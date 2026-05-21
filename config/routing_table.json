@@ -1,0 +1,22 @@
+{
+  "character_dialogue": {
+    "standard": "anthropic/claude-haiku-4-5-20251001",
+    "premium": "anthropic/claude-sonnet-4-6"
+  },
+  "pacing_decision": {
+    "standard": "groq/llama-3.1-8b-instant",
+    "premium": "groq/llama-3.1-8b-instant"
+  },
+  "safety_classification": {
+    "standard": "groq/gpt-oss-safeguard-20b",
+    "premium": "groq/gpt-oss-safeguard-20b"
+  },
+  "knowledge_inference": {
+    "standard": "groq/llama-3.1-8b-instant",
+    "premium": "groq/llama-3.3-70b-versatile"
+  },
+  "narrative_generation": {
+    "standard": "anthropic/claude-haiku-4-5-20251001",
+    "premium": "anthropic/claude-sonnet-4-6"
+  }
+}

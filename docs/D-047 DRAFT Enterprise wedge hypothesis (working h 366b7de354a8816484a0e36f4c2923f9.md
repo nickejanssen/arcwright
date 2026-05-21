@@ -1,0 +1,6 @@
+# D-047 DRAFT Enterprise wedge hypothesis (working hypothesis, not committed)
+
+Date: May 19, 2026
+Rationale: Per user signal that enterprise is too early to discuss, this is retained as a draft for revisit, not a hard commitment. Working hypothesis: Arcwright's enterprise wedge is a white-label-first, direct-secondary corporate team-building offering, sold primarily through mid-tier events vendors and secondarily to HR or People Ops decision-makers at companies of 200 or more employees. Testable within 12 months of Nightcap consumer launch by recruiting at least two events vendors as white-label partners, running at least three multi-session corporate engagements, and achieving either repeat booking rate above 50 percent or aggregate first-year revenue above $50K from these partnerships. Falsification conditions include buyer preference for fresh content over continuity, no vendor willingness after five qualified conversations, or cost-per-session economics failing to match category alternatives.
+Section: Section 4: Vertical Strategy
+Status: Tentative
