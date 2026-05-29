@@ -1,0 +1,274 @@
+{
+  "version": "1.1",
+  "status": "active",
+  "canonical_readme": "docs/roadmap/README.md",
+  "aliases": [
+    "docs/12-Build-Roadmap-v1.md",
+    "docs/12-Build-Roadmap-v1.1.md"
+  ],
+  "markdown_source_of_truth": true,
+  "tracker": {
+    "repository": "nickejanssen/arcwright",
+    "project_name": "Arcwright Build",
+    "config_paths": {
+      "readme": ".github/tracker/README.md",
+      "labels": ".github/tracker/labels.json",
+      "milestones": ".github/tracker/milestones.json",
+      "project": ".github/tracker/project.json"
+    },
+    "labels": [
+      "Epic",
+      "task",
+      "size:S",
+      "size:M",
+      "size:L",
+      "M1",
+      "agent-ready",
+      "blocked"
+    ],
+    "issue_templates": {
+      "feature": ".github/ISSUE_TEMPLATE/feature.md",
+      "bug": ".github/ISSUE_TEMPLATE/bug.md"
+    },
+    "pull_request_template": ".github/pull_request_template.md",
+    "cross_reference_policy": {
+      "canonical_ids_live_in_markdown": true,
+      "live_github_numbers_live_in_manifest": true,
+      "repeat_live_issue_numbers_in_each_markdown_file": false
+    }
+  },
+  "sources": [
+    "docs/12-Build-Roadmap-v1.md",
+    "docs/12-Build-Roadmap-v1.1.md",
+    "docs/12b-GitHub-M1-Epic-A-Setup.md"
+  ],
+  "milestones": [
+    {
+      "id": "M0",
+      "title": "Wizard-of-Oz validation",
+      "status": "overridden",
+      "path": "docs/roadmap/milestones/M0-wizard-of-oz-validation.md",
+      "epics": []
+    },
+    {
+      "id": "M1",
+      "title": "Deterministic platform core",
+      "status": "active",
+      "path": "docs/roadmap/milestones/M1-deterministic-platform-core.md",
+      "github": {
+        "milestone_number": 1,
+        "url": "https://github.com/nickejanssen/arcwright/milestone/1"
+      },
+      "epics": [
+        "M1-A",
+        "M1-B",
+        "M1-C",
+        "M1-D",
+        "M1-E"
+      ]
+    },
+    {
+      "id": "M2",
+      "title": "Arc engine + Nightcap arc + safety",
+      "status": "planned",
+      "path": "docs/roadmap/milestones/M2-arc-engine-nightcap-arc-safety.md",
+      "epics": []
+    },
+    {
+      "id": "M3",
+      "title": "Events, API, persistence, telemetry",
+      "status": "planned",
+      "path": "docs/roadmap/milestones/M3-events-api-persistence-telemetry.md",
+      "epics": []
+    },
+    {
+      "id": "M4",
+      "title": "Nightcap experience layer",
+      "status": "planned",
+      "path": "docs/roadmap/milestones/M4-nightcap-experience-layer.md",
+      "epics": []
+    },
+    {
+      "id": "M5",
+      "title": "Hardening + proof prerequisites",
+      "status": "planned",
+      "path": "docs/roadmap/milestones/M5-hardening-proof-prerequisites.md",
+      "epics": []
+    },
+    {
+      "id": "M6",
+      "title": "First qualifying sessions",
+      "status": "planned",
+      "path": "docs/roadmap/milestones/M6-first-qualifying-sessions.md",
+      "epics": []
+    }
+  ],
+  "epics": [
+    {
+      "id": "M1-A",
+      "milestone": "M1",
+      "title": "Scaffolding and infrastructure",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M1-A-scaffolding-and-infrastructure.md",
+      "github": {
+        "issue_number": 1,
+        "url": "https://github.com/nickejanssen/arcwright/issues/1"
+      },
+      "tasks": [
+        "AW-101",
+        "AW-102"
+      ]
+    },
+    {
+      "id": "M1-B",
+      "milestone": "M1",
+      "title": "Data model",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M1-B-data-model.md",
+      "tasks": [
+        "AW-103",
+        "AW-104"
+      ]
+    },
+    {
+      "id": "M1-C",
+      "milestone": "M1",
+      "title": "Knowledge graph core",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M1-C-knowledge-graph-core.md",
+      "tasks": [
+        "AW-105",
+        "AW-106"
+      ]
+    },
+    {
+      "id": "M1-D",
+      "milestone": "M1",
+      "title": "Model routing abstraction",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M1-D-model-routing-abstraction.md",
+      "tasks": [
+        "AW-107",
+        "AW-108"
+      ]
+    },
+    {
+      "id": "M1-E",
+      "milestone": "M1",
+      "title": "Harness scaffold",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M1-E-harness-scaffold.md",
+      "tasks": [
+        "AW-110"
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": "AW-101",
+      "title": "Repository structure and Python project setup",
+      "milestone": "M1",
+      "epic": "M1-A",
+      "size": "S",
+      "depends_on": [],
+      "github": {
+        "issue_number": 2,
+        "url": "https://github.com/nickejanssen/arcwright/issues/2"
+      },
+      "path": "docs/roadmap/tasks/AW-101-repository-structure-and-python-project-setup.md"
+    },
+    {
+      "id": "AW-102",
+      "title": "Local Postgres 15 + pgvector + Alembic init",
+      "milestone": "M1",
+      "epic": "M1-A",
+      "size": "S",
+      "depends_on": [
+        "AW-101"
+      ],
+      "github": {
+        "issue_number": 3,
+        "url": "https://github.com/nickejanssen/arcwright/issues/3"
+      },
+      "path": "docs/roadmap/tasks/AW-102-local-postgres-pgvector-alembic-init.md"
+    },
+    {
+      "id": "AW-103",
+      "title": "SQLAlchemy models for all platform tables",
+      "milestone": "M1",
+      "epic": "M1-B",
+      "size": "L",
+      "depends_on": [
+        "AW-102"
+      ],
+      "path": "docs/roadmap/tasks/AW-103-sqlalchemy-models-for-all-platform-tables.md"
+    },
+    {
+      "id": "AW-104",
+      "title": "First full Alembic migration",
+      "milestone": "M1",
+      "epic": "M1-B",
+      "size": "M",
+      "depends_on": [
+        "AW-103"
+      ],
+      "path": "docs/roadmap/tasks/AW-104-first-full-alembic-migration.md"
+    },
+    {
+      "id": "AW-105",
+      "title": "Knowledge graph assertion API",
+      "milestone": "M1",
+      "epic": "M1-C",
+      "size": "L",
+      "depends_on": [
+        "AW-104"
+      ],
+      "path": "docs/roadmap/tasks/AW-105-knowledge-graph-assertion-api.md"
+    },
+    {
+      "id": "AW-106",
+      "title": "Pre-generation knowledge constraint hook",
+      "milestone": "M1",
+      "epic": "M1-C",
+      "size": "M",
+      "depends_on": [
+        "AW-105"
+      ],
+      "path": "docs/roadmap/tasks/AW-106-pre-generation-knowledge-constraint-hook.md"
+    },
+    {
+      "id": "AW-107",
+      "title": "LiteLLM routing layer",
+      "milestone": "M1",
+      "epic": "M1-D",
+      "size": "M",
+      "depends_on": [
+        "AW-101"
+      ],
+      "path": "docs/roadmap/tasks/AW-107-litellm-routing-layer.md"
+    },
+    {
+      "id": "AW-108",
+      "title": "Prompt caching and generation logging",
+      "milestone": "M1",
+      "epic": "M1-D",
+      "size": "M",
+      "depends_on": [
+        "AW-107"
+      ],
+      "path": "docs/roadmap/tasks/AW-108-prompt-caching-and-generation-logging.md"
+    },
+    {
+      "id": "AW-110",
+      "title": "Simulation harness skeleton (arc-runnable)",
+      "milestone": "M1",
+      "epic": "M1-E",
+      "size": "M",
+      "depends_on": [
+        "AW-105",
+        "AW-107"
+      ],
+      "path": "docs/roadmap/tasks/AW-110-simulation-harness-skeleton.md"
+    }
+  ]
+}

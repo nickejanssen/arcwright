@@ -1,0 +1,21 @@
+{
+  "id": "routing_table_required_tasks",
+  "description": "The routing table exposes the required MVP task categories and both standard and premium tiers for each one.",
+  "input": {
+    "routing_table_path": "config/routing_table.json",
+    "required_tasks": [
+      "character_dialogue",
+      "pacing_decision",
+      "safety_classification",
+      "knowledge_inference",
+      "narrative_generation",
+      "killer_assignment",
+      "narrator_bridge"
+    ]
+  },
+  "expected_behavior": "Every required task exists in the routing table and defines both standard and premium model entries.",
+  "expected_assertions": {
+    "required_tasks_present": true,
+    "each_task_has_standard_and_premium": true
+  }
+}

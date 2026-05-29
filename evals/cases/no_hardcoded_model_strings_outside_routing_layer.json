@@ -1,0 +1,22 @@
+{
+  "id": "no_hardcoded_model_strings_outside_routing_layer",
+  "description": "Model/provider strings from the routing table are not hardcoded elsewhere in the repo outside the routing configuration and eval fixtures.",
+  "input": {
+    "routing_table_path": "config/routing_table.json",
+    "exclude_paths": [
+      "config/routing_table.json",
+      "evals/cases/",
+      "docs/"
+    ],
+    "include_roots": [
+      "engine/",
+      "api/",
+      "config/",
+      ".github/workflows/"
+    ]
+  },
+  "expected_behavior": "No configured model string appears in implementation files outside the routing layer configuration and eval cases.",
+  "expected_assertions": {
+    "no_hardcoded_model_strings_outside_allowed_paths": true
+  }
+}

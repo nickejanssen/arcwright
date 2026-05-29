@@ -1,0 +1,27 @@
+[
+  {
+    "id": "M1",
+    "title": "M1: Deterministic Platform Core",
+    "description": "Build-order coverage: #1 session models, #2 knowledge graph, #3 routing, harness scaffold."
+  },
+  {
+    "id": "M2",
+    "title": "M2: Arc Engine + Nightcap Arc + Safety",
+    "description": "Build-order coverage: #4 arc execution, #5 safety, #7 character behavior."
+  },
+  {
+    "id": "M3",
+    "title": "M3: Events, API, Persistence, Telemetry",
+    "description": "Build-order coverage: #6 events, #8 API + auth, #9 persistence, #10 telemetry, #11 full harness."
+  },
+  {
+    "id": "M4",
+    "title": "M4: Nightcap Experience Layer",
+    "description": "Experience-layer milestone for real human end-to-end play on real devices."
+  },
+  {
+    "id": "M5",
+    "title": "M5: Hardening + Proof Prerequisites",
+    "description": "PRD MVP done-criteria milestone for safety hardening, economics, second arc schema, and inspection tooling."
+  }
+]

@@ -34,15 +34,15 @@ See `/docs/conventions/` for:
 ```bash
 pip install -r requirements.txt
 pytest engine/tests/                    # Run unit tests
-mypy engine/                            # TODO: Type checking (setup needed)
-python -m pylint engine/                # TODO: Linting (setup needed)
-python -m pytest engine/tests/ --cov    # TODO: Coverage (setup needed)
+pytest evals/runners/test_routing_evals.py -q
+python -m ruff check engine api
+python -m ruff format --check engine api
 ```
 
 **TypeScript (SDK + Dashboard):**
 ```bash
-cd sdk && npm install && npm test
-cd dashboard && npm install && npm test
+cd sdk && npm install && npm run typecheck && npm run build
+cd dashboard && npm install && npm run typecheck && npm run build
 ```
 
 **Database:**

@@ -1,0 +1,75 @@
+{
+  "repository": "nickejanssen/arcwright",
+  "project": {
+    "name": "Arcwright Build",
+    "owner": {
+      "type": "user",
+      "login": "nickejanssen"
+    },
+    "layout": "table",
+    "fields": [
+      {
+        "name": "Size",
+        "type": "single_select",
+        "options": [
+          "S",
+          "M",
+          "L"
+        ]
+      },
+      {
+        "name": "Status",
+        "type": "single_select",
+        "options": [
+          "Backlog",
+          "In Progress",
+          "In Review",
+          "Done"
+        ]
+      },
+      {
+        "name": "Epic",
+        "type": "text"
+      }
+    ]
+  },
+  "seed_items": [
+    {
+      "id": "M1-A",
+      "kind": "epic",
+      "title": "[Epic] M1-A: Project Scaffolding and Infrastructure",
+      "roadmap_path": "docs/roadmap/epics/M1-A-scaffolding-and-infrastructure.md",
+      "milestone_id": "M1",
+      "labels": [
+        "Epic",
+        "M1"
+      ]
+    },
+    {
+      "id": "AW-101",
+      "kind": "task",
+      "title": "AW-101: Repository structure and Python project setup",
+      "roadmap_path": "docs/roadmap/tasks/AW-101-repository-structure-and-python-project-setup.md",
+      "milestone_id": "M1",
+      "labels": [
+        "task",
+        "size:S",
+        "M1"
+      ],
+      "epic_id": "M1-A"
+    },
+    {
+      "id": "AW-102",
+      "kind": "task",
+      "title": "AW-102: Local Postgres 15 + pgvector + Alembic init",
+      "roadmap_path": "docs/roadmap/tasks/AW-102-local-postgres-pgvector-alembic-init.md",
+      "milestone_id": "M1",
+      "labels": [
+        "task",
+        "size:S",
+        "M1"
+      ],
+      "epic_id": "M1-A"
+    }
+  ]
+}

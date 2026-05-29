@@ -1,0 +1,110 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.11"
+  NODE_VERSION: "20"
+
+jobs:
+  ci:
+    name: Lint, Typecheck, Test, Build, and Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: Cache npm downloads
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-${{ hashFiles('sdk/package.json', 'dashboard/package.json', 'eslint.config.mjs', '.github/workflows/ci.yml') }}
+          restore-keys: |
+            ${{ runner.os }}-node-${{ env.NODE_VERSION }}-
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt pytest ruff==0.15.14
+
+      - name: Install SDK dependencies
+        run: npm install --prefix sdk
+
+      - name: Install dashboard dependencies
+        run: npm install --prefix dashboard
+
+      - name: Lint Python
+        run: python -m ruff check engine api
+
+      - name: Check Python formatting
+        run: python -m ruff format --check engine api
+
+      - name: Lint JavaScript and TypeScript
+        run: >
+          npx --yes
+          --package=eslint@9.25.0
+          --package=@eslint/js@9.25.0
+          --package=typescript@5.6.3
+          --package=typescript-eslint@8.44.1
+          eslint .
+
+      - name: Check JavaScript and TypeScript formatting
+        run: |
+          files=(dashboard/vite.config.ts eslint.config.mjs)
+          while IFS= read -r file; do files+=("$file"); done < <(
+            find sdk/src dashboard/src -type f \( \
+              -name '*.js' -o -name '*.jsx' -o -name '*.ts' -o -name '*.tsx' -o -name '*.mjs' -o -name '*.cjs' \
+            \)
+          )
+          npx --yes --package=prettier@3.6.2 prettier --check "${files[@]}"
+
+      - name: Type check SDK
+        if: ${{ hashFiles('sdk/src/**/*.ts', 'sdk/src/**/*.tsx') != '' }}
+        run: npm run typecheck --prefix sdk
+
+      - name: Type check dashboard
+        if: ${{ hashFiles('dashboard/src/**/*.ts', 'dashboard/src/**/*.tsx') != '' }}
+        run: npm run typecheck --prefix dashboard
+
+      - name: Run Python tests
+        run: pytest engine/tests
+
+      - name: Build SDK
+        if: ${{ hashFiles('sdk/src/**/*.ts', 'sdk/src/**/*.tsx') != '' }}
+        run: npm run build --prefix sdk
+
+      - name: Build dashboard
+        if: ${{ hashFiles('dashboard/src/**/*.ts', 'dashboard/src/**/*.tsx', 'dashboard/index.html') != '' }}
+        run: npm run build --prefix dashboard
+
+      - name: Scan for secrets with gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

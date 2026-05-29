@@ -1,22 +1,44 @@
 {
   "character_dialogue": {
     "standard": "anthropic/claude-haiku-4-5-20251001",
-    "premium": "anthropic/claude-sonnet-4-6"
+    "standard_fallback": "groq/llama-3.3-70b-versatile",
+    "premium": "anthropic/claude-sonnet-4-6",
+    "premium_fallback": "anthropic/claude-haiku-4-5-20251001"
   },
   "pacing_decision": {
     "standard": "groq/llama-3.1-8b-instant",
-    "premium": "groq/llama-3.1-8b-instant"
+    "standard_fallback": "anthropic/claude-haiku-4-5-20251001",
+    "premium": "groq/llama-3.1-8b-instant",
+    "premium_fallback": "anthropic/claude-haiku-4-5-20251001"
   },
   "safety_classification": {
     "standard": "groq/gpt-oss-safeguard-20b",
-    "premium": "groq/gpt-oss-safeguard-20b"
+    "standard_fallback": "anthropic/claude-haiku-4-5-20251001",
+    "premium": "groq/gpt-oss-safeguard-20b",
+    "premium_fallback": "anthropic/claude-haiku-4-5-20251001"
   },
   "knowledge_inference": {
     "standard": "groq/llama-3.1-8b-instant",
-    "premium": "groq/llama-3.3-70b-versatile"
+    "standard_fallback": "anthropic/claude-haiku-4-5-20251001",
+    "premium": "groq/llama-3.3-70b-versatile",
+    "premium_fallback": "anthropic/claude-sonnet-4-6"
   },
   "narrative_generation": {
     "standard": "anthropic/claude-haiku-4-5-20251001",
-    "premium": "anthropic/claude-sonnet-4-6"
+    "standard_fallback": "groq/llama-3.3-70b-versatile",
+    "premium": "anthropic/claude-sonnet-4-6",
+    "premium_fallback": "anthropic/claude-haiku-4-5-20251001"
+  },
+  "killer_assignment": {
+    "standard": "groq/llama-3.1-8b-instant",
+    "standard_fallback": "anthropic/claude-haiku-4-5-20251001",
+    "premium": "groq/llama-3.3-70b-versatile",
+    "premium_fallback": "anthropic/claude-sonnet-4-6"
+  },
+  "narrator_bridge": {
+    "standard": "groq/llama-3.1-8b-instant",
+    "standard_fallback": "anthropic/claude-haiku-4-5-20251001",
+    "premium": "anthropic/claude-haiku-4-5-20251001",
+    "premium_fallback": "groq/llama-3.1-8b-instant"
   }
 }

@@ -87,6 +87,7 @@ If you are new to the repo, read these in order:
 
 Helpful supporting docs:
 
+- `docs/roadmap/README.md`
 - `docs/07-Story-Bible-Murder-Mystery-v1 361b7de354a8817a99ece1b701763f06.md`
 - `docs/09-Story-Bible-Monster-RPG-v1 0 365b7de354a881e08dd5d43e2ab2edb5.md`
 - `docs/02-Decisions-Log 03d3b381bfe34918b6100a73897893da.csv`
@@ -123,6 +124,14 @@ This repository is still scaffold-stage, so setup is intentionally light.
 python -m venv .venv
 . .venv/Scripts/activate
 pip install -r requirements.txt
+pip install pre-commit
+pre-commit install
+```
+
+### Repo Tooling
+
+```bash
+npm install
 ```
 
 ### Environment

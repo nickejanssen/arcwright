@@ -32,15 +32,15 @@ See `/docs/conventions/` for:
 ```bash
 pip install -r requirements.txt
 pytest engine/tests/                    # Run unit tests
-mypy engine/                            # TODO: Type checking (setup needed)
-python -m pylint engine/                # TODO: Linting (setup needed)
-python -m pytest engine/tests/ --cov    # TODO: Coverage (setup needed)
+pytest evals/runners/test_routing_evals.py -q
+python -m ruff check engine api
+python -m ruff format --check engine api
 ```
 
 **TypeScript (SDK + Dashboard):**
 ```bash
-cd sdk && npm install && npm test
-cd dashboard && npm install && npm test
+cd sdk && npm install && npm run typecheck && npm run build
+cd dashboard && npm install && npm run typecheck && npm run build
 ```
 
 **Database:**
@@ -51,8 +51,8 @@ alembic revision --autogenerate -m "description"  # Create migration
 
 ## Workflow Expectations
 
-1. **Write a plan** before implementing. Create or update `/PLAN.md` in session workspace.
-2. **Get plan approved** via `exit_plan_mode` tool. Do not implement without approval.
+1. **Write a plan** before implementing. Use planning tools or create a plan file in your workspace.
+2. **Get plan approved** before implementation. Do not implement without approval.
 3. **Write tests as part of changes**, not after. Tests must validate acceptance criteria from spec.
 4. **Run all checks locally** before claiming done: tests pass, types check, linting passes.
 

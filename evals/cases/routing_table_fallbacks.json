@@ -1,0 +1,11 @@
+{
+  "id": "routing_table_fallbacks",
+  "description": "Each routing task defines both standard and premium fallback entries so sessions have a recovery path when a primary model call fails.",
+  "input": {
+    "routing_table_path": "config/routing_table.json"
+  },
+  "expected_behavior": "Every task defines standard_fallback and premium_fallback values alongside the primary model entries.",
+  "expected_assertions": {
+    "each_task_has_standard_and_premium_fallbacks": true
+  }
+}

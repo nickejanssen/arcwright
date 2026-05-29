@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Epic",
+    "color": "5319e7",
+    "description": "Parent roadmap epic issues"
+  },
+  {
+    "name": "task",
+    "color": "0e8a16",
+    "description": "Individual roadmap task issues"
+  },
+  {
+    "name": "size:S",
+    "color": "c2e0c6",
+    "description": "Small task, usually less than two hours"
+  },
+  {
+    "name": "size:M",
+    "color": "fbca04",
+    "description": "Medium task, usually two to eight hours"
+  },
+  {
+    "name": "size:L",
+    "color": "d93f0b",
+    "description": "Large task or unclear scope"
+  },
+  {
+    "name": "M1",
+    "color": "1d76db",
+    "description": "Milestone 1 work"
+  },
+  {
+    "name": "agent-ready",
+    "color": "0e8a16",
+    "description": "Task is fully spec'd and ready to hand to an agent"
+  },
+  {
+    "name": "blocked",
+    "color": "b60205",
+    "description": "Work is blocked and should not be assigned yet"
+  }
+]
