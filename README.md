@@ -138,12 +138,39 @@ npm install
 
 Create a local `.env` from `.env.example` and fill in:
 
-- `DATABASE_URL`
+- `POSTGRES_HOST`
+- `POSTGRES_PORT`
+- `POSTGRES_DB`
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
 - `FIREBASE_PROJECT_ID`
 - `ANTHROPIC_API_KEY`
 - `GROQ_API_KEY`
 
+`DATABASE_URL` is optional. If it is unset, Alembic builds the async Postgres URL from the `POSTGRES_*` variables.
+The local development default for `POSTGRES_PORT` is `5433` to avoid common conflicts with other Postgres installs.
+
 Do not commit secrets.
+
+### Local Postgres + Alembic
+
+Bring up the local Postgres 15 + pgvector database:
+
+```bash
+docker compose up -d
+```
+
+Apply the initial migration:
+
+```bash
+alembic upgrade head
+```
+
+Roll it back to base:
+
+```bash
+alembic downgrade base
+```
 
 ### TypeScript Packages
 
