@@ -52,11 +52,13 @@ Autogenerate misses or mishandles these items — verify each by hand before com
 
 1. **`VECTOR(1536)` columns** — autogenerate may emit them as `NullType` or omit them. Patch to `Vector(1536)` using the `pgvector.sqlalchemy` import, guarded by a try/except for environments without pgvector installed.
 2. **`JSONB` columns** — autogenerate may emit `JSON` instead of `JSONB`. Change to `JSONB` explicitly.
-3. **Extension ordering** — `CREATE EXTENSION IF NOT EXISTS vector` must appear before any `VECTOR` column. The migration runs after `0001`, so this is satisfied by the chain order, but verify the `down_revision` in the new file points to `0001`.
-4. **Append-only annotation on `events`** — SQLAlchemy cannot enforce append-only at the DB layer without a trigger. Add a comment in the migration noting this is an append-only table; enforcement is at the engine layer. Do not add a database trigger (out of scope at MVP).
-5. **Index on `knowledge_states(session_id, character_id)`** — the knowledge graph query pattern requires this. If autogenerate does not emit it, add it manually.
-6. **Index on `events(session_id, timestamp)`** — required for session event log replay. Add if missing.
-7. **`nullable=True` on all three `VECTOR` columns in `generation_logs`** — `prompt_embedding`, `prompt_text`, `output_text` are nullable at MVP.
+3. **Extension ordering** — verify the `down_revision` in the new file equals the revision ID from `0001_enable_vector_extension.py`.
+4. **Append-only annotation on `events`** — add a table comment noting this is append-only; enforcement is at the engine layer. Do not add a database trigger (out of scope at MVP).
+5. **Index on `events(session_id, timestamp)` and `events(event_type, timestamp)`** — required per Arch §11.2. Add if missing.
+6. **Index on `arc_beat_states(session_id, is_current)`** — required for the nearest-beat restore pattern. Add if missing.
+7. **`UNIQUE (session_id, source_char_id, target_char_id)` on `relationships`** — verify autogenerate captured the table-level constraint.
+8. **`nullable=True` on all content columns in `generation_logs`** — `prompt_text`, `output_text`, `prompt_embedding`, `output_embedding` are all nullable at MVP.
+9. **Self-referential FK on `knowledge_states.superseded_by`** — verify it is present with `use_alter=True`.
 
 ---
 
@@ -66,9 +68,10 @@ Autogenerate misses or mishandles these items — verify each by hand before com
 - [ ] All 15 platform tables exist after upgrade
 - [ ] `pgvector` extension created before any `VECTOR` column (chain ordering verified)
 - [ ] `VECTOR(1536)` columns present and nullable on `characters`, `facts`, `events`, `generation_logs`
-- [ ] `JSONB` (not `JSON`) on `characters.behavior_profile` and `arc_beat_states.statemachine_config`
-- [ ] Index on `knowledge_states(session_id, character_id)` present
-- [ ] Index on `events(session_id, timestamp)` present
+- [ ] `JSONB` (not `JSON`) on all JSONB columns
+- [ ] Index on `events(session_id, timestamp)` and `events(event_type, timestamp)` present
+- [ ] Index on `arc_beat_states(session_id, is_current)` present
+- [ ] `UNIQUE (session_id, source_char_id, target_char_id)` constraint on `relationships` present
 - [ ] `alembic downgrade base` drops all tables and the extension with zero errors
 - [ ] Migration is re-runnable: `downgrade base` then `upgrade head` succeeds a second time on the same database
 
