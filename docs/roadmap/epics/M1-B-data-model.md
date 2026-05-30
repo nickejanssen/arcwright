@@ -1,7 +1,8 @@
 # M1-B: Data Model
 
 **Milestone:** M1  
-**Status:** Planned
+**Status:** Active
+**GitHub:** [Issue #4](https://github.com/nickejanssen/arcwright/issues/4)
 
 ## What This Epic Covers
 

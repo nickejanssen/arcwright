@@ -125,6 +125,10 @@
       "title": "Data model",
       "status": "planned",
       "path": "docs/roadmap/epics/M1-B-data-model.md",
+      "github": {
+        "issue_number": 4,
+        "url": "https://github.com/nickejanssen/arcwright/issues/4"
+      },
       "tasks": [
         "AW-103",
         "AW-104"
@@ -201,7 +205,11 @@
       "depends_on": [
         "AW-102"
       ],
-      "path": "docs/roadmap/tasks/AW-103-sqlalchemy-models-for-all-platform-tables.md"
+      "path": "docs/roadmap/tasks/AW-103-sqlalchemy-models-for-all-platform-tables.md",
+      "github": {
+        "issue_number": 5,
+        "url": "https://github.com/nickejanssen/arcwright/issues/5"
+      }
     },
     {
       "id": "AW-104",
@@ -212,7 +220,11 @@
       "depends_on": [
         "AW-103"
       ],
-      "path": "docs/roadmap/tasks/AW-104-first-full-alembic-migration.md"
+      "path": "docs/roadmap/tasks/AW-104-first-full-alembic-migration.md",
+      "github": {
+        "issue_number": 6,
+        "url": "https://github.com/nickejanssen/arcwright/issues/6"
+      }
     },
     {
       "id": "AW-105",
