@@ -6,6 +6,7 @@ from logging.config import fileConfig
 
 from alembic import context
 from dotenv import load_dotenv
+from engine.db.orm import Base
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import AsyncEngine, async_engine_from_config
@@ -17,7 +18,7 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-target_metadata = None
+target_metadata = Base.metadata
 
 
 def get_database_url() -> str:

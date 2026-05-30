@@ -48,6 +48,10 @@ module = ["alembic", "alembic.*", "litellm", "statemachine"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
+module = ["pgvector", "pgvector.*", "sqlalchemy", "sqlalchemy.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
 module = ["engine.routing.router"]
 disable_error_code = ["no-any-return"]
 
