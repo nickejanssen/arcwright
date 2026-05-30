@@ -10,6 +10,7 @@ from uuid import UUID
 from pgvector.sqlalchemy import Vector
 from sqlalchemy import (
     Boolean,
+    DateTime,
     Float,
     ForeignKey,
     Index,
@@ -41,10 +42,13 @@ class Account(Base):
     email: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     display_name: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
         nullable=False,
         server_default=text("now()"),
     )
-    last_seen_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
+    last_seen_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
 
     hosted_sessions: Mapped[list[Session]] = relationship(
         back_populates="host_account",
@@ -79,10 +83,13 @@ class ConsentRecord(Base):
     consent_type: Mapped[str] = mapped_column(Text, nullable=False)
     granted: Mapped[bool] = mapped_column(Boolean, nullable=False)
     granted_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
         nullable=False,
         server_default=text("now()"),
     )
-    revoked_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
+    revoked_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     consent_version: Mapped[str] = mapped_column(Text, nullable=False)
 
     account: Mapped[Optional[Account]] = relationship(back_populates="consent_records")
@@ -186,10 +193,13 @@ class KnowledgeState(Base):
         server_default=text("'[]'::jsonb"),
     )
     asserted_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
         nullable=False,
         server_default=text("now()"),
     )
-    expires_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
+    expires_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     superseded_by: Mapped[Optional[UUID]] = mapped_column(
         PGUUID(as_uuid=True),
         ForeignKey("knowledge_states.ks_id", use_alter=True),
@@ -255,6 +265,7 @@ class RelationshipState(Base):
     history_tag: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     current_affect: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
         nullable=False,
         server_default=text("now()"),
     )
@@ -341,6 +352,7 @@ class Decision(Base):
         nullable=False,
     )
     timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
         nullable=False,
         server_default=text("now()"),
     )
@@ -377,6 +389,7 @@ class Event(Base):
         nullable=False,
     )
     timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
         nullable=False,
         server_default=text("now()"),
     )
@@ -414,11 +427,16 @@ class Session(Base):
         nullable=False,
     )
     created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
         nullable=False,
         server_default=text("now()"),
     )
-    started_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
-    completed_at: Mapped[Optional[datetime]] = mapped_column(nullable=True)
+    started_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    completed_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     current_beat_id: Mapped[str] = mapped_column(Text, nullable=False)
     quality_tier: Mapped[str] = mapped_column(Text, nullable=False)
     player_count: Mapped[int] = mapped_column(Integer, nullable=False)
@@ -513,6 +531,7 @@ class ArcBeatState(Base):
         server_default=text("'[]'::jsonb"),
     )
     snapshot_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
         nullable=False,
         server_default=text("now()"),
     )
@@ -539,6 +558,7 @@ class GenerationLog(Base):
         nullable=False,
     )
     timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
         nullable=False,
         server_default=text("now()"),
     )
@@ -572,6 +592,7 @@ class DecisionLog(Base):
         nullable=False,
     )
     timestamp: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
         nullable=False,
         server_default=text("now()"),
     )

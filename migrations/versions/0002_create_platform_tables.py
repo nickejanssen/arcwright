@@ -44,9 +44,12 @@ def upgrade() -> None:
         sa.Column("email", sa.Text(), nullable=True),
         sa.Column("display_name", sa.Text(), nullable=True),
         sa.Column(
-            "created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
         ),
-        sa.Column("last_seen_at", sa.DateTime(), nullable=True),
+        sa.Column("last_seen_at", sa.DateTime(timezone=True), nullable=True),
         sa.PrimaryKeyConstraint("account_id"),
         sa.UniqueConstraint("firebase_uid"),
     )
@@ -79,10 +82,13 @@ def upgrade() -> None:
         sa.Column("status", sa.Text(), nullable=False),
         sa.Column("host_account_id", sa.UUID(), nullable=False),
         sa.Column(
-            "created_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False
+            "created_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
         ),
-        sa.Column("started_at", sa.DateTime(), nullable=True),
-        sa.Column("completed_at", sa.DateTime(), nullable=True),
+        sa.Column("started_at", sa.DateTime(timezone=True), nullable=True),
+        sa.Column("completed_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("current_beat_id", sa.Text(), nullable=False),
         sa.Column("quality_tier", sa.Text(), nullable=False),
         sa.Column("player_count", sa.Integer(), nullable=False),
@@ -115,7 +121,7 @@ def upgrade() -> None:
         ),
         sa.Column(
             "snapshot_at",
-            sa.DateTime(),
+            sa.DateTime(timezone=True),
             server_default=sa.text("now()"),
             nullable=False,
         ),
@@ -147,9 +153,12 @@ def upgrade() -> None:
         sa.Column("consent_type", sa.Text(), nullable=False),
         sa.Column("granted", sa.Boolean(), nullable=False),
         sa.Column(
-            "granted_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False
+            "granted_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
         ),
-        sa.Column("revoked_at", sa.DateTime(), nullable=True),
+        sa.Column("revoked_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("consent_version", sa.Text(), nullable=False),
         sa.ForeignKeyConstraint(
             ["account_id"],
@@ -171,7 +180,10 @@ def upgrade() -> None:
         ),
         sa.Column("session_id", sa.UUID(), nullable=False),
         sa.Column(
-            "timestamp", sa.DateTime(), server_default=sa.text("now()"), nullable=False
+            "timestamp",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
         ),
         sa.Column("decision_type", sa.Text(), nullable=False),
         sa.Column(
@@ -194,7 +206,10 @@ def upgrade() -> None:
         ),
         sa.Column("session_id", sa.UUID(), nullable=False),
         sa.Column(
-            "timestamp", sa.DateTime(), server_default=sa.text("now()"), nullable=False
+            "timestamp",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
         ),
         sa.Column("decision_type", sa.Text(), nullable=False),
         sa.Column(
@@ -225,7 +240,10 @@ def upgrade() -> None:
         ),
         sa.Column("session_id", sa.UUID(), nullable=False),
         sa.Column(
-            "timestamp", sa.DateTime(), server_default=sa.text("now()"), nullable=False
+            "timestamp",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
         ),
         sa.Column("actor_char_id", sa.UUID(), nullable=True),
         sa.Column("event_type", sa.Text(), nullable=False),
@@ -290,7 +308,10 @@ def upgrade() -> None:
         ),
         sa.Column("session_id", sa.UUID(), nullable=False),
         sa.Column(
-            "timestamp", sa.DateTime(), server_default=sa.text("now()"), nullable=False
+            "timestamp",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
         ),
         sa.Column("task_type", sa.Text(), nullable=False),
         sa.Column("quality_tier", sa.Text(), nullable=False),
@@ -350,7 +371,10 @@ def upgrade() -> None:
         sa.Column("history_tag", sa.Text(), nullable=True),
         sa.Column("current_affect", sa.Text(), nullable=True),
         sa.Column(
-            "updated_at", sa.DateTime(), server_default=sa.text("now()"), nullable=False
+            "updated_at",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=False,
         ),
         sa.ForeignKeyConstraint(
             ["session_id"],
@@ -428,11 +452,11 @@ def upgrade() -> None:
         ),
         sa.Column(
             "asserted_at",
-            sa.DateTime(),
+            sa.DateTime(timezone=True),
             server_default=sa.text("now()"),
             nullable=False,
         ),
-        sa.Column("expires_at", sa.DateTime(), nullable=True),
+        sa.Column("expires_at", sa.DateTime(timezone=True), nullable=True),
         sa.Column("superseded_by", sa.UUID(), nullable=True),
         sa.ForeignKeyConstraint(
             ["character_id"],
