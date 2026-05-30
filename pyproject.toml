@@ -3,29 +3,12 @@ requires = ["setuptools==75.6.0", "wheel==0.45.1"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "arcwright-workspace"
+name = "arcwright-dev"
 version = "0.1.0"
-description = "Workspace tooling and dependency manifest for Arcwright."
+description = "Shared developer tooling configuration for the Arcwright monorepo."
 requires-python = ">=3.11"
 
 [project.optional-dependencies]
-engine = [
-    "alembic==1.14.0",
-    "asyncpg==0.30.0",
-    "httpx==0.28.1",
-    "litellm==1.52.15",
-    "pgvector==0.3.6",
-    "pydantic==2.10.3",
-    "python-dotenv==1.0.1",
-    "python-statemachine==3.0.1",
-    "sqlalchemy[asyncio]==2.0.36",
-    "structlog==24.4.0",
-]
-api = [
-    "fastapi==0.115.6",
-    "firebase-admin==6.6.0",
-    "uvicorn[standard]==0.32.1",
-]
 dev = [
     "mypy==1.13.0",
     "pytest==8.3.4",

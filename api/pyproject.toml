@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools==75.6.0", "wheel==0.45.1"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "arcwright-api"
+version = "0.1.0"
+description = "Arcwright API package."
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi==0.115.6",
+    "firebase-admin==6.6.0",
+    "pydantic==2.10.3",
+    "uvicorn[standard]==0.32.1",
+]
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+where = [".."]
+include = ["api*"]

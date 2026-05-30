@@ -17,13 +17,14 @@
 
 # Overview
 
-Add the missing Python workspace scaffolding for AW-101 without replacing the existing engine and API spine that is already present in the repository.
+Add the missing Python workspace scaffolding for AW-101 without replacing the existing engine and API spine that is already present in the repository. The final state keeps shared tooling at the repo root and gives `engine/` and `api/` their own package manifests so dependencies are not mixed into one runtime package.
 
 ---
 
 # In Scope
 
 - Add a root `pyproject.toml` for pinned Python dependency groups and shared tooling config
+- Add separate package manifests for `arcwright-engine` and `arcwright-api`
 - Add a task runner interface for `lint`, `type`, `test`, and `migrate`
 - Scaffold the four top-level locked test directories from Architecture S2.9
 - Preserve the current `engine/` and `api/` package layout if it already satisfies the issue
