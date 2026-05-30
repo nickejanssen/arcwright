@@ -11,3 +11,5 @@ pgvector
 python-dotenv
 httpx
 structlog
+pytest-asyncio==0.23.8
+aiosqlite==0.20.0
