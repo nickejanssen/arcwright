@@ -427,7 +427,9 @@ class Session(Base):
         back_populates="hosted_sessions",
         foreign_keys=[host_account_id],
     )
-    consent_records: Mapped[list[ConsentRecord]] = relationship(back_populates="session")
+    consent_records: Mapped[list[ConsentRecord]] = relationship(
+        back_populates="session"
+    )
     facts: Mapped[list[Fact]] = relationship(back_populates="session")
     knowledge_states: Mapped[list[KnowledgeState]] = relationship(
         back_populates="session"
@@ -442,9 +444,7 @@ class Session(Base):
     session_participants: Mapped[list[SessionParticipant]] = relationship(
         back_populates="session"
     )
-    arc_beat_states: Mapped[list[ArcBeatState]] = relationship(
-        back_populates="session"
-    )
+    arc_beat_states: Mapped[list[ArcBeatState]] = relationship(back_populates="session")
     generation_logs: Mapped[list[GenerationLog]] = relationship(
         back_populates="session"
     )
@@ -484,7 +484,9 @@ class SessionParticipant(Base):
 
     session: Mapped[Session] = relationship(back_populates="session_participants")
     character: Mapped[Character] = relationship(back_populates="session_participants")
-    account: Mapped[Optional[Account]] = relationship(back_populates="session_participants")
+    account: Mapped[Optional[Account]] = relationship(
+        back_populates="session_participants"
+    )
 
 
 class ArcBeatState(Base):
@@ -550,12 +552,8 @@ class GenerationLog(Base):
     tension_score: Mapped[Optional[float]] = mapped_column(Float, nullable=True)
     prompt_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
     output_text: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
-    prompt_embedding: Mapped[Optional[Any]] = mapped_column(
-        Vector(1536), nullable=True
-    )
-    output_embedding: Mapped[Optional[Any]] = mapped_column(
-        Vector(1536), nullable=True
-    )
+    prompt_embedding: Mapped[Optional[Any]] = mapped_column(Vector(1536), nullable=True)
+    output_embedding: Mapped[Optional[Any]] = mapped_column(Vector(1536), nullable=True)
 
     session: Mapped[Session] = relationship(back_populates="generation_logs")
 
