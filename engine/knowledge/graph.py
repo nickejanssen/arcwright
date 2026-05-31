@@ -69,7 +69,7 @@ async def revoke_knowledge(
     result = await session.execute(
         select(KnowledgeState).where(KnowledgeState.ks_id == existing_ks_id)
     )
-    old_record = result.scalar_one()
+    old_record: KnowledgeState = result.scalar_one()
     old_record.superseded_by = replacement.ks_id
     await session.flush()
     return old_record
