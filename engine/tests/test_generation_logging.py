@@ -16,7 +16,11 @@ from sqlalchemy.sql.schema import ColumnDefault, DefaultClause
 
 from engine.db.orm import Base, Event, GenerationLog, Session
 from engine.routing import generate, log_generation, mark_stable_context_cacheable
-from engine.routing.router import RouteResult, resolve_fallback_model_key, resolve_model_key
+from engine.routing.router import (
+    RouteResult,
+    resolve_fallback_model_key,
+    resolve_model_key,
+)
 
 CHARACTER_STANDARD_MODEL = resolve_model_key("character_dialogue", "standard")
 CHARACTER_PREMIUM_MODEL = resolve_model_key("character_dialogue", "premium")

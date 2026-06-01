@@ -24,9 +24,9 @@ Complete the Epic E acceptance bar by adding deterministic trace comparison and 
 
 # Context From Current State
 
-The build roadmap's Phase 7 lists "synthetic players, seeded runs, batch statistics." Current repo state supports only the first two layers after AW-110 and AW-111. This task should finish the deterministic and batch execution pieces without overreaching into telemetry pipelines or dashboards.
+The build roadmap's Phase 7 lists "synthetic players, seeded runs, batch statistics." Current repo state supports only the first two layers after AW-110 and AW-111. This task finishes the deterministic and batch execution pieces without overreaching into telemetry pipelines or dashboards.
 
-Epic D also matters here: any generation seam used during batch runs must stay mockable, and any routing-aware tests must continue deriving behavior from helper boundaries instead of embedding provider/model literals.
+Epic D also matters here: any generation seam used during batch runs must stay mockable. The established mock target is `engine.routing.logging.route_generation` (patched with `AsyncMock`), exactly as done in `engine/tests/test_generation_logging.py`. Do not mock lower (`litellm.acompletion`) or higher (`engine.routing.logging.generate`) than this boundary -- the established pattern keeps the cost-tracking path exercisable without provider calls.
 
 ---
 
@@ -35,12 +35,16 @@ Epic D also matters here: any generation seam used during batch runs must stay m
 - Add a deterministic trace canonicalizer and comparer, such as `engine/harness/replay.py`
 - Add a batch execution entrypoint, such as `engine/harness/batch.py`
 - Support repeated scenario execution from explicit seeds
+- `canonicalize_trace` strips exactly two categories of non-deterministic data before comparison:
+  - wall-clock timestamp fields (any `datetime` or `float` that represents elapsed real time)
+  - debug-only fields explicitly marked outside the equality path in AW-110 `HarnessTraceEntry`
+  - it must NOT strip `step_index`, `transition_name`, `from_configuration`, `to_configuration`, or `payload` -- those are the structural assertion fields
 - Produce a structured batch summary containing at minimum:
   - run index
-  - seed
+  - seed used
   - scenario id
   - pass/fail result
-  - failure reason when determinism breaks
+  - failure reason (diff of canonical trace fields) when determinism breaks
 - Keep the batch path offline and mock-friendly
 - Add focused tests, expected at `engine/tests/test_harness_batch.py`
 
@@ -59,14 +63,35 @@ Epic D also matters here: any generation seam used during batch runs must stay m
 # Proposed Shape
 
 ```python
-def canonicalize_trace(trace: list[HarnessTraceEntry]) -> list[dict[str, Any]]: ...
+def canonicalize_trace(trace: list[HarnessTraceEntry]) -> list[dict[str, Any]]:
+    # Returns list of dicts keeping only: step_index, transition_name, from_configuration, to_configuration, payload
+    # from_configuration and to_configuration are already sorted lists; no re-sort needed here
+    # Omits any debug-only or wall-clock fields
 
 
-def traces_equal(left: list[HarnessTraceEntry], right: list[HarnessTraceEntry]) -> bool: ...
+def traces_equal(left: list[HarnessTraceEntry], right: list[HarnessTraceEntry]) -> bool:
+    return canonicalize_trace(left) == canonicalize_trace(right)
+
+
+class BatchRunResult(BaseModel):
+    run_index: int
+    seed: int
+    scenario_id: str
+    passed: bool
+    failure_reason: str | None = None             # human-readable diff of canonical trace fields
+
+
+class BatchSummary(BaseModel):
+    scenario_id: str
+    total_runs: int
+    passed: int
+    failed: int
+    results: list[BatchRunResult]
 
 
 class BatchRunner:
     def run(self, scenario: HarnessScenario, *, runs: int, base_seed: int) -> BatchSummary: ...
+    # seeds each run as base_seed + run_index for full reproducibility
 ```
 
 If a CLI is added, use stdlib `argparse`. Do not introduce a new dependency for this task.

@@ -32,6 +32,23 @@ Three facts constrain this task:
 
 This means AW-110 is a runner-core task, not a full session coordinator, and not a networked gameplay loop.
 
+**Arc transition names and configurations.** The `ArcStateChart` uses python-statemachine v3 `StateChart`. `chart.current_state` is deprecated in that version -- use `chart.configuration_values` (a set of lowercase state ID strings) instead. The complete sorted configuration after each happy-path transition is:
+
+| Transition | `sorted(chart.configuration_values)` after |
+|---|---|
+| *(initial)* | `['introduction', 'onboarding']` |
+| `begin_game` | `['introduction', 'killer_assignment']` |
+| `motives_established` | `['introduction', 'motive_reveal']` |
+| `investigation_begins` | `['clue_phase', 'distributing', 'interrogation', 'investigation', 'open', 'private_clues']` |
+| `clues_sent` | `['clue_phase', 'distributed', 'interrogation', 'investigation', 'open', 'private_clues']` |
+| `interrogation_complete` | `['closed', 'clue_phase', 'distributed', 'interrogation', 'investigation', 'private_clues']` |
+| `phases_complete` | `['investigation', 'resolution']` |
+| `accusation_filed` | `['reveal']` |
+
+During `investigation` the parallel `clue_phase` branches are both active; the configuration list has 6 entries, not 1. A single string cannot represent this. `apply_action` calls `getattr(self._chart, action.transition_name)()` then captures `sorted(chart.configuration_values)` as the `to_configuration` trace field. Beat IDs from `nightcap/arc.json` are metadata only; the chart is driven by transition names.
+
+**Session identity.** `HarnessRun` carries `session_id: UUID` directly. Do not use the ORM `Session` from `engine.db.orm` in runner state -- that model requires a live SQLAlchemy session. If tests need to exercise any generation boundary, inject a stub callable rather than wiring up a DB session; follow the `_patch_metadata_for_sqlite` pattern from `engine/tests/test_generation_logging.py` only if ORM access is unavoidable.
+
 ---
 
 # In Scope
@@ -72,10 +89,32 @@ This means AW-110 is a runner-core task, not a full session coordinator, and not
 The exact names may vary, but the implementation should stay close to this split:
 
 ```python
+class HarnessAction(BaseModel):
+    transition_name: str                          # e.g. "begin_game", "investigation_begins"
+    payload: dict[str, Any] = Field(default_factory=dict)
+
+
+class HarnessTraceEntry(BaseModel):
+    step_index: int
+    transition_name: str
+    from_configuration: list[str]                 # sorted(chart.configuration_values) before transition
+    to_configuration: list[str]                   # sorted(chart.configuration_values) after transition
+    payload: dict[str, Any] = Field(default_factory=dict)
+    # debug_ts excluded from canonical equality path; keep outside HarnessTraceEntry if needed
+
+
+class HarnessSnapshot(BaseModel):
+    step_index: int
+    configuration: list[str]                      # sorted(chart.configuration_values) at snapshot time
+    seed: int
+    session_id: UUID
+
+
 class HarnessRun(BaseModel):
     seed: int
-    session: Session
-    current_beat_id: str
+    session_id: UUID
+    arc_id: str
+    configuration: list[str]                      # sorted(chart.configuration_values) -- current live state
     step_index: int
     trace: list[HarnessTraceEntry]
 
@@ -91,8 +130,10 @@ class HarnessRunner:
 Notes:
 
 - Use a seeded local RNG such as `random.Random(seed)` and store the seed on the run object.
-- Trace entries should prefer `step_index`, `action_type`, `from_beat`, `to_beat`, and deterministic payload fields.
-- Do not capture `datetime.now()` in the canonical trace. If timestamps are useful for debugging, keep them outside the equality path.
+- `apply_action` captures `sorted(chart.configuration_values)` before and after calling `getattr(self._chart, action.transition_name)()`.
+- Do not use `chart.current_state` -- it is deprecated in python-statemachine v3 and collapses parallel states to one value. Use `chart.configuration_values` exclusively.
+- `from_configuration` and `to_configuration` must be `sorted(...)` lists; parallel states activate as a set and `configuration_values` is unordered -- without sorting, equality assertions are non-deterministic.
+- Do not capture `datetime.now()` anywhere on `HarnessTraceEntry`. If wall-clock timestamps are useful for debugging, add them as a separate field excluded from `canonicalize_trace` in AW-112.
 
 ---
 
