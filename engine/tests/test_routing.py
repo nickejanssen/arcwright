@@ -264,6 +264,13 @@ def test_compute_cost_raises_for_unknown_model() -> None:
         compute_cost("unknown/model-xyz", 100, 50)
 
 
+def test_compute_cost_clamps_sub_precision_positive_cost_to_minimum() -> None:
+    # groq/llama-3.1-8b-instant: 0.00000005 + 0.00000008 = 0.00000013
+    # quantize("0.000001") -> 0.000000 without the clamp
+    cost = compute_cost("groq/llama-3.1-8b-instant", 1, 1)
+    assert cost == Decimal("0.000001")
+
+
 def test_cost_rates_cover_all_routing_table_models() -> None:
     from engine.routing.router import _COST_RATES
 

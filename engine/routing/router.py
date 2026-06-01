@@ -39,15 +39,22 @@ class RouteResult:
     used_fallback: bool
 
 
+_MIN_COST = Decimal("0.000001")
+
+
 def compute_cost(model_used: str, input_tokens: int, output_tokens: int) -> Decimal:
     rates = _COST_RATES.get(model_used)
     if rates is None:
         raise ValueError(
             f"unknown model cost: {model_used!r} — add it to _COST_RATES in router.py"
         )
-    return Decimal(str(rates[0] * input_tokens + rates[1] * output_tokens)).quantize(
-        Decimal("0.000001")
-    )
+    raw = rates[0] * input_tokens + rates[1] * output_tokens
+    quantized = Decimal(str(raw)).quantize(_MIN_COST)
+    # Clamp sub-precision positive costs to the minimum representable value so
+    # small pacing/safety calls don't appear free in per-session cost rollups.
+    if raw > 0 and quantized == Decimal("0"):
+        return _MIN_COST
+    return quantized
 
 
 def mark_stable_context_cacheable(
