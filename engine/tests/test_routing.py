@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from decimal import Decimal
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import AsyncMock, patch
@@ -12,6 +13,7 @@ import pytest
 from engine.routing import RouteResult, route_generation
 from engine.routing.router import (
     ROUTING_TABLE_PATH,
+    compute_cost,
     resolve_fallback_model_key,
     resolve_model_key,
 )
@@ -217,3 +219,67 @@ def test_engine_routing_exports_route_result_and_route_generation() -> None:
 
     assert exported_route_result is RouteResult
     assert exported_route_generation is route_generation
+
+
+async def test_route_generation_applies_prompt_caching_to_system_message() -> None:
+    response = _mock_response()
+    messages = [
+        {"role": "system", "content": "arc context"},
+        {"role": "user", "content": "go"},
+    ]
+
+    with (
+        patch(
+            "engine.routing.router.litellm.acompletion",
+            new_callable=AsyncMock,
+            return_value=response,
+        ) as mock_completion,
+        patch(
+            "engine.routing.router.time.perf_counter",
+            side_effect=[0.0, 0.1],
+        ),
+    ):
+        await route_generation(
+            task_type="character_dialogue",
+            quality_tier="standard",
+            messages=messages,
+        )
+
+    call_messages = mock_completion.call_args.kwargs["messages"]
+    assert call_messages[0]["content"] == [
+        {"type": "text", "text": "arc context", "cache_control": {"type": "ephemeral"}}
+    ]
+    assert call_messages[1] == {"role": "user", "content": "go"}
+    # original list not mutated
+    assert messages[0]["content"] == "arc context"
+
+
+def test_compute_cost_nonzero_for_known_model() -> None:
+    cost = compute_cost("anthropic/claude-haiku-4-5-20251001", 1000, 500)
+    assert cost > Decimal("0")
+
+
+def test_compute_cost_raises_for_unknown_model() -> None:
+    with pytest.raises(ValueError, match="unknown model cost"):
+        compute_cost("unknown/model-xyz", 100, 50)
+
+
+def test_compute_cost_clamps_sub_precision_positive_cost_to_minimum() -> None:
+    # groq/llama-3.1-8b-instant: 0.00000005 + 0.00000008 = 0.00000013
+    # quantize("0.000001") -> 0.000000 without the clamp
+    cost = compute_cost("groq/llama-3.1-8b-instant", 1, 1)
+    assert cost == Decimal("0.000001")
+
+
+def test_cost_rates_cover_all_routing_table_models() -> None:
+    from engine.routing.router import _COST_RATES
+
+    routing_table = json.loads(Path(ROUTING_TABLE_PATH).read_text())
+    all_model_keys: set[str] = set()
+    for tiers in routing_table.values():
+        all_model_keys.update(tiers.values())
+
+    missing = all_model_keys - set(_COST_RATES)
+    assert not missing, (
+        f"models in routing_table.json missing from _COST_RATES: {missing}"
+    )
