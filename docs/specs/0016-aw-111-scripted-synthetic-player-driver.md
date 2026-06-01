@@ -9,6 +9,7 @@
 # References
 
 - Architecture sections: `docs/architecture/02-technology-stack.md` (§2.9), `docs/architecture/03-arc-execution.md` (§3.6, §3.7), `docs/architecture/12-build-plan.md` (§12.2 Phase 7), `docs/architecture/15-development-guide.md` (§15.9 #11)
+- ADRs: `docs/decisions/0002-harness-scenario-execution-contract.md`
 - Related specs: `docs/specs/0015-aw-110-headless-session-runner-core.md`, `docs/specs/0013-aw-106-pre-generation-knowledge-constraint-hook.md`, `docs/specs/0014-aw-107-litellm-routing-layer.md`
 - PRD sections: `docs/prd/02-requirements.md` (Principles 2 and 5)
 - Roadmap task: `docs/roadmap/tasks/AW-111-scripted-synthetic-player-driver.md`
