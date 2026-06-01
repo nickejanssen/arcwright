@@ -34,4 +34,5 @@ class HarnessRun(BaseModel):
     arc_id: str
     configuration: list[str]
     step_index: int
+    participants: list[str] = Field(default_factory=list)
     trace: list[HarnessTraceEntry]
