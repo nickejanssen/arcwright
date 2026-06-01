@@ -50,7 +50,7 @@ The `StateChart` subclass in `engine/arc_state.py` implements exactly the beat g
 `evals/cases/no_hardcoded_model_strings_outside_routing_layer.json` enforces the core S6.2 rule ("no model name or provider string appears anywhere in the codebase outside `routing_table.json`") via a CI eval. The eval CI workflow fires on `config/routing_table.json` and `engine/routing/**` changes.
 
 ### 1.13 Routing table provider-prefix enforcement
-`evals/cases/routing_table_provider_policy.json` enforces that all routing entries use `anthropic/` or `groq/` prefixes. The allowed-provider list matches S2.7's AI supply chain decisions.
+`evals/cases/routing_provider_prefix_policy_fixture.json` enforces that all routing entries use `anthropic/` or `groq/` prefixes. The allowed-provider list matches S2.7's AI supply chain decisions.
 
 ### 1.14 Key hard constraints in CLAUDE.md / AGENTS.md
 Both files correctly encode the five non-negotiable constraints: Python 3.11+, arc logic stays in Python, knowledge state queries mandatory before every AI generation call, provider/model names isolated to `routing_table.json` + `router.py`, safety enforced at engine layer.
