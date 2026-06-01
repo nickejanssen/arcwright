@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import uuid
 from decimal import Decimal
+from unittest.mock import AsyncMock, patch
 from uuid import UUID, uuid4
 
 import pytest
@@ -14,7 +15,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.schema import ColumnDefault, DefaultClause
 
 from engine.db.orm import Base, Event, GenerationLog, Session
-from engine.routing import log_generation, mark_stable_context_cacheable
+from engine.routing import generate, log_generation, mark_stable_context_cacheable
 from engine.routing.router import RouteResult
 
 # ---------------------------------------------------------------------------
@@ -169,9 +170,7 @@ async def test_log_generation_cost_nonzero_for_known_model(
     assert log.cost_usd > Decimal("0")
 
 
-async def test_log_generation_cost_zero_for_unknown_model(
-    session: AsyncSession,
-) -> None:
+async def test_log_generation_raises_for_unknown_model(session: AsyncSession) -> None:
     sess_row = await _make_session_row(session)
     result = _make_route_result(
         model_used="unknown/model-xyz",
@@ -179,15 +178,14 @@ async def test_log_generation_cost_zero_for_unknown_model(
         output_tokens=200,
     )
 
-    log = await log_generation(
-        session,
-        session_id=sess_row.session_id,
-        task_type="narration",
-        quality_tier="standard",
-        result=result,
-    )
-
-    assert log.cost_usd == Decimal("0")
+    with pytest.raises(ValueError, match="unknown model cost"):
+        await log_generation(
+            session,
+            session_id=sess_row.session_id,
+            task_type="narration",
+            quality_tier="standard",
+            result=result,
+        )
 
 
 async def test_log_generation_omits_content_when_flag_off(
@@ -290,6 +288,84 @@ async def test_log_generation_no_fallback_event_on_clean_call(
         )
     ).all()
     assert len(events) == 0
+
+
+# ---------------------------------------------------------------------------
+# generate() wrapper tests
+# ---------------------------------------------------------------------------
+
+
+async def test_generate_writes_generation_log(session: AsyncSession) -> None:
+    sess_row = await _make_session_row(session)
+    mock_result = _make_route_result(
+        model_used="anthropic/claude-haiku-4-5-20251001",
+        input_tokens=120,
+        output_tokens=60,
+        content="generated output",
+    )
+
+    with patch(
+        "engine.routing.logging.route_generation",
+        new_callable=AsyncMock,
+        return_value=mock_result,
+    ):
+        result = await generate(
+            session,
+            session_id=sess_row.session_id,
+            task_type="character_dialogue",
+            quality_tier="standard",
+            messages=[{"role": "system", "content": "arc context"}],
+            tension_score=0.5,
+        )
+
+    assert result is mock_result
+
+    logs = (
+        await session.scalars(
+            select(GenerationLog).where(GenerationLog.session_id == sess_row.session_id)
+        )
+    ).all()
+    assert len(logs) == 1
+    log = logs[0]
+    assert log.task_type == "character_dialogue"
+    assert log.quality_tier == "standard"
+    assert log.model_used == "anthropic/claude-haiku-4-5-20251001"
+    assert log.input_tokens == 120
+    assert log.output_tokens == 60
+    assert log.cost_usd > Decimal("0")
+    assert abs((log.tension_score or 0) - 0.5) < 1e-9
+
+
+async def test_generate_writes_fallback_event(session: AsyncSession) -> None:
+    sess_row = await _make_session_row(session)
+    mock_result = _make_route_result(
+        model_used="groq/llama-3.3-70b-versatile",
+        used_fallback=True,
+    )
+
+    with patch(
+        "engine.routing.logging.route_generation",
+        new_callable=AsyncMock,
+        return_value=mock_result,
+    ):
+        await generate(
+            session,
+            session_id=sess_row.session_id,
+            task_type="character_dialogue",
+            quality_tier="standard",
+            messages=[{"role": "user", "content": "hi"}],
+        )
+
+    events = (
+        await session.scalars(
+            select(Event).where(
+                Event.session_id == sess_row.session_id,
+                Event.event_type == "routing_fallback",
+            )
+        )
+    ).all()
+    assert len(events) == 1
+    assert events[0].payload["model_used"] == "groq/llama-3.3-70b-versatile"
 
 
 # ---------------------------------------------------------------------------

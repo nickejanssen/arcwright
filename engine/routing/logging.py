@@ -1,36 +1,16 @@
-"""Generation logging and prompt caching helpers."""
+"""Generation logging and the db-aware generation entrypoint."""
 
 from __future__ import annotations
 
 import json
 import os
-from decimal import Decimal
 from typing import Any
 from uuid import UUID
 
-import structlog
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from engine.db.orm import Event, GenerationLog
-from engine.routing.router import RouteResult
-
-_COST_RATES: dict[str, tuple[float, float]] = {
-    # key: (cost_per_input_token, cost_per_output_token)
-    "anthropic/claude-haiku-4-5-20251001": (0.00000025, 0.00000125),
-    "anthropic/claude-sonnet-4-6": (0.000003, 0.000015),
-    "groq/llama-3.1-8b-instant": (0.00000005, 0.00000008),
-    "groq/llama-3.3-70b-versatile": (0.00000059, 0.00000079),
-    "groq/gpt-oss-safeguard-20b": (0.00000020, 0.00000020),
-}
-
-
-def compute_cost(model_used: str, input_tokens: int, output_tokens: int) -> Decimal:
-    rates = _COST_RATES.get(model_used, (0.0, 0.0))
-    if rates == (0.0, 0.0):
-        structlog.get_logger().warning("unknown_model_cost", model_used=model_used)
-    return Decimal(str(rates[0] * input_tokens + rates[1] * output_tokens)).quantize(
-        Decimal("0.000001")
-    )
+from engine.routing.router import RouteResult, compute_cost, route_generation
 
 
 async def log_generation(
@@ -82,20 +62,25 @@ async def log_generation(
     return log
 
 
-def mark_stable_context_cacheable(
+async def generate(
+    db_session: AsyncSession,
+    *,
+    session_id: UUID,
+    task_type: str,
+    quality_tier: str,
     messages: list[dict[str, Any]],
-) -> list[dict[str, Any]]:
-    if not messages:
-        return messages
-    first = messages[0]
-    if first.get("role") != "system" or not isinstance(first.get("content"), str):
-        return messages
-    new_first: dict[str, Any] = dict(first)
-    new_first["content"] = [
-        {
-            "type": "text",
-            "text": first["content"],
-            "cache_control": {"type": "ephemeral"},
-        }
-    ]
-    return [new_first] + list(messages[1:])
+    temperature: float = 0.7,
+    tension_score: float | None = None,
+) -> RouteResult:
+    """Route a generation call and immediately log it to generation_logs."""
+    result = await route_generation(task_type, quality_tier, messages, temperature)
+    await log_generation(
+        db_session,
+        session_id=session_id,
+        task_type=task_type,
+        quality_tier=quality_tier,
+        result=result,
+        messages=messages,
+        tension_score=tension_score,
+    )
+    return result
