@@ -24,10 +24,11 @@ Build the declarative scenario layer on top of the AW-110 runner core. Synthetic
 
 # Context From Current State
 
-This task must respect two current-state constraints:
+This task must respect three current-state constraints:
 
 1. There is no canonical player-input API yet. The script layer should target the harness runner's action contract, not invent a public REST or SSE schema early.
 2. Epic D completed the routing abstraction and established the testing rule that provider and model literals stay out of new harness tests. If this task needs generation seams for future extensibility, mock at `engine.routing.logging.generate` or inject a fake callable.
+3. `ScenarioStep.action_type` values are `transition_name` strings that map directly to `HarnessAction.transition_name` from AW-110. The scenario executor does not maintain a separate action taxonomy. The full Nightcap happy-path sequence in order is: `begin_game`, `motives_established`, `investigation_begins`, `clues_sent`, `interrogation_complete`, `phases_complete`, `accusation_filed`. Any scenario fixture that exercises start-to-reveal must include all seven steps in this order; a scenario that skips sub-state transitions will fail when the chart refuses an invalid transition.
 
 ---
 
@@ -63,11 +64,17 @@ This task must respect two current-state constraints:
 # Proposed Shape
 
 ```python
+class SyntheticPlayer(BaseModel):
+    player_id: str                                # stable string id; must match actor_id in steps
+    display_name: str
+    is_killer: bool = False                       # optional hint for scenario fixtures; not enforced by executor
+
+
 class ScenarioStep(BaseModel):
-    actor_id: str
-    action_type: str
+    actor_id: str                                 # must match a SyntheticPlayer.player_id
+    action_type: str                              # equals HarnessAction.transition_name exactly
     payload: dict[str, Any] = Field(default_factory=dict)
-    expected_beat: str | None = None
+    expected_beat: str | None = None              # if set, executor asserts current_state after transition
 
 
 class HarnessScenario(BaseModel):
@@ -77,11 +84,21 @@ class HarnessScenario(BaseModel):
     steps: list[ScenarioStep]
 
 
+class HarnessRunResult(BaseModel):
+    scenario_id: str
+    seed: int
+    run: HarnessRun                               # final HarnessRun from AW-110 runner
+    passed: bool
+    failure_reason: str | None = None
+
+
 class ScenarioExecutor:
     def run(self, scenario: HarnessScenario) -> HarnessRunResult: ...
 ```
 
 The schema should stay intentionally small. It is an engine test harness contract, not the public API.
+
+Participant IDs are assigned deterministically: `player_id` from `SyntheticPlayer` is used as-is and stored on `HarnessRun`; do not generate UUIDs from `uuid4()` for synthetic players. This keeps scenario fixtures reproducible without a seed-derived UUID derivation.
 
 ---
 

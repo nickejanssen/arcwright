@@ -32,6 +32,22 @@ Three facts constrain this task:
 
 This means AW-110 is a runner-core task, not a full session coordinator, and not a networked gameplay loop.
 
+**Arc transition names.** The `ArcStateChart` transitions the runner must fire in happy-path order are:
+
+| Transition | Effect |
+|---|---|
+| `begin_game` | introduction.onboarding → introduction.killer_assignment |
+| `motives_established` | introduction.killer_assignment → introduction.motive_reveal (final) |
+| `investigation_begins` | introduction → investigation |
+| `clues_sent` | investigation.clue_phase.private_clues.distributing → distributed |
+| `interrogation_complete` | investigation.clue_phase.interrogation.open → closed |
+| `phases_complete` | investigation.clue_phase (parallel) → investigation.resolution |
+| `accusation_filed` | investigation → reveal (final) |
+
+`apply_action` calls the named transition method on the chart instance: `getattr(self._chart, action.transition_name)()`. Beat IDs from `nightcap/arc.json` are metadata only; the chart is driven by transition names.
+
+**Session identity.** `HarnessRun` carries `session_id: UUID` directly. Do not use the ORM `Session` from `engine.db.orm` in runner state -- that model requires a live SQLAlchemy session. If tests need to exercise any generation boundary, inject a stub callable rather than wiring up a DB session; follow the `_patch_metadata_for_sqlite` pattern from `engine/tests/test_generation_logging.py` only if ORM access is unavoidable.
+
 ---
 
 # In Scope
@@ -72,10 +88,32 @@ This means AW-110 is a runner-core task, not a full session coordinator, and not
 The exact names may vary, but the implementation should stay close to this split:
 
 ```python
+class HarnessAction(BaseModel):
+    transition_name: str                          # e.g. "begin_game", "investigation_begins"
+    payload: dict[str, Any] = Field(default_factory=dict)
+
+
+class HarnessTraceEntry(BaseModel):
+    step_index: int
+    transition_name: str
+    from_state: str                               # chart.current_state label before transition
+    to_state: str                                 # chart.current_state label after transition
+    payload: dict[str, Any] = Field(default_factory=dict)
+    # debug_ts excluded from canonical equality path; keep outside HarnessTraceEntry if needed
+
+
+class HarnessSnapshot(BaseModel):
+    step_index: int
+    current_state: str
+    seed: int
+    session_id: UUID
+
+
 class HarnessRun(BaseModel):
     seed: int
-    session: Session
-    current_beat_id: str
+    session_id: UUID
+    arc_id: str
+    current_state: str
     step_index: int
     trace: list[HarnessTraceEntry]
 
@@ -91,8 +129,9 @@ class HarnessRunner:
 Notes:
 
 - Use a seeded local RNG such as `random.Random(seed)` and store the seed on the run object.
-- Trace entries should prefer `step_index`, `action_type`, `from_beat`, `to_beat`, and deterministic payload fields.
-- Do not capture `datetime.now()` in the canonical trace. If timestamps are useful for debugging, keep them outside the equality path.
+- `apply_action` calls `getattr(self._chart, action.transition_name)()` on the `ArcStateChart` instance.
+- `from_state` and `to_state` in trace entries must be stable string representations of chart state, not `repr()` of the state machine object.
+- Do not capture `datetime.now()` anywhere on `HarnessTraceEntry`. If wall-clock timestamps are useful for debugging, add them as a separate field excluded from `canonicalize_trace` in AW-112.
 
 ---
 

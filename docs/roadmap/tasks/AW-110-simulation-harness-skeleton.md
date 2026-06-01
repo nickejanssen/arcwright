@@ -29,3 +29,7 @@ Create the harness runner core that loads the Nightcap arc, instantiates session
 ## Agent Notes
 
 Use current implemented names from Epics C and D: `build_character_generation_context`, `CharacterGenerationContext`, and `engine.routing.logging.generate` if any generation boundary is exercised.
+
+The `ArcStateChart` top-level beat transitions are `investigation_begins` (introduction → investigation) and `accusation_filed` (investigation → reveal). The `introduction` compound state requires two sub-transitions before the top-level one fires: `begin_game` (onboarding → killer_assignment) and `motives_established` (killer_assignment → motive_reveal). The `investigation` compound state requires `clues_sent`, `interrogation_complete`, and `phases_complete` before `accusation_filed` can fire. The runner's `apply_action` must call the named transition method on the chart instance; it does not accept beat IDs.
+
+`Session` is ambiguous in this codebase. The runner state uses `session_id: UUID` directly on `HarnessRun` -- do not use the ORM `Session` from `engine.db.orm` in runner state. If generation is exercised in tests, use the SQLite in-memory patching pattern from `engine/tests/test_generation_logging.py`.
