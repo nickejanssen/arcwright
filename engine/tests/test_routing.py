@@ -18,6 +18,9 @@ from engine.routing.router import (
     resolve_model_key,
 )
 
+CHARACTER_STANDARD_MODEL = resolve_model_key("character_dialogue", "standard")
+PACING_STANDARD_MODEL = resolve_model_key("pacing_decision", "standard")
+
 
 def _mock_response(
     *,
@@ -255,7 +258,7 @@ async def test_route_generation_applies_prompt_caching_to_system_message() -> No
 
 
 def test_compute_cost_nonzero_for_known_model() -> None:
-    cost = compute_cost("anthropic/claude-haiku-4-5-20251001", 1000, 500)
+    cost = compute_cost(CHARACTER_STANDARD_MODEL, 1000, 500)
     assert cost > Decimal("0")
 
 
@@ -265,9 +268,9 @@ def test_compute_cost_raises_for_unknown_model() -> None:
 
 
 def test_compute_cost_clamps_sub_precision_positive_cost_to_minimum() -> None:
-    # groq/llama-3.1-8b-instant: 0.00000005 + 0.00000008 = 0.00000013
-    # quantize("0.000001") -> 0.000000 without the clamp
-    cost = compute_cost("groq/llama-3.1-8b-instant", 1, 1)
+    # The current pacing standard model is cheap enough that a 1-token call
+    # rounds to zero without the minimum-cost clamp.
+    cost = compute_cost(PACING_STANDARD_MODEL, 1, 1)
     assert cost == Decimal("0.000001")
 
 

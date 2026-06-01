@@ -163,7 +163,9 @@
       "status": "planned",
       "path": "docs/roadmap/epics/M1-E-harness-scaffold.md",
       "tasks": [
-        "AW-110"
+        "AW-110",
+        "AW-111",
+        "AW-112"
       ]
     }
   ],
@@ -272,15 +274,38 @@
     },
     {
       "id": "AW-110",
-      "title": "Simulation harness skeleton (arc-runnable)",
+      "title": "Headless session runner core",
       "milestone": "M1",
       "epic": "M1-E",
       "size": "M",
       "depends_on": [
         "AW-105",
-        "AW-107"
+        "AW-108"
       ],
       "path": "docs/roadmap/tasks/AW-110-simulation-harness-skeleton.md"
+    },
+    {
+      "id": "AW-111",
+      "title": "Scripted synthetic player driver",
+      "milestone": "M1",
+      "epic": "M1-E",
+      "size": "M",
+      "depends_on": [
+        "AW-110"
+      ],
+      "path": "docs/roadmap/tasks/AW-111-scripted-synthetic-player-driver.md"
+    },
+    {
+      "id": "AW-112",
+      "title": "Deterministic replay and batch runner",
+      "milestone": "M1",
+      "epic": "M1-E",
+      "size": "S",
+      "depends_on": [
+        "AW-110",
+        "AW-111"
+      ],
+      "path": "docs/roadmap/tasks/AW-112-deterministic-replay-and-batch-runner.md"
     }
   ]
 }

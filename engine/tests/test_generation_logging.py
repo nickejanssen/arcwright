@@ -16,7 +16,19 @@ from sqlalchemy.sql.schema import ColumnDefault, DefaultClause
 
 from engine.db.orm import Base, Event, GenerationLog, Session
 from engine.routing import generate, log_generation, mark_stable_context_cacheable
-from engine.routing.router import RouteResult
+from engine.routing.router import RouteResult, resolve_fallback_model_key, resolve_model_key
+
+CHARACTER_STANDARD_MODEL = resolve_model_key("character_dialogue", "standard")
+CHARACTER_PREMIUM_MODEL = resolve_model_key("character_dialogue", "premium")
+SAFETY_STANDARD_FALLBACK_MODEL = resolve_fallback_model_key(
+    "safety_classification", "standard"
+)
+NARRATIVE_STANDARD_FALLBACK_MODEL = resolve_fallback_model_key(
+    "narrative_generation", "standard"
+)
+
+assert SAFETY_STANDARD_FALLBACK_MODEL is not None
+assert NARRATIVE_STANDARD_FALLBACK_MODEL is not None
 
 # ---------------------------------------------------------------------------
 # SQLite metadata patch — same pattern as test_knowledge_graph.py
@@ -98,7 +110,7 @@ async def _make_session_row(
 
 def _make_route_result(
     *,
-    model_used: str = "anthropic/claude-haiku-4-5-20251001",
+    model_used: str = CHARACTER_STANDARD_MODEL,
     input_tokens: int = 100,
     output_tokens: int = 50,
     latency_ms: int = 250,
@@ -141,7 +153,7 @@ async def test_log_generation_writes_correct_fields(session: AsyncSession) -> No
     assert fetched.session_id == sess_row.session_id
     assert fetched.task_type == "character_dialogue"
     assert fetched.quality_tier == "standard"
-    assert fetched.model_used == "anthropic/claude-haiku-4-5-20251001"
+    assert fetched.model_used == CHARACTER_STANDARD_MODEL
     assert fetched.latency_ms == 300
     assert fetched.input_tokens == 200
     assert fetched.output_tokens == 80
@@ -154,7 +166,7 @@ async def test_log_generation_cost_nonzero_for_known_model(
 ) -> None:
     sess_row = await _make_session_row(session)
     result = _make_route_result(
-        model_used="anthropic/claude-sonnet-4-6",
+        model_used=CHARACTER_PREMIUM_MODEL,
         input_tokens=1000,
         output_tokens=500,
     )
@@ -236,7 +248,7 @@ async def test_log_generation_writes_content_when_flag_on(
 async def test_log_generation_writes_fallback_event(session: AsyncSession) -> None:
     sess_row = await _make_session_row(session)
     result = _make_route_result(
-        model_used="groq/llama-3.1-8b-instant",
+        model_used=SAFETY_STANDARD_FALLBACK_MODEL,
         used_fallback=True,
     )
 
@@ -262,7 +274,7 @@ async def test_log_generation_writes_fallback_event(session: AsyncSession) -> No
     assert events[0].actor_char_id is None
     payload = events[0].payload
     assert payload["task_type"] == "safety_check"
-    assert payload["model_used"] == "groq/llama-3.1-8b-instant"
+    assert payload["model_used"] == SAFETY_STANDARD_FALLBACK_MODEL
 
 
 async def test_log_generation_no_fallback_event_on_clean_call(
@@ -298,7 +310,7 @@ async def test_log_generation_no_fallback_event_on_clean_call(
 async def test_generate_writes_generation_log(session: AsyncSession) -> None:
     sess_row = await _make_session_row(session)
     mock_result = _make_route_result(
-        model_used="anthropic/claude-haiku-4-5-20251001",
+        model_used=CHARACTER_STANDARD_MODEL,
         input_tokens=120,
         output_tokens=60,
         content="generated output",
@@ -329,7 +341,7 @@ async def test_generate_writes_generation_log(session: AsyncSession) -> None:
     log = logs[0]
     assert log.task_type == "character_dialogue"
     assert log.quality_tier == "standard"
-    assert log.model_used == "anthropic/claude-haiku-4-5-20251001"
+    assert log.model_used == CHARACTER_STANDARD_MODEL
     assert log.input_tokens == 120
     assert log.output_tokens == 60
     assert log.cost_usd > Decimal("0")
@@ -339,7 +351,7 @@ async def test_generate_writes_generation_log(session: AsyncSession) -> None:
 async def test_generate_writes_fallback_event(session: AsyncSession) -> None:
     sess_row = await _make_session_row(session)
     mock_result = _make_route_result(
-        model_used="groq/llama-3.3-70b-versatile",
+        model_used=NARRATIVE_STANDARD_FALLBACK_MODEL,
         used_fallback=True,
     )
 
@@ -365,7 +377,7 @@ async def test_generate_writes_fallback_event(session: AsyncSession) -> None:
         )
     ).all()
     assert len(events) == 1
-    assert events[0].payload["model_used"] == "groq/llama-3.3-70b-versatile"
+    assert events[0].payload["model_used"] == NARRATIVE_STANDARD_FALLBACK_MODEL
 
 
 # ---------------------------------------------------------------------------

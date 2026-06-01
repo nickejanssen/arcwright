@@ -20,4 +20,4 @@ This is Tier 1 deterministic infrastructure: minimal AI cost, no narrative-quali
 - AW-104 migrates cleanly
 - AW-105 knowledge graph passes its full unit suite
 - AW-107 routing swaps with zero code change
-- AW-110 runs a scripted session deterministically
+- AW-112 proves deterministic scripted sessions and 10-run headless batch support
