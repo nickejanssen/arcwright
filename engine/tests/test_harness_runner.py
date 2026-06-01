@@ -4,9 +4,11 @@ from __future__ import annotations
 
 from pathlib import Path
 
+import pytest
+
 from engine.harness import HarnessAction, HarnessRunner
 
-ARC_PATH = Path("nightcap/arc.json")
+ARC_PATH = Path(__file__).parents[2] / "nightcap" / "arc.json"
 
 
 def test_runner_initialises_from_nightcap_arc() -> None:
@@ -97,3 +99,30 @@ def test_same_seed_same_actions_identical_trace() -> None:
         second_runner.apply_action(action)
 
     assert first_runner.trace() == second_runner.trace()
+
+
+def test_same_seed_produces_identical_session_id_and_snapshot() -> None:
+    first_runner = HarnessRunner(arc_path=ARC_PATH, seed=110)
+    second_runner = HarnessRunner(arc_path=ARC_PATH, seed=110)
+
+    first_run = first_runner.start()
+    second_run = second_runner.start()
+
+    assert first_run.session_id == second_run.session_id
+    assert first_runner.snapshot() == second_runner.snapshot()
+
+
+def test_start_raises_when_called_twice() -> None:
+    runner = HarnessRunner(arc_path=ARC_PATH, seed=110)
+    runner.start()
+
+    with pytest.raises(RuntimeError, match="already been called"):
+        runner.start()
+
+
+def test_apply_action_rejects_unknown_transition_name() -> None:
+    runner = HarnessRunner(arc_path=ARC_PATH, seed=110)
+    runner.start()
+
+    with pytest.raises(ValueError, match="Unknown transition"):
+        runner.apply_action(HarnessAction(transition_name="update_context"))

@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import random
 from pathlib import Path
-from uuid import uuid4
+from typing import Any, Callable
+from uuid import UUID
 
 from engine.arc.arc_state import ArcStateChart
 from engine.arc.models import ArcDefinition
@@ -14,11 +15,28 @@ from engine.harness.models import (
     HarnessSnapshot,
     HarnessTraceEntry,
 )
-from engine.routing.logging import generate as default_generate
 
 
 class HarnessRunner:
-    def __init__(self, *, arc_path: Path, seed: int) -> None:
+    _TRANSITION_NAMES = frozenset(
+        {
+            "begin_game",
+            "motives_established",
+            "investigation_begins",
+            "clues_sent",
+            "interrogation_complete",
+            "phases_complete",
+            "accusation_filed",
+        }
+    )
+
+    def __init__(
+        self,
+        *,
+        arc_path: Path,
+        seed: int,
+        generate: Callable[..., Any] | None = None,
+    ) -> None:
         self._arc_path = arc_path
         self._seed = seed
         self._rng = random.Random(seed)
@@ -27,24 +45,27 @@ class HarnessRunner:
         )
         self._chart = ArcStateChart(self._arc_definition)
         self._run: HarnessRun | None = None
-        self._generate = default_generate
+        self._generate = generate
 
     def start(self) -> HarnessRun:
-        if self._run is None:
-            self._run = HarnessRun(
-                seed=self._seed,
-                session_id=uuid4(),
-                arc_id=self._arc_definition.arc_id,
-                configuration=sorted(self._chart.configuration_values),
-                step_index=0,
-                trace=[],
-            )
+        if self._run is not None:
+            msg = "HarnessRunner.start() has already been called."
+            raise RuntimeError(msg)
+        self._run = HarnessRun(
+            seed=self._seed,
+            session_id=self._build_session_id(),
+            arc_id=self._arc_definition.arc_id,
+            configuration=sorted(self._chart.configuration_values),
+            step_index=0,
+            trace=[],
+        )
         return self._run.model_copy(deep=True)
 
     def apply_action(self, action: HarnessAction) -> HarnessTraceEntry:
         run = self._require_run()
         from_configuration = sorted(self._chart.configuration_values)
-        getattr(self._chart, action.transition_name)()
+        transition = self._resolve_transition(action.transition_name)
+        transition()
         to_configuration = sorted(self._chart.configuration_values)
 
         step_index = run.step_index + 1
@@ -78,3 +99,16 @@ class HarnessRunner:
             msg = "HarnessRunner.start() must be called before use."
             raise RuntimeError(msg)
         return self._run
+
+    def _build_session_id(self) -> UUID:
+        return UUID(int=self._rng.getrandbits(128), version=4)
+
+    def _resolve_transition(self, transition_name: str) -> Callable[[], Any]:
+        if transition_name not in self._TRANSITION_NAMES:
+            msg = f"Unknown transition: {transition_name!r}"
+            raise ValueError(msg)
+        transition = getattr(self._chart, transition_name, None)
+        if not callable(transition):
+            msg = f"Unknown transition: {transition_name!r}"
+            raise ValueError(msg)
+        return transition
