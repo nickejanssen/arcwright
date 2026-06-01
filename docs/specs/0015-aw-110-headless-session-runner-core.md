@@ -32,19 +32,20 @@ Three facts constrain this task:
 
 This means AW-110 is a runner-core task, not a full session coordinator, and not a networked gameplay loop.
 
-**Arc transition names.** The `ArcStateChart` transitions the runner must fire in happy-path order are:
+**Arc transition names and configurations.** The `ArcStateChart` uses python-statemachine v3 `StateChart`. `chart.current_state` is deprecated in that version -- use `chart.configuration_values` (a set of lowercase state ID strings) instead. The complete sorted configuration after each happy-path transition is:
 
-| Transition | Effect |
+| Transition | `sorted(chart.configuration_values)` after |
 |---|---|
-| `begin_game` | introduction.onboarding → introduction.killer_assignment |
-| `motives_established` | introduction.killer_assignment → introduction.motive_reveal (final) |
-| `investigation_begins` | introduction → investigation |
-| `clues_sent` | investigation.clue_phase.private_clues.distributing → distributed |
-| `interrogation_complete` | investigation.clue_phase.interrogation.open → closed |
-| `phases_complete` | investigation.clue_phase (parallel) → investigation.resolution |
-| `accusation_filed` | investigation → reveal (final) |
+| *(initial)* | `['introduction', 'onboarding']` |
+| `begin_game` | `['introduction', 'killer_assignment']` |
+| `motives_established` | `['introduction', 'motive_reveal']` |
+| `investigation_begins` | `['clue_phase', 'distributing', 'interrogation', 'investigation', 'open', 'private_clues']` |
+| `clues_sent` | `['clue_phase', 'distributed', 'interrogation', 'investigation', 'open', 'private_clues']` |
+| `interrogation_complete` | `['closed', 'clue_phase', 'distributed', 'interrogation', 'investigation', 'private_clues']` |
+| `phases_complete` | `['investigation', 'resolution']` |
+| `accusation_filed` | `['reveal']` |
 
-`apply_action` calls the named transition method on the chart instance: `getattr(self._chart, action.transition_name)()`. Beat IDs from `nightcap/arc.json` are metadata only; the chart is driven by transition names.
+During `investigation` the parallel `clue_phase` branches are both active; the configuration list has 6 entries, not 1. A single string cannot represent this. `apply_action` calls `getattr(self._chart, action.transition_name)()` then captures `sorted(chart.configuration_values)` as the `to_configuration` trace field. Beat IDs from `nightcap/arc.json` are metadata only; the chart is driven by transition names.
 
 **Session identity.** `HarnessRun` carries `session_id: UUID` directly. Do not use the ORM `Session` from `engine.db.orm` in runner state -- that model requires a live SQLAlchemy session. If tests need to exercise any generation boundary, inject a stub callable rather than wiring up a DB session; follow the `_patch_metadata_for_sqlite` pattern from `engine/tests/test_generation_logging.py` only if ORM access is unavoidable.
 
@@ -96,15 +97,15 @@ class HarnessAction(BaseModel):
 class HarnessTraceEntry(BaseModel):
     step_index: int
     transition_name: str
-    from_state: str                               # chart.current_state label before transition
-    to_state: str                                 # chart.current_state label after transition
+    from_configuration: list[str]                 # sorted(chart.configuration_values) before transition
+    to_configuration: list[str]                   # sorted(chart.configuration_values) after transition
     payload: dict[str, Any] = Field(default_factory=dict)
     # debug_ts excluded from canonical equality path; keep outside HarnessTraceEntry if needed
 
 
 class HarnessSnapshot(BaseModel):
     step_index: int
-    current_state: str
+    configuration: list[str]                      # sorted(chart.configuration_values) at snapshot time
     seed: int
     session_id: UUID
 
@@ -113,7 +114,7 @@ class HarnessRun(BaseModel):
     seed: int
     session_id: UUID
     arc_id: str
-    current_state: str
+    configuration: list[str]                      # sorted(chart.configuration_values) -- current live state
     step_index: int
     trace: list[HarnessTraceEntry]
 
@@ -129,8 +130,9 @@ class HarnessRunner:
 Notes:
 
 - Use a seeded local RNG such as `random.Random(seed)` and store the seed on the run object.
-- `apply_action` calls `getattr(self._chart, action.transition_name)()` on the `ArcStateChart` instance.
-- `from_state` and `to_state` in trace entries must be stable string representations of chart state, not `repr()` of the state machine object.
+- `apply_action` captures `sorted(chart.configuration_values)` before and after calling `getattr(self._chart, action.transition_name)()`.
+- Do not use `chart.current_state` -- it is deprecated in python-statemachine v3 and collapses parallel states to one value. Use `chart.configuration_values` exclusively.
+- `from_configuration` and `to_configuration` must be `sorted(...)` lists; parallel states activate as a set and `configuration_values` is unordered -- without sorting, equality assertions are non-deterministic.
 - Do not capture `datetime.now()` anywhere on `HarnessTraceEntry`. If wall-clock timestamps are useful for debugging, add them as a separate field excluded from `canonicalize_trace` in AW-112.
 
 ---

@@ -38,7 +38,7 @@ Epic D also matters here: any generation seam used during batch runs must stay m
 - `canonicalize_trace` strips exactly two categories of non-deterministic data before comparison:
   - wall-clock timestamp fields (any `datetime` or `float` that represents elapsed real time)
   - debug-only fields explicitly marked outside the equality path in AW-110 `HarnessTraceEntry`
-  - it must NOT strip `step_index`, `transition_name`, `from_state`, `to_state`, or `payload` -- those are the structural assertion fields
+  - it must NOT strip `step_index`, `transition_name`, `from_configuration`, `to_configuration`, or `payload` -- those are the structural assertion fields
 - Produce a structured batch summary containing at minimum:
   - run index
   - seed used
@@ -64,7 +64,8 @@ Epic D also matters here: any generation seam used during batch runs must stay m
 
 ```python
 def canonicalize_trace(trace: list[HarnessTraceEntry]) -> list[dict[str, Any]]:
-    # Returns list of dicts keeping only: step_index, transition_name, from_state, to_state, payload
+    # Returns list of dicts keeping only: step_index, transition_name, from_configuration, to_configuration, payload
+    # from_configuration and to_configuration are already sorted lists; no re-sort needed here
     # Omits any debug-only or wall-clock fields
 
 

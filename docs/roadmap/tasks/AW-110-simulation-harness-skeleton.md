@@ -30,6 +30,8 @@ Create the harness runner core that loads the Nightcap arc, instantiates session
 
 Use current implemented names from Epics C and D: `build_character_generation_context`, `CharacterGenerationContext`, and `engine.routing.logging.generate` if any generation boundary is exercised.
 
-The `ArcStateChart` top-level beat transitions are `investigation_begins` (introduction → investigation) and `accusation_filed` (investigation → reveal). The `introduction` compound state requires two sub-transitions before the top-level one fires: `begin_game` (onboarding → killer_assignment) and `motives_established` (killer_assignment → motive_reveal). The `investigation` compound state requires `clues_sent`, `interrogation_complete`, and `phases_complete` before `accusation_filed` can fire. The runner's `apply_action` must call the named transition method on the chart instance; it does not accept beat IDs.
+The `ArcStateChart` uses python-statemachine v3 `StateChart`. `chart.current_state` is deprecated -- use `chart.configuration_values` (a set of lowercase state ID strings). All trace and snapshot fields use `sorted(chart.configuration_values)` so that parallel-state configurations are captured completely and sorted for deterministic equality checks.
+
+Full happy-path transition sequence with resulting sorted configurations: see spec `docs/specs/0015-aw-110-headless-session-runner-core.md` Context section. The `investigation` parallel state produces a 6-entry configuration -- a single string cannot represent it.
 
 `Session` is ambiguous in this codebase. The runner state uses `session_id: UUID` directly on `HarnessRun` -- do not use the ORM `Session` from `engine.db.orm` in runner state. If generation is exercised in tests, use the SQLite in-memory patching pattern from `engine/tests/test_generation_logging.py`.

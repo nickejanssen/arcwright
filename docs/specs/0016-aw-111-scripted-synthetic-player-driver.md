@@ -74,7 +74,7 @@ class ScenarioStep(BaseModel):
     actor_id: str                                 # must match a SyntheticPlayer.player_id
     action_type: str                              # equals HarnessAction.transition_name exactly
     payload: dict[str, Any] = Field(default_factory=dict)
-    expected_beat: str | None = None              # if set, executor asserts current_state after transition
+    expected_beat: str | None = None              # if set, executor asserts this ID is in to_configuration
 
 
 class HarnessScenario(BaseModel):
