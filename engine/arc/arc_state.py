@@ -14,7 +14,7 @@ from engine.arc.models import ArcDefinition
 logger = logging.getLogger(__name__)
 
 
-class ArcStateChart(StateChart):
+class ArcStateChart(StateChart[Any]):
     """Single StateChart-based arc implementation for the scaffold."""
 
     class introduction(State.Compound, initial=True):

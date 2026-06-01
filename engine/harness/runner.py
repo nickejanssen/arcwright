@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import random
 from pathlib import Path
-from typing import Any, Callable
+from typing import Any, Callable, cast
 from uuid import UUID
 
 from engine.arc.arc_state import ArcStateChart
@@ -81,6 +81,15 @@ class HarnessRunner:
         run.trace.append(entry)
         return entry.model_copy(deep=True)
 
+    def set_participants(self, participants: list[str]) -> HarnessRun:
+        run = self._require_run()
+        run.participants = list(participants)
+        return run.model_copy(deep=True)
+
+    def current_run(self) -> HarnessRun:
+        run = self._require_run()
+        return run.model_copy(deep=True)
+
     def snapshot(self) -> HarnessSnapshot:
         run = self._require_run()
         return HarnessSnapshot(
@@ -111,4 +120,4 @@ class HarnessRunner:
         if not callable(transition):
             msg = f"Unknown transition: {transition_name!r}"
             raise ValueError(msg)
-        return transition
+        return cast(Callable[[], Any], transition)

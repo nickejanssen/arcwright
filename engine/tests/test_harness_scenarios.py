@@ -158,6 +158,48 @@ def test_happy_path_scenario_completes_reveal() -> None:
     assert result.run.step_index == 7
 
 
+def test_live_run_expected_beat_assertion_is_enforced() -> None:
+    class DivergentRunner(HarnessRunner):
+        def apply_action(self, action):  # type: ignore[override]
+            entry = super().apply_action(action)
+            if action.transition_name == "begin_game":
+                entry.to_configuration = ["unexpected"]
+            return entry
+
+    scenario = HarnessScenario(
+        scenario_id="live-run-beat-check",
+        seed=111,
+        players=_players(),
+        steps=[
+            ScenarioStep(
+                actor_id="player-a",
+                action_type="begin_game",
+                expected_beat="killer_assignment",
+            )
+        ],
+    )
+
+    executor = ScenarioExecutor(
+        arc_path=ARC_PATH,
+        runner_factory=lambda arc_path, seed: DivergentRunner(
+            arc_path=arc_path,
+            seed=seed,
+        ),
+        preflight_runner_factory=lambda arc_path, seed: HarnessRunner(
+            arc_path=arc_path,
+            seed=seed,
+        ),
+    )
+
+    result = executor.run(scenario)
+
+    assert result.passed is False
+    assert (
+        result.failure_reason
+        == "step 1: expected beat 'killer_assignment', got ['unexpected']"
+    )
+
+
 def test_same_scenario_same_seed_produces_identical_trace() -> None:
     scenario = _happy_path_scenario()
     executor = ScenarioExecutor(arc_path=ARC_PATH)
@@ -169,14 +211,19 @@ def test_same_scenario_same_seed_produces_identical_trace() -> None:
     assert first_result.run.session_id == second_result.run.session_id
 
 
+def test_participant_ids_are_stable_across_runs() -> None:
+    scenario = _happy_path_scenario()
+    executor = ScenarioExecutor(arc_path=ARC_PATH)
+
+    first_result = executor.run(scenario)
+    second_result = executor.run(scenario)
+
+    assert first_result.run.participants == second_result.run.participants
+
+
 def test_run_participants_match_input_order() -> None:
     scenario = _happy_path_scenario()
 
     result = ScenarioExecutor(arc_path=ARC_PATH).run(scenario)
 
-    assert result.run.participants == [
-        "player-a",
-        "player-b",
-        "player-c",
-        "player-d",
-    ]
+    assert result.run.participants == [player.player_id for player in scenario.players]
