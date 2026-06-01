@@ -31,6 +31,11 @@ When proposing changes:
 2. Reference relevant ADRs in your new proposal
 3. If overriding a decision, create a superseding ADR explaining why
 
+## Current ADRs
+
+- `0001-scaffolding-audit.md` — repository scaffold audit against the technical architecture
+- `0002-harness-scenario-execution-contract.md` — AW-111 scenario execution contract for participants, preflight validation, and payload scope
+
 ## Current Decision Categories
 
 - **Technology choices**: Python, PostgreSQL, python-statemachine, LiteLLM
