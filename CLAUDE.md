@@ -73,6 +73,20 @@ When a decision affects multiple components or represents a significant trade-of
 3. Reference the ADR in relevant spec or architecture files
 4. Update `/docs/decisions/README.md` index if adding a new numbered decision
 
+## Agent-Local Files — Do Not Commit
+
+Directories like `.claude/`, `.codex/`, `.cursor/`, and similar tool metadata dirs contain a mix of:
+- **Project-level config** (e.g., `.codex/environments/`, `.cursorrules`) — may be intentionally tracked
+- **Local-only state** (session files, per-user settings, generated indexes) — must never be committed
+
+Rules for every agent working in this repo:
+- Do not create, modify, stage, commit, or delete files inside `.claude/`, `.codex/`, `.cursor/`, or any similar tool-local directory unless explicitly asked.
+- Treat those directories as local workspace state, not product code.
+- Before every commit, run `git status` and verify that no agent-local files appear in the staged list.
+- If `git status` shows untracked or modified files in these directories, leave them untracked and call them out to the human — do not clean them up automatically.
+- Do not include agent-local files in commits or PRs.
+- Leave pre-existing local files that are unrelated to the current task alone; call them out rather than cleaning them up.
+
 ## Key Constraints
 
 - Python 3.11+, no earlier

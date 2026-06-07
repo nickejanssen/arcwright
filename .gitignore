@@ -9,3 +9,8 @@ node_modules/
 
 evals/reports/*
 !evals/reports/.gitkeep
+
+# Agent-local state (session files, per-user settings — not project config)
+# .codex/ is intentionally NOT listed here because .codex/environments/ is tracked project config
+.claude/
+.cursor/
