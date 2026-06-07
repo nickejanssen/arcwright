@@ -1,4 +1,4 @@
-> This file applies to all coding agents operating on this repo. Claude Code reads CLAUDE.md, which may contain additional Claude-specific guidance; otherwise CLAUDE.md should be kept in sync with this file.
+> This file applies to all coding agents operating on this repo **except Claude Code**, which reads `CLAUDE.md` as its canonical instruction file. Keep this file in sync with `CLAUDE.md`; if they conflict, `CLAUDE.md` wins.
 
 # Agent Initialization Guide
 
