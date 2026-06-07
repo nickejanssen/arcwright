@@ -1,0 +1,110 @@
+---
+name: github-task-implementer
+description: Implement one GitHub issue, task, or story from intake through PR handoff while staying inside the ticket's documented scope. Use when an AI agent needs to read the full work item, inspect linked specs and repo docs, verify prerequisites, propose a plan before coding, implement only the approved acceptance criteria, run required checks, report each acceptance criterion explicitly, address review feedback, and perform post-merge branch cleanup.
+---
+
+# Github Task Implementer
+
+## Overview
+
+Implement a single GitHub work item with a strict plan-before-code workflow and strong scope control. Keep the core procedure platform-neutral so the same file can be used by Codex, Claude Code, or any other AI coding agent.
+
+## Workflow
+
+### 1. Capture the Task Contract
+
+- Extract the issue number, any stable roadmap or task ID such as `AW-111`, the exact issue title, and any explicit branch, commit, PR, or review requirements.
+- Read the full issue body before planning. Include the spec, acceptance criteria, anti-requirements, linked docs, dependencies, and any "Implements:" or equivalent references.
+- Treat the issue body plus referenced repo docs as the scope contract. Treat comments as non-authoritative unless the user says they supersede the ticket.
+- If the ticket is missing acceptance criteria or concrete done conditions, stop and ask for them before coding.
+
+### 2. Create a Safe Branch
+
+- Make branch creation the first state-changing git action for the task.
+- Prefer `task/AW-111-brief-description` when a stable task ID exists.
+- Otherwise use `task/issue-123-brief-description`.
+- Sanitize the branch slug to lowercase letters, digits, and hyphens only. Remove or replace characters such as `:`, spaces, quotes, and duplicate hyphens.
+- If the user supplied an invalid branch name, show the sanitized branch name before using it.
+- Do not reuse a branch that already contains unrelated work.
+
+### 3. Inspect Repo State Before Editing
+
+- Run a repo-state check such as `git status` before editing.
+- Read the repo's agent instruction file and workflow docs first, such as `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `README.md`, or docs under `docs/`.
+- Read the specific PRD, architecture, design, or spec files referenced by the ticket.
+- Inspect the current code paths, tests, and configuration that the task touches.
+- Verify prerequisites from prior tasks are actually present in the codebase. If a required dependency, earlier task, migration, API, or helper is missing or incomplete, stop and report the exact prerequisite gap.
+- Do not clean up unrelated local changes. Call them out only if they affect the task.
+
+### 4. Produce a Plan and Wait for Approval
+
+- After reading, send a short implementation plan before writing code.
+- Include ambiguities, missing decisions, conflicting instructions, or prerequisite gaps in the same message.
+- Quote the exact unclear ticket or spec text when asking for clarification.
+- Ask in one message, not a long back-and-forth.
+- Do not write code until the user explicitly approves the plan.
+
+### 5. Implement Only the Approved Scope
+
+- Implement only what the ticket and approved plan require.
+- Do not add cleanup, refactors, dependencies, schema changes, or extra features unless the acceptance criteria require them or the user approves them.
+- If the repo requires tests with code, write them as part of the same change.
+- Preserve existing unrelated edits in touched files unless the user explicitly asks you to revert them.
+- If you hit an unspecified decision during implementation, stop and ask instead of guessing.
+- If repo policy marks a change type as approval-gated, stop and surface that gate before proceeding. Common gated categories include dependency changes, database schema changes, auth or secret handling, prompt or eval changes, and broad cross-module architecture changes.
+
+### 6. Verify Like a Reviewer
+
+- Run the smallest set of checks that proves the ticket, then add any repo-required lint, type, build, or test commands needed to claim completion.
+- Separate results into three categories:
+  - checks that passed because of your work
+  - checks blocked or broken by your changes
+  - checks blocked by a pre-existing repo or environment issue
+- Confirm each acceptance criterion explicitly, one by one, with short evidence.
+- If the repo or ticket names a mandatory command, run it unless blocked by a missing dependency, missing credential, or environment limitation. If blocked, say so explicitly.
+
+### 7. Commit and PR Correctly
+
+- Use one branch per task.
+- Use a conventional commit subject on the first line.
+- Put `Closes #123` or `Refs #123` in the commit body or PR description unless the repo explicitly uses another pattern.
+- Push the branch.
+- Open a PR when the platform supports it.
+- Use the issue title as the PR title when the ticket or repo workflow expects that. If the repo enforces a different title format and the ticket says "exact issue title," stop and surface the conflict.
+- In the PR description, list which acceptance criteria pass, what checks ran, and any remaining blockers or follow-up risk.
+
+### 8. Handle Review Follow-Up on the Same Ticket
+
+- Read review comments carefully and distinguish actionable requests from preference-only commentary.
+- Fix actionable comments on the same branch unless the repo workflow says otherwise.
+- Resolve review conversations only after the code or explanation actually addresses them.
+- If a review request would expand scope beyond the original ticket, stop and ask whether to fold it into the current task or open a follow-up issue.
+
+### 9. Clean Up Only After Merge
+
+- Do not do post-merge cleanup until merge is confirmed.
+- After merge, switch back to the default branch, pull the latest remote state, delete the local task branch, and run `git status`.
+- Report whether the working tree is clean and synced with the default branch.
+- If pre-existing files or ignored local state prevent a clean tree, report them explicitly and leave them alone.
+
+## Stop Conditions
+
+- Missing, contradictory, or non-verifiable acceptance criteria
+- Missing prerequisite work from earlier tickets
+- Conflicting instructions between the issue, repo conventions, and user request
+- Required checks blocked by missing dependencies, credentials, or environment access
+- Approval-gated work types that the repo or user has not approved
+- Unrelated local changes that make the task unsafe to continue without direction
+
+## Conflict Rules
+
+- Prefer the repo's canonical design docs over issue comments when scope or architecture disagree.
+- Prefer stable task IDs such as `AW-111` over mutable GitHub numbers when naming branches and locating roadmap docs.
+- Prefer repo commit conventions for the commit subject line, then add issue-closing references in the body.
+- If two instructions cannot both be satisfied, do not guess. Explain the conflict and ask the user to choose.
+
+## Platform Notes
+
+- Keep the core workflow platform-neutral. Do not rely on Codex-only or Claude-only features in the required path.
+- Use host-platform GitHub tools when available. If the platform lacks GitHub integration, ask the user for the issue body or pasted ticket content and continue with the same workflow.
+- Treat this file as the primary source of procedure. Read `references/response-contracts.md` only when you need reusable output shapes.

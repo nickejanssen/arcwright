@@ -1,0 +1,4 @@
+interface:
+  display_name: "GitHub Task Implementer"
+  short_description: "Execute one GitHub task from spec to PR"
+  default_prompt: "Use $github-task-implementer to implement GitHub Issue #123 from issue read-through through PR handoff."
