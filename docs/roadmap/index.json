@@ -234,7 +234,7 @@
     {
       "id": "M2-A",
       "milestone": "M2",
-      "title": "External Platform Decision Gate",
+      "title": "Nightcap Web Experience Runtime Decision Gate",
       "status": "planned",
       "path": "docs/roadmap/epics/M2-A-external-platform-decision-gate.md",
       "tasks": [
@@ -374,7 +374,7 @@
     {
       "id": "M4-A",
       "milestone": "M4",
-      "title": "Nightcap External Platform Integration",
+      "title": "Nightcap Web Experience Runtime Integration",
       "status": "planned",
       "path": "docs/roadmap/epics/M4-A-nightcap-external-platform-integration.md",
       "tasks": [
@@ -702,7 +702,7 @@
     },
     {
       "id": "AW-202",
-      "title": "External Nightcap Platform Decision",
+      "title": "Nightcap Web Experience Runtime Decision",
       "milestone": "M2",
       "epic": "M2-A",
       "size": "M",
@@ -1079,7 +1079,7 @@
     },
     {
       "id": "AW-225",
-      "title": "External Platform Connector Scaffold",
+      "title": "Nightcap Web Experience Runtime Connector Scaffold",
       "milestone": "M4",
       "epic": "M4-A",
       "size": "M",

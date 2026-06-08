@@ -22,7 +22,7 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 ## Technical Scope
 
-Verify all event audiences across real devices. Likely files affected: test docs, external platform integration files.
+Verify all event audiences across real devices in the Cloudflare-hosted Nightcap web experience runtime selected by AW-202. Likely files affected: test docs, Cloudflare Pages, Workers, Durable Objects or PartyKit files.
 
 ## Acceptance Criteria
 
@@ -43,18 +43,19 @@ Verify all event audiences across real devices. Likely files affected: test docs
 
 ## Likely Files Affected
 
-test docs, external platform integration files
+test docs, Cloudflare Pages, Workers, Durable Objects or PartyKit files
 
 ## Must Not Do
 
 - Do not implement product code outside this task scope.
 - Do not duplicate closed M1 work.
 - Do not hardcode secrets or API keys.
-- Do not start this implementation until AW-202 selects the external Nightcap platform.
+- Do not bypass the AW-202 Nightcap web experience runtime contract.
 
 ## Architecture References
 
 - docs/architecture/08-event-system.md S8.4-S8.5
+- `docs/decisions/0003-nightcap-web-experience-runtime.md`
 - `AGENTS.md`
 - `docs/architecture/15-development-guide.md`
 

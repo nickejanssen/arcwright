@@ -40,7 +40,7 @@ This spec defines the documentation and GitHub tracker bootstrap required to mov
 - Schema or migration implementation
 - Prompt, routing, safety, or eval behavior changes
 - Modifying or reopening closed M1 issues
-- Implementing M4 external-platform code before AW-202 selects the platform
+- Implementing M4 Nightcap web experience runtime code before AW-202 records the runtime contract
 
 ---
 
@@ -52,7 +52,7 @@ This spec defines the documentation and GitHub tracker bootstrap required to mov
 - [ ] GitHub labels `M2`, `M3`, `M4`, `M5`, and `M6` exist
 - [ ] GitHub milestone `M6: First Qualifying Sessions` exists, and M2-M5 milestone titles/descriptions match the roadmap
 - [ ] GitHub epic and task issues are created for every new roadmap item without duplicating or modifying closed M1 issues
-- [ ] M4 implementation tasks are explicitly dependent on AW-202 and marked blocked until the external platform decision is complete
+- [ ] M4 implementation tasks are explicitly dependent on AW-202 and tied to the Nightcap web experience runtime decision
 
 ---
 
@@ -74,7 +74,7 @@ This spec defines the documentation and GitHub tracker bootstrap required to mov
 - M6 can be misread as a formality instead of a product proof gate
 
 **Unknowns**:
-- The external Nightcap platform remains TBD until AW-202
+- The Nightcap web experience runtime is resolved by AW-202
 - Nightcap trademark clearance remains outside this product-code tracker unless separately requested
 - Pricing remains a product decision, so gross-margin tasks must separate actual logged cost from open revenue assumptions
 
