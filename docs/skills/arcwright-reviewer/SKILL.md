@@ -36,7 +36,7 @@ Check each item and record evidence (file and line) for anything you flag:
 - New dependencies, and whether they were explicitly approved (a Hard Rule in `AGENTS.md`).
 - Secrets, credentials, or unsafe logging of sensitive data.
 - Hardcoded values that should live in config, env, or routing tables.
-- Provider or model strings outside `config/routing_table.json` and `engine/routing/router.py` (engine constraint; treat any occurrence as a block).
+- Provider or model strings hardcoded in implementation code outside `config/routing_table.json` and `engine/routing/router.py` (engine constraint). The automated eval scans `engine/`, `api/`, `config/`, and `.github/workflows/`; treat any such occurrence in those paths as a block. Documentation under `docs/` may name models where it explains the routing design, so do not block on doc references; instead flag any doc that duplicates the per-task model mapping (it will drift) and ask for a pointer to `config/routing_table.json`.
 - LLM-dependent code: prompts kept under version control, eval cases updated when prompt, routing, or model behavior changed, and model selection justified and consistent with routing policy.
 - Engine constraint integrity: arc logic stays in Python, knowledge-state query precedes every AI generation call, safety stays enforced at the engine layer. Flag any change that erodes these.
 

@@ -156,9 +156,9 @@ These eight principles are enforced unconditionally. If a proposed change violat
 3. **Configurable composition** (`docs/prd/02-requirements.md`): Per-element authored/generative dial. `ArcDefinition` carries `generative_elements: GenerativeConfig`.
 4. **Unified character model** (`docs/architecture/07-character-behavior.md §7.2`): Single `Character` object for human and AI participants. Behavior source is the only difference.
 5. **Knowledge graph as first-class** (`docs/architecture/04-knowledge-graph.md §4.3`): `assert_knowledge` / `get_character_knowledge` / `revoke_knowledge` enforced before every generation call. Not optional. Never skippable for performance.
-6. **Cost-aware architecture** (`docs/architecture/06-model-routing.md §6.4`): LiteLLM routing table maps task type plus quality tier. Pacing/safety on small models (Groq). Generation on capable models (Anthropic). Premium tier gated by `dramatic_tension_score`. Budget-first by default.
+6. **Cost-aware architecture** (`docs/architecture/06-model-routing.md §6.4`): the routing table maps task type plus quality tier. Pacing and safety run on small, low-cost models. Generation runs on capable models. Premium tier gated by `dramatic_tension_score`. Budget-first by default. Concrete model and provider choices live only in `config/routing_table.json`.
 7. **Progressive proprietary infrastructure** (`docs/architecture/12-build-plan.md §12.1`): Tier 1 (deterministic) at MVP. Tier 2 (fine-tuned) on volume and data. Tier 3 (foundation model) never.
-8. **Provider-agnostic routing** (`docs/architecture/06-model-routing.md §6.2`): All calls through `engine/routing/router.py`. No provider name outside `routing_table.json`. Zero code changes for routing table swap.
+8. **Provider-agnostic routing** (`docs/architecture/06-model-routing.md §6.2`): All calls through `engine/routing/router.py`. No provider name in code outside `config/routing_table.json` and `engine/routing/router.py`. Zero code changes for a routing table swap.
 
 ---
 
@@ -204,23 +204,23 @@ Authoritative source on any conflict: `docs/architecture/supplemental-schemas.md
 
 ---
 
-## Routing Table Quick Reference
+## Routing Task Types
 
-Authoritative source on any conflict: `docs/architecture/06-model-routing.md §6.3` and `docs/architecture/15-development-guide.md §15.7`, plus `config/routing_table.json` itself. If this table and those sources disagree, the sources win.
+Do not copy model or provider names here. Per the AGENTS.md provider-agnostic rule, the concrete model and provider assignments live only in `config/routing_table.json` and `engine/routing/router.py`. Read the routing table for the current per-task mapping and tiers, and read `docs/architecture/06-model-routing.md §6.3` and `docs/architecture/15-development-guide.md §15.7` for the design rationale and tier gating. If anyone asks "which model does task X use," answer from `config/routing_table.json`, not from memory.
 
-Seven task types at MVP (5 in initial scaffold plus 2 added by remediation spec):
+The MVP task types (read `config/routing_table.json` for the authoritative list and the model mapping):
 
-| Task type | Standard model | Premium model | Notes |
-|---|---|---|---|
-| `character_dialogue` | Claude Haiku | Claude Sonnet | Premium gated by `dramatic_tension_score >= 0.85` |
-| `narrative_generation` | Claude Haiku | Claude Sonnet | Same premium gate |
-| `pacing_decision` | Llama 3.1 8B (Groq) | Llama 3.1 8B (Groq) | Same both tiers; cost is the priority |
-| `knowledge_inference` | Llama 3.1 8B (Groq) | Llama 3.3 70B (Groq) | |
-| `safety_classification` | GPT-OSS-Safeguard 20B (Groq) | same | All tiers; blocks generation |
-| `killer_assignment` | Llama 3.1 8B (Groq) | Llama 3.3 70B (Groq) | One-shot at session start |
-| `narrator_bridge` | Claude Haiku | Claude Sonnet | Short recap on session resume |
+| Task type | Notes |
+|---|---|
+| `character_dialogue` | Premium tier gated by `dramatic_tension_score >= 0.85` |
+| `narrative_generation` | Same premium gate as character dialogue |
+| `pacing_decision` | Same tier both standard and premium; cost is the priority |
+| `knowledge_inference` | Standard and premium tiers differ; see the routing table |
+| `safety_classification` | Same across all tiers; blocks generation |
+| `killer_assignment` | One-shot at session start |
+| `narrator_bridge` | Short recap on session resume |
 
-Fallback entries required per `docs/architecture/06-model-routing.md §6.5`.
+Fallback entries are required per `docs/architecture/06-model-routing.md §6.5`.
 
 ---
 
