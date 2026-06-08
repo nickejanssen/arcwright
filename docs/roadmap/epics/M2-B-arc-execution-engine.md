@@ -30,11 +30,17 @@ The technical scope is limited to the tasks listed below and the architecture re
 - [AW-207: Dramatic Tension Pacing Engine](../tasks/AW-207-dramatic-tension-pacing-engine.md)
 - [AW-214: M2 Headless Nightcap Exit Harness](../tasks/AW-214-m2-headless-nightcap-exit-harness.md)
 
-## Epic Exit Criteria
+## Acceptance Criteria
 
 - All child tasks satisfy their acceptance criteria.
 - The milestone exit gate remains consistent with `docs/roadmap/00-overview.md`.
 - Any open decision is explicitly recorded before implementation proceeds.
+
+## Tests/Verification
+
+- Verify every child task is complete and has evidence linked from its task issue.
+- Verify the parent milestone exit gate still matches `docs/roadmap/00-overview.md`.
+- Verify any open decision named by this epic is recorded before dependent implementation starts.
 
 ## Dependencies
 

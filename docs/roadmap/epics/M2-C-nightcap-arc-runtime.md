@@ -28,11 +28,17 @@ The technical scope is limited to the tasks listed below and the architecture re
 - [AW-205: Nightcap Canonical Arc JSON](../tasks/AW-205-nightcap-canonical-arc-json.md)
 - [AW-206: Killer Assignment And Reveal State](../tasks/AW-206-killer-assignment-and-reveal-state.md)
 
-## Epic Exit Criteria
+## Acceptance Criteria
 
 - All child tasks satisfy their acceptance criteria.
 - The milestone exit gate remains consistent with `docs/roadmap/00-overview.md`.
 - Any open decision is explicitly recorded before implementation proceeds.
+
+## Tests/Verification
+
+- Verify every child task is complete and has evidence linked from its task issue.
+- Verify the parent milestone exit gate still matches `docs/roadmap/00-overview.md`.
+- Verify any open decision named by this epic is recorded before dependent implementation starts.
 
 ## Dependencies
 

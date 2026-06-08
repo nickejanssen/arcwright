@@ -28,11 +28,17 @@ The technical scope is limited to the tasks listed below and the architecture re
 - [AW-228: Player Join Flow Under 30 Seconds](../tasks/AW-228-player-join-flow-under-30-seconds.md)
 - [AW-229: Player Private Event And Input Flow](../tasks/AW-229-player-private-event-and-input-flow.md)
 
-## Epic Exit Criteria
+## Acceptance Criteria
 
 - All child tasks satisfy their acceptance criteria.
 - The milestone exit gate remains consistent with `docs/roadmap/00-overview.md`.
 - Any open decision is explicitly recorded before implementation proceeds.
+
+## Tests/Verification
+
+- Verify every child task is complete and has evidence linked from its task issue.
+- Verify the parent milestone exit gate still matches `docs/roadmap/00-overview.md`.
+- Verify any open decision named by this epic is recorded before dependent implementation starts.
 
 ## Dependencies
 
