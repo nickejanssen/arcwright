@@ -28,11 +28,17 @@ The technical scope is limited to the tasks listed below and the architecture re
 - [AW-232: Adversarial Safety Playtest Protocol](../tasks/AW-232-adversarial-safety-playtest-protocol.md)
 - [AW-233: Safety Findings Remediation](../tasks/AW-233-safety-findings-remediation.md)
 
-## Epic Exit Criteria
+## Acceptance Criteria
 
 - All child tasks satisfy their acceptance criteria.
 - The milestone exit gate remains consistent with `docs/roadmap/00-overview.md`.
 - Any open decision is explicitly recorded before implementation proceeds.
+
+## Tests/Verification
+
+- Verify every child task is complete and has evidence linked from its task issue.
+- Verify the parent milestone exit gate still matches `docs/roadmap/00-overview.md`.
+- Verify any open decision named by this epic is recorded before dependent implementation starts.
 
 ## Dependencies
 

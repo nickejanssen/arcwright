@@ -28,11 +28,17 @@ The technical scope is limited to the tasks listed below and the architecture re
 - [AW-230: Real-Device Privacy Matrix](../tasks/AW-230-real-device-privacy-matrix.md)
 - [AW-231: M4 Real-Human Rehearsal](../tasks/AW-231-m4-real-human-rehearsal.md)
 
-## Epic Exit Criteria
+## Acceptance Criteria
 
 - All child tasks satisfy their acceptance criteria.
 - The milestone exit gate remains consistent with `docs/roadmap/00-overview.md`.
 - Any open decision is explicitly recorded before implementation proceeds.
+
+## Tests/Verification
+
+- Verify every child task is complete and has evidence linked from its task issue.
+- Verify the parent milestone exit gate still matches `docs/roadmap/00-overview.md`.
+- Verify any open decision named by this epic is recorded before dependent implementation starts.
 
 ## Dependencies
 

@@ -29,11 +29,17 @@ The technical scope is limited to the tasks listed below and the architecture re
 - [AW-241: Qualifying Session Instrumentation Checklist](../tasks/AW-241-qualifying-session-instrumentation-checklist.md)
 - [AW-242: Founder-Run Final Rehearsal](../tasks/AW-242-founder-run-final-rehearsal.md)
 
-## Epic Exit Criteria
+## Acceptance Criteria
 
 - All child tasks satisfy their acceptance criteria.
 - The milestone exit gate remains consistent with `docs/roadmap/00-overview.md`.
 - Any open decision is explicitly recorded before implementation proceeds.
+
+## Tests/Verification
+
+- Verify every child task is complete and has evidence linked from its task issue.
+- Verify the parent milestone exit gate still matches `docs/roadmap/00-overview.md`.
+- Verify any open decision named by this epic is recorded before dependent implementation starts.
 
 ## Dependencies
 
