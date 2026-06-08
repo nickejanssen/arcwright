@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Turn an approved intent into a sequenced, dependency-aware plan, and for platform-build work, into one or more roadmap tasks with stable AW-NNN IDs. The Planner is the second gate in the pipeline (see `docs/agents/README.md`).
+Turn an approved intent into a sequenced, dependency-aware plan, and for platform-build work, into one or more roadmap tasks with stable AW-NNN IDs. The Planner runs after the intent and approval gate (Product Steward, Business Steward, System Architect) has aligned on a go (see `docs/agents/README.md`).
 
 ## When to Use
 
@@ -11,7 +11,7 @@ Turn an approved intent into a sequenced, dependency-aware plan, and for platfor
 
 ## Inputs
 
-- The approved intent and its scope boundary from the Product Steward.
+- The approved intent and its scope boundary from the intent gate (Product Steward, Business Steward, and System Architect).
 - The roadmap: `docs/roadmap/index.json` (manifest, dependencies, issue numbers), `docs/roadmap/milestones/*.md`, `docs/roadmap/epics/*.md`, `docs/roadmap/tasks/*.md`, and `docs/roadmap/operations/working-model.md`.
 - SME input (`docs/skills/arcwright-sme`) for dependency and architecture implications.
 
