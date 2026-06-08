@@ -10,7 +10,12 @@ node_modules/
 evals/reports/*
 !evals/reports/.gitkeep
 
-# Agent-local state (session files, per-user settings — not project config)
+# Agent-local state (session files, per-user settings, not project config)
 # .codex/ is intentionally NOT listed here because .codex/environments/ is tracked project config
-.claude/
+# .claude/ is ignored except the shared, version-controlled launchers re-included below.
+# Local-only state (settings.local.json, sessions, caches) stays ignored.
+.claude/*
+!.claude/agents/
+!.claude/commands/
+!.claude/settings.json
 .cursor/
