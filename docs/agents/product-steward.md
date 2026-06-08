@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Own product intent and scope. Decide what should be built and why, and whether it belongs in the current horizon, before any planning or spec work begins. The Product Steward is the first gate in the pipeline (see `docs/agents/README.md`).
+Own product intent and scope. Decide what should be built and why, and whether it belongs in the current horizon, before any planning or spec work begins. The Product Steward is one of three roles at the shared intent and approval gate, alongside the Business Steward and the System Architect (see `docs/agents/README.md`). Product owns the product call; planning does not begin until that gate aligns on a go.
 
 ## When to Use
 
@@ -31,4 +31,4 @@ Own product intent and scope. Decide what should be built and why, and whether i
 
 ## Handoff
 
-Pass an approved intent to the **Planner** (`docs/agents/planner.md`). For platform-build work, the Planner will mint the AW-NNN task ID that threads the rest of the pipeline.
+Reach a shared go or no-go with the **Business Steward** (`docs/agents/business-steward.md`) and the **System Architect** (`docs/agents/system-architect.md`) at the intent gate, then pass the approved intent to the **Planner** (`docs/agents/planner.md`). For platform-build work, the Planner will mint the AW-NNN task ID that threads the rest of the pipeline.

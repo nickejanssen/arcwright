@@ -1,6 +1,6 @@
 # Operating Model: Business Steward and System Architect Roles
 
-**Status**: Draft
+**Status**: Approved
 
 **Author**: Claude Code | **Date**: 2026-06-08
 
