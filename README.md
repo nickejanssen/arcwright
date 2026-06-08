@@ -48,7 +48,7 @@ These are the non-negotiables for work in this repo:
 7. Progressive proprietary infrastructure: start managed, replace components only when economics justify it.
 8. Provider-agnostic routing: no provider or model hardcoding outside `config/routing_table.json` and `engine/routing/router.py`.
 
-See `.cursorrules` for the repo-level AI implementation guardrails derived from the PRD.
+See `AGENTS.md` for the repo-level AI implementation guardrails derived from the PRD. It is the single authoritative, always-on instruction file for every agent.
 
 ## Repository Layout
 
@@ -83,7 +83,7 @@ If you are new to the repo, read these in order:
 
 1. `docs/06-PRD-v1 3 358b7de354a8814292c3d0e67cb73f3c.md`
 2. `docs/07-Technical-Architecture-v1 3 35db7de354a881618e59e65c8e12caf6.md`
-3. `.cursorrules`
+3. `AGENTS.md`
 
 Helpful supporting docs:
 
