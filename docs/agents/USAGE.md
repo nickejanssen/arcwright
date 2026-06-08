@@ -1,127 +1,184 @@
 # Using the Arcwright Agents and Skills
 
-A beginner-friendly guide to the roles wired up by spec 0019 and spec 0021, and how to use them in Claude Code, Codex, GitHub Copilot, and the Claude.ai Project chat.
+A practical, click-by-click guide to the roles wired up by specs 0019 and 0021. It is written for the **client apps** (the Claude desktop app, the Codex app, and VS Code with GitHub Copilot). The command line is mentioned only where it is the only or the best option, and those spots are clearly marked **CLI**.
 
-## The one rule that fixes most "I do not see it" problems
+If you read nothing else, read these three lines:
 
-These files load when the tool starts. After you `git pull` on `main`, reload or restart the tool (close and reopen, or run "Developer: Reload Window" in VS Code). If a role, command, or skill does not appear, this is almost always the reason.
+- To run a role, open the app, click the chat box, type `/`, and pick the command from the menu.
+- To get the next task, ask the **Planner**; to build it, run the **Implementer**; to check it, run the **Reviewer**.
+- To change how any role behaves, edit the canonical file in `docs/skills/` or `docs/agents/`, never the per-app launcher.
 
-## Mental model
+---
 
-There are two kinds of role:
+## Part 1: Words you need (plain English)
 
-- **Doing roles** run inside coding tools (Claude Code, Codex, Copilot): Implementer and Reviewer, plus the Architecture SME for questions.
-- **Thinking roles** run in the Claude.ai Project chat: Product Steward, Business Steward, System Architect, Planner, Spec Author, Scribe.
+- **Skill**: a saved capability you trigger by typing a slash command, for example `/implement`. In the Claude app the skills are `/implement`, `/review-pr`, and `/scribe`. Think of a skill as a labeled button that loads a set of instructions.
+- **Subagent (Claude app) or custom agent (Copilot)**: a named helper with its own job and its own limited tools, for example **Implementer** or **Reviewer**. You can pick it from a menu and talk to it directly.
+- **Thinking role**: a role you talk to in the **Claude.ai Project chat** by name (Product Steward, Business Steward, System Architect, Planner, Spec Author, Scribe). These have no buttons; you invoke them by asking.
+- **Canonical contract**: the single real instruction file each launcher points at, under `docs/skills/` or `docs/agents/`. The launchers are thin on purpose.
 
-The role logic lives once in `docs/skills/` and `docs/agents/`. Every tool-specific file is a thin launcher that points at those canonical contracts, so all three tools behave the same. To change how a role behaves, edit the canonical file, never the per-tool launcher.
-
-The workflow the roles encode:
+The pipeline the roles follow:
 
 ```
-Intent gate (Product Steward + Business Steward + System Architect agree on a go)
-  -> Planner (selects and sequences the next task, assigns an AW-NNN id)
-  -> Spec Author (writes docs/specs/NNNN with acceptance criteria)
-  -> Implementer (branch, code, PR)
-  -> Reviewer (gates the PR)
-Scribe records decisions and outcomes throughout.
+Intent gate: Product Steward + Business Steward + System Architect agree on a go
+  -> Planner: picks and sequences the next task, gives it an AW-NNN id
+  -> Spec Author: writes docs/specs/NNNN with acceptance criteria
+  -> Implementer: branch, code, open a pull request (PR)
+  -> Reviewer: gates the PR
+Scribe records decisions and outcomes the whole way.
 ```
 
-### Which role gets the next task before the Implementer
+---
 
-The **Planner** selects and sequences the next task and assigns its AW-NNN id, after the intent gate has approved a go. The **Spec Author** then ensures the task has a spec, and only then does the **Implementer** pick it up. For a quick "what is next" lookup without full sequencing, the **Architecture SME** can answer from `docs/roadmap/index.json`.
+## Part 2: One-time setup (do this in each app, once)
+
+The role files load when the app starts and reads the project. After the project's `main` branch changes, refresh:
+
+- **Claude app**: make sure the app has the latest project files, then start a new chat (or reopen the project). New skills and subagents appear after a fresh start.
+- **Codex app**: reopen the project, or start a new session.
+- **VS Code (Copilot)**: open the Command Palette (View menu, or Ctrl+Shift+P), type "Developer: Reload Window", press Enter.
+
+If a command, skill, or agent does not appear, this refresh is almost always the fix.
+
+**CLI (only if your app does not auto-sync the repo):** in a terminal at the project folder, run `git pull`. Most app users can skip this; the app handles it. GitHub Desktop is a GUI alternative if you prefer not to use a terminal.
 
 ---
 
-## Claude Code
+## Part 3: Claude desktop app (your main tool)
 
-Wired: subagents `implementer` and `reviewer`; commands `/implement`, `/review-pr`, `/scribe`; a shared `.claude/settings.json` that pre-approves lint, test, type, and migrate commands.
+### 3a. How to run a skill (the slash menu)
 
-First time: pull `main`, then restart Claude Code.
+1. Open the project in the Claude app and start a chat.
+2. Click into the message box at the bottom.
+3. Type a single forward slash `/`. A menu pops up listing available commands and skills.
+4. Click the one you want, or keep typing to filter (for example type `imp` to find `implement`).
+5. Add your input after the command, then send.
 
-Check it loaded:
-- Type `/agents`. You should see `implementer` and `reviewer`.
-- Type `/`. You should see `/implement`, `/review-pr`, `/scribe`.
+That is the whole mechanism. The three skills you will use most:
 
-How to use it:
-- Implement a task: `/implement AW-123` (or an issue number, or a description). It reads `docs/skills/github-task-implementer/SKILL.md` and runs the branch, plan, code, PR loop. It pauses for plan approval before coding.
-- Review a change or PR: `/review-pr` (not `/review`, which is a Claude Code built-in). Or say "Use the reviewer subagent to review my current changes."
-- Record a decision: `/scribe we decided X because Y`. It follows the Scribe contract to write or update an ADR.
-- Ask architecture questions: the SME loads from `docs/skills/arcwright-sme`. Ask "what does the architecture say about the knowledge graph" and it grounds the answer in `docs/`.
+- **`/implement`**: builds one task end to end. Example: type `/implement AW-130` and send. It reads the canonical Implementer contract (`docs/skills/github-task-implementer/SKILL.md`), then shows you a short plan and waits. Read the plan, and if it looks right, reply "approved" (or tell it what to change). It then creates a branch, writes the code and tests, runs checks, and opens a PR. You do not type any git commands.
+- **`/review-pr`**: checks a change or PR against the review checklist. Example: type `/review-pr` and send (optionally name a PR). It reports a clear pass or block with evidence. Use `/review-pr`, not `/review`; `/review` is a built-in that does something else.
+- **`/scribe`**: records a decision. Example: `/scribe we chose Postgres over SQLite because we need pgvector`. It writes or updates an ADR for you.
 
-Why permissions do not nag you: `.claude/settings.json` pre-allows ruff, pytest, mypy, make lint/type/test, alembic, and the npm typecheck and build commands.
+### 3b. How to use the subagents (Implementer, Reviewer)
 
----
+You usually do not need to pick them by hand; the slash commands above already use them. But if you want to talk to one directly:
 
-## Codex
+1. In the message box, type `/agents` and send. You will see **implementer** and **reviewer** listed.
+2. To use one, just ask in plain language, for example: "Use the reviewer subagent to review my current changes." The app routes the work to that helper, which loads its canonical contract and reports back.
 
-Wired: three skills exposed at `.agents/skills/<name>/SKILL.md` (thin pointers into `docs/skills/`): `github-task-implementer`, `arcwright-reviewer`, `arcwright-sme`. Rules come from `AGENTS.md`, which Codex reads automatically.
+The **Reviewer** is read-only by design: it inspects and reports, it does not edit your files.
 
-First time: pull `main`, restart Codex.
+### 3c. Asking architecture questions (the SME)
 
-Check it loaded: run `/skills`. You should see the three skills.
+For "how does this work" or "what does the architecture say" questions, just ask in a normal chat. The Architecture SME knowledge (`docs/skills/arcwright-sme`) is available, and answers are grounded in the project's `docs/` folder with file references. Example: "What does the architecture say about the knowledge graph, and which file?"
 
-How to use it:
-- Reference a skill with `$name`, for example: "Use $github-task-implementer to implement issue #123", "Use $arcwright-reviewer to review this PR", or "Use $arcwright-sme: which component owns killer assignment?"
-- Each skill body tells Codex to open the canonical `docs/skills/.../SKILL.md` and follow it, so behavior matches Claude Code.
-- `AGENTS.md` is always on, so the engine constraints and approval gates apply automatically.
+### 3d. Approving plans and finishing
 
----
-
-## GitHub Copilot (VS Code)
-
-Wired: custom agents Implementer, Reviewer, and Arcwright SME (`.github/agents/*.agent.md`); prompts `/implement-task` and `/review-pr` (`.github/prompts/*.prompt.md`); auto-applied path instructions for `engine/**` and `api/**` (`.github/instructions/engine.instructions.md`); and `.github/copilot-instructions.md`, a full mirror of `AGENTS.md` that applies repo-wide including Copilot code review.
-
-First time: pull `main`, use a recent VS Code with GitHub Copilot Chat, then run "Developer: Reload Window".
-
-Check it loaded:
-- Open Copilot Chat. The mode or agent dropdown at the top of the Chat view should list Implementer, Reviewer, and Arcwright SME alongside the built-in modes.
-- Type `/` in Copilot Chat. You should see `implement-task` and `review-pr`.
-
-How to use it:
-- Implement: pick the Implementer agent from the dropdown (or run `/implement-task`), then describe the task. When a PR is ready, use the "Hand off to Reviewer" action the Implementer exposes; it switches you to the Reviewer agent.
-- Review: pick Reviewer (or run `/review-pr`). It is read-only by design and reports pass or block with evidence.
-- Ask architecture questions: pick Arcwright SME.
-- Engine guardrails are automatic: when you edit anything under `engine/` or `api/`, Copilot loads the five engine constraints from `engine.instructions.md`. You do not invoke it.
-- Copilot code review on PRs automatically uses `.github/copilot-instructions.md` (the AGENTS.md mirror), which is why that file is kept as a full copy.
+- When the Implementer shows a plan, nothing is written yet. Reply "approved" to proceed, or give corrections.
+- When it finishes, it gives you a PR link.
+- **To review and merge the PR, use the GitHub website (GUI):** open the PR link, read the "Files changed" tab, and click the green **Merge** button when you are satisfied. This is the easiest path and needs no terminal. GitHub Desktop also works.
+- **CLI (optional):** the agent can also merge for you if you ask it to; that runs `gh pr merge` under the hood. Use this only if you prefer not to open the website.
 
 ---
 
-## Claude.ai Project chat (the thinking roles)
+## Part 4: Codex app
 
-These have no buttons. You invoke them by name in the Project chat, and they read their contract from the repo:
+### 4a. See the skills
 
-- "Act as the Product Steward (`docs/agents/product-steward.md`): is feature X in MVP scope?"
-- "Act as the Business Steward (`docs/agents/business-steward.md`): is X worth building now?"
-- "Act as the System Architect (`docs/agents/system-architect.md`): decide the approach for X and draft the ADR."
-- "Act as the Planner (`docs/agents/planner.md`): what is the next task and how should it be sequenced?"
-- "Act as the Spec Author (`docs/agents/spec-author.md`): write the spec for AW-NNN."
-- "Act as the Scribe (`docs/agents/scribe.md`): record this decision as an ADR."
+In a Codex chat, type `/skills` and send. You should see three: `github-task-implementer`, `arcwright-reviewer`, `arcwright-sme`.
 
-The Architecture SME skill is available here too for grounding. The three deciding roles (Product, Business, Architect) form the intent gate: get their shared go before planning. The System Architect decides design and owns the ADR; the SME only informs.
+### 4b. Run a skill
 
----
+Reference a skill with a dollar sign and its name, in plain language:
 
-## End-to-end example (one new feature)
+- Implement: "Use $github-task-implementer to implement AW-130." Approve its plan when asked.
+- Review: "Use $arcwright-reviewer to review the open PR."
+- Ask the SME: "Use $arcwright-sme: which component owns killer assignment?"
 
-1. Project chat: Product Steward confirms scope, Business Steward confirms it is worth it, System Architect approves the approach and notes an ADR. Planner gives it `AW-130` and sequences it. Spec Author writes `docs/specs/00NN-aw-130-...md` with acceptance criteria.
-2. Pick one client and implement AW-130, approving its plan before it codes. The command differs per client:
-   - Claude Code: `/implement AW-130`
-   - Codex: "Use $github-task-implementer to implement AW-130"
-   - Copilot: select the Implementer agent (or run `/implement-task`), then describe AW-130
-   It branches, codes, runs checks, and opens a PR with per-criterion evidence.
-3. Review the PR. Again the command differs per client:
-   - Claude Code: `/review-pr`
-   - Codex: "Use $arcwright-reviewer to review the PR"
-   - Copilot: use the Implementer's "Hand off to Reviewer" action, or select the Reviewer agent, or run `/review-pr`
-   It gates against the checklist and `AGENTS.md`.
-4. You merge. Scribe records the ADR or outcome.
+Each skill points Codex at the same canonical contract Claude uses, so the behavior matches. The project rules in `AGENTS.md` are always applied automatically; you do not load them.
 
 ---
 
-## Troubleshooting
+## Part 5: VS Code with GitHub Copilot
 
-- I do not see the agents or commands: restart the tool after pulling `main`; they load at startup.
-- `/review` does the wrong thing in Claude Code: use `/review-pr`. `/review` is a built-in.
-- Copilot code review seems to ignore the rules: it reads `.github/copilot-instructions.md` (the mirror), not `AGENTS.md`. The mirror is kept in sync; if you edit `AGENTS.md`, re-sync the mirror.
-- Codex skill not found: confirm `.agents/skills/<name>/SKILL.md` exists on your branch and restart Codex. Rules still apply via `AGENTS.md` regardless.
-- Golden rule: to change how a role behaves, edit the canonical file in `docs/skills/` or `docs/agents/`, never the per-tool launcher. One edit updates all tools.
+VS Code is the client app here; no terminal needed for the roles.
+
+### 5a. Pick a role from the dropdown
+
+1. Open the Copilot Chat panel (the chat icon in the left sidebar, or View menu, then Chat).
+2. At the top of the chat input there is a **mode or agent dropdown**. Click it.
+3. Choose **Implementer**, **Reviewer**, or **Arcwright SME**.
+
+### 5b. Run the prompts
+
+Alternatively, in the Copilot Chat box type `/` and pick:
+
+- **`/implement-task`**: then describe the task (for example "implement AW-130"). Approve its plan.
+- **`/review-pr`**: reviews the current change set or PR.
+
+### 5c. The Implementer to Reviewer handoff
+
+When you are in the **Implementer** agent and a PR is ready, it shows a **"Hand off to Reviewer"** action. Click it to switch to the Reviewer agent with the right prompt already filled in.
+
+### 5d. Automatic guardrails (nothing to click)
+
+- When you edit any file under `engine/` or `api/`, Copilot automatically loads the five engine rules from `.github/instructions/engine.instructions.md`.
+- When Copilot reviews a PR on GitHub, it automatically uses `.github/copilot-instructions.md` (a full copy of the project rules). You do not invoke either.
+
+---
+
+## Part 6: The thinking roles (Claude.ai Project chat)
+
+These run in the **Project chat**, not in a coding app, and you invoke them by name. They read their contract from the repo.
+
+- "Act as the **Product Steward** (`docs/agents/product-steward.md`): is feature X in MVP scope?"
+- "Act as the **Business Steward** (`docs/agents/business-steward.md`): is X worth building now?"
+- "Act as the **System Architect** (`docs/agents/system-architect.md`): decide the approach for X and draft the ADR."
+- "Act as the **Planner** (`docs/agents/planner.md`): what is the next task, and how should it be sequenced?"
+- "Act as the **Spec Author** (`docs/agents/spec-author.md`): write the spec for AW-NNN."
+- "Act as the **Scribe** (`docs/agents/scribe.md`): record this decision as an ADR."
+
+The first three form the **intent gate**: get their shared go before any building. The System Architect **decides** the design and owns the ADR; the SME only **informs**.
+
+### Getting the next task before the Implementer
+
+Ask the **Planner** for the next task and its AW-NNN id. The **Spec Author** then makes sure that task has a spec. Only then do you run the Implementer. For a quick "what is next" lookup, you can also ask the **Architecture SME**, which reads `docs/roadmap/index.json`.
+
+---
+
+## Part 7: A full task, start to finish (client-first)
+
+1. **Project chat:** Product Steward confirms scope, Business Steward confirms it is worth it, System Architect approves the approach. Planner gives it `AW-130`. Spec Author writes the spec.
+2. **Build it in your coding app**, approving the plan first:
+   - Claude app: `/implement AW-130`
+   - Codex app: "Use $github-task-implementer to implement AW-130"
+   - VS Code Copilot: pick the Implementer agent, or run `/implement-task`, then describe AW-130
+3. **Review it:**
+   - Claude app: `/review-pr`
+   - Codex app: "Use $arcwright-reviewer to review the PR"
+   - VS Code Copilot: use the "Hand off to Reviewer" action, or pick the Reviewer agent, or run `/review-pr`
+4. **Merge it on the GitHub website:** open the PR, check "Files changed", click **Merge**.
+5. **Record it:** in the Claude app, `/scribe` the decision if it was significant.
+
+---
+
+## Part 8: When you actually need the command line
+
+You can do almost everything from the apps. Reach for the CLI (or GitHub Desktop) only here:
+
+- **Getting the latest code** if your app does not auto-sync: `git pull` in the project folder. GitHub Desktop's "Pull" button does the same with no typing.
+- **Merging from the terminal** if you do not want to use the GitHub website: ask the agent to merge, or run `gh pr merge <number> --squash`. The website Merge button is usually easier.
+- **Branch cleanup** of old local branches: this is optional housekeeping. Ask the agent to do it, or use GitHub Desktop.
+
+Day to day, the agents run all the git work (branching, committing, opening PRs) for you. You mainly approve plans and click Merge.
+
+---
+
+## Part 9: Troubleshooting
+
+- **A command, skill, or agent is missing:** refresh the app (Part 2). They load at startup.
+- **`/review` did something unexpected in the Claude app:** use `/review-pr` instead. `/review` is a built-in.
+- **Copilot review seems to ignore the rules:** it reads `.github/copilot-instructions.md` (a copy of the rules), not `AGENTS.md`. The copy is kept in sync; if someone edits `AGENTS.md`, the copy must be updated too.
+- **Codex does not list a skill:** confirm the project is fully synced and start a new session. The rules still apply through `AGENTS.md` regardless.
+- **Golden rule:** to change how a role behaves, edit the canonical file in `docs/skills/` or `docs/agents/`, never the per-app launcher. One edit updates every app.
