@@ -1,0 +1,4 @@
+interface:
+  display_name: "Arcwright Reviewer"
+  short_description: "Gate one PR against the Arcwright review checklist"
+  default_prompt: "Use $arcwright-reviewer to review the current pull request against the Arcwright review checklist and report a pass or block with per-criterion evidence."
