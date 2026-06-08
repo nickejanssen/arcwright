@@ -9,6 +9,8 @@ Two kinds of role live in this operating model:
 
 The Architecture SME (`docs/skills/arcwright-sme`) is consulted by every role at every gate. It is the authority on what the canonical docs say.
 
+For step-by-step instructions on invoking these roles in Claude Code, Codex, and GitHub Copilot, see [`docs/agents/USAGE.md`](USAGE.md).
+
 ## The Pipeline
 
 ```
