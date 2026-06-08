@@ -104,8 +104,16 @@ The Architecture SME skill is available here too for grounding. The three decidi
 ## End-to-end example (one new feature)
 
 1. Project chat: Product Steward confirms scope, Business Steward confirms it is worth it, System Architect approves the approach and notes an ADR. Planner gives it `AW-130` and sequences it. Spec Author writes `docs/specs/00NN-aw-130-...md` with acceptance criteria.
-2. Claude Code, Codex, or Copilot: `/implement AW-130`. Approve its plan. It branches, codes, runs checks, and opens a PR with per-criterion evidence.
-3. Reviewer: `/review-pr` (or hand off in Copilot). It gates against the checklist and `AGENTS.md`.
+2. Pick one client and implement AW-130, approving its plan before it codes. The command differs per client:
+   - Claude Code: `/implement AW-130`
+   - Codex: "Use $github-task-implementer to implement AW-130"
+   - Copilot: select the Implementer agent (or run `/implement-task`), then describe AW-130
+   It branches, codes, runs checks, and opens a PR with per-criterion evidence.
+3. Review the PR. Again the command differs per client:
+   - Claude Code: `/review-pr`
+   - Codex: "Use $arcwright-reviewer to review the PR"
+   - Copilot: use the Implementer's "Hand off to Reviewer" action, or select the Reviewer agent, or run `/review-pr`
+   It gates against the checklist and `AGENTS.md`.
 4. You merge. Scribe records the ADR or outcome.
 
 ---
