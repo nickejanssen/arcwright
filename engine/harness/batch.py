@@ -47,11 +47,15 @@ class BatchRunner:
         for run_index in range(runs):
             seed = base_seed + run_index
             seeded_scenario = scenario.model_copy(update={"seed": seed}, deep=True)
-            first_result = self._build_executor().run(seeded_scenario)
-            second_result = self._build_executor().run(seeded_scenario)
+            first_result, first_error = self._run_safely(seeded_scenario)
+            second_result, second_error = self._run_safely(seeded_scenario)
 
             passed = (
-                first_result.passed
+                first_error is None
+                and second_error is None
+                and first_result is not None
+                and second_result is not None
+                and first_result.passed
                 and second_result.passed
                 and traces_equal(first_result.run.trace, second_result.run.trace)
             )
@@ -60,6 +64,8 @@ class BatchRunner:
                 failure_reason = self._build_failure_reason(
                     first_result,
                     second_result,
+                    first_error,
+                    second_error,
                 )
 
             results.append(
@@ -86,11 +92,30 @@ class BatchRunner:
             return self._executor_factory()
         return ScenarioExecutor()
 
+    def _run_safely(
+        self,
+        scenario: HarnessScenario,
+    ) -> tuple[HarnessRunResult | None, str | None]:
+        try:
+            return self._build_executor().run(scenario), None
+        except Exception as exc:
+            return None, str(exc)
+
     def _build_failure_reason(
         self,
-        first_result: HarnessRunResult,
-        second_result: HarnessRunResult,
+        first_result: HarnessRunResult | None,
+        second_result: HarnessRunResult | None,
+        first_error: str | None,
+        second_error: str | None,
     ) -> str:
+        if first_error is not None:
+            return f"first execution failed: {first_error}"
+        if second_error is not None:
+            return f"second execution failed: {second_error}"
+        if first_result is None:
+            return "first execution failed: unknown error"
+        if second_result is None:
+            return "second execution failed: unknown error"
         if not first_result.passed:
             return f"first execution failed: {first_result.failure_reason or 'unknown error'}"
         if not second_result.passed:

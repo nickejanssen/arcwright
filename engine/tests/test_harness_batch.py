@@ -169,3 +169,29 @@ def test_batch_runner_seeds_incrementally() -> None:
     summary = runner.run(scenario, runs=10, base_seed=base_seed)
 
     assert [result.seed for result in summary.results] == list(range(base_seed, 17))
+
+
+def test_batch_runner_records_executor_exceptions_as_failed_runs() -> None:
+    scenario = _happy_path_scenario()
+
+    class FailingExecutor:
+        def run(self, scenario: HarnessScenario):  # type: ignore[no-untyped-def]
+            raise RuntimeError(f"seed {scenario.seed} failed preflight")
+
+    runner = BatchRunner(executor_factory=lambda: FailingExecutor())
+
+    summary = runner.run(scenario, runs=2, base_seed=3)
+
+    assert summary.total_runs == 2
+    assert summary.passed == 0
+    assert summary.failed == 2
+    assert [result.seed for result in summary.results] == [3, 4]
+    assert all(result.passed is False for result in summary.results)
+    assert (
+        summary.results[0].failure_reason
+        == "first execution failed: seed 3 failed preflight"
+    )
+    assert (
+        summary.results[1].failure_reason
+        == "first execution failed: seed 4 failed preflight"
+    )
