@@ -6,5 +6,3 @@ description: Review one pull request or change set against Arcwright's review ch
 # Reviewer (Codex launcher)
 
 This is a thin launcher. It carries no role logic of its own. The canonical contract is `docs/skills/arcwright-reviewer/SKILL.md`. Read that file in full and follow it exactly.
-
-The review checklist source is `docs/conventions/review-checklist.md` and the always-on rules are in `AGENTS.md`. You do not merge; you produce an evidence-backed pass or block verdict for a human.

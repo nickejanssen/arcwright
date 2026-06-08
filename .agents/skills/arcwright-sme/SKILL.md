@@ -7,5 +7,3 @@ description: |
 # Architecture SME (Codex launcher)
 
 This is a thin launcher. It carries no role logic of its own. The canonical contract is `docs/skills/arcwright-sme/SKILL.md`. Read that file in full and follow it exactly.
-
-Ground every answer in the GitHub `docs/` tree first, and respect the always-on rules in `AGENTS.md`.

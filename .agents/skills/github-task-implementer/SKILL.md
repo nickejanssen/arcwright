@@ -6,5 +6,3 @@ description: Implement one GitHub issue, task, or story from intake through PR h
 # Implementer (Codex launcher)
 
 This is a thin launcher. It carries no role logic of its own. The canonical, platform-neutral contract is `docs/skills/github-task-implementer/SKILL.md`. Read that file in full and follow it exactly.
-
-Before changing any code, also read the always-on rules in `AGENTS.md` (engine constraints, approval gates, workflow, agent-local-file policy). Do not write implementation code until the plan is approved.
