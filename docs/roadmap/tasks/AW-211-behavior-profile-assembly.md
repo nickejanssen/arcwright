@@ -26,9 +26,9 @@ Build runtime character context from behavior profile and live relationships. Li
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/07-character-behavior.md S7.2`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Runtime character context includes personality, goals, secrets, tells, and relationship dispositions.
+- [ ] Human-controlled and AI-driven characters use the same platform character object model.
+- [ ] Tests cover context assembly for killer and non-killer characters.
 
 ## Tests/Verification
 

@@ -26,9 +26,9 @@ Render private player events and submit player input. Likely files affected: ext
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/08-event-system.md`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Specific-player events render only on the intended player device.
+- [ ] Player can submit action or dialogue through the SDK or API path.
+- [ ] Private event handling survives reconnect without leaking payloads to other devices.
 
 ## Tests/Verification
 

@@ -26,9 +26,9 @@ Wire all five minimum telemetry signals. Likely files affected: engine/telemetry
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/11-telemetry.md S11.3`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Beat transition, pacing intervention, knowledge constraint, session completion, and replay intent signals log with documented payload fields.
+- [ ] A complete mocked session contains all five MVP telemetry signals.
+- [ ] Required telemetry writes do not depend on `CONTENT_LOGGING_ENABLED=true`.
 
 ## Tests/Verification
 

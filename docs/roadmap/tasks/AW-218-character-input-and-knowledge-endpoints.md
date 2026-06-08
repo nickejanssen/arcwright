@@ -26,9 +26,9 @@ Add player input and internal knowledge endpoint surfaces. Likely files affected
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/09-developer-api.md S9.2`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Player input endpoint accepts typed character action or dialogue input.
+- [ ] Knowledge assert, revoke, and query endpoints are available only to host or internal engine callers as documented.
+- [ ] Tests prove player clients cannot query another character private knowledge state.
 
 ## Tests/Verification
 

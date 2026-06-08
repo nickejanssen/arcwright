@@ -26,9 +26,9 @@ Prove the full M2 exit gate offline. Likely files affected: engine/tests, docs/r
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/roadmap/milestones/M2-arc-engine-nightcap-arc-safety.md`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Headless harness completes introduction, investigation, and reveal for the Nightcap arc.
+- [ ] Harness trace shows killer assignment, reveal firing, safety pre-generation checks, and no knowledge leaks.
+- [ ] Harness path uses mocked routing and spends no real provider tokens.
 
 ## Tests/Verification
 

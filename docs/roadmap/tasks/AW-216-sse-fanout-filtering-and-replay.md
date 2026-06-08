@@ -26,9 +26,9 @@ Deliver events to connected clients based on target audience and replay missed e
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/08-event-system.md S8.4-S8.6`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Specific-player events are delivered only to the matching player connection.
+- [ ] Host-only, shared-display, and all-player events route to the documented connection sets.
+- [ ] Reconnect replay uses sequence numbers to deliver missed events without duplicating already-seen events.
 
 ## Tests/Verification
 

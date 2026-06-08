@@ -26,9 +26,9 @@ Generate and emit a narrator recap when a session resumes. Likely files affected
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/05-session-persistence.md S5.3-S5.4`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Resume emits a narrator bridge ContentEvent before normal play continues.
+- [ ] Narrator bridge generation uses the `narrator_bridge` routing task type.
+- [ ] Bridge generation passes through L1, L2, and L3 safety handling.
 
 ## Tests/Verification
 

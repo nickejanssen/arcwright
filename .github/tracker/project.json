@@ -72,6 +72,167 @@
       "epic_id": "M1-A"
     },
     {
+      "id": "M1-B",
+      "kind": "epic",
+      "title": "[Epic] M1-B: Data Model",
+      "roadmap_path": "docs/roadmap/epics/M1-B-data-model.md",
+      "milestone_id": "M1",
+      "labels": [
+        "Epic",
+        "M1"
+      ]
+    },
+    {
+      "id": "M1-C",
+      "kind": "epic",
+      "title": "[Epic] M1-C: Knowledge Graph Core",
+      "roadmap_path": "docs/roadmap/epics/M1-C-knowledge-graph-core.md",
+      "milestone_id": "M1",
+      "labels": [
+        "Epic",
+        "M1"
+      ]
+    },
+    {
+      "id": "M1-D",
+      "kind": "epic",
+      "title": "[Epic] M1-D: Model Routing Abstraction",
+      "roadmap_path": "docs/roadmap/epics/M1-D-model-routing-abstraction.md",
+      "milestone_id": "M1",
+      "labels": [
+        "Epic",
+        "M1"
+      ]
+    },
+    {
+      "id": "M1-E",
+      "kind": "epic",
+      "title": "[Epic] M1-E: Harness Scaffold",
+      "roadmap_path": "docs/roadmap/epics/M1-E-harness-scaffold.md",
+      "milestone_id": "M1",
+      "labels": [
+        "Epic",
+        "M1"
+      ]
+    },
+    {
+      "id": "AW-103",
+      "kind": "task",
+      "title": "AW-103: SQLAlchemy ORM models for all platform tables",
+      "roadmap_path": "docs/roadmap/tasks/AW-103-sqlalchemy-models-for-all-platform-tables.md",
+      "milestone_id": "M1",
+      "labels": [
+        "task",
+        "size:L",
+        "M1"
+      ],
+      "epic_id": "M1-B"
+    },
+    {
+      "id": "AW-104",
+      "kind": "task",
+      "title": "AW-104: First full Alembic migration",
+      "roadmap_path": "docs/roadmap/tasks/AW-104-first-full-alembic-migration.md",
+      "milestone_id": "M1",
+      "labels": [
+        "task",
+        "size:M",
+        "M1"
+      ],
+      "epic_id": "M1-B"
+    },
+    {
+      "id": "AW-105",
+      "kind": "task",
+      "title": "AW-105: Knowledge graph assertion API",
+      "roadmap_path": "docs/roadmap/tasks/AW-105-knowledge-graph-assertion-api.md",
+      "milestone_id": "M1",
+      "labels": [
+        "task",
+        "size:L",
+        "M1"
+      ],
+      "epic_id": "M1-C"
+    },
+    {
+      "id": "AW-106",
+      "kind": "task",
+      "title": "AW-106: Pre-generation knowledge constraint hook",
+      "roadmap_path": "docs/roadmap/tasks/AW-106-pre-generation-knowledge-constraint-hook.md",
+      "milestone_id": "M1",
+      "labels": [
+        "task",
+        "size:M",
+        "M1"
+      ],
+      "epic_id": "M1-C"
+    },
+    {
+      "id": "AW-107",
+      "kind": "task",
+      "title": "AW-107: LiteLLM routing layer",
+      "roadmap_path": "docs/roadmap/tasks/AW-107-litellm-routing-layer.md",
+      "milestone_id": "M1",
+      "labels": [
+        "task",
+        "size:M",
+        "M1"
+      ],
+      "epic_id": "M1-D"
+    },
+    {
+      "id": "AW-108",
+      "kind": "task",
+      "title": "AW-108: Prompt caching and generation logging",
+      "roadmap_path": "docs/roadmap/tasks/AW-108-prompt-caching-and-generation-logging.md",
+      "milestone_id": "M1",
+      "labels": [
+        "task",
+        "size:M",
+        "M1"
+      ],
+      "epic_id": "M1-D"
+    },
+    {
+      "id": "AW-110",
+      "kind": "task",
+      "title": "AW-110: Headless session runner core",
+      "roadmap_path": "docs/roadmap/tasks/AW-110-simulation-harness-skeleton.md",
+      "milestone_id": "M1",
+      "labels": [
+        "task",
+        "size:M",
+        "M1"
+      ],
+      "epic_id": "M1-E"
+    },
+    {
+      "id": "AW-111",
+      "kind": "task",
+      "title": "AW-111: Scripted synthetic player driver",
+      "roadmap_path": "docs/roadmap/tasks/AW-111-scripted-synthetic-player-driver.md",
+      "milestone_id": "M1",
+      "labels": [
+        "task",
+        "size:M",
+        "M1"
+      ],
+      "epic_id": "M1-E"
+    },
+    {
+      "id": "AW-112",
+      "kind": "task",
+      "title": "AW-112: Deterministic replay and batch runner",
+      "roadmap_path": "docs/roadmap/tasks/AW-112-deterministic-replay-and-batch-runner.md",
+      "milestone_id": "M1",
+      "labels": [
+        "task",
+        "size:S",
+        "M1"
+      ],
+      "epic_id": "M1-E"
+    },
+    {
       "id": "M2-A",
       "kind": "epic",
       "title": "[Epic] M2-A: External Platform Decision Gate",
@@ -300,8 +461,7 @@
       "labels": [
         "task",
         "size:M",
-        "M2",
-        "agent-ready"
+        "M2"
       ],
       "epic_id": null
     },
@@ -735,7 +895,7 @@
         "task",
         "size:M",
         "M5",
-        "agent-ready"
+        "blocked"
       ],
       "epic_id": "M5-A"
     },
@@ -749,7 +909,7 @@
         "task",
         "size:M",
         "M5",
-        "agent-ready"
+        "blocked"
       ],
       "epic_id": "M5-A"
     },
@@ -763,7 +923,7 @@
         "task",
         "size:M",
         "M5",
-        "agent-ready"
+        "blocked"
       ],
       "epic_id": "M5-B"
     },
@@ -777,7 +937,7 @@
         "task",
         "size:M",
         "M5",
-        "agent-ready"
+        "blocked"
       ],
       "epic_id": "M5-C"
     },
@@ -791,7 +951,7 @@
         "task",
         "size:M",
         "M5",
-        "agent-ready"
+        "blocked"
       ],
       "epic_id": "M5-D"
     },
@@ -805,7 +965,7 @@
         "task",
         "size:M",
         "M5",
-        "agent-ready"
+        "blocked"
       ],
       "epic_id": "M5-D"
     },
@@ -819,7 +979,7 @@
         "task",
         "size:M",
         "M5",
-        "agent-ready"
+        "blocked"
       ],
       "epic_id": "M5-D"
     },
@@ -833,7 +993,7 @@
         "task",
         "size:M",
         "M5",
-        "agent-ready"
+        "blocked"
       ],
       "epic_id": "M5-D"
     },
@@ -847,7 +1007,7 @@
         "task",
         "size:S",
         "M6",
-        "agent-ready"
+        "blocked"
       ],
       "epic_id": "M6-A"
     },
@@ -861,7 +1021,7 @@
         "task",
         "size:S",
         "M6",
-        "agent-ready"
+        "blocked"
       ],
       "epic_id": "M6-A"
     },
@@ -875,7 +1035,7 @@
         "task",
         "size:M",
         "M6",
-        "agent-ready"
+        "blocked"
       ],
       "epic_id": "M6-A"
     },
@@ -889,7 +1049,7 @@
         "task",
         "size:L",
         "M6",
-        "agent-ready"
+        "blocked"
       ],
       "epic_id": "M6-B"
     },
@@ -903,7 +1063,7 @@
         "task",
         "size:M",
         "M6",
-        "agent-ready"
+        "blocked"
       ],
       "epic_id": "M6-C"
     }

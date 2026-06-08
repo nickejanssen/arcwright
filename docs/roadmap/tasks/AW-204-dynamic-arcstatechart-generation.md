@@ -26,9 +26,9 @@ Generate a python-statemachine StateChart from an arc definition beat graph. Lik
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/03-arc-execution.md S3.1-S3.2`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] StateChart generation supports linear, branching, convergence, and loop beat graph patterns from ArcDefinition data.
+- [ ] Generated transition guards enforce authored entry and exit constraints before a beat transition is accepted.
+- [ ] Tests prove the engine does not rely on custom graph traversal or LLM output for canonical state transitions.
 
 ## Tests/Verification
 

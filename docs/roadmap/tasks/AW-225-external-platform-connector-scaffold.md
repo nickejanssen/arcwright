@@ -26,9 +26,9 @@ Implement the selected external platform connector scaffold after AW-202. Likely
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/02-Decisions-Log-Additions-May2026.md Entry 3`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Task remains blocked until AW-202 records the external platform decision.
+- [ ] Connector can create or attach to a Nightcap session using the selected platform contract.
+- [ ] Connector subscribes to Arcwright events without requiring engine surface assumptions.
 
 ## Tests/Verification
 

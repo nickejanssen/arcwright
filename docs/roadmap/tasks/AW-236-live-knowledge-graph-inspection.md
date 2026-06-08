@@ -26,9 +26,9 @@ Build read-only live knowledge graph inspection. Likely files affected: dashboar
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/prd/03-scope.md Visual Storyworld Roadmap`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Read-only live knowledge graph inspection surface exists.
+- [ ] Surface shows current knowledge state enough to diagnose clue and leak issues.
+- [ ] Private information handling follows dashboard privacy rules.
 
 ## Tests/Verification
 

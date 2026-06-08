@@ -26,9 +26,9 @@ Verify all event audiences across real devices. Likely files affected: test docs
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/08-event-system.md S8.4-S8.5`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Device matrix verifies `all`, `specific_player`, `host_only`, and `shared_display` routing.
+- [ ] Player A never receives Player B private event in the test matrix.
+- [ ] Shared display never receives private clue text.
 
 ## Tests/Verification
 

@@ -26,9 +26,9 @@ Run a non-qualifying real-device rehearsal and log blockers. Likely files affect
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/roadmap/milestones/M4-nightcap-experience-layer.md`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] A non-qualifying real-human rehearsal is attempted on real devices.
+- [ ] Join timing, privacy result, completion state, and blockers are recorded.
+- [ ] Every blocker is triaged into a follow-up issue before M5 begins.
 
 ## Tests/Verification
 

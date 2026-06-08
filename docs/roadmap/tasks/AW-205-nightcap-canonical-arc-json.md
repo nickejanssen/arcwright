@@ -26,9 +26,9 @@ Create the canonical Nightcap arc definition at `nightcap/arc.json`. Likely file
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/09-developer-api.md S9.3`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] `nightcap/arc.json` exists and validates against the ArcDefinition schema.
+- [ ] The arc defines introduction, investigation, and reveal beats with Nightcap content rails and knowledge rules.
+- [ ] The arc supports 4 to 10 players while explicitly preserving the M6 first-proof focus on 4 to 6 players.
 
 ## Tests/Verification
 

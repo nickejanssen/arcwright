@@ -26,9 +26,9 @@ Expose cost and usage summaries from generation logs. Likely files affected: eng
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/13-cost-model.md`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Usage summary exposes per-session AI cost from `generation_logs`.
+- [ ] Cost can be grouped by session, arc, task type, and player count.
+- [ ] Output distinguishes actual logged costs from open pricing or revenue assumptions.
 
 ## Tests/Verification
 

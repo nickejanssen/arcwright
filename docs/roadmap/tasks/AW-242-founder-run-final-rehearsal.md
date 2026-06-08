@@ -26,9 +26,9 @@ Run the final non-qualifying rehearsal before outside groups. Likely files affec
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/roadmap/milestones/M6-first-qualifying-sessions.md`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Final rehearsal completes or records blockers with owner and severity.
+- [ ] Telemetry and all four inspection surfaces are verified during rehearsal.
+- [ ] No blocker remains untriaged before AW-243 starts.
 
 ## Tests/Verification
 

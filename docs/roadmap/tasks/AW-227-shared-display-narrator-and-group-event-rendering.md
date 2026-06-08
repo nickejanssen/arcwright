@@ -26,9 +26,9 @@ Render narrator and group-visible events from ContentEvents. Likely files affect
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/08-event-system.md S8.5`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Narration events render from ContentEvent payloads on the shared display.
+- [ ] Group-visible events render without private clue content.
+- [ ] Presentation hints are consumed as surface hints and do not alter engine state.
 
 ## Tests/Verification
 

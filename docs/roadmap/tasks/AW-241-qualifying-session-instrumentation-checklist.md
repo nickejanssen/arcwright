@@ -26,9 +26,9 @@ Define the exact evidence checklist for qualifying sessions. Likely files affect
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/prd/02-requirements.md Qualitative gate`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Checklist maps completion, replay enthusiasm, personalization perception, telemetry, cost, and blockers to concrete evidence.
+- [ ] Replay enthusiasm and personalization perception definitions match `docs/prd/02-requirements.md`.
+- [ ] Checklist marks sessions missing telemetry evidence as non-qualifying until reviewed.
 
 ## Tests/Verification
 

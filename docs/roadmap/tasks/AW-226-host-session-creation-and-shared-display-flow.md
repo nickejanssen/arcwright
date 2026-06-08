@@ -26,9 +26,9 @@ Build host controls and shared display flow on the selected platform. Likely fil
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/prd/02-requirements.md Host experience`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Host can create, start, pause, resume, and end a session through the selected platform.
+- [ ] Shared display shows only public or shared-display ContentEvents.
+- [ ] Host controls use API lifecycle endpoints rather than bypassing the platform API.
 
 ## Tests/Verification
 

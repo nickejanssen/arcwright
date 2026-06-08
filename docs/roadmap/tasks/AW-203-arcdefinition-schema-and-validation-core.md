@@ -26,9 +26,9 @@ Implement the full Pydantic arc definition schema and validation behavior. Likel
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/09-developer-api.md S9.3`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] ArcDefinition and nested models cover the fields documented in `docs/architecture/15-development-guide.md` S15.4.
+- [ ] Validation rejects missing required fields, invalid beat graph references, invalid player counts, invalid pacing weight sums, and invalid narrator triggers.
+- [ ] Tests include at least one valid arc fixture and at least five invalid arc fixtures tied to documented validation rules.
 
 ## Tests/Verification
 

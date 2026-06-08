@@ -26,9 +26,9 @@ Design one non-Nightcap arc schema to validate platform-clean architecture. Like
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/14-architecture-validation.md`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] A non-Nightcap arc schema exists as a document or sample arc.
+- [ ] Schema validates against ArcDefinition or documents exact validation gaps.
+- [ ] No second game implementation is added.
 
 ## Tests/Verification
 

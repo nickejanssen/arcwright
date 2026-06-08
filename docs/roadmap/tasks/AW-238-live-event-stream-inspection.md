@@ -26,9 +26,9 @@ Build live event stream inspection. Likely files affected: dashboard, api, engin
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/08-event-system.md`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Live event stream inspection surface exists.
+- [ ] View shows sequence number, event type, target audience, and timestamp.
+- [ ] Private payload handling prevents broad exposure of private clue text.
 
 ## Tests/Verification
 

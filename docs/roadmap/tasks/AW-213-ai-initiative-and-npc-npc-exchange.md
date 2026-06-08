@@ -26,9 +26,9 @@ Add AI initiative scheduling and NPC-to-NPC interactions. Likely files affected:
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/07-character-behavior.md S7.5-S7.6`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] AI initiative can trigger an AI character action without player input.
+- [ ] NPC-NPC exchanges include both characters knowledge state and relationship context.
+- [ ] Scheduler tasks do not block the session coordinator loop.
 
 ## Tests/Verification
 

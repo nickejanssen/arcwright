@@ -43,9 +43,22 @@
     }
   },
   "sources": [
-    "docs/12-Build-Roadmap-v1.md",
-    "docs/12-Build-Roadmap-v1.1.md",
-    "docs/12b-GitHub-M1-Epic-A-Setup.md"
+    {
+      "path": "docs/roadmap/00-overview.md",
+      "role": "canonical_overview"
+    },
+    {
+      "path": "docs/roadmap/milestones/",
+      "role": "canonical_milestones"
+    },
+    {
+      "path": "docs/roadmap/epics/",
+      "role": "canonical_epics"
+    },
+    {
+      "path": "docs/roadmap/tasks/",
+      "role": "canonical_tasks"
+    }
   ],
   "milestones": [
     {
@@ -534,7 +547,8 @@
         "issue_number": 2,
         "url": "https://github.com/nickejanssen/arcwright/issues/2"
       },
-      "path": "docs/roadmap/tasks/AW-101-repository-structure-and-python-project-setup.md"
+      "path": "docs/roadmap/tasks/AW-101-repository-structure-and-python-project-setup.md",
+      "epic_id": "M1-A"
     },
     {
       "id": "AW-102",
@@ -549,7 +563,8 @@
         "issue_number": 3,
         "url": "https://github.com/nickejanssen/arcwright/issues/3"
       },
-      "path": "docs/roadmap/tasks/AW-102-local-postgres-pgvector-alembic-init.md"
+      "path": "docs/roadmap/tasks/AW-102-local-postgres-pgvector-alembic-init.md",
+      "epic_id": "M1-A"
     },
     {
       "id": "AW-103",
@@ -564,7 +579,8 @@
       "github": {
         "issue_number": 5,
         "url": "https://github.com/nickejanssen/arcwright/issues/5"
-      }
+      },
+      "epic_id": "M1-B"
     },
     {
       "id": "AW-104",
@@ -579,7 +595,8 @@
       "github": {
         "issue_number": 6,
         "url": "https://github.com/nickejanssen/arcwright/issues/6"
-      }
+      },
+      "epic_id": "M1-B"
     },
     {
       "id": "AW-105",
@@ -590,7 +607,8 @@
       "depends_on": [
         "AW-104"
       ],
-      "path": "docs/roadmap/tasks/AW-105-knowledge-graph-assertion-api.md"
+      "path": "docs/roadmap/tasks/AW-105-knowledge-graph-assertion-api.md",
+      "epic_id": "M1-C"
     },
     {
       "id": "AW-106",
@@ -601,7 +619,8 @@
       "depends_on": [
         "AW-105"
       ],
-      "path": "docs/roadmap/tasks/AW-106-pre-generation-knowledge-constraint-hook.md"
+      "path": "docs/roadmap/tasks/AW-106-pre-generation-knowledge-constraint-hook.md",
+      "epic_id": "M1-C"
     },
     {
       "id": "AW-107",
@@ -612,7 +631,8 @@
       "depends_on": [
         "AW-101"
       ],
-      "path": "docs/roadmap/tasks/AW-107-litellm-routing-layer.md"
+      "path": "docs/roadmap/tasks/AW-107-litellm-routing-layer.md",
+      "epic_id": "M1-D"
     },
     {
       "id": "AW-108",
@@ -623,7 +643,8 @@
       "depends_on": [
         "AW-107"
       ],
-      "path": "docs/roadmap/tasks/AW-108-prompt-caching-and-generation-logging.md"
+      "path": "docs/roadmap/tasks/AW-108-prompt-caching-and-generation-logging.md",
+      "epic_id": "M1-D"
     },
     {
       "id": "AW-110",
@@ -635,7 +656,8 @@
         "AW-105",
         "AW-108"
       ],
-      "path": "docs/roadmap/tasks/AW-110-simulation-harness-skeleton.md"
+      "path": "docs/roadmap/tasks/AW-110-simulation-harness-skeleton.md",
+      "epic_id": "M1-E"
     },
     {
       "id": "AW-111",
@@ -646,7 +668,8 @@
       "depends_on": [
         "AW-110"
       ],
-      "path": "docs/roadmap/tasks/AW-111-scripted-synthetic-player-driver.md"
+      "path": "docs/roadmap/tasks/AW-111-scripted-synthetic-player-driver.md",
+      "epic_id": "M1-E"
     },
     {
       "id": "AW-112",
@@ -658,7 +681,8 @@
         "AW-110",
         "AW-111"
       ],
-      "path": "docs/roadmap/tasks/AW-112-deterministic-replay-and-batch-runner.md"
+      "path": "docs/roadmap/tasks/AW-112-deterministic-replay-and-batch-runner.md",
+      "epic_id": "M1-E"
     },
     {
       "id": "AW-201",
@@ -673,7 +697,8 @@
       "github": {
         "issue_number": 34,
         "url": "https://github.com/nickejanssen/arcwright/issues/34"
-      }
+      },
+      "epic_id": null
     },
     {
       "id": "AW-202",
@@ -688,7 +713,8 @@
       "github": {
         "issue_number": 55,
         "url": "https://github.com/nickejanssen/arcwright/issues/55"
-      }
+      },
+      "epic_id": "M2-A"
     },
     {
       "id": "AW-203",
@@ -703,7 +729,8 @@
       "github": {
         "issue_number": 56,
         "url": "https://github.com/nickejanssen/arcwright/issues/56"
-      }
+      },
+      "epic_id": "M2-B"
     },
     {
       "id": "AW-204",
@@ -718,7 +745,8 @@
       "github": {
         "issue_number": 57,
         "url": "https://github.com/nickejanssen/arcwright/issues/57"
-      }
+      },
+      "epic_id": "M2-B"
     },
     {
       "id": "AW-205",
@@ -733,7 +761,8 @@
       "github": {
         "issue_number": 58,
         "url": "https://github.com/nickejanssen/arcwright/issues/58"
-      }
+      },
+      "epic_id": "M2-C"
     },
     {
       "id": "AW-206",
@@ -749,7 +778,8 @@
       "github": {
         "issue_number": 59,
         "url": "https://github.com/nickejanssen/arcwright/issues/59"
-      }
+      },
+      "epic_id": "M2-C"
     },
     {
       "id": "AW-207",
@@ -764,7 +794,8 @@
       "github": {
         "issue_number": 60,
         "url": "https://github.com/nickejanssen/arcwright/issues/60"
-      }
+      },
+      "epic_id": "M2-B"
     },
     {
       "id": "AW-208",
@@ -779,7 +810,8 @@
       "github": {
         "issue_number": 61,
         "url": "https://github.com/nickejanssen/arcwright/issues/61"
-      }
+      },
+      "epic_id": "M2-D"
     },
     {
       "id": "AW-209",
@@ -794,7 +826,8 @@
       "github": {
         "issue_number": 62,
         "url": "https://github.com/nickejanssen/arcwright/issues/62"
-      }
+      },
+      "epic_id": "M2-D"
     },
     {
       "id": "AW-210",
@@ -809,7 +842,8 @@
       "github": {
         "issue_number": 63,
         "url": "https://github.com/nickejanssen/arcwright/issues/63"
-      }
+      },
+      "epic_id": "M2-D"
     },
     {
       "id": "AW-211",
@@ -825,7 +859,8 @@
       "github": {
         "issue_number": 64,
         "url": "https://github.com/nickejanssen/arcwright/issues/64"
-      }
+      },
+      "epic_id": "M2-E"
     },
     {
       "id": "AW-212",
@@ -841,7 +876,8 @@
       "github": {
         "issue_number": 65,
         "url": "https://github.com/nickejanssen/arcwright/issues/65"
-      }
+      },
+      "epic_id": "M2-E"
     },
     {
       "id": "AW-213",
@@ -856,7 +892,8 @@
       "github": {
         "issue_number": 66,
         "url": "https://github.com/nickejanssen/arcwright/issues/66"
-      }
+      },
+      "epic_id": "M2-E"
     },
     {
       "id": "AW-214",
@@ -874,7 +911,8 @@
       "github": {
         "issue_number": 67,
         "url": "https://github.com/nickejanssen/arcwright/issues/67"
-      }
+      },
+      "epic_id": "M2-B"
     },
     {
       "id": "AW-215",
@@ -889,7 +927,8 @@
       "github": {
         "issue_number": 68,
         "url": "https://github.com/nickejanssen/arcwright/issues/68"
-      }
+      },
+      "epic_id": "M3-A"
     },
     {
       "id": "AW-216",
@@ -904,7 +943,8 @@
       "github": {
         "issue_number": 69,
         "url": "https://github.com/nickejanssen/arcwright/issues/69"
-      }
+      },
+      "epic_id": "M3-A"
     },
     {
       "id": "AW-217",
@@ -919,7 +959,8 @@
       "github": {
         "issue_number": 70,
         "url": "https://github.com/nickejanssen/arcwright/issues/70"
-      }
+      },
+      "epic_id": "M3-B"
     },
     {
       "id": "AW-218",
@@ -934,7 +975,8 @@
       "github": {
         "issue_number": 71,
         "url": "https://github.com/nickejanssen/arcwright/issues/71"
-      }
+      },
+      "epic_id": "M3-B"
     },
     {
       "id": "AW-219",
@@ -950,7 +992,8 @@
       "github": {
         "issue_number": 72,
         "url": "https://github.com/nickejanssen/arcwright/issues/72"
-      }
+      },
+      "epic_id": "M3-B"
     },
     {
       "id": "AW-220",
@@ -966,7 +1009,8 @@
       "github": {
         "issue_number": 73,
         "url": "https://github.com/nickejanssen/arcwright/issues/73"
-      }
+      },
+      "epic_id": "M3-C"
     },
     {
       "id": "AW-221",
@@ -981,7 +1025,8 @@
       "github": {
         "issue_number": 74,
         "url": "https://github.com/nickejanssen/arcwright/issues/74"
-      }
+      },
+      "epic_id": "M3-C"
     },
     {
       "id": "AW-222",
@@ -996,7 +1041,8 @@
       "github": {
         "issue_number": 75,
         "url": "https://github.com/nickejanssen/arcwright/issues/75"
-      }
+      },
+      "epic_id": "M3-D"
     },
     {
       "id": "AW-223",
@@ -1011,7 +1057,8 @@
       "github": {
         "issue_number": 76,
         "url": "https://github.com/nickejanssen/arcwright/issues/76"
-      }
+      },
+      "epic_id": "M3-D"
     },
     {
       "id": "AW-224",
@@ -1027,7 +1074,8 @@
       "github": {
         "issue_number": 77,
         "url": "https://github.com/nickejanssen/arcwright/issues/77"
-      }
+      },
+      "epic_id": "M3-D"
     },
     {
       "id": "AW-225",
@@ -1043,7 +1091,8 @@
       "github": {
         "issue_number": 78,
         "url": "https://github.com/nickejanssen/arcwright/issues/78"
-      }
+      },
+      "epic_id": "M4-A"
     },
     {
       "id": "AW-226",
@@ -1058,7 +1107,8 @@
       "github": {
         "issue_number": 79,
         "url": "https://github.com/nickejanssen/arcwright/issues/79"
-      }
+      },
+      "epic_id": "M4-B"
     },
     {
       "id": "AW-227",
@@ -1073,7 +1123,8 @@
       "github": {
         "issue_number": 80,
         "url": "https://github.com/nickejanssen/arcwright/issues/80"
-      }
+      },
+      "epic_id": "M4-B"
     },
     {
       "id": "AW-228",
@@ -1088,7 +1139,8 @@
       "github": {
         "issue_number": 81,
         "url": "https://github.com/nickejanssen/arcwright/issues/81"
-      }
+      },
+      "epic_id": "M4-C"
     },
     {
       "id": "AW-229",
@@ -1103,7 +1155,8 @@
       "github": {
         "issue_number": 82,
         "url": "https://github.com/nickejanssen/arcwright/issues/82"
-      }
+      },
+      "epic_id": "M4-C"
     },
     {
       "id": "AW-230",
@@ -1119,7 +1172,8 @@
       "github": {
         "issue_number": 83,
         "url": "https://github.com/nickejanssen/arcwright/issues/83"
-      }
+      },
+      "epic_id": "M4-D"
     },
     {
       "id": "AW-231",
@@ -1134,7 +1188,8 @@
       "github": {
         "issue_number": 84,
         "url": "https://github.com/nickejanssen/arcwright/issues/84"
-      }
+      },
+      "epic_id": "M4-D"
     },
     {
       "id": "AW-232",
@@ -1149,7 +1204,8 @@
       "github": {
         "issue_number": 85,
         "url": "https://github.com/nickejanssen/arcwright/issues/85"
-      }
+      },
+      "epic_id": "M5-A"
     },
     {
       "id": "AW-233",
@@ -1164,7 +1220,8 @@
       "github": {
         "issue_number": 86,
         "url": "https://github.com/nickejanssen/arcwright/issues/86"
-      }
+      },
+      "epic_id": "M5-A"
     },
     {
       "id": "AW-234",
@@ -1180,7 +1237,8 @@
       "github": {
         "issue_number": 87,
         "url": "https://github.com/nickejanssen/arcwright/issues/87"
-      }
+      },
+      "epic_id": "M5-B"
     },
     {
       "id": "AW-235",
@@ -1195,7 +1253,8 @@
       "github": {
         "issue_number": 88,
         "url": "https://github.com/nickejanssen/arcwright/issues/88"
-      }
+      },
+      "epic_id": "M5-C"
     },
     {
       "id": "AW-236",
@@ -1210,7 +1269,8 @@
       "github": {
         "issue_number": 89,
         "url": "https://github.com/nickejanssen/arcwright/issues/89"
-      }
+      },
+      "epic_id": "M5-D"
     },
     {
       "id": "AW-237",
@@ -1226,7 +1286,8 @@
       "github": {
         "issue_number": 90,
         "url": "https://github.com/nickejanssen/arcwright/issues/90"
-      }
+      },
+      "epic_id": "M5-D"
     },
     {
       "id": "AW-238",
@@ -1242,7 +1303,8 @@
       "github": {
         "issue_number": 91,
         "url": "https://github.com/nickejanssen/arcwright/issues/91"
-      }
+      },
+      "epic_id": "M5-D"
     },
     {
       "id": "AW-239",
@@ -1259,7 +1321,8 @@
       "github": {
         "issue_number": 92,
         "url": "https://github.com/nickejanssen/arcwright/issues/92"
-      }
+      },
+      "epic_id": "M5-D"
     },
     {
       "id": "AW-240",
@@ -1276,7 +1339,8 @@
       "github": {
         "issue_number": 93,
         "url": "https://github.com/nickejanssen/arcwright/issues/93"
-      }
+      },
+      "epic_id": "M6-A"
     },
     {
       "id": "AW-241",
@@ -1291,7 +1355,8 @@
       "github": {
         "issue_number": 94,
         "url": "https://github.com/nickejanssen/arcwright/issues/94"
-      }
+      },
+      "epic_id": "M6-A"
     },
     {
       "id": "AW-242",
@@ -1306,7 +1371,8 @@
       "github": {
         "issue_number": 95,
         "url": "https://github.com/nickejanssen/arcwright/issues/95"
-      }
+      },
+      "epic_id": "M6-A"
     },
     {
       "id": "AW-243",
@@ -1321,7 +1387,8 @@
       "github": {
         "issue_number": 96,
         "url": "https://github.com/nickejanssen/arcwright/issues/96"
-      }
+      },
+      "epic_id": "M6-B"
     },
     {
       "id": "AW-244",
@@ -1336,7 +1403,22 @@
       "github": {
         "issue_number": 97,
         "url": "https://github.com/nickejanssen/arcwright/issues/97"
-      }
+      },
+      "epic_id": "M6-C"
+    }
+  ],
+  "superseded_sources": [
+    {
+      "path": "docs/12-Build-Roadmap-v1.md",
+      "superseded_by": "docs/roadmap/00-overview.md"
+    },
+    {
+      "path": "docs/12-Build-Roadmap-v1.1.md",
+      "superseded_by": "docs/roadmap/00-overview.md"
+    },
+    {
+      "path": "docs/12b-GitHub-M1-Epic-A-Setup.md",
+      "superseded_by": "docs/roadmap/operations/github-project-setup.md"
     }
   ]
 }

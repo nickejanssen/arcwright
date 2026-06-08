@@ -9,9 +9,11 @@ This milestone is the first one that spends meaningful AI tokens. It builds the 
 
 ## Epics
 
-- Arc execution engine
-- Content safety pipeline
-- Character behavior engine
+- [M2-A: External Platform Decision Gate](../epics/M2-A-external-platform-decision-gate.md)
+- [M2-B: Arc Execution Engine](../epics/M2-B-arc-execution-engine.md)
+- [M2-C: Nightcap Arc Runtime](../epics/M2-C-nightcap-arc-runtime.md)
+- [M2-D: Content Safety Pipeline](../epics/M2-D-content-safety-pipeline.md)
+- [M2-E: Character Behavior Engine](../epics/M2-E-character-behavior-engine.md)
 
 ## Exit Gate
 

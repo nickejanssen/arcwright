@@ -26,9 +26,9 @@ Build QR or code join flow for player devices. Likely files affected: external p
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/prd/02-requirements.md Player experience`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] A new player can join by QR or code in under 30 seconds in rehearsal conditions.
+- [ ] Player join does not require a Firebase account or app install.
+- [ ] Player receives only their assigned character context after join.
 
 ## Tests/Verification
 

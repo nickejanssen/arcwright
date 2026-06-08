@@ -26,9 +26,9 @@ Run safety classification before every main generation call. Likely files affect
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/10-content-safety.md S10.3`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] L2 safety classification runs before every main generation call path.
+- [ ] Classification calls route through the model routing abstraction and never call a provider directly.
+- [ ] Blocked classifications prevent the main generation call and log classification confidence data.
 
 ## Tests/Verification
 

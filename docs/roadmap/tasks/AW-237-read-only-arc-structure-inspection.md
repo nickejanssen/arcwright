@@ -26,9 +26,9 @@ Build read-only arc structure inspection. Likely files affected: dashboard, api,
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/prd/03-scope.md`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Read-only arc structure view exists.
+- [ ] View shows beat graph and current beat for an attached session.
+- [ ] Surface cannot edit arc structure.
 
 ## Tests/Verification
 

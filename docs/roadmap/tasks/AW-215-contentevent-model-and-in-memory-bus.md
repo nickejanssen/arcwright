@@ -26,9 +26,9 @@ Add ContentEvent schema, presentation hints, sequence numbers, and an in-memory 
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/08-event-system.md S8.2-S8.3`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] ContentEvent and PresentationHints models include the fields documented in `docs/architecture/08-event-system.md`.
+- [ ] Sequence numbers are monotonically increasing per session.
+- [ ] An in-memory per-session event bus can publish and subscribe to ContentEvents in order.
 
 ## Tests/Verification
 

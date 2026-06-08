@@ -26,9 +26,9 @@ Produce gross-margin readiness report for 4 through 10 players. Likely files aff
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/13-cost-model.md`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Cost report covers 4, 5, 6, 7, 8, 9, and 10 player sessions.
+- [ ] Report separates actual logged model and infrastructure cost from open pricing assumptions.
+- [ ] Gross-margin calculation assumptions are sourced or explicitly marked as open decisions.
 
 ## Tests/Verification
 

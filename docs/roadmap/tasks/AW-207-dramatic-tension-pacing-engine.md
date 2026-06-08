@@ -26,9 +26,9 @@ Compute dramatic tension and trigger pacing interventions from session signals. 
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/03-arc-execution.md S3.3`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Dramatic tension score is computed from configured time, action, suspicion, and clue coverage weights.
+- [ ] Stall and misdirection thresholds trigger the documented pacing intervention paths.
+- [ ] Pacing intervention and tension update events log the payload fields required by `docs/architecture/11-telemetry.md`.
 
 ## Tests/Verification
 

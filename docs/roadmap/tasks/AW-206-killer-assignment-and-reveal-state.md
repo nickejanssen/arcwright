@@ -26,9 +26,9 @@ Resolve killer assignment at session start and preserve reveal constraints. Like
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/03-arc-execution.md S3.4-S3.7`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Killer assignment occurs during the introduction setup path and stores the assigned killer in session state.
+- [ ] A seeded run produces the same killer assignment and reveal state when replayed with the same seed.
+- [ ] Reveal cannot fire until authored reveal conditions are satisfied or a host-privileged bypass is logged.
 
 ## Tests/Verification
 

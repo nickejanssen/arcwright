@@ -26,9 +26,9 @@ Add thin API routes for session creation, start, pause, resume, and end. Likely 
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/09-developer-api.md S9.2`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Session lifecycle endpoints create, start, pause, resume, and end sessions with documented request and response schemas.
+- [ ] Route handlers validate input, call engine services, and return responses without arc execution logic.
+- [ ] API key, host JWT, and unauthenticated join behavior match `docs/architecture/09-developer-api.md`.
 
 ## Tests/Verification
 

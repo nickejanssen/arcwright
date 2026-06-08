@@ -26,9 +26,9 @@ Build read-only character state inspection. Likely files affected: dashboard, ap
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/07-character-behavior.md`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Read-only character state inspection surface exists.
+- [ ] View shows allowed character profile and live relationship state.
+- [ ] Surface does not expose another player private knowledge state.
 
 ## Tests/Verification
 

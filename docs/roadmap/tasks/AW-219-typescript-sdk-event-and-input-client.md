@@ -26,9 +26,9 @@ Build the typed web SDK wrapper for event subscription and player input. Likely 
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/09-developer-api.md S9.4`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] ArcwrightClient exposes event subscription, input submission, current-character fetch, and disconnect behavior.
+- [ ] Public SDK types are generated from or aligned with API schemas and avoid `any` in public interfaces.
+- [ ] SDK typecheck and build pass without embedding arc execution logic.
 
 ## Tests/Verification
 

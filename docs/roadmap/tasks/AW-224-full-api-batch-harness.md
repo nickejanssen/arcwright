@@ -26,9 +26,9 @@ Run repeated complete sessions through the API path. Likely files affected: engi
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/12-build-plan.md`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Batch harness runs 10 complete sessions through API-level flows.
+- [ ] Each batch run records seed, pass/fail status, and telemetry signal presence.
+- [ ] Batch harness uses mocked generation and spends no real provider tokens.
 
 ## Tests/Verification
 

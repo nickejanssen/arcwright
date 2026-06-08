@@ -26,9 +26,9 @@ Persist session state and resume from nearest beat. Likely files affected: engin
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/05-session-persistence.md`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Interruption writes an `arc_beat_states` snapshot at the nearest completed beat boundary.
+- [ ] Resume restores statemachine configuration, knowledge state, relationship state, and session status.
+- [ ] A resumed session never restarts from the beginning unless no valid prior state exists and that exception is documented.
 
 ## Tests/Verification
 

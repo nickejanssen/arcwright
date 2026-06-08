@@ -26,9 +26,9 @@ Analyze qualifying session evidence and record the H1 decision. Likely files aff
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/prd/02-requirements.md Personalization perception gate`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Report states whether the qualitative replay enthusiasm gate passed.
+- [ ] Report states whether the personalization perception gate passed with session evidence.
+- [ ] Next-step decision is recorded before scope expands beyond first proof.
 
 ## Tests/Verification
 

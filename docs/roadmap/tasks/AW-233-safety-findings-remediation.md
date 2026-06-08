@@ -26,9 +26,9 @@ Resolve or explicitly defer adversarial safety findings. Likely files affected: 
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/conventions/review-checklist.md`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Every blocking adversarial finding has a linked fix or explicit human-approved deferral.
+- [ ] Resolved findings have retest evidence.
+- [ ] No high-severity unresolved safety blocker remains before M6 begins.
 
 ## Tests/Verification
 

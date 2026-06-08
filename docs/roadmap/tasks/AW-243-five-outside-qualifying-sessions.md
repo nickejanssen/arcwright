@@ -26,9 +26,9 @@ Run five or more qualifying Nightcap sessions with outside groups at 4 to 6 play
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/prd/02-requirements.md Success criteria`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Five or more outside-group sessions are attempted and documented.
+- [ ] Each session records completion status, replay intent, personalization perception evidence, player count, and telemetry status.
+- [ ] All qualifying sessions use 4 to 6 players.
 
 ## Tests/Verification
 

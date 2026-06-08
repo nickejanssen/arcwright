@@ -26,9 +26,9 @@ Inject content rails into prompts and provide neutral bridge on blocked generati
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/10-content-safety.md S10.4`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Every main generation prompt includes an L3 policy block derived from arc content rails.
+- [ ] Blocked generation emits a neutral bridge event so the session can continue.
+- [ ] Tests prove Nightcap-specific L3 policy is sourced from arc rails rather than hardcoded platform policy.
 
 ## Tests/Verification
 

@@ -26,9 +26,9 @@ Create the operational runbook for qualifying playtests. Likely files affected: 
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/prd/02-requirements.md Success criteria`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Runbook defines outside-group eligibility, consent steps, setup, host script, observer notes, and failure handling.
+- [ ] Runbook explicitly excludes founder immediate-circle sessions from qualifying status.
+- [ ] Runbook is reviewed before AW-242 final rehearsal.
 
 ## Tests/Verification
 

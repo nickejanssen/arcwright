@@ -26,9 +26,9 @@ Add deterministic hard-stop checks before generation. Likely files affected: eng
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/10-content-safety.md S10.2`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] All L1 hard-stop categories from `docs/architecture/10-content-safety.md` S10.2 are blocked before any model call.
+- [ ] A blocked L1 event is logged as `safety_hard_stop` without exposing trigger details to the player.
+- [ ] Tests prove L1 cannot be disabled by arc configuration.
 
 ## Tests/Verification
 

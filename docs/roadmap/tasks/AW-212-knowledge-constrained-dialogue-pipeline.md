@@ -26,9 +26,9 @@ Generate character dialogue through knowledge query, safety, routing, and event 
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/architecture/04-knowledge-graph.md S4.3`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] `get_character_knowledge` is called before every AI character dialogue generation.
+- [ ] Dialogue prompts include explicit known and not-known knowledge constraint blocks.
+- [ ] Tests prove a mocked generation path cannot emit dialogue containing facts outside the character knowledge state.
 
 ## Tests/Verification
 

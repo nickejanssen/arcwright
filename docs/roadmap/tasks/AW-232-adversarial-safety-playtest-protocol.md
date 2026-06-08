@@ -26,9 +26,9 @@ Create and run the adversarial safety playtest protocol. Likely files affected: 
 
 ## Acceptance Criteria
 
-- [ ] The implementation satisfies the scope described in `docs/prd/03-scope.md`.
-- [ ] The work is small enough for one agent implementation session or is split before coding.
-- [ ] Tests or verification evidence prove the task-specific behavior.
+- [ ] Protocol covers dark-content edge cases, tone breaks, embarrassment attempts, prompt injection, and real-world harm probes.
+- [ ] At least one adversarial safety run is completed before qualifying sessions.
+- [ ] Findings are documented with severity, reproduction notes, and blocking status.
 
 ## Tests/Verification
 
