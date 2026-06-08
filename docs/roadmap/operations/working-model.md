@@ -4,7 +4,7 @@
 
 Use GitHub Projects plus GitHub Issues.
 
-- Milestones M1-M5 map to GitHub Milestones.
+- Milestones M1-M6 map to GitHub Milestones.
 - Epics are parent issues.
 - Tasks (`AW-xxx`) are sub-issues under their epic.
 
@@ -13,7 +13,7 @@ The task spec body in the roadmap should be copied into the issue body.
 ## Per Work Session
 
 1. Identify the current milestone and epic.
-2. Update or decompose the next epic only when its milestone is approaching execution.
+2. Use the AW-201 decomposition for M2-M6. Revise task details when new decisions land, especially the AW-202 external Nightcap platform decision that gates M4 implementation.
 3. Hand agents one task at a time.
 4. If a coding decision affects strategy or architecture, record it in the Decisions Log flow described in `AGENTS.md`.
 
