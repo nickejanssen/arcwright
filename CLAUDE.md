@@ -1,6 +1,6 @@
 # Claude Code Initialization Guide
 
-The canonical, always-on rules for every agent in this repository live in [`AGENTS.md`](AGENTS.md). It is authoritative. This file holds no rules of its own; it imports the canonical file so Claude Code loads the same source of truth as Codex, Copilot, and Cursor.
+The canonical, always-on rules for every agent in this repository live in [`AGENTS.md`](AGENTS.md). It is authoritative. This file holds no rules of its own; it imports the canonical file so Claude Code loads the same source of truth as Codex and Copilot.
 
 @AGENTS.md
 

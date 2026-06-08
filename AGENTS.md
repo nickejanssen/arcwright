@@ -1,4 +1,4 @@
-> This is the single authoritative, always-on instruction file for every AI coding agent working in this repository, including Claude Code, Codex, GitHub Copilot, Cursor, and any other agent. `CLAUDE.md`, `.github/copilot-instructions.md`, and `.cursorrules` are thin pointers to this file. Role-specific contracts live in `docs/agents/` and `docs/skills/`. If a proposed implementation conflicts with one of the platform architecture principles below, the principle wins unless the founder explicitly overrides it with documented rationale.
+> This is the single authoritative, always-on instruction file for every AI coding agent working in this repository, including Claude Code, Codex, and GitHub Copilot. `CLAUDE.md` imports this file so Claude Code loads it. `.github/copilot-instructions.md` is a synchronized mirror of this file, kept because Copilot code review reads that path but not `AGENTS.md`. Role-specific contracts live in `docs/agents/` and `docs/skills/`.
 
 # Agent Operating Guide
 
@@ -8,7 +8,7 @@ Arcwright is Layer 2 narrative runtime middleware that automates session facilit
 
 ## Architecture Principles (Non-Negotiable)
 
-All work in this repository must comply with the Arcwright PRD and technical architecture.
+All work in this repository must comply with the Arcwright PRD and technical architecture. If a proposed implementation conflicts with one of the platform architecture principles below, the principle wins unless the founder explicitly overrides it with documented rationale.
 
 1. Surface agnosticism
 - The engine has no opinion about what displays its output.
@@ -145,7 +145,7 @@ When a decision affects multiple components or represents a significant trade-of
 ## Agent-Local Files: Do Not Commit
 
 Directories like `.claude/`, `.codex/`, `.cursor/`, and similar tool metadata dirs contain a mix of:
-- **Project-level config** (for example, `.codex/environments/`, `.cursorrules`): may be intentionally tracked.
+- **Project-level config** (for example, `.codex/environments/`): may be intentionally tracked.
 - **Local-only state** (session files, per-user settings, generated indexes): must never be committed.
 
 Rules for every agent working in this repo:

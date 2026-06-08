@@ -145,7 +145,7 @@ When a decision affects multiple components or represents a significant trade-of
 ## Agent-Local Files: Do Not Commit
 
 Directories like `.claude/`, `.codex/`, `.cursor/`, and similar tool metadata dirs contain a mix of:
-- **Project-level config** (for example, `.codex/environments/`, `.cursorrules`): may be intentionally tracked.
+- **Project-level config** (for example, `.codex/environments/`): may be intentionally tracked.
 - **Local-only state** (session files, per-user settings, generated indexes): must never be committed.
 
 Rules for every agent working in this repo:
