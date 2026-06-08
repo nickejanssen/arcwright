@@ -38,5 +38,30 @@
     "name": "blocked",
     "color": "b60205",
     "description": "Work is blocked and should not be assigned yet"
+  },
+  {
+    "name": "M2",
+    "color": "1d76db",
+    "description": "Milestone 2 work"
+  },
+  {
+    "name": "M3",
+    "color": "5319e7",
+    "description": "Milestone 3 work"
+  },
+  {
+    "name": "M4",
+    "color": "fbca04",
+    "description": "Milestone 4 work"
+  },
+  {
+    "name": "M5",
+    "color": "d93f0b",
+    "description": "Milestone 5 work"
+  },
+  {
+    "name": "M6",
+    "color": "b60205",
+    "description": "Milestone 6 work"
   }
 ]

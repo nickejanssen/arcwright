@@ -1,0 +1,62 @@
+# AW-209: L2 Pre-Generation Classification
+
+**Milestone / Epic:** M2 / M2-D  
+**Size:** M  
+**Status:** Planned
+
+## Plain-English Summary
+
+Run safety classification before every main generation call.
+
+## Why This Matters
+
+This task advances the documented M2-M6 path to first qualifying Nightcap playtests. It exists because `docs/architecture/10-content-safety.md S10.3` defines this capability or gate as part of the Arcwright MVP path.
+
+## Player Impact
+
+Players benefit when this task reduces session failure, privacy risk, safety risk, pacing problems, or proof ambiguity before outside groups play Nightcap.
+
+## Business Value
+
+This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove the platform through a real game before expanding into broader platform scope.
+
+## Technical Scope
+
+Run safety classification before every main generation call. Likely files affected: engine/safety, engine/routing, engine/tests.
+
+## Acceptance Criteria
+
+- [ ] L2 safety classification runs before every main generation call path.
+- [ ] Classification calls route through the model routing abstraction and never call a provider directly.
+- [ ] Blocked classifications prevent the main generation call and log classification confidence data.
+
+## Tests/Verification
+
+- Run the smallest automated tests that prove this task where product code is changed.
+- For documentation, tracker, or playtest-operation tasks, provide review evidence, JSON validation, GitHub state confirmation, or runbook approval as appropriate.
+- Follow `docs/conventions/ai-contributions.md`: tests are written with code changes, not later.
+
+## Dependencies
+
+- AW-208
+
+## Likely Files Affected
+
+engine/safety, engine/routing, engine/tests
+
+## Must Not Do
+
+- Do not implement product code outside this task scope.
+- Do not duplicate closed M1 work.
+- Do not hardcode secrets or API keys.
+- Do not place provider or model strings outside `config/routing_table.json` and `engine/routing/router.py`.
+
+## Architecture References
+
+- docs/architecture/10-content-safety.md S10.3
+- `AGENTS.md`
+- `docs/architecture/15-development-guide.md`
+
+## Playtest Relevance
+
+This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.

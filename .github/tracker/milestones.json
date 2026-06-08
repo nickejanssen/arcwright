@@ -7,21 +7,26 @@
   {
     "id": "M2",
     "title": "M2: Arc Engine + Nightcap Arc + Safety",
-    "description": "Build-order coverage: #4 arc execution, #5 safety, #7 character behavior."
+    "description": "Nightcap runs all three beats in the harness; killer is assigned; reveal fires; AI dialogue never leaks knowledge state; L1 hard stops and L2 classification fire before generation."
   },
   {
     "id": "M3",
     "title": "M3: Events, API, Persistence, Telemetry",
-    "description": "Build-order coverage: #6 events, #8 API + auth, #9 persistence, #10 telemetry, #11 full harness."
+    "description": "A full session runs through the API; event routing respects target audience boundaries; interrupt and resume restore to the nearest beat; all five telemetry signals log; a 10-run API harness passes."
   },
   {
     "id": "M4",
     "title": "M4: Nightcap Experience Layer",
-    "description": "Experience-layer milestone for real human end-to-end play on real devices."
+    "description": "Real humans can play end-to-end on real devices; join flow takes under 30 seconds; private information never appears on the shared display."
   },
   {
     "id": "M5",
     "title": "M5: Hardening + Proof Prerequisites",
-    "description": "PRD MVP done-criteria milestone for safety hardening, economics, second arc schema, and inspection tooling."
+    "description": "Adversarial safety playtest is complete and blocking issues are resolved; per-session gross margin is known at each player count; a second arc schema exists; all four Visual Storyworld Phase 1 inspection surfaces are live."
+  },
+  {
+    "id": "M6",
+    "title": "M6: First Qualifying Sessions",
+    "description": "Five or more completed sessions with outside groups; unprompted replay enthusiasm; personalization perception in at least two sessions; initial proof runs at 4 to 6 players."
   }
 ]

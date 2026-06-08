@@ -9,11 +9,10 @@ This milestone exposes the platform over API boundaries, adds event delivery and
 
 ## Epics
 
-- Content event system
-- FastAPI layer and auth
-- Session persistence
-- Telemetry MVP minimum
-- Full simulation harness
+- [M3-A: Content Event System](../epics/M3-A-content-event-system.md)
+- [M3-B: API, Auth, And TypeScript SDK](../epics/M3-B-api-auth-and-typescript-sdk.md)
+- [M3-C: Session Persistence And Resume](../epics/M3-C-session-persistence-and-resume.md)
+- [M3-D: Telemetry And Full Simulation Harness](../epics/M3-D-telemetry-and-full-simulation-harness.md)
 
 ## Exit Gate
 

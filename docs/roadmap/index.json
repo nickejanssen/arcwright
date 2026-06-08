@@ -24,7 +24,12 @@
       "size:L",
       "M1",
       "agent-ready",
-      "blocked"
+      "blocked",
+      "M2",
+      "M3",
+      "M4",
+      "M5",
+      "M6"
     ],
     "issue_templates": {
       "feature": ".github/ISSUE_TEMPLATE/feature.md",
@@ -38,9 +43,22 @@
     }
   },
   "sources": [
-    "docs/12-Build-Roadmap-v1.md",
-    "docs/12-Build-Roadmap-v1.1.md",
-    "docs/12b-GitHub-M1-Epic-A-Setup.md"
+    {
+      "path": "docs/roadmap/00-overview.md",
+      "role": "canonical_overview"
+    },
+    {
+      "path": "docs/roadmap/milestones/",
+      "role": "canonical_milestones"
+    },
+    {
+      "path": "docs/roadmap/epics/",
+      "role": "canonical_epics"
+    },
+    {
+      "path": "docs/roadmap/tasks/",
+      "role": "canonical_tasks"
+    }
   ],
   "milestones": [
     {
@@ -69,38 +87,83 @@
     },
     {
       "id": "M2",
-      "title": "Arc engine + Nightcap arc + safety",
+      "title": "Arc Engine + Nightcap Arc + Safety",
       "status": "planned",
       "path": "docs/roadmap/milestones/M2-arc-engine-nightcap-arc-safety.md",
-      "epics": []
+      "epics": [
+        "M2-A",
+        "M2-B",
+        "M2-C",
+        "M2-D",
+        "M2-E"
+      ],
+      "github": {
+        "milestone_number": 2,
+        "url": "https://github.com/nickejanssen/arcwright/milestone/2"
+      }
     },
     {
       "id": "M3",
-      "title": "Events, API, persistence, telemetry",
+      "title": "Events, API, Persistence, Telemetry",
       "status": "planned",
       "path": "docs/roadmap/milestones/M3-events-api-persistence-telemetry.md",
-      "epics": []
+      "epics": [
+        "M3-A",
+        "M3-B",
+        "M3-C",
+        "M3-D"
+      ],
+      "github": {
+        "milestone_number": 3,
+        "url": "https://github.com/nickejanssen/arcwright/milestone/3"
+      }
     },
     {
       "id": "M4",
-      "title": "Nightcap experience layer",
+      "title": "Nightcap Experience Layer",
       "status": "planned",
       "path": "docs/roadmap/milestones/M4-nightcap-experience-layer.md",
-      "epics": []
+      "epics": [
+        "M4-A",
+        "M4-B",
+        "M4-C",
+        "M4-D"
+      ],
+      "github": {
+        "milestone_number": 4,
+        "url": "https://github.com/nickejanssen/arcwright/milestone/4"
+      }
     },
     {
       "id": "M5",
-      "title": "Hardening + proof prerequisites",
+      "title": "Hardening + Proof Prerequisites",
       "status": "planned",
       "path": "docs/roadmap/milestones/M5-hardening-proof-prerequisites.md",
-      "epics": []
+      "epics": [
+        "M5-A",
+        "M5-B",
+        "M5-C",
+        "M5-D"
+      ],
+      "github": {
+        "milestone_number": 5,
+        "url": "https://github.com/nickejanssen/arcwright/milestone/5"
+      }
     },
     {
       "id": "M6",
-      "title": "First qualifying sessions",
+      "title": "First Qualifying Sessions",
       "status": "planned",
       "path": "docs/roadmap/milestones/M6-first-qualifying-sessions.md",
-      "epics": []
+      "epics": [
+        "M6-A",
+        "M6-B",
+        "M6-C"
+      ],
+      "github": {
+        "milestone_number": 6,
+        "url": "https://github.com/nickejanssen/arcwright/milestone/6"
+      }
     }
   ],
   "epics": [
@@ -167,6 +230,309 @@
         "AW-111",
         "AW-112"
       ]
+    },
+    {
+      "id": "M2-A",
+      "milestone": "M2",
+      "title": "External Platform Decision Gate",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M2-A-external-platform-decision-gate.md",
+      "tasks": [
+        "AW-202"
+      ],
+      "github": {
+        "issue_number": 35,
+        "url": "https://github.com/nickejanssen/arcwright/issues/35"
+      }
+    },
+    {
+      "id": "M2-B",
+      "milestone": "M2",
+      "title": "Arc Execution Engine",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M2-B-arc-execution-engine.md",
+      "tasks": [
+        "AW-203",
+        "AW-204",
+        "AW-207",
+        "AW-214"
+      ],
+      "github": {
+        "issue_number": 36,
+        "url": "https://github.com/nickejanssen/arcwright/issues/36"
+      }
+    },
+    {
+      "id": "M2-C",
+      "milestone": "M2",
+      "title": "Nightcap Arc Runtime",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M2-C-nightcap-arc-runtime.md",
+      "tasks": [
+        "AW-205",
+        "AW-206"
+      ],
+      "github": {
+        "issue_number": 37,
+        "url": "https://github.com/nickejanssen/arcwright/issues/37"
+      }
+    },
+    {
+      "id": "M2-D",
+      "milestone": "M2",
+      "title": "Content Safety Pipeline",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M2-D-content-safety-pipeline.md",
+      "tasks": [
+        "AW-208",
+        "AW-209",
+        "AW-210"
+      ],
+      "github": {
+        "issue_number": 38,
+        "url": "https://github.com/nickejanssen/arcwright/issues/38"
+      }
+    },
+    {
+      "id": "M2-E",
+      "milestone": "M2",
+      "title": "Character Behavior Engine",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M2-E-character-behavior-engine.md",
+      "tasks": [
+        "AW-211",
+        "AW-212",
+        "AW-213"
+      ],
+      "github": {
+        "issue_number": 39,
+        "url": "https://github.com/nickejanssen/arcwright/issues/39"
+      }
+    },
+    {
+      "id": "M3-A",
+      "milestone": "M3",
+      "title": "Content Event System",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M3-A-content-event-system.md",
+      "tasks": [
+        "AW-215",
+        "AW-216"
+      ],
+      "github": {
+        "issue_number": 40,
+        "url": "https://github.com/nickejanssen/arcwright/issues/40"
+      }
+    },
+    {
+      "id": "M3-B",
+      "milestone": "M3",
+      "title": "API, Auth, And TypeScript SDK",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M3-B-api-auth-and-typescript-sdk.md",
+      "tasks": [
+        "AW-217",
+        "AW-218",
+        "AW-219"
+      ],
+      "github": {
+        "issue_number": 41,
+        "url": "https://github.com/nickejanssen/arcwright/issues/41"
+      }
+    },
+    {
+      "id": "M3-C",
+      "milestone": "M3",
+      "title": "Session Persistence And Resume",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M3-C-session-persistence-and-resume.md",
+      "tasks": [
+        "AW-220",
+        "AW-221"
+      ],
+      "github": {
+        "issue_number": 42,
+        "url": "https://github.com/nickejanssen/arcwright/issues/42"
+      }
+    },
+    {
+      "id": "M3-D",
+      "milestone": "M3",
+      "title": "Telemetry And Full Simulation Harness",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M3-D-telemetry-and-full-simulation-harness.md",
+      "tasks": [
+        "AW-222",
+        "AW-223",
+        "AW-224"
+      ],
+      "github": {
+        "issue_number": 43,
+        "url": "https://github.com/nickejanssen/arcwright/issues/43"
+      }
+    },
+    {
+      "id": "M4-A",
+      "milestone": "M4",
+      "title": "Nightcap External Platform Integration",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M4-A-nightcap-external-platform-integration.md",
+      "tasks": [
+        "AW-225"
+      ],
+      "github": {
+        "issue_number": 44,
+        "url": "https://github.com/nickejanssen/arcwright/issues/44"
+      }
+    },
+    {
+      "id": "M4-B",
+      "milestone": "M4",
+      "title": "Nightcap Host And Shared Display Experience",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M4-B-nightcap-host-and-shared-display-experience.md",
+      "tasks": [
+        "AW-226",
+        "AW-227"
+      ],
+      "github": {
+        "issue_number": 45,
+        "url": "https://github.com/nickejanssen/arcwright/issues/45"
+      }
+    },
+    {
+      "id": "M4-C",
+      "milestone": "M4",
+      "title": "Nightcap Player Device Experience",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M4-C-nightcap-player-device-experience.md",
+      "tasks": [
+        "AW-228",
+        "AW-229"
+      ],
+      "github": {
+        "issue_number": 46,
+        "url": "https://github.com/nickejanssen/arcwright/issues/46"
+      }
+    },
+    {
+      "id": "M4-D",
+      "milestone": "M4",
+      "title": "Real-Device Privacy And Join Validation",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M4-D-real-device-privacy-and-join-validation.md",
+      "tasks": [
+        "AW-230",
+        "AW-231"
+      ],
+      "github": {
+        "issue_number": 47,
+        "url": "https://github.com/nickejanssen/arcwright/issues/47"
+      }
+    },
+    {
+      "id": "M5-A",
+      "milestone": "M5",
+      "title": "Adversarial Safety And Remediation",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M5-A-adversarial-safety-and-remediation.md",
+      "tasks": [
+        "AW-232",
+        "AW-233"
+      ],
+      "github": {
+        "issue_number": 48,
+        "url": "https://github.com/nickejanssen/arcwright/issues/48"
+      }
+    },
+    {
+      "id": "M5-B",
+      "milestone": "M5",
+      "title": "Cost, Usage, And Gross Margin",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M5-B-cost-usage-and-gross-margin.md",
+      "tasks": [
+        "AW-234"
+      ],
+      "github": {
+        "issue_number": 49,
+        "url": "https://github.com/nickejanssen/arcwright/issues/49"
+      }
+    },
+    {
+      "id": "M5-C",
+      "milestone": "M5",
+      "title": "Second Arc Schema Validation",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M5-C-second-arc-schema-validation.md",
+      "tasks": [
+        "AW-235"
+      ],
+      "github": {
+        "issue_number": 50,
+        "url": "https://github.com/nickejanssen/arcwright/issues/50"
+      }
+    },
+    {
+      "id": "M5-D",
+      "milestone": "M5",
+      "title": "Visual Storyworld Phase 1 Inspection",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M5-D-visual-storyworld-phase-1-inspection.md",
+      "tasks": [
+        "AW-236",
+        "AW-237",
+        "AW-238",
+        "AW-239"
+      ],
+      "github": {
+        "issue_number": 51,
+        "url": "https://github.com/nickejanssen/arcwright/issues/51"
+      }
+    },
+    {
+      "id": "M6-A",
+      "milestone": "M6",
+      "title": "Playtest Operations",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M6-A-playtest-operations.md",
+      "tasks": [
+        "AW-240",
+        "AW-241",
+        "AW-242"
+      ],
+      "github": {
+        "issue_number": 52,
+        "url": "https://github.com/nickejanssen/arcwright/issues/52"
+      }
+    },
+    {
+      "id": "M6-B",
+      "milestone": "M6",
+      "title": "Qualifying Session Execution",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M6-B-qualifying-session-execution.md",
+      "tasks": [
+        "AW-243"
+      ],
+      "github": {
+        "issue_number": 53,
+        "url": "https://github.com/nickejanssen/arcwright/issues/53"
+      }
+    },
+    {
+      "id": "M6-C",
+      "milestone": "M6",
+      "title": "H1 Proof Analysis",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M6-C-h1-proof-analysis.md",
+      "tasks": [
+        "AW-244"
+      ],
+      "github": {
+        "issue_number": 54,
+        "url": "https://github.com/nickejanssen/arcwright/issues/54"
+      }
     }
   ],
   "tasks": [
@@ -181,7 +547,8 @@
         "issue_number": 2,
         "url": "https://github.com/nickejanssen/arcwright/issues/2"
       },
-      "path": "docs/roadmap/tasks/AW-101-repository-structure-and-python-project-setup.md"
+      "path": "docs/roadmap/tasks/AW-101-repository-structure-and-python-project-setup.md",
+      "epic_id": "M1-A"
     },
     {
       "id": "AW-102",
@@ -196,7 +563,8 @@
         "issue_number": 3,
         "url": "https://github.com/nickejanssen/arcwright/issues/3"
       },
-      "path": "docs/roadmap/tasks/AW-102-local-postgres-pgvector-alembic-init.md"
+      "path": "docs/roadmap/tasks/AW-102-local-postgres-pgvector-alembic-init.md",
+      "epic_id": "M1-A"
     },
     {
       "id": "AW-103",
@@ -211,7 +579,8 @@
       "github": {
         "issue_number": 5,
         "url": "https://github.com/nickejanssen/arcwright/issues/5"
-      }
+      },
+      "epic_id": "M1-B"
     },
     {
       "id": "AW-104",
@@ -226,7 +595,8 @@
       "github": {
         "issue_number": 6,
         "url": "https://github.com/nickejanssen/arcwright/issues/6"
-      }
+      },
+      "epic_id": "M1-B"
     },
     {
       "id": "AW-105",
@@ -237,7 +607,8 @@
       "depends_on": [
         "AW-104"
       ],
-      "path": "docs/roadmap/tasks/AW-105-knowledge-graph-assertion-api.md"
+      "path": "docs/roadmap/tasks/AW-105-knowledge-graph-assertion-api.md",
+      "epic_id": "M1-C"
     },
     {
       "id": "AW-106",
@@ -248,7 +619,8 @@
       "depends_on": [
         "AW-105"
       ],
-      "path": "docs/roadmap/tasks/AW-106-pre-generation-knowledge-constraint-hook.md"
+      "path": "docs/roadmap/tasks/AW-106-pre-generation-knowledge-constraint-hook.md",
+      "epic_id": "M1-C"
     },
     {
       "id": "AW-107",
@@ -259,7 +631,8 @@
       "depends_on": [
         "AW-101"
       ],
-      "path": "docs/roadmap/tasks/AW-107-litellm-routing-layer.md"
+      "path": "docs/roadmap/tasks/AW-107-litellm-routing-layer.md",
+      "epic_id": "M1-D"
     },
     {
       "id": "AW-108",
@@ -270,7 +643,8 @@
       "depends_on": [
         "AW-107"
       ],
-      "path": "docs/roadmap/tasks/AW-108-prompt-caching-and-generation-logging.md"
+      "path": "docs/roadmap/tasks/AW-108-prompt-caching-and-generation-logging.md",
+      "epic_id": "M1-D"
     },
     {
       "id": "AW-110",
@@ -282,7 +656,8 @@
         "AW-105",
         "AW-108"
       ],
-      "path": "docs/roadmap/tasks/AW-110-simulation-harness-skeleton.md"
+      "path": "docs/roadmap/tasks/AW-110-simulation-harness-skeleton.md",
+      "epic_id": "M1-E"
     },
     {
       "id": "AW-111",
@@ -293,7 +668,8 @@
       "depends_on": [
         "AW-110"
       ],
-      "path": "docs/roadmap/tasks/AW-111-scripted-synthetic-player-driver.md"
+      "path": "docs/roadmap/tasks/AW-111-scripted-synthetic-player-driver.md",
+      "epic_id": "M1-E"
     },
     {
       "id": "AW-112",
@@ -305,7 +681,744 @@
         "AW-110",
         "AW-111"
       ],
-      "path": "docs/roadmap/tasks/AW-112-deterministic-replay-and-batch-runner.md"
+      "path": "docs/roadmap/tasks/AW-112-deterministic-replay-and-batch-runner.md",
+      "epic_id": "M1-E"
+    },
+    {
+      "id": "AW-201",
+      "title": "M2-M6 Roadmap and Tracker Bootstrap",
+      "milestone": "M2",
+      "epic": null,
+      "size": "M",
+      "depends_on": [
+        "M1 complete"
+      ],
+      "path": "docs/roadmap/tasks/AW-201-m2-m6-roadmap-and-tracker-bootstrap.md",
+      "github": {
+        "issue_number": 34,
+        "url": "https://github.com/nickejanssen/arcwright/issues/34"
+      },
+      "epic_id": null
+    },
+    {
+      "id": "AW-202",
+      "title": "External Nightcap Platform Decision",
+      "milestone": "M2",
+      "epic": "M2-A",
+      "size": "M",
+      "depends_on": [
+        "AW-201"
+      ],
+      "path": "docs/roadmap/tasks/AW-202-external-nightcap-platform-decision.md",
+      "github": {
+        "issue_number": 55,
+        "url": "https://github.com/nickejanssen/arcwright/issues/55"
+      },
+      "epic_id": "M2-A"
+    },
+    {
+      "id": "AW-203",
+      "title": "ArcDefinition Schema And Validation Core",
+      "milestone": "M2",
+      "epic": "M2-B",
+      "size": "M",
+      "depends_on": [
+        "AW-201"
+      ],
+      "path": "docs/roadmap/tasks/AW-203-arcdefinition-schema-and-validation-core.md",
+      "github": {
+        "issue_number": 56,
+        "url": "https://github.com/nickejanssen/arcwright/issues/56"
+      },
+      "epic_id": "M2-B"
+    },
+    {
+      "id": "AW-204",
+      "title": "Dynamic ArcStateChart Generation",
+      "milestone": "M2",
+      "epic": "M2-B",
+      "size": "L",
+      "depends_on": [
+        "AW-203"
+      ],
+      "path": "docs/roadmap/tasks/AW-204-dynamic-arcstatechart-generation.md",
+      "github": {
+        "issue_number": 57,
+        "url": "https://github.com/nickejanssen/arcwright/issues/57"
+      },
+      "epic_id": "M2-B"
+    },
+    {
+      "id": "AW-205",
+      "title": "Nightcap Canonical Arc JSON",
+      "milestone": "M2",
+      "epic": "M2-C",
+      "size": "M",
+      "depends_on": [
+        "AW-203"
+      ],
+      "path": "docs/roadmap/tasks/AW-205-nightcap-canonical-arc-json.md",
+      "github": {
+        "issue_number": 58,
+        "url": "https://github.com/nickejanssen/arcwright/issues/58"
+      },
+      "epic_id": "M2-C"
+    },
+    {
+      "id": "AW-206",
+      "title": "Killer Assignment And Reveal State",
+      "milestone": "M2",
+      "epic": "M2-C",
+      "size": "M",
+      "depends_on": [
+        "AW-204",
+        "AW-205"
+      ],
+      "path": "docs/roadmap/tasks/AW-206-killer-assignment-and-reveal-state.md",
+      "github": {
+        "issue_number": 59,
+        "url": "https://github.com/nickejanssen/arcwright/issues/59"
+      },
+      "epic_id": "M2-C"
+    },
+    {
+      "id": "AW-207",
+      "title": "Dramatic Tension Pacing Engine",
+      "milestone": "M2",
+      "epic": "M2-B",
+      "size": "M",
+      "depends_on": [
+        "AW-204"
+      ],
+      "path": "docs/roadmap/tasks/AW-207-dramatic-tension-pacing-engine.md",
+      "github": {
+        "issue_number": 60,
+        "url": "https://github.com/nickejanssen/arcwright/issues/60"
+      },
+      "epic_id": "M2-B"
+    },
+    {
+      "id": "AW-208",
+      "title": "L1 Hard Stops",
+      "milestone": "M2",
+      "epic": "M2-D",
+      "size": "S",
+      "depends_on": [
+        "AW-201"
+      ],
+      "path": "docs/roadmap/tasks/AW-208-l1-hard-stops.md",
+      "github": {
+        "issue_number": 61,
+        "url": "https://github.com/nickejanssen/arcwright/issues/61"
+      },
+      "epic_id": "M2-D"
+    },
+    {
+      "id": "AW-209",
+      "title": "L2 Pre-Generation Classification",
+      "milestone": "M2",
+      "epic": "M2-D",
+      "size": "M",
+      "depends_on": [
+        "AW-208"
+      ],
+      "path": "docs/roadmap/tasks/AW-209-l2-pre-generation-classification.md",
+      "github": {
+        "issue_number": 62,
+        "url": "https://github.com/nickejanssen/arcwright/issues/62"
+      },
+      "epic_id": "M2-D"
+    },
+    {
+      "id": "AW-210",
+      "title": "L3 Policy Injection And Neutral Bridge",
+      "milestone": "M2",
+      "epic": "M2-D",
+      "size": "M",
+      "depends_on": [
+        "AW-209"
+      ],
+      "path": "docs/roadmap/tasks/AW-210-l3-policy-injection-and-neutral-bridge.md",
+      "github": {
+        "issue_number": 63,
+        "url": "https://github.com/nickejanssen/arcwright/issues/63"
+      },
+      "epic_id": "M2-D"
+    },
+    {
+      "id": "AW-211",
+      "title": "Behavior Profile Assembly",
+      "milestone": "M2",
+      "epic": "M2-E",
+      "size": "M",
+      "depends_on": [
+        "AW-205",
+        "AW-206"
+      ],
+      "path": "docs/roadmap/tasks/AW-211-behavior-profile-assembly.md",
+      "github": {
+        "issue_number": 64,
+        "url": "https://github.com/nickejanssen/arcwright/issues/64"
+      },
+      "epic_id": "M2-E"
+    },
+    {
+      "id": "AW-212",
+      "title": "Knowledge-Constrained Dialogue Pipeline",
+      "milestone": "M2",
+      "epic": "M2-E",
+      "size": "L",
+      "depends_on": [
+        "AW-210",
+        "AW-211"
+      ],
+      "path": "docs/roadmap/tasks/AW-212-knowledge-constrained-dialogue-pipeline.md",
+      "github": {
+        "issue_number": 65,
+        "url": "https://github.com/nickejanssen/arcwright/issues/65"
+      },
+      "epic_id": "M2-E"
+    },
+    {
+      "id": "AW-213",
+      "title": "AI Initiative And NPC-NPC Exchange",
+      "milestone": "M2",
+      "epic": "M2-E",
+      "size": "M",
+      "depends_on": [
+        "AW-212"
+      ],
+      "path": "docs/roadmap/tasks/AW-213-ai-initiative-and-npc-npc-exchange.md",
+      "github": {
+        "issue_number": 66,
+        "url": "https://github.com/nickejanssen/arcwright/issues/66"
+      },
+      "epic_id": "M2-E"
+    },
+    {
+      "id": "AW-214",
+      "title": "M2 Headless Nightcap Exit Harness",
+      "milestone": "M2",
+      "epic": "M2-B",
+      "size": "M",
+      "depends_on": [
+        "AW-206",
+        "AW-207",
+        "AW-212",
+        "AW-213"
+      ],
+      "path": "docs/roadmap/tasks/AW-214-m2-headless-nightcap-exit-harness.md",
+      "github": {
+        "issue_number": 67,
+        "url": "https://github.com/nickejanssen/arcwright/issues/67"
+      },
+      "epic_id": "M2-B"
+    },
+    {
+      "id": "AW-215",
+      "title": "ContentEvent Model And In-Memory Bus",
+      "milestone": "M3",
+      "epic": "M3-A",
+      "size": "M",
+      "depends_on": [
+        "AW-214"
+      ],
+      "path": "docs/roadmap/tasks/AW-215-contentevent-model-and-in-memory-bus.md",
+      "github": {
+        "issue_number": 68,
+        "url": "https://github.com/nickejanssen/arcwright/issues/68"
+      },
+      "epic_id": "M3-A"
+    },
+    {
+      "id": "AW-216",
+      "title": "SSE Fanout Filtering And Replay",
+      "milestone": "M3",
+      "epic": "M3-A",
+      "size": "M",
+      "depends_on": [
+        "AW-215"
+      ],
+      "path": "docs/roadmap/tasks/AW-216-sse-fanout-filtering-and-replay.md",
+      "github": {
+        "issue_number": 69,
+        "url": "https://github.com/nickejanssen/arcwright/issues/69"
+      },
+      "epic_id": "M3-A"
+    },
+    {
+      "id": "AW-217",
+      "title": "Session Lifecycle API And Auth",
+      "milestone": "M3",
+      "epic": "M3-B",
+      "size": "M",
+      "depends_on": [
+        "AW-216"
+      ],
+      "path": "docs/roadmap/tasks/AW-217-session-lifecycle-api-and-auth.md",
+      "github": {
+        "issue_number": 70,
+        "url": "https://github.com/nickejanssen/arcwright/issues/70"
+      },
+      "epic_id": "M3-B"
+    },
+    {
+      "id": "AW-218",
+      "title": "Character Input And Knowledge Endpoints",
+      "milestone": "M3",
+      "epic": "M3-B",
+      "size": "M",
+      "depends_on": [
+        "AW-217"
+      ],
+      "path": "docs/roadmap/tasks/AW-218-character-input-and-knowledge-endpoints.md",
+      "github": {
+        "issue_number": 71,
+        "url": "https://github.com/nickejanssen/arcwright/issues/71"
+      },
+      "epic_id": "M3-B"
+    },
+    {
+      "id": "AW-219",
+      "title": "TypeScript SDK Event And Input Client",
+      "milestone": "M3",
+      "epic": "M3-B",
+      "size": "M",
+      "depends_on": [
+        "AW-217",
+        "AW-218"
+      ],
+      "path": "docs/roadmap/tasks/AW-219-typescript-sdk-event-and-input-client.md",
+      "github": {
+        "issue_number": 72,
+        "url": "https://github.com/nickejanssen/arcwright/issues/72"
+      },
+      "epic_id": "M3-B"
+    },
+    {
+      "id": "AW-220",
+      "title": "Session Persistence Snapshots And Resume",
+      "milestone": "M3",
+      "epic": "M3-C",
+      "size": "L",
+      "depends_on": [
+        "AW-217",
+        "AW-218"
+      ],
+      "path": "docs/roadmap/tasks/AW-220-session-persistence-snapshots-and-resume.md",
+      "github": {
+        "issue_number": 73,
+        "url": "https://github.com/nickejanssen/arcwright/issues/73"
+      },
+      "epic_id": "M3-C"
+    },
+    {
+      "id": "AW-221",
+      "title": "Narrator Bridge On Resume",
+      "milestone": "M3",
+      "epic": "M3-C",
+      "size": "S",
+      "depends_on": [
+        "AW-220"
+      ],
+      "path": "docs/roadmap/tasks/AW-221-narrator-bridge-on-resume.md",
+      "github": {
+        "issue_number": 74,
+        "url": "https://github.com/nickejanssen/arcwright/issues/74"
+      },
+      "epic_id": "M3-C"
+    },
+    {
+      "id": "AW-222",
+      "title": "Five MVP Telemetry Signals",
+      "milestone": "M3",
+      "epic": "M3-D",
+      "size": "M",
+      "depends_on": [
+        "AW-220"
+      ],
+      "path": "docs/roadmap/tasks/AW-222-five-mvp-telemetry-signals.md",
+      "github": {
+        "issue_number": 75,
+        "url": "https://github.com/nickejanssen/arcwright/issues/75"
+      },
+      "epic_id": "M3-D"
+    },
+    {
+      "id": "AW-223",
+      "title": "Cost And Usage Summary",
+      "milestone": "M3",
+      "epic": "M3-D",
+      "size": "M",
+      "depends_on": [
+        "AW-222"
+      ],
+      "path": "docs/roadmap/tasks/AW-223-cost-and-usage-summary.md",
+      "github": {
+        "issue_number": 76,
+        "url": "https://github.com/nickejanssen/arcwright/issues/76"
+      },
+      "epic_id": "M3-D"
+    },
+    {
+      "id": "AW-224",
+      "title": "Full API Batch Harness",
+      "milestone": "M3",
+      "epic": "M3-D",
+      "size": "M",
+      "depends_on": [
+        "AW-219",
+        "AW-223"
+      ],
+      "path": "docs/roadmap/tasks/AW-224-full-api-batch-harness.md",
+      "github": {
+        "issue_number": 77,
+        "url": "https://github.com/nickejanssen/arcwright/issues/77"
+      },
+      "epic_id": "M3-D"
+    },
+    {
+      "id": "AW-225",
+      "title": "External Platform Connector Scaffold",
+      "milestone": "M4",
+      "epic": "M4-A",
+      "size": "M",
+      "depends_on": [
+        "AW-202",
+        "AW-224"
+      ],
+      "path": "docs/roadmap/tasks/AW-225-external-platform-connector-scaffold.md",
+      "github": {
+        "issue_number": 78,
+        "url": "https://github.com/nickejanssen/arcwright/issues/78"
+      },
+      "epic_id": "M4-A"
+    },
+    {
+      "id": "AW-226",
+      "title": "Host Session Creation And Shared Display Flow",
+      "milestone": "M4",
+      "epic": "M4-B",
+      "size": "M",
+      "depends_on": [
+        "AW-225"
+      ],
+      "path": "docs/roadmap/tasks/AW-226-host-session-creation-and-shared-display-flow.md",
+      "github": {
+        "issue_number": 79,
+        "url": "https://github.com/nickejanssen/arcwright/issues/79"
+      },
+      "epic_id": "M4-B"
+    },
+    {
+      "id": "AW-227",
+      "title": "Shared Display Narrator And Group Event Rendering",
+      "milestone": "M4",
+      "epic": "M4-B",
+      "size": "M",
+      "depends_on": [
+        "AW-226"
+      ],
+      "path": "docs/roadmap/tasks/AW-227-shared-display-narrator-and-group-event-rendering.md",
+      "github": {
+        "issue_number": 80,
+        "url": "https://github.com/nickejanssen/arcwright/issues/80"
+      },
+      "epic_id": "M4-B"
+    },
+    {
+      "id": "AW-228",
+      "title": "Player Join Flow Under 30 Seconds",
+      "milestone": "M4",
+      "epic": "M4-C",
+      "size": "M",
+      "depends_on": [
+        "AW-225"
+      ],
+      "path": "docs/roadmap/tasks/AW-228-player-join-flow-under-30-seconds.md",
+      "github": {
+        "issue_number": 81,
+        "url": "https://github.com/nickejanssen/arcwright/issues/81"
+      },
+      "epic_id": "M4-C"
+    },
+    {
+      "id": "AW-229",
+      "title": "Player Private Event And Input Flow",
+      "milestone": "M4",
+      "epic": "M4-C",
+      "size": "M",
+      "depends_on": [
+        "AW-228"
+      ],
+      "path": "docs/roadmap/tasks/AW-229-player-private-event-and-input-flow.md",
+      "github": {
+        "issue_number": 82,
+        "url": "https://github.com/nickejanssen/arcwright/issues/82"
+      },
+      "epic_id": "M4-C"
+    },
+    {
+      "id": "AW-230",
+      "title": "Real-Device Privacy Matrix",
+      "milestone": "M4",
+      "epic": "M4-D",
+      "size": "M",
+      "depends_on": [
+        "AW-227",
+        "AW-229"
+      ],
+      "path": "docs/roadmap/tasks/AW-230-real-device-privacy-matrix.md",
+      "github": {
+        "issue_number": 83,
+        "url": "https://github.com/nickejanssen/arcwright/issues/83"
+      },
+      "epic_id": "M4-D"
+    },
+    {
+      "id": "AW-231",
+      "title": "M4 Real-Human Rehearsal",
+      "milestone": "M4",
+      "epic": "M4-D",
+      "size": "M",
+      "depends_on": [
+        "AW-230"
+      ],
+      "path": "docs/roadmap/tasks/AW-231-m4-real-human-rehearsal.md",
+      "github": {
+        "issue_number": 84,
+        "url": "https://github.com/nickejanssen/arcwright/issues/84"
+      },
+      "epic_id": "M4-D"
+    },
+    {
+      "id": "AW-232",
+      "title": "Adversarial Safety Playtest Protocol",
+      "milestone": "M5",
+      "epic": "M5-A",
+      "size": "M",
+      "depends_on": [
+        "AW-231"
+      ],
+      "path": "docs/roadmap/tasks/AW-232-adversarial-safety-playtest-protocol.md",
+      "github": {
+        "issue_number": 85,
+        "url": "https://github.com/nickejanssen/arcwright/issues/85"
+      },
+      "epic_id": "M5-A"
+    },
+    {
+      "id": "AW-233",
+      "title": "Safety Findings Remediation",
+      "milestone": "M5",
+      "epic": "M5-A",
+      "size": "M",
+      "depends_on": [
+        "AW-232"
+      ],
+      "path": "docs/roadmap/tasks/AW-233-safety-findings-remediation.md",
+      "github": {
+        "issue_number": 86,
+        "url": "https://github.com/nickejanssen/arcwright/issues/86"
+      },
+      "epic_id": "M5-A"
+    },
+    {
+      "id": "AW-234",
+      "title": "Gross Margin By Player Count",
+      "milestone": "M5",
+      "epic": "M5-B",
+      "size": "M",
+      "depends_on": [
+        "AW-223",
+        "AW-231"
+      ],
+      "path": "docs/roadmap/tasks/AW-234-gross-margin-by-player-count.md",
+      "github": {
+        "issue_number": 87,
+        "url": "https://github.com/nickejanssen/arcwright/issues/87"
+      },
+      "epic_id": "M5-B"
+    },
+    {
+      "id": "AW-235",
+      "title": "Second Arc Schema Design",
+      "milestone": "M5",
+      "epic": "M5-C",
+      "size": "M",
+      "depends_on": [
+        "AW-203"
+      ],
+      "path": "docs/roadmap/tasks/AW-235-second-arc-schema-design.md",
+      "github": {
+        "issue_number": 88,
+        "url": "https://github.com/nickejanssen/arcwright/issues/88"
+      },
+      "epic_id": "M5-C"
+    },
+    {
+      "id": "AW-236",
+      "title": "Live Knowledge Graph Inspection",
+      "milestone": "M5",
+      "epic": "M5-D",
+      "size": "M",
+      "depends_on": [
+        "AW-222"
+      ],
+      "path": "docs/roadmap/tasks/AW-236-live-knowledge-graph-inspection.md",
+      "github": {
+        "issue_number": 89,
+        "url": "https://github.com/nickejanssen/arcwright/issues/89"
+      },
+      "epic_id": "M5-D"
+    },
+    {
+      "id": "AW-237",
+      "title": "Read-Only Arc Structure Inspection",
+      "milestone": "M5",
+      "epic": "M5-D",
+      "size": "M",
+      "depends_on": [
+        "AW-222",
+        "AW-236"
+      ],
+      "path": "docs/roadmap/tasks/AW-237-read-only-arc-structure-inspection.md",
+      "github": {
+        "issue_number": 90,
+        "url": "https://github.com/nickejanssen/arcwright/issues/90"
+      },
+      "epic_id": "M5-D"
+    },
+    {
+      "id": "AW-238",
+      "title": "Live Event Stream Inspection",
+      "milestone": "M5",
+      "epic": "M5-D",
+      "size": "M",
+      "depends_on": [
+        "AW-222",
+        "AW-236"
+      ],
+      "path": "docs/roadmap/tasks/AW-238-live-event-stream-inspection.md",
+      "github": {
+        "issue_number": 91,
+        "url": "https://github.com/nickejanssen/arcwright/issues/91"
+      },
+      "epic_id": "M5-D"
+    },
+    {
+      "id": "AW-239",
+      "title": "Character State Inspection",
+      "milestone": "M5",
+      "epic": "M5-D",
+      "size": "M",
+      "depends_on": [
+        "AW-236",
+        "AW-237",
+        "AW-238"
+      ],
+      "path": "docs/roadmap/tasks/AW-239-character-state-inspection.md",
+      "github": {
+        "issue_number": 92,
+        "url": "https://github.com/nickejanssen/arcwright/issues/92"
+      },
+      "epic_id": "M5-D"
+    },
+    {
+      "id": "AW-240",
+      "title": "Closed Playtest Operations Runbook",
+      "milestone": "M6",
+      "epic": "M6-A",
+      "size": "S",
+      "depends_on": [
+        "AW-233",
+        "AW-234",
+        "AW-239"
+      ],
+      "path": "docs/roadmap/tasks/AW-240-closed-playtest-operations-runbook.md",
+      "github": {
+        "issue_number": 93,
+        "url": "https://github.com/nickejanssen/arcwright/issues/93"
+      },
+      "epic_id": "M6-A"
+    },
+    {
+      "id": "AW-241",
+      "title": "Qualifying Session Instrumentation Checklist",
+      "milestone": "M6",
+      "epic": "M6-A",
+      "size": "S",
+      "depends_on": [
+        "AW-240"
+      ],
+      "path": "docs/roadmap/tasks/AW-241-qualifying-session-instrumentation-checklist.md",
+      "github": {
+        "issue_number": 94,
+        "url": "https://github.com/nickejanssen/arcwright/issues/94"
+      },
+      "epic_id": "M6-A"
+    },
+    {
+      "id": "AW-242",
+      "title": "Founder-Run Final Rehearsal",
+      "milestone": "M6",
+      "epic": "M6-A",
+      "size": "M",
+      "depends_on": [
+        "AW-241"
+      ],
+      "path": "docs/roadmap/tasks/AW-242-founder-run-final-rehearsal.md",
+      "github": {
+        "issue_number": 95,
+        "url": "https://github.com/nickejanssen/arcwright/issues/95"
+      },
+      "epic_id": "M6-A"
+    },
+    {
+      "id": "AW-243",
+      "title": "Five Outside Qualifying Sessions",
+      "milestone": "M6",
+      "epic": "M6-B",
+      "size": "L",
+      "depends_on": [
+        "AW-242"
+      ],
+      "path": "docs/roadmap/tasks/AW-243-five-outside-qualifying-sessions.md",
+      "github": {
+        "issue_number": 96,
+        "url": "https://github.com/nickejanssen/arcwright/issues/96"
+      },
+      "epic_id": "M6-B"
+    },
+    {
+      "id": "AW-244",
+      "title": "H1 Proof Analysis And Next-Step Decision",
+      "milestone": "M6",
+      "epic": "M6-C",
+      "size": "M",
+      "depends_on": [
+        "AW-243"
+      ],
+      "path": "docs/roadmap/tasks/AW-244-h1-proof-analysis-and-next-step-decision.md",
+      "github": {
+        "issue_number": 97,
+        "url": "https://github.com/nickejanssen/arcwright/issues/97"
+      },
+      "epic_id": "M6-C"
+    }
+  ],
+  "superseded_sources": [
+    {
+      "path": "docs/12-Build-Roadmap-v1.md",
+      "superseded_by": "docs/roadmap/00-overview.md"
+    },
+    {
+      "path": "docs/12-Build-Roadmap-v1.1.md",
+      "superseded_by": "docs/roadmap/00-overview.md"
+    },
+    {
+      "path": "docs/12b-GitHub-M1-Epic-A-Setup.md",
+      "superseded_by": "docs/roadmap/operations/github-project-setup.md"
     }
   ]
 }

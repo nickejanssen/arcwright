@@ -59,4 +59,4 @@ For an AI agent handed a GitHub issue number or URL:
 - When a future roadmap revision adds or changes tasks, update the split Markdown files first.
 - After the Markdown updates, update `index.json` so agents can still locate the right file quickly.
 - When a live GitHub issue or milestone is created for a roadmap item, add the cross-reference in `index.json` rather than editing every Markdown file.
-- Only split milestones into task files when the roadmap itself has already decomposed them to task level.
+- M2 through M6 are decomposed into agent-sized task files as of AW-201. M4 implementation tasks remain explicitly gated by AW-202 until the external Nightcap platform decision is complete.
