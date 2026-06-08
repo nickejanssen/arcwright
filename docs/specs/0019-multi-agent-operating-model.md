@@ -80,7 +80,7 @@ Establish one canonical definition per development role plus thin per-client lau
 - [ ] `docs/skills/arcwright-reviewer/SKILL.md` exists, derived from `review-checklist.md`, with `agents/openai.yaml` present.
 - [ ] An `arcwright-sme` skill exists in-repo under `docs/skills/`, with content captured from the existing user-level skill rather than re-authored.
 - [ ] `docs/agents/` contains contracts for Product Steward, Planner, Spec Author, and Scribe, plus a `README.md` defining the pipeline and the AW-NNN handoff protocol.
-- [ ] Claude Code: `.claude/agents/implementer.md` and `.claude/agents/reviewer.md` exist as thin launchers; `/implement`, `/review`, and `/scribe` commands exist; `/agents` lists the subagents.
+- [ ] Claude Code: `.claude/agents/implementer.md` and `.claude/agents/reviewer.md` exist as thin launchers; `/implement`, `/review-pr`, and `/scribe` commands exist; `/agents` lists the subagents. (The review command is `/review-pr`, not `/review`, to avoid colliding with Claude Code's built-in `/review`, which otherwise prevents the custom command from registering.)
 - [ ] Codex: the canonical skills are discoverable by Codex (via `.agents/skills/<name>`); `/skills` lists Implementer, Reviewer, and SME.
 - [ ] Copilot: the three `.agent.md` files exist with an Implementer-to-Reviewer handoff; the two `.prompt.md` files exist; `engine.instructions.md` applies to `engine/**` and `api/**`.
 - [ ] No client launcher file contains role logic; each references the canonical skill or `docs/agents` contract.
