@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m ruff check:*)",
+      "Bash(python -m ruff format:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(pytest:*)",
+      "Bash(python -m mypy:*)",
+      "Bash(make lint:*)",
+      "Bash(make type:*)",
+      "Bash(make test:*)",
+      "Bash(alembic upgrade:*)",
+      "Bash(alembic revision:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run build:*)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)"
+    ]
+  }
+}
