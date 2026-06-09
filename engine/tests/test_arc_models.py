@@ -169,6 +169,21 @@ def test_missing_required_field_is_rejected() -> None:
     assert_invalid(payload, "Field required")
 
 
+@pytest.mark.parametrize(
+    "section",
+    [
+        "generative_elements",
+        "content_rails",
+        "knowledge_rules",
+    ],
+)
+def test_missing_required_arc_sections_are_rejected(section: str) -> None:
+    payload = valid_arc_payload()
+    del payload[section]
+
+    assert_invalid(payload, "Field required")
+
+
 def test_invalid_beat_graph_reference_is_rejected() -> None:
     payload = valid_arc_payload()
     payload["beat_graph"]["introduction"] = ["missing_beat"]

@@ -172,9 +172,9 @@ class ArcDefinition(BaseModel):
     characters: List[Dict[str, Any]] = Field(default_factory=list)
     beats: List[BeatDefinition]
     beat_graph: Dict[str, List[str]]
-    generative_elements: GenerativeConfig = Field(default_factory=GenerativeConfig)
-    content_rails: ContentRailsConfig = Field(default_factory=ContentRailsConfig)
-    knowledge_rules: KnowledgeRuleSet = Field(default_factory=KnowledgeRuleSet)
+    generative_elements: GenerativeConfig
+    content_rails: ContentRailsConfig
+    knowledge_rules: KnowledgeRuleSet
     pacing_config: PacingConfig
     victim_config: Dict[str, Any] = Field(default_factory=dict)
     kill_config: Dict[str, Any] = Field(default_factory=dict)
