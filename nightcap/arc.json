@@ -4,7 +4,19 @@
   "min_players": 4,
   "max_players": 10,
   "character_mode": "generated",
-  "aesthetic_mode": "fixed",
+  "aesthetic_config": {
+    "selection_model": {},
+    "asset_generation": {
+      "background_art": "pre_produced_per_theme",
+      "music_palette": "pre_produced_per_theme",
+      "animations": "pre_produced_per_theme",
+      "ui_chrome": "pre_produced_per_theme",
+      "character_portraits": "generated_at_session_start",
+      "setting_name": "generative_runtime",
+      "character_identities": "generative_runtime",
+      "narrator_dialogue": "generative_runtime"
+    }
+  },
   "setting_constraint": "social_gathering",
   "arc_structure": "dan_harmon",
   "play_mode": "imposter",
@@ -135,14 +147,38 @@
     "reveal": []
   },
   "generative_elements": {
-    "killer_assignment_strategy": "ai_driven"
+    "killer_assignment": true,
+    "character_generation": true,
+    "character_personality_augmentation": true,
+    "clue_content": true,
+    "narrator_dialogue": true
   },
   "content_rails": {
-    "allow_dark_content": true
+    "prohibited_categories": [
+      "csam",
+      "graphic_violence",
+      "real_person_targeting"
+    ],
+    "thematic_warnings": [
+      "murder_mystery",
+      "deception",
+      "dark_motives"
+    ],
+    "age_floor": 18
   },
-  "knowledge_rules": {},
+  "knowledge_rules": {
+    "killer_knows_they_did_it": true,
+    "narrator_omniscient": true,
+    "clues_private_until_shared": true
+  },
   "pacing_config": {
-    "premium_threshold": 0.75
+    "stall_threshold": 0.25,
+    "misdirection_threshold": 0.8,
+    "premium_threshold": 0.75,
+    "w_time": 0.3,
+    "w_action": 0.3,
+    "w_suspicion": 0.2,
+    "w_coverage": 0.2
   },
   "victim_config": {
     "selection_mode": "generated"
