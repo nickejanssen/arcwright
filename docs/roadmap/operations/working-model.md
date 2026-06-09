@@ -13,7 +13,7 @@ The task spec body in the roadmap should be copied into the issue body.
 ## Per Work Session
 
 1. Identify the current milestone and epic.
-2. Use the AW-201 decomposition for M2-M6. Revise task details when new decisions land, especially the AW-202 external Nightcap platform decision that gates M4 implementation.
+2. Use the AW-201 decomposition for M2-M6. Revise task details when new decisions land, especially the AW-202 Nightcap web experience runtime contract that shapes M4 implementation.
 3. Hand agents one task at a time.
 4. If a coding decision affects strategy or architecture, record it in the Decisions Log flow described in `AGENTS.md`.
 

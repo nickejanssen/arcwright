@@ -9,7 +9,7 @@ This milestone is the first one that spends meaningful AI tokens. It builds the 
 
 ## Epics
 
-- [M2-A: External Platform Decision Gate](../epics/M2-A-external-platform-decision-gate.md)
+- [M2-A: Nightcap Web Experience Runtime Decision Gate](../epics/M2-A-external-platform-decision-gate.md)
 - [M2-B: Arc Execution Engine](../epics/M2-B-arc-execution-engine.md)
 - [M2-C: Nightcap Arc Runtime](../epics/M2-C-nightcap-arc-runtime.md)
 - [M2-D: Content Safety Pipeline](../epics/M2-D-content-safety-pipeline.md)

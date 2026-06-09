@@ -22,7 +22,7 @@ Three layers:
 
 Source-of-truth rule: tasks reference Architecture and PRD sections rather than restating schemas. If a task and the Architecture doc disagree, the Architecture doc wins; fix the task.
 
-Decomposition policy: Milestone 1 is complete. AW-201 decomposes Milestones 2 through 6 into epics and agent-sized task specs so the path to first qualifying Nightcap playtests is executable. M4 implementation tasks are intentionally gated by AW-202 because the external Nightcap platform decision is required before platform-specific work begins.
+Decomposition policy: Milestone 1 is complete. AW-201 decomposes Milestones 2 through 6 into epics and agent-sized task specs so the path to first qualifying Nightcap playtests is executable. M4 implementation tasks are anchored to the AW-202 Nightcap web experience runtime decision before runtime-specific work begins.
 
 ## M0 Gate Override
 

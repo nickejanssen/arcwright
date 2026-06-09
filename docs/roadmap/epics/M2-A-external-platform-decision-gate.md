@@ -1,11 +1,11 @@
-# M2-A: External Platform Decision Gate
+# M2-A: Nightcap Web Experience Runtime Decision Gate
 
 **Milestone:** M2  
 **Status:** Planned
 
 ## Plain-English Summary
 
-Select the external Nightcap experience platform early enough that M4 implementation can be decomposed before it starts.
+Select the Nightcap web experience runtime early enough that M4 implementation can follow a concrete integration contract.
 
 ## Why This Matters
 
@@ -25,7 +25,7 @@ The technical scope is limited to the tasks listed below and the architecture re
 
 ## Tasks
 
-- [AW-202: External Nightcap Platform Decision](../tasks/AW-202-external-nightcap-platform-decision.md)
+- [AW-202: Nightcap Web Experience Runtime Decision](../tasks/AW-202-external-nightcap-platform-decision.md)
 
 ## Acceptance Criteria
 
@@ -53,6 +53,7 @@ The technical scope is limited to the tasks listed below and the architecture re
 ## Architecture References
 
 - docs/02-Decisions-Log-Additions-May2026.md Entry 3
+- `docs/decisions/0003-nightcap-web-experience-runtime.md`
 - `docs/roadmap/00-overview.md`
 - `docs/architecture/15-development-guide.md`
 

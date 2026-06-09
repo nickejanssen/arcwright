@@ -22,7 +22,7 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 ## Technical Scope
 
-Run a non-qualifying real-device rehearsal and log blockers. Likely files affected: docs/playtest notes or GitHub issue comments, docs/roadmap if needed.
+Run a non-qualifying real-device rehearsal on the Nightcap web experience runtime selected by AW-202 and log blockers. Likely files affected: docs/playtest notes or GitHub issue comments, docs/roadmap if needed.
 
 ## Acceptance Criteria
 
@@ -49,11 +49,12 @@ docs/playtest notes or GitHub issue comments, docs/roadmap if needed
 - Do not implement product code outside this task scope.
 - Do not duplicate closed M1 work.
 - Do not hardcode secrets or API keys.
-- Do not start this implementation until AW-202 selects the external Nightcap platform.
+- Do not bypass the AW-202 Nightcap web experience runtime contract.
 
 ## Architecture References
 
 - docs/roadmap/milestones/M4-nightcap-experience-layer.md
+- `docs/decisions/0003-nightcap-web-experience-runtime.md`
 - `AGENTS.md`
 - `docs/architecture/15-development-guide.md`
 

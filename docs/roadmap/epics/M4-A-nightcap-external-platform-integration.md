@@ -1,11 +1,11 @@
-# M4-A: Nightcap External Platform Integration
+# M4-A: Nightcap Web Experience Runtime Integration
 
 **Milestone:** M4  
 **Status:** Planned
 
 ## Plain-English Summary
 
-Implement the selected external-platform connector according to the AW-202 contract.
+Implement the Nightcap web experience runtime connector according to the AW-202 contract.
 
 ## Why This Matters
 
@@ -25,7 +25,7 @@ The technical scope is limited to the tasks listed below and the architecture re
 
 ## Tasks
 
-- [AW-225: External Platform Connector Scaffold](../tasks/AW-225-external-platform-connector-scaffold.md)
+- [AW-225: Nightcap Web Experience Runtime Connector Scaffold](../tasks/AW-225-external-platform-connector-scaffold.md)
 
 ## Acceptance Criteria
 
@@ -53,6 +53,7 @@ The technical scope is limited to the tasks listed below and the architecture re
 ## Architecture References
 
 - docs/02-Decisions-Log-Additions-May2026.md Entry 3
+- `docs/decisions/0003-nightcap-web-experience-runtime.md`
 - `docs/roadmap/00-overview.md`
 - `docs/architecture/15-development-guide.md`
 

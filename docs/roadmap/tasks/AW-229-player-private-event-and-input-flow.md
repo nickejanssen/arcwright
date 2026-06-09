@@ -22,7 +22,7 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 ## Technical Scope
 
-Render private player events and submit player input. Likely files affected: external platform integration files, sdk if needed.
+Render private player events and submit player input in the Cloudflare-hosted Nightcap web experience runtime selected by AW-202. Likely files affected: Cloudflare Pages, Workers, Durable Objects or PartyKit files, SDK usage if needed.
 
 ## Acceptance Criteria
 
@@ -42,19 +42,20 @@ Render private player events and submit player input. Likely files affected: ext
 
 ## Likely Files Affected
 
-external platform integration files, sdk if needed
+Cloudflare Pages, Workers, Durable Objects or PartyKit files, SDK usage if needed
 
 ## Must Not Do
 
 - Do not implement product code outside this task scope.
 - Do not duplicate closed M1 work.
 - Do not hardcode secrets or API keys.
-- Do not start this implementation until AW-202 selects the external Nightcap platform.
+- Do not bypass the AW-202 Nightcap web experience runtime contract.
 - Do not put arc execution logic in TypeScript.
 
 ## Architecture References
 
 - docs/architecture/08-event-system.md
+- `docs/decisions/0003-nightcap-web-experience-runtime.md`
 - `AGENTS.md`
 - `docs/architecture/15-development-guide.md`
 

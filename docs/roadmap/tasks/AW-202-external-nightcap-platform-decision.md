@@ -1,4 +1,4 @@
-# AW-202: External Nightcap Platform Decision
+# AW-202: Nightcap Web Experience Runtime Decision
 
 **Milestone / Epic:** M2 / M2-A  
 **Size:** M  
@@ -6,7 +6,7 @@
 
 ## Plain-English Summary
 
-Select the external platform for Nightcap and document the integration contract.
+Select the Nightcap web experience runtime and document the integration contract.
 
 ## Why This Matters
 
@@ -22,12 +22,12 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 ## Technical Scope
 
-Select the external platform for Nightcap and document the integration contract. Likely files affected: docs/decisions, docs/roadmap/tasks/AW-225-through-AW-231, docs/roadmap/index.json.
+Select the browser-based Nightcap web experience runtime and document the integration contract. This task is not a decision to use a third-party app builder, and it does not move Arcwright core infrastructure or canonical state ownership out of Arcwright. Likely files affected: docs/specs, docs/decisions, docs/roadmap/tasks/AW-225-through-AW-231.
 
 ## Acceptance Criteria
 
-- [ ] A decision record names the selected external Nightcap platform or explicitly blocks M4 if no platform is acceptable.
-- [ ] The integration contract lists API, SDK, auth, event, and deployment assumptions.
+- [ ] A decision record names the selected Nightcap web experience runtime or explicitly blocks M4 if no runtime is acceptable.
+- [ ] The integration contract lists API, SDK, auth, event, deployment, privacy, state ownership, and performance assumptions.
 - [ ] M4 tasks are updated or unblocked according to the decision.
 
 ## Tests/Verification
@@ -42,7 +42,7 @@ Select the external platform for Nightcap and document the integration contract.
 
 ## Likely Files Affected
 
-docs/decisions, docs/roadmap/tasks/AW-225-through-AW-231, docs/roadmap/index.json
+docs/specs, docs/decisions, docs/roadmap/tasks/AW-225-through-AW-231
 
 ## Must Not Do
 
@@ -53,6 +53,8 @@ docs/decisions, docs/roadmap/tasks/AW-225-through-AW-231, docs/roadmap/index.jso
 ## Architecture References
 
 - docs/02-Decisions-Log-Additions-May2026.md Entry 3
+- `docs/specs/0022-aw-202-nightcap-web-experience-runtime-decision.md`
+- `docs/decisions/0003-nightcap-web-experience-runtime.md`
 - `AGENTS.md`
 - `docs/architecture/15-development-guide.md`
 
