@@ -52,10 +52,17 @@ class HarnessRunner:
     def apply_action(self, action: HarnessAction) -> HarnessTraceEntry:
         run = self._require_run()
         from_configuration = sorted(self._chart.configuration_values)
-        self._apply_context_payload(action.payload)
-        transition = self._resolve_transition(action.transition_name)
-        transition()
-        to_configuration = sorted(self._chart.configuration_values)
+        context_snapshot = dict(self._chart.session_context)
+        try:
+            self._apply_context_payload(action.payload)
+            transition = self._resolve_transition(action.transition_name)
+            transition()
+            to_configuration = sorted(self._chart.configuration_values)
+        except Exception:
+            self._chart.session_context = context_snapshot
+            raise
+        if to_configuration == from_configuration:
+            self._chart.session_context = context_snapshot
 
         step_index = run.step_index + 1
         entry = HarnessTraceEntry(

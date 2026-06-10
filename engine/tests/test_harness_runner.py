@@ -140,6 +140,32 @@ def test_apply_action_rejects_unknown_transition_name() -> None:
         runner.apply_action(HarnessAction(transition_name="update_context"))
 
 
+def test_failed_action_rolls_back_context_payload() -> None:
+    runner = HarnessRunner(arc_path=ARC_PATH, seed=110)
+    runner.start()
+
+    failed_entry = runner.apply_action(
+        HarnessAction(
+            transition_name=INVESTIGATION_TO_REVEAL,
+            payload=REVEAL_CONTEXT,
+        )
+    )
+    assert failed_entry.to_configuration == ["introduction"]
+
+    runner.apply_action(
+        HarnessAction(
+            transition_name=INTRO_TO_INVESTIGATION,
+            payload=READY_CONTEXT,
+        )
+    )
+    blocked_entry = runner.apply_action(
+        HarnessAction(transition_name=INVESTIGATION_TO_REVEAL)
+    )
+
+    assert blocked_entry.to_configuration == ["investigation"]
+    assert runner.snapshot().configuration == ["investigation"]
+
+
 def test_apply_action_does_not_call_generation_callback() -> None:
     def fail_generate(*args, **kwargs):  # type: ignore[no-untyped-def]
         raise AssertionError("generation should not be called for beat transitions")
