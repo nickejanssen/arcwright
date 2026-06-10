@@ -28,7 +28,7 @@
     "ab_test_planned": "pre_produced_vs_runtime_generated"
   },
   "setting_constraint": "social_gathering",
-  "arc_structure": "dan_harmon",
+  "arc_structure": "story_circle",
   "play_mode": "imposter",
   "narrator": {
     "type": "host_persona",

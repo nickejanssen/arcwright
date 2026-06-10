@@ -315,6 +315,7 @@ def test_nightcap_canonical_arc_matches_reference_runtime_choices() -> None:
 
     assert set(arc.aesthetic_config.selection_model) == {"era", "occasion"}
     assert arc.aesthetic_config.ab_test_planned == ("pre_produced_vs_runtime_generated")
+    assert arc.arc_structure == "story_circle"
     assert arc.narrator.persona_mode == "aesthetic_linked"
     assert arc.narrator.behavior_triggers == [
         "beat_transition",
