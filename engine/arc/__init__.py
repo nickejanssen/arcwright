@@ -1,4 +1,4 @@
-from engine.arc.arc_state import ArcStateChart
+from engine.arc.arc_state import ArcStateChart, transition_name_for
 from engine.arc.models import (
     AestheticMode,
     ArcDefinition,
@@ -16,4 +16,5 @@ __all__ = [
     "CharacterMode",
     "NarratorConfig",
     "PlayMode",
+    "transition_name_for",
 ]

@@ -18,18 +18,6 @@ from engine.harness.models import (
 
 
 class HarnessRunner:
-    _TRANSITION_NAMES = frozenset(
-        {
-            "begin_game",
-            "motives_established",
-            "investigation_begins",
-            "clues_sent",
-            "interrogation_complete",
-            "phases_complete",
-            "accusation_filed",
-        }
-    )
-
     def __init__(
         self,
         *,
@@ -64,9 +52,21 @@ class HarnessRunner:
     def apply_action(self, action: HarnessAction) -> HarnessTraceEntry:
         run = self._require_run()
         from_configuration = sorted(self._chart.configuration_values)
-        transition = self._resolve_transition(action.transition_name)
-        transition()
-        to_configuration = sorted(self._chart.configuration_values)
+        context_snapshot = dict(self._chart.session_context)
+        try:
+            self._apply_context_payload(action.payload)
+            transition = self._resolve_transition(action.transition_name)
+            if action.transition_name not in self._enabled_transition_names():
+                msg = (
+                    f"Transition {action.transition_name!r} is not enabled "
+                    f"from configuration {from_configuration!r}"
+                )
+                raise ValueError(msg)
+            transition()
+            to_configuration = sorted(self._chart.configuration_values)
+        except Exception:
+            self._chart.session_context = context_snapshot
+            raise
 
         step_index = run.step_index + 1
         entry = HarnessTraceEntry(
@@ -103,6 +103,10 @@ class HarnessRunner:
         run = self._require_run()
         return [entry.model_copy(deep=True) for entry in run.trace]
 
+    @property
+    def transition_names(self) -> frozenset[str]:
+        return self._chart.transition_names
+
     def _require_run(self) -> HarnessRun:
         if self._run is None:
             msg = "HarnessRunner.start() must be called before use."
@@ -112,8 +116,16 @@ class HarnessRunner:
     def _build_session_id(self) -> UUID:
         return UUID(int=self._rng.getrandbits(128), version=4)
 
+    def _apply_context_payload(self, payload: dict[str, Any]) -> None:
+        context = payload.get("context")
+        if not isinstance(context, dict):
+            return
+        for key, value in context.items():
+            if isinstance(key, str):
+                self._chart.update_context(key, value)
+
     def _resolve_transition(self, transition_name: str) -> Callable[[], Any]:
-        if transition_name not in self._TRANSITION_NAMES:
+        if transition_name not in self._chart.transition_names:
             msg = f"Unknown transition: {transition_name!r}"
             raise ValueError(msg)
         transition = getattr(self._chart, transition_name, None)
@@ -121,3 +133,6 @@ class HarnessRunner:
             msg = f"Unknown transition: {transition_name!r}"
             raise ValueError(msg)
         return cast(Callable[[], Any], transition)
+
+    def _enabled_transition_names(self) -> set[str]:
+        return {event.id for event in self._chart.enabled_events()}

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from engine.arc import transition_name_for
 from engine.harness import (
     BatchRunner,
     HarnessScenario,
@@ -16,6 +17,10 @@ from engine.harness import (
 )
 
 ARC_PATH = Path(__file__).parents[2] / "nightcap" / "arc.json"
+INTRO_TO_INVESTIGATION = transition_name_for("introduction", "investigation")
+INVESTIGATION_TO_REVEAL = transition_name_for("investigation", "reveal")
+READY_CONTEXT = {"context": {"all_players_ready": True}}
+REVEAL_CONTEXT = {"context": {"core_clues_revealed": True}}
 
 
 class DebugTraceEntry(HarnessTraceEntry):
@@ -41,37 +46,14 @@ def _happy_path_scenario(seed: int = 111) -> HarnessScenario:
         steps=[
             ScenarioStep(
                 actor_id=players[0].player_id,
-                action_type="begin_game",
-                expected_beat="killer_assignment",
-            ),
-            ScenarioStep(
-                actor_id=players[1].player_id,
-                action_type="motives_established",
-                expected_beat="motive_reveal",
-            ),
-            ScenarioStep(
-                actor_id=players[2].player_id,
-                action_type="investigation_begins",
+                action_type=INTRO_TO_INVESTIGATION,
+                payload=READY_CONTEXT,
                 expected_beat="investigation",
             ),
             ScenarioStep(
-                actor_id=players[0].player_id,
-                action_type="clues_sent",
-                expected_beat="distributed",
-            ),
-            ScenarioStep(
                 actor_id=players[1].player_id,
-                action_type="interrogation_complete",
-                expected_beat="closed",
-            ),
-            ScenarioStep(
-                actor_id=players[2].player_id,
-                action_type="phases_complete",
-                expected_beat="resolution",
-            ),
-            ScenarioStep(
-                actor_id=players[3].player_id,
-                action_type="accusation_filed",
+                action_type=INVESTIGATION_TO_REVEAL,
+                payload=REVEAL_CONTEXT,
                 expected_beat="reveal",
             ),
         ],
@@ -82,9 +64,9 @@ def test_canonicalize_trace_keeps_structural_fields() -> None:
     trace = [
         DebugTraceEntry(
             step_index=1,
-            transition_name="begin_game",
-            from_configuration=["introduction", "onboarding"],
-            to_configuration=["introduction", "killer_assignment"],
+            transition_name=INTRO_TO_INVESTIGATION,
+            from_configuration=["introduction"],
+            to_configuration=["investigation"],
             payload={"source": "scripted"},
             debug_label="ignored",
             elapsed_seconds=1.23,
@@ -96,9 +78,9 @@ def test_canonicalize_trace_keeps_structural_fields() -> None:
     assert canonical == [
         {
             "step_index": 1,
-            "transition_name": "begin_game",
-            "from_configuration": ["introduction", "onboarding"],
-            "to_configuration": ["introduction", "killer_assignment"],
+            "transition_name": INTRO_TO_INVESTIGATION,
+            "from_configuration": ["introduction"],
+            "to_configuration": ["investigation"],
             "payload": {"source": "scripted"},
         }
     ]
@@ -108,9 +90,9 @@ def test_canonicalize_trace_strips_debug_fields() -> None:
     trace = [
         DebugTraceEntry(
             step_index=2,
-            transition_name="motives_established",
-            from_configuration=["introduction", "killer_assignment"],
-            to_configuration=["introduction", "motive_reveal"],
+            transition_name=INVESTIGATION_TO_REVEAL,
+            from_configuration=["investigation"],
+            to_configuration=["reveal"],
             payload={"source": "scripted"},
             debug_label="debug-only",
             elapsed_seconds=4.56,
