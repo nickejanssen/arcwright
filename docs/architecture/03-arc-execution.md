@@ -90,13 +90,13 @@ Weights (`w_time`, `w_action`, `w_suspicion`, `w_coverage`) are stored in `pacin
 
 | Condition | Threshold | Action | Model route |
 | --- | --- | --- | --- |
-| Score falls below `stall_threshold` (default 0.25) | Players have stalled | Inject clue or narrator prompt | `pacing_decision` / Llama 3.1 8B on Groq |
-| Score rises above `misdirection_threshold` (default 0.80) | Players solving too quickly | Inject red herring via a character whose behavior has been too transparent | `narrative_generation` / Llama 3.1 8B on Groq |
-| Score above `premium_threshold` (default 0.85) | Peak dramatic moment | Upgrade character dialogue to `premium` quality tier for this beat | Routing table: `character_dialogue / premium` |
+| Score falls below `stall_threshold` (default 0.25) | Players have stalled | Inject clue or narrator prompt | `pacing_decision` resolved by routing table |
+| Score rises above `misdirection_threshold` (default 0.80) and remains below `premium_threshold` | Players solving too quickly | Inject red herring via a character whose behavior has been too transparent | `narrative_generation` resolved by routing table |
+| Score reaches or exceeds `premium_threshold` (default 0.85) | Peak dramatic moment | Upgrade character dialogue to `premium` quality tier for this beat | `character_dialogue / premium` resolved by routing table |
 
-The third row is the architectural benefit of unification: when tension is highest, the routing table automatically serves premium-tier character dialogue without any explicit call-site code. The score is the quality tier signal.
+Threshold evaluation is mutually exclusive. Premium quality upgrade takes precedence over misdirection so a peak dramatic moment is not undercut by injecting a red herring. The third row is the architectural benefit of unification: when tension is highest, the routing table automatically serves premium-tier character dialogue without any explicit provider-specific call-site code. The score is the quality tier signal.
 
-`dramatic_tension_score` is logged to `events` table on every pacing poll as `event_type = "tension_update"` with `payload.score`. Intervention events log `event_type = "pacing_intervention"` with `trigger_type`, `score_at_trigger`, and `outcome` (whether player activity resumed within 60 seconds). Both are Telemetry signal 2 (pacing intervention triggers/outcomes) from the PRD minimum set. The continuous score log is also a Tier 2 training signal: it captures the shape of tension across a session's arc.
+`dramatic_tension_score` is logged to the `events` table on every pacing poll as `event_type = "tension_update"` with `payload.score` and `payload.beat_id`. Player-facing stall and misdirection interventions log `event_type = "pacing_intervention"` with `trigger_type`, `tension_score_at_trigger`, and `beat_id`. Their 60-second follow-up result is logged as a separate append-only `event_type = "pacing_intervention_outcome"` with `outcome_resumed_within_60s`. Premium quality upgrades do not emit pacing intervention events because there is no resumed-activity outcome for a quality-tier change. These events are Telemetry signal 2 (pacing intervention triggers/outcomes) from the PRD minimum set. The continuous score log is also a Tier 2 training signal: it captures the shape of tension across a session's arc.
 
 ## 3.4 Generative vs Authored Execution
 

@@ -44,7 +44,13 @@ Logged on every beat transition: `event_type = "beat_transition"`, `payload = {"
 
 **Signal 2: Pacing intervention triggers and outcomes.**
 
-Logged by the pacing engine: `event_type = "pacing_intervention"`, `payload = {"trigger_type": "stall" | "misdirection", "tension_score_at_trigger": float, "beat_id": str, "outcome_resumed_within_60s": bool}`. Also logged on every pacing poll: `event_type = "tension_update"`, `payload = {"score": float}`. The continuous tension score log captures the shape of dramatic arc across the full session, not just intervention moments.
+Logged on every pacing poll: `event_type = "tension_update"`, `payload = {"score": float, "beat_id": str}`. The continuous tension score log captures the shape of dramatic arc across the full session, not just intervention moments, and `beat_id` supports per-beat training-data review.
+
+Logged when the pacing engine triggers a player-facing stall or misdirection intervention: `event_type = "pacing_intervention"`, `payload = {"trigger_type": "stall" | "misdirection", "tension_score_at_trigger": float, "beat_id": str}`.
+
+Logged after the follow-up outcome window for those same player-facing interventions: `event_type = "pacing_intervention_outcome"`, `payload = {"trigger_type": "stall" | "misdirection", "tension_score_at_trigger": float, "beat_id": str, "outcome_resumed_within_60s": bool}`. The outcome is a separate event because the `events` table is append-only and the 60-second outcome cannot be known when the trigger event is first written.
+
+A premium quality-tier upgrade is a pacing decision but not a `pacing_intervention` event. It has no `outcome_resumed_within_60s` semantics and is instead captured through the tension score, generation log quality tier and tension score, and decision-log payloads when persistence integration is wired.
 
 **Signal 3: Knowledge state constraint activations.**
 
