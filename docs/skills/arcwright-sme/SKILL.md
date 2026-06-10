@@ -233,7 +233,7 @@ All five must be live before a single real-user session. Sessions without teleme
 | Signal | Event type | Key payload fields |
 |---|---|---|
 | Arc beat engagement duration | `beat_transition` | `from_beat`, `to_beat`, `duration_seconds`, `player_action_count` |
-| Pacing interventions | `pacing_intervention` + `tension_update` | `trigger_type`, `tension_score_at_trigger`, `outcome_resumed_within_60s` |
+| Pacing interventions | `tension_update` + `pacing_intervention` + `pacing_intervention_outcome` | `score`, `beat_id`, `trigger_type`, `tension_score_at_trigger`, `outcome_resumed_within_60s` |
 | Knowledge constraint activations | `knowledge_constraint_activated` | `character_id`, `fact_type`, `constraint_direction`, `provenance_chain_length` |
 | Session completion status | `session_completed` | `completion_type`, `final_beat_reached`, `killer_identified`, `total_duration_seconds` |
 | Replay intent | `replay_intent` | `intent` (yes/no/maybe/not_asked), `collection_method` |
