@@ -6,9 +6,14 @@ from pathlib import Path
 
 import pytest
 
+from engine.arc import transition_name_for
 from engine.harness import HarnessAction, HarnessRunner
 
 ARC_PATH = Path(__file__).parents[2] / "nightcap" / "arc.json"
+INTRO_TO_INVESTIGATION = transition_name_for("introduction", "investigation")
+INVESTIGATION_TO_REVEAL = transition_name_for("investigation", "reveal")
+READY_CONTEXT = {"context": {"all_players_ready": True}}
+REVEAL_CONTEXT = {"context": {"core_clues_revealed": True}}
 
 
 def test_runner_initialises_from_nightcap_arc() -> None:
@@ -19,7 +24,7 @@ def test_runner_initialises_from_nightcap_arc() -> None:
     assert run.arc_id == "nightcap"
     assert run.seed == 110
     assert run.step_index == 0
-    assert run.configuration == ["introduction", "onboarding"]
+    assert run.configuration == ["introduction"]
     assert run.trace == []
 
 
@@ -27,62 +32,73 @@ def test_apply_action_advances_configuration() -> None:
     runner = HarnessRunner(arc_path=ARC_PATH, seed=110)
     runner.start()
 
-    entry = runner.apply_action(HarnessAction(transition_name="begin_game"))
+    entry = runner.apply_action(
+        HarnessAction(
+            transition_name=INTRO_TO_INVESTIGATION,
+            payload=READY_CONTEXT,
+        )
+    )
     snapshot = runner.snapshot()
 
     assert entry.step_index == 1
-    assert entry.transition_name == "begin_game"
-    assert entry.from_configuration == ["introduction", "onboarding"]
-    assert entry.to_configuration == ["introduction", "killer_assignment"]
+    assert entry.transition_name == INTRO_TO_INVESTIGATION
+    assert entry.from_configuration == ["introduction"]
+    assert entry.to_configuration == ["investigation"]
     assert snapshot.step_index == 1
-    assert snapshot.configuration == ["introduction", "killer_assignment"]
+    assert snapshot.configuration == ["investigation"]
 
 
 def test_full_happy_path_reaches_reveal() -> None:
     runner = HarnessRunner(arc_path=ARC_PATH, seed=110)
     runner.start()
 
-    transitions = [
-        "begin_game",
-        "motives_established",
-        "investigation_begins",
-        "clues_sent",
-        "interrogation_complete",
-        "phases_complete",
-        "accusation_filed",
+    actions = [
+        HarnessAction(
+            transition_name=INTRO_TO_INVESTIGATION,
+            payload=READY_CONTEXT,
+        ),
+        HarnessAction(
+            transition_name=INVESTIGATION_TO_REVEAL,
+            payload=REVEAL_CONTEXT,
+        ),
     ]
 
-    for transition_name in transitions:
-        runner.apply_action(HarnessAction(transition_name=transition_name))
+    for action in actions:
+        runner.apply_action(action)
 
     snapshot = runner.snapshot()
 
-    assert snapshot.step_index == 7
+    assert snapshot.step_index == 2
     assert snapshot.configuration == ["reveal"]
 
 
 def test_snapshot_reflects_current_step_and_configuration() -> None:
     runner = HarnessRunner(arc_path=ARC_PATH, seed=110)
     runner.start()
-    runner.apply_action(HarnessAction(transition_name="begin_game"))
-    runner.apply_action(HarnessAction(transition_name="motives_established"))
+    runner.apply_action(
+        HarnessAction(
+            transition_name=INTRO_TO_INVESTIGATION,
+            payload=READY_CONTEXT,
+        )
+    )
 
     snapshot = runner.snapshot()
 
-    assert snapshot.step_index == 2
+    assert snapshot.step_index == 1
     assert snapshot.seed == 110
-    assert snapshot.configuration == ["introduction", "motive_reveal"]
+    assert snapshot.configuration == ["investigation"]
 
 
 def test_same_seed_same_actions_identical_trace() -> None:
-    transitions = [
-        "begin_game",
-        "motives_established",
-        "investigation_begins",
-        "clues_sent",
-        "interrogation_complete",
-        "phases_complete",
-        "accusation_filed",
+    actions = [
+        HarnessAction(
+            transition_name=INTRO_TO_INVESTIGATION,
+            payload={**READY_CONTEXT, "source": "scripted"},
+        ),
+        HarnessAction(
+            transition_name=INVESTIGATION_TO_REVEAL,
+            payload={**REVEAL_CONTEXT, "source": "scripted"},
+        ),
     ]
 
     first_runner = HarnessRunner(arc_path=ARC_PATH, seed=110)
@@ -90,11 +106,7 @@ def test_same_seed_same_actions_identical_trace() -> None:
     first_runner.start()
     second_runner.start()
 
-    for transition_name in transitions:
-        action = HarnessAction(
-            transition_name=transition_name,
-            payload={"source": "scripted"},
-        )
+    for action in actions:
         first_runner.apply_action(action)
         second_runner.apply_action(action)
 
@@ -126,3 +138,20 @@ def test_apply_action_rejects_unknown_transition_name() -> None:
 
     with pytest.raises(ValueError, match="Unknown transition"):
         runner.apply_action(HarnessAction(transition_name="update_context"))
+
+
+def test_apply_action_does_not_call_generation_callback() -> None:
+    def fail_generate(*args, **kwargs):  # type: ignore[no-untyped-def]
+        raise AssertionError("generation should not be called for beat transitions")
+
+    runner = HarnessRunner(arc_path=ARC_PATH, seed=110, generate=fail_generate)
+    runner.start()
+
+    runner.apply_action(
+        HarnessAction(
+            transition_name=INTRO_TO_INVESTIGATION,
+            payload=READY_CONTEXT,
+        )
+    )
+
+    assert runner.snapshot().configuration == ["investigation"]

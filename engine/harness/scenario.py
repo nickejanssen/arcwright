@@ -95,7 +95,9 @@ class ScenarioExecutor:
 
     def _validate_structure(self, scenario: HarnessScenario) -> None:
         known_players = {player.player_id for player in scenario.players}
-        allowed_actions = HarnessRunner._TRANSITION_NAMES
+        allowed_actions = self._build_runner(
+            scenario.seed, preflight=True
+        ).transition_names
         errors: list[str] = []
 
         for step_index, step in enumerate(scenario.steps, start=1):
