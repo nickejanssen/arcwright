@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from pathlib import Path
 
 import pytest
 from pydantic import ValidationError
 
 from engine.arc.models import ArcDefinition
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
 
 
 def valid_arc_payload() -> dict:
@@ -243,3 +246,83 @@ def test_legacy_aesthetic_mode_is_migrated_for_minimal_fixtures() -> None:
     arc = ArcDefinition.model_validate(payload)
 
     assert arc.aesthetic_config.asset_generation["legacy_mode"] == "fixed"
+
+
+def test_nightcap_canonical_arc_json_validates() -> None:
+    arc = ArcDefinition.model_validate_json(
+        (REPO_ROOT / "nightcap" / "arc.json").read_text(encoding="utf-8")
+    )
+
+    assert arc.arc_id == "nightcap"
+    assert arc.name == "Nightcap Murder Mystery"
+
+
+def test_nightcap_canonical_arc_keeps_three_top_level_beats() -> None:
+    arc = ArcDefinition.model_validate_json(
+        (REPO_ROOT / "nightcap" / "arc.json").read_text(encoding="utf-8")
+    )
+
+    assert [beat.beat_id for beat in arc.beats] == [
+        "introduction",
+        "investigation",
+        "reveal",
+    ]
+    assert arc.beat_graph == {
+        "introduction": ["investigation"],
+        "investigation": ["reveal"],
+        "reveal": [],
+    }
+
+
+def test_nightcap_canonical_arc_defines_safety_and_knowledge_rules() -> None:
+    arc = ArcDefinition.model_validate_json(
+        (REPO_ROOT / "nightcap" / "arc.json").read_text(encoding="utf-8")
+    )
+
+    assert arc.content_rails.prohibited_categories == [
+        "csam",
+        "graphic_violence",
+        "real_person_targeting",
+    ]
+    assert arc.content_rails.thematic_warnings == [
+        "murder_mystery",
+        "deception",
+        "dark_motives",
+    ]
+    assert arc.content_rails.age_floor == 18
+    assert arc.knowledge_rules.killer_knows_they_did_it is True
+    assert arc.knowledge_rules.narrator_omniscient is True
+    assert arc.knowledge_rules.clues_private_until_shared is True
+
+
+def test_nightcap_canonical_arc_records_m6_first_proof_range() -> None:
+    arc = ArcDefinition.model_validate_json(
+        (REPO_ROOT / "nightcap" / "arc.json").read_text(encoding="utf-8")
+    )
+    canonical_reference = arc.tone_config["canonical_reference"]
+
+    assert arc.min_players == 4
+    assert arc.max_players == 10
+    assert canonical_reference["supported_player_range"] == [4, 10]
+    assert canonical_reference["first_proof_player_range"] == [4, 6]
+    assert canonical_reference["top_level_beat_model"] == "three_beat_graph"
+
+
+def test_nightcap_canonical_arc_matches_reference_runtime_choices() -> None:
+    arc = ArcDefinition.model_validate_json(
+        (REPO_ROOT / "nightcap" / "arc.json").read_text(encoding="utf-8")
+    )
+
+    assert set(arc.aesthetic_config.selection_model) == {"era", "occasion"}
+    assert arc.aesthetic_config.ab_test_planned == ("pre_produced_vs_runtime_generated")
+    assert arc.narrator.persona_mode == "aesthetic_linked"
+    assert arc.narrator.behavior_triggers == [
+        "beat_transition",
+        "clue_release",
+        "tension_threshold",
+        "player_inaction",
+    ]
+    assert arc.generative_elements.aesthetic_generation is True
+    assert arc.generative_elements.plot_twist is True
+    assert arc.session_duration_range == [30, 75]
+    assert arc.revelation_step_range == [2, 4]
