@@ -44,6 +44,8 @@ Logged on every beat transition: `event_type = "beat_transition"`, `payload = {"
 
 **Signal 2: Pacing intervention triggers and outcomes.**
 
+Decision record: `docs/decisions/0004-pacing-telemetry-outcome-events.md`.
+
 Logged on every pacing poll: `event_type = "tension_update"`, `payload = {"score": float, "beat_id": str}`. The continuous tension score log captures the shape of dramatic arc across the full session, not just intervention moments, and `beat_id` supports per-beat training-data review.
 
 Logged when the pacing engine triggers a player-facing stall or misdirection intervention: `event_type = "pacing_intervention"`, `payload = {"trigger_type": "stall" | "misdirection", "tension_score_at_trigger": float, "beat_id": str}`.

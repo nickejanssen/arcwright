@@ -8,7 +8,7 @@
 
 # References
 
-- Related ADRs: `docs/decisions/0001-scaffolding-audit.md`
+- Related ADRs: `docs/decisions/0001-scaffolding-audit.md`, `docs/decisions/0004-pacing-telemetry-outcome-events.md`
 - Architecture sections: `docs/architecture/03-arc-execution.md`, `docs/architecture/11-telemetry.md`, `docs/architecture/15-development-guide.md`
 - Related specs: `docs/specs/0024-aw-204-dynamic-arcstatechart-generation.md`
 - PRD sections: `docs/prd/02-requirements.md`

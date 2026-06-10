@@ -36,6 +36,7 @@ When proposing changes:
 - `0001-scaffolding-audit.md` - repository scaffold audit against the technical architecture
 - `0002-harness-scenario-execution-contract.md` - AW-111 scenario execution contract for participants, preflight validation, and payload scope
 - `0003-nightcap-web-experience-runtime.md` - AW-202 Nightcap web experience runtime and Arcwright integration contract
+- `0004-pacing-telemetry-outcome-events.md` - AW-207 append-only pacing trigger and outcome telemetry contract
 
 ## Current Decision Categories
 
