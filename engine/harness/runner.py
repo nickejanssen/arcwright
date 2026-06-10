@@ -56,13 +56,17 @@ class HarnessRunner:
         try:
             self._apply_context_payload(action.payload)
             transition = self._resolve_transition(action.transition_name)
+            if action.transition_name not in self._enabled_transition_names():
+                msg = (
+                    f"Transition {action.transition_name!r} is not enabled "
+                    f"from configuration {from_configuration!r}"
+                )
+                raise ValueError(msg)
             transition()
             to_configuration = sorted(self._chart.configuration_values)
         except Exception:
             self._chart.session_context = context_snapshot
             raise
-        if to_configuration == from_configuration:
-            self._chart.session_context = context_snapshot
 
         step_index = run.step_index + 1
         entry = HarnessTraceEntry(
@@ -129,3 +133,6 @@ class HarnessRunner:
             msg = f"Unknown transition: {transition_name!r}"
             raise ValueError(msg)
         return cast(Callable[[], Any], transition)
+
+    def _enabled_transition_names(self) -> set[str]:
+        return {event.id for event in self._chart.enabled_events()}

@@ -140,17 +140,21 @@ def test_apply_action_rejects_unknown_transition_name() -> None:
         runner.apply_action(HarnessAction(transition_name="update_context"))
 
 
-def test_failed_action_rolls_back_context_payload() -> None:
+def test_unaccepted_action_rolls_back_context_payload_and_raises() -> None:
     runner = HarnessRunner(arc_path=ARC_PATH, seed=110)
     runner.start()
 
-    failed_entry = runner.apply_action(
-        HarnessAction(
-            transition_name=INVESTIGATION_TO_REVEAL,
-            payload=REVEAL_CONTEXT,
+    with pytest.raises(ValueError, match="is not enabled"):
+        runner.apply_action(
+            HarnessAction(
+                transition_name=INVESTIGATION_TO_REVEAL,
+                payload=REVEAL_CONTEXT,
+            )
         )
-    )
-    assert failed_entry.to_configuration == ["introduction"]
+
+    assert runner.snapshot().configuration == ["introduction"]
+    assert runner.snapshot().step_index == 0
+    assert runner.trace() == []
 
     runner.apply_action(
         HarnessAction(
@@ -158,12 +162,20 @@ def test_failed_action_rolls_back_context_payload() -> None:
             payload=READY_CONTEXT,
         )
     )
-    blocked_entry = runner.apply_action(
-        HarnessAction(transition_name=INVESTIGATION_TO_REVEAL)
+    with pytest.raises(ValueError, match="is not enabled"):
+        runner.apply_action(HarnessAction(transition_name=INVESTIGATION_TO_REVEAL))
+
+    assert runner.snapshot().configuration == ["investigation"]
+    assert runner.snapshot().step_index == 1
+
+    entry = runner.apply_action(
+        HarnessAction(
+            transition_name=INVESTIGATION_TO_REVEAL,
+            payload=REVEAL_CONTEXT,
+        )
     )
 
-    assert blocked_entry.to_configuration == ["investigation"]
-    assert runner.snapshot().configuration == ["investigation"]
+    assert entry.to_configuration == ["reveal"]
 
 
 def test_apply_action_does_not_call_generation_callback() -> None:

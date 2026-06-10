@@ -130,6 +130,41 @@ def test_expected_beat_assertion_fails_before_real_run_starts() -> None:
     assert starts == [111]
 
 
+def test_unenabled_transition_fails_before_real_run_starts() -> None:
+    starts: list[int] = []
+
+    class TrackingRunner(HarnessRunner):
+        def start(self):  # type: ignore[override]
+            starts.append(self._seed)
+            return super().start()
+
+    scenario = HarnessScenario(
+        scenario_id="blocked-transition",
+        seed=111,
+        players=_players(),
+        steps=[
+            ScenarioStep(
+                actor_id="player-a",
+                action_type=INTRO_TO_INVESTIGATION,
+                expected_beat="investigation",
+            )
+        ],
+    )
+
+    executor = ScenarioExecutor(
+        arc_path=ARC_PATH,
+        runner_factory=lambda arc_path, seed: TrackingRunner(
+            arc_path=arc_path,
+            seed=seed,
+        ),
+    )
+
+    with pytest.raises(ScenarioValidationError, match="is not enabled"):
+        executor.run(scenario)
+
+    assert starts == [111]
+
+
 def test_happy_path_scenario_completes_reveal() -> None:
     scenario = _happy_path_scenario()
 
