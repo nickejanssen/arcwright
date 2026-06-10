@@ -7,6 +7,8 @@ from uuid import UUID
 
 from pydantic import BaseModel, Field
 
+from engine.session import SessionRuntimeState
+
 
 class HarnessAction(BaseModel):
     transition_name: str
@@ -35,4 +37,5 @@ class HarnessRun(BaseModel):
     configuration: list[str]
     step_index: int
     participants: list[str] = Field(default_factory=list)
+    runtime_state: SessionRuntimeState
     trace: list[HarnessTraceEntry]

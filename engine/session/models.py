@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Any, Literal, Optional
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class SessionStatus(str, Enum):
@@ -28,6 +28,30 @@ class ArcBeat(BaseModel):
     beat_name: str
     entered_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
+
+
+class RevealState(BaseModel):
+    is_revealed: bool = False
+    revealed_by: Optional[Literal["authored_conditions", "host_bypass"]] = None
+    bypass_sequence: Optional[int] = None
+
+
+class TransitionBypassLogEntry(BaseModel):
+    sequence: int
+    actor_id: str
+    reason: str
+    source_transition: str
+    source_beat_id: str
+    target_beat_id: str
+    bypassed_conditions: list[str] = Field(default_factory=list)
+
+
+class SessionRuntimeState(BaseModel):
+    seed: int
+    role_assignments: dict[str, str] = Field(default_factory=dict)
+    resolved_generative_elements: dict[str, Any] = Field(default_factory=dict)
+    reveal_state: RevealState = Field(default_factory=RevealState)
+    transition_bypass_log: list[TransitionBypassLogEntry] = Field(default_factory=list)
 
 
 class Session(BaseModel):
