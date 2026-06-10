@@ -348,6 +348,39 @@ def test_reveal_bypass_without_reason_fails() -> None:
     assert runner.current_run().runtime_state.transition_bypass_log == []
 
 
+def test_malformed_bypass_with_authored_context_fails_before_reveal() -> None:
+    runner = HarnessRunner(arc_path=ARC_PATH, seed=110)
+    runner.start()
+    runner.set_participants(PLAYERS)
+    runner.apply_action(
+        HarnessAction(
+            transition_name=INTRO_TO_INVESTIGATION,
+            payload=READY_CONTEXT,
+        )
+    )
+
+    with pytest.raises(ValueError, match="actor_role='host'"):
+        runner.apply_action(
+            HarnessAction(
+                transition_name=INVESTIGATION_TO_REVEAL,
+                payload={
+                    **REVEAL_CONTEXT,
+                    "host_bypass": {
+                        "actor_id": "player-a",
+                        "actor_role": "player",
+                        "reason": "trying to force reveal",
+                    },
+                },
+            )
+        )
+
+    run = runner.current_run()
+    assert runner.snapshot().configuration == ["investigation"]
+    assert run.runtime_state.reveal_state.is_revealed is False
+    assert run.runtime_state.transition_bypass_log == []
+    assert runner.context_value("core_clues_revealed") is None
+
+
 def test_apply_action_does_not_call_generation_callback() -> None:
     def fail_generate(*args, **kwargs):  # type: ignore[no-untyped-def]
         raise AssertionError("generation should not be called for beat transitions")

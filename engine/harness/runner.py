@@ -68,11 +68,14 @@ class HarnessRunner:
             self._apply_context_payload(action.payload)
             transition = self._resolve_transition(action.transition_name)
             transition_edge = self._transition_edges[action.transition_name]
+            has_host_bypass = self._has_host_bypass_payload(action.payload)
+            if has_host_bypass:
+                self._validate_host_bypass_payload(action.payload)
             if action.transition_name in self._enabled_transition_names():
                 transition()
                 to_configuration = sorted(self._chart.configuration_values)
                 self._record_reveal_if_needed(transition_edge[1], "authored_conditions")
-            elif self._has_host_bypass_payload(action.payload):
+            elif has_host_bypass:
                 to_configuration = self._apply_host_bypass(
                     action,
                     transition,
