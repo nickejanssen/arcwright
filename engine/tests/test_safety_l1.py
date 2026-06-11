@@ -71,6 +71,17 @@ def test_l1_allows_fictional_murder_mystery_content(text: str) -> None:
     assert evaluate_l1_hard_stops(messages(text)) is None
 
 
+def test_phrase_triggers_do_not_create_global_common_word_matches() -> None:
+    result = evaluate_l1_hard_stops(
+        messages(
+            "How to host a Nightcap scene with soft tension and steady clue "
+            "pacing: I go to the fictional weapon display."
+        )
+    )
+
+    assert result is None
+
+
 @pytest.mark.parametrize(
     "text",
     [

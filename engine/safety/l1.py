@@ -265,9 +265,13 @@ def _matches_underage_sexual_content(
 ) -> bool:
     if any(phrase in normalized for phrase in _CSAM_PHRASES):
         return True
-    under_18_terms = set(_UNDER_18_TERMS)
-    under_18_terms.update(_phrase_terms(normalized, _UNDER_18_PHRASES))
-    return _terms_near(tokens, _SEXUAL_CONTENT_TERMS, under_18_terms)
+    sexual_indexes = _indicator_indexes(tokens, terms=_SEXUAL_CONTENT_TERMS)
+    under_18_indexes = _indicator_indexes(
+        tokens,
+        terms=_UNDER_18_TERMS,
+        phrases=_UNDER_18_PHRASES,
+    )
+    return _indexes_near(sexual_indexes, under_18_indexes)
 
 
 def _matches_real_person_harm_targeting(
@@ -279,8 +283,9 @@ def _matches_real_person_harm_targeting(
         return False
     if not _has_person_name_shape(raw_text, normalized):
         return False
-    marker_terms = _phrase_terms(normalized, _REAL_PERSON_PHRASES)
-    return _terms_near(tokens, _HARMFUL_ACTION_TERMS, marker_terms)
+    harmful_indexes = _indicator_indexes(tokens, terms=_HARMFUL_ACTION_TERMS)
+    marker_indexes = _indicator_indexes(tokens, phrases=_REAL_PERSON_PHRASES)
+    return _indexes_near(harmful_indexes, marker_indexes)
 
 
 def _has_person_name_shape(raw_text: str, normalized: str) -> bool:
@@ -295,46 +300,71 @@ def _matches_real_world_violence_instructions(
     normalized: str,
     tokens: list[str],
 ) -> bool:
-    instruction_terms = set(_INSTRUCTION_TERMS)
-    instruction_terms.update(_phrase_terms(normalized, _INSTRUCTION_PHRASES))
-    weapon_terms = set(_WEAPON_ATTACK_TERMS)
-    weapon_terms.update(_phrase_terms(normalized, _WEAPON_ATTACK_PHRASES))
-    return _terms_near(tokens, instruction_terms, weapon_terms)
+    instruction_indexes = _indicator_indexes(
+        tokens,
+        terms=_INSTRUCTION_TERMS,
+        phrases=_INSTRUCTION_PHRASES,
+    )
+    weapon_indexes = _indicator_indexes(
+        tokens,
+        terms=_WEAPON_ATTACK_TERMS,
+        phrases=_WEAPON_ATTACK_PHRASES,
+    )
+    return _indexes_near(instruction_indexes, weapon_indexes)
 
 
 def _matches_real_world_harm_facilitation(
     normalized: str,
     tokens: list[str],
 ) -> bool:
-    facilitation_terms = set(_FACILITATION_TERMS)
-    facilitation_terms.update(_phrase_terms(normalized, _FACILITATION_PHRASES))
-    harm_terms = set(_OPERATIONAL_HARM_TERMS)
-    harm_terms.update(_phrase_terms(normalized, _OPERATIONAL_HARM_PHRASES))
-    if not _terms_near(tokens, facilitation_terms, harm_terms):
+    facilitation_indexes = _indicator_indexes(
+        tokens,
+        terms=_FACILITATION_TERMS,
+        phrases=_FACILITATION_PHRASES,
+    )
+    harm_indexes = _indicator_indexes(
+        tokens,
+        terms=_OPERATIONAL_HARM_TERMS,
+        phrases=_OPERATIONAL_HARM_PHRASES,
+    )
+    if not _indexes_near(facilitation_indexes, harm_indexes):
         return False
     if any(phrase in normalized for phrase in _REAL_WORLD_MARKERS):
         return True
-    fictional_terms = set(_FICTIONAL_FRAME_TERMS)
-    fictional_terms.update(_phrase_terms(normalized, _FICTIONAL_FRAME_PHRASES))
-    return not _terms_near(tokens, harm_terms, fictional_terms)
+    fictional_indexes = _indicator_indexes(
+        tokens,
+        terms=_FICTIONAL_FRAME_TERMS,
+        phrases=_FICTIONAL_FRAME_PHRASES,
+    )
+    return not _indexes_near(harm_indexes, fictional_indexes)
 
 
-def _phrase_terms(normalized: str, phrases: tuple[str, ...]) -> set[str]:
-    terms: set[str] = set()
-    for phrase in phrases:
-        normalized_phrase = normalize_text(phrase)
-        if normalized_phrase in normalized:
-            terms.update(normalized_phrase.split())
-    return terms
-
-
-def _terms_near(
+def _indicator_indexes(
     tokens: list[str],
-    left_terms: set[str] | frozenset[str],
-    right_terms: set[str] | frozenset[str],
-) -> bool:
-    left_indexes = [idx for idx, token in enumerate(tokens) if token in left_terms]
-    right_indexes = [idx for idx, token in enumerate(tokens) if token in right_terms]
+    *,
+    terms: set[str] | frozenset[str] = frozenset(),
+    phrases: tuple[str, ...] = (),
+) -> list[int]:
+    indexes = [idx for idx, token in enumerate(tokens) if token in terms]
+    indexes.extend(_phrase_indexes(tokens, phrases))
+    return indexes
+
+
+def _phrase_indexes(tokens: list[str], phrases: tuple[str, ...]) -> list[int]:
+    indexes: list[int] = []
+    for phrase in phrases:
+        phrase_tokens = tokenize(phrase)
+        if not phrase_tokens:
+            continue
+        phrase_length = len(phrase_tokens)
+        for start_idx in range(len(tokens) - phrase_length + 1):
+            end_idx = start_idx + phrase_length
+            if tokens[start_idx:end_idx] == phrase_tokens:
+                indexes.extend(range(start_idx, end_idx))
+    return indexes
+
+
+def _indexes_near(left_indexes: list[int], right_indexes: list[int]) -> bool:
     return any(
         abs(left_idx - right_idx) <= _TOKEN_WINDOW
         for left_idx in left_indexes
