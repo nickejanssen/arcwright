@@ -88,7 +88,7 @@ Minimum term groups:
 
 | Group | Terms |
 | --- | --- |
-| Under-18 indicators | `minor`, `underage`, `child`, `kid`, `teen`, `teenager`, `schoolgirl`, `schoolboy`, `14 year old`, `15 year old`, `16 year old`, `17 year old`, `under 18` |
+| Under-18 indicators | `minor`, `underage`, `child`, `kid`, `infant`, `baby`, `toddler`, `preteen`, `adolescent`, `teen`, `teenager`, `schoolgirl`, `schoolboy`, numeric ages `0 year old` through `17 year old`, numeric ages `0 years old` through `17 years old`, `under 18`, `under eighteen` |
 | Sexual-content indicators | `sexual`, `sex`, `erotic`, `nude`, `naked`, `porn`, `explicit`, `intercourse` |
 | Explicit child sexual abuse material indicators | `csam`, `child sexual abuse material` |
 | Real-person markers | `real person`, `living person`, `named person`, `public figure`, `actual person`, `irl person`, `in real life` |

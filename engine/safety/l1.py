@@ -34,6 +34,11 @@ _UNDER_18_TERMS = frozenset(
         "underage",
         "child",
         "kid",
+        "infant",
+        "baby",
+        "toddler",
+        "preteen",
+        "adolescent",
         "teen",
         "teenager",
         "schoolgirl",
@@ -41,11 +46,12 @@ _UNDER_18_TERMS = frozenset(
     }
 )
 _UNDER_18_PHRASES = (
-    "14 year old",
-    "15 year old",
-    "16 year old",
-    "17 year old",
-    "under 18",
+    tuple(f"{age} year old" for age in range(18))
+    + tuple(f"{age} years old" for age in range(18))
+    + (
+        "under 18",
+        "under eighteen",
+    )
 )
 _SEXUAL_CONTENT_TERMS = frozenset(
     {
@@ -154,6 +160,11 @@ _FICTIONAL_FRAME_PHRASES = (
 )
 
 _NAME_SHAPED_PHRASE = re.compile(r"\b[A-Z][a-z]+ [A-Z][a-z]+\b")
+_LOWERCASE_NAMED_PERSON_PHRASE = re.compile(r"\bnamed\s+[a-z][a-z]+ [a-z][a-z]+\b")
+_LOWERCASE_MARKER_PERSON_PHRASE = re.compile(
+    r"\b(?:real person|living person|public figure|actual person|irl person)"
+    r"\s+[a-z][a-z]+ [a-z][a-z]+\b"
+)
 
 
 def normalize_text(text: str) -> str:
@@ -266,10 +277,18 @@ def _matches_real_person_harm_targeting(
 ) -> bool:
     if not any(phrase in normalized for phrase in _REAL_PERSON_PHRASES):
         return False
-    if not _NAME_SHAPED_PHRASE.search(raw_text):
+    if not _has_person_name_shape(raw_text, normalized):
         return False
     marker_terms = _phrase_terms(normalized, _REAL_PERSON_PHRASES)
     return _terms_near(tokens, _HARMFUL_ACTION_TERMS, marker_terms)
+
+
+def _has_person_name_shape(raw_text: str, normalized: str) -> bool:
+    return bool(
+        _NAME_SHAPED_PHRASE.search(raw_text)
+        or _LOWERCASE_NAMED_PERSON_PHRASE.search(normalized)
+        or _LOWERCASE_MARKER_PERSON_PHRASE.search(normalized)
+    )
 
 
 def _matches_real_world_violence_instructions(
