@@ -11,6 +11,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from engine.db.orm import Event, GenerationLog
 from engine.routing.router import RouteResult, compute_cost, route_generation
+from engine.safety import (
+    build_l1_hard_stop_route_result,
+    build_safety_hard_stop_payload,
+    evaluate_l1_hard_stops,
+)
 
 
 async def log_generation(
@@ -73,6 +78,19 @@ async def generate(
     tension_score: float | None = None,
 ) -> RouteResult:
     """Route a generation call and immediately log it to generation_logs."""
+    hard_stop = evaluate_l1_hard_stops(messages)
+    if hard_stop is not None:
+        event = Event(
+            session_id=session_id,
+            actor_char_id=None,
+            event_type="safety_hard_stop",
+            payload=build_safety_hard_stop_payload(hard_stop),
+            content_text=None,
+        )
+        db_session.add(event)
+        await db_session.flush()
+        return build_l1_hard_stop_route_result()
+
     result = await route_generation(task_type, quality_tier, messages, temperature)
     await log_generation(
         db_session,
