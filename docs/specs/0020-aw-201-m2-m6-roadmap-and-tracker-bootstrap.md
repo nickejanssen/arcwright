@@ -8,7 +8,7 @@
 
 # References
 
-- Related ADRs: `docs/decisions/0001-scaffolding-audit.md`, `docs/02-Decisions-Log-Additions-May2026.md`
+- Related ADRs: `docs/decisions/0001-scaffolding-audit.md`, `docs/product/decisions-log-additions-may2026.md`
 - Architecture sections: `docs/architecture/01-overview.md` through `docs/architecture/15-development-guide.md`, plus `docs/architecture/supplemental-schemas.md`
 - Related specs: `docs/specs/0006-roadmap-organization.md`, `docs/specs/0007-roadmap-tracker-alignment.md`, `docs/specs/0008-github-tracker-reproducibility.md`
 - PRD sections: `docs/prd/01-overview.md`, `docs/prd/02-requirements.md`, `docs/prd/03-scope.md`, `docs/prd/04-non-goals.md`

@@ -16,6 +16,7 @@ Implement a single GitHub work item with a strict plan-before-code workflow and 
 - Extract the issue number, any stable roadmap or task ID such as `AW-111`, the exact issue title, and any explicit branch, commit, PR, or review requirements.
 - Read the full issue body before planning. Include the spec, acceptance criteria, anti-requirements, linked docs, dependencies, and any "Implements:" or equivalent references.
 - Treat the issue body plus referenced repo docs as the scope contract. Treat comments as non-authoritative unless the user says they supersede the ticket.
+- Treat product-scope additions as unapproved until durable evidence exists in canonical repo docs. Use `docs/product/decisions-log.csv` for product approval records, plus an ADR or approved spec when the decision affects roadmap sequencing, architecture, privacy, APIs, schemas, telemetry, or implementation behavior.
 - If the ticket is missing acceptance criteria or concrete done conditions, stop and ask for them before coding.
 
 ### 2. Create a Safe Branch
@@ -52,6 +53,7 @@ Implement a single GitHub work item with a strict plan-before-code workflow and 
 - Preserve existing unrelated edits in touched files unless the user explicitly asks you to revert them.
 - If you hit an unspecified decision during implementation, stop and ask instead of guessing.
 - If repo policy marks a change type as approval-gated, stop and surface that gate before proceeding. Common gated categories include dependency changes, database schema changes, auth or secret handling, prompt or eval changes, and broad cross-module architecture changes.
+- If approved work adds product scope, add or update the durable decision evidence in `docs/product/`, `docs/decisions/`, or `docs/specs/` as part of the same change.
 
 ### 6. Verify Like a Reviewer
 

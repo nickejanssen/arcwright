@@ -1,4 +1,9 @@
-# 09-Story-Bible-Monster-RPG-v1.0
+# Monster RPG Story Bible
+
+> Current version: v1.0
+> Last updated: 2026-06-13
+> Status: Current
+> Canonical path: docs/story-bibles/monster-rpg.md
 
 > **STATUS, v1.0.** Finalized after Chat 9 (Platform-as-Product Strategy).
 > 

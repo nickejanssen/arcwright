@@ -1,6 +1,6 @@
 # Decisions Log Additions, May 2026
 
-**Merge target:** 02-Decisions-Log (append-only; add these entries at the end)
+**Merge target:** `docs/product/decisions-log.csv` (append-only; add these entries at the end)
 **Produced in:** Build planning session, May 2026
 
 ---

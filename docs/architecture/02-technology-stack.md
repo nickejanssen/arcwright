@@ -4,7 +4,7 @@
 
 # Technology Stack
 
-All decisions in this section are locked (Chat 6a, May 7 2026). Rationale is summarized here; full rationale is in 02-Decisions-Log. Alternatives considered are listed to prevent re-litigation during implementation.
+All decisions in this section are locked (Chat 6a, May 7 2026). Rationale is summarized here; full rationale is in `docs/product/decisions-log.csv`. Alternatives considered are listed to prevent re-litigation during implementation.
 
 ## 2.1 Decision Summary Table
 
@@ -93,7 +93,7 @@ Verified May 11 2026: v3.0 supports all required arc graph patterns (branching, 
 
 Routing table at `config/routing_table.json` maps task type + quality tier to current model. No model name or provider string appears outside this file and `engine/routing/router.py`.
 
-**Safety L2: GPT-OSS-Safeguard 20B on Groq.** Pre-generation safety classification. Supports bring-your-own-policy. Groq inference: fast and cheap (~$0.075/million input tokens; output rate pending verification per Open Question in 03-Open-Questions-Log). See Section 10 for full safety pipeline.
+**Safety L2: GPT-OSS-Safeguard 20B on Groq.** Pre-generation safety classification. Supports bring-your-own-policy. Groq inference: fast and cheap (~$0.075/million input tokens; output rate pending verification per `docs/product/open-questions-log.csv`). See Section 10 for full safety pipeline.
 
 **Pricing reference (verified May 7 2026):**
 

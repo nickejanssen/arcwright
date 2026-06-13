@@ -15,4 +15,8 @@ This launcher carries no role logic of its own. The canonical, platform-neutral 
 
 Before changing any code, also read the always-on rules in `AGENTS.md` (engine constraints, approval gates, workflow, agent-local-file policy). Do not write implementation code until the plan is approved.
 
+Use `docs/README.md` for documentation routing, stable current-doc paths, and AI-cost rules. Do not read archived exports unless the task explicitly requires source recovery or conflict investigation.
+
+If approved work adds product scope, record durable decision evidence in `docs/product/decisions-log.csv` plus an ADR or approved spec when it affects roadmap sequencing, architecture, privacy, APIs, schemas, telemetry, or implementation behavior.
+
 When a PR is open, use the "Hand off to Reviewer" action to pass it to the Reviewer agent.
