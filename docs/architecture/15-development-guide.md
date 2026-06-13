@@ -176,10 +176,10 @@ class BeatDefinition(BaseModel):
     exit_conditions: list[str]         # logical conditions that trigger next beat transition
     pacing_config: PacingConfig        # stall threshold, acceleration trigger, misdirection trigger
     audience_targets: list[AudienceTarget]
-    mini_games: list[MiniGameConfig] | None  # available in beats 1-3; outputs feed killer_assignment_logic
+    mini_games: list[MiniGameConfig] | None  # cross-beat puzzle-gated interactions; v1 captures behavioral output but killer-assignment wiring is v1.1
 ```
 
-Nightcap has three top-level beats: `introduction`, `investigation`, `reveal`. `investigation` is a `State.Compound` in the statemachine with internal sub-beats for clue distribution phases. The killer identity is AI-assigned at `introduction` entry via a generative trigger; the assignment is stored in session state and constrains all subsequent character behavior generation.
+Nightcap has eight authored Story Circle beats: `arrival`, `body`, `opening_move`, `dig`, `thread`, `reckoning`, `close`, and `truth`. This is Nightcap's arc-level structure, not a platform or engine beat-count assumption. Monster RPG uses `arc_structure: emergent` with no fixed beat count, and future arcs choose their own. The killer identity is resolved through the assignment interface; v1 uses constrained-random assignment and stores the result in session state to constrain subsequent character behavior generation. Mini-game behavioral signals are captured in schema but are not wired into killer assignment until v1.1.
 
 ## 15.5 Knowledge State: Assertion API
 
@@ -306,7 +306,7 @@ Two Cloud Run services at MVP: the API service (FastAPI, handles REST requests a
 | 1 | Session models + DB migration | All 16 tables exist; pgvector enabled; `alembic upgrade head` completes with zero errors | Do not add Nightcap-specific columns to platform tables |
 | 2 | Knowledge graph core | `assert_knowledge`, `get_character_knowledge`, `revoke_knowledge` pass unit tests; AI response never references a fact outside the queried character knowledge state | Do not make knowledge state optional or a performance trade-off |
 | 3 | Model routing abstraction | All generation calls route through `router.py`; no model name appears outside `routing_table.json`; swapping a table entry changes behavior with zero code changes | Do not hardcode any provider name outside `routing_table.json` |
-| 4 | Arc execution engine (Nightcap arc) | Nightcap arc executes through all three beats in simulation harness; killer identity assigned at introduction; all beats reachable; session completes with reveal | Do not encode beat logic that only functions with linear arcs and fixed endpoints |
+| 4 | Arc execution engine (Nightcap arc) | Nightcap arc executes through all eight Story Circle beats in simulation harness; killer identity resolves through the assignment interface; all beats reachable; session completes with reveal | Do not encode beat logic that only functions with linear arcs and fixed endpoints |
 | 5 | Content safety pipeline | L1 hard stops block prohibited content before generation; L2 Safeguard classification fires before every generation call; all safety activations logged to `events` table | Do not add safety as a post-generation filter only; hard stops must be pre-generation |
 | 6 | Content event system | Events emitted with correct `target_audience`; no event targeting player A is delivered to player B; shared_display events contain no private character information | Do not couple event emission to any named surface type |
 | 7 | Character behavior engine | AI dialogue is consistent with `behavior_profile`; dialogue never references a fact outside the character's knowledge state; NPC-NPC interaction produces a coherent exchange without human input | Do not generate a character response without first querying that character's knowledge state |

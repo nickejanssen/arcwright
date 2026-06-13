@@ -27,6 +27,7 @@ Build host controls and shared display flow on the Cloudflare-hosted Nightcap we
 ## Acceptance Criteria
 
 - [ ] Host can create, start, pause, resume, and end a session through the Nightcap web experience runtime.
+- [ ] Host session creation captures the v1 personalization intake seed fields once the exact three questions are resolved.
 - [ ] Shared display shows only public or shared-display ContentEvents.
 - [ ] Host controls use API lifecycle endpoints rather than bypassing the platform API.
 

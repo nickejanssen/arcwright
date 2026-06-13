@@ -14,37 +14,28 @@ Each session instantiates one `ArcStateChart`, a subclass of `python-statemachin
 from statemachine import StateChart, State
 
 class NightcapArcChart(StateChart):
-    # Top-level beats
-    class introduction(State.Compound, initial=True):
-        onboarding = State(initial=True)
-        killer_assignment = State()
-        motive_reveal = State(final=True)
-        begin_game = onboarding.to(killer_assignment)
-        motives_established = killer_assignment.to(motive_reveal)
+    # Nightcap's eight authored Story Circle beats.
+    arrival = State(initial=True)
+    body = State()
+    opening_move = State()
+    dig = State()
+    thread = State()
+    reckoning = State()
+    close = State()
+    truth = State(final=True)
 
-    class investigation(State.Compound):
-        class clue_phase(State.Parallel):
-            class private_clues(State.Compound):
-                distributing = State(initial=True)
-                distributed = State(final=True)
-                clues_sent = distributing.to(distributed)
-            class interrogation(State.Compound):
-                open = State(initial=True)
-                closed = State(final=True)
-                interrogation_complete = open.to(closed)
-        resolution = State(final=True)
-        phases_complete = clue_phase.to(resolution)
-
-    reveal = State(final=True)
-
-    # Arc-level transitions
-    investigation_begins = introduction.to(investigation)
-    accusation_filed = investigation.to(reveal)
+    body_revealed = arrival.to(body)
+    investigation_opens = body.to(opening_move)
+    deeper_investigation = opening_move.to(dig)
+    thread_found = dig.to(thread)
+    accusation_pressure = thread.to(reckoning)
+    final_convergence = reckoning.to(close)
+    truth_revealed = close.to(truth)
 ```
 
-The `introduction` beat uses `State.Compound` with internal sub-beats for onboarding, killer assignment, and motive establishment. The `investigation` beat uses `State.Parallel` so private clue distribution and group interrogation run simultaneously: the parallel region's `done.state` event fires only when both regions reach final, which is the engine's signal that investigation is complete. `reveal` is the terminal state.
+The example above is Nightcap-specific. It is not a platform beat-count rule. Nightcap uses the eight Story Circle beats defined in `docs/story-bibles/nightcap-murder-mystery.md` Section 4. Other arcs define their own beat graphs; Monster RPG uses `arc_structure: emergent` with no fixed beat count.
 
-Runtime conditional transitions use `cond=` guards. Example: the engine does not advance to `reveal` until the accusation meets the minimum evidence threshold defined in the arc definition. If a host forces early reveal, the guard is bypassed via a host-privileged event, logged as a pacing intervention.
+Runtime conditional transitions use `cond=` guards. Example: the engine does not advance to Nightcap's `truth` beat until the accusation meets the minimum evidence threshold defined in the arc definition. If a host forces early reveal, the guard is bypassed via a host-privileged event, logged as a pacing intervention.
 
 ## 3.2 Beat Graph Model
 
@@ -106,7 +97,7 @@ Each element in an arc definition is flagged as `authored` (fixed) or `generativ
 | --- | --- | --- |
 | Beat structure | Executed as defined; cannot be overridden by AI output | N/A (beats are always authored) |
 | Character identity | Served from arc definition | N/A |
-| Killer assignment | N/A | AI-assigned at `introduction.killer_assignment` entry; seeded with session player list and character profiles |
+| Killer assignment | N/A | Resolved through the assignment interface; v1 uses constrained-random assignment with the session player list and character profiles |
 | Character personality | Served from arc definition (base profile) | Behavior_profile augmented at session start with group-specific calibration |
 | Clue content | Optional authored clue text | AI-generates clue text calibrated to assigned character |
 | Plot twist | N/A | Injected by pacing engine when misdirection threshold crossed |
@@ -125,7 +116,7 @@ Six commitments from Decision 13, with implementation approach:
 | NPC-NPC interaction first-class | AI characters can be targeted at each other, not only at players. The behavior engine accepts `target_character_id` on generation calls; NPC-NPC exchanges are generated with both characters' knowledge states and relationship graphs in the prompt. |
 | Goal pursuit drives behavior | Each character's `behavior_profile.goals` list is injected into every generation prompt as a constraint block. Character responses are generated to advance or conceal their goals, not to be generically helpful. |
 | Per-character behavior_profile | `behavior_profile JSONB` column on `characters` table. Stores: personality traits, communication style, goals, secrets, tells (behavioral signals of guilt or nervousness), and relationship dispositions toward each other character. |
-| Arc-level non-determinism | The arc's `generative_elements.killer_assignment` is resolved at session start with a seeded random draw. The seed is stored in session state (for replay and persistence). Two identical player groups produce different killers across sessions. |
+| Arc-level non-determinism | The arc's `generative_elements.killer_assignment` is resolved through the assignment interface. Nightcap v1 uses constrained-random assignment. The seed is stored in session state for replay and persistence. Two identical player groups can produce different killers across sessions. |
 
 ## 3.6 Session Coordinator Loop
 
@@ -144,7 +135,11 @@ The coordinator never blocks. All AI generation calls are `await`-ed as asyncio 
 
 | Phase | Beat | Key generative triggers | Content events emitted |
 | --- | --- | --- | --- |
-| Setup | `introduction.killer_assignment` | Killer identity draw, initial behavior_profile calibration | None visible to players yet |
-| Onboarding | `introduction.motive_reveal` | Character personality augmentation, opening narrator dialogue | Shared display: setting; phones: character cards with private background |
-| Investigation | `investigation.clue_phase` (parallel) | Clue generation per character, NPC initiative, pacing interventions | Phones: private clues; shared display: group events and NPC dialogue |
-| Reveal | `reveal` | Killer confession narrative | Shared display: reveal scene; phones: outcome summary |
+| Arrival | `arrival` | Character personality augmentation, opening narrator dialogue, optional mini-game setup | Shared display: setting; phones: character cards with private background |
+| Body | `body` | Murder discovery or reveal, initial clue surfacing | Shared display: disruption; phones: private character reactions |
+| Opening Move | `opening_move` | Investigation starts, early clue generation | Phones: private clues; shared display: group events |
+| Dig | `dig` | Puzzle-gated clue access, narrator prompts, pacing interventions | Phones: puzzle and clue events; shared display: group acknowledgments |
+| Thread | `thread` | Evidential clue synthesis, misdirection or bridge generation | Phones: targeted clues; shared display: synthesis cues |
+| Reckoning | `reckoning` | Accusation pressure, standing shifts, balance checks | Shared display: accusation mechanics; phones: private prompts |
+| Close | `close` | Final convergence and reveal readiness checks | Shared display: closing tension; phones: final private context |
+| Truth | `truth` | Killer confession narrative and full evidence accounting | Shared display: reveal scene; phones: outcome summary |

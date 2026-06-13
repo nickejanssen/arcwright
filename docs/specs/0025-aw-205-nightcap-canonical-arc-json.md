@@ -18,16 +18,17 @@
 
 # Overview
 
-This spec defines the AW-205 canonical Nightcap arc JSON. The goal is to make `nightcap/arc.json` the schema-valid reference arc described by the Developer API architecture while preserving the three top-level beat graph used by AW-204.
+This spec defines the AW-205 canonical Nightcap arc JSON. The goal is to make `nightcap/arc.json` the schema-valid reference arc described by the Developer API architecture while using the canonical eight Nightcap Story Circle beats from `docs/story-bibles/nightcap-murder-mystery.md` Section 4.
 
 ---
 
 # In Scope
 
 - Canonicalize values in `nightcap/arc.json` against `docs/architecture/09-developer-api.md` Section 9.3
-- Preserve the top-level beat IDs and graph shape: `introduction -> investigation -> reveal`
-- Encode Nightcap support for 4 to 10 players
-- Explicitly record the M6 first-proof target range of 4 to 6 players in schema-safe metadata
+- Encode the eight Nightcap Story Circle beats: `arrival`, `body`, `opening_move`, `dig`, `thread`, `reckoning`, `close`, and `truth`
+- Encode the v1 four-human-player floor and larger supported human player counts
+- Explicitly record the M6 first-proof target range of 4 to 6 human players in schema-safe metadata
+- Explicitly record that 2-3 player support requires v1.1 interrogatable AI participants
 - Preserve Nightcap content rails and knowledge rules
 - Add focused tests that prove the canonical arc properties
 
@@ -36,7 +37,7 @@ This spec defines the AW-205 canonical Nightcap arc JSON. The goal is to make `n
 # Out Of Scope
 
 - Changing the `ArcDefinition` schema
-- Adding nested Nightcap sub-beats or an 8-beat internal phase model
+- Adding nested Nightcap sub-beats beyond the eight canonical Story Circle beats
 - Changing the generated StateChart behavior from AW-204
 - Implementing killer assignment runtime behavior
 - Implementing pacing engine behavior
@@ -48,12 +49,13 @@ This spec defines the AW-205 canonical Nightcap arc JSON. The goal is to make `n
 # Acceptance Criteria
 
 - [ ] `nightcap/arc.json` exists and validates against `ArcDefinition`
-- [ ] `nightcap/arc.json` defines exactly the top-level beats `introduction`, `investigation`, and `reveal`
-- [ ] The top-level beat graph remains `introduction -> investigation -> reveal`
+- [ ] `nightcap/arc.json` defines exactly the eight canonical Nightcap Story Circle beats
+- [ ] The beat graph follows the Story Circle sequence through `truth`
 - [ ] Nightcap content rails include prohibited categories, thematic warnings, and age floor
 - [ ] Nightcap knowledge rules enable killer self-knowledge, narrator omniscience, and private clues until shared
-- [ ] The arc supports 4 to 10 players through `min_players` and `max_players`
-- [ ] The arc explicitly records the M6 first-proof target range of 4 to 6 players
+- [ ] The arc supports the v1 four-human-player floor through `min_players`
+- [ ] The arc explicitly records the M6 first-proof target range of 4 to 6 human players
+- [ ] The arc records that 2-3 player support is deferred to v1.1 interrogatable AI participants
 - [ ] Canonicalization does not introduce schema, dependency, prompt, routing, safety, auth, or migration changes
 
 ---
@@ -72,7 +74,7 @@ This spec defines the AW-205 canonical Nightcap arc JSON. The goal is to make `n
 
 **Risks**:
 - Adding too much Nightcap-specific metadata to the platform schema would blur the platform/game boundary. This implementation keeps the metadata inside existing flexible arc-level config dictionaries.
-- Replacing the top-level three-beat graph with older 8-beat decision-log material would conflict with the AW-205 scope and the AW-204 generated chart path.
+- Encoding Nightcap's eight-beat Story Circle as a platform-wide beat-count assumption would violate D-053. Keep the eight-beat graph Nightcap-specific.
 
 **Unknowns**:
 - Later Nightcap runtime tasks may need a separate internal phase model. That should be added through a future task rather than folded into AW-205.

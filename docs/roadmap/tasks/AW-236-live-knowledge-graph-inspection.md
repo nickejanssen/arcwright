@@ -24,6 +24,8 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 Build read-only live knowledge graph inspection. Likely files affected: dashboard, api, engine/knowledge.
 
+This is the only Visual Storyworld inspection surface required for the M5 exit gate. Read-only arc structure, live event stream, and character state inspection may ship as logs or defer until after proof.
+
 ## Acceptance Criteria
 
 - [ ] Read-only live knowledge graph inspection surface exists.

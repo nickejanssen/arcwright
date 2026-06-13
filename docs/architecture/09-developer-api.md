@@ -72,7 +72,7 @@ Base path: `/v1/`. All endpoints require auth (API key for developer calls; sess
 
 ## 9.3 Arc Definition Format
 
-Arc definitions are JSON files. Nightcap's arc definition at `nightcap/arc.json` is the canonical reference. Every field name here must match the `ArcDefinition` Pydantic schema in `engine/arc/models.py`.
+Arc definitions are JSON files. Nightcap's arc definition at `nightcap/arc.json` is the canonical reference. Every field name here must match the `ArcDefinition` Pydantic schema in `engine/arc/models.py`. Nightcap v1 has a four-human-player floor. Two- and three-player sessions require interrogatable AI participants and are deferred to v1.1. Beat count is arc-level: Nightcap uses eight Story Circle beats, Monster RPG is emergent, and the platform does not assume a fixed count.
 
 **Top-level structure:**
 
@@ -150,9 +150,14 @@ Arc definitions are JSON files. Nightcap's arc definition at `nightcap/arc.json`
   "characters": [...],
   "beats": [...],
   "beat_graph": {
-    "introduction": ["investigation"],
-    "investigation": ["reveal"],
-    "reveal": []
+    "arrival": ["body"],
+    "body": ["opening_move"],
+    "opening_move": ["dig"],
+    "dig": ["thread"],
+    "thread": ["reckoning"],
+    "reckoning": ["close"],
+    "close": ["truth"],
+    "truth": []
   },
   "generative_elements": {
     "killer_assignment": true,
@@ -194,7 +199,7 @@ Arc definitions are JSON files. Nightcap's arc definition at `nightcap/arc.json`
 - Pacing weight sum (`w_time + w_action + w_suspicion + w_coverage`) not equal to 1.0
 - `character_mode: authored` with no characters defined in `characters` array
 - `narrator.behavior_triggers` references a trigger type not in the allowed set
-- `play_mode: imposter` with `min_players` less than 3 (imposter mode requires at least 2 investigators plus 1 killer)
+- `play_mode: imposter` with `min_players` less than 4 for Nightcap v1 (two- and three-player imposter support requires v1.1 interrogatable AI participants)
 
 ## 9.4 TypeScript Web SDK
 

@@ -1,11 +1,11 @@
-# M5-D: Visual Storyworld Phase 1 Inspection
+# M5-D: Visual Storyworld Knowledge Graph Inspection
 
 **Milestone:** M5  
 **Status:** Planned
 
 ## Plain-English Summary
 
-Ship all four read-only inspection surfaces required for H1.
+Ship the live knowledge graph inspection surface required for H1 proof. The other Phase 1 inspection surfaces may ship as logs or defer until after proof.
 
 ## Why This Matters
 
@@ -26,13 +26,14 @@ The technical scope is limited to the tasks listed below and the architecture re
 ## Tasks
 
 - [AW-236: Live Knowledge Graph Inspection](../tasks/AW-236-live-knowledge-graph-inspection.md)
-- [AW-237: Read-Only Arc Structure Inspection](../tasks/AW-237-read-only-arc-structure-inspection.md)
-- [AW-238: Live Event Stream Inspection](../tasks/AW-238-live-event-stream-inspection.md)
-- [AW-239: Character State Inspection](../tasks/AW-239-character-state-inspection.md)
+- [AW-237: Read-Only Arc Structure Inspection](../tasks/AW-237-read-only-arc-structure-inspection.md) (post-proof optional or log-backed for M5)
+- [AW-238: Live Event Stream Inspection](../tasks/AW-238-live-event-stream-inspection.md) (post-proof optional or log-backed for M5)
+- [AW-239: Character State Inspection](../tasks/AW-239-character-state-inspection.md) (post-proof optional or log-backed for M5)
 
 ## Acceptance Criteria
 
-- All child tasks satisfy their acceptance criteria.
+- AW-236 satisfies its acceptance criteria before M6.
+- AW-237, AW-238, and AW-239 are not M5 exit-gate blockers and may ship as logs or defer until after proof.
 - The milestone exit gate remains consistent with `docs/roadmap/00-overview.md`.
 - Any open decision is explicitly recorded before implementation proceeds.
 

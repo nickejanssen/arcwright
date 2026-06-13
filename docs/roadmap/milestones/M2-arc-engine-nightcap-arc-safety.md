@@ -17,8 +17,8 @@ This milestone is the first one that spends meaningful AI tokens. It builds the 
 
 ## Exit Gate
 
-- Nightcap arc runs all three beats in the harness
-- Killer is assigned
+- Nightcap arc runs all eight beats in the harness
+- Killer is assigned through the constrained-random v1 assignment interface
 - Reveal fires
 - AI dialogue never leaks knowledge state
 - L1 hard stops and L2 classification fire before generation

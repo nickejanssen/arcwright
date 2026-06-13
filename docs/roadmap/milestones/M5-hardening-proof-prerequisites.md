@@ -11,12 +11,12 @@ This milestone closes the gap between a technically working product and a produc
 
 - [M5-A: Adversarial Safety And Remediation](../epics/M5-A-adversarial-safety-and-remediation.md)
 - [M5-B: Cost, Usage, And Gross Margin](../epics/M5-B-cost-usage-and-gross-margin.md)
-- [M5-C: Second Arc Schema Validation](../epics/M5-C-second-arc-schema-validation.md)
-- [M5-D: Visual Storyworld Phase 1 Inspection](../epics/M5-D-visual-storyworld-phase-1-inspection.md)
+- [M5-C: Second Arc Schema And Executable Follow-Through](../epics/M5-C-second-arc-schema-validation.md)
+- [M5-D: Visual Storyworld Knowledge Graph Inspection](../epics/M5-D-visual-storyworld-phase-1-inspection.md)
 
 ## Exit Gate
 
 - Adversarial safety playtest complete and blocking issues resolved
-- Per-session gross margin known at each player count
-- A second arc schema exists
-- All four Visual Storyworld Phase 1 inspection surfaces are live: live knowledge graph, read-only arc structure, live event stream, and character state inspection
+- Per-session gross margin known at each supported human player count
+- A second arc schema exists and post-M6 executable follow-through is queued
+- The live knowledge graph inspection surface is live; read-only arc structure, live event stream, and character state inspection may ship as logs or defer until after proof

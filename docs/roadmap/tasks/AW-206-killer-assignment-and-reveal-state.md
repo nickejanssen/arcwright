@@ -6,7 +6,7 @@
 
 ## Plain-English Summary
 
-Resolve killer assignment at session start and preserve reveal constraints.
+Resolve v1 constrained-random killer assignment behind the assignment interface and preserve reveal constraints.
 
 ## Why This Matters
 
@@ -22,13 +22,14 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 ## Technical Scope
 
-Resolve killer assignment at session start and preserve reveal constraints. Likely files affected: engine/arc, engine/session, engine/tests.
+Resolve v1 constrained-random killer assignment behind the assignment interface and preserve reveal constraints. Likely files affected: engine/arc, engine/session, engine/tests.
 
 ## Acceptance Criteria
 
-- [ ] Killer assignment occurs during the introduction setup path and stores the assigned killer in session state.
+- [ ] Killer assignment uses the existing assignment interface and v1 constrained-random selection, then stores the assigned killer in session state.
 - [ ] A seeded run produces the same killer assignment and reveal state when replayed with the same seed.
 - [ ] Reveal cannot fire until authored reveal conditions are satisfied or a host-privileged bypass is logged.
+- [ ] Mini-game behavioral signals are not wired into killer assignment in v1.
 
 ## Tests/Verification
 

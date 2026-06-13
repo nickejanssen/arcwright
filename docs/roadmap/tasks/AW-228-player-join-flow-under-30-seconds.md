@@ -28,6 +28,7 @@ Build QR or code join flow for player devices in the Cloudflare-hosted Nightcap 
 
 - [ ] A new player can join by QR or code in under 30 seconds in rehearsal conditions.
 - [ ] Player join does not require a Firebase account or app install.
+- [ ] Player join captures one to two v1 personalization prompts once the exact prompt set is resolved.
 - [ ] Player receives only their assigned character context after join.
 
 ## Tests/Verification

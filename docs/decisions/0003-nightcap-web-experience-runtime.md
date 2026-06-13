@@ -19,7 +19,7 @@ Nightcap needs:
 - Browser-based player devices with no app install
 - A shared display for narrator and group-visible story moments
 - QR or code join under 30 seconds
-- Real-time room coordination for 4 to 10 players
+- Real-time room coordination for the Nightcap v1 four-human-player floor and additional supported human players
 - Private event delivery that never leaks one player's information to another player or to the shared display
 - A runtime boundary that keeps Arcwright authoritative for session state, knowledge state, safety, telemetry, arc execution, and event audience targeting
 
@@ -139,6 +139,7 @@ Performance and cost assumptions:
 - `docs/roadmap/00-overview.md`
 - `docs/roadmap/milestones/M4-nightcap-experience-layer.md`
 - `docs/roadmap/tasks/AW-202-external-nightcap-platform-decision.md`
+- `docs/product/decisions-log.csv` D-052
 - Cloudflare Workers pricing: https://developers.cloudflare.com/workers/platform/pricing/
 - Cloudflare Durable Objects pricing: https://developers.cloudflare.com/durable-objects/platform/pricing/
 - Cloudflare Durable Objects WebSockets: https://developers.cloudflare.com/durable-objects/best-practices/websockets/
