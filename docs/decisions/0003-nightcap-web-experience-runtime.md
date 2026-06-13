@@ -10,7 +10,7 @@
 
 # Context
 
-AW-202 exists because `docs/02-Decisions-Log-Additions-May2026.md` Entry 3 already decided that Nightcap's experience layer will be outside Arcwright core and will connect to Arcwright through its API. That prior decision protects surface agnosticism: Arcwright emits structured events and the experience layer renders them.
+AW-202 exists because `docs/product/decisions-log-additions-may2026.md` Entry 3 already decided that Nightcap's experience layer will be outside Arcwright core and will connect to Arcwright through its API. That prior decision protects surface agnosticism: Arcwright emits structured events and the experience layer renders them.
 
 The remaining decision is not whether to use a third-party app builder. The remaining decision is which web runtime hosts the custom browser experience for the shared display and each player phone.
 
@@ -132,7 +132,7 @@ Performance and cost assumptions:
 
 # References
 
-- `docs/02-Decisions-Log-Additions-May2026.md` Entry 3
+- `docs/product/decisions-log-additions-may2026.md` Entry 3
 - `docs/prd/02-requirements.md`
 - `docs/architecture/08-event-system.md`
 - `docs/architecture/09-developer-api.md`

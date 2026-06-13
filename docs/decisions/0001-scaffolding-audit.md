@@ -2,7 +2,7 @@
 
 **Date:** 2026-05-20
 **Status:** Informational — read-only analysis, no code changes
-**Architecture reference:** `docs/07-Technical-Architecture-v1 3 35db7de354a881618e59e65c8e12caf6.md` (S1–S15)
+**Architecture reference:** `docs/archive/notion-export/07-Technical-Architecture-v1 3 35db7de354a881618e59e65c8e12caf6.md` (S1-S15)
 **Scope:** All non-git, non-doc files in the repository as scaffolded by Codex
 
 > Items marked **⚠ Expensive to undo** carry structural lock-in risk. Address these before building further code on top of them.

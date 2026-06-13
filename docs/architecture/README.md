@@ -36,5 +36,6 @@ This directory contains the Technical Architecture documentation split into focu
 ## Relationship to Other Documents
 
 - Architecture justifies decisions → see `/docs/decisions` for ADRs
+- Raw full-document exports live in [../archive/notion-export/](../archive/notion-export/). Prefer these split files for active architecture work.
 - Architecture defines what specs implement → see `/docs/specs` for detailed requirements
 - Architecture is informed by product needs → see `/docs/prd` for product requirements

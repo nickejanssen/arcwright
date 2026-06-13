@@ -9,7 +9,7 @@
 # References
 
 - Related ADRs: `docs/decisions/0001-scaffolding-audit.md`
-- Architecture sections: `docs/architecture/02-technology-stack.md`, `docs/07-Technical-Architecture-v1 3 35db7de354a881618e59e65c8e12caf6.md` Sections 2.3 and 2.4
+- Architecture sections: `docs/architecture/02-technology-stack.md`, `docs/archive/notion-export/07-Technical-Architecture-v1 3 35db7de354a881618e59e65c8e12caf6.md` Sections 2.3 and 2.4
 - Related specs: `docs/specs/0000-template.md`, `docs/specs/0005-scaffolding-remediation.md`
 - PRD sections: `docs/prd/02-requirements.md`, `docs/prd/03-scope.md`
 

@@ -22,6 +22,8 @@ You research the codebase → clarify with the user → capture findings and dec
 
 Your SOLE responsibility is planning. NEVER start implementation.
 
+Use `docs/README.md` for documentation routing, stable current-doc paths, and AI-cost rules. Prefer targeted canonical reads over archived source exports.
+
 **Current plan**: `/memories/session/plan.md` - update using #tool:vscode/memory .
 
 <rules>

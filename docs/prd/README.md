@@ -9,6 +9,8 @@ This directory contains the Product Requirements Document split into focused sec
 - **03-scope.md**: MVP definition, milestone map, Visual Storyworld roadmap, business model
 - **04-non-goals.md**: Architectural constraints and deferred decisions
 
+Related product logs live in [../product/](../product/). Raw full-document exports live in [../archive/notion-export/](../archive/notion-export/).
+
 ## Adding New PRD Files
 
 - Follow the naming convention: `NN-description.md` (e.g., `05-pricing-model.md`)

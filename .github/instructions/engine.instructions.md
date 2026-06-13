@@ -10,3 +10,5 @@ These paths are the Python engine and the thin FastAPI layer over it. Follow the
 - Safety is enforced at the engine layer and cannot be bypassed by arc configuration.
 
 FastAPI route handlers stay thin: validate input, call engine functions, return responses. No arc logic in route handlers. See `AGENTS.md` for the full rule set, the eight architecture principles, and the approval gates.
+
+For documentation context, follow `docs/README.md`: read targeted canonical docs first, avoid archived exports unless required, and use stable current-doc paths.

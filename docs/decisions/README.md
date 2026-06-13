@@ -23,6 +23,7 @@ This directory contains decisions that shape the technical platform. Each ADR ca
 - **To specs**: An ADR decides technology/approach; specs detail what to build
 - **To architecture**: ADRs accumulate to form the architecture document
 - **To PRDs**: ADRs may respond to product requirements or constraints
+- **To product logs**: Product decisions and open questions live in `docs/product/`; implementation-shaping technical decisions should also become ADRs here
 
 ## Consulting ADRs
 

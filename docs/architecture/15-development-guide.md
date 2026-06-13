@@ -4,7 +4,7 @@
 
 # Agentic Development Guide
 
-**Purpose.** This section is the primary input for Claude Code. Every component definition is unambiguous: input schema, output contract, acceptance criteria, dependencies, and must-not-do guards are explicit. Claude Code builds against this guide without asking the founder to explain decisions. All locked architectural decisions are in 02-Decisions-Log (Chat 6a entries, May 7 2026). This guide operationalizes decisions; it does not restate rationale.
+**Purpose.** This section is the primary input for Claude Code. Every component definition is unambiguous: input schema, output contract, acceptance criteria, dependencies, and must-not-do guards are explicit. Claude Code builds against this guide without asking the founder to explain decisions. All locked architectural decisions are in `docs/product/decisions-log.csv` (Chat 6a entries, May 7 2026). This guide operationalizes decisions; it does not restate rationale.
 
 ## 15.1 Repository Structure and First File
 

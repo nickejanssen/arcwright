@@ -73,19 +73,37 @@ These five constraints are non-negotiable and may not be bypassed by arc configu
 
 ## Documentation Structure
 
+- `/docs/README.md`: documentation access rules, source-of-truth hierarchy, versioning policy, and AI-cost guidance
 - `/docs/prd/`: product requirements (01-overview, 02-requirements, 03-scope, 04-non-goals)
 - `/docs/architecture/`: technical architecture sections (01-overview through 15-development-guide)
+- `/docs/story-bibles/`: canonical current story bibles with stable filenames and in-file version metadata
+- `/docs/product/`: canonical product decision and open-question logs
 - `/docs/decisions/`: Architecture Decision Records (ADR template, locked decisions from Chat 6a)
 - `/docs/specs/`: implementation specifications (template provided; specs created per feature)
+- `/docs/roadmap/`: milestone, epic, task, and manifest source of truth
 - `/docs/conventions/`: coding standards, testing, AI contribution, cost policy
 - `/docs/agents/`: development-role contracts (Product Steward, Planner, Spec Author, Scribe, and the operating-model README)
 - `/docs/skills/`: reusable, platform-neutral role skills (Implementer, Reviewer, Architecture SME)
+- `/docs/archive/notion-export/`: raw historical exports only; not canonical unless active docs are silent
 
 ## Before Starting Any Task
 
-1. Read the relevant **PRD section** from `/docs/prd/` for product context.
-2. Read the relevant **architecture section** from `/docs/architecture/` for design details.
-3. Read or create a **spec file** in `/docs/specs/` using the template; the spec must define acceptance criteria.
+1. Read `/docs/README.md` for documentation routing, versioning, and AI-cost rules.
+2. Read the relevant **PRD section** from `/docs/prd/` for product context.
+3. Read the relevant **architecture section** from `/docs/architecture/` for design details.
+4. Read the relevant **story bible** from `/docs/story-bibles/` for experience-specific product context.
+5. Read or create a **spec file** in `/docs/specs/` using the template; the spec must define acceptance criteria.
+
+## Documentation Versioning and AI-Cost Rules
+
+- Active canonical docs use stable filenames. Do not create a new active file per version.
+- Put version, status, last-updated date, and canonical path inside the file header.
+- Use git history for previous versions. Use `/docs/archive/notion-export/` only for source recovery, conflict resolution, or when canonical docs are silent.
+- Do not read or compare archived exports by default. That wastes AI credits and increases stale-context risk.
+- Do not manually maintain duplicate `_all.csv` mirrors unless the task is explicitly about import reconciliation.
+- For roadmap work, use `/docs/roadmap/index.json` to locate the relevant milestone, epic, or task before opening broader roadmap files.
+- For product, roadmap, business, or story questions, answer from canonical current docs first: `/docs/prd/`, `/docs/architecture/`, `/docs/story-bibles/`, `/docs/product/`, `/docs/roadmap/`, `/docs/decisions/`, and `/docs/specs/`.
+- If canonical docs conflict, state the conflict with file paths and ask for direction before implementing.
 
 ## Coding Conventions
 

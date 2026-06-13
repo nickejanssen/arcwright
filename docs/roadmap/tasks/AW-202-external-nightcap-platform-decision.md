@@ -10,7 +10,7 @@ Select the Nightcap web experience runtime and document the integration contract
 
 ## Why This Matters
 
-This task advances the documented M2-M6 path to first qualifying Nightcap playtests. It exists because `docs/02-Decisions-Log-Additions-May2026.md Entry 3` defines this capability or gate as part of the Arcwright MVP path.
+This task advances the documented M2-M6 path to first qualifying Nightcap playtests. It exists because `docs/product/decisions-log-additions-may2026.md Entry 3` defines this capability or gate as part of the Arcwright MVP path.
 
 ## Player Impact
 
@@ -52,7 +52,7 @@ docs/specs, docs/decisions, docs/roadmap/tasks/AW-225-through-AW-231
 
 ## Architecture References
 
-- docs/02-Decisions-Log-Additions-May2026.md Entry 3
+- docs/product/decisions-log-additions-may2026.md Entry 3
 - `docs/specs/0022-aw-202-nightcap-web-experience-runtime-decision.md`
 - `docs/decisions/0003-nightcap-web-experience-runtime.md`
 - `AGENTS.md`

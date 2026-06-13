@@ -10,7 +10,7 @@ Implement the Nightcap web experience runtime connector scaffold after AW-202.
 
 ## Why This Matters
 
-This task advances the documented M2-M6 path to first qualifying Nightcap playtests. It exists because `docs/02-Decisions-Log-Additions-May2026.md Entry 3` defines this capability or gate as part of the Arcwright MVP path.
+This task advances the documented M2-M6 path to first qualifying Nightcap playtests. It exists because `docs/product/decisions-log-additions-may2026.md Entry 3` defines this capability or gate as part of the Arcwright MVP path.
 
 ## Player Impact
 
@@ -56,7 +56,7 @@ Cloudflare Pages, Workers, Durable Objects or PartyKit files, SDK usage, api doc
 
 ## Architecture References
 
-- docs/02-Decisions-Log-Additions-May2026.md Entry 3
+- docs/product/decisions-log-additions-may2026.md Entry 3
 - `docs/decisions/0003-nightcap-web-experience-runtime.md`
 - `AGENTS.md`
 - `docs/architecture/15-development-guide.md`

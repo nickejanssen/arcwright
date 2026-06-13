@@ -4,5 +4,6 @@ The canonical, always-on rules for every agent in this repository live in [`AGEN
 
 @AGENTS.md
 
+- Documentation access, versioning, and AI-cost rules are defined in [`AGENTS.md`](AGENTS.md) and [`docs/README.md`](docs/README.md).
 - Development-role contracts (Product Steward, Planner, Spec Author, Scribe, and the operating model): [`docs/agents/`](docs/agents/)
 - Reusable role skills (Implementer, Reviewer, Architecture SME): [`docs/skills/`](docs/skills/)

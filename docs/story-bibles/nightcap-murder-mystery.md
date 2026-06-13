@@ -1,6 +1,11 @@
-# 07-Story-Bible-Murder-Mystery-v1
+# Nightcap Murder Mystery Story Bible
 
-**Status:** Draft v1 with Chat 9 schema and enterprise adaptation notes applied | **Date:** 2026-05-19 | **Chat:** Chat 7 + Chat 9 integration
+> Current version: v1.1
+> Last updated: 2026-06-13
+> Status: Current
+> Canonical path: docs/story-bibles/nightcap-murder-mystery.md
+
+**Status:** Current v1.1 with Chat 9 schema, enterprise adaptation notes, and Nightcap Continuity fast-follow scope applied | **Date:** 2026-06-13 | **Chat:** Chat 7 + Chat 9 integration + product review
 
 **Design inspirations:** Murder Trivia Party (Jackbox) as format reference; ReBoot (animated series) game-descent mechanic as Arcwright platform philosophy.
 
@@ -11,6 +16,75 @@
 Schema references in this Bible follow the platform-clean naming principle from D-038 and D-039: schema names describe structure, while game-specific semantics live in configuration. Relevant platform names include `bonded_entities`, `player_anchor_location`, `current_companion_entities`, `event_authorship`, `witness_entity_ids`, and `current_intent` where applicable. Nightcap may not exercise all fields.
 
 Enterprise adaptations of Nightcap-style arcs are in scope per D-046. Future enterprise templates may derive from Nightcap structure with corporate-context content, while still running on the same Arcwright platform.
+
+## v1.1 Fast Follow: Nightcap Continuity
+
+**Decision:** Nightcap Continuity is committed to v1.1, not v1. v1 proves the single-session party game. v1.1 adds cross-session group memory and a post-session recap artifact so Nightcap demonstrates the D-034 wedge: cross-session narrative state management with the knowledge graph as the headline primitive.
+
+**Problem statement:** A single Nightcap session can feel personalized, but it does not yet prove that Arcwright can remember a group over time. Continuity turns completed sessions into durable narrative state. It gives returning groups the feeling that the system remembers their table without requiring the v1 launch to carry consent, retention, and memory-product complexity.
+
+**v1.1 scope:**
+
+- Generate a post-session recap artifact after The Truth.
+- Persist a group-level continuity record that can be used when the same host or group starts a later session.
+- Store only narrative-relevant group memory, not raw chat or unnecessary personal detail.
+- Give the host a clear way to reuse, ignore, or delete prior group memory for a future session.
+- Use continuity as optional personalization input. The current session arc must still execute deterministically from the authored arc and current session state.
+
+**Post-session recap artifact:**
+
+- Session title or generated case name.
+- Era and occasion theme.
+- Final cast list, including killer, victim, major suspects, and optional Conspirator if active.
+- Outcome: correct accusation, wrong accusation, killer survival, or exhausted accusations.
+- Evidence chain summary: genuine clues, false clues, and what each pointed to.
+- Memorable table moments suitable for players to reread after the game.
+- Replay seed notes: hooks that could be referenced in a later Nightcap session without requiring continuity to alter canonical v1 arc structure.
+
+**Group memory record:**
+
+- Host or group identifier.
+- Session IDs included in continuity.
+- High-level play style signals, such as cautious investigators, aggressive accusers, social bluffing, puzzle focus, or roleplay-heavy table.
+- Recurring group preferences, such as favored tone, pacing tolerance, clue density, and preferred themes.
+- Prior session callbacks approved for reuse.
+- Redacted or excluded items that must not be reused.
+
+**Non-goals for v1.1:**
+
+- No cross-session plot dependency. A new Nightcap case must remain playable by people who missed prior sessions.
+- No raw transcript replay by default.
+- No hidden permanent player profiling.
+- No continuity requirement for first-time groups.
+- No change to the v1 eight-beat Story Circle skeleton.
+
+**Likely architecture touchpoints:**
+
+- Knowledge graph: define which facts graduate from session-local knowledge into group memory.
+- Session persistence: add post-completion summary generation and durable recap storage.
+- Telemetry: track recap generation, continuity opt-in, reuse, deletion, and replay intent.
+- Safety and privacy: classify recap contents before storage and define deletion behavior.
+- API and SDK: expose recap retrieval and continuity selection at session creation.
+- Nightcap experience layer: show recap after The Truth and let the host choose continuity behavior for a future session.
+
+**Likely v1.1 task breakdown:**
+
+1. Define `SessionRecap` and `GroupContinuityRecord` schemas.
+2. Add recap generation after session completion.
+3. Add consent and retention rules for continuity storage.
+4. Add host controls for viewing, reusing, excluding, and deleting continuity.
+5. Add continuity intake to session creation without making continuity required.
+6. Add telemetry for recap and continuity usage.
+7. Add tests for recap safety, deletion, reuse, and deterministic arc behavior.
+
+**Acceptance criteria for v1.1 planning:**
+
+- A completed session produces a recap artifact tied to the session.
+- A host can start a new session with or without prior continuity.
+- Continuity inputs can personalize generated content but cannot change canonical session state outside deterministic engine rules.
+- Players are not surprised by durable storage of personal or group-specific details.
+- Recap and continuity storage can be deleted or excluded.
+- The implementation reinforces D-034 by making cross-session state visible and useful.
 
 ## Section 1: What Nightcap Is
 

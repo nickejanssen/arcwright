@@ -9,7 +9,7 @@ Implement the Nightcap web experience runtime connector according to the AW-202 
 
 ## Why This Matters
 
-This epic is part of the documented path from M1 complete to M6 first qualifying Nightcap playtests. Its scope is grounded in `docs/02-Decisions-Log-Additions-May2026.md Entry 3` and the milestone exit gates in `docs/roadmap/00-overview.md`.
+This epic is part of the documented path from M1 complete to M6 first qualifying Nightcap playtests. Its scope is grounded in `docs/product/decisions-log-additions-may2026.md Entry 3` and the milestone exit gates in `docs/roadmap/00-overview.md`.
 
 ## Player Impact
 
@@ -52,7 +52,7 @@ The technical scope is limited to the tasks listed below and the architecture re
 
 ## Architecture References
 
-- docs/02-Decisions-Log-Additions-May2026.md Entry 3
+- docs/product/decisions-log-additions-may2026.md Entry 3
 - `docs/decisions/0003-nightcap-web-experience-runtime.md`
 - `docs/roadmap/00-overview.md`
 - `docs/architecture/15-development-guide.md`

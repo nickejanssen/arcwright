@@ -61,4 +61,4 @@ If one player drops (not the host), the arc continues. The dropped player's char
 
 ## 5.6 Scope Debt
 
-Inter-service communication between the API service and the engine worker (two Cloud Run services coordinating on session resume) is a deferred decision. Cloud Tasks (async, reliable, retryable) and direct async HTTP invocation (simpler, lower latency) are both viable at MVP scale. This decision must be made before production deployment and is logged in 03-Open-Questions-Log.
+Inter-service communication between the API service and the engine worker (two Cloud Run services coordinating on session resume) is a deferred decision. Cloud Tasks (async, reliable, retryable) and direct async HTTP invocation (simpler, lower latency) are both viable at MVP scale. This decision must be made before production deployment and is logged in `docs/product/open-questions-log.csv`.
