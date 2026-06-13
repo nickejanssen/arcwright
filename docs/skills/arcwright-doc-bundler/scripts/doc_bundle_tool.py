@@ -530,10 +530,12 @@ def validate_file(path: Path) -> list[str]:
             issues.append(f"local agent path in manifest: {manifest_path}")
     for pattern in SECRET_PATTERNS:
         if re.search(pattern, text):
-            issues.append(f"secret-looking value found: {pattern}")
+            issues.append("secret-looking value found")
+            break
     for pattern in MODEL_PATTERNS:
         if re.search(pattern, text, flags=re.IGNORECASE):
-            issues.append(f"provider or model string found: {pattern}")
+            issues.append("provider or model string found")
+            break
     return issues
 
 
