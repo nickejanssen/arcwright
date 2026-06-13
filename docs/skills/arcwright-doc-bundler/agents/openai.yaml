@@ -1,0 +1,4 @@
+interface:
+  display_name: "Arcwright Doc Bundler"
+  short_description: "Build compact Arcwright documentation bundles for AI agents and personas."
+  default_prompt: "Use $arcwright-doc-bundler to generate a compact task-specific or persona-targeted documentation bundle from canonical Arcwright docs."
