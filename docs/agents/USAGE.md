@@ -141,6 +141,8 @@ These run in the **Project chat**, not in a coding app, and you invoke them by n
 
 The first three form the **intent gate**: get their shared go before any building. The System Architect **decides** the design and owns the ADR; the SME only **informs**.
 
+Use [`docs/agents/expert-personas.md`](expert-personas.md) as advisory lenses when a question benefits from product, narrative, developer-stakeholder, architecture, or CEO-advisor critique. Personas inform the roles above; they do not replace role authority or create approved product scope.
+
 ### Getting the next task before the Implementer
 
 Ask the **Planner** for the next task and its AW-NNN id. The **Spec Author** then makes sure that task has a spec. Only then do you run the Implementer. For a quick "what is next" lookup, you can also ask the **Architecture SME**, which reads `docs/roadmap/index.json`.

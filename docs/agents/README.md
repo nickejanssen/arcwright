@@ -9,6 +9,8 @@ Two kinds of role live in this operating model:
 
 The Architecture SME (`docs/skills/arcwright-sme`) is consulted by every role at every gate. It is the authority on what the canonical docs say.
 
+Expert advisory personas live in [`expert-personas.md`](expert-personas.md). Use them as lenses for strategy, critique, design-partner preparation, and persona-targeted documentation bundles. They inform the operating roles; they do not replace Product Steward, Business Steward, System Architect, SME, Implementer, Reviewer, or Scribe authority.
+
 For step-by-step instructions on invoking these roles in Claude Code, Codex, and GitHub Copilot, see [`docs/agents/USAGE.md`](USAGE.md).
 
 ## The Pipeline
@@ -58,6 +60,7 @@ Prefer the stable AW-NNN over a mutable GitHub issue number when naming branches
 | Planner | `docs/agents/planner.md` | Claude.ai Project chat |
 | Spec Author | `docs/agents/spec-author.md` | Claude.ai Project chat |
 | Scribe | `docs/agents/scribe.md` | Claude.ai Project chat and coding clients |
+| Expert Personas | `docs/agents/expert-personas.md` | Any client as advisory lenses |
 | Architecture SME | `docs/skills/arcwright-sme` | Any client |
 | Implementer | `docs/skills/github-task-implementer` | Claude Code, Codex, Copilot |
 | Reviewer | `docs/skills/arcwright-reviewer` | Claude Code, Codex, Copilot |
