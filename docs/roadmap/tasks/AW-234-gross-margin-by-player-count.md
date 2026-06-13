@@ -6,7 +6,7 @@
 
 ## Plain-English Summary
 
-Produce gross-margin readiness report for 4 through 10 players.
+Produce gross-margin readiness report for supported human player counts.
 
 ## Why This Matters
 
@@ -22,13 +22,13 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 ## Technical Scope
 
-Produce gross-margin readiness report for 4 through 10 players. Likely files affected: docs/roadmap/tasks, engine/telemetry or dashboard if implementation needed.
+Produce gross-margin readiness report for supported human player counts. Likely files affected: docs/roadmap/tasks, engine/telemetry or dashboard if implementation needed.
 
 ## Acceptance Criteria
 
-- [ ] Cost report covers 4, 5, 6, 7, 8, 9, and 10 player sessions.
+- [ ] Cost report covers the v1 four-human-player floor and larger supported human player counts used in rehearsal.
 - [ ] Report separates actual logged model and infrastructure cost from open pricing assumptions.
-- [ ] Gross-margin calculation assumptions are sourced or explicitly marked as open decisions.
+- [ ] Gross-margin calculation assumptions are sourced or explicitly marked as open decisions, including the temporary host-pays-per-session pricing north star and deferred numeric launch price.
 
 ## Tests/Verification
 

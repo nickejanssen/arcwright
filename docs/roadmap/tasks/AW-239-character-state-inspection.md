@@ -2,7 +2,7 @@
 
 **Milestone / Epic:** M5 / M5-D  
 **Size:** M  
-**Status:** Planned
+**Status:** Deferred / Post-proof optional
 
 ## Plain-English Summary
 
@@ -23,6 +23,8 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 ## Technical Scope
 
 Build read-only character state inspection. Likely files affected: dashboard, api, engine/characters.
+
+This task is no longer an M5 exit-gate blocker. For M5, character state inspection may be satisfied by logs or deferred until after proof to protect the solo-founder critical path.
 
 ## Acceptance Criteria
 

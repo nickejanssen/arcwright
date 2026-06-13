@@ -6,7 +6,7 @@
 
 ## Plain-English Summary
 
-Design one non-Nightcap arc schema to validate platform-clean architecture.
+Design one non-Nightcap arc schema to validate platform-clean architecture and prepare post-M6 executable follow-through.
 
 ## Why This Matters
 
@@ -22,13 +22,14 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 ## Technical Scope
 
-Design one non-Nightcap arc schema to validate platform-clean architecture. Likely files affected: docs/specs, sample arc docs, docs/roadmap/tasks.
+Design one non-Nightcap arc schema to validate platform-clean architecture and prepare post-M6 executable follow-through. Likely files affected: docs/specs, sample arc docs, docs/roadmap/tasks.
 
 ## Acceptance Criteria
 
 - [ ] A non-Nightcap arc schema exists as a document or sample arc.
 - [ ] Schema validates against ArcDefinition or documents exact validation gaps.
-- [ ] No second game implementation is added.
+- [ ] The schema identifies the minimal executable product to be built after M6 proof.
+- [ ] No second game implementation is added before M6 proof.
 
 ## Tests/Verification
 

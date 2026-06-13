@@ -156,7 +156,7 @@ Notes:
 - Unit tests: direct action stepping moves across the expected beats
 - Unit tests: snapshot output reflects current beat and step index correctly
 - Unit tests: repeated runs with the same seed and direct action sequence produce identical canonical traces
-- Manual verification: instantiate the runner in a Python REPL and inspect the trace after a three-beat happy-path run
+- Manual verification: instantiate the runner in a Python REPL and inspect the trace after a canonical happy-path run
 
 ---
 

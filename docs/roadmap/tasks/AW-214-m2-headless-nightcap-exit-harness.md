@@ -26,7 +26,7 @@ Prove the full M2 exit gate offline. Likely files affected: engine/tests, docs/r
 
 ## Acceptance Criteria
 
-- [ ] Headless harness completes introduction, investigation, and reveal for the Nightcap arc.
+- [ ] Headless harness completes all eight Nightcap Story Circle beats.
 - [ ] Harness trace shows killer assignment, reveal firing, safety pre-generation checks, and no knowledge leaks.
 - [ ] Harness path uses mocked routing and spends no real provider tokens.
 

@@ -27,8 +27,9 @@ Create the canonical Nightcap arc definition at `nightcap/arc.json`. Likely file
 ## Acceptance Criteria
 
 - [ ] `nightcap/arc.json` exists and validates against the ArcDefinition schema.
-- [ ] The arc defines introduction, investigation, and reveal beats with Nightcap content rails and knowledge rules.
-- [ ] The arc supports 4 to 10 players while explicitly preserving the M6 first-proof focus on 4 to 6 players.
+- [ ] The arc defines all eight Nightcap Story Circle beats with Nightcap content rails and knowledge rules.
+- [ ] The arc supports the v1 four-human-player floor and explicitly preserves the M6 first-proof focus on 4 to 6 human players.
+- [ ] The arc records that two- and three-player support depends on v1.1 interrogatable AI participants.
 
 ## Tests/Verification
 

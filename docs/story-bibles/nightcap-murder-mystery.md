@@ -90,7 +90,7 @@ Enterprise adaptations of Nightcap-style arcs are in scope per D-046. Future ent
 
 ## Section 1: What Nightcap Is
 
-Nightcap is a social murder mystery experience for 2 to 8 players, played in a physical space with a shared display and individual player devices. Each session is a complete, AI-generated story. No two sessions are identical.
+Nightcap is a social murder mystery experience played in a physical space with a shared display and individual player devices. v1 requires a floor of four human players and scales up with additional human players. Two- and three-player sessions depend on interrogatable AI participants that can fill empty player slots, hold private knowledge state, and be the killer; that capability is deferred to v1.1. The narrator, NPC victim role, and non-participating background narration remain in v1. Each session is a complete, AI-generated story. No two sessions are identical.
 
 The premise is always the same: a social gathering has been interrupted by a death. Everyone in the room had a reason to be there. One of them is responsible.
 
@@ -165,6 +165,10 @@ Era and occasion type, selected by the host or randomized via Pick for Me. Toget
 
 Each entry is an art production engagement. Absurdist options have different asset requirements than period-realistic ones. Production scope for each must be named when art production is planned.
 
+**v1 Launch Slate**
+
+Nightcap v1 launches with two or three era/occasion themes selected from the existing list above. The remaining themes are post-proof content production, not v1 launch requirements.
+
 **Physical Space**
 
 Nightcap is designed for a room. Players may be seated at a table, on a couch, or moving freely through the space. No fixed arrangement is required. The phone is always with them. The shared display is not a continuous focal point.
@@ -189,7 +193,7 @@ The role is permanent. The character is not.
 
 **The Two Configurations**
 
-Four-slot (2-4 players): the complete core experience. Nothing is missing or simplified. Six-slot (5-8 players): adds two expansion slots that deepen the clue web and increase social complexity. Empty slots are filled by AI-controlled NPC participants who hold information states, cover stories, and respond dynamically when players interact with them.
+Four-slot (4 human players): the complete v1 core experience. Nothing is missing or simplified. Six-slot (5+ human players): adds two expansion slots that deepen the clue web and increase social complexity. Empty participant slots are not filled by interrogatable AI participants in v1. AI-controlled participant slots that hold information states, cover stories, respond dynamically, and can be the killer are deferred to v1.1.
 
 **The Six Role Types**
 
@@ -206,7 +210,7 @@ These are the founding set. Role types are first-class platform objects in an ex
 
 Killer assignment is a two-event system:
 
-*Assignment:* The engine internally determines which player is the killer. Can happen anywhere from session start to immediately before the revelation beat. The engine observes player behavior passively across early beats and evaluates candidates based on narrative fit and social dynamics. Specific interaction triggers (including mini-game outputs) can accelerate or influence the decision.
+*Assignment:* In v1, the engine internally determines which player is the killer through constrained-random assignment behind the existing assignment interface. No slot is reserved for the killer and no slot is immune from assignment. Mini-game behavioral inputs are captured in schema in v1 but are not wired into killer assignment until v1.1.
 
 *Revelation:* Fires privately on the killer's device at the assigned beat (range: beats 2-4). The revelation delivers: role disclosure, the killer's prompted action opportunities for this session, and the victim designation prompt.
 
@@ -216,7 +220,7 @@ No slot is reserved for the killer. No slot is immune from the assignment.
 
 The victim is a dedicated structural position, separate from the six role types. The victim is never a playable investigative role.
 
-*Eligibility:* With three or fewer human players, NPCs fill the victim slot. With four or more human players, a human player can be the victim. The engine determines eligibility by player count.
+*Eligibility:* In v1, the NPC victim role is retained and the victim remains a dedicated structural position separate from playable investigative roles. Human victim eligibility begins at the four-human-player floor. Two- and three-player support depends on v1.1 interrogatable AI participants and is not part of v1.
 
 *Designation:* The killer designates the victim at the moment of revelation, selecting from available characters. The engine may constrain choices to narratively valid options.
 
@@ -251,7 +255,7 @@ Every Nightcap session tells a different story in the same shape.
 
 The gathering is in full swing. Characters are in their element. No one knows anything is wrong yet. Players receive their character cards privately. The room has the energy of any social gathering before it goes wrong.
 
-Before or alongside the social dynamics, players may engage in aesthetic-themed mini-games delivered to their phones, optionally mirrored on the shared display. These games are framed as part of the gathering itself. They generate behavioral and response data that feeds the killer assignment logic, though players have no visibility into this function. Whether game data drives the assignment or not varies per session. The murder may occur during this beat.
+Before or alongside the social dynamics, players may engage in aesthetic-themed mini-games delivered to their phones, optionally mirrored on the shared display. These games are framed as part of the gathering itself. In v1, mini-games are timed, puzzle-gated interactions that gate clue access, drive competition, and create investigative leads across beats. They capture behavioral-read output in schema but do not feed killer assignment until v1.1. The murder may occur during this beat.
 
 The pacing engine is observing but not intervening.
 
@@ -388,6 +392,8 @@ A clue is a discrete piece of information with a defined delivery target, a deli
 - *Targeted multi-player:* Delivered to a defined subset of players, not the full group.
 
 Any delivery type can be puzzle-gated. The puzzle determines access, not content or recipient.
+
+Mini-games in v1 ride on these existing puzzle-gated clue formats as a cross-beat interaction layer. They are not opening-only content; they can appear wherever a beat calls for timed competitive clue-cracking or collaborative clue access.
 
 **Puzzle Formats**
 

@@ -1,11 +1,11 @@
-# M5-C: Second Arc Schema Validation
+# M5-C: Second Arc Schema And Executable Follow-Through
 
 **Milestone:** M5  
 **Status:** Planned
 
 ## Plain-English Summary
 
-Design one non-Nightcap arc schema to prove platform-clean abstractions.
+Design one non-Nightcap arc schema to prove platform-clean abstractions, then queue a post-M6 minimal executable product that proves platform reuse by execution.
 
 ## Why This Matters
 
@@ -26,6 +26,7 @@ The technical scope is limited to the tasks listed below and the architecture re
 ## Tasks
 
 - [AW-235: Second Arc Schema Design](../tasks/AW-235-second-arc-schema-design.md)
+- AW-245: Second Arc Minimal Executable Product (post-M6, added to the roadmap manifest)
 
 ## Acceptance Criteria
 

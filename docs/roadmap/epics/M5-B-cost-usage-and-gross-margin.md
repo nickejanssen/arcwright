@@ -5,7 +5,7 @@
 
 ## Plain-English Summary
 
-Compute per-session cost and gross-margin readiness by player count.
+Compute per-session cost and gross-margin readiness by supported human player count.
 
 ## Why This Matters
 

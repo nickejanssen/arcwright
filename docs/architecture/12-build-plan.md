@@ -42,7 +42,7 @@ The component build order follows the dependency graph. Components higher in the
 
 **Phase 4: Arc execution engine (build after knowledge and routing are stable)**
 
-1. `ArcStateChart` base class and `NightcapArcChart` implementation
+1. `ArcStateChart` base class and generated Nightcap chart from the authored eight-beat Story Circle arc definition
 2. `DramaticTensionScore` pacing engine with intervention logic
 3. Session coordinator asyncio loop
 4. Character behavior generation pipeline (7-step: knowledge query through event emit)
@@ -61,7 +61,7 @@ The component build order follows the dependency graph. Components higher in the
 **Phase 6: Session persistence (build after end-to-end flow is working)**
 
 1. Interrupt/resume flow with nearest-beat snapshot
-2. Player drop and AI takeover
+2. Player drop handling without interrogatable AI participant takeover in v1
 3. Session state replay from event log
 
 **Phase 7: Telemetry and simulation (build last; validates everything above)**
@@ -75,8 +75,8 @@ The component build order follows the dependency graph. Components higher in the
 
 MVP is complete when all of the following are true (from PRD Section 9):
 
-- Nightcap is playable end-to-end by a group of 4-10 real players not involved in building it
-- Session completes through all three beats to the reveal
+- Nightcap is playable end-to-end by a group of real human players not involved in building it, with a v1 floor of four human players and scaling up with additional human players
+- Session completes through the eight Nightcap Story Circle beats to the reveal
 - Knowledge state enforcement works: no player receives information their character should not have
 - Session persistence works: mid-game interruption restores from nearest beat
 - Provider-agnostic routing abstraction is in place: no model name outside `routing_table.json`
@@ -84,7 +84,7 @@ MVP is complete when all of the following are true (from PRD Section 9):
 - API is documented for a technical co-founder to read without explanation
 - Per-session cost model is live: AI credit tracking active, gross margin calculable
 - Content safety rails are active for Nightcap's thematic territory
-- At least one non-Nightcap arc schema has been designed, proving the arc format is not Nightcap-specific
+- A second non-Nightcap arc schema has been designed, and after M6 proof it is built as a minimal executable product to prove platform reuse by execution
 
 ## 12.4 What Can Be Built in Parallel
 

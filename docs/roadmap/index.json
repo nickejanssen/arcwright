@@ -462,11 +462,12 @@
     {
       "id": "M5-C",
       "milestone": "M5",
-      "title": "Second Arc Schema Validation",
+      "title": "Second Arc Schema And Executable Follow-Through",
       "status": "planned",
       "path": "docs/roadmap/epics/M5-C-second-arc-schema-validation.md",
       "tasks": [
-        "AW-235"
+        "AW-235",
+        "AW-245"
       ],
       "github": {
         "issue_number": 50,
@@ -476,7 +477,7 @@
     {
       "id": "M5-D",
       "milestone": "M5",
-      "title": "Visual Storyworld Phase 1 Inspection",
+      "title": "Visual Storyworld Knowledge Graph Inspection",
       "status": "planned",
       "path": "docs/roadmap/epics/M5-D-visual-storyworld-phase-1-inspection.md",
       "tasks": [
@@ -1225,7 +1226,7 @@
     },
     {
       "id": "AW-234",
-      "title": "Gross Margin By Player Count",
+      "title": "Gross Margin By Supported Human Player Count",
       "milestone": "M5",
       "epic": "M5-B",
       "size": "M",
@@ -1333,7 +1334,7 @@
       "depends_on": [
         "AW-233",
         "AW-234",
-        "AW-239"
+        "AW-236"
       ],
       "path": "docs/roadmap/tasks/AW-240-closed-playtest-operations-runbook.md",
       "github": {
@@ -1405,6 +1406,23 @@
         "url": "https://github.com/nickejanssen/arcwright/issues/97"
       },
       "epic_id": "M6-C"
+    },
+    {
+      "id": "AW-245",
+      "title": "Second Arc Minimal Executable Product",
+      "milestone": "Post-M6",
+      "epic": "M5-C",
+      "size": "L",
+      "depends_on": [
+        "AW-235",
+        "AW-244"
+      ],
+      "path": "docs/roadmap/tasks/AW-245-second-arc-minimal-executable-product.md",
+      "github": {
+        "issue_number": 114,
+        "url": "https://github.com/nickejanssen/arcwright/issues/114"
+      },
+      "epic_id": "M5-C"
     }
   ],
   "superseded_sources": [
