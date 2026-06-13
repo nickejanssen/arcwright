@@ -19,6 +19,7 @@ The canonical checklist this skill enforces lives at `docs/conventions/review-ch
 - Confirm the spec is linked, current, and approved. If there is no spec for a non-trivial change, block and say so.
 - Confirm the acceptance criteria are testable and actually tested.
 - Confirm the change scope matches the spec scope. Anything beyond the spec is scope creep until proven otherwise.
+- Confirm product-scope additions have durable approval evidence in `docs/product/decisions-log.csv` plus an ADR or approved spec when they affect roadmap sequencing, architecture, privacy, APIs, schemas, telemetry, or implementation behavior.
 
 ### 2. Read Every Changed File
 
@@ -31,6 +32,7 @@ The canonical checklist this skill enforces lives at `docs/conventions/review-ch
 Check each item and record evidence (file and line) for anything you flag:
 
 - Scope creep beyond the approved spec.
+- Product-scope additions that appear only in a story bible, PR description, chat summary, or diff without durable decision evidence.
 - Weakened, deleted, or narrowly mocked tests that reduce confidence.
 - Suppressed errors, broad exception handling, or TODOs that hide breakage.
 - New dependencies, and whether they were explicitly approved (a Hard Rule in `AGENTS.md`).

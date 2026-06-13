@@ -31,9 +31,22 @@ This spec defines the repository documentation layout so active canonical docs a
 
 ---
 
+# Founder-Approved Scope Addendum
+
+After the initial docs organization plan was approved, the founder approved one product-scope addition for this PR: record Nightcap Continuity as approved v1.1 fast-follow scope, not v1 MVP scope. This addendum is intentionally narrow.
+
+Included:
+
+- Record the Nightcap Continuity v1.1 decision in `docs/product/decisions-log.csv`
+- Add ADR `docs/decisions/0006-nightcap-continuity-v11.md` as durable approval evidence
+- Clarify the Nightcap story bible so continuity is visible for v1.1 planning but cannot be implemented as v1 MVP scope
+- Update agent and review guidance so future AI agents require durable product-scope evidence before treating roadmap additions as approved build scope
+
+---
+
 # Out of Scope
 
-- Product-content edits to the PRD, story bibles, decisions log, or open questions log
+- Product-content edits to the PRD, story bibles, decisions log, or open questions log beyond the founder-approved Nightcap Continuity v1.1 addendum above
 - Deleting historical artifacts
 - Changing implementation specs, roadmap scope, or architecture decisions beyond path references
 - Rewriting old Notion export links inside archived files
@@ -51,6 +64,7 @@ This spec defines the repository documentation layout so active canonical docs a
 - [x] No `.claude/`, `.codex/`, `.cursor/`, `.vscode/`, or similar agent-local files are modified or staged
 - [x] Active documentation uses stable filenames with in-file version metadata instead of one active file per version
 - [x] AI-cost guidance directs agents to canonical targeted reads before archived source recovery
+- [x] Nightcap Continuity v1.1 is backed by D-051 and ADR 0006, with an explicit v1 MVP boundary
 
 ---
 

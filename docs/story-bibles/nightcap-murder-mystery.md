@@ -5,7 +5,7 @@
 > Status: Current
 > Canonical path: docs/story-bibles/nightcap-murder-mystery.md
 
-**Status:** Current v1.1 with Chat 9 schema, enterprise adaptation notes, and Nightcap Continuity fast-follow scope applied | **Date:** 2026-06-13 | **Chat:** Chat 7 + Chat 9 integration + product review
+**Status:** Current v1.1 with Chat 9 schema, enterprise adaptation notes, and approved Nightcap Continuity v1.1 fast-follow scope applied | **Date:** 2026-06-13 | **Chat:** Chat 7 + Chat 9 integration + product review
 
 **Design inspirations:** Murder Trivia Party (Jackbox) as format reference; ReBoot (animated series) game-descent mechanic as Arcwright platform philosophy.
 
@@ -17,9 +17,11 @@ Schema references in this Bible follow the platform-clean naming principle from 
 
 Enterprise adaptations of Nightcap-style arcs are in scope per D-046. Future enterprise templates may derive from Nightcap structure with corporate-context content, while still running on the same Arcwright platform.
 
-## v1.1 Fast Follow: Nightcap Continuity
+## Approved v1.1 Fast Follow: Nightcap Continuity
 
-**Decision:** Nightcap Continuity is committed to v1.1, not v1. v1 proves the single-session party game. v1.1 adds cross-session group memory and a post-session recap artifact so Nightcap demonstrates the D-034 wedge: cross-session narrative state management with the knowledge graph as the headline primitive.
+**Decision:** Nightcap Continuity is approved v1.1 fast-follow scope, not v1 MVP scope. The durable decision evidence is D-051 in `docs/product/decisions-log.csv` and ADR `docs/decisions/0006-nightcap-continuity-v11.md`. v1 proves the single-session party game. v1.1 adds cross-session group memory and a post-session recap artifact so Nightcap demonstrates the D-034 wedge: cross-session narrative state management with the knowledge graph as the headline primitive.
+
+**Scope boundary:** This section is a v1.1 roadmap bookmark for future planning. It must not be treated as permission to add continuity schemas, APIs, consent flows, recap generation, storage, or UI to v1 implementation work without a dedicated v1.1 spec and normal approval.
 
 **Problem statement:** A single Nightcap session can feel personalized, but it does not yet prove that Arcwright can remember a group over time. Continuity turns completed sessions into durable narrative state. It gives returning groups the feeling that the system remembers their table without requiring the v1 launch to carry consent, retention, and memory-product complexity.
 

@@ -5,5 +5,6 @@ The canonical, always-on rules for every agent in this repository live in [`AGEN
 @AGENTS.md
 
 - Documentation access, versioning, and AI-cost rules are defined in [`AGENTS.md`](AGENTS.md) and [`docs/README.md`](docs/README.md).
+- Product-scope approval rules are defined in [`AGENTS.md`](AGENTS.md); Nightcap Continuity is approved v1.1 fast-follow scope only via D-051 and [`docs/decisions/0006-nightcap-continuity-v11.md`](docs/decisions/0006-nightcap-continuity-v11.md).
 - Development-role contracts (Product Steward, Planner, Spec Author, Scribe, and the operating model): [`docs/agents/`](docs/agents/)
 - Reusable role skills (Implementer, Reviewer, Architecture SME): [`docs/skills/`](docs/skills/)

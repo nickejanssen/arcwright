@@ -74,6 +74,8 @@ When answering a question, identify which `docs/` section is relevant and refere
 
 Active canonical docs use stable filenames with in-file version metadata. Do not create or rely on one active file per version. Use git history and `docs/archive/notion-export/` for older versions or raw source recovery.
 
+Product-scope commitments require durable approval evidence before they become build scope. Check `docs/product/decisions-log.csv` first, then check `docs/decisions/` or `docs/specs/` when the decision affects roadmap sequencing, architecture, privacy, APIs, schemas, telemetry, or implementation behavior. Nightcap Continuity is approved v1.1 fast-follow scope only via D-051 and `docs/decisions/0006-nightcap-continuity-v11.md`; it is not v1 MVP scope unless a later approved spec changes that boundary.
+
 ---
 
 ## Core Expertise Surface
@@ -109,6 +111,7 @@ Before giving an answer, note which of these are in play:
 - Does this introduce an LLM-dependent code path that needs evals, not just unit tests?
 - Does this conflict with a finding in `docs/decisions/0001-scaffolding-audit.md`?
 - Does this affect the five MVP telemetry signals?
+- Does this add product scope, and if so does it have durable approval evidence in `docs/product/decisions-log.csv` plus an ADR or approved spec?
 
 State which checklist items are relevant before answering.
 

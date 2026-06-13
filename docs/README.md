@@ -67,3 +67,5 @@ Archived source exports may retain versioned or hash-based filenames. They are t
 ## Source of Truth
 
 Canonical repo docs win over archived exports. Archived exports exist for traceability and recovery. If a raw export conflicts with the split PRD, split architecture, roadmap, or accepted ADRs, update the canonical doc and record the reason in a spec or ADR when the decision has lasting impact.
+
+Product-scope commitments need durable approval evidence before they become build scope. Use `docs/product/decisions-log.csv` for the product record and add an ADR or approved spec when the decision affects roadmap, architecture, privacy, APIs, or implementation sequencing. Story bibles may describe approved scope, but they are not the only approval record for new product commitments.

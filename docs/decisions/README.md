@@ -39,6 +39,7 @@ When proposing changes:
 - `0003-nightcap-web-experience-runtime.md` - AW-202 Nightcap web experience runtime and Arcwright integration contract
 - `0004-pacing-telemetry-outcome-events.md` - AW-207 append-only pacing trigger and outcome telemetry contract
 - `0005-l1-hard-stop-boundary.md` - AW-208 deterministic L1 safety boundary and blocked-generation return contract
+- `0006-nightcap-continuity-v11.md` - approved Nightcap Continuity v1.1 fast-follow scope and v1 MVP boundary
 
 ## Current Decision Categories
 

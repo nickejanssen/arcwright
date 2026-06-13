@@ -105,6 +105,14 @@ These five constraints are non-negotiable and may not be bypassed by arc configu
 - For product, roadmap, business, or story questions, answer from canonical current docs first: `/docs/prd/`, `/docs/architecture/`, `/docs/story-bibles/`, `/docs/product/`, `/docs/roadmap/`, `/docs/decisions/`, and `/docs/specs/`.
 - If canonical docs conflict, state the conflict with file paths and ask for direction before implementing.
 
+## Product Scope Approval Rules
+
+- Product-scope additions are not approved just because they appear in a story bible, PR description, chat summary, or branch diff.
+- Durable approval evidence must live in canonical repo docs before an agent treats new product scope as build scope.
+- Use `docs/product/decisions-log.csv` for product approval records.
+- Add an ADR in `docs/decisions/` or an approved spec in `docs/specs/` when the decision affects roadmap sequencing, architecture, privacy, APIs, schemas, telemetry, or implementation behavior.
+- Nightcap Continuity is approved v1.1 fast-follow scope only. It is recorded in D-051 and ADR `docs/decisions/0006-nightcap-continuity-v11.md`. Do not implement it as v1 MVP work unless a later approved spec explicitly changes that boundary.
+
 ## Coding Conventions
 
 See `/docs/conventions/` for:
