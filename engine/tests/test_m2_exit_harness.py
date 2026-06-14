@@ -25,6 +25,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.schema import ColumnDefault, DefaultClause
 
 from engine.arc import transition_name_for
+from engine.arc.models import ArcDefinition, BeatDefinition
 from engine.characters import (
     KnowledgeConstraintViolation,
     build_character_generation_context,
@@ -70,16 +71,45 @@ EXIT_CONDITIONS = {
     "reckoning": "accusations_resolved",
     "close": "final_accusation_committed",
 }
-GENERATIVE_BEATS = (
-    "opening_move",
-    "dig",
-    "thread",
-    "reckoning",
-    "close",
-    "truth",
-)
 PLAYERS = ["player-a", "player-b", "player-c", "player-d"]
 SEED = 214
+
+# Generative triggers resolved deterministically by the harness itself
+# (no AI call, no safety pipeline). Every other declared trigger must flow
+# through engine.routing.generate so that L1, L2, and the routing-table
+# abstraction are exercised before any provider call.
+HARNESS_RESOLVED_TRIGGERS = frozenset({"killer_assignment"})
+
+# Maps each AI-routed Nightcap generative trigger to the routing-table
+# task_type it should route through. New triggers fall back to
+# "narrative_generation". If a brand-new trigger needs a different routing
+# key, add it here so the M2 exit-harness coverage stays explicit.
+_TRIGGER_TASK_TYPES = {
+    "narrator_opening": "narrator_bridge",
+    "narrator_dialogue": "narrator_bridge",
+    "victim_designation": "narrative_generation",
+    "clue_content": "narrative_generation",
+    "private_clue_distribution": "narrative_generation",
+    "killer_private_revelation": "narrative_generation",
+    "plot_twist": "narrative_generation",
+    "killer_action_opportunity": "character_dialogue",
+    "final_accusation_prompt": "narrator_bridge",
+    "killer_confession": "character_dialogue",
+}
+_DEFAULT_TRIGGER_TASK_TYPE = "narrative_generation"
+
+
+def _load_nightcap_arc() -> ArcDefinition:
+    return ArcDefinition.model_validate_json(ARC_PATH.read_text(encoding="utf-8"))
+
+
+def _routed_triggers_for_beat(beat: BeatDefinition) -> tuple[str, ...]:
+    return tuple(
+        trigger
+        for trigger in beat.generative_triggers
+        if trigger not in HARNESS_RESOLVED_TRIGGERS
+    )
+
 
 _PATCHED = False
 
@@ -633,6 +663,11 @@ async def test_find_unknown_fact_leak_flags_unknown_fact_appearance(
 async def test_end_to_end_harness_records_only_routing_table_models(
     db_session: AsyncSession,
 ) -> None:
+    # Drive the generation calls from the canonical arc's own
+    # generative_triggers rather than a hard-coded beat list, so that any
+    # future arc trigger change is automatically reflected in the
+    # safety-pipeline coverage.
+    arc = _load_nightcap_arc()
     session_row, character, _known, _unknown = await _seed_dialogue_fixture(db_session)
     probe = _ProviderProbe()
     approved = _approved_models() | _safety_layer_sentinels()
@@ -648,49 +683,41 @@ async def test_end_to_end_harness_records_only_routing_table_models(
             task_type, quality_tier, messages, temperature
         )
 
-    generation_results: list[RouteResult] = []
+    generation_results: list[tuple[str, str, RouteResult]] = []
+    expected_routed_triggers: list[tuple[str, str]] = []
+    for beat in arc.beats:
+        for trigger in _routed_triggers_for_beat(beat):
+            expected_routed_triggers.append((beat.beat_id, trigger))
+
     with (
         patch.object(routing_logging, "route_generation", side_effect=stub_route),
         patch("litellm.acompletion", side_effect=probe.litellm_tripwire),
     ):
-        for source_beat in BEAT_SEQUENCE[:-1]:
-            if source_beat in GENERATIVE_BEATS or source_beat == "body":
+        for beat in arc.beats:
+            routed_triggers = _routed_triggers_for_beat(beat)
+            for trigger in routed_triggers:
+                task_type = _TRIGGER_TASK_TYPES.get(trigger, _DEFAULT_TRIGGER_TASK_TYPE)
                 result = await generate(
                     db_session,
                     session_id=session_row.session_id,
-                    task_type="narrator_bridge",
+                    task_type=task_type,
                     quality_tier="standard",
                     messages=[
                         {
                             "role": "system",
-                            "content": (f"You are narrating the beat '{source_beat}'."),
+                            "content": (
+                                f"Beat '{beat.beat_id}' fires trigger '{trigger}'."
+                            ),
                         },
                         {
                             "role": "user",
-                            "content": ("Set the scene without naming the killer."),
+                            "content": "Advance the story without naming the killer.",
                         },
                     ],
                 )
-                generation_results.append(result)
-            runner.apply_action(_next_action(source_beat))
-
-        truth_narration = await generate(
-            db_session,
-            session_id=session_row.session_id,
-            task_type="narrative_generation",
-            quality_tier="standard",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "You are narrating The Truth, beat 8.",
-                },
-                {
-                    "role": "user",
-                    "content": "Deliver the closing reveal.",
-                },
-            ],
-        )
-        generation_results.append(truth_narration)
+                generation_results.append((beat.beat_id, trigger, result))
+            if beat.beat_id != BEAT_SEQUENCE[-1]:
+                runner.apply_action(_next_action(beat.beat_id))
 
     snapshot = runner.snapshot()
     run = runner.current_run()
@@ -701,7 +728,13 @@ async def test_end_to_end_harness_records_only_routing_table_models(
 
     assert probe.litellm_calls == 0
     assert generation_results, "harness should exercise at least one generation"
-    for result in generation_results:
+    actual_routed_triggers = [
+        (beat_id, trigger) for beat_id, trigger, _ in generation_results
+    ]
+    assert actual_routed_triggers == expected_routed_triggers, (
+        "every arc-declared routed trigger must drive one generate() call"
+    )
+    for _beat_id, _trigger, result in generation_results:
         assert result.model_used in approved
 
     routing_table = load_routing_table()
@@ -715,6 +748,9 @@ async def test_end_to_end_harness_records_only_routing_table_models(
     )
     main_call_count = sum(
         1 for call in probe.calls if call["task_type"] != "safety_classification"
+    )
+    assert main_call_count == len(expected_routed_triggers), (
+        "every routed arc trigger must produce exactly one main routing call"
     )
     assert safety_classification_count == main_call_count, (
         "every main routing call must be preceded by an L2 classification call"
@@ -732,3 +768,30 @@ async def test_end_to_end_harness_records_only_routing_table_models(
     for _event_type, payload in safety_events:
         assert payload["layer"] == "L2"
         assert payload["blocked"] is False
+
+
+def test_every_arc_trigger_is_either_harness_resolved_or_has_a_routed_task_type() -> (
+    None
+):
+    """Guard rail: any new arc trigger must be classified explicitly.
+
+    If a new trigger string lands in nightcap/arc.json without a routing
+    decision, this test fails and forces the M2 exit-harness coverage
+    table (_TRIGGER_TASK_TYPES or HARNESS_RESOLVED_TRIGGERS) to be
+    updated before the trigger can ship. That keeps the Codex P2
+    invariant intact: the headless harness routing/safety check follows
+    the arc, not a hard-coded list.
+    """
+    arc = _load_nightcap_arc()
+    declared_triggers: set[str] = set()
+    for beat in arc.beats:
+        declared_triggers.update(beat.generative_triggers)
+
+    classified = HARNESS_RESOLVED_TRIGGERS | set(_TRIGGER_TASK_TYPES)
+    unclassified = declared_triggers - classified
+    assert not unclassified, (
+        "Nightcap arc declares triggers without an M2 exit-harness "
+        f"classification: {sorted(unclassified)}. Add each to "
+        "HARNESS_RESOLVED_TRIGGERS (if harness-internal) or "
+        "_TRIGGER_TASK_TYPES (if AI-routed) in test_m2_exit_harness.py."
+    )
