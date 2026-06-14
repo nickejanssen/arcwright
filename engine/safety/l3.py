@@ -82,6 +82,19 @@ _NIGHTCAP_EXTRA_PROHIBITIONS = (
     "Do not produce content that directly accuses or targets a real, named person.",
 )
 
+# Platform minimum policy: the four unconditional L1 hard-stop categories
+# expressed as plain-language instructions for the main language model.
+# These are injected when no arc-specific content_rails are provided, so
+# L3 always runs as a backstop even before the arc coordinator is wired up.
+# They mirror L1 (which blocks at the input layer) but act at the generation
+# layer as additional protection for the same categories.
+_PLATFORM_MINIMUM_PROHIBITIONS = (
+    "Do not produce sexual content involving anyone under 18.",
+    "Do not produce content targeting a real, named, living individual with harmful intent.",
+    "Do not provide detailed instructions for real-world violence or weapons construction.",
+    "Do not produce content designed to facilitate real-world harm outside the fictional frame.",
+)
+
 
 def build_nightcap_l3_policy_block(content_rails: "ContentRailsConfig") -> str:
     """Build the Nightcap-specific L3 policy block from arc content rails.
@@ -160,14 +173,15 @@ def inject_l3_policy_block(
     prompt.  This avoids creating duplicate system messages, which some
     providers do not support.
 
-    If `content_rails` is None (the arc has not configured any rails), this
-    function returns the original messages list unchanged.  Callers do not
-    need to check for None before calling.
+    If `content_rails` is None, the platform minimum policy block is injected
+    (the four unconditional L1 categories expressed as plain-language
+    instructions).  Callers do not need to check for None before calling.
 
     Args:
         messages: The generation prompt message list to inject into.
-        content_rails: The arc's content rails configuration, or None if
-            the arc does not define any.
+        content_rails: The arc's content rails configuration, or None when
+            no arc has been wired up yet.  When None, the platform minimum
+            policy is used so L3 always runs.
         nightcap_mode: When True, uses the Nightcap-specific policy builder
             which adds extra Nightcap-appropriate prohibitions on top of the
             arc-level rails.  Defaults to False so other arcs are unaffected.
@@ -176,7 +190,10 @@ def inject_l3_policy_block(
         A new messages list.  The original list is never mutated.
     """
     if content_rails is None:
-        return messages
+        # No arc-specific rails provided. Inject the platform minimum so
+        # L3 always runs, even before the arc coordinator is wired up.
+        policy_text = _format_policy_block(list(_PLATFORM_MINIMUM_PROHIBITIONS))
+        return _inject_policy_into_messages(messages, policy_text)
 
     if nightcap_mode:
         policy_text = build_nightcap_l3_policy_block(content_rails)
@@ -187,7 +204,7 @@ def inject_l3_policy_block(
         # No prohibitions at all, so there is nothing to inject.
         return messages
 
-    return _prepend_policy_to_messages(messages, policy_text)
+    return _inject_policy_into_messages(messages, policy_text)
 
 
 def build_l3_blocked_route_result() -> "RouteResult":  # type: ignore[name-defined]  # noqa: F821
@@ -235,25 +252,41 @@ def _format_policy_block(prohibitions: list[str]) -> str:
     return "\n".join(lines)
 
 
-def _prepend_policy_to_messages(
+def _inject_policy_into_messages(
     messages: list[dict[str, Any]],
     policy_text: str,
 ) -> list[dict[str, Any]]:
-    """Add the policy block to the front of the system prompt.
+    """Append the policy block to the system prompt, preserving prompt caching.
 
-    This inserts the policy before the character identity and knowledge state
-    blocks that follow it in the full assembled prompt.  The order matches
-    the architecture document: character identity → knowledge state → L3 policy
-    (from the model's perspective, policy is at the outermost system level).
+    Policy is appended to the content of the first system message so the
+    complete system prompt (character identity + knowledge state + L3 policy)
+    stays in a single message.  The generation router passes messages to
+    `mark_stable_context_cacheable()`, which wraps `messages[0]` with
+    Anthropic's `cache_control`.  Merging the policy into that message means
+    the stable character/knowledge context stays in the cached region rather
+    than being displaced by the policy block.
 
-    Implementation note: we inject as a new system message at position 0 so
-    that the existing system message (character identity + knowledge state)
-    remains intact and the policy is always the first thing the model reads.
-    This is safe across providers because the policy message is a standard
-    string-content system message.
+    The architecture places L3 policy after the character identity and
+    knowledge state blocks (docs/architecture/10-content-safety.md §10.4),
+    which appending to the end of the system message achieves.
+
+    If the system message content is not a plain string (e.g. it is already
+    in content-block format from a prior `cache_control` wrap), a new system
+    message is inserted at position 0 as a safe fallback.  In that case
+    caching of the original context is preserved because its block remains
+    intact at position 1.
     """
-    policy_message: dict[str, Any] = {
-        "role": "system",
-        "content": policy_text,
-    }
-    return [policy_message] + list(messages)
+    result = list(messages)
+    for i, msg in enumerate(result):
+        if msg.get("role") == "system":
+            existing = msg.get("content", "")
+            if not isinstance(existing, str):
+                # Content already in block format, so insert a new system message
+                # rather than mutating the block list.
+                result.insert(0, {"role": "system", "content": policy_text})
+                return result
+            result[i] = {**msg, "content": f"{existing}\n\n{policy_text}"}
+            return result
+    # No system message found, so create one at the front.
+    result.insert(0, {"role": "system", "content": policy_text})
+    return result

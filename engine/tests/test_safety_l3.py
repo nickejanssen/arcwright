@@ -254,11 +254,19 @@ def test_nightcap_policy_block_arc_rails_override_is_additive() -> None:
 # ---------------------------------------------------------------------------
 
 
-def test_inject_l3_policy_block_prepends_policy_message() -> None:
-    """The injected policy message must be the first message in the list.
+def test_inject_l3_policy_block_appends_policy_to_existing_system_message() -> None:
+    """The policy is appended to the existing system message, not prepended as a new one.
 
-    The model reads messages in order.  The policy must come first so the
-    model knows the rules before it reads the story context and generates.
+    Appending keeps the full system prompt (character context + policy) in a
+    single message.  route_generation() calls mark_stable_context_cacheable(),
+    which applies Anthropic's cache_control to messages[0].  If the policy
+    were a separate leading message, the cache would wrap only the short policy
+    block and leave the stable character/knowledge context uncached, regressing
+    cost and latency on every L3 generation call.
+
+    The architecture places L3 policy after the character identity and knowledge
+    state blocks (docs/architecture/10-content-safety.md §10.4), which
+    appending achieves.
     """
     content_rails = ContentRailsConfig(
         prohibited_categories=["graphic torture"],
@@ -269,12 +277,18 @@ def test_inject_l3_policy_block_prepends_policy_message() -> None:
 
     result = inject_l3_policy_block(messages, content_rails)
 
-    # Policy is first, original message is second.
-    assert len(result) == 2
+    # Policy is merged into the single existing system message, not a new one.
+    assert len(result) == 1
     assert result[0]["role"] == "system"
+    # Original character context is present.
+    assert "You are a detective character." in result[0]["content"]
+    # Policy block is present in the same message.
     assert "CONTENT POLICY" in result[0]["content"]
     assert "graphic torture" in result[0]["content"]
-    assert result[1]["content"] == "You are a detective character."
+    # Policy comes AFTER the original context (architecture ordering).
+    assert result[0]["content"].index("CONTENT POLICY") > result[0]["content"].index(
+        "detective character"
+    )
 
 
 def test_inject_l3_policy_block_does_not_mutate_original_messages() -> None:
@@ -298,17 +312,26 @@ def test_inject_l3_policy_block_does_not_mutate_original_messages() -> None:
     assert messages[0]["content"] == original_content
 
 
-def test_inject_l3_policy_block_returns_original_when_no_rails() -> None:
-    """When content_rails is None, messages are returned unchanged.
+def test_inject_l3_policy_block_injects_platform_minimum_when_no_rails() -> None:
+    """When content_rails is None, the platform minimum policy block is injected.
 
-    This handles the case where no arc has been wired up yet.  The function
-    must be safe to call with None without crashing or injecting anything.
+    L3 must always run.  When no arc has been wired up, a platform-level minimum
+    policy, mirroring the four unconditional L1 hard-stop categories, is
+    injected as a backstop.  This ensures L3 protection is always present even
+    before the arc coordinator passes content_rails down the call stack.
     """
-    messages = [{"role": "user", "content": "Hello."}]
+    messages = [{"role": "system", "content": "You are a narrator."}]
 
     result = inject_l3_policy_block(messages, None)
 
-    assert result is messages
+    # A new message list is returned (not the original).
+    assert result is not messages
+    # Platform minimum policy block is present.
+    assert "CONTENT POLICY" in result[0]["content"]
+    # Platform minimum covers the L1 hard-stop categories.
+    assert "under 18" in result[0]["content"]
+    # Original system message content is preserved in the merged prompt.
+    assert "You are a narrator." in result[0]["content"]
 
 
 def test_inject_l3_policy_block_returns_original_when_no_prohibitions() -> None:
@@ -341,7 +364,8 @@ def test_inject_l3_policy_block_nightcap_mode_includes_nightcap_rules() -> None:
     result = inject_l3_policy_block(messages, content_rails, nightcap_mode=True)
 
     # Nightcap mode produces a non-empty block even with no arc prohibitions.
-    assert len(result) == 2
+    # Policy is appended to the existing system message (not a new one).
+    assert len(result) == 1
     assert "CONTENT POLICY" in result[0]["content"]
     assert "murder" in result[0]["content"].lower()
 
@@ -407,12 +431,12 @@ async def test_generate_injects_l3_policy_block_before_main_call(
 
     assert len(captured_main_messages) == 1
     main_messages = captured_main_messages[0]
-    # The policy block must be the first message.
+    # Policy and original context are merged into a single system message.
     assert main_messages[0]["role"] == "system"
     assert "CONTENT POLICY" in main_messages[0]["content"]
     assert "real-world weapon construction" in main_messages[0]["content"]
-    # The original system message must still be present.
-    assert any(msg["content"] == "You are a detective." for msg in main_messages)
+    # The original character context is present in the merged system message.
+    assert "You are a detective." in main_messages[0]["content"]
 
 
 async def test_generate_nightcap_mode_injects_nightcap_rules(
@@ -462,13 +486,15 @@ async def test_generate_nightcap_mode_injects_nightcap_rules(
     assert "sexual content" in policy_text.lower()
 
 
-async def test_generate_without_content_rails_does_not_inject_policy(
+async def test_generate_without_content_rails_injects_platform_minimum(
     db_session: AsyncSession,
 ) -> None:
-    """When content_rails is None, the main call receives unmodified messages.
+    """When content_rails is None, generate() injects the platform minimum policy.
 
-    Callers that have not yet wired up arc content rails must not have an
-    empty or accidental policy block injected into their prompts.
+    L3 must always run.  When no arc has been wired up, the platform minimum
+    policy (mirroring the four L1 hard-stop categories) is injected so the
+    main model always receives safety instructions, even before arc-specific
+    content rails are available.
     """
     sess_row = await _make_session_row(db_session)
     original_messages = [{"role": "system", "content": "You are a narrator."}]
@@ -494,8 +520,12 @@ async def test_generate_without_content_rails_does_not_inject_policy(
         )
 
     assert len(captured_main_messages) == 1
-    # Without content rails, the messages are passed through unchanged.
-    assert captured_main_messages[0] == original_messages
+    combined = captured_main_messages[0][0]["content"]
+    # Platform minimum policy block is present.
+    assert "CONTENT POLICY" in combined
+    assert "under 18" in combined
+    # Original narrator context is preserved in the merged system message.
+    assert "You are a narrator." in combined
 
 
 async def test_generate_safety_classification_task_skips_l3_injection(

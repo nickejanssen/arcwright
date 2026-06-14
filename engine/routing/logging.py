@@ -122,8 +122,9 @@ async def generate(
         safety_policy_context: Optional serialised L2 policy context passed
             to the classifier.  When None the default platform policy is used.
         content_rails: Optional arc `ContentRailsConfig` used to build the L3
-            policy block.  When None, no L3 block is injected (the prompt is
-            sent as-is to the main model after L2 approves it).
+            policy block.  When None, the platform minimum policy (mirroring
+            the four L1 hard-stop categories) is injected as a backstop so
+            L3 always runs.
         nightcap_mode: When True, uses the Nightcap-specific L3 policy builder
             which adds murder-mystery-specific prohibitions on top of the
             arc-level rails.  Defaults to False.
@@ -197,9 +198,9 @@ async def generate(
         # It is injected here, after L2 has approved the prompt but before
         # the main model sees it, so the rules are always present.
         #
-        # If no content_rails were provided (e.g. the arc coordinator has not
-        # yet been wired up), we skip injection and call the main model with
-        # the original messages.  L2 already approved those messages.
+        # When content_rails is None, inject_l3_policy_block falls back to
+        # the platform minimum policy (the four L1 hard-stop categories
+        # expressed as prompt instructions) so L3 always runs.
         # -------------------------------------------------------------------
         messages = inject_l3_policy_block(
             messages,
