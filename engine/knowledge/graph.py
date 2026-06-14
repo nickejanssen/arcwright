@@ -49,6 +49,7 @@ async def get_character_knowledge(
             KnowledgeState.character_id == character_id,
             KnowledgeState.superseded_by.is_(None),
         )
+        .order_by(KnowledgeState.asserted_at, KnowledgeState.fact_id)
         .options(selectinload(KnowledgeState.fact))
     )
     return list(result.scalars().all())

@@ -24,6 +24,8 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 Generate character dialogue through knowledge query, safety, routing, and event emission. Likely files affected: engine/characters, engine/knowledge, engine/safety, engine/events, engine/tests.
 
+Scope guard: this is current-session Nightcap v1 dialogue work only. "Event emission" means recording or returning the dialogue event through the existing persistence or local engine path needed by this task. It does not mean building the M3 ContentEvent bus, SSE fanout, or replay system.
+
 ## Acceptance Criteria
 
 - [ ] `get_character_knowledge` is called before every AI character dialogue generation.
@@ -51,6 +53,12 @@ engine/characters, engine/knowledge, engine/safety, engine/events, engine/tests
 - Do not duplicate closed M1 work.
 - Do not hardcode secrets or API keys.
 - Do not place provider or model strings outside `config/routing_table.json` and `engine/routing/router.py`.
+- Do not implement Nightcap Continuity, cross-session group memory, recap artifacts, continuity consent, retention, deletion, or reuse flows. Those are v1.1 scope per D-051 and D-055.
+- Do not implement two- or three-player support, interrogatable AI player-slot fillers, or AI participants that can fill empty player slots and be the killer. Those are v1.1 scope per D-052.
+- Do not encode a platform-level fixed beat count. Nightcap uses eight Story Circle beats as an arc-level property per D-053.
+- Do not implement Nightcap v1 personalization intake prompts beyond consuming already-available current-session context. Intake definition belongs to the D-054 follow-up.
+- Do not wire mini-game behavioral-read outputs into killer assignment or dialogue policy. D-058 keeps v1 killer assignment constrained-random and defers behavioral signal wiring to v1.1.
+- Do not implement AI initiative scheduling or NPC-NPC exchange. That belongs to AW-213.
 
 ## Architecture References
 

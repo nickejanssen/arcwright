@@ -8,15 +8,14 @@ from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import selectinload
 
 from engine.db.orm import (
     Character,
     Fact,
-    KnowledgeState,
     RelationshipState,
     SessionParticipant,
 )
+from engine.knowledge import get_character_knowledge
 
 
 @dataclass(frozen=True)
@@ -102,17 +101,11 @@ async def build_character_generation_context(
         for relationship in relationships_result.scalars().all()
     )
 
-    known_result = await session.execute(
-        select(KnowledgeState)
-        .where(
-            KnowledgeState.session_id == session_id,
-            KnowledgeState.character_id == character_id,
-            KnowledgeState.superseded_by.is_(None),
-        )
-        .order_by(KnowledgeState.asserted_at, KnowledgeState.fact_id)
-        .options(selectinload(KnowledgeState.fact))
+    known_states = await get_character_knowledge(
+        session,
+        session_id=session_id,
+        character_id=character_id,
     )
-    known_states = list(known_result.scalars().all())
     known_fact_ids = {state.fact_id for state in known_states}
 
     all_facts_result = await session.execute(
