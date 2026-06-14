@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 import re
-from typing import Any, Dict, Type
+from typing import Any, Callable, Dict, Type
 
 from statemachine import State, StateChart
 
@@ -126,7 +126,9 @@ def _build_transition_attributes(
     return attrs, transition_names
 
 
-def _make_guard(source_beat: BeatDefinition, target_beat: BeatDefinition):
+def _make_guard(
+    source_beat: BeatDefinition, target_beat: BeatDefinition
+) -> Callable[[GeneratedArcStateChart], bool]:
     def guard(self: GeneratedArcStateChart) -> bool:
         return self._conditions_satisfied(
             [*source_beat.exit_conditions, *target_beat.entry_conditions]
