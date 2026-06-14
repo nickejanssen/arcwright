@@ -480,14 +480,14 @@ def schedule_initiative_tasks(
     safety_policy_context: dict[str, Any] | str | None = None,
     content_rails: "ContentRailsConfig | None" = None,
     nightcap_mode: bool = False,
-) -> list[asyncio.Task]:
+) -> list[asyncio.Task[NpcNpcExchangeEvent | CharacterDialogueEvent]]:
     """Dispatch each action as its own asyncio task. Returns immediately.
 
     Each task opens its own ``AsyncSession`` through ``session_factory`` so the
     coordinator's session is never shared. The caller may await the returned
     handles later, store them, or fire and forget.
     """
-    tasks: list[asyncio.Task] = []
+    tasks: list[asyncio.Task[NpcNpcExchangeEvent | CharacterDialogueEvent]] = []
     for action in actions:
         coro = _run_initiative_action(
             session_factory,
