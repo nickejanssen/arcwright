@@ -4,7 +4,7 @@ What this module does and why it exists
 ----------------------------------------
 This is the "rules in the prompt" safety layer. Before the AI writes any
 character dialogue or narration, the engine adds a plain-language block to
-the prompt that tells the AI exactly what it must not write — no matter what
+the prompt that tells the AI exactly what it must not write, no matter what
 a player asks or what the story setup looks like.
 
 Think of it like the instructions a human game master receives before
@@ -17,7 +17,7 @@ developer building a different game can set their own L3 rules without
 needing to change Arcwright's core engine code.
 
 For the Nightcap murder mystery, the L3 rules are derived directly from the
-arc's `content_rails` configuration — so tests can prove the policy is
+arc's `content_rails` configuration, so tests can prove the policy is
 sourced from the arc, not baked into the platform.
 
 L3 is the cheapest and most customisable safety layer. It sits after the
@@ -42,7 +42,7 @@ if TYPE_CHECKING:
 NEUTRAL_L3_BRIDGE = "The narrator gently steers the scene in a different direction."
 """Fallback text returned when L3 blocks a generation call.
 
-This keeps the session alive for players — they see a smooth narrative
+This keeps the session alive for players. They see a smooth narrative
 redirect rather than an error or an abrupt silence.
 """
 
@@ -66,7 +66,7 @@ policy layer, not by the classifier (L2) or a hard stop (L1).
 # designer reading the injected prompt can understand what they say.
 
 _NIGHTCAP_EXTRA_PROHIBITIONS = (
-    # Nightcap is a social deduction game — the murder is a plot device, not
+    # Nightcap is a social deduction game. The murder is a plot device, not
     # a spectacle.  Describing it in graphic detail would shift the tone from
     # cosy mystery to disturbing content.
     "Do not graphically depict the murder itself or describe violence in explicit physical detail.",
@@ -184,7 +184,7 @@ def inject_l3_policy_block(
         policy_text = build_l3_policy_block(content_rails)
 
     if not policy_text.strip():
-        # No prohibitions at all — nothing to inject.
+        # No prohibitions at all, so there is nothing to inject.
         return messages
 
     return _prepend_policy_to_messages(messages, policy_text)
@@ -195,7 +195,7 @@ def build_l3_blocked_route_result() -> "RouteResult":  # type: ignore[name-defin
 
     This is used when the caller detects that the assembled messages would
     violate L3 policy even after L2 classification passed.  In practice,
-    L3 works through prompt injection rather than blocking — but this
+    L3 works through prompt injection rather than blocking, but this
     sentinel is available if a future caller needs to signal a hard stop at
     the L3 level.
 
@@ -229,7 +229,7 @@ def _format_policy_block(prohibitions: list[str]) -> str:
     """
     if not prohibitions:
         return ""
-    lines = ["[CONTENT POLICY — YOU MUST FOLLOW THESE RULES]"]
+    lines = ["[CONTENT POLICY - YOU MUST FOLLOW THESE RULES]"]
     lines.extend(prohibitions)
     lines.append("[END CONTENT POLICY]")
     return "\n".join(lines)

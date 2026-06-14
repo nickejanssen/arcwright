@@ -96,14 +96,14 @@ async def generate(
 
     Safety layers run in this order:
 
-    1. L1 hard stops — deterministic, no AI call, catches the most severe
+    1. L1 hard stops: deterministic, no AI call, catches the most severe
        content categories unconditionally.
-    2. L2 classification — AI-based classification of whether the assembled
+    2. L2 classification: AI-based classification of whether the assembled
        prompt falls inside the arc's permitted territory.
-    3. L3 policy injection — adds plain-language rules to the prompt telling
+    3. L3 policy injection: adds plain-language rules to the prompt telling
        the main model what it must not write.  This is the "rules in the
        prompt" backstop for anything L2 did not catch.
-    4. Main generation — the actual content call, only reached if L1 and L2
+    4. Main generation: the actual content call, only reached if L1 and L2
        both allow it.
 
     Args:
@@ -134,7 +134,7 @@ async def generate(
         returns the main generation result.
     """
     # -----------------------------------------------------------------------
-    # L1: Hard stops — deterministic checks, no model call, zero latency.
+    # L1: Hard stops are deterministic checks with no model call or latency.
     # If any hard stop fires, we log a safety_hard_stop event and return a
     # neutral bridge.  No model is ever called when L1 fires.
     # -----------------------------------------------------------------------

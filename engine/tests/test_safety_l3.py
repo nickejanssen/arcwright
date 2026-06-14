@@ -43,7 +43,7 @@ CHARACTER_STANDARD_MODEL = resolve_model_key("character_dialogue", "standard")
 
 
 # ---------------------------------------------------------------------------
-# SQLite metadata patch — same pattern used across the test suite.
+# SQLite metadata patch, same pattern used across the test suite.
 # This lets us run tests without a real PostgreSQL instance.
 # ---------------------------------------------------------------------------
 
