@@ -19,12 +19,22 @@ from engine.safety.l2 import (
     build_l2_classification_payload,
     parse_l2_classification,
 )
+from engine.safety.l3 import (
+    L3_BLOCK_SENTINEL,
+    NEUTRAL_L3_BRIDGE,
+    build_l3_blocked_route_result,
+    build_l3_policy_block,
+    build_nightcap_l3_policy_block,
+    inject_l3_policy_block,
+)
 
 __all__ = [
     "L1_HARD_STOP_SENTINEL",
     "L2_BLOCK_SENTINEL",
+    "L3_BLOCK_SENTINEL",
     "NEUTRAL_L1_BRIDGE",
     "NEUTRAL_L2_BRIDGE",
+    "NEUTRAL_L3_BRIDGE",
     "SafetyClassificationResult",
     "SafetyHardStopCategory",
     "SafetyHardStopResult",
@@ -32,9 +42,13 @@ __all__ = [
     "build_l2_blocked_route_result",
     "build_l2_classification_messages",
     "build_l2_classification_payload",
+    "build_l3_blocked_route_result",
+    "build_l3_policy_block",
+    "build_nightcap_l3_policy_block",
     "build_safety_hard_stop_payload",
     "evaluate_l1_hard_stops",
     "extract_message_text",
+    "inject_l3_policy_block",
     "normalize_text",
     "parse_l2_classification",
     "tokenize",
