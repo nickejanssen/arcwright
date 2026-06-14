@@ -1,6 +1,6 @@
 ---
 name: github-task-implementer
-description: Implement one GitHub issue, task, or story from intake through PR handoff while staying inside the ticket's documented scope. Use when an AI agent needs to read the full work item, inspect linked specs and repo docs, verify prerequisites, propose a plan before coding, implement only the approved acceptance criteria, run required checks, report each acceptance criterion explicitly, address review feedback, and perform post-merge branch cleanup.
+description: Implement one GitHub issue, task, or story from intake through PR handoff while staying inside the ticket's documented scope. Use when an AI agent needs to read the full work item, inspect linked specs and repo docs, verify prerequisites, propose a plan before coding, implement only the approved acceptance criteria, run required checks, report each acceptance criterion explicitly, address review feedback, perform post-merge branch cleanup, and close task or epic tracker items with useful completion notes.
 ---
 
 # Github Task Implementer
@@ -88,6 +88,19 @@ Implement a single GitHub work item with a strict plan-before-code workflow and 
 - After merge, switch back to the default branch, pull the latest remote state, delete the local task branch, and run `git status`.
 - Report whether the working tree is clean and synced with the default branch.
 - If pre-existing files or ignored local state prevent a clean tree, report them explicitly and leave them alone.
+
+### 10. Close Tracker Items After Merge
+
+- After merge and local branch cleanup, identify the completed ticket, its parent epic, and its milestone from the GitHub issue, PR, and canonical roadmap index.
+- Close the completed task ticket unless it is already closed. Add a clear completion note before or during closure.
+- In the task closure note, write for multiple readers: engineers, the chief architect, game developers, product managers, and business stakeholders.
+- Include what shipped, what changed during review, acceptance criteria satisfied, verification run, what remains, and what was explicitly punted to future scope.
+- Check whether the completed task closes its parent epic. Close the epic only when all child tasks are closed and the epic acceptance criteria are satisfied.
+- If an epic closes, add easy-to-read epic notes covering what was accomplished, what changed, what remains, and what moves to future work. Also close any milestone only when all milestone epics are closed and the milestone exit gate is met.
+- If the task does not close its parent epic or milestone, leave them open and add a short status note explaining what was completed and what child work remains.
+- When closing an epic or milestone, celebrate the accomplishment in the final user response in plain language. Explain what the accomplishment means for the engine and platform, what to look forward to next, and whether humans or another role can now test, configure, set up, or use anything new.
+- Do not claim an epic or milestone is complete from PR merge alone. Verify live tracker state and canonical roadmap children first.
+- Do not hide deferred work. Name future-scope items explicitly and tie them to the correct task, milestone, version, or decision record when known.
 
 ## Stop Conditions
 
