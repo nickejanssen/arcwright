@@ -1,0 +1,16 @@
+{
+  "id": "routing_table_provider_policy",
+  "description": "The routing table keeps provider/model strings inside the routing configuration and uses approved provider prefixes.",
+  "input": {
+    "routing_table_path": "config/routing_table.json",
+    "allowed_provider_prefixes": [
+      "anthropic/",
+      "groq/"
+    ]
+  },
+  "expected_behavior": "Each configured model key uses an allowed provider prefix and no routing slot is empty.",
+  "expected_assertions": {
+    "all_models_use_allowed_provider_prefix": true,
+    "no_empty_model_entries": true
+  }
+}

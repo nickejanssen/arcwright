@@ -5,6 +5,7 @@
     "routing_table_path": "config/routing_table.json",
     "exclude_paths": [
       "config/routing_table.json",
+      "engine/routing/router.py",
       "evals/cases/",
       "docs/"
     ],
