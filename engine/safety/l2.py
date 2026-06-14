@@ -3,11 +3,14 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Mapping
+from typing import TYPE_CHECKING, Any, Mapping
 
 from pydantic import BaseModel, ConfigDict, Field
 
 from engine.safety.l1 import extract_message_text
+
+if TYPE_CHECKING:
+    from engine.routing.router import RouteResult
 
 NEUTRAL_L2_BRIDGE = "The narrator redirects the moment back to the story."
 L2_BLOCK_SENTINEL = "l2_safety_block"
@@ -116,7 +119,7 @@ def build_l2_classification_payload(
     }
 
 
-def build_l2_blocked_route_result() -> Any:
+def build_l2_blocked_route_result() -> "RouteResult":
     from engine.routing.router import RouteResult
 
     return RouteResult(
