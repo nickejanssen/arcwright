@@ -21,10 +21,16 @@ from engine.routing.router import (
     resolve_fallback_model_key,
     resolve_model_key,
 )
-from engine.safety import L1_HARD_STOP_SENTINEL, NEUTRAL_L1_BRIDGE
+from engine.safety import (
+    L1_HARD_STOP_SENTINEL,
+    L2_BLOCK_SENTINEL,
+    NEUTRAL_L1_BRIDGE,
+    NEUTRAL_L2_BRIDGE,
+)
 
 CHARACTER_STANDARD_MODEL = resolve_model_key("character_dialogue", "standard")
 CHARACTER_PREMIUM_MODEL = resolve_model_key("character_dialogue", "premium")
+SAFETY_STANDARD_MODEL = resolve_model_key("safety_classification", "standard")
 SAFETY_STANDARD_FALLBACK_MODEL = resolve_fallback_model_key(
     "safety_classification", "standard"
 )
@@ -129,6 +135,28 @@ def _make_route_result(
         output_tokens=output_tokens,
         latency_ms=latency_ms,
         used_fallback=used_fallback,
+    )
+
+
+def _make_allowed_classification_result() -> RouteResult:
+    return _make_route_result(
+        model_used=SAFETY_STANDARD_MODEL,
+        input_tokens=80,
+        output_tokens=12,
+        latency_ms=90,
+        content='{"blocked": false, "confidence": 0.94, "category": "permitted"}',
+    )
+
+
+def _make_blocked_classification_result() -> RouteResult:
+    return _make_route_result(
+        model_used=SAFETY_STANDARD_MODEL,
+        input_tokens=90,
+        output_tokens=14,
+        latency_ms=100,
+        content=(
+            '{"blocked": true, "confidence": 0.87, "category": "real_world_harm"}'
+        ),
     )
 
 
@@ -314,6 +342,7 @@ async def test_log_generation_no_fallback_event_on_clean_call(
 
 async def test_generate_writes_generation_log(session: AsyncSession) -> None:
     sess_row = await _make_session_row(session)
+    classification_result = _make_allowed_classification_result()
     mock_result = _make_route_result(
         model_used=CHARACTER_STANDARD_MODEL,
         input_tokens=120,
@@ -324,8 +353,8 @@ async def test_generate_writes_generation_log(session: AsyncSession) -> None:
     with patch(
         "engine.routing.logging.route_generation",
         new_callable=AsyncMock,
-        return_value=mock_result,
-    ):
+        side_effect=[classification_result, mock_result],
+    ) as mock_route_generation:
         result = await generate(
             session,
             session_id=sess_row.session_id,
@@ -336,14 +365,22 @@ async def test_generate_writes_generation_log(session: AsyncSession) -> None:
         )
 
     assert result is mock_result
+    assert mock_route_generation.await_args_list[0].args[0] == "safety_classification"
+    assert mock_route_generation.await_args_list[1].args[0] == "character_dialogue"
 
     logs = (
         await session.scalars(
             select(GenerationLog).where(GenerationLog.session_id == sess_row.session_id)
         )
     ).all()
-    assert len(logs) == 1
-    log = logs[0]
+    assert len(logs) == 2
+    classification_log = next(
+        log for log in logs if log.task_type == "safety_classification"
+    )
+    log = next(log for log in logs if log.task_type == "character_dialogue")
+    assert classification_log.model_used == SAFETY_STANDARD_MODEL
+    assert classification_log.input_tokens == 80
+    assert classification_log.output_tokens == 12
     assert log.task_type == "character_dialogue"
     assert log.quality_tier == "standard"
     assert log.model_used == CHARACTER_STANDARD_MODEL
@@ -352,9 +389,29 @@ async def test_generate_writes_generation_log(session: AsyncSession) -> None:
     assert log.cost_usd > Decimal("0")
     assert abs((log.tension_score or 0) - 0.5) < 1e-9
 
+    events = (
+        await session.scalars(
+            select(Event).where(
+                Event.session_id == sess_row.session_id,
+                Event.event_type == "safety_classification",
+            )
+        )
+    ).all()
+    assert len(events) == 1
+    assert events[0].payload == {
+        "layer": "L2",
+        "blocked": False,
+        "confidence": 0.94,
+        "category": "permitted",
+        "code": "l2_allowed",
+        "source": "generation_messages",
+    }
+    assert events[0].content_text is None
+
 
 async def test_generate_writes_fallback_event(session: AsyncSession) -> None:
     sess_row = await _make_session_row(session)
+    classification_result = _make_allowed_classification_result()
     mock_result = _make_route_result(
         model_used=NARRATIVE_STANDARD_FALLBACK_MODEL,
         used_fallback=True,
@@ -363,7 +420,7 @@ async def test_generate_writes_fallback_event(session: AsyncSession) -> None:
     with patch(
         "engine.routing.logging.route_generation",
         new_callable=AsyncMock,
-        return_value=mock_result,
+        side_effect=[classification_result, mock_result],
     ):
         await generate(
             session,
@@ -383,6 +440,64 @@ async def test_generate_writes_fallback_event(session: AsyncSession) -> None:
     ).all()
     assert len(events) == 1
     assert events[0].payload["model_used"] == NARRATIVE_STANDARD_FALLBACK_MODEL
+
+
+async def test_generate_l2_block_prevents_main_generation_and_logs_confidence(
+    session: AsyncSession,
+) -> None:
+    sess_row = await _make_session_row(session)
+    classification_result = _make_blocked_classification_result()
+
+    with patch(
+        "engine.routing.logging.route_generation",
+        new_callable=AsyncMock,
+        side_effect=[classification_result],
+    ) as mock_route_generation:
+        result = await generate(
+            session,
+            session_id=sess_row.session_id,
+            task_type="character_dialogue",
+            quality_tier="standard",
+            messages=[{"role": "user", "content": "unsafe request"}],
+        )
+
+    assert mock_route_generation.await_count == 1
+    assert mock_route_generation.await_args_list[0].args[0] == "safety_classification"
+    assert result.content == NEUTRAL_L2_BRIDGE
+    assert result.model_used == L2_BLOCK_SENTINEL
+    assert result.input_tokens == 0
+    assert result.output_tokens == 0
+    assert result.latency_ms == 0
+    assert result.used_fallback is False
+
+    logs = (
+        await session.scalars(
+            select(GenerationLog).where(GenerationLog.session_id == sess_row.session_id)
+        )
+    ).all()
+    assert len(logs) == 1
+    assert logs[0].task_type == "safety_classification"
+    assert logs[0].model_used == SAFETY_STANDARD_MODEL
+
+    events = (
+        await session.scalars(
+            select(Event).where(Event.session_id == sess_row.session_id)
+        )
+    ).all()
+    assert len(events) == 1
+    assert events[0].event_type == "safety_classification"
+    assert events[0].content_text is None
+    assert events[0].payload == {
+        "layer": "L2",
+        "blocked": True,
+        "confidence": 0.87,
+        "category": "real_world_harm",
+        "code": "l2_real_world_harm",
+        "source": "generation_messages",
+    }
+    assert "unsafe request" not in " ".join(
+        str(value) for value in events[0].payload.values()
+    )
 
 
 async def test_generate_l1_hard_stop_blocks_before_routing(

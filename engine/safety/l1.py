@@ -4,9 +4,12 @@ from __future__ import annotations
 
 import re
 from enum import Enum
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from pydantic import BaseModel, ConfigDict
+
+if TYPE_CHECKING:
+    from engine.routing.router import RouteResult
 
 NEUTRAL_L1_BRIDGE = "The narrator redirects the moment back to the story."
 L1_HARD_STOP_SENTINEL = "l1_hard_stop"
@@ -198,16 +201,16 @@ def _extract_text_block(value: Any) -> list[str]:
     if isinstance(value, str):
         return [value]
     if isinstance(value, list):
-        parts: list[str] = []
+        list_parts: list[str] = []
         for item in value:
-            parts.extend(_extract_text_block(item))
-        return parts
+            list_parts.extend(_extract_text_block(item))
+        return list_parts
     if isinstance(value, dict):
-        parts: list[str] = []
+        dict_parts: list[str] = []
         for key in ("text", "content"):
             if key in value:
-                parts.extend(_extract_text_block(value[key]))
-        return parts
+                dict_parts.extend(_extract_text_block(value[key]))
+        return dict_parts
     return []
 
 
@@ -239,7 +242,7 @@ def build_safety_hard_stop_payload(result: SafetyHardStopResult) -> dict[str, An
     }
 
 
-def build_l1_hard_stop_route_result() -> Any:
+def build_l1_hard_stop_route_result() -> "RouteResult":
     from engine.routing.router import RouteResult
 
     return RouteResult(

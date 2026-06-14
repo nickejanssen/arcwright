@@ -13,8 +13,12 @@ from engine.db.orm import Event, GenerationLog
 from engine.routing.router import RouteResult, compute_cost, route_generation
 from engine.safety import (
     build_l1_hard_stop_route_result,
+    build_l2_blocked_route_result,
+    build_l2_classification_messages,
+    build_l2_classification_payload,
     build_safety_hard_stop_payload,
     evaluate_l1_hard_stops,
+    parse_l2_classification,
 )
 
 
@@ -76,6 +80,7 @@ async def generate(
     messages: list[dict[str, Any]],
     temperature: float = 0.7,
     tension_score: float | None = None,
+    safety_policy_context: dict[str, Any] | str | None = None,
 ) -> RouteResult:
     """Route a generation call and immediately log it to generation_logs."""
     hard_stop = evaluate_l1_hard_stops(messages)
@@ -90,6 +95,39 @@ async def generate(
         db_session.add(event)
         await db_session.flush()
         return build_l1_hard_stop_route_result()
+
+    if task_type != "safety_classification":
+        classification_messages = build_l2_classification_messages(
+            messages,
+            safety_policy_context=safety_policy_context,
+        )
+        classification_result = await route_generation(
+            "safety_classification",
+            quality_tier,
+            classification_messages,
+            0.0,
+        )
+        await log_generation(
+            db_session,
+            session_id=session_id,
+            task_type="safety_classification",
+            quality_tier=quality_tier,
+            result=classification_result,
+            messages=classification_messages,
+            tension_score=tension_score,
+        )
+        classification = parse_l2_classification(classification_result.content)
+        event = Event(
+            session_id=session_id,
+            actor_char_id=None,
+            event_type="safety_classification",
+            payload=build_l2_classification_payload(classification),
+            content_text=None,
+        )
+        db_session.add(event)
+        await db_session.flush()
+        if classification.blocked:
+            return build_l2_blocked_route_result()
 
     result = await route_generation(task_type, quality_tier, messages, temperature)
     await log_generation(
