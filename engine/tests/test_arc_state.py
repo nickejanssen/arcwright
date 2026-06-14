@@ -151,8 +151,8 @@ class TestArcDefinition:
         arc_payload = json.loads((REPO_ROOT / "nightcap" / "arc.json").read_text())
         parsed = ArcDefinition(**arc_payload)
         assert parsed.arc_id == "nightcap"
-        assert len(parsed.beats) == 3
-        assert "investigation" in parsed.beat_graph
+        assert len(parsed.beats) == 8
+        assert "dig" in parsed.beat_graph
 
 
 def _beat(
