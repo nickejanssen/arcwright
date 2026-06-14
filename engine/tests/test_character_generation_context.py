@@ -14,7 +14,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.schema import ColumnDefault, DefaultClause
 
 from engine.characters import build_character_generation_context
-from engine.db.orm import Base, Fact
+from engine.db.orm import Base, Character, Fact, RelationshipState, SessionParticipant
 from engine.knowledge import assert_knowledge, revoke_knowledge
 
 _PATCHED = False
@@ -81,6 +81,66 @@ async def _make_fact(
     session.add(fact)
     await session.flush()
     return fact
+
+
+async def _make_character(
+    session: AsyncSession,
+    *,
+    character_id: UUID | None = None,
+    behavior_profile: dict[str, object] | None = None,
+) -> Character:
+    character = Character(
+        character_id=character_id or uuid4(),
+        behavior_profile=behavior_profile or {},
+    )
+    session.add(character)
+    await session.flush()
+    return character
+
+
+async def _make_participant(
+    session: AsyncSession,
+    *,
+    session_id: UUID,
+    character_id: UUID,
+    is_ai_controlled: bool,
+) -> SessionParticipant:
+    participant = SessionParticipant(
+        participant_id=uuid4(),
+        session_id=session_id,
+        character_id=character_id,
+        account_id=None,
+        join_token="join-token",
+        surface_type="phone",
+        is_ai_controlled=is_ai_controlled,
+    )
+    session.add(participant)
+    await session.flush()
+    return participant
+
+
+async def _make_relationship(
+    session: AsyncSession,
+    *,
+    session_id: UUID,
+    source_character_id: UUID,
+    target_character_id: UUID,
+    trust_level: float,
+    history_tag: str,
+    current_affect: str,
+) -> RelationshipState:
+    relationship = RelationshipState(
+        relationship_id=uuid4(),
+        session_id=session_id,
+        source_char_id=source_character_id,
+        target_char_id=target_character_id,
+        trust_level=trust_level,
+        history_tag=history_tag,
+        current_affect=current_affect,
+    )
+    session.add(relationship)
+    await session.flush()
+    return relationship
 
 
 async def test_build_character_generation_context_scopes_known_and_unknown_facts(
@@ -153,6 +213,162 @@ async def test_build_character_generation_context_scopes_known_and_unknown_facts
     assert all(
         fact.fact_id != other_session_fact.fact_id for fact in context.unknown_facts
     )
+
+
+async def test_build_character_generation_context_includes_killer_behavior_profile(
+    session: AsyncSession,
+) -> None:
+    session_id = uuid4()
+    killer_id = uuid4()
+    target_id = uuid4()
+    await _make_character(session, character_id=target_id)
+    await _make_character(
+        session,
+        character_id=killer_id,
+        behavior_profile={
+            "personality": {
+                "traits": ["charming", "evasive"],
+                "communication_style": "deflects with humor",
+                "under_pressure_style": "over-precise about timings",
+            },
+            "goals": [
+                "Conceal my role as the killer",
+                "Redirect suspicion toward another guest",
+            ],
+            "secrets": [
+                {
+                    "content": "I killed the victim",
+                    "concealment_priority": "highest",
+                    "crumble_threshold": 0.9,
+                }
+            ],
+            "tells": ["Mentions exact times without being asked"],
+        },
+    )
+    await _make_participant(
+        session,
+        session_id=session_id,
+        character_id=killer_id,
+        is_ai_controlled=False,
+    )
+    await _make_relationship(
+        session,
+        session_id=session_id,
+        source_character_id=killer_id,
+        target_character_id=target_id,
+        trust_level=0.2,
+        history_tag="rivalry",
+        current_affect="guarded",
+    )
+
+    context = await build_character_generation_context(
+        session,
+        session_id=session_id,
+        character_id=killer_id,
+    )
+
+    assert context.behavior_profile.personality == {
+        "traits": ["charming", "evasive"],
+        "communication_style": "deflects with humor",
+        "under_pressure_style": "over-precise about timings",
+    }
+    assert context.behavior_profile.goals == (
+        "Conceal my role as the killer",
+        "Redirect suspicion toward another guest",
+    )
+    assert context.behavior_profile.secrets == (
+        {
+            "content": "I killed the victim",
+            "concealment_priority": "highest",
+            "crumble_threshold": 0.9,
+        },
+    )
+    assert context.behavior_profile.tells == (
+        "Mentions exact times without being asked",
+    )
+    assert len(context.relationship_dispositions) == 1
+    assert context.relationship_dispositions[0].target_character_id == target_id
+    assert context.relationship_dispositions[0].trust == 0.2
+    assert context.relationship_dispositions[0].history == "rivalry"
+    assert context.relationship_dispositions[0].current_affect == "guarded"
+    assert context.is_ai_controlled is False
+
+
+async def test_build_character_generation_context_includes_non_killer_profile_for_ai(
+    session: AsyncSession,
+) -> None:
+    session_id = uuid4()
+    character_id = uuid4()
+    target_id = uuid4()
+    await _make_character(session, character_id=target_id)
+    await _make_character(
+        session,
+        character_id=character_id,
+        behavior_profile={
+            "personality": {
+                "traits": ["observant", "warm"],
+                "communication_style": "answers directly",
+                "under_pressure_style": "becomes quieter",
+            },
+            "goals": [
+                "Find out who killed the victim",
+                "Protect a professional embarrassment",
+            ],
+            "secrets": [
+                {
+                    "content": "I lied about where I was before dinner",
+                    "concealment_priority": "medium",
+                    "crumble_threshold": 0.5,
+                }
+            ],
+            "tells": ["Looks away before discussing the study"],
+        },
+    )
+    await _make_participant(
+        session,
+        session_id=session_id,
+        character_id=character_id,
+        is_ai_controlled=True,
+    )
+    await _make_relationship(
+        session,
+        session_id=session_id,
+        source_character_id=character_id,
+        target_character_id=target_id,
+        trust_level=0.7,
+        history_tag="old-friend",
+        current_affect="protective",
+    )
+
+    context = await build_character_generation_context(
+        session,
+        session_id=session_id,
+        character_id=character_id,
+    )
+
+    assert context.behavior_profile.personality == {
+        "traits": ["observant", "warm"],
+        "communication_style": "answers directly",
+        "under_pressure_style": "becomes quieter",
+    }
+    assert context.behavior_profile.goals == (
+        "Find out who killed the victim",
+        "Protect a professional embarrassment",
+    )
+    assert context.behavior_profile.secrets == (
+        {
+            "content": "I lied about where I was before dinner",
+            "concealment_priority": "medium",
+            "crumble_threshold": 0.5,
+        },
+    )
+    assert context.behavior_profile.tells == ("Looks away before discussing the study",)
+    assert len(context.relationship_dispositions) == 1
+    assert context.relationship_dispositions[0].target_character_id == target_id
+    assert context.relationship_dispositions[0].trust == 0.7
+    assert context.relationship_dispositions[0].history == "old-friend"
+    assert context.relationship_dispositions[0].current_affect == "protective"
+    assert context.is_ai_controlled is True
 
 
 async def test_build_character_generation_context_excludes_superseded_facts(
