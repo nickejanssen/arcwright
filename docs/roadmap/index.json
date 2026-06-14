@@ -492,6 +492,21 @@
       }
     },
     {
+      "id": "M5-E",
+      "milestone": "M5",
+      "title": "Character Behavior Engine Hardening",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M5-E-character-behavior-engine-hardening.md",
+      "tasks": [
+        "AW-246",
+        "AW-247"
+      ],
+      "github": {
+        "issue_number": 123,
+        "url": "https://github.com/nickejanssen/arcwright/issues/123"
+      }
+    },
+    {
       "id": "M6-A",
       "milestone": "M6",
       "title": "Playtest Operations",
@@ -1423,6 +1438,41 @@
         "url": "https://github.com/nickejanssen/arcwright/issues/114"
       },
       "epic_id": "M5-C"
+    },
+    {
+      "id": "AW-246",
+      "title": "Per-Character Social Pressure Compute",
+      "milestone": "M5",
+      "epic": "M5-E",
+      "size": "M",
+      "depends_on": [
+        "AW-211",
+        "AW-213",
+        "AW-207"
+      ],
+      "path": "docs/roadmap/tasks/AW-246-per-character-social-pressure-compute.md",
+      "github": {
+        "issue_number": 124,
+        "url": "https://github.com/nickejanssen/arcwright/issues/124"
+      },
+      "epic_id": "M5-E"
+    },
+    {
+      "id": "AW-247",
+      "title": "Killer Tell Tier Selection By Group Size",
+      "milestone": "M5",
+      "epic": "M5-E",
+      "size": "M",
+      "depends_on": [
+        "AW-211",
+        "AW-206"
+      ],
+      "path": "docs/roadmap/tasks/AW-247-killer-tell-tier-selection-by-group-size.md",
+      "github": {
+        "issue_number": 125,
+        "url": "https://github.com/nickejanssen/arcwright/issues/125"
+      },
+      "epic_id": "M5-E"
     }
   ],
   "superseded_sources": [

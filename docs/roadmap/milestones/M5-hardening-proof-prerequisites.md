@@ -13,6 +13,7 @@ This milestone closes the gap between a technically working product and a produc
 - [M5-B: Cost, Usage, And Gross Margin](../epics/M5-B-cost-usage-and-gross-margin.md)
 - [M5-C: Second Arc Schema And Executable Follow-Through](../epics/M5-C-second-arc-schema-validation.md)
 - [M5-D: Visual Storyworld Knowledge Graph Inspection](../epics/M5-D-visual-storyworld-phase-1-inspection.md)
+- [M5-E: Character Behavior Engine Hardening](../epics/M5-E-character-behavior-engine-hardening.md)
 
 ## Exit Gate
 
