@@ -15,17 +15,27 @@ The engine never knows what a TV or phone is. It only knows audience targets: `a
 Defined in `engine/events/models.py`. Referenced in S15 with the core fields. Full schema:
 
 ```python
+class EventCategory(str, Enum):
+    NARRATIVE          = "narrative"           # narrator lines, environmental description
+    CHARACTER_DIALOGUE = "character_dialogue"  # in-character speech, AI or human
+    PRIVATE_DELIVERY   = "private_delivery"    # clue, item, fact delivered to one player
+    ACKNOWLEDGEMENT    = "acknowledgement"     # public-safe receipt of a private event
+    STATE_TRANSITION   = "state_transition"    # beat changes, phase changes, reveals
+    INPUT_REQUEST      = "input_request"       # prompt to player or host for input
+    SYSTEM             = "system"              # session lifecycle, errors, replay markers
+
 class ContentEvent(BaseModel):
     event_id:          UUID
     session_id:        UUID
     timestamp:         datetime
-    event_type:        ContentEventType
-    actor_id:          UUID | None          # character who produced this event; None for system events
-    target_audience:   AudienceTarget       # all | host_only | specific_player | shared_display
-    target_player_id:  UUID | None          # set only when target_audience = specific_player
-    payload:           dict                 # event-type-specific structured content
+    category:          EventCategory       # closed platform vocabulary; owned by Arcwright
+    event_type:        str                 # open game-defined vocabulary; owned by the arc/game
+    actor_id:          UUID | None         # character who produced this event; None for system events
+    target_audience:   AudienceTarget      # all | host_only | specific_player | shared_display
+    target_player_id:  UUID | None         # set only when target_audience = specific_player
+    payload:           dict                # event-type-specific structured content
     presentation_hints: PresentationHints
-    sequence_number:   int                  # monotonically increasing per session; enables client-side ordering
+    sequence_number:   int                 # monotonically increasing per session; enables client-side ordering
 
 class PresentationHints(BaseModel):
     emotion:          str | None   # "tense" | "warm" | "suspicious" | "playful" | "solemn"
@@ -35,6 +45,8 @@ class PresentationHints(BaseModel):
     lighting_hint:    str | None   # display layer hint; engine-agnostic string
     pause_before_ms:  int          # optional pre-event pause for dramatic timing; default 0
 ```
+
+`category` and `event_type` together replace the single `event_type: ContentEventType` field used in earlier drafts. The split is committed in ADR-0008: `EventCategory` is the closed platform vocabulary the engine uses for routing, safety, and cross-game telemetry; `event_type` is the open game-defined string that arcs and games own. Nightcap may emit `event_type="clue_delivery"` under `category=PRIVATE_DELIVERY`; Monster RPG may emit `event_type="monster_spawn"` under `category=STATE_TRANSITION`; a third-party arc chooses its own strings.
 
 `sequence_number` is new relative to the S15 definition: it is a monotonically increasing integer per session, assigned at event emission. SSE clients use this to detect missed events and request a replay window. This prevents gaps in the experience if a client reconnects.
 
@@ -89,11 +101,11 @@ Nightcap deploys on two surfaces simultaneously: the shared display (a TV or lap
 
 When the arc engine distributes a clue to Player 3:
 
-| Event | target_audience | Delivered to | Content |
-| --- | --- | --- | --- |
-| `clue_delivery` | `specific_player` (Player 3) | Player 3's phone only | Full clue text, character association, presentation hints |
-| `clue_acknowledged` | `shared_display` | TV | "A clue has been passed to [Character Name]" — no content |
-| `clue_acknowledged` | `host_only` | Host interface | Which clue, which player, timestamp |
+| event_type | category | target_audience | Delivered to | Content |
+| --- | --- | --- | --- | --- |
+| `clue_delivery` | `PRIVATE_DELIVERY` | `specific_player` (Player 3) | Player 3's phone only | Full clue text, character association, presentation hints |
+| `clue_acknowledged` | `ACKNOWLEDGEMENT` | `shared_display` | TV | "A clue has been passed to [Character Name]" — no content |
+| `clue_acknowledged` | `ACKNOWLEDGEMENT` | `host_only` | Host interface | Which clue, which player, timestamp |
 
 Player 3 receives their clue privately. Everyone in the room sees that something happened. The host sees what it was. The engine emits three events; the routing layer handles the rest.
 
@@ -109,7 +121,7 @@ FastAPI's `EventSourceResponse` (from the `sse-starlette` library) handles the S
 Event format on the wire:
 
 ```
-data: {"event_id": "...", "event_type": "clue_delivery", "sequence_number": 42, "payload": {...}, "presentation_hints": {...}}
+data: {"event_id": "...", "category": "private_delivery", "event_type": "clue_delivery", "sequence_number": 42, "payload": {...}, "presentation_hints": {...}}
 
 ```
 
