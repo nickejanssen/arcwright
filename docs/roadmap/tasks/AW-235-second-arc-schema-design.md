@@ -6,7 +6,7 @@
 
 ## Plain-English Summary
 
-Design one non-Nightcap arc schema to validate platform-clean architecture and prepare post-M6 executable follow-through.
+Design Daily Case, a non-Nightcap solo daily interrogation arc, to validate platform-clean architecture and prepare post-M6 executable follow-through.
 
 ## Why This Matters
 
@@ -22,12 +22,14 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 ## Technical Scope
 
-Design one non-Nightcap arc schema to validate platform-clean architecture and prepare post-M6 executable follow-through. Likely files affected: docs/specs, sample arc docs, docs/roadmap/tasks.
+Design Daily Case as the canonical second arc: a solo, asynchronous, sub-10-minute daily interrogation experience with one AI suspect, week-long memory, contradiction accumulation, and final accusation. Likely files affected: docs/specs, docs/story-bibles, docs/roadmap/tasks.
 
 ## Acceptance Criteria
 
-- [ ] A non-Nightcap arc schema exists as a document or sample arc.
-- [ ] Schema validates against ArcDefinition or documents exact validation gaps.
+- [ ] A canonical Daily Case design exists as a story bible and implementation spec.
+- [ ] The schema validates against ArcDefinition or documents exact validation gaps.
+- [ ] The design identifies the minimum persisted state for cross-day suspect memory, contradiction tracking, and accusation resolution.
+- [ ] The design states which capability gaps Daily Case closes beyond Nightcap and Monster RPG.
 - [ ] The schema identifies the minimal executable product to be built after M6 proof.
 - [ ] No second game implementation is added before M6 proof.
 
@@ -43,7 +45,7 @@ Design one non-Nightcap arc schema to validate platform-clean architecture and p
 
 ## Likely Files Affected
 
-docs/specs, sample arc docs, docs/roadmap/tasks
+docs/specs, docs/story-bibles, docs/roadmap/tasks
 
 ## Must Not Do
 

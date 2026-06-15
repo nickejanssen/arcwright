@@ -6,6 +6,7 @@ This directory contains canonical game and experience story bibles.
 
 - [Nightcap murder mystery](nightcap-murder-mystery.md)
 - [Monster RPG](monster-rpg.md)
+- [Daily Case](daily-case.md)
 
 ## Rules
 
