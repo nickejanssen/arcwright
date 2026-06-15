@@ -257,21 +257,32 @@ def test_nightcap_canonical_arc_json_validates() -> None:
     assert arc.name == "Nightcap Murder Mystery"
 
 
-def test_nightcap_canonical_arc_keeps_three_top_level_beats() -> None:
+def test_nightcap_canonical_arc_uses_eight_story_circle_beats() -> None:
     arc = ArcDefinition.model_validate_json(
         (REPO_ROOT / "nightcap" / "arc.json").read_text(encoding="utf-8")
     )
 
     assert [beat.beat_id for beat in arc.beats] == [
-        "introduction",
-        "investigation",
-        "reveal",
+        "arrival",
+        "body",
+        "opening_move",
+        "dig",
+        "thread",
+        "reckoning",
+        "close",
+        "truth",
     ]
     assert arc.beat_graph == {
-        "introduction": ["investigation"],
-        "investigation": ["reveal"],
-        "reveal": [],
+        "arrival": ["body"],
+        "body": ["opening_move"],
+        "opening_move": ["dig"],
+        "dig": ["thread"],
+        "thread": ["reckoning"],
+        "reckoning": ["close"],
+        "close": ["truth"],
+        "truth": [],
     }
+    assert [beat.story_circle_step for beat in arc.beats] == [1, 2, 3, 4, 5, 6, 7, 8]
 
 
 def test_nightcap_canonical_arc_defines_safety_and_knowledge_rules() -> None:
@@ -305,7 +316,7 @@ def test_nightcap_canonical_arc_records_m6_first_proof_range() -> None:
     assert arc.max_players == 10
     assert canonical_reference["supported_player_range"] == [4, 10]
     assert canonical_reference["first_proof_player_range"] == [4, 6]
-    assert canonical_reference["top_level_beat_model"] == "three_beat_graph"
+    assert canonical_reference["top_level_beat_model"] == "eight_beat_story_circle"
 
 
 def test_nightcap_canonical_arc_matches_reference_runtime_choices() -> None:

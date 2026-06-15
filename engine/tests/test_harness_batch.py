@@ -17,10 +17,29 @@ from engine.harness import (
 )
 
 ARC_PATH = Path(__file__).parents[2] / "nightcap" / "arc.json"
-INTRO_TO_INVESTIGATION = transition_name_for("introduction", "investigation")
-INVESTIGATION_TO_REVEAL = transition_name_for("investigation", "reveal")
-READY_CONTEXT = {"context": {"all_players_ready": True}}
-REVEAL_CONTEXT = {"context": {"core_clues_revealed": True}}
+
+BEAT_SEQUENCE = [
+    "arrival",
+    "body",
+    "opening_move",
+    "dig",
+    "thread",
+    "reckoning",
+    "close",
+    "truth",
+]
+EXIT_CONDITIONS = {
+    "arrival": "all_players_ready",
+    "body": "body_discovered",
+    "opening_move": "private_clues_distributed",
+    "dig": "killer_revealed_to_themselves",
+    "thread": "first_convergence_reached",
+    "reckoning": "accusations_resolved",
+    "close": "final_accusation_committed",
+}
+
+ARRIVAL_TO_BODY = transition_name_for("arrival", "body")
+CLOSE_TO_TRUTH = transition_name_for("close", "truth")
 
 
 class DebugTraceEntry(HarnessTraceEntry):
@@ -37,26 +56,29 @@ def _players() -> list[SyntheticPlayer]:
     ]
 
 
+def _happy_path_steps(players: list[SyntheticPlayer]) -> list[ScenarioStep]:
+    steps: list[ScenarioStep] = []
+    for index, source_beat in enumerate(BEAT_SEQUENCE[:-1]):
+        target_beat = BEAT_SEQUENCE[index + 1]
+        actor = players[index % len(players)].player_id
+        steps.append(
+            ScenarioStep(
+                actor_id=actor,
+                action_type=transition_name_for(source_beat, target_beat),
+                payload={"context": {EXIT_CONDITIONS[source_beat]: True}},
+                expected_beat=target_beat,
+            )
+        )
+    return steps
+
+
 def _happy_path_scenario(seed: int = 111) -> HarnessScenario:
     players = _players()
     return HarnessScenario(
         scenario_id="nightcap-happy-path",
         seed=seed,
         players=players,
-        steps=[
-            ScenarioStep(
-                actor_id=players[0].player_id,
-                action_type=INTRO_TO_INVESTIGATION,
-                payload=READY_CONTEXT,
-                expected_beat="investigation",
-            ),
-            ScenarioStep(
-                actor_id=players[1].player_id,
-                action_type=INVESTIGATION_TO_REVEAL,
-                payload=REVEAL_CONTEXT,
-                expected_beat="reveal",
-            ),
-        ],
+        steps=_happy_path_steps(players),
     )
 
 
@@ -64,9 +86,9 @@ def test_canonicalize_trace_keeps_structural_fields() -> None:
     trace = [
         DebugTraceEntry(
             step_index=1,
-            transition_name=INTRO_TO_INVESTIGATION,
-            from_configuration=["introduction"],
-            to_configuration=["investigation"],
+            transition_name=ARRIVAL_TO_BODY,
+            from_configuration=["arrival"],
+            to_configuration=["body"],
             payload={"source": "scripted"},
             debug_label="ignored",
             elapsed_seconds=1.23,
@@ -78,9 +100,9 @@ def test_canonicalize_trace_keeps_structural_fields() -> None:
     assert canonical == [
         {
             "step_index": 1,
-            "transition_name": INTRO_TO_INVESTIGATION,
-            "from_configuration": ["introduction"],
-            "to_configuration": ["investigation"],
+            "transition_name": ARRIVAL_TO_BODY,
+            "from_configuration": ["arrival"],
+            "to_configuration": ["body"],
             "payload": {"source": "scripted"},
         }
     ]
@@ -89,10 +111,10 @@ def test_canonicalize_trace_keeps_structural_fields() -> None:
 def test_canonicalize_trace_strips_debug_fields() -> None:
     trace = [
         DebugTraceEntry(
-            step_index=2,
-            transition_name=INVESTIGATION_TO_REVEAL,
-            from_configuration=["investigation"],
-            to_configuration=["reveal"],
+            step_index=7,
+            transition_name=CLOSE_TO_TRUTH,
+            from_configuration=["close"],
+            to_configuration=["truth"],
             payload={"source": "scripted"},
             debug_label="debug-only",
             elapsed_seconds=4.56,

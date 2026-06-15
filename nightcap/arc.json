@@ -47,14 +47,14 @@
   "characters": [],
   "beats": [
     {
-      "beat_id": "introduction",
+      "beat_id": "arrival",
       "beat_name": "The Arrival",
       "beat_type": "introduction",
       "story_circle_step": 1,
-      "structural_function": "establish_comfort",
-      "dramatic_purpose": "Introduce the gathering and seed suspicion.",
+      "structural_function": "establish_comfort_and_order",
+      "dramatic_purpose": "Establish the gathering and seat the players in normalcy before disruption.",
       "emotional_target": "curious",
-      "information_goal": "Players understand the social setup and initial stakes.",
+      "information_goal": "Players understand the social setup, receive character cards, and meet the room.",
       "tension_target": 0.2,
       "character_emphasis": [
         "host"
@@ -63,7 +63,8 @@
         "opening_note": "Guests settle into the party."
       },
       "generative_triggers": [
-        "killer_assignment"
+        "killer_assignment",
+        "narrator_opening"
       ],
       "entry_conditions": [],
       "exit_conditions": [
@@ -78,37 +79,64 @@
       "mini_games": []
     },
     {
-      "beat_id": "investigation",
-      "beat_name": "The Search",
+      "beat_id": "body",
+      "beat_name": "The Body",
       "beat_type": "investigation",
-      "story_circle_step": [
-        2,
-        3,
-        4,
-        5,
-        6
-      ],
-      "structural_function": "surface_disruption",
-      "dramatic_purpose": "Push the group into accusation and clue exchange.",
-      "emotional_target": "tense",
-      "information_goal": "Players gather clues and test hypotheses.",
-      "tension_target": 0.7,
+      "story_circle_step": 2,
+      "structural_function": "surface_disruption_and_stakes",
+      "dramatic_purpose": "Surface the murder, establish need, and shift the room into investigation framing.",
+      "emotional_target": "alarmed",
+      "information_goal": "Players know a murder has occurred and understand they are now investigators.",
+      "tension_target": 0.35,
       "character_emphasis": [
-        "suspects"
+        "host",
+        "narrator"
       ],
       "authored_content": null,
       "generative_triggers": [
-        "clue_distribution"
+        "narrator_dialogue",
+        "victim_designation"
       ],
       "entry_conditions": [
         "all_players_ready"
       ],
       "exit_conditions": [
-        "core_clues_revealed"
+        "body_discovered"
       ],
       "pacing_config": {
-        "stall_threshold_seconds": 300,
-        "premium_threshold": 0.75
+        "stall_threshold_seconds": 180
+      },
+      "audience_targets": [
+        "all"
+      ],
+      "mini_games": []
+    },
+    {
+      "beat_id": "opening_move",
+      "beat_name": "The Opening Move",
+      "beat_type": "investigation",
+      "story_circle_step": 3,
+      "structural_function": "enter_the_unfamiliar",
+      "dramatic_purpose": "Open formal investigation. Private clues land on devices and group clues land on the shared display.",
+      "emotional_target": "engaged",
+      "information_goal": "Players have first private and group clues and begin probing characters.",
+      "tension_target": 0.5,
+      "character_emphasis": [
+        "suspects"
+      ],
+      "authored_content": null,
+      "generative_triggers": [
+        "clue_content",
+        "private_clue_distribution"
+      ],
+      "entry_conditions": [
+        "body_discovered"
+      ],
+      "exit_conditions": [
+        "private_clues_distributed"
+      ],
+      "pacing_config": {
+        "stall_threshold_seconds": 300
       },
       "audience_targets": [
         "all",
@@ -117,24 +145,165 @@
       "mini_games": []
     },
     {
-      "beat_id": "reveal",
-      "beat_name": "The Reveal",
-      "beat_type": "reveal",
-      "story_circle_step": 8,
-      "structural_function": "deliver_resolution",
-      "dramatic_purpose": "Resolve the murder and close the session cleanly.",
-      "emotional_target": "satisfied",
-      "information_goal": "Players learn the killer identity and explanation.",
-      "tension_target": 0.95,
+      "beat_id": "dig",
+      "beat_name": "The Dig",
+      "beat_type": "investigation",
+      "story_circle_step": 4,
+      "structural_function": "adapt_and_investigate",
+      "dramatic_purpose": "Longest beat. Cross-reference clues, form theories, probe characters. Red herrings most active.",
+      "emotional_target": "tense",
+      "information_goal": "Players exchange clues and form working hypotheses; the killer-revelation window closes.",
+      "tension_target": 0.6,
       "character_emphasis": [
+        "suspects"
+      ],
+      "authored_content": null,
+      "generative_triggers": [
+        "clue_content",
+        "killer_private_revelation"
+      ],
+      "entry_conditions": [
+        "private_clues_distributed"
+      ],
+      "exit_conditions": [
+        "killer_revealed_to_themselves"
+      ],
+      "pacing_config": {
+        "stall_threshold_seconds": 360,
+        "premium_threshold": 0.6
+      },
+      "audience_targets": [
+        "all",
+        "specific_player"
+      ],
+      "mini_games": []
+    },
+    {
+      "beat_id": "thread",
+      "beat_name": "The Thread",
+      "beat_type": "investigation",
+      "story_circle_step": 5,
+      "structural_function": "first_convergence",
+      "dramatic_purpose": "A connection lands that recontextualizes what the group already knew. Shape of the answer becomes visible.",
+      "emotional_target": "charged",
+      "information_goal": "Players share a convergent theory; first informal accusation energy emerges.",
+      "tension_target": 0.7,
+      "character_emphasis": [
+        "suspects",
         "killer"
       ],
       "authored_content": null,
       "generative_triggers": [
-        "killer_confession"
+        "plot_twist",
+        "narrator_dialogue"
       ],
       "entry_conditions": [
-        "core_clues_revealed"
+        "killer_revealed_to_themselves"
+      ],
+      "exit_conditions": [
+        "first_convergence_reached"
+      ],
+      "pacing_config": {
+        "stall_threshold_seconds": 240,
+        "premium_threshold": 0.7
+      },
+      "audience_targets": [
+        "all",
+        "specific_player"
+      ],
+      "mini_games": []
+    },
+    {
+      "beat_id": "reckoning",
+      "beat_name": "The Reckoning",
+      "beat_type": "investigation",
+      "story_circle_step": 6,
+      "structural_function": "confrontation_and_cost",
+      "dramatic_purpose": "Accusation tokens activate. Evidence is presented and argued. Wrong-accusation events fire here.",
+      "emotional_target": "high_stakes",
+      "information_goal": "Players present and resolve formal accusations; killer prompted-action opportunities peak.",
+      "tension_target": 0.85,
+      "character_emphasis": [
+        "killer",
+        "suspects"
+      ],
+      "authored_content": null,
+      "generative_triggers": [
+        "narrator_dialogue",
+        "plot_twist",
+        "killer_action_opportunity"
+      ],
+      "entry_conditions": [
+        "first_convergence_reached"
+      ],
+      "exit_conditions": [
+        "accusations_resolved"
+      ],
+      "pacing_config": {
+        "stall_threshold_seconds": 240,
+        "premium_threshold": 0.8
+      },
+      "audience_targets": [
+        "all",
+        "specific_player"
+      ],
+      "mini_games": []
+    },
+    {
+      "beat_id": "close",
+      "beat_name": "The Close",
+      "beat_type": "investigation",
+      "story_circle_step": 7,
+      "structural_function": "convergence_and_commitment",
+      "dramatic_purpose": "Remaining tokens commit. The group must converge on a final answer. Killer attrition win becomes visible.",
+      "emotional_target": "decisive",
+      "information_goal": "Players commit a final accusation or exhaust their pool.",
+      "tension_target": 0.95,
+      "character_emphasis": [
+        "killer",
+        "suspects"
+      ],
+      "authored_content": null,
+      "generative_triggers": [
+        "narrator_dialogue",
+        "final_accusation_prompt"
+      ],
+      "entry_conditions": [
+        "accusations_resolved"
+      ],
+      "exit_conditions": [
+        "final_accusation_committed"
+      ],
+      "pacing_config": {
+        "stall_threshold_seconds": 180,
+        "premium_threshold": 0.85
+      },
+      "audience_targets": [
+        "all"
+      ],
+      "mini_games": []
+    },
+    {
+      "beat_id": "truth",
+      "beat_name": "The Truth",
+      "beat_type": "reveal",
+      "story_circle_step": 8,
+      "structural_function": "revelation_and_change",
+      "dramatic_purpose": "The truth surfaces regardless of outcome. The narrator delivers the full story. The session ends.",
+      "emotional_target": "satisfied",
+      "information_goal": "Players learn the killer identity and the full case explanation.",
+      "tension_target": 0.2,
+      "character_emphasis": [
+        "killer",
+        "narrator"
+      ],
+      "authored_content": null,
+      "generative_triggers": [
+        "killer_confession",
+        "narrator_dialogue"
+      ],
+      "entry_conditions": [
+        "final_accusation_committed"
       ],
       "exit_conditions": [
         "session_complete"
@@ -149,13 +318,28 @@
     }
   ],
   "beat_graph": {
-    "introduction": [
-      "investigation"
+    "arrival": [
+      "body"
     ],
-    "investigation": [
-      "reveal"
+    "body": [
+      "opening_move"
     ],
-    "reveal": []
+    "opening_move": [
+      "dig"
+    ],
+    "dig": [
+      "thread"
+    ],
+    "thread": [
+      "reckoning"
+    ],
+    "reckoning": [
+      "close"
+    ],
+    "close": [
+      "truth"
+    ],
+    "truth": []
   },
   "generative_elements": {
     "killer_assignment": true,
@@ -271,8 +455,18 @@
         6
       ],
       "first_proof_rationale": "M6 qualifying sessions target 4 to 6 players to reduce coordination complexity, lower per-session AI cost, and produce a cleaner diagnostic signal before expanding to the full 4 to 10 range.",
-      "top_level_beat_model": "three_beat_graph",
-      "top_level_beat_rationale": "AW-205 preserves the introduction, investigation, and reveal graph used by the generated StateChart path. Any later internal phase model should be added by a separate task."
+      "top_level_beat_model": "eight_beat_story_circle",
+      "top_level_beat_rationale": "Canonical Nightcap Story Circle with 1:1 mapping from beats to Story Circle steps per D-053 and the May 15 2026 Nightcap eight-beat decision in docs/product/decisions-log.csv. AW-214 (M2 Headless Exit Harness) landed the expansion that AW-205 explicitly deferred.",
+      "beat_to_story_circle_map": [
+        ["arrival", 1, "You"],
+        ["body", 2, "Need"],
+        ["opening_move", 3, "Go"],
+        ["dig", 4, "Search"],
+        ["thread", 5, "Find"],
+        ["reckoning", 6, "Take"],
+        ["close", 7, "Return"],
+        ["truth", 8, "Change"]
+      ]
     }
   }
 }

@@ -21,7 +21,8 @@ _HOST_BYPASS_KEY = "host_bypass"
 _HOST_ROLE = "host"
 _KILLER_ROLE = "killer"
 _KILLER_ASSIGNMENT_KEY = "killer_assignment"
-_REVEAL_BEAT_ID = "reveal"
+_ARRIVAL_BEAT_ID = "arrival"
+_REVEAL_BEAT_ID = "truth"
 
 
 class HarnessRunner:
@@ -163,8 +164,8 @@ class HarnessRunner:
             return
         if not run.participants:
             return
-        if sorted(self._chart.configuration_values) != ["introduction"]:
-            msg = "killer assignment must resolve during introduction setup."
+        if sorted(self._chart.configuration_values) != [_ARRIVAL_BEAT_ID]:
+            msg = "killer assignment must resolve during arrival setup."
             raise RuntimeError(msg)
 
         assigned_participant = self._assignment_rng.choice(run.participants)
@@ -209,7 +210,7 @@ class HarnessRunner:
         run = self._require_run()
         source_beat_id, target_beat_id = transition_edge
         if target_beat_id != _REVEAL_BEAT_ID:
-            msg = "host bypass is only supported for reveal transitions."
+            msg = "host bypass is only supported for the truth reveal transition."
             raise ValueError(msg)
 
         actor_id, reason = self._validate_host_bypass_payload(action.payload)

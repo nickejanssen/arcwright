@@ -17,10 +17,29 @@ from engine.harness import (
 )
 
 ARC_PATH = Path(__file__).parents[2] / "nightcap" / "arc.json"
-INTRO_TO_INVESTIGATION = transition_name_for("introduction", "investigation")
-INVESTIGATION_TO_REVEAL = transition_name_for("investigation", "reveal")
-READY_CONTEXT = {"context": {"all_players_ready": True}}
-REVEAL_CONTEXT = {"context": {"core_clues_revealed": True}}
+
+BEAT_SEQUENCE = [
+    "arrival",
+    "body",
+    "opening_move",
+    "dig",
+    "thread",
+    "reckoning",
+    "close",
+    "truth",
+]
+EXIT_CONDITIONS = {
+    "arrival": "all_players_ready",
+    "body": "body_discovered",
+    "opening_move": "private_clues_distributed",
+    "dig": "killer_revealed_to_themselves",
+    "thread": "first_convergence_reached",
+    "reckoning": "accusations_resolved",
+    "close": "final_accusation_committed",
+}
+
+ARRIVAL_TO_BODY = transition_name_for("arrival", "body")
+CLOSE_TO_TRUTH = transition_name_for("close", "truth")
 
 
 def _players() -> list[SyntheticPlayer]:
@@ -32,26 +51,29 @@ def _players() -> list[SyntheticPlayer]:
     ]
 
 
-def _happy_path_scenario() -> HarnessScenario:
+def _happy_path_steps(players: list[SyntheticPlayer]) -> list[ScenarioStep]:
+    steps: list[ScenarioStep] = []
+    for index, source_beat in enumerate(BEAT_SEQUENCE[:-1]):
+        target_beat = BEAT_SEQUENCE[index + 1]
+        actor = players[index % len(players)].player_id
+        steps.append(
+            ScenarioStep(
+                actor_id=actor,
+                action_type=transition_name_for(source_beat, target_beat),
+                payload={"context": {EXIT_CONDITIONS[source_beat]: True}},
+                expected_beat=target_beat,
+            )
+        )
+    return steps
+
+
+def _happy_path_scenario(seed: int = 111) -> HarnessScenario:
     players = _players()
     return HarnessScenario(
         scenario_id="nightcap-happy-path",
-        seed=111,
+        seed=seed,
         players=players,
-        steps=[
-            ScenarioStep(
-                actor_id=players[0].player_id,
-                action_type=INTRO_TO_INVESTIGATION,
-                payload=READY_CONTEXT,
-                expected_beat="investigation",
-            ),
-            ScenarioStep(
-                actor_id=players[1].player_id,
-                action_type=INVESTIGATION_TO_REVEAL,
-                payload=REVEAL_CONTEXT,
-                expected_beat="reveal",
-            ),
-        ],
+        steps=_happy_path_steps(players),
     )
 
 
@@ -106,9 +128,9 @@ def test_expected_beat_assertion_fails_before_real_run_starts() -> None:
         steps=[
             ScenarioStep(
                 actor_id="player-a",
-                action_type=INTRO_TO_INVESTIGATION,
-                payload=READY_CONTEXT,
-                expected_beat="reveal",
+                action_type=ARRIVAL_TO_BODY,
+                payload={"context": {"all_players_ready": True}},
+                expected_beat="truth",
             )
         ],
     )
@@ -123,7 +145,7 @@ def test_expected_beat_assertion_fails_before_real_run_starts() -> None:
 
     with pytest.raises(
         ScenarioValidationError,
-        match=r"step 1: expected beat 'reveal', got \['investigation'\]",
+        match=r"step 1: expected beat 'truth', got \['body'\]",
     ):
         executor.run(scenario)
 
@@ -145,8 +167,8 @@ def test_unenabled_transition_fails_before_real_run_starts() -> None:
         steps=[
             ScenarioStep(
                 actor_id="player-a",
-                action_type=INTRO_TO_INVESTIGATION,
-                expected_beat="investigation",
+                action_type=ARRIVAL_TO_BODY,
+                expected_beat="body",
             )
         ],
     )
@@ -165,22 +187,22 @@ def test_unenabled_transition_fails_before_real_run_starts() -> None:
     assert starts == [111]
 
 
-def test_happy_path_scenario_completes_reveal() -> None:
+def test_happy_path_scenario_completes_truth() -> None:
     scenario = _happy_path_scenario()
 
     result = ScenarioExecutor(arc_path=ARC_PATH).run(scenario)
 
     assert result.passed is True
     assert result.failure_reason is None
-    assert result.run.configuration == ["reveal"]
-    assert result.run.step_index == 2
+    assert result.run.configuration == ["truth"]
+    assert result.run.step_index == 7
 
 
 def test_live_run_expected_beat_assertion_is_enforced() -> None:
     class DivergentRunner(HarnessRunner):
         def apply_action(self, action):  # type: ignore[override]
             entry = super().apply_action(action)
-            if action.transition_name == INTRO_TO_INVESTIGATION:
+            if action.transition_name == ARRIVAL_TO_BODY:
                 entry.to_configuration = ["unexpected"]
             return entry
 
@@ -191,9 +213,9 @@ def test_live_run_expected_beat_assertion_is_enforced() -> None:
         steps=[
             ScenarioStep(
                 actor_id="player-a",
-                action_type=INTRO_TO_INVESTIGATION,
-                payload=READY_CONTEXT,
-                expected_beat="investigation",
+                action_type=ARRIVAL_TO_BODY,
+                payload={"context": {"all_players_ready": True}},
+                expected_beat="body",
             )
         ],
     )
@@ -213,10 +235,7 @@ def test_live_run_expected_beat_assertion_is_enforced() -> None:
     result = executor.run(scenario)
 
     assert result.passed is False
-    assert (
-        result.failure_reason
-        == "step 1: expected beat 'investigation', got ['unexpected']"
-    )
+    assert result.failure_reason == "step 1: expected beat 'body', got ['unexpected']"
 
 
 def test_same_scenario_same_seed_produces_identical_trace() -> None:
