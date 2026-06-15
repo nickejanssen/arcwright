@@ -41,7 +41,7 @@ Risk accepted: production engineering begins before the personalization layer ha
 | M2 | Arc engine + Nightcap arc + safety | #4 arc execution, #5 safety, #7 character behavior | Nightcap arc runs all eight beats in harness; killer assigned through the constrained-random v1 assignment interface; reveal fires; AI dialogue never leaks knowledge state; L1 hard stops + L2 classification fire pre-generation |
 | M3 | Events, API, persistence, telemetry | #6 events, #8 API + auth, #9 persistence, #10 telemetry, #11 full harness | Full session runs through API; events routed by target audience with no leakage; interrupt/resume restores to nearest beat; 5 telemetry signals logging; batch harness runs 10 headless sessions |
 | M4 | Nightcap experience layer | none (experience layer, PRD-required) | Real humans play end-to-end on real devices; join under 30s; private info never on shared display |
-| M5 | Hardening + proof prerequisites | none (PRD MVP done-criteria) | Adversarial safety playtest complete and blocking issues resolved; per-session gross margin known at each supported human player count; second arc schema designed with post-M6 executable follow-through queued; live knowledge graph inspection surface live |
+| M5 | Hardening + proof prerequisites | none (PRD MVP done-criteria) | Adversarial safety playtest complete and blocking issues resolved; per-session gross margin known at each supported human player count; Daily Case second arc schema designed with post-M6 executable follow-through queued; live knowledge graph inspection surface live |
 | M6 | First qualifying sessions | none (the actual H1 proof) | 5+ completed sessions with outside groups; replay enthusiasm; personalization perception in 2+; run at 4-6 players |
 
 ## Sequencing Note

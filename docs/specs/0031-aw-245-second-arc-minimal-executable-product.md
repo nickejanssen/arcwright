@@ -10,16 +10,17 @@
 
 - Related ADRs: None yet
 - Architecture sections: `docs/architecture/14-architecture-validation.md`, `docs/architecture/15-development-guide.md`
-- Related specs: `docs/specs/0023-aw-203-arcdefinition-schema-validation-core.md`
+- Related specs: `docs/specs/0023-aw-203-arcdefinition-schema-validation-core.md`, `docs/specs/0039-aw-235-daily-case-second-arc-schema-design.md`
 - PRD sections: `docs/prd/03-scope.md`
 - Roadmap task: `docs/roadmap/tasks/AW-245-second-arc-minimal-executable-product.md`
 - Product decision: `docs/product/decisions-log.csv` D-056
+- Story bible: `docs/story-bibles/daily-case.md`
 
 ---
 
 # Overview
 
-This spec records the post-M6 commitment to build the second arc schema as a minimal executable product. It preserves sequencing: Nightcap M6 proof happens first, then this work validates platform reuse by execution.
+This spec records the post-M6 commitment to build Daily Case, the second arc defined by AW-235, as a minimal executable product. It preserves sequencing: Nightcap M6 proof happens first, then this work validates platform reuse by execution.
 
 ---
 
@@ -27,7 +28,8 @@ This spec records the post-M6 commitment to build the second arc schema as a min
 
 - Convert the AW-235 second arc schema into a minimal executable product after M6 proof
 - Exercise platform primitives outside Nightcap, including arc execution, knowledge graph, event delivery, safety, routing, cost tracking, and telemetry where applicable
-- Preserve the current working concept unless replaced by a later approved decision: a solo daily single-suspect interrogation game where the suspect remembers prior days through the knowledge graph
+- Build the current approved working concept unless replaced by a later approved decision: a solo daily single-suspect interrogation game where the suspect remembers prior days through the knowledge graph
+- Preserve the minimum Daily Case shape from AW-235: one player, one suspect, one primary surface, week-long case, sub-10-minute daily play
 - Define follow-up implementation acceptance criteria after AW-235 and AW-244 are complete
 
 ---
@@ -44,9 +46,10 @@ This spec records the post-M6 commitment to build the second arc schema as a min
 # Acceptance Criteria
 
 - [ ] AW-244 is complete before implementation begins
-- [ ] AW-235 defines the second arc schema and validation gaps
+- [ ] AW-235 and `docs/story-bibles/daily-case.md` define the second arc schema, product shape, and validation gaps
 - [ ] A follow-up implementation spec is approved before code work begins
 - [ ] The executable product validates platform reuse without Nightcap-specific engine assumptions
+- [ ] The executable product preserves Daily Case's core proof shape: asynchronous return play, contradiction accumulation, and final accusation
 - [ ] The work does not delay Nightcap M2-M6 delivery
 
 ---
@@ -66,14 +69,14 @@ This spec records the post-M6 commitment to build the second arc schema as a min
 - Treating the working concept as final before AW-235 may skip the schema validation step
 
 **Unknowns**:
-- Final second arc product concept
-- Runtime surface and delivery model
+- Final product name
+- Runtime surface and delivery model details
 - Persistence and privacy requirements for prior-day memory
 
 ---
 
 # Open Questions
 
-- What exact second arc schema does AW-235 select?
+- What exact implementation container carries cross-day case memory?
 - What memory retention and deletion rules apply to the suspect's prior-day memory?
 - What is the minimum executable loop that proves platform reuse without becoming a full second game?

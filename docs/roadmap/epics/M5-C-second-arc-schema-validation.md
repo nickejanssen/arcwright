@@ -5,7 +5,7 @@
 
 ## Plain-English Summary
 
-Design one non-Nightcap arc schema to prove platform-clean abstractions, then queue a post-M6 minimal executable product that proves platform reuse by execution.
+Design Daily Case, a non-Nightcap solo daily interrogation arc, to prove platform-clean abstractions, then queue a post-M6 minimal executable product that proves platform reuse by execution.
 
 ## Why This Matters
 
@@ -17,20 +17,21 @@ The player impact is that Nightcap moves closer to a coherent, safe, private, me
 
 ## Business Value
 
-This work protects the H1 proof path: build the platform foundation, prove it through Nightcap, and avoid premature external-developer or dashboard polish scope.
+This work protects the H1 proof path: build the platform foundation, prove it through Nightcap, and define the smallest second executable arc that makes Arcwright's cross-session memory wedge visible without bloating current scope.
 
 ## Technical Scope
 
-The technical scope is limited to the tasks listed below and the architecture references named in those task files.
+The technical scope is limited to the tasks listed below and the architecture references named in those task files. For M5-C, the canonical second arc is Daily Case: a solo, asynchronous, week-long suspect interrogation experience.
 
 ## Tasks
 
 - [AW-235: Second Arc Schema Design](../tasks/AW-235-second-arc-schema-design.md)
-- AW-245: Second Arc Minimal Executable Product (post-M6, added to the roadmap manifest)
+- [AW-245: Second Arc Minimal Executable Product](../tasks/AW-245-second-arc-minimal-executable-product.md) (post-M6)
 
 ## Acceptance Criteria
 
 - All child tasks satisfy their acceptance criteria.
+- Daily Case is documented as the canonical second-arc target for M5-C and post-M6 executable follow-through.
 - The milestone exit gate remains consistent with `docs/roadmap/00-overview.md`.
 - Any open decision is explicitly recorded before implementation proceeds.
 
