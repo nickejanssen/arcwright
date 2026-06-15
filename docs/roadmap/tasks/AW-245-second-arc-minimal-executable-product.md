@@ -6,7 +6,7 @@
 
 ## Plain-English Summary
 
-Build the second arc schema from AW-235 as a minimal executable product after Nightcap M6 proof.
+Build Daily Case, the second arc schema from AW-235, as a minimal executable product after Nightcap M6 proof.
 
 ## Why This Matters
 
@@ -18,17 +18,18 @@ Players benefit when the platform claim is validated through a second real exper
 
 ## Business Value
 
-This task strengthens Arcwright's core platform claim: the engine can run more than one kind of authored arc, including a working concept such as a solo daily single-suspect interrogation game where the suspect remembers prior days through the knowledge graph.
+This task strengthens Arcwright's core platform claim: the engine can run more than one kind of authored arc, including Daily Case, a solo daily single-suspect interrogation game where the suspect remembers prior days through the knowledge graph.
 
 ## Technical Scope
 
-Implement the minimal real product defined by the AW-235 second arc schema after M6 proof. Likely files affected depend on the selected schema and runtime surface.
+Implement the minimal real product defined by the AW-235 Daily Case schema after M6 proof. Likely files affected depend on the selected schema and runtime surface.
 
 ## Acceptance Criteria
 
 - [ ] Implementation starts only after AW-244 records the H1 proof analysis and next-step decision.
-- [ ] The executable product is based on the second arc schema designed in AW-235.
+- [ ] The executable product is based on the Daily Case schema designed in AW-235 and `docs/story-bibles/daily-case.md`.
 - [ ] The implementation exercises platform reuse through arc execution, knowledge graph, event delivery, safety, routing, cost tracking, and telemetry where applicable.
+- [ ] The implementation preserves Daily Case's core shape: one player, one suspect, one primary surface, cross-day memory, contradiction accumulation, and final accusation.
 - [ ] The implementation does not require Nightcap-specific engine assumptions.
 - [ ] Any new schema, API, privacy, or telemetry scope is backed by a dedicated approved spec before code work begins.
 

@@ -19,5 +19,5 @@ This milestone closes the gap between a technically working product and a produc
 
 - Adversarial safety playtest complete and blocking issues resolved
 - Per-session gross margin known at each supported human player count
-- A second arc schema exists and post-M6 executable follow-through is queued
+- A Daily Case second arc schema exists and post-M6 executable follow-through is queued
 - The live knowledge graph inspection surface is live; read-only arc structure, live event stream, and character state inspection may ship as logs or defer until after proof
