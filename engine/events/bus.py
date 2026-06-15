@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import asyncio
 from collections import deque
+from types import TracebackType
 from typing import AsyncIterator, Optional
 
 from engine.events.models import ContentEvent
@@ -55,6 +56,12 @@ class SessionEventBus:
         return event
 
     def subscribe(self) -> "Subscription":
+        """Register a new live subscriber.
+
+        The subscription starts receiving events published after this method
+        returns. Consumers that need past events or a reconnect gap must use
+        ``replay_since`` explicitly.
+        """
         queue: asyncio.Queue[ContentEvent] = asyncio.Queue()
         self._subscribers.append(queue)
         return Subscription(self, queue)
@@ -98,7 +105,12 @@ class Subscription:
     async def __aenter__(self) -> "Subscription":
         return self
 
-    async def __aexit__(self, exc_type, exc, tb) -> None:
+    async def __aexit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc: BaseException | None,
+        tb: TracebackType | None,
+    ) -> None:
         await self.aclose()
 
     async def aclose(self) -> None:
