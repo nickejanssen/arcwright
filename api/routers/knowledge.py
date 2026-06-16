@@ -40,13 +40,14 @@ from api.schemas import (
     KnowledgeFactResponse,
 )
 from engine.db import get_async_session
-from engine.db.orm import Fact, KnowledgeState
+from engine.db.orm import Account, Fact, KnowledgeState
+from engine.db.orm import Session as OrmSession
 from engine.knowledge import (
     assert_knowledge,
     get_character_knowledge,
     revoke_fact_in_session,
 )
-from engine.session.service import _session_service
+from engine.session.service import SessionService, _session_service
 
 router = APIRouter(prefix="/sessions", tags=["knowledge"])
 
@@ -73,6 +74,7 @@ async def assert_knowledge_endpoint(
         _require_session_claim_match(session_id, caller)
     if _session_service.get_session(session_id) is None:
         raise HTTPException(status_code=404, detail="Session not found")
+    await _ensure_session_row_for_knowledge(db, session_id, _session_service)
     ks = await assert_knowledge(
         db,
         session_id=session_id,
@@ -104,6 +106,8 @@ async def revoke_knowledge_endpoint(
     character with the original record's ``superseded_by`` set; the
     original row is never deleted (§4.3).
     """
+    if _session_service.get_session(session_id) is None:
+        raise HTTPException(status_code=404, detail="Session not found")
     fact = await db.get(Fact, fact_id)
     if fact is None or fact.session_id != session_id:
         raise HTTPException(status_code=404, detail="Fact not found")
@@ -130,6 +134,8 @@ async def get_character_knowledge_endpoint(
     db: AsyncSession = Depends(get_async_session),
 ) -> CharacterKnowledgeResponse:
     """Query a character's current knowledge state. Internal callers only."""
+    if _session_service.get_session(session_id) is None:
+        raise HTTPException(status_code=404, detail="Session not found")
     states = await get_character_knowledge(
         db, session_id=session_id, character_id=character_id
     )
@@ -143,6 +149,55 @@ async def get_character_knowledge_endpoint(
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
+
+async def _ensure_session_row_for_knowledge(
+    db: AsyncSession, session_id: UUID, sessions: SessionService
+) -> None:
+    """Lazily seed the ``sessions`` (and host ``accounts``) row from the
+    in-memory ``SessionService`` so the ``facts.session_id`` FK resolves on
+    real Postgres.
+
+    Idempotent and safe to call on every assert. This is a temporary bridge
+    while ``SessionService`` itself is still in-memory; once sessions are
+    DB-backed this helper can be retired.
+    """
+    existing = await db.execute(
+        select(OrmSession).where(OrmSession.session_id == session_id)
+    )
+    if existing.scalars().first() is not None:
+        return
+    mem = sessions.get_session(session_id)
+    if mem is None:
+        return
+
+    existing_acc = await db.execute(
+        select(Account).where(Account.account_id == mem.host_account_id)
+    )
+    if existing_acc.scalars().first() is None:
+        db.add(
+            Account(
+                account_id=mem.host_account_id,
+                firebase_uid=f"in-memory:{mem.host_account_id}",
+            )
+        )
+        await db.flush()
+
+    db.add(
+        OrmSession(
+            session_id=mem.session_id,
+            arc_id=mem.arc_id,
+            status=mem.status.value,
+            host_account_id=mem.host_account_id,
+            created_at=mem.created_at,
+            started_at=mem.started_at,
+            completed_at=mem.completed_at,
+            current_beat_id=mem.current_beat_id,
+            quality_tier=mem.quality_tier.value,
+            player_count=mem.player_count,
+        )
+    )
+    await db.flush()
 
 
 def _to_response(ks: KnowledgeState, fact: Fact) -> KnowledgeFactResponse:

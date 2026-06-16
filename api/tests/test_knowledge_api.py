@@ -39,7 +39,8 @@ from api.auth import (
 from api.main import app
 from engine.characters import build_character_generation_context
 from engine.db import get_async_session
-from engine.db.orm import Base, Character, KnowledgeState
+from engine.db.orm import Account, Base, Character, KnowledgeState
+from engine.db.orm import Session as OrmSession
 from engine.db.testing import patch_metadata_for_sqlite
 from engine.session.service import SessionService
 
@@ -198,6 +199,52 @@ class TestAssertKnowledge:
         )
         assert resp.status_code == 404
 
+    def test_assert_seeds_sessions_row_for_fk(
+        self,
+        internal_client: TestClient,
+        fresh_sessions: SessionService,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        """The facts.session_id FK to sessions.session_id must resolve on real
+        Postgres. The router lazily seeds the sessions + accounts rows from
+        the in-memory SessionService on first assert.
+        """
+        session_id = _open_session(fresh_sessions)
+        char_id = uuid4()
+        resp = internal_client.post(
+            f"/v1/sessions/{session_id}/knowledge",
+            json={
+                "character_id": str(char_id),
+                "fact_type": "alibi",
+                "fact_content": {"k": 1},
+            },
+        )
+        assert resp.status_code == 201
+
+        async def _check() -> tuple[bool, bool]:
+            async with db_factory() as db:
+                sess_row = (
+                    (
+                        await db.execute(
+                            select(OrmSession).where(
+                                OrmSession.session_id == session_id
+                            )
+                        )
+                    )
+                    .scalars()
+                    .first()
+                )
+                acc_row = (await db.execute(select(Account))).scalars().first()
+                return sess_row is not None, acc_row is not None
+
+        import asyncio
+
+        sess_present, acc_present = asyncio.get_event_loop().run_until_complete(
+            _check()
+        )
+        assert sess_present
+        assert acc_present
+
     def test_two_asserts_same_content_dedupe_to_one_fact(
         self,
         internal_client: TestClient,
@@ -353,6 +400,10 @@ class TestRevokeKnowledge:
         resp = internal_client.delete(f"/v1/sessions/{session_id}/knowledge/{uuid4()}")
         assert resp.status_code == 404
 
+    def test_unknown_session_returns_404(self, internal_client: TestClient) -> None:
+        resp = internal_client.delete(f"/v1/sessions/{uuid4()}/knowledge/{uuid4()}")
+        assert resp.status_code == 404
+
 
 # ---------------------------------------------------------------------------
 # Query
@@ -404,6 +455,10 @@ class TestGetKnowledge:
         resp = internal_client.get(f"/v1/sessions/{session_id}/knowledge/{char_id}")
         assert resp.status_code == 200
         assert resp.json()["facts"] == []
+
+    def test_unknown_session_returns_404(self, internal_client: TestClient) -> None:
+        resp = internal_client.get(f"/v1/sessions/{uuid4()}/knowledge/{uuid4()}")
+        assert resp.status_code == 404
 
 
 # ---------------------------------------------------------------------------
