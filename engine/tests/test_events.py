@@ -1,4 +1,4 @@
-"""Tests for ContentEvent schema and the in-memory SessionEventBus."""
+"""Tests for ContentEvent schema, the in-memory SessionEventBus, and the SSE fanout layer."""
 
 from __future__ import annotations
 
@@ -14,7 +14,10 @@ from engine.events import (
     ContentEvent,
     EventCategory,
     PresentationHints,
+    SessionConnectionRegistry,
     SessionEventBus,
+    SSEConnection,
+    run_fanout,
 )
 
 
@@ -270,3 +273,259 @@ class TestSessionEventBus:
         stamped = await bus.publish(event)
         assert stamped is event
         assert event.sequence_number == 1
+
+
+# ---------------------------------------------------------------------------
+# AW-216: SessionConnectionRegistry routing
+# ---------------------------------------------------------------------------
+
+
+class TestSessionConnectionRegistry:
+    def test_specific_player_event_routes_only_to_matching_player(self) -> None:
+        registry = SessionConnectionRegistry()
+        player_a = uuid4()
+        player_b = uuid4()
+        conn_a = registry.register_player(player_a)
+        conn_b = registry.register_player(player_b)
+
+        event = make_event(
+            session_id=uuid4(),
+            target_audience=AudienceTarget.specific_player,
+            target_player_id=player_a,
+            category=EventCategory.private_delivery,
+            event_type="clue_delivery",
+        )
+        result = registry.route(event)
+
+        assert conn_a in result
+        assert conn_b not in result
+
+    def test_all_event_routes_to_all_players_and_displays_but_not_hosts(self) -> None:
+        registry = SessionConnectionRegistry()
+        conn_player = registry.register_player(uuid4())
+        conn_display = registry.register_display()
+        conn_host = registry.register_host(uuid4())
+
+        event = make_event(session_id=uuid4(), target_audience=AudienceTarget.all)
+        result = registry.route(event)
+
+        assert conn_player in result
+        assert conn_display in result
+        assert conn_host not in result
+
+    def test_host_only_event_routes_only_to_host_connections(self) -> None:
+        registry = SessionConnectionRegistry()
+        conn_host = registry.register_host(uuid4())
+        conn_player = registry.register_player(uuid4())
+        conn_display = registry.register_display()
+
+        event = make_event(session_id=uuid4(), target_audience=AudienceTarget.host_only)
+        result = registry.route(event)
+
+        assert conn_host in result
+        assert conn_player not in result
+        assert conn_display not in result
+
+    def test_shared_display_event_routes_only_to_display_connections(self) -> None:
+        registry = SessionConnectionRegistry()
+        conn_display = registry.register_display()
+        conn_player = registry.register_player(uuid4())
+        conn_host = registry.register_host(uuid4())
+
+        event = make_event(
+            session_id=uuid4(), target_audience=AudienceTarget.shared_display
+        )
+        result = registry.route(event)
+
+        assert conn_display in result
+        assert conn_player not in result
+        assert conn_host not in result
+
+    def test_specific_player_missing_from_registry_returns_empty(self) -> None:
+        registry = SessionConnectionRegistry()
+        unknown = uuid4()
+
+        event = make_event(
+            session_id=uuid4(),
+            target_audience=AudienceTarget.specific_player,
+            target_player_id=unknown,
+            category=EventCategory.private_delivery,
+            event_type="clue_delivery",
+        )
+        assert registry.route(event) == []
+
+    def test_deregister_player_removes_connection_from_subsequent_routing(self) -> None:
+        registry = SessionConnectionRegistry()
+        player_id = uuid4()
+        conn = registry.register_player(player_id)
+        registry.deregister(conn)
+
+        event = make_event(
+            session_id=uuid4(),
+            target_audience=AudienceTarget.specific_player,
+            target_player_id=player_id,
+            category=EventCategory.private_delivery,
+            event_type="clue_delivery",
+        )
+        assert registry.route(event) == []
+
+    def test_deregister_host_removes_connection_from_subsequent_routing(self) -> None:
+        registry = SessionConnectionRegistry()
+        host_id = uuid4()
+        conn = registry.register_host(host_id)
+        registry.deregister(conn)
+
+        event = make_event(session_id=uuid4(), target_audience=AudienceTarget.host_only)
+        assert registry.route(event) == []
+
+    def test_deregister_display_removes_connection_from_subsequent_routing(
+        self,
+    ) -> None:
+        registry = SessionConnectionRegistry()
+        conn = registry.register_display()
+        registry.deregister(conn)
+
+        event = make_event(
+            session_id=uuid4(), target_audience=AudienceTarget.shared_display
+        )
+        assert registry.route(event) == []
+
+    def test_deregister_is_idempotent(self) -> None:
+        registry = SessionConnectionRegistry()
+        conn = registry.register_player(uuid4())
+        registry.deregister(conn)
+        registry.deregister(conn)  # second call must not raise
+
+    def test_multiple_players_all_receive_all_event(self) -> None:
+        registry = SessionConnectionRegistry()
+        conns = [registry.register_player(uuid4()) for _ in range(3)]
+
+        event = make_event(session_id=uuid4(), target_audience=AudienceTarget.all)
+        result = registry.route(event)
+
+        for conn in conns:
+            assert conn in result
+
+
+# ---------------------------------------------------------------------------
+# AW-216: run_fanout integration tests (AC1, AC2, AC3)
+# ---------------------------------------------------------------------------
+
+
+async def _cancel_task(task: asyncio.Task) -> None:  # type: ignore[type-arg]
+    task.cancel()
+    try:
+        await task
+    except asyncio.CancelledError:
+        pass
+
+
+class TestFanoutRouter:
+    async def test_fanout_delivers_specific_player_event_only_to_matching_connection(
+        self,
+    ) -> None:
+        bus = SessionEventBus()
+        registry = SessionConnectionRegistry()
+        player_a = uuid4()
+        player_b = uuid4()
+        conn_a = registry.register_player(player_a)
+        conn_b = registry.register_player(player_b)
+
+        task = asyncio.create_task(run_fanout(bus, registry))
+        # Yield so the fanout task runs up to its first await (queue.get),
+        # establishing its bus subscription before we publish.
+        await asyncio.sleep(0)
+        try:
+            event = await bus.publish(
+                make_event(
+                    session_id=uuid4(),
+                    target_audience=AudienceTarget.specific_player,
+                    target_player_id=player_a,
+                    category=EventCategory.private_delivery,
+                    event_type="clue_delivery",
+                )
+            )
+            received = await asyncio.wait_for(conn_a._queue.get(), timeout=1.0)
+            assert received.event_id == event.event_id
+            assert conn_b._queue.empty()
+        finally:
+            await _cancel_task(task)
+
+    async def test_fanout_delivers_all_event_to_players_and_display_not_host(
+        self,
+    ) -> None:
+        bus = SessionEventBus()
+        registry = SessionConnectionRegistry()
+        conn_player = registry.register_player(uuid4())
+        conn_display = registry.register_display()
+        conn_host = registry.register_host(uuid4())
+
+        task = asyncio.create_task(run_fanout(bus, registry))
+        await asyncio.sleep(0)
+        try:
+            event = await bus.publish(
+                make_event(session_id=uuid4(), target_audience=AudienceTarget.all)
+            )
+            received_player = await asyncio.wait_for(
+                conn_player._queue.get(), timeout=1.0
+            )
+            received_display = await asyncio.wait_for(
+                conn_display._queue.get(), timeout=1.0
+            )
+            assert received_player.event_id == event.event_id
+            assert received_display.event_id == event.event_id
+            assert conn_host._queue.empty()
+        finally:
+            await _cancel_task(task)
+
+    async def test_replay_missed_events_and_live_events_are_disjoint(self) -> None:
+        """AC3: reconnect replay uses sequence numbers; no duplicates.
+
+        Approach: publish 5 events before the connection, register it with
+        since=3, capture cutoff = bus.last_sequence_number, get replay events,
+        then publish 2 more. Verify replay covers only seqs 4-5, live covers
+        6-7, and the two sets are disjoint.
+        """
+        bus = SessionEventBus()
+        registry = SessionConnectionRegistry()
+        session_id = uuid4()
+
+        for _ in range(5):
+            await bus.publish(make_event(session_id=session_id))
+
+        player_id = uuid4()
+        conn = registry.register_player(player_id)
+        task = asyncio.create_task(run_fanout(bus, registry))
+        await asyncio.sleep(0)
+
+        try:
+            # Atomic capture — no await between these three lines.
+            cutoff = bus.last_sequence_number  # 5
+            missed = bus.replay_since(3)  # seqs 4, 5
+
+            await bus.publish(make_event(session_id=session_id))  # seq 6
+            await bus.publish(make_event(session_id=session_id))  # seq 7
+
+            live_event_a = await asyncio.wait_for(conn._queue.get(), timeout=1.0)
+            live_event_b = await asyncio.wait_for(conn._queue.get(), timeout=1.0)
+
+            missed_seqs = {e.sequence_number for e in missed}
+            live_seqs_raw = {live_event_a.sequence_number, live_event_b.sequence_number}
+            live_seqs_filtered = {s for s in live_seqs_raw if s > cutoff}
+
+            assert missed_seqs == {4, 5}
+            assert live_seqs_filtered == {6, 7}
+            assert missed_seqs.isdisjoint(live_seqs_filtered)
+        finally:
+            await _cancel_task(task)
+
+    async def test_sse_connection_close_ends_async_iteration(self) -> None:
+        conn = SSEConnection(player_id=uuid4())
+        conn.send(make_event(session_id=uuid4()))
+        conn.close()
+
+        received = []
+        async for event in conn:
+            received.append(event)
+
+        assert len(received) == 1
