@@ -4,7 +4,7 @@ title: "AW-217: Session Lifecycle API And Auth"
 issue: 70
 milestone: M3
 epic: M3-B
-status: in-progress
+status: approved
 created: 2026-06-15
 author: claude-code
 ---

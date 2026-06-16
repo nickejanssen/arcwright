@@ -84,10 +84,11 @@ async def require_host_jwt(
     if role != "host":
         raise HTTPException(status_code=403, detail="Host token required")
     session_id_str = decoded.get("arcwright_session_id")
+    player_id_str = decoded.get("arcwright_player_id")
     return JwtClaims(
         uid=decoded["uid"],
         session_id=UUID(session_id_str) if session_id_str else None,
-        player_id=None,
+        player_id=UUID(player_id_str) if player_id_str else None,
         role=role,
     )
 
