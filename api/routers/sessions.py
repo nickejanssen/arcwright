@@ -30,12 +30,14 @@ from api.auth import (
     require_host_jwt,
 )
 from api.schemas import (
+    AddPlayerResponse,
     CreateSessionRequest,
     CreateSessionResponse,
     JoinSessionResponse,
     SessionStateResponse,
 )
 from engine.session.service import (
+    SessionCapacityError,
     SessionNotFoundError,
     SessionStateError,
     _session_service,
@@ -167,6 +169,33 @@ async def end_session(
     except SessionStateError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
     return _session_to_state_response(session)
+
+
+@router.post("/{session_id}/players", response_model=AddPlayerResponse, status_code=201)
+async def add_player(
+    session_id: UUID,
+    caller: ApiCaller = Depends(require_api_key),
+) -> AddPlayerResponse:
+    """Create a player participant slot and return a join token.
+
+    The caller distributes the join_token to the player out of band.
+    The player presents it to GET /sessions/{id}/join to receive a Firebase
+    custom token for the SSE stream and character endpoints.
+    """
+    try:
+        participant, join_token = _session_service.add_player(session_id)
+    except SessionNotFoundError:
+        raise HTTPException(status_code=404, detail="Session not found")
+    except SessionCapacityError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    except SessionStateError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    join_url = f"/v1/sessions/{session_id}/join?token={join_token}"
+    return AddPlayerResponse(
+        participant_id=participant.participant_id,
+        join_token=join_token,
+        join_url=join_url,
+    )
 
 
 @router.get("/{session_id}/join", response_model=JoinSessionResponse)

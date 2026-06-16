@@ -11,6 +11,7 @@ import pytest
 
 from engine.session.models import QualityTier, SessionStatus
 from engine.session.service import (
+    SessionCapacityError,
     SessionNotFoundError,
     SessionService,
     SessionStateError,
@@ -159,3 +160,50 @@ class TestValidateJoinToken:
         _, t1 = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
         _, t2 = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
         assert t1 != t2
+
+
+class TestAddPlayer:
+    def test_returns_participant_and_join_token(self, svc: SessionService) -> None:
+        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
+        participant, token = svc.add_player(session.session_id)
+
+        assert participant.session_id == session.session_id
+        assert participant.surface_type == "player"
+        assert isinstance(token, str) and len(token) > 0
+
+    def test_increments_player_count(self, svc: SessionService) -> None:
+        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
+        svc.add_player(session.session_id)
+        svc.add_player(session.session_id)
+        assert session.player_count == 2
+
+    def test_join_token_is_valid_for_join_endpoint(self, svc: SessionService) -> None:
+        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
+        participant, token = svc.add_player(session.session_id)
+
+        found = svc.validate_join_token(session.session_id, token)
+        assert found is not None
+        assert found.participant_id == participant.participant_id
+
+    def test_each_player_gets_distinct_token(self, svc: SessionService) -> None:
+        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
+        _, t1 = svc.add_player(session.session_id)
+        _, t2 = svc.add_player(session.session_id)
+        assert t1 != t2
+
+    def test_fails_when_at_capacity(self, svc: SessionService) -> None:
+        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
+        svc.add_player(session.session_id, max_players=2)
+        svc.add_player(session.session_id, max_players=2)
+        with pytest.raises(SessionCapacityError):
+            svc.add_player(session.session_id, max_players=2)
+
+    def test_fails_for_completed_session(self, svc: SessionService) -> None:
+        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
+        svc.end_session(session.session_id, uuid4())
+        with pytest.raises(SessionStateError):
+            svc.add_player(session.session_id)
+
+    def test_fails_for_unknown_session(self, svc: SessionService) -> None:
+        with pytest.raises(SessionNotFoundError):
+            svc.add_player(uuid4())

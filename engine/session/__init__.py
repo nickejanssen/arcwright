@@ -9,6 +9,7 @@ from engine.session.models import (
     TransitionBypassLogEntry,
 )
 from engine.session.service import (
+    SessionCapacityError,
     SessionNotFoundError,
     SessionService,
     SessionStateError,
@@ -20,6 +21,7 @@ __all__ = [
     "QualityTier",
     "RevealState",
     "Session",
+    "SessionCapacityError",
     "SessionNotFoundError",
     "SessionParticipant",
     "SessionRuntimeState",

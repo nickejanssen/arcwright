@@ -40,10 +40,8 @@ middleware that replaces that stub.
 - Character assignment, knowledge state, arc execution (separate tasks)
 - Character management, knowledge state, usage endpoints (§9.2 rows 2–3 and 5–6)
 - Firebase credential loading code (ADC / env-var pattern only; no service-account JSON in code)
-- **Player join token creation** — `SessionService.create_session` seeds only a host join
-  token. There is no endpoint to add players and receive per-player join tokens, so the
-  player path through `GET /sessions/{id}/join` is not yet reachable. This is tracked as a
-  separate follow-up task (GitHub issue #132).
+- ~~Player join token creation~~ — resolved: `POST /sessions/{id}/players` added,
+  making the full player join path reachable. GitHub issue #132 closed.
 
 ## Acceptance Criteria
 
@@ -64,14 +62,15 @@ middleware that replaces that stub.
 
 ```
 Developer (API key)
-  → POST /v1/sessions                          returns session_id, join_url, host_token
-  → distribute join_url + per-player tokens out of band
+  → POST /v1/sessions                               session_id, join_url, host_token
+  → POST /v1/sessions/{id}/players  (per player)   participant_id, join_token, join_url
+  → distribute per-player join URLs out of band
 
 Host (host_token = Firebase custom token)
   → exchanges host_token for Firebase ID token via Firebase client SDK
   → POST /v1/sessions/{id}/start              Authorization: Bearer <id_token>
 
-Player (per-player join token)
+Player (per-player join token from POST /players)
   → GET /v1/sessions/{id}/join?token=<token>  returns player_token (Firebase custom token)
   → exchanges player_token for Firebase ID token
   → GET /v1/sessions/{id}/events              Authorization: Bearer <id_token>

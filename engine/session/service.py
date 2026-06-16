@@ -26,6 +26,10 @@ class SessionStateError(Exception):
     pass
 
 
+class SessionCapacityError(Exception):
+    pass
+
+
 class SessionService:
     """In-process session registry for single-process MVP deployment."""
 
@@ -116,6 +120,40 @@ class SessionService:
         session.status = SessionStatus.completed
         session.completed_at = datetime.now(tz=timezone.utc)
         return session
+
+    def add_player(
+        self,
+        session_id: UUID,
+        max_players: int = 10,
+        surface_type: str = "player",
+    ) -> tuple[SessionParticipant, str]:
+        """Create a player participant slot and return (participant, join_token).
+
+        The caller distributes ``join_token`` to the player out of band.
+        The player presents it to GET /sessions/{id}/join to receive a Firebase token.
+        """
+        session = self._require_session(session_id)
+        if session.status in (SessionStatus.completed, SessionStatus.abandoned):
+            raise SessionStateError(
+                f"Cannot add player to session in status {session.status!r}"
+            )
+        if session.player_count >= max_players:
+            raise SessionCapacityError(
+                f"Session is at capacity ({max_players} players)"
+            )
+        join_token = secrets.token_urlsafe(32)
+        participant = SessionParticipant(
+            participant_id=uuid4(),
+            session_id=session_id,
+            character_id=uuid4(),  # placeholder; real assignment is arc execution scope
+            join_token=join_token,
+            surface_type=surface_type,
+            is_ai_controlled=False,
+        )
+        self._participants[session_id].append(participant)
+        self._join_token_index[join_token] = (session_id, participant.participant_id)
+        session.player_count += 1
+        return participant, join_token
 
     def validate_join_token(
         self, session_id: UUID, join_token: str
