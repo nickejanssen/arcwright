@@ -45,9 +45,10 @@ def services(
 @pytest.fixture()
 def host_session(
     services: tuple[SessionService, CharacterService],
-) -> tuple[SessionService, CharacterService, UUID, UUID, UUID]:
+) -> tuple[SessionService, CharacterService, UUID, UUID, UUID, UUID]:
     """A session with one host plus two players. Returns (sessions, characters,
-    session_id, player_a_participant_id, player_a_character_id, player_b_*)."""
+    session_id, player_a_participant_id, player_a_character_id,
+    player_b_character_id)."""
     sessions, characters = services
     session, _ = sessions.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
     a, _ = sessions.add_player(session.session_id)
