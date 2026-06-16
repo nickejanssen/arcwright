@@ -7,13 +7,15 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 
-from api.routers import events, sessions
+from api.routers import characters, events, knowledge, sessions
 
 
 def create_app() -> FastAPI:
     application = FastAPI(title="Arcwright API", version="0.1.0")
     application.include_router(sessions.router, prefix="/v1")
     application.include_router(events.router, prefix="/v1")
+    application.include_router(characters.router, prefix="/v1")
+    application.include_router(knowledge.router, prefix="/v1")
     return application
 
 
