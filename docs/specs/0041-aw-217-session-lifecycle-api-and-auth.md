@@ -40,20 +40,24 @@ middleware that replaces that stub.
 - Character assignment, knowledge state, arc execution (separate tasks)
 - Character management, knowledge state, usage endpoints (§9.2 rows 2–3 and 5–6)
 - Firebase credential loading code (ADC / env-var pattern only; no service-account JSON in code)
+- **Player join token creation** — `SessionService.create_session` seeds only a host join
+  token. There is no endpoint to add players and receive per-player join tokens, so the
+  player path through `GET /sessions/{id}/join` is not yet reachable. This is tracked as a
+  separate follow-up task (GitHub issue #132).
 
 ## Acceptance Criteria
 
-- [ ] AC1: Endpoints `POST /sessions`, `POST /sessions/{id}/start`, `GET /sessions/{id}`,
+- [x] AC1: Endpoints `POST /sessions`, `POST /sessions/{id}/start`, `GET /sessions/{id}`,
       `POST /sessions/{id}/pause`, `POST /sessions/{id}/resume`, `POST /sessions/{id}/end`,
       `GET /sessions/{id}/join` exist with documented request and response schemas.
-- [ ] AC2: Route handlers validate input, call engine service functions, and return responses;
+- [x] AC2: Route handlers validate input, call engine service functions, and return responses;
       no arc execution logic appears in any handler.
-- [ ] AC3: `POST /sessions` is gated by `X-Api-Key`; `start/pause/resume/end` are gated by
+- [x] AC3: `POST /sessions` is gated by `X-Api-Key`; `start/pause/resume/end` are gated by
       host JWT (Firebase custom token exchanged for an ID token); `GET /sessions/{id}` accepts
       API key or host JWT; `GET /sessions/{id}/join` is unauthenticated.
-- [ ] AC4: `GET /sessions/{id}/events` (AW-216 SSE endpoint) extracts `player_id` and role from
+- [x] AC4: `GET /sessions/{id}/events` (AW-216 SSE endpoint) extracts `player_id` and role from
       JWT claims; the `player_id`/`connection_type` query-param trust model is removed.
-- [ ] AC5: `SessionService` unit tests cover the full lifecycle state machine and join-token
+- [x] AC5: `SessionService` unit tests cover the full lifecycle state machine and join-token
       validation.
 
 ## Token Flow
