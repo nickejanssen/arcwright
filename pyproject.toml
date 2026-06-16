@@ -19,7 +19,7 @@ dev = [
 
 [tool.pytest.ini_options]
 addopts = "-ra"
-testpaths = ["tests", "engine/tests"]
+testpaths = ["tests", "engine/tests", "api/tests"]
 asyncio_mode = "auto"
 
 [tool.ruff]
@@ -52,6 +52,10 @@ ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
 module = ["pgvector", "pgvector.*", "sqlalchemy", "sqlalchemy.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = ["firebase_admin", "firebase_admin.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
