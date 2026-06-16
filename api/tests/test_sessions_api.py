@@ -10,6 +10,7 @@ _session_service singleton is replaced per-test for isolation.
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from unittest.mock import patch
 from uuid import uuid4
 
@@ -39,7 +40,7 @@ def fresh_svc(monkeypatch: pytest.MonkeyPatch) -> SessionService:
 
 
 @pytest.fixture()
-def client(fresh_svc: SessionService) -> TestClient:
+def client(fresh_svc: SessionService) -> Iterator[TestClient]:
     """TestClient with auth dependencies overridden and Firebase calls mocked."""
     with (
         patch("api.routers.sessions._ensure_firebase_app"),
