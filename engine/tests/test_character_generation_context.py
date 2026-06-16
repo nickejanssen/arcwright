@@ -176,25 +176,29 @@ async def test_build_character_generation_context_scopes_known_and_unknown_facts
         fact_content={"fact": "other-session"},
     )
 
+    upstream_source = uuid4()
     await assert_knowledge(
         session,
         session_id=session_id,
         character_id=character_id,
-        fact_id=known_fact.fact_id,
+        fact_type=known_fact.fact_type,
+        fact_content=known_fact.fact_content,
+        source_character_id=upstream_source,
         confidence=0.8,
-        provenance_chain=[uuid4(), character_id],
     )
     await assert_knowledge(
         session,
         session_id=session_id,
         character_id=other_character_id,
-        fact_id=other_character_fact.fact_id,
+        fact_type=other_character_fact.fact_type,
+        fact_content=other_character_fact.fact_content,
     )
     await assert_knowledge(
         session,
         session_id=other_session_id,
         character_id=character_id,
-        fact_id=other_session_fact.fact_id,
+        fact_type=other_session_fact.fact_type,
+        fact_content=other_session_fact.fact_content,
     )
 
     context = await build_character_generation_context(
@@ -376,20 +380,26 @@ async def test_build_character_generation_context_excludes_superseded_facts(
 ) -> None:
     session_id = uuid4()
     character_id = uuid4()
-    original_fact = await _make_fact(session, session_id=session_id)
-    replacement_fact = await _make_fact(session, session_id=session_id)
+    original_fact = await _make_fact(
+        session, session_id=session_id, fact_content={"fact": "original"}
+    )
+    replacement_fact = await _make_fact(
+        session, session_id=session_id, fact_content={"fact": "replacement"}
+    )
 
     original = await assert_knowledge(
         session,
         session_id=session_id,
         character_id=character_id,
-        fact_id=original_fact.fact_id,
+        fact_type=original_fact.fact_type,
+        fact_content=original_fact.fact_content,
     )
     replacement = await assert_knowledge(
         session,
         session_id=session_id,
         character_id=character_id,
-        fact_id=replacement_fact.fact_id,
+        fact_type=replacement_fact.fact_type,
+        fact_content=replacement_fact.fact_content,
     )
     await revoke_knowledge(
         session, existing_ks_id=original.ks_id, replacement=replacement
@@ -440,13 +450,15 @@ async def test_build_character_generation_context_is_stably_ordered(
         session,
         session_id=session_id,
         character_id=character_id,
-        fact_id=later_known_fact.fact_id,
+        fact_type=later_known_fact.fact_type,
+        fact_content=later_known_fact.fact_content,
     )
     early_state = await assert_knowledge(
         session,
         session_id=session_id,
         character_id=character_id,
-        fact_id=early_known_fact.fact_id,
+        fact_type=early_known_fact.fact_type,
+        fact_content=early_known_fact.fact_content,
     )
     later_state.asserted_at = datetime(2026, 1, 2, tzinfo=timezone.utc)
     early_state.asserted_at = datetime(2026, 1, 1, tzinfo=timezone.utc)
@@ -487,13 +499,15 @@ async def test_build_character_generation_context_keeps_same_character_id_sessio
         session,
         session_id=session_a,
         character_id=character_id,
-        fact_id=fact_a.fact_id,
+        fact_type=fact_a.fact_type,
+        fact_content=fact_a.fact_content,
     )
     await assert_knowledge(
         session,
         session_id=session_b,
         character_id=character_id,
-        fact_id=fact_b.fact_id,
+        fact_type=fact_b.fact_type,
+        fact_content=fact_b.fact_content,
     )
 
     context = await build_character_generation_context(

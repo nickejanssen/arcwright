@@ -1,67 +1,24 @@
-"""Tests for engine/knowledge/graph.py — knowledge graph assertion API."""
+"""Tests for engine/knowledge/graph.py — knowledge graph assert/revoke/query."""
 
 from __future__ import annotations
 
-import uuid
 from uuid import UUID, uuid4
 
 import pytest
-from sqlalchemy import JSON, Text, text
-from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy.sql.schema import ColumnDefault, DefaultClause
 
 from engine.db.orm import Base, Character, Fact, KnowledgeState, Session
-from engine.knowledge import assert_knowledge, get_character_knowledge, revoke_knowledge
+from engine.db.testing import patch_metadata_for_sqlite
+from engine.knowledge import (
+    assert_knowledge,
+    get_character_knowledge,
+    revoke_fact_in_session,
+    revoke_knowledge,
+)
 
-# ---------------------------------------------------------------------------
-# One-time metadata patch so Base.metadata.create_all works with SQLite.
-# Patches are applied module-wide before any test runs.
-# ---------------------------------------------------------------------------
-
-_PATCHED = False
-
-
-def _patch_metadata_for_sqlite() -> None:
-    global _PATCHED
-    if _PATCHED:
-        return
-    _PATCHED = True
-
-    for table in Base.metadata.tables.values():
-        for col in table.columns:
-            # Replace pgvector Vector types (not supported by SQLite)
-            if type(col.type).__name__ == "VECTOR":
-                col.type = Text()
-
-            # Replace JSONB with JSON (SQLite has no JSONB type compiler)
-            if isinstance(col.type, JSONB):
-                col.type = JSON()
-
-            sd = col.server_default
-            if sd is None:
-                continue
-            arg_str = str(getattr(sd, "arg", ""))
-
-            if "gen_random_uuid" in arg_str:
-                # Replace PG-specific UUID generation with Python-side uuid4
-                col.server_default = None
-                col.default = ColumnDefault(uuid.uuid4)
-            elif arg_str.strip() == "now()":
-                # SQLite recognises CURRENT_TIMESTAMP natively
-                col.server_default = DefaultClause(text("CURRENT_TIMESTAMP"))
-            elif "::jsonb" in arg_str:
-                # Strip the PG cast; raw JSON literals are valid in SQLite
-                col.server_default = DefaultClause(text(arg_str.replace("::jsonb", "")))
-
-
-_patch_metadata_for_sqlite()
-
-
-# ---------------------------------------------------------------------------
-# Async session fixture
-# ---------------------------------------------------------------------------
+patch_metadata_for_sqlite()
 
 
 @pytest.fixture
@@ -77,34 +34,11 @@ async def session() -> AsyncSession:  # type: ignore[override]
     await engine.dispose()
 
 
-# ---------------------------------------------------------------------------
-# Helpers for creating minimal parent objects required by selectinload.
-# SQLite does not enforce FK constraints, so only the Fact row is strictly
-# required (get_character_knowledge eager-loads it via selectinload).
-# ---------------------------------------------------------------------------
-
-
-async def _make_fact(
-    session: AsyncSession,
-    *,
-    session_id: UUID,
-    fact_id: UUID | None = None,
-) -> Fact:
-    fact = Fact(
-        fact_id=fact_id or uuid4(),
-        session_id=session_id,
-        fact_type="test_type",
-        fact_content={"key": "value"},
-    )
-    session.add(fact)
-    await session.flush()
-    return fact
+# Helpers ---------------------------------------------------------------------
 
 
 async def _make_session_row(
-    db: AsyncSession,
-    *,
-    session_id: UUID | None = None,
+    db: AsyncSession, *, session_id: UUID | None = None
 ) -> Session:
     s = Session(
         session_id=session_id or uuid4(),
@@ -121,115 +55,191 @@ async def _make_session_row(
 
 
 async def _make_character(
-    db: AsyncSession,
-    *,
-    character_id: UUID | None = None,
+    db: AsyncSession, *, character_id: UUID | None = None
 ) -> Character:
-    c = Character(
-        character_id=character_id or uuid4(),
-        behavior_profile={},
-    )
+    c = Character(character_id=character_id or uuid4(), behavior_profile={})
     db.add(c)
     await db.flush()
     return c
 
 
-# ---------------------------------------------------------------------------
-# Tests
-# ---------------------------------------------------------------------------
+# Assert ----------------------------------------------------------------------
 
 
-async def test_assert_knowledge_inserts_record(session: AsyncSession) -> None:
+async def test_assert_inserts_fact_and_knowledge_state(session: AsyncSession) -> None:
     sess_id = uuid4()
     char_id = uuid4()
-    fact = await _make_fact(session, session_id=sess_id)
 
     ks = await assert_knowledge(
         session,
         session_id=sess_id,
         character_id=char_id,
-        fact_id=fact.fact_id,
-        confidence=1.0,
+        fact_type="clue",
+        fact_content={"detail": "library, 9pm"},
     )
 
     assert ks.ks_id is not None
-    assert ks.fact_id == fact.fact_id
     assert ks.character_id == char_id
     assert ks.confidence == 1.0
     assert ks.superseded_by is None
 
-    # Re-query by ks_id to confirm persistence
-    from sqlalchemy import select
-
-    result = await session.execute(
-        select(KnowledgeState).where(KnowledgeState.ks_id == ks.ks_id)
-    )
-    fetched = result.scalar_one()
-    assert fetched.fact_id == fact.fact_id
-    assert fetched.character_id == char_id
+    facts = (await session.execute(select(Fact))).scalars().all()
+    assert len(facts) == 1
+    assert facts[0].fact_id == ks.fact_id
+    assert facts[0].fact_type == "clue"
+    assert facts[0].fact_content == {"detail": "library, 9pm"}
 
 
-async def test_assert_knowledge_provenance_chain_round_trips(
-    session: AsyncSession,
-) -> None:
-    sess_id = uuid4()
-    char_id = uuid4()
-    fact = await _make_fact(session, session_id=sess_id)
-
-    uid_a = uuid4()
-    uid_b = uuid4()
-
-    ks = await assert_knowledge(
-        session,
-        session_id=sess_id,
-        character_id=char_id,
-        fact_id=fact.fact_id,
-        provenance_chain=[uid_a, uid_b],
-    )
-
-    # Expire to force re-read from DB
-    session.expire(ks)
-    await session.refresh(ks)
-
-    chain = ks.provenance_chain
-    assert isinstance(chain, list)
-    assert len(chain) == 2
-    assert chain[0] == str(uid_a).lower()
-    assert chain[1] == str(uid_b).lower()
-
-
-async def test_assert_knowledge_confidence_below_1(session: AsyncSession) -> None:
-    sess_id = uuid4()
-    char_id = uuid4()
-    fact = await _make_fact(session, session_id=sess_id)
-
-    ks = await assert_knowledge(
-        session,
-        session_id=sess_id,
-        character_id=char_id,
-        fact_id=fact.fact_id,
-        confidence=0.42,
-    )
-
-    session.expire(ks)
-    await session.refresh(ks)
-
-    assert abs(ks.confidence - 0.42) < 1e-9
-
-
-async def test_get_character_knowledge_excludes_other_characters(
+async def test_assert_dedupes_identical_facts_in_same_session(
     session: AsyncSession,
 ) -> None:
     sess_id = uuid4()
     char_a = uuid4()
     char_b = uuid4()
-    fact = await _make_fact(session, session_id=sess_id)
+
+    ks_a = await assert_knowledge(
+        session,
+        session_id=sess_id,
+        character_id=char_a,
+        fact_type="clue",
+        fact_content={"detail": "library, 9pm"},
+    )
+    ks_b = await assert_knowledge(
+        session,
+        session_id=sess_id,
+        character_id=char_b,
+        fact_type="clue",
+        fact_content={"detail": "library, 9pm"},
+    )
+
+    assert ks_a.fact_id == ks_b.fact_id
+    assert ks_a.ks_id != ks_b.ks_id
+
+    facts = (await session.execute(select(Fact))).scalars().all()
+    assert len(facts) == 1
+
+
+async def test_assert_different_session_creates_new_fact(session: AsyncSession) -> None:
+    sess_a = uuid4()
+    sess_b = uuid4()
+    char_id = uuid4()
+    content = {"detail": "library, 9pm"}
+
+    ks_a = await assert_knowledge(
+        session,
+        session_id=sess_a,
+        character_id=char_id,
+        fact_type="clue",
+        fact_content=content,
+    )
+    ks_b = await assert_knowledge(
+        session,
+        session_id=sess_b,
+        character_id=char_id,
+        fact_type="clue",
+        fact_content=content,
+    )
+
+    assert ks_a.fact_id != ks_b.fact_id
+    facts = (await session.execute(select(Fact))).scalars().all()
+    assert len(facts) == 2
+
+
+async def test_assert_direct_observation_chain_is_just_self(
+    session: AsyncSession,
+) -> None:
+    sess_id = uuid4()
+    char_id = uuid4()
+    ks = await assert_knowledge(
+        session,
+        session_id=sess_id,
+        character_id=char_id,
+        fact_type="clue",
+        fact_content={"x": 1},
+    )
+    assert ks.provenance_chain == [str(char_id).lower()]
+
+
+async def test_assert_with_source_extends_chain(session: AsyncSession) -> None:
+    sess_id = uuid4()
+    witness = uuid4()
+    detective = uuid4()
 
     await assert_knowledge(
-        session, session_id=sess_id, character_id=char_a, fact_id=fact.fact_id
+        session,
+        session_id=sess_id,
+        character_id=witness,
+        fact_type="clue",
+        fact_content={"x": 1},
+    )
+    ks = await assert_knowledge(
+        session,
+        session_id=sess_id,
+        character_id=detective,
+        fact_type="clue",
+        fact_content={"x": 1},
+        source_character_id=witness,
+    )
+
+    assert ks.provenance_chain == [str(witness).lower(), str(detective).lower()]
+
+
+async def test_assert_with_unknown_source_starts_two_link_chain(
+    session: AsyncSession,
+) -> None:
+    sess_id = uuid4()
+    detective = uuid4()
+    rumored_source = uuid4()
+
+    ks = await assert_knowledge(
+        session,
+        session_id=sess_id,
+        character_id=detective,
+        fact_type="clue",
+        fact_content={"x": 1},
+        source_character_id=rumored_source,
+    )
+
+    assert ks.provenance_chain == [
+        str(rumored_source).lower(),
+        str(detective).lower(),
+    ]
+
+
+async def test_assert_records_confidence(session: AsyncSession) -> None:
+    sess_id = uuid4()
+    ks = await assert_knowledge(
+        session,
+        session_id=sess_id,
+        character_id=uuid4(),
+        fact_type="clue",
+        fact_content={"x": 1},
+        confidence=0.42,
+    )
+    assert abs(ks.confidence - 0.42) < 1e-9
+
+
+# Query -----------------------------------------------------------------------
+
+
+async def test_query_isolates_by_character(session: AsyncSession) -> None:
+    sess_id = uuid4()
+    char_a = uuid4()
+    char_b = uuid4()
+
+    await assert_knowledge(
+        session,
+        session_id=sess_id,
+        character_id=char_a,
+        fact_type="clue",
+        fact_content={"x": 1},
     )
     await assert_knowledge(
-        session, session_id=sess_id, character_id=char_b, fact_id=fact.fact_id
+        session,
+        session_id=sess_id,
+        character_id=char_b,
+        fact_type="clue",
+        fact_content={"x": 1},
     )
 
     results = await get_character_knowledge(
@@ -239,20 +249,24 @@ async def test_get_character_knowledge_excludes_other_characters(
     assert results[0].character_id == char_a
 
 
-async def test_get_character_knowledge_excludes_other_sessions(
-    session: AsyncSession,
-) -> None:
+async def test_query_isolates_by_session(session: AsyncSession) -> None:
     sess_a = uuid4()
     sess_b = uuid4()
     char_id = uuid4()
-    fact_a = await _make_fact(session, session_id=sess_a)
-    fact_b = await _make_fact(session, session_id=sess_b)
 
     await assert_knowledge(
-        session, session_id=sess_a, character_id=char_id, fact_id=fact_a.fact_id
+        session,
+        session_id=sess_a,
+        character_id=char_id,
+        fact_type="clue",
+        fact_content={"x": 1},
     )
     await assert_knowledge(
-        session, session_id=sess_b, character_id=char_id, fact_id=fact_b.fact_id
+        session,
+        session_id=sess_b,
+        character_id=char_id,
+        fact_type="clue",
+        fact_content={"x": 1},
     )
 
     results = await get_character_knowledge(
@@ -262,18 +276,51 @@ async def test_get_character_knowledge_excludes_other_sessions(
     assert results[0].session_id == sess_a
 
 
-async def test_get_character_knowledge_excludes_superseded_records(
-    session: AsyncSession,
-) -> None:
+# Revoke (low-level) ----------------------------------------------------------
+
+
+async def test_revoke_knowledge_sets_superseded_by(session: AsyncSession) -> None:
     sess_id = uuid4()
     char_id = uuid4()
-    fact = await _make_fact(session, session_id=sess_id)
 
     original = await assert_knowledge(
-        session, session_id=sess_id, character_id=char_id, fact_id=fact.fact_id
+        session,
+        session_id=sess_id,
+        character_id=char_id,
+        fact_type="clue",
+        fact_content={"x": 1},
     )
     replacement = await assert_knowledge(
-        session, session_id=sess_id, character_id=char_id, fact_id=fact.fact_id
+        session,
+        session_id=sess_id,
+        character_id=char_id,
+        fact_type="clue",
+        fact_content={"x": 1},
+    )
+    old = await revoke_knowledge(
+        session, existing_ks_id=original.ks_id, replacement=replacement
+    )
+
+    assert old.superseded_by == replacement.ks_id
+
+
+async def test_query_excludes_superseded_records(session: AsyncSession) -> None:
+    sess_id = uuid4()
+    char_id = uuid4()
+
+    original = await assert_knowledge(
+        session,
+        session_id=sess_id,
+        character_id=char_id,
+        fact_type="clue",
+        fact_content={"x": 1},
+    )
+    replacement = await assert_knowledge(
+        session,
+        session_id=sess_id,
+        character_id=char_id,
+        fact_type="clue",
+        fact_content={"x": 1},
     )
     await revoke_knowledge(
         session, existing_ks_id=original.ks_id, replacement=replacement
@@ -287,41 +334,80 @@ async def test_get_character_knowledge_excludes_superseded_records(
     assert replacement.ks_id in returned_ids
 
 
-async def test_revoke_sets_superseded_by(session: AsyncSession) -> None:
+# Revoke (mass, by fact_id) ---------------------------------------------------
+
+
+async def test_revoke_fact_tombstones_all_active_records(
+    session: AsyncSession,
+) -> None:
+    sess_id = uuid4()
+    char_a = uuid4()
+    char_b = uuid4()
+    content = {"x": 1}
+
+    ks_a = await assert_knowledge(
+        session,
+        session_id=sess_id,
+        character_id=char_a,
+        fact_type="clue",
+        fact_content=content,
+    )
+    ks_b = await assert_knowledge(
+        session,
+        session_id=sess_id,
+        character_id=char_b,
+        fact_type="clue",
+        fact_content=content,
+    )
+
+    tombstones = await revoke_fact_in_session(
+        session, session_id=sess_id, fact_id=ks_a.fact_id
+    )
+
+    assert len(tombstones) == 2
+    for ts in tombstones:
+        assert ts.confidence == 0.0
+        assert ts.superseded_by == ts.ks_id
+
+    a_active = await get_character_knowledge(
+        session, session_id=sess_id, character_id=char_a
+    )
+    b_active = await get_character_knowledge(
+        session, session_id=sess_id, character_id=char_b
+    )
+    assert a_active == []
+    assert b_active == []
+
+    # Originals are not deleted; only superseded.
+    surviving = (
+        (
+            await session.execute(
+                select(KnowledgeState).where(
+                    KnowledgeState.ks_id.in_([ks_a.ks_id, ks_b.ks_id])
+                )
+            )
+        )
+        .scalars()
+        .all()
+    )
+    assert len(surviving) == 2
+    for row in surviving:
+        assert row.superseded_by is not None
+        assert row.superseded_by != row.ks_id
+
+
+async def test_revoke_fact_is_idempotent(session: AsyncSession) -> None:
     sess_id = uuid4()
     char_id = uuid4()
-    fact = await _make_fact(session, session_id=sess_id)
-
-    original = await assert_knowledge(
-        session, session_id=sess_id, character_id=char_id, fact_id=fact.fact_id
+    ks = await assert_knowledge(
+        session,
+        session_id=sess_id,
+        character_id=char_id,
+        fact_type="clue",
+        fact_content={"x": 1},
     )
-    replacement = await assert_knowledge(
-        session, session_id=sess_id, character_id=char_id, fact_id=fact.fact_id
+    await revoke_fact_in_session(session, session_id=sess_id, fact_id=ks.fact_id)
+    second = await revoke_fact_in_session(
+        session, session_id=sess_id, fact_id=ks.fact_id
     )
-
-    old = await revoke_knowledge(
-        session, existing_ks_id=original.ks_id, replacement=replacement
-    )
-
-    assert old.superseded_by == replacement.ks_id
-
-
-async def test_revoked_records_not_returned_by_get(session: AsyncSession) -> None:
-    sess_id = uuid4()
-    char_id = uuid4()
-    fact = await _make_fact(session, session_id=sess_id)
-
-    original = await assert_knowledge(
-        session, session_id=sess_id, character_id=char_id, fact_id=fact.fact_id
-    )
-    replacement = await assert_knowledge(
-        session, session_id=sess_id, character_id=char_id, fact_id=fact.fact_id
-    )
-    await revoke_knowledge(
-        session, existing_ks_id=original.ks_id, replacement=replacement
-    )
-
-    results = await get_character_knowledge(
-        session, session_id=sess_id, character_id=char_id
-    )
-    assert all(r.ks_id != original.ks_id for r in results)
+    assert second == []

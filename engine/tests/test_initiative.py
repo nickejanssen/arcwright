@@ -531,17 +531,17 @@ async def _make_npc_pair_fixture(db: AsyncSession) -> dict[str, object]:
         db,
         session_id=session_row.session_id,
         character_id=butler.character_id,
-        fact_id=butler_known.fact_id,
+        fact_type=butler_known.fact_type,
+        fact_content=butler_known.fact_content,
         confidence=0.9,
-        provenance_chain=[butler.character_id],
     )
     await assert_knowledge(
         db,
         session_id=session_row.session_id,
         character_id=housekeeper.character_id,
-        fact_id=housekeeper_known.fact_id,
+        fact_type=housekeeper_known.fact_type,
+        fact_content=housekeeper_known.fact_content,
         confidence=0.9,
-        provenance_chain=[housekeeper.character_id],
     )
 
     await _make_relationship(
