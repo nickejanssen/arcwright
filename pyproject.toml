@@ -19,7 +19,7 @@ dev = [
 
 [tool.pytest.ini_options]
 addopts = "-ra"
-testpaths = ["tests", "engine/tests"]
+testpaths = ["tests", "engine/tests", "api/tests"]
 asyncio_mode = "auto"
 
 [tool.ruff]

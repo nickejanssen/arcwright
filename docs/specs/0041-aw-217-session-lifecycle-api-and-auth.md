@@ -77,7 +77,7 @@ Player (per-player join token from POST /players)
 ```
 
 Custom token claims:
-- Host:   `{ arcwright_role: "host",   arcwright_session_id: "<uuid>" }`
+- Host:   `{ arcwright_role: "host",   arcwright_session_id: "<uuid>", arcwright_player_id: "<uuid>" }`
 - Player: `{ arcwright_role: "player", arcwright_session_id: "<uuid>", arcwright_player_id: "<uuid>" }`
 - Display: `{ arcwright_role: "display", arcwright_session_id: "<uuid>", arcwright_player_id: "<uuid>" }`
 
