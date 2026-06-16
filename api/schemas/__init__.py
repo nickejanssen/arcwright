@@ -6,10 +6,10 @@ Architecture: docs/architecture/09-developer-api.md §9.2.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Optional
+from typing import Any, Literal, Optional
 from uuid import UUID
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 from engine.session.models import QualityTier, SessionStatus
 
@@ -50,3 +50,64 @@ class JoinSessionResponse(BaseModel):
     player_id: UUID
     character_id: UUID
     player_token: str
+
+
+class CharacterSummaryResponse(BaseModel):
+    character_id: UUID
+    participant_id: UUID
+    surface_type: str
+    is_ai_controlled: bool
+
+
+class CharacterListResponse(BaseModel):
+    session_id: UUID
+    characters: list[CharacterSummaryResponse]
+
+
+class CharacterDetailResponse(BaseModel):
+    session_id: UUID
+    character_id: UUID
+    participant_id: UUID
+    surface_type: str
+    is_ai_controlled: bool
+
+
+class PlayerInputRequest(BaseModel):
+    kind: Literal["action", "dialogue"]
+    content: str = Field(min_length=1, max_length=4000)
+
+
+class PlayerInputResponse(BaseModel):
+    input_id: UUID
+    session_id: UUID
+    character_id: UUID
+    participant_id: UUID
+    kind: Literal["action", "dialogue"]
+    content: str
+    submitted_at: datetime
+
+
+class KnowledgeAssertRequest(BaseModel):
+    character_id: UUID
+    fact_type: str = Field(min_length=1, max_length=64)
+    fact_content: dict[str, Any]
+    confidence: float = Field(default=1.0, ge=0.0, le=1.0)
+    source_character_id: Optional[UUID] = None
+
+
+class KnowledgeFactResponse(BaseModel):
+    fact_id: UUID
+    session_id: UUID
+    character_id: UUID
+    fact_type: str
+    fact_content: dict[str, Any]
+    confidence: float
+    source_character_id: Optional[UUID] = None
+    asserted_at: datetime
+    revoked_at: Optional[datetime] = None
+
+
+class CharacterKnowledgeResponse(BaseModel):
+    session_id: UUID
+    character_id: UUID
+    facts: list[KnowledgeFactResponse]
