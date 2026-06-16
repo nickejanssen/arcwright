@@ -192,3 +192,29 @@ class TestSubmitInput:
                 json={"kind": "narration", "content": "foo"},
             )
         assert resp.status_code == 422
+
+    def test_host_token_cannot_submit_input(
+        self,
+        host_session: tuple[SessionService, CharacterService, UUID, UUID, UUID, UUID],
+    ) -> None:
+        _, characters, session_id, _, char_a, _ = host_session
+        for c in _client_for_role("host", session_id, uuid4()):
+            resp = c.post(
+                f"/v1/sessions/{session_id}/characters/{char_a}/input",
+                json={"kind": "dialogue", "content": "host attempt"},
+            )
+        assert resp.status_code == 403
+        assert characters.get_inputs(session_id) == []
+
+    def test_display_token_cannot_submit_input(
+        self,
+        host_session: tuple[SessionService, CharacterService, UUID, UUID, UUID, UUID],
+    ) -> None:
+        _, characters, session_id, _, char_a, _ = host_session
+        for c in _client_for_role("display", session_id, uuid4()):
+            resp = c.post(
+                f"/v1/sessions/{session_id}/characters/{char_a}/input",
+                json={"kind": "dialogue", "content": "display attempt"},
+            )
+        assert resp.status_code == 403
+        assert characters.get_inputs(session_id) == []

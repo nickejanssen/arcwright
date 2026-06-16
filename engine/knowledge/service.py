@@ -3,11 +3,23 @@
 Architecture: docs/architecture/09-developer-api.md §9.2.
 
 The async ``engine.knowledge.graph`` module persists knowledge state through
-the Postgres-backed ORM. That module remains the source of truth for arc
-execution and generation context. This module is a lightweight in-memory
-analogue that backs the REST endpoints exposed at MVP, mirroring the same
-pattern as ``engine.session.service`` (AW-217). Persistence is a later M3
-task; swap this module then.
+the Postgres-backed ORM and is read by ``engine.characters.context`` at
+generation time. That module remains the source of truth for arc execution
+and generation context. This module is a lightweight in-memory analogue
+that backs the REST endpoints exposed at MVP, mirroring the same pattern
+as ``engine.session.service`` (AW-217).
+
+KNOWN GAP — to be closed by the persistence task (AW-219+):
+    Facts asserted through this service are not yet visible to the
+    DB-backed generation knowledge graph. The two paths are parallel at
+    MVP because the API layer does not yet hold an ``AsyncSession`` or
+    own ``Fact`` row creation. When DB persistence lands for the session
+    surface, the assert/revoke/query methods here will be re-implemented
+    on top of ``engine.knowledge.graph`` (and the `_knowledge_service`
+    singleton will be retired) so the §9.2 contract — that asserted facts
+    are visible to the next AI generation — is enforced end-to-end. Until
+    that swap, the API does not orchestrate dialogue generation, so the
+    parallel stores cannot produce a stale-read at runtime.
 """
 
 from __future__ import annotations

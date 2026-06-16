@@ -33,6 +33,8 @@ from engine.session.service import _session_service
 
 router = APIRouter(prefix="/sessions", tags=["characters"])
 
+_PLAYER_INPUT_ROLE = "player"
+
 
 @router.get("/{session_id}/characters", response_model=CharacterListResponse)
 async def list_characters(
@@ -113,10 +115,20 @@ async def submit_character_input(
     body: PlayerInputRequest,
     claims: JwtClaims = Depends(require_player_or_host_jwt),
 ) -> PlayerInputResponse:
-    """Submit a typed player action or dialogue input as the named character."""
+    """Submit a typed player action or dialogue input as the named character.
+
+    §9.2 documents this route as Player JWT only. Host and shared-display
+    tokens are rejected here even though the underlying dependency accepts
+    them, so non-player surfaces cannot pollute the player input stream.
+    """
     _require_session_claim_match(session_id, claims)
     if _session_service.get_session(session_id) is None:
         raise HTTPException(status_code=404, detail="Session not found")
+    if claims.role != _PLAYER_INPUT_ROLE:
+        raise HTTPException(
+            status_code=403,
+            detail="Player token required to submit character input",
+        )
     if claims.player_id is None:
         raise HTTPException(
             status_code=400,

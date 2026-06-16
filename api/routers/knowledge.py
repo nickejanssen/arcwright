@@ -13,6 +13,11 @@ The DELETE and GET routes are documented as "Arc engine (internal)" in §9.2.
 ``require_api_key`` accepts only the server-side X-Api-Key header and
 naturally rejects player Bearer tokens — the privacy guarantee the
 acceptance criteria require.
+
+Persistence boundary: this router writes to the in-memory
+``engine.knowledge.service``. The DB-backed ``engine.knowledge.graph``
+that ``engine.characters.context`` reads at generation time is parallel
+to it at MVP. See ``engine.knowledge.service`` for the gap and follow-up.
 """
 
 from __future__ import annotations
