@@ -1,0 +1,229 @@
+"""Session lifecycle endpoints.
+
+Architecture: docs/architecture/09-developer-api.md §9.2.
+Route handlers are thin: validate input, call engine service, return response.
+No arc execution logic here.
+
+Endpoint summary (base path /v1/sessions):
+  POST   /                      API key          Create session
+  GET    /{id}                   API key|host JWT Session state
+  POST   /{id}/start             host JWT         Start arc
+  POST   /{id}/pause             host JWT         Pause arc
+  POST   /{id}/resume            host JWT         Resume arc
+  POST   /{id}/end               host JWT         End session
+  GET    /{id}/join              public           Exchange join token for player JWT
+"""
+
+from __future__ import annotations
+
+from uuid import UUID, uuid4
+
+from fastapi import APIRouter, Depends, HTTPException, Query
+from firebase_admin import auth as firebase_auth
+
+from api.auth import (
+    ApiCaller,
+    JwtClaims,
+    _ensure_firebase_app,
+    require_api_key,
+    require_api_key_or_host_jwt,
+    require_host_jwt,
+)
+from api.schemas import (
+    CreateSessionRequest,
+    CreateSessionResponse,
+    JoinSessionResponse,
+    SessionStateResponse,
+)
+from engine.session.service import (
+    SessionNotFoundError,
+    SessionStateError,
+    _session_service,
+)
+
+router = APIRouter(prefix="/sessions", tags=["sessions"])
+
+
+@router.post("", response_model=CreateSessionResponse, status_code=201)
+async def create_session(
+    body: CreateSessionRequest,
+    caller: ApiCaller = Depends(require_api_key),
+) -> CreateSessionResponse:
+    """Create a new session from an arc definition.
+
+    Returns session_id, a join URL for players, and a host_token (Firebase custom
+    token) the host exchanges for an ID token via the Firebase client SDK.
+    """
+    host_account_id = uuid4()
+    session, host_join_token = _session_service.create_session(
+        arc_id=body.arc_id,
+        host_account_id=host_account_id,
+        quality_tier=body.quality_tier,
+    )
+
+    _ensure_firebase_app()
+    host_uid = f"session:{session.session_id}:host"
+    host_claims = {
+        "arcwright_role": "host",
+        "arcwright_session_id": str(session.session_id),
+        "arcwright_player_id": str(host_account_id),
+    }
+    host_token_bytes = firebase_auth.create_custom_token(host_uid, host_claims)
+    host_token = host_token_bytes.decode("utf-8")
+
+    join_url = f"/v1/sessions/{session.session_id}/join"
+    return CreateSessionResponse(
+        session_id=session.session_id,
+        join_url=join_url,
+        host_token=host_token,
+    )
+
+
+@router.get("/{session_id}", response_model=SessionStateResponse)
+async def get_session(
+    session_id: UUID,
+    caller: ApiCaller | JwtClaims = Depends(require_api_key_or_host_jwt),
+) -> SessionStateResponse:
+    """Return current session state (status, beat, player count, cost consumed)."""
+    session = _session_service.get_session(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return SessionStateResponse(
+        session_id=session.session_id,
+        arc_id=session.arc_id,
+        status=session.status,
+        current_beat_id=session.current_beat_id,
+        player_count=session.player_count,
+        quality_tier=session.quality_tier,
+        created_at=session.created_at,
+        started_at=session.started_at,
+        completed_at=session.completed_at,
+        cost_consumed_usd=0.0,
+    )
+
+
+@router.post("/{session_id}/start", response_model=SessionStateResponse)
+async def start_session(
+    session_id: UUID,
+    claims: JwtClaims = Depends(require_host_jwt),
+) -> SessionStateResponse:
+    """Start the session arc; triggers the introduction beat."""
+    _require_session_claim_match(session_id, claims)
+    try:
+        session = _session_service.start_session(session_id, _host_id(claims))
+    except SessionNotFoundError:
+        raise HTTPException(status_code=404, detail="Session not found")
+    except SessionStateError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    return _session_to_state_response(session)
+
+
+@router.post("/{session_id}/pause", response_model=SessionStateResponse)
+async def pause_session(
+    session_id: UUID,
+    claims: JwtClaims = Depends(require_host_jwt),
+) -> SessionStateResponse:
+    """Pause the arc and snapshot state."""
+    _require_session_claim_match(session_id, claims)
+    try:
+        session = _session_service.pause_session(session_id, _host_id(claims))
+    except SessionNotFoundError:
+        raise HTTPException(status_code=404, detail="Session not found")
+    except SessionStateError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    return _session_to_state_response(session)
+
+
+@router.post("/{session_id}/resume", response_model=SessionStateResponse)
+async def resume_session(
+    session_id: UUID,
+    claims: JwtClaims = Depends(require_host_jwt),
+) -> SessionStateResponse:
+    """Resume from the nearest beat snapshot."""
+    _require_session_claim_match(session_id, claims)
+    try:
+        session = _session_service.resume_session(session_id, _host_id(claims))
+    except SessionNotFoundError:
+        raise HTTPException(status_code=404, detail="Session not found")
+    except SessionStateError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    return _session_to_state_response(session)
+
+
+@router.post("/{session_id}/end", response_model=SessionStateResponse)
+async def end_session(
+    session_id: UUID,
+    claims: JwtClaims = Depends(require_host_jwt),
+) -> SessionStateResponse:
+    """End the session and emit the final state record."""
+    _require_session_claim_match(session_id, claims)
+    try:
+        session = _session_service.end_session(session_id, _host_id(claims))
+    except SessionNotFoundError:
+        raise HTTPException(status_code=404, detail="Session not found")
+    except SessionStateError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
+    return _session_to_state_response(session)
+
+
+@router.get("/{session_id}/join", response_model=JoinSessionResponse)
+async def join_session(
+    session_id: UUID,
+    token: str = Query(
+        ..., description="Per-player join token distributed out of band"
+    ),
+) -> JoinSessionResponse:
+    """Validate a join token and return a Firebase custom token for the player.
+
+    The player exchanges the returned player_token for a Firebase ID token via
+    the Firebase client SDK, then uses that ID token on the SSE stream and
+    character endpoints.
+    """
+    participant = _session_service.validate_join_token(session_id, token)
+    if participant is None:
+        raise HTTPException(status_code=403, detail="Invalid join token")
+
+    _ensure_firebase_app()
+    player_uid = f"session:{session_id}:player:{participant.participant_id}"
+    player_claims = {
+        "arcwright_role": participant.surface_type,
+        "arcwright_session_id": str(session_id),
+        "arcwright_player_id": str(participant.participant_id),
+    }
+    player_token_bytes = firebase_auth.create_custom_token(player_uid, player_claims)
+    player_token = player_token_bytes.decode("utf-8")
+
+    return JoinSessionResponse(
+        session_id=session_id,
+        player_id=participant.participant_id,
+        character_id=participant.character_id,
+        player_token=player_token,
+    )
+
+
+def _require_session_claim_match(session_id: UUID, claims: JwtClaims) -> None:
+    """Reject requests where the JWT's session claim does not match the path."""
+    if claims.session_id is not None and claims.session_id != session_id:
+        raise HTTPException(
+            status_code=403,
+            detail="Token session_id does not match requested session",
+        )
+
+
+def _host_id(claims: JwtClaims) -> UUID:
+    return claims.player_id or uuid4()
+
+
+def _session_to_state_response(session) -> SessionStateResponse:  # type: ignore[no-untyped-def]
+    return SessionStateResponse(
+        session_id=session.session_id,
+        arc_id=session.arc_id,
+        status=session.status,
+        current_beat_id=session.current_beat_id,
+        player_count=session.player_count,
+        quality_tier=session.quality_tier,
+        created_at=session.created_at,
+        started_at=session.started_at,
+        completed_at=session.completed_at,
+        cost_consumed_usd=0.0,
+    )

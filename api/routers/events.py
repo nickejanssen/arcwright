@@ -4,19 +4,21 @@ Architecture: docs/architecture/08-event-system.md S8.6.
 Route handlers are thin: validate input, call engine functions, return responses.
 No arc execution logic here.
 
-Auth: JWT auth on SSE connections is M3-B scope. For MVP this endpoint accepts
-connection_type and player_id as query parameters.
+Auth: Firebase ID token (Authorization: Bearer <token>). Identity and role are
+extracted from JWT claims (arcwright_player_id, arcwright_role); query-param
+trust is removed as of AW-217.
 """
 
 from __future__ import annotations
 
 import asyncio
-from typing import AsyncGenerator, Literal
+from typing import AsyncGenerator
 from uuid import UUID
 
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sse_starlette.sse import EventSourceResponse
 
+from api.auth import JwtClaims, require_player_or_host_jwt
 from engine.events.bus import SessionEventBus
 from engine.events.fanout import SessionConnectionRegistry, run_fanout
 
@@ -55,34 +57,34 @@ async def session_events_stream(
     since: int = Query(
         default=0, ge=0, description="Last seen sequence number; 0 for full replay."
     ),
-    player_id: UUID | None = Query(
-        default=None,
-        description="Participant UUID (required for player/host connections).",
-    ),
-    connection_type: Literal["player", "host", "display"] = Query(
-        default="player",
-        description="Connection audience type.",
-    ),
+    claims: JwtClaims = Depends(require_player_or_host_jwt),
 ) -> EventSourceResponse:
     """Stream ContentEvents for ``session_id`` as Server-Sent Events.
 
-    On connect, missed events (sequence_number > ``since``) are replayed first.
-    Live events follow with no duplication — the replay cutoff is captured
-    atomically before any await so replay and live ranges are always disjoint.
+    Identity and role are extracted from the Firebase JWT in the Authorization
+    header. On connect, missed events (sequence_number > ``since``) are replayed
+    first. Live events follow with no duplication.
     """
-    if connection_type in ("player", "host") and player_id is None:
+    if claims.session_id is not None and claims.session_id != session_id:
+        raise HTTPException(
+            status_code=403,
+            detail="Token session_id does not match requested session",
+        )
+
+    if claims.role in ("player", "host") and claims.player_id is None:
         raise HTTPException(
             status_code=400,
-            detail="player_id is required for player and host connections",
+            detail="Player/host tokens must include arcwright_player_id claim",
         )
 
     bus, registry = _get_or_create_session_state(session_id)
 
     async def generator() -> AsyncGenerator[dict[str, str], None]:
-        if connection_type == "player":
+        player_id = claims.player_id
+        if claims.role == "player":
             assert player_id is not None  # validated above
             conn = registry.register_player(player_id)
-        elif connection_type == "host":
+        elif claims.role == "host":
             assert player_id is not None  # validated above
             conn = registry.register_host(player_id)
         else:
@@ -95,10 +97,7 @@ async def session_events_stream(
             missed = bus.replay_since(since)
 
             # Filter replay through registry.route() — same privacy guarantee
-            # as the live fanout path. Without this, a player reconnecting
-            # with an old sequence number would receive specific_player or
-            # host_only events from the history buffer that route() would
-            # have excluded from this connection.
+            # as the live fanout path.
             for event in missed:
                 if conn in registry.route(event):
                     yield {"data": event.model_dump_json()}
