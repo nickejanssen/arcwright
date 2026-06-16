@@ -76,6 +76,7 @@ async def create_session(
         session_id=session.session_id,
         join_url=join_url,
         host_token=host_token,
+        host_join_token=host_join_token,
     )
 
 
@@ -85,6 +86,8 @@ async def get_session(
     caller: ApiCaller | JwtClaims = Depends(require_api_key_or_host_jwt),
 ) -> SessionStateResponse:
     """Return current session state (status, beat, player count, cost consumed)."""
+    if isinstance(caller, JwtClaims):
+        _require_session_claim_match(session_id, caller)
     session = _session_service.get_session(session_id)
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found")

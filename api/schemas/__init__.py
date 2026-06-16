@@ -23,6 +23,7 @@ class CreateSessionResponse(BaseModel):
     session_id: UUID
     join_url: str
     host_token: str
+    host_join_token: str
 
 
 class SessionStateResponse(BaseModel):

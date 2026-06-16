@@ -21,6 +21,7 @@ from __future__ import annotations
 import logging
 import os
 from dataclasses import dataclass
+from typing import Any
 from uuid import UUID
 
 import firebase_admin
@@ -63,10 +64,11 @@ async def require_api_key(
     return ApiCaller(api_key=x_api_key)
 
 
-def _decode_bearer(token: str) -> dict:
+def _decode_bearer(token: str) -> dict[str, Any]:
     _ensure_firebase_app()
     try:
-        return firebase_auth.verify_id_token(token)
+        decoded: dict[str, Any] = firebase_auth.verify_id_token(token)
+        return decoded
     except firebase_exceptions.FirebaseError as exc:
         raise HTTPException(status_code=401, detail="Invalid or expired token") from exc
 

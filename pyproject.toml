@@ -55,6 +55,10 @@ module = ["pgvector", "pgvector.*", "sqlalchemy", "sqlalchemy.*"]
 ignore_missing_imports = true
 
 [[tool.mypy.overrides]]
+module = ["firebase_admin", "firebase_admin.*"]
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
 module = ["engine.routing.router"]
 disable_error_code = ["no-any-return"]
 
