@@ -1,5 +1,6 @@
 python-statemachine>=3.0
 fastapi>=0.111
+sse-starlette>=1.6
 uvicorn[standard]
 asyncpg
 sqlalchemy[asyncio]>=2.0
