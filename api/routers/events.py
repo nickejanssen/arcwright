@@ -78,7 +78,7 @@ async def session_events_stream(
 
     bus, registry = _get_or_create_session_state(session_id)
 
-    async def generator() -> AsyncGenerator[dict, None]:
+    async def generator() -> AsyncGenerator[dict[str, str], None]:
         if connection_type == "player":
             assert player_id is not None  # validated above
             conn = registry.register_player(player_id)
@@ -94,8 +94,14 @@ async def session_events_stream(
             cutoff = bus.last_sequence_number
             missed = bus.replay_since(since)
 
+            # Filter replay through registry.route() — same privacy guarantee
+            # as the live fanout path. Without this, a player reconnecting
+            # with an old sequence number would receive specific_player or
+            # host_only events from the history buffer that route() would
+            # have excluded from this connection.
             for event in missed:
-                yield {"data": event.model_dump_json()}
+                if conn in registry.route(event):
+                    yield {"data": event.model_dump_json()}
 
             async for event in conn:
                 if event.sequence_number > cutoff:

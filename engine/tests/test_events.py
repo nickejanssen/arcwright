@@ -529,3 +529,65 @@ class TestFanoutRouter:
             received.append(event)
 
         assert len(received) == 1
+
+    def test_replay_privacy_specific_player_events_filtered_for_wrong_player(
+        self,
+    ) -> None:
+        """Replay must apply the same registry.route() filter as the live fanout.
+
+        A player reconnecting with since=0 should not receive specific_player
+        events from history that were addressed to a different player.
+        """
+        registry = SessionConnectionRegistry()
+        session_id = uuid4()
+        player_a = uuid4()
+        player_b = uuid4()
+        conn_a = registry.register_player(player_a)
+        registry.register_player(player_b)
+
+        event_for_a = ContentEvent(
+            session_id=session_id,
+            timestamp=datetime.now(tz=timezone.utc),
+            category=EventCategory.private_delivery,
+            event_type="clue_delivery",
+            target_audience=AudienceTarget.specific_player,
+            target_player_id=player_a,
+        )
+        event_for_b = ContentEvent(
+            session_id=session_id,
+            timestamp=datetime.now(tz=timezone.utc),
+            category=EventCategory.private_delivery,
+            event_type="clue_delivery",
+            target_audience=AudienceTarget.specific_player,
+            target_player_id=player_b,
+        )
+
+        # Simulate what the SSE endpoint does when filtering replay events.
+        replay_history = [event_for_a, event_for_b]
+        visible_to_conn_a = [e for e in replay_history if conn_a in registry.route(e)]
+
+        assert event_for_a in visible_to_conn_a
+        assert event_for_b not in visible_to_conn_a
+
+    def test_replay_privacy_host_only_events_hidden_from_player(self) -> None:
+        """A player reconnecting should not receive host_only events from history."""
+        registry = SessionConnectionRegistry()
+        session_id = uuid4()
+        player_conn = registry.register_player(uuid4())
+
+        host_event = ContentEvent(
+            session_id=session_id,
+            timestamp=datetime.now(tz=timezone.utc),
+            category=EventCategory.acknowledgement,
+            event_type="clue_acknowledged",
+            target_audience=AudienceTarget.host_only,
+        )
+        all_event = make_event(
+            session_id=session_id, target_audience=AudienceTarget.all
+        )
+
+        replay_history = [host_event, all_event]
+        visible = [e for e in replay_history if player_conn in registry.route(e)]
+
+        assert host_event not in visible
+        assert all_event in visible
