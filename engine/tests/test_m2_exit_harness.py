@@ -250,9 +250,9 @@ async def _seed_dialogue_fixture(
         db,
         session_id=session_row.session_id,
         character_id=character.character_id,
-        fact_id=known_fact.fact_id,
+        fact_type=known_fact.fact_type,
+        fact_content=known_fact.fact_content,
         confidence=0.9,
-        provenance_chain=[character.character_id],
     )
 
     return session_row, character, known_fact, unknown_fact
