@@ -146,6 +146,68 @@ class TestStartSession:
 
 
 class TestPauseResumeSession:
+    def test_resume_emits_narrator_bridge_event(self, client: TestClient) -> None:
+        """AW-221 AC1: resume publishes a narrator_bridge ContentEvent to the bus."""
+        from unittest.mock import AsyncMock, MagicMock, patch
+
+        from engine.events.bus import SessionEventBus
+        from engine.events.models import AudienceTarget, ContentEvent, EventCategory
+
+        session_id = _create_session(client)
+        client.post(f"/v1/sessions/{session_id}/start")
+        client.post(f"/v1/sessions/{session_id}/pause")
+
+        mock_bus = MagicMock(spec=SessionEventBus)
+        mock_bus.publish = AsyncMock()
+
+        def _l2_allowed() -> MagicMock:
+            msg = MagicMock()
+            msg.content = (
+                '{"blocked": false, "confidence": 0.05, "category": "permitted"}'
+            )
+            choice = MagicMock()
+            choice.message = msg
+            usage = MagicMock()
+            usage.prompt_tokens = 10
+            usage.completion_tokens = 5
+            resp = MagicMock()
+            resp.choices = [choice]
+            resp.usage = usage
+            return resp
+
+        def _narrator_response() -> MagicMock:
+            msg = MagicMock()
+            msg.content = "The investigation continues."
+            choice = MagicMock()
+            choice.message = msg
+            usage = MagicMock()
+            usage.prompt_tokens = 80
+            usage.completion_tokens = 30
+            resp = MagicMock()
+            resp.choices = [choice]
+            resp.usage = usage
+            return resp
+
+        with (
+            patch(
+                "api.routers.sessions._get_or_create_session_state",
+                return_value=(mock_bus, MagicMock()),
+            ),
+            patch(
+                "engine.routing.router.litellm.acompletion",
+                new_callable=AsyncMock,
+            ) as mock_completion,
+        ):
+            mock_completion.side_effect = [_l2_allowed(), _narrator_response()]
+            resp = client.post(f"/v1/sessions/{session_id}/resume")
+
+        assert resp.status_code == 200
+        mock_bus.publish.assert_awaited_once()
+        published: ContentEvent = mock_bus.publish.call_args[0][0]
+        assert published.event_type == "narrator_bridge"
+        assert published.category == EventCategory.narrative
+        assert published.target_audience == AudienceTarget.all
+
     def test_pause_returns_paused_status(self, client: TestClient) -> None:
         session_id = _create_session(client)
         client.post(f"/v1/sessions/{session_id}/start")
@@ -155,10 +217,28 @@ class TestPauseResumeSession:
         assert resp.json()["status"] == "paused"
 
     def test_resume_returns_active_status(self, client: TestClient) -> None:
+        from unittest.mock import AsyncMock, MagicMock, patch
+
+        from engine.events.bus import SessionEventBus
+
         session_id = _create_session(client)
         client.post(f"/v1/sessions/{session_id}/start")
         client.post(f"/v1/sessions/{session_id}/pause")
-        resp = client.post(f"/v1/sessions/{session_id}/resume")
+
+        mock_bus = MagicMock(spec=SessionEventBus)
+        mock_bus.publish = AsyncMock()
+        with (
+            patch(
+                "api.routers.sessions._get_or_create_session_state",
+                return_value=(mock_bus, MagicMock()),
+            ),
+            patch(
+                "api.routers.sessions.generate_narrator_bridge",
+                new_callable=AsyncMock,
+                return_value=MagicMock(),
+            ),
+        ):
+            resp = client.post(f"/v1/sessions/{session_id}/resume")
 
         assert resp.status_code == 200
         assert resp.json()["status"] == "active"
@@ -215,6 +295,10 @@ class TestPauseResumeSession:
     ) -> None:
         """AW-220 AC2 at the HTTP layer: resume reads status + beat from
         the DB (the service holds no in-process session state)."""
+        from unittest.mock import AsyncMock, MagicMock, patch
+
+        from engine.events.bus import SessionEventBus
+
         session_id = _create_session(client)
         client.post(f"/v1/sessions/{session_id}/start")
 
@@ -230,7 +314,22 @@ class TestPauseResumeSession:
         asyncio.get_event_loop().run_until_complete(_set_beat())
 
         client.post(f"/v1/sessions/{session_id}/pause")
-        resp = client.post(f"/v1/sessions/{session_id}/resume")
+
+        mock_bus = MagicMock(spec=SessionEventBus)
+        mock_bus.publish = AsyncMock()
+        with (
+            patch(
+                "api.routers.sessions._get_or_create_session_state",
+                return_value=(mock_bus, MagicMock()),
+            ),
+            patch(
+                "api.routers.sessions.generate_narrator_bridge",
+                new_callable=AsyncMock,
+                return_value=MagicMock(),
+            ),
+        ):
+            resp = client.post(f"/v1/sessions/{session_id}/resume")
+
         assert resp.status_code == 200
         body = resp.json()
         assert body["status"] == "active"
