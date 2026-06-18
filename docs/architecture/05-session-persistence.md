@@ -32,7 +32,7 @@ The engine does not resume from mid-scene. Resuming mid-dialogue is disorienting
 4. On resume, restore the statemachine to that beat boundary
 5. Emit a narrator bridge: a short AI-generated recap that re-grounds players before the arc continues
 
-No session restarts from the beginning. No session state is permanently lost.
+No session restarts from the beginning. No session state is permanently lost. Exception: if a session is paused before any beat transition has completed, no `arc_beat_states` row exists and the resume falls back to the arc's initial beat — the only state available when no snapshot has been written.
 
 ## 5.4 Interruption and Resume Flow
 
