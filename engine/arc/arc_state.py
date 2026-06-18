@@ -22,10 +22,10 @@ class GeneratedArcStateChart(StateChart[Any]):
     session_context: Dict[str, Any]
     transition_names: frozenset[str]
 
-    def __init__(self, arc_definition: ArcDefinition):
+    def __init__(self, arc_definition: ArcDefinition, *, start_value: Any = None):
         self.arc_definition = arc_definition
         self.session_context = {}
-        super().__init__()
+        super().__init__(start_value=start_value)
         logger.info("Generated ArcStateChart initialized")
 
     def update_context(self, key: str, value: Any) -> None:
@@ -47,11 +47,18 @@ class GeneratedArcStateChart(StateChart[Any]):
         )
 
 
-def ArcStateChart(arc_definition: ArcDefinition) -> GeneratedArcStateChart:
-    """Instantiate a StateChart generated from an arc definition."""
+def ArcStateChart(
+    arc_definition: ArcDefinition, *, start_value: Any = None
+) -> GeneratedArcStateChart:
+    """Instantiate a StateChart generated from an arc definition.
+
+    ``start_value`` is forwarded to the underlying ``StateChart`` to resume
+    an existing session at a specific beat boundary; defaults to the first
+    beat in the definition for fresh sessions.
+    """
 
     chart_class = build_arc_state_chart_class(arc_definition)
-    return chart_class(arc_definition)
+    return chart_class(arc_definition, start_value=start_value)
 
 
 def build_arc_state_chart_class(

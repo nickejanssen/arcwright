@@ -15,6 +15,12 @@ from engine.session.service import (
     SessionStateError,
     _session_service,
 )
+from engine.session.snapshots import (
+    capture_chart_config,
+    load_current_snapshot,
+    restore_chart_from_snapshot,
+    write_snapshot,
+)
 
 __all__ = [
     "ArcBeat",
@@ -30,4 +36,8 @@ __all__ = [
     "SessionStatus",
     "TransitionBypassLogEntry",
     "_session_service",
+    "capture_chart_config",
+    "load_current_snapshot",
+    "restore_chart_from_snapshot",
+    "write_snapshot",
 ]

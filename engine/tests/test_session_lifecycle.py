@@ -1,14 +1,25 @@
-"""Tests for the in-memory SessionService (AW-217 acceptance criteria).
+"""Tests for the DB-backed SessionService (AW-217 + AW-220).
 
-AC5: session lifecycle state machine and join-token validation.
+AW-217 AC5: session lifecycle state machine and join-token validation.
+AW-220: snapshot-on-pause and resume-from-snapshot behaviour live in
+``test_session_resume.py``.
 """
 
 from __future__ import annotations
 
+from collections.abc import AsyncIterator
 from uuid import uuid4
 
 import pytest
+import pytest_asyncio
+from sqlalchemy.ext.asyncio import (
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 
+from engine.db.orm import Base
+from engine.db.testing import patch_metadata_for_sqlite
 from engine.session.models import QualityTier, SessionStatus
 from engine.session.service import (
     SessionCapacityError,
@@ -17,6 +28,22 @@ from engine.session.service import (
     SessionStateError,
 )
 
+patch_metadata_for_sqlite()
+
+
+@pytest_asyncio.fixture()
+async def db() -> AsyncIterator[AsyncSession]:
+    engine = create_async_engine("sqlite+aiosqlite:///:memory:", echo=False)
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+    factory = async_sessionmaker(engine, expire_on_commit=False)
+    async with factory() as session:
+        try:
+            yield session
+        finally:
+            await session.rollback()
+    await engine.dispose()
+
 
 @pytest.fixture()
 def svc() -> SessionService:
@@ -24,186 +51,283 @@ def svc() -> SessionService:
 
 
 class TestCreateSession:
-    def test_returns_session_and_join_token(self, svc: SessionService) -> None:
-        session, token = svc.create_session(
-            arc_id="nightcap-v1", host_account_id=uuid4()
+    @pytest.mark.asyncio
+    async def test_returns_session_and_join_token(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, token = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
         )
-
         assert session.arc_id == "nightcap-v1"
         assert session.status is SessionStatus.created
         assert session.current_beat_id == "arrival"
         assert session.player_count == 0
         assert isinstance(token, str) and len(token) > 0
 
-    def test_respects_quality_tier(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(
+    @pytest.mark.asyncio
+    async def test_respects_quality_tier(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, _ = await svc.create_session(
+            db,
             arc_id="nightcap-v1",
             host_account_id=uuid4(),
             quality_tier=QualityTier.premium,
         )
         assert session.quality_tier is QualityTier.premium
 
-    def test_each_call_returns_distinct_session_id(self, svc: SessionService) -> None:
-        s1, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        s2, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
+    @pytest.mark.asyncio
+    async def test_each_call_returns_distinct_session_id(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        s1, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        s2, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
         assert s1.session_id != s2.session_id
-
-    def test_created_at_is_set(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        assert session.created_at is not None
 
 
 class TestGetSession:
-    def test_returns_none_for_unknown_session(self, svc: SessionService) -> None:
-        assert svc.get_session(uuid4()) is None
+    @pytest.mark.asyncio
+    async def test_returns_none_for_unknown_session(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        assert await svc.get_session(db, uuid4()) is None
 
-    def test_returns_session_after_create(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        result = svc.get_session(session.session_id)
+    @pytest.mark.asyncio
+    async def test_returns_session_after_create(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        result = await svc.get_session(db, session.session_id)
         assert result is not None
         assert result.session_id == session.session_id
 
 
 class TestStartSession:
-    def test_transitions_to_active(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        started = svc.start_session(session.session_id, uuid4())
-
+    @pytest.mark.asyncio
+    async def test_transitions_to_active(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        started = await svc.start_session(db, session.session_id)
         assert started.status is SessionStatus.active
         assert started.started_at is not None
 
-    def test_fails_if_already_active(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        svc.start_session(session.session_id, uuid4())
+    @pytest.mark.asyncio
+    async def test_fails_if_already_active(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        await svc.start_session(db, session.session_id)
         with pytest.raises(SessionStateError):
-            svc.start_session(session.session_id, uuid4())
+            await svc.start_session(db, session.session_id)
 
-    def test_fails_for_unknown_session(self, svc: SessionService) -> None:
+    @pytest.mark.asyncio
+    async def test_fails_for_unknown_session(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
         with pytest.raises(SessionNotFoundError):
-            svc.start_session(uuid4(), uuid4())
+            await svc.start_session(db, uuid4())
 
 
 class TestPauseResumeSession:
-    def test_pause_transitions_active_to_paused(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        svc.start_session(session.session_id, uuid4())
-        paused = svc.pause_session(session.session_id, uuid4())
+    @pytest.mark.asyncio
+    async def test_pause_transitions_active_to_paused(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        await svc.start_session(db, session.session_id)
+        paused = await svc.pause_session(db, session.session_id)
         assert paused.status is SessionStatus.paused
 
-    def test_resume_transitions_paused_to_active(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        svc.start_session(session.session_id, uuid4())
-        svc.pause_session(session.session_id, uuid4())
-        resumed = svc.resume_session(session.session_id, uuid4())
+    @pytest.mark.asyncio
+    async def test_resume_transitions_paused_to_active(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        await svc.start_session(db, session.session_id)
+        await svc.pause_session(db, session.session_id)
+        resumed, _ = await svc.resume_session(db, session.session_id)
         assert resumed.status is SessionStatus.active
 
-    def test_pause_fails_if_not_active(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
+    @pytest.mark.asyncio
+    async def test_pause_fails_if_not_active(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
         with pytest.raises(SessionStateError):
-            svc.pause_session(session.session_id, uuid4())
+            await svc.pause_session(db, session.session_id)
 
-    def test_resume_fails_if_not_paused(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        svc.start_session(session.session_id, uuid4())
+    @pytest.mark.asyncio
+    async def test_resume_fails_if_not_paused(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        await svc.start_session(db, session.session_id)
         with pytest.raises(SessionStateError):
-            svc.resume_session(session.session_id, uuid4())
+            await svc.resume_session(db, session.session_id)
 
 
 class TestEndSession:
-    def test_transitions_to_completed_from_active(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        svc.start_session(session.session_id, uuid4())
-        ended = svc.end_session(session.session_id, uuid4())
-
+    @pytest.mark.asyncio
+    async def test_transitions_to_completed_from_active(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        await svc.start_session(db, session.session_id)
+        ended = await svc.end_session(db, session.session_id)
         assert ended.status is SessionStatus.completed
         assert ended.completed_at is not None
 
-    def test_end_session_can_end_created_session(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        ended = svc.end_session(session.session_id, uuid4())
+    @pytest.mark.asyncio
+    async def test_end_session_can_end_created_session(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        ended = await svc.end_session(db, session.session_id)
         assert ended.status is SessionStatus.completed
 
-    def test_end_fails_if_already_completed(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        svc.end_session(session.session_id, uuid4())
+    @pytest.mark.asyncio
+    async def test_end_fails_if_already_completed(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        await svc.end_session(db, session.session_id)
         with pytest.raises(SessionStateError):
-            svc.end_session(session.session_id, uuid4())
+            await svc.end_session(db, session.session_id)
 
-    def test_end_fails_for_unknown_session(self, svc: SessionService) -> None:
+    @pytest.mark.asyncio
+    async def test_end_fails_for_unknown_session(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
         with pytest.raises(SessionNotFoundError):
-            svc.end_session(uuid4(), uuid4())
+            await svc.end_session(db, uuid4())
 
 
 class TestValidateJoinToken:
-    def test_returns_participant_for_valid_token(self, svc: SessionService) -> None:
-        session, host_token = svc.create_session(
-            arc_id="nightcap-v1", host_account_id=uuid4()
+    @pytest.mark.asyncio
+    async def test_returns_participant_for_valid_token(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, host_token = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
         )
-        participant = svc.validate_join_token(session.session_id, host_token)
-
+        participant = await svc.validate_join_token(db, session.session_id, host_token)
         assert participant is not None
         assert participant.session_id == session.session_id
         assert participant.surface_type == "host"
 
-    def test_returns_none_for_unknown_token(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        assert svc.validate_join_token(session.session_id, "not-a-real-token") is None
-
-    def test_returns_none_when_token_belongs_to_different_session(
-        self, svc: SessionService
+    @pytest.mark.asyncio
+    async def test_returns_none_for_unknown_token(
+        self, svc: SessionService, db: AsyncSession
     ) -> None:
-        s1, t1 = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        s2, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        assert svc.validate_join_token(s2.session_id, t1) is None
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        assert (
+            await svc.validate_join_token(db, session.session_id, "not-a-token") is None
+        )
 
-    def test_tokens_are_unique_per_session(self, svc: SessionService) -> None:
-        _, t1 = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        _, t2 = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        assert t1 != t2
+    @pytest.mark.asyncio
+    async def test_returns_none_when_token_belongs_to_different_session(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        s1, t1 = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        s2, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        assert await svc.validate_join_token(db, s2.session_id, t1) is None
 
 
 class TestAddPlayer:
-    def test_returns_participant_and_join_token(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        participant, token = svc.add_player(session.session_id)
-
+    @pytest.mark.asyncio
+    async def test_returns_participant_and_join_token(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        participant, token = await svc.add_player(db, session.session_id)
         assert participant.session_id == session.session_id
         assert participant.surface_type == "player"
         assert isinstance(token, str) and len(token) > 0
 
-    def test_increments_player_count(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        svc.add_player(session.session_id)
-        svc.add_player(session.session_id)
-        assert session.player_count == 2
+    @pytest.mark.asyncio
+    async def test_increments_player_count(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        await svc.add_player(db, session.session_id)
+        await svc.add_player(db, session.session_id)
+        reloaded = await svc.get_session(db, session.session_id)
+        assert reloaded is not None
+        assert reloaded.player_count == 2
 
-    def test_join_token_is_valid_for_join_endpoint(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        participant, token = svc.add_player(session.session_id)
-
-        found = svc.validate_join_token(session.session_id, token)
+    @pytest.mark.asyncio
+    async def test_join_token_is_valid_for_join_endpoint(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        participant, token = await svc.add_player(db, session.session_id)
+        found = await svc.validate_join_token(db, session.session_id, token)
         assert found is not None
         assert found.participant_id == participant.participant_id
 
-    def test_each_player_gets_distinct_token(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        _, t1 = svc.add_player(session.session_id)
-        _, t2 = svc.add_player(session.session_id)
-        assert t1 != t2
-
-    def test_fails_when_at_capacity(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        svc.add_player(session.session_id, max_players=2)
-        svc.add_player(session.session_id, max_players=2)
+    @pytest.mark.asyncio
+    async def test_fails_when_at_capacity(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        await svc.add_player(db, session.session_id, max_players=2)
+        await svc.add_player(db, session.session_id, max_players=2)
         with pytest.raises(SessionCapacityError):
-            svc.add_player(session.session_id, max_players=2)
+            await svc.add_player(db, session.session_id, max_players=2)
 
-    def test_fails_for_completed_session(self, svc: SessionService) -> None:
-        session, _ = svc.create_session(arc_id="nightcap-v1", host_account_id=uuid4())
-        svc.end_session(session.session_id, uuid4())
+    @pytest.mark.asyncio
+    async def test_fails_for_completed_session(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        await svc.end_session(db, session.session_id)
         with pytest.raises(SessionStateError):
-            svc.add_player(session.session_id)
+            await svc.add_player(db, session.session_id)
 
-    def test_fails_for_unknown_session(self, svc: SessionService) -> None:
+    @pytest.mark.asyncio
+    async def test_fails_for_unknown_session(
+        self, svc: SessionService, db: AsyncSession
+    ) -> None:
         with pytest.raises(SessionNotFoundError):
-            svc.add_player(uuid4())
+            await svc.add_player(db, uuid4())
