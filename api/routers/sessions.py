@@ -8,8 +8,8 @@ Endpoint summary (base path /v1/sessions):
   POST   /                      API key          Create session
   GET    /{id}                   API key|host JWT Session state
   POST   /{id}/start             host JWT         Start arc
-  POST   /{id}/pause             host JWT         Pause arc
-  POST   /{id}/resume            host JWT         Resume arc
+  POST   /{id}/pause             host JWT         Pause arc + snapshot
+  POST   /{id}/resume            host JWT         Resume arc from snapshot
   POST   /{id}/end               host JWT         End session
   GET    /{id}/join              public           Exchange join token for player JWT
 """
@@ -20,6 +20,7 @@ from uuid import UUID, uuid4
 
 from fastapi import APIRouter, Depends, HTTPException, Query
 from firebase_admin import auth as firebase_auth
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.auth import (
     ApiCaller,
@@ -36,6 +37,7 @@ from api.schemas import (
     JoinSessionResponse,
     SessionStateResponse,
 )
+from engine.db import get_async_session
 from engine.session.service import (
     SessionCapacityError,
     SessionNotFoundError,
@@ -50,6 +52,7 @@ router = APIRouter(prefix="/sessions", tags=["sessions"])
 async def create_session(
     body: CreateSessionRequest,
     caller: ApiCaller = Depends(require_api_key),
+    db: AsyncSession = Depends(get_async_session),
 ) -> CreateSessionResponse:
     """Create a new session from an arc definition.
 
@@ -57,7 +60,8 @@ async def create_session(
     token) the host exchanges for an ID token via the Firebase client SDK.
     """
     host_account_id = uuid4()
-    session, host_join_token = _session_service.create_session(
+    session, host_join_token = await _session_service.create_session(
+        db,
         arc_id=body.arc_id,
         host_account_id=host_account_id,
         quality_tier=body.quality_tier,
@@ -86,36 +90,27 @@ async def create_session(
 async def get_session(
     session_id: UUID,
     caller: ApiCaller | JwtClaims = Depends(require_api_key_or_host_jwt),
+    db: AsyncSession = Depends(get_async_session),
 ) -> SessionStateResponse:
     """Return current session state (status, beat, player count, cost consumed)."""
     if isinstance(caller, JwtClaims):
         _require_session_claim_match(session_id, caller)
-    session = _session_service.get_session(session_id)
+    session = await _session_service.get_session(db, session_id)
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found")
-    return SessionStateResponse(
-        session_id=session.session_id,
-        arc_id=session.arc_id,
-        status=session.status,
-        current_beat_id=session.current_beat_id,
-        player_count=session.player_count,
-        quality_tier=session.quality_tier,
-        created_at=session.created_at,
-        started_at=session.started_at,
-        completed_at=session.completed_at,
-        cost_consumed_usd=0.0,
-    )
+    return _session_to_state_response(session)
 
 
 @router.post("/{session_id}/start", response_model=SessionStateResponse)
 async def start_session(
     session_id: UUID,
     claims: JwtClaims = Depends(require_host_jwt),
+    db: AsyncSession = Depends(get_async_session),
 ) -> SessionStateResponse:
     """Start the session arc; triggers the introduction beat."""
     _require_session_claim_match(session_id, claims)
     try:
-        session = _session_service.start_session(session_id, _host_id(claims))
+        session = await _session_service.start_session(db, session_id)
     except SessionNotFoundError:
         raise HTTPException(status_code=404, detail="Session not found")
     except SessionStateError as exc:
@@ -127,11 +122,12 @@ async def start_session(
 async def pause_session(
     session_id: UUID,
     claims: JwtClaims = Depends(require_host_jwt),
+    db: AsyncSession = Depends(get_async_session),
 ) -> SessionStateResponse:
-    """Pause the arc and snapshot state."""
+    """Pause the arc and snapshot state at the current beat boundary."""
     _require_session_claim_match(session_id, claims)
     try:
-        session = _session_service.pause_session(session_id, _host_id(claims))
+        session = await _session_service.pause_session(db, session_id)
     except SessionNotFoundError:
         raise HTTPException(status_code=404, detail="Session not found")
     except SessionStateError as exc:
@@ -143,11 +139,12 @@ async def pause_session(
 async def resume_session(
     session_id: UUID,
     claims: JwtClaims = Depends(require_host_jwt),
+    db: AsyncSession = Depends(get_async_session),
 ) -> SessionStateResponse:
-    """Resume from the nearest beat snapshot."""
+    """Resume the arc from the nearest beat snapshot."""
     _require_session_claim_match(session_id, claims)
     try:
-        session = _session_service.resume_session(session_id, _host_id(claims))
+        session, _snapshot = await _session_service.resume_session(db, session_id)
     except SessionNotFoundError:
         raise HTTPException(status_code=404, detail="Session not found")
     except SessionStateError as exc:
@@ -159,11 +156,12 @@ async def resume_session(
 async def end_session(
     session_id: UUID,
     claims: JwtClaims = Depends(require_host_jwt),
+    db: AsyncSession = Depends(get_async_session),
 ) -> SessionStateResponse:
     """End the session and emit the final state record."""
     _require_session_claim_match(session_id, claims)
     try:
-        session = _session_service.end_session(session_id, _host_id(claims))
+        session = await _session_service.end_session(db, session_id)
     except SessionNotFoundError:
         raise HTTPException(status_code=404, detail="Session not found")
     except SessionStateError as exc:
@@ -175,15 +173,11 @@ async def end_session(
 async def add_player(
     session_id: UUID,
     caller: ApiCaller = Depends(require_api_key),
+    db: AsyncSession = Depends(get_async_session),
 ) -> AddPlayerResponse:
-    """Create a player participant slot and return a join token.
-
-    The caller distributes the join_token to the player out of band.
-    The player presents it to GET /sessions/{id}/join to receive a Firebase
-    custom token for the SSE stream and character endpoints.
-    """
+    """Create a player participant slot and return a join token."""
     try:
-        participant, join_token = _session_service.add_player(session_id)
+        participant, join_token = await _session_service.add_player(db, session_id)
     except SessionNotFoundError:
         raise HTTPException(status_code=404, detail="Session not found")
     except SessionCapacityError as exc:
@@ -204,14 +198,10 @@ async def join_session(
     token: str = Query(
         ..., description="Per-player join token distributed out of band"
     ),
+    db: AsyncSession = Depends(get_async_session),
 ) -> JoinSessionResponse:
-    """Validate a join token and return a Firebase custom token for the player.
-
-    The player exchanges the returned player_token for a Firebase ID token via
-    the Firebase client SDK, then uses that ID token on the SSE stream and
-    character endpoints.
-    """
-    participant = _session_service.validate_join_token(session_id, token)
+    """Validate a join token and return a Firebase custom token for the player."""
+    participant = await _session_service.validate_join_token(db, session_id, token)
     if participant is None:
         raise HTTPException(status_code=403, detail="Invalid join token")
 
@@ -240,10 +230,6 @@ def _require_session_claim_match(session_id: UUID, claims: JwtClaims) -> None:
             status_code=403,
             detail="Token session_id does not match requested session",
         )
-
-
-def _host_id(claims: JwtClaims) -> UUID:
-    return claims.player_id or uuid4()
 
 
 def _session_to_state_response(session) -> SessionStateResponse:  # type: ignore[no-untyped-def]

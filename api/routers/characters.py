@@ -15,6 +15,7 @@ from __future__ import annotations
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.auth import JwtClaims, require_host_jwt, require_player_or_host_jwt
 from api.schemas import (
@@ -29,6 +30,7 @@ from engine.characters.service import (
     CharacterNotFoundError,
     _character_service,
 )
+from engine.db import get_async_session
 from engine.session.service import _session_service
 
 router = APIRouter(prefix="/sessions", tags=["characters"])
@@ -40,15 +42,13 @@ _PLAYER_INPUT_ROLE = "player"
 async def list_characters(
     session_id: UUID,
     claims: JwtClaims = Depends(require_host_jwt),
+    db: AsyncSession = Depends(get_async_session),
 ) -> CharacterListResponse:
-    """Return every character in the session with surface-level behavior state.
-
-    Private knowledge state is intentionally not included.
-    """
+    """Return every character in the session with surface-level behavior state."""
     _require_session_claim_match(session_id, claims)
-    if _session_service.get_session(session_id) is None:
+    if await _session_service.get_session(db, session_id) is None:
         raise HTTPException(status_code=404, detail="Session not found")
-    characters = _character_service.list_characters(session_id)
+    characters = await _character_service.list_characters(db, session_id)
     return CharacterListResponse(
         session_id=session_id,
         characters=[
@@ -71,25 +71,22 @@ async def get_character(
     session_id: UUID,
     character_id: UUID,
     claims: JwtClaims = Depends(require_player_or_host_jwt),
+    db: AsyncSession = Depends(get_async_session),
 ) -> CharacterDetailResponse:
-    """Return the requesting player's own character detail.
-
-    A host token may also call this for any character; a player token is
-    rejected with 403 if the character is not theirs.
-    """
+    """Return the requesting player's own character detail."""
     _require_session_claim_match(session_id, claims)
-    if _session_service.get_session(session_id) is None:
+    if await _session_service.get_session(db, session_id) is None:
         raise HTTPException(status_code=404, detail="Session not found")
     if claims.role == "host":
-        return _detail_for_any_character(session_id, character_id)
+        return await _detail_for_any_character(db, session_id, character_id)
     if claims.player_id is None:
         raise HTTPException(
             status_code=400,
             detail="Player token must include arcwright_player_id claim",
         )
     try:
-        detail = _character_service.get_character_for_player(
-            session_id, character_id, claims.player_id
+        detail = await _character_service.get_character_for_player(
+            db, session_id, character_id, claims.player_id
         )
     except CharacterNotFoundError:
         raise HTTPException(status_code=404, detail="Character not found")
@@ -114,15 +111,11 @@ async def submit_character_input(
     character_id: UUID,
     body: PlayerInputRequest,
     claims: JwtClaims = Depends(require_player_or_host_jwt),
+    db: AsyncSession = Depends(get_async_session),
 ) -> PlayerInputResponse:
-    """Submit a typed player action or dialogue input as the named character.
-
-    §9.2 documents this route as Player JWT only. Host and shared-display
-    tokens are rejected here even though the underlying dependency accepts
-    them, so non-player surfaces cannot pollute the player input stream.
-    """
+    """Submit a typed player action or dialogue input as the named character."""
     _require_session_claim_match(session_id, claims)
-    if _session_service.get_session(session_id) is None:
+    if await _session_service.get_session(db, session_id) is None:
         raise HTTPException(status_code=404, detail="Session not found")
     if claims.role != _PLAYER_INPUT_ROLE:
         raise HTTPException(
@@ -135,7 +128,8 @@ async def submit_character_input(
             detail="Token must include arcwright_player_id claim",
         )
     try:
-        record = _character_service.submit_input(
+        record = await _character_service.submit_input(
+            db,
             session_id=session_id,
             character_id=character_id,
             requesting_participant_id=claims.player_id,
@@ -157,11 +151,11 @@ async def submit_character_input(
     )
 
 
-def _detail_for_any_character(
-    session_id: UUID, character_id: UUID
+async def _detail_for_any_character(
+    db: AsyncSession, session_id: UUID, character_id: UUID
 ) -> CharacterDetailResponse:
-    participant = _character_service._find_participant_by_character(
-        session_id, character_id
+    participant = await _session_service.find_participant_by_character(
+        db, session_id, character_id
     )
     if participant is None:
         raise HTTPException(status_code=404, detail="Character not found")
