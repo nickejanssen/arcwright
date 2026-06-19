@@ -30,6 +30,7 @@ from api.auth import (
     require_api_key_or_host_jwt,
     require_host_jwt,
 )
+from api.routers.events import _get_or_create_session_state
 from api.schemas import (
     AddPlayerResponse,
     CreateSessionRequest,
@@ -38,6 +39,7 @@ from api.schemas import (
     SessionStateResponse,
 )
 from engine.db import get_async_session
+from engine.narrator.bridge import generate_narrator_bridge
 from engine.session.service import (
     SessionCapacityError,
     SessionNotFoundError,
@@ -144,11 +146,16 @@ async def resume_session(
     """Resume the arc from the nearest beat snapshot."""
     _require_session_claim_match(session_id, claims)
     try:
-        session, _snapshot = await _session_service.resume_session(db, session_id)
+        session, snapshot = await _session_service.resume_session(db, session_id)
     except SessionNotFoundError:
         raise HTTPException(status_code=404, detail="Session not found")
     except SessionStateError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
+    bridge_event = await generate_narrator_bridge(
+        db, session_id, snapshot, session.quality_tier.value
+    )
+    bus, _registry = _get_or_create_session_state(session_id)
+    await bus.publish(bridge_event)
     return _session_to_state_response(session)
 
 
