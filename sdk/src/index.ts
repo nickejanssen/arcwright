@@ -98,6 +98,7 @@ export class ArcwrightClient {
         const { done, value } = await this._reader.read();
         if (done) break;
         buf += decoder.decode(value, { stream: true });
+        buf = buf.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
         const blocks = buf.split("\n\n");
         buf = blocks.pop() ?? "";
         for (const block of blocks) {
