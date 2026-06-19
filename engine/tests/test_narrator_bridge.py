@@ -202,3 +202,54 @@ class TestNarratorBridgeGeneration:
         assert event.category == EventCategory.narrative
         assert event.target_audience == AudienceTarget.all
         assert event.payload["text"] == "The session begins."
+
+    async def test_prompt_contains_no_arc_specific_genre_text(
+        self, db: AsyncSession
+    ) -> None:
+        """Regression guard: system prompt must not embed arc-specific genre labels.
+
+        Uses a non-Nightcap arc shape to confirm the engine-level prompt stays
+        neutral regardless of arc_id or session_context contents.
+        """
+        session_id = uuid4()
+        row = OrmSession(
+            session_id=session_id,
+            arc_id="monster_rpg",
+            status="active",
+            host_account_id=uuid4(),
+            current_beat_id="dungeon_entrance",
+            quality_tier="standard",
+            player_count=4,
+        )
+        db.add(row)
+        await db.flush()
+
+        snapshot = ArcBeatState(
+            state_id=uuid4(),
+            session_id=session_id,
+            beat_id="dungeon_entrance",
+            statemachine_config={
+                "beat_id": "dungeon_entrance",
+                "configuration_values": ["dungeon_entrance"],
+                "session_context": {"encounter": "dragon_lair", "players_alive": True},
+            },
+            transition_history=["tavern", "dungeon_entrance"],
+            is_current=True,
+        )
+
+        with patch(
+            "engine.routing.router.litellm.acompletion",
+            new_callable=AsyncMock,
+        ) as mock_completion:
+            mock_completion.side_effect = [
+                _l2_allowed_response(),
+                _litellm_response("The dungeon entrance looms before you."),
+            ]
+            await generate_narrator_bridge(db, session_id, snapshot, "standard")
+
+        # Second call is the narrator_bridge generation call; inspect its messages
+        assert mock_completion.call_count == 2
+        _, kwargs = mock_completion.call_args_list[1]
+        messages_text = str(kwargs["messages"])
+        assert "murder mystery" not in messages_text.lower()
+        assert "nightcap" not in messages_text.lower()
