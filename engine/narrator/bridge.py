@@ -59,7 +59,7 @@ async def generate_narrator_bridge(
         {
             "role": "system",
             "content": (
-                "You are the narrator of a murder mystery experience. "
+                "You are the narrator of a live interactive experience. "
                 "Write a 2-3 sentence recap that re-grounds players in the "
                 "story after a brief pause. Speak directly to the players. "
                 "Do not mention the interruption.\n\n"
