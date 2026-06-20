@@ -47,6 +47,11 @@ from engine.session.models import (
     SessionStatus,
 )
 from engine.session.snapshots import load_current_snapshot, write_snapshot
+from engine.telemetry.beats import build_beat_transition_payload
+from engine.telemetry.session import (
+    build_replay_intent_payload,
+    build_session_completed_payload,
+)
 
 
 class SessionNotFoundError(Exception):
@@ -201,7 +206,14 @@ class SessionService:
         await db.flush()
         return _orm_session_to_pydantic(orm), snapshot
 
-    async def end_session(self, db: AsyncSession, session_id: UUID) -> Session:
+    async def end_session(
+        self,
+        db: AsyncSession,
+        session_id: UUID,
+        *,
+        completion_type: str = "full_arc",
+        killer_identified: bool = False,
+    ) -> Session:
         orm = await self._require_session(db, session_id)
         if orm.status in (
             SessionStatus.completed.value,
@@ -211,7 +223,73 @@ class SessionService:
         orm.status = SessionStatus.completed.value
         orm.completed_at = datetime.now(tz=timezone.utc)
         await db.flush()
+        total_duration_seconds = 0
+        if orm.started_at is not None:
+            completed_at = orm.completed_at
+            started_at = orm.started_at
+            # SQLite strips tz info on readback; normalize both sides.
+            if started_at.tzinfo is None and completed_at.tzinfo is not None:
+                completed_at = completed_at.replace(tzinfo=None)
+            total_duration_seconds = int((completed_at - started_at).total_seconds())
+        db.add(
+            Event(
+                session_id=session_id,
+                event_type="session_completed",
+                payload=build_session_completed_payload(
+                    completion_type=completion_type,
+                    final_beat_reached=orm.current_beat_id,
+                    killer_identified=killer_identified,
+                    total_duration_seconds=total_duration_seconds,
+                    player_count=orm.player_count,
+                ),
+            )
+        )
+        await db.flush()
         return _orm_session_to_pydantic(orm)
+
+    async def record_beat_transition(
+        self,
+        db: AsyncSession,
+        session_id: UUID,
+        *,
+        from_beat: str,
+        to_beat: str,
+        duration_seconds: int,
+        player_action_count: int,
+    ) -> None:
+        db.add(
+            Event(
+                session_id=session_id,
+                event_type="beat_transition",
+                payload=build_beat_transition_payload(
+                    from_beat=from_beat,
+                    to_beat=to_beat,
+                    duration_seconds=duration_seconds,
+                    player_action_count=player_action_count,
+                ),
+            )
+        )
+        await db.flush()
+
+    async def write_replay_intent(
+        self,
+        db: AsyncSession,
+        session_id: UUID,
+        *,
+        intent: str,
+        collection_method: str,
+    ) -> None:
+        db.add(
+            Event(
+                session_id=session_id,
+                event_type="replay_intent",
+                payload=build_replay_intent_payload(
+                    intent=intent,
+                    collection_method=collection_method,
+                ),
+            )
+        )
+        await db.flush()
 
     async def add_player(
         self,

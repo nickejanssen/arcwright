@@ -111,3 +111,8 @@ class CharacterKnowledgeResponse(BaseModel):
     session_id: UUID
     character_id: UUID
     facts: list[KnowledgeFactResponse]
+
+
+class EndSessionRequest(BaseModel):
+    completion_type: Literal["full_arc", "interrupted", "abandoned"] = "full_arc"
+    killer_identified: bool = False
