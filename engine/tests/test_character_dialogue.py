@@ -471,8 +471,4 @@ async def test_generate_character_dialogue_does_not_emit_out_of_scope_events(
     ).all()
     event_types = {event.event_type for event in events}
 
-    assert "dialogue" in event_types
-    assert all("continuity" not in event.event_type for event in events)
-    assert all("recap" not in event.event_type for event in events)
-    assert all("npc_exchange" not in event.event_type for event in events)
-    assert all("ai_player_slot" not in str(event.payload) for event in events)
+    assert event_types == {"dialogue", "knowledge_constraint_activated"}

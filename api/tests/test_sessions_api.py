@@ -349,6 +349,48 @@ class TestEndSession:
         resp = client.post(f"/v1/sessions/{uuid4()}/end")
         assert resp.status_code == 404
 
+    def test_end_with_body_writes_completion_type_and_killer_flag(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        import asyncio
+
+        session_id = _create_session(client)
+        client.post(f"/v1/sessions/{session_id}/start")
+        resp = client.post(
+            f"/v1/sessions/{session_id}/end",
+            json={"completion_type": "interrupted", "killer_identified": True},
+        )
+        assert resp.status_code == 200
+        assert resp.json()["status"] == "completed"
+
+        async def _check_event() -> dict:
+            async with db_factory() as db:
+                result = await db.execute(
+                    select(Event).where(
+                        Event.session_id == session_id,
+                        Event.event_type == "session_completed",
+                    )
+                )
+                event = result.scalars().first()
+                assert event is not None
+                return event.payload
+
+        payload = asyncio.get_event_loop().run_until_complete(_check_event())
+        assert payload["completion_type"] == "interrupted"
+        assert payload["killer_identified"] is True
+
+    def test_end_with_invalid_completion_type_returns_422(
+        self, client: TestClient
+    ) -> None:
+        session_id = _create_session(client)
+        resp = client.post(
+            f"/v1/sessions/{session_id}/end",
+            json={"completion_type": "nonsense"},
+        )
+        assert resp.status_code == 422
+
 
 class TestAddPlayer:
     def test_returns_201_with_join_token(self, client: TestClient) -> None:

@@ -273,7 +273,8 @@ class TestSignal3KnowledgeConstraint:
         assert event.payload["constraint_direction"] == "permitted"
         assert event.payload["fact_type"] == "murder_weapon"
         assert event.payload["provenance_chain_length"] >= 0
-        assert str(event.actor_char_id) == str(character_id)
+        assert event.payload["character_id"] == str(character_id)
+        assert event.actor_char_id is None
         assert event.content_text is None
 
     @pytest.mark.asyncio
@@ -297,7 +298,8 @@ class TestSignal3KnowledgeConstraint:
         assert event.payload["constraint_direction"] == "blocked"
         assert event.payload["fact_type"] == ""
         assert event.payload["provenance_chain_length"] == 0
-        assert str(event.actor_char_id) == str(character_id)
+        assert event.payload["character_id"] == str(character_id)
+        assert event.actor_char_id is None
 
 
 # ---------------------------------------------------------------------------

@@ -121,7 +121,7 @@ async def get_character_knowledge(
     session.add(
         Event(
             session_id=session_id,
-            actor_char_id=character_id,
+            actor_char_id=None,
             event_type="knowledge_constraint_activated",
             payload=build_knowledge_constraint_payload(
                 character_id=str(character_id),
