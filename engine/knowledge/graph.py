@@ -29,7 +29,8 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import selectinload
 
-from engine.db.orm import Fact, KnowledgeState
+from engine.db.orm import Event, Fact, KnowledgeState
+from engine.telemetry.knowledge import build_knowledge_constraint_payload
 
 
 async def assert_knowledge(
@@ -94,6 +95,7 @@ async def get_character_knowledge(
     character in a session.
 
     Mandatory pre-generation chokepoint per §4.3.
+    Writes a knowledge_constraint_activated Event (Signal 3, AW-222).
     """
     result = await session.execute(
         select(KnowledgeState)
@@ -105,7 +107,33 @@ async def get_character_knowledge(
         .order_by(KnowledgeState.asserted_at, KnowledgeState.fact_id)
         .options(selectinload(KnowledgeState.fact))
     )
-    return list(result.scalars().all())
+    ks_list = list(result.scalars().all())
+
+    if ks_list:
+        constraint_direction = "permitted"
+        fact_type = ks_list[0].fact.fact_type
+        provenance_chain_length = max(len(ks.provenance_chain) for ks in ks_list)
+    else:
+        constraint_direction = "blocked"
+        fact_type = ""
+        provenance_chain_length = 0
+
+    session.add(
+        Event(
+            session_id=session_id,
+            actor_char_id=None,
+            event_type="knowledge_constraint_activated",
+            payload=build_knowledge_constraint_payload(
+                character_id=str(character_id),
+                fact_type=fact_type,
+                constraint_direction=constraint_direction,
+                provenance_chain_length=provenance_chain_length,
+            ),
+        )
+    )
+    await session.flush()
+
+    return ks_list
 
 
 async def revoke_knowledge(

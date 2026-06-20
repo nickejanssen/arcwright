@@ -35,6 +35,7 @@ from api.schemas import (
     AddPlayerResponse,
     CreateSessionRequest,
     CreateSessionResponse,
+    EndSessionRequest,
     JoinSessionResponse,
     SessionStateResponse,
 )
@@ -164,11 +165,19 @@ async def end_session(
     session_id: UUID,
     claims: JwtClaims = Depends(require_host_jwt),
     db: AsyncSession = Depends(get_async_session),
+    body: EndSessionRequest | None = None,
 ) -> SessionStateResponse:
-    """End the session and emit the final state record."""
+    """End the session and write the session_completed telemetry event."""
     _require_session_claim_match(session_id, claims)
+    completion_type = body.completion_type if body is not None else "full_arc"
+    killer_identified = body.killer_identified if body is not None else False
     try:
-        session = await _session_service.end_session(db, session_id)
+        session = await _session_service.end_session(
+            db,
+            session_id,
+            completion_type=completion_type,
+            killer_identified=killer_identified,
+        )
     except SessionNotFoundError:
         raise HTTPException(status_code=404, detail="Session not found")
     except SessionStateError as exc:
