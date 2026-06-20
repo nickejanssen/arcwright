@@ -365,7 +365,7 @@ class TestEndSession:
         assert resp.status_code == 200
         assert resp.json()["status"] == "completed"
 
-        async def _check_event() -> dict:
+        async def _check_event() -> None:
             async with db_factory() as db:
                 result = await db.execute(
                     select(Event).where(
@@ -375,11 +375,10 @@ class TestEndSession:
                 )
                 event = result.scalars().first()
                 assert event is not None
-                return event.payload
+                assert event.payload["completion_type"] == "interrupted"
+                assert event.payload["killer_identified"] is True
 
-        payload = asyncio.get_event_loop().run_until_complete(_check_event())
-        assert payload["completion_type"] == "interrupted"
-        assert payload["killer_identified"] is True
+        asyncio.get_event_loop().run_until_complete(_check_event())
 
     def test_end_with_invalid_completion_type_returns_422(
         self, client: TestClient
