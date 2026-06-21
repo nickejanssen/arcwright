@@ -76,7 +76,7 @@ def client(
 def _create_session_id(client: TestClient) -> str:
     resp = client.post("/v1/sessions", json={"arc_id": "test-arc"})
     assert resp.status_code == 201, resp.text
-    return resp.json()["session_id"]
+    return str(resp.json()["session_id"])
 
 
 class TestGetSessionCostSummary:
