@@ -13,6 +13,7 @@ from collections.abc import AsyncIterator, Iterator
 from datetime import datetime, timezone
 from decimal import Decimal
 from pathlib import Path
+from typing import Any, Awaitable, TypeVar
 from unittest.mock import AsyncMock, patch
 from uuid import UUID, uuid4
 
@@ -36,7 +37,7 @@ from api.auth import (
 )
 from api.main import app
 from engine.arc import transition_name_for
-from engine.characters.service import _character_service
+from engine.characters.service import InputKind, PlayerInputRecord, _character_service
 from engine.db import get_async_session
 from engine.db.orm import Base, Event, GenerationLog
 from engine.db.orm import SessionParticipant as OrmParticipant
@@ -74,6 +75,7 @@ _EXIT_CONDITIONS = {
     "close": "final_accusation_committed",
 }
 _CLOSE_TO_TRUTH = transition_name_for("close", "truth")
+_T = TypeVar("_T")
 
 
 patch_metadata_for_sqlite()
@@ -143,7 +145,7 @@ def client(
         app.dependency_overrides.clear()
 
 
-def _run(coro):
+def _run(coro: Awaitable[_T]) -> _T:
     return asyncio.get_event_loop().run_until_complete(coro)
 
 
@@ -182,10 +184,8 @@ def _advance_runner_to_truth(runner: HarnessRunner, participants: list[str]) -> 
     runner.start()
     runner.set_participants(participants)
 
-    for current_beat, next_beat in zip(_BEAT_SEQUENCE, _BEAT_SEQUENCE[1:]):
-        payload: dict[str, object] = {}
-        if current_beat != "close":
-            payload = {"context": {_EXIT_CONDITIONS[current_beat]: True}}
+    for current_beat, next_beat in zip(_BEAT_SEQUENCE, _BEAT_SEQUENCE[1:-1]):
+        payload: dict[str, object] = {"context": {_EXIT_CONDITIONS[current_beat]: True}}
         runner.apply_action(
             HarnessAction(
                 transition_name=transition_name_for(current_beat, next_beat),
@@ -278,11 +278,20 @@ def test_batch_session_completes(
     start_resp = client.post(f"/v1/sessions/{session_id}/start")
     assert start_resp.status_code == 200, start_resp.text
 
-    async def _fake_generate(*args, **kwargs) -> RouteResult:
-        db_session = args[0]
-        task_type = kwargs["task_type"]
-        quality_tier = kwargs["quality_tier"]
-        tension_score = kwargs.get("tension_score")
+    async def _fake_generate(
+        db_session: AsyncSession,
+        *,
+        session_id: UUID,
+        task_type: str,
+        quality_tier: str,
+        messages: list[dict[str, Any]],
+        temperature: float = 0.7,
+        tension_score: float | None = None,
+        safety_policy_context: dict[str, Any] | str | None = None,
+        content_rails: Any = None,
+        nightcap_mode: bool = False,
+    ) -> RouteResult:
+        _ = messages, temperature, safety_policy_context, content_rails, nightcap_mode
         db_session.add(
             GenerationLog(
                 session_id=session_id,
@@ -309,9 +318,22 @@ def test_batch_session_completes(
 
     original_submit_input = _character_service.submit_input
 
-    async def _submit_input_with_generation(*args, **kwargs):  # type: ignore[no-untyped-def]
-        record = await original_submit_input(*args, **kwargs)
-        db_session = args[0]
+    async def _submit_input_with_generation(
+        db_session: AsyncSession,
+        session_id: UUID,
+        character_id: UUID,
+        requesting_participant_id: UUID,
+        kind: InputKind,
+        content: str,
+    ) -> PlayerInputRecord:
+        record = await original_submit_input(
+            db_session,
+            session_id,
+            character_id,
+            requesting_participant_id,
+            kind,
+            content,
+        )
         await routing_logging.generate(
             db_session,
             session_id=session_id,
@@ -344,7 +366,6 @@ def test_batch_session_completes(
             json={
                 "kind": "dialogue",
                 "content": f"seed {seed}: carry the truth beat forward.",
-                "host_bypass": _HOST_BYPASS,
             },
         )
         assert input_resp.status_code == 201, input_resp.text
