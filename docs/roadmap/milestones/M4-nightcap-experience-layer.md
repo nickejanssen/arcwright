@@ -15,9 +15,12 @@ The roadmap notes that the UI is built as a separate Nightcap web experience con
 - [M4-B: Nightcap Host And Shared Display Experience](../epics/M4-B-nightcap-host-and-shared-display-experience.md)
 - [M4-C: Nightcap Player Device Experience](../epics/M4-C-nightcap-player-device-experience.md)
 - [M4-D: Real-Device Privacy And Join Validation](../epics/M4-D-real-device-privacy-and-join-validation.md)
+- [M4-E: Nightcap Mini-game Interaction Layer](../epics/M4-E-nightcap-mini-game-interaction-layer.md)
 
 ## Exit Gate
 
 - Real humans can play end-to-end on real devices
 - Join flow takes under 30 seconds
 - Private information never appears on the shared display
+- One approved production mini-game completes on real devices through both its
+  normal and delayed clue fallback paths

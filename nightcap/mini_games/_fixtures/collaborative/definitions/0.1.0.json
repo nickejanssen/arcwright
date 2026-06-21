@@ -1,0 +1,42 @@
+{
+  "schema_version": "1.0",
+  "game_id": "fixture-collaborative",
+  "version": "0.1.0",
+  "mechanic_type": "piece-assembly",
+  "participation_mode": "collaborative",
+  "content_mode": "hybrid",
+  "min_players": 2,
+  "max_players": 10,
+  "duration_seconds": 90,
+  "rules": {
+    "piece_count": 4,
+    "all_pieces_required": true
+  },
+  "authored_content": {
+    "instructions": "Combine the private pieces into one sequence."
+  },
+  "generation_constraints": {
+    "content_must_match_current_clue": true
+  },
+  "behavioral_outputs": [
+    {
+      "key": "collaboration-actions",
+      "description": "Count of explicit piece-sharing actions.",
+      "value_type": "integer",
+      "scope": "participant",
+      "derived": false
+    },
+    {
+      "key": "collaboration-score",
+      "description": "Deterministic run-scoped score derived from sharing actions.",
+      "value_type": "number",
+      "scope": "run",
+      "derived": true
+    }
+  ],
+  "clue_fallback": {
+    "delay_seconds": 30,
+    "clue_variant": "reduced",
+    "host_override": true
+  }
+}

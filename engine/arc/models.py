@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from engine.mini_games.models import MiniGameBinding
 from engine.session.models import QualityTier
 
 
@@ -151,7 +152,7 @@ class BeatDefinition(BaseModel):
     exit_conditions: List[str] = Field(default_factory=list)
     pacing_config: BeatPacingConfig = Field(default_factory=BeatPacingConfig)
     audience_targets: List[str] = Field(default_factory=list)
-    mini_games: Optional[List[Dict[str, Any]]] = None
+    mini_games: Optional[List[MiniGameBinding]] = None
 
 
 class ArcDefinition(BaseModel):

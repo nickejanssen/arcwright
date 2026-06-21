@@ -130,6 +130,16 @@ Performance and cost assumptions:
 
 ---
 
+# Revisit Trigger
+
+Before AW-225 introduces the first Cloudflare-specific dependency, Worker,
+Durable Object, or deployment configuration, compare this design against a
+GCP-only implementation using then-current Cloud Run and Firebase capabilities.
+Cloudflare remains the approved default unless the founder records a
+superseding decision.
+
+---
+
 # References
 
 - `docs/product/decisions-log-additions-may2026.md` Entry 3
