@@ -68,6 +68,11 @@ def load_mini_game_catalog(root_path: Path) -> dict[str, LoadedMiniGame]:
     for package_path in package_paths:
         loaded = load_mini_game_package(package_path)
         game_id = loaded.manifest.game_id
+        if package_path.name != game_id:
+            raise MiniGamePackageError(
+                f"package directory {package_path.name} does not match "
+                f"manifest game_id {game_id}"
+            )
         if game_id in catalog:
             raise MiniGamePackageError(f"duplicate mini-game ID: {game_id}")
         catalog[game_id] = loaded

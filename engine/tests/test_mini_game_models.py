@@ -50,11 +50,26 @@ def test_reserved_directories_are_not_loaded_as_production_catalog() -> None:
 
 
 def test_duplicate_game_ids_are_rejected(tmp_path: Path) -> None:
-    _write_package(tmp_path / "first", game_id="duplicate-game")
-    _write_package(tmp_path / "second", game_id="duplicate-game")
+    _write_package(tmp_path / "duplicate-game", game_id="duplicate-game")
+    _write_package(tmp_path / "duplicate-game-copy", game_id="duplicate-game")
 
-    with pytest.raises(MiniGamePackageError, match="duplicate mini-game ID"):
+    with pytest.raises(MiniGamePackageError, match="does not match"):
         load_mini_game_catalog(tmp_path)
+
+
+def test_directory_name_must_match_manifest_game_id(tmp_path: Path) -> None:
+    _write_package(tmp_path / "directory-name", game_id="different-id")
+
+    with pytest.raises(MiniGamePackageError, match="does not match"):
+        load_mini_game_catalog(tmp_path)
+
+
+def test_matching_directory_and_game_id_loads(tmp_path: Path) -> None:
+    _write_package(tmp_path / "matching-game", game_id="matching-game")
+
+    catalog = load_mini_game_catalog(tmp_path)
+
+    assert set(catalog) == {"matching-game"}
 
 
 def test_missing_definition_is_rejected(tmp_path: Path) -> None:

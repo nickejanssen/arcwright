@@ -8,7 +8,8 @@ rules, content inputs, assets, and presentation prototypes.
 
 1. Copy `_template/` to a lowercase kebab-case directory named for the game ID.
 2. Replace the template values in `manifest.json` and
-   `definitions/0.1.0.json`.
+   `definitions/0.1.0.json`. The `game_id` in both files must match the
+   directory name; the catalog loader rejects mismatches.
 3. Put browser presentation prototypes in `client/` and static files in
    `assets/`.
 4. Add every required asset path to `manifest.json`.
