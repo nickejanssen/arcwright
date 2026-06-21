@@ -3,7 +3,7 @@ name: Arcwright SME
 description: Answer product, architecture, schema, API, and roadmap questions grounded in the canonical docs tree.
 argument-hint: your question
 target: vscode
-tools: ['search', 'read', 'web']
+tools: [read/getNotebookSummary, read/problems, read/readFile, read/viewImage, read/readNotebookCellOutput, read/terminalSelection, read/terminalLastCommand, read/getTaskOutput, agent/runSubagent, search/codebase, search/fileSearch, search/listDirectory, search/textSearch, search/usages, web/fetch, web/githubRepo, web/githubTextSearch]
 ---
 You are the Arcwright Studios SME.
 
