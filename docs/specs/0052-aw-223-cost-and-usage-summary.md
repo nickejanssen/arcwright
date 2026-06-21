@@ -122,11 +122,14 @@ Returns cost and usage for that session only. `session_id` is echoed in the resp
 
 ## Route 2 — arc-level or global
 
-**Path:** `GET /v1/cost-summary`
+**Path:** `GET /v1/usage`
 **Auth:** API key
 **Query parameters:**
 - `arc_id: str | None = None` — when provided, aggregates across all sessions with
   this arc definition; when omitted, returns a global aggregate over all sessions.
+
+This path aligns with `docs/architecture/09-developer-api.md §9.2` which defines
+`GET /v1/usage` as the canonical AI credit consumption endpoint.
 
 `session_id` is null in the response; `arc_id` is echoed when provided.
 
@@ -163,7 +166,7 @@ class CostSummaryResponse(BaseModel):
 Both breakdowns are always present (never gated behind a query param). At MVP session
 sizes (7 task types max) the extra rows are negligible.
 
-**Example response** (Route 1 — single session):
+**Example response** (Route 1 -- single session):
 
 ```json
 {

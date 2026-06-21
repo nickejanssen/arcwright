@@ -2,23 +2,25 @@
 
 Architecture: docs/architecture/13-cost-model.md §13.4.
 Route handlers are thin: validate input, call engine function, return response.
-No query logic here — aggregation lives in engine/telemetry/costs.py.
+No query logic here -- aggregation lives in engine/telemetry/costs.py.
 
 Endpoint summary:
   GET /v1/sessions/{session_id}/cost-summary   API key   Per-session totals
-  GET /v1/cost-summary?arc_id=                 API key   Arc-level or global totals
+  GET /v1/usage?arc_id=                        API key   Arc-level or global totals
 """
 
 from __future__ import annotations
 
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
+from sqlalchemy import exists, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.auth import ApiCaller, require_api_key
 from api.schemas import CostSummaryResponse, PlayerCountCostRow, TaskTypeCostRow
 from engine.db import get_async_session
+from engine.db.orm import Session as OrmSession
 from engine.telemetry.costs import CostSummaryData, get_cost_summary
 
 router = APIRouter(tags=["costs"])
@@ -66,20 +68,26 @@ async def get_session_cost_summary(
     db: AsyncSession = Depends(get_async_session),
 ) -> CostSummaryResponse:
     """Return cost and usage totals for a single session."""
+    session_exists = (
+        await db.execute(select(exists().where(OrmSession.session_id == session_id)))
+    ).scalar()
+    if not session_exists:
+        raise HTTPException(status_code=404, detail="Session not found")
     data = await get_cost_summary(db, session_id=session_id)
     return _to_response(data, session_id=session_id)
 
 
-@router.get("/cost-summary", response_model=CostSummaryResponse)
-async def get_arc_or_global_cost_summary(
+@router.get("/usage", response_model=CostSummaryResponse)
+async def get_usage(
     arc_id: str | None = Query(
         default=None, description="Filter to sessions with this arc definition"
     ),
     caller: ApiCaller = Depends(require_api_key),
     db: AsyncSession = Depends(get_async_session),
 ) -> CostSummaryResponse:
-    """Return cost and usage totals grouped by arc or globally.
+    """Return AI credit consumption by arc or globally.
 
+    Implements docs/architecture/09-developer-api.md §9.2 GET /v1/usage.
     Pass ?arc_id= to filter to sessions sharing that arc definition.
     Omit arc_id for a global aggregate over all sessions.
     """
