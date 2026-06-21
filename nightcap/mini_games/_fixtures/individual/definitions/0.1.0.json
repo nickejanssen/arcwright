@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "game_id": "fixture-individual",
+  "version": "0.1.0",
+  "mechanic_type": "timed-choice",
+  "participation_mode": "individual",
+  "content_mode": "authored",
+  "min_players": 1,
+  "max_players": 10,
+  "duration_seconds": 45,
+  "rules": {
+    "max_attempts": 3
+  },
+  "authored_content": {
+    "prompt": "Select the matching symbol.",
+    "choices": ["circle", "square", "triangle"]
+  },
+  "generation_constraints": null,
+  "behavioral_outputs": [
+    {
+      "key": "attempt-count",
+      "description": "Number of submitted attempts.",
+      "value_type": "integer",
+      "scope": "participant",
+      "derived": false
+    }
+  ],
+  "clue_fallback": {
+    "delay_seconds": 20,
+    "clue_variant": "reduced",
+    "host_override": true
+  }
+}

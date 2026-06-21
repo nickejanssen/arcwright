@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "game_id": "replace-me",
+  "version": "0.1.0",
+  "mechanic_type": "replace-me",
+  "participation_mode": "individual",
+  "content_mode": "authored",
+  "min_players": 1,
+  "max_players": 10,
+  "duration_seconds": 60,
+  "rules": {
+    "replace-me": true
+  },
+  "authored_content": {
+    "instructions": "Replace this template content."
+  },
+  "generation_constraints": null,
+  "behavioral_outputs": [
+    {
+      "key": "completion-time-ms",
+      "description": "Elapsed server time before completion.",
+      "value_type": "integer",
+      "scope": "participant",
+      "derived": false
+    }
+  ],
+  "clue_fallback": {
+    "delay_seconds": 30,
+    "clue_variant": "reduced",
+    "host_override": true
+  }
+}

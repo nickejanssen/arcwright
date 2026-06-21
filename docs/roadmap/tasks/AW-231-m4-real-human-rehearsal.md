@@ -27,7 +27,7 @@ Run a non-qualifying real-device rehearsal on the Nightcap web experience runtim
 ## Acceptance Criteria
 
 - [ ] A non-qualifying real-human rehearsal is attempted on real devices.
-- [ ] Join timing, privacy result, completion state, and blockers are recorded.
+- [ ] Join timing, privacy result, mini-game completion or fallback, completion state, and blockers are recorded.
 - [ ] Every blocker is triaged into a follow-up issue before M5 begins.
 
 ## Tests/Verification
@@ -39,6 +39,7 @@ Run a non-qualifying real-device rehearsal on the Nightcap web experience runtim
 ## Dependencies
 
 - AW-230
+- AW-254
 
 ## Likely Files Affected
 
@@ -50,11 +51,13 @@ docs/playtest notes or GitHub issue comments, docs/roadmap if needed
 - Do not duplicate closed M1 work.
 - Do not hardcode secrets or API keys.
 - Do not bypass the AW-202 Nightcap web experience runtime contract.
+- Do not run the M4 rehearsal using only non-shipping mini-game fixtures.
 
 ## Architecture References
 
 - docs/roadmap/milestones/M4-nightcap-experience-layer.md
 - `docs/decisions/0003-nightcap-web-experience-runtime.md`
+- `docs/decisions/0009-mini-game-runtime-boundary.md`
 - `AGENTS.md`
 - `docs/architecture/15-development-guide.md`
 

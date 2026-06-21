@@ -1,0 +1,33 @@
+{
+  "schema_version": "1.0",
+  "game_id": "fixture-group",
+  "version": "0.1.0",
+  "mechanic_type": "group-sequence",
+  "participation_mode": "group",
+  "content_mode": "generative",
+  "min_players": 4,
+  "max_players": 10,
+  "duration_seconds": 75,
+  "rules": {
+    "submission_policy": "one-per-participant"
+  },
+  "authored_content": null,
+  "generation_constraints": {
+    "answer_count": 4,
+    "must_reference_resolved_session_state": true
+  },
+  "behavioral_outputs": [
+    {
+      "key": "response-time-ms",
+      "description": "Elapsed server time before each participant response.",
+      "value_type": "integer",
+      "scope": "participant",
+      "derived": false
+    }
+  ],
+  "clue_fallback": {
+    "delay_seconds": 25,
+    "clue_variant": "reduced",
+    "host_override": true
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "version": "1.1",
+  "version": "1.2",
   "status": "active",
   "canonical_readme": "docs/roadmap/README.md",
   "aliases": [
@@ -127,7 +127,8 @@
         "M4-A",
         "M4-B",
         "M4-C",
-        "M4-D"
+        "M4-D",
+        "M4-E"
       ],
       "github": {
         "milestone_number": 4,
@@ -428,6 +429,25 @@
       "github": {
         "issue_number": 47,
         "url": "https://github.com/nickejanssen/arcwright/issues/47"
+      }
+    },
+    {
+      "id": "M4-E",
+      "milestone": "M4",
+      "title": "Nightcap Mini-game Interaction Layer",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M4-E-nightcap-mini-game-interaction-layer.md",
+      "tasks": [
+        "AW-249",
+        "AW-250",
+        "AW-251",
+        "AW-252",
+        "AW-253",
+        "AW-254"
+      ],
+      "github": {
+        "issue_number": 142,
+        "url": "https://github.com/nickejanssen/arcwright/issues/142"
       }
     },
     {
@@ -1198,7 +1218,8 @@
       "epic": "M4-D",
       "size": "M",
       "depends_on": [
-        "AW-230"
+        "AW-230",
+        "AW-254"
       ],
       "path": "docs/roadmap/tasks/AW-231-m4-real-human-rehearsal.md",
       "github": {
@@ -1473,6 +1494,109 @@
         "url": "https://github.com/nickejanssen/arcwright/issues/125"
       },
       "epic_id": "M5-E"
+    },
+    {
+      "id": "AW-249",
+      "title": "Nightcap Mini-game Authoring Foundation",
+      "milestone": "M4",
+      "epic": "M4-E",
+      "size": "M",
+      "depends_on": [
+        "AW-203"
+      ],
+      "path": "docs/roadmap/tasks/AW-249-nightcap-mini-game-authoring-foundation.md",
+      "github": {
+        "issue_number": 143,
+        "url": "https://github.com/nickejanssen/arcwright/issues/143"
+      },
+      "epic_id": "M4-E"
+    },
+    {
+      "id": "AW-250",
+      "title": "Mini-game Content Resolution And Safety",
+      "milestone": "M4",
+      "epic": "M4-E",
+      "size": "M",
+      "depends_on": [
+        "AW-249"
+      ],
+      "path": "docs/roadmap/tasks/AW-250-mini-game-content-resolution-and-safety.md",
+      "github": {
+        "issue_number": 144,
+        "url": "https://github.com/nickejanssen/arcwright/issues/144"
+      },
+      "epic_id": "M4-E"
+    },
+    {
+      "id": "AW-251",
+      "title": "Mini-game Runtime, Persistence, And Clue Gating",
+      "milestone": "M4",
+      "epic": "M4-E",
+      "size": "L",
+      "depends_on": [
+        "AW-250",
+        "AW-215",
+        "AW-220"
+      ],
+      "path": "docs/roadmap/tasks/AW-251-mini-game-runtime-persistence-and-clue-gating.md",
+      "github": {
+        "issue_number": 145,
+        "url": "https://github.com/nickejanssen/arcwright/issues/145"
+      },
+      "epic_id": "M4-E"
+    },
+    {
+      "id": "AW-252",
+      "title": "Mini-game API, Events, And TypeScript SDK",
+      "milestone": "M4",
+      "epic": "M4-E",
+      "size": "M",
+      "depends_on": [
+        "AW-251",
+        "AW-219"
+      ],
+      "path": "docs/roadmap/tasks/AW-252-mini-game-api-events-and-sdk.md",
+      "github": {
+        "issue_number": 146,
+        "url": "https://github.com/nickejanssen/arcwright/issues/146"
+      },
+      "epic_id": "M4-E"
+    },
+    {
+      "id": "AW-253",
+      "title": "Nightcap Web Mini-game Rendering And Device Integration",
+      "milestone": "M4",
+      "epic": "M4-E",
+      "size": "L",
+      "depends_on": [
+        "AW-252",
+        "AW-225",
+        "AW-227",
+        "AW-229"
+      ],
+      "path": "docs/roadmap/tasks/AW-253-nightcap-web-mini-game-rendering.md",
+      "github": {
+        "issue_number": 147,
+        "url": "https://github.com/nickejanssen/arcwright/issues/147"
+      },
+      "epic_id": "M4-E"
+    },
+    {
+      "id": "AW-254",
+      "title": "First Production Nightcap Mini-game And Rehearsal",
+      "milestone": "M4",
+      "epic": "M4-E",
+      "size": "M",
+      "depends_on": [
+        "AW-253",
+        "AW-230"
+      ],
+      "path": "docs/roadmap/tasks/AW-254-first-production-nightcap-mini-game.md",
+      "github": {
+        "issue_number": 148,
+        "url": "https://github.com/nickejanssen/arcwright/issues/148"
+      },
+      "epic_id": "M4-E"
     }
   ],
   "superseded_sources": [

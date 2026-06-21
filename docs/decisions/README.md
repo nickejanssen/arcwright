@@ -42,6 +42,7 @@ When proposing changes:
 - `0006-nightcap-continuity-v11.md` - approved Nightcap Continuity v1.1 fast-follow scope and v1 MVP boundary
 - `0007-m2-exit-harness-and-nightcap-eight-beats.md` - AW-214 bundles the Nightcap eight-beat encoding that AW-205 deferred and lands the M2 headless exit harness
 - `0008-content-event-type-layering.md` - AW-215 splits ContentEvent classification into a closed platform `category` enum and an open game-defined `event_type` string
+- `0009-mini-game-runtime-boundary.md` - AW-249 separates reusable deterministic mini-game contracts from Nightcap presentation and records the v1 behavioral and clue fallback boundaries
 
 ## Current Decision Categories
 

@@ -26,6 +26,7 @@ Implement the Cloudflare-hosted Nightcap web experience runtime connector scaffo
 
 ## Acceptance Criteria
 
+- [ ] Before adding a Cloudflare-specific dependency, Worker, Durable Object, or deployment configuration, compare ADR 0003 against a GCP-only implementation using then-current Cloud Run and Firebase capabilities; Cloudflare remains the default unless superseded by a founder decision.
 - [ ] Connector can create or attach to a Nightcap session using the AW-202 runtime contract.
 - [ ] Connector subscribes to Arcwright events without requiring engine surface assumptions.
 - [ ] Connector keeps Arcwright authoritative for session state, event audience targeting, safety, and telemetry.
@@ -53,6 +54,7 @@ Cloudflare Pages, Workers, Durable Objects or PartyKit files, SDK usage, api doc
 - Do not bypass the AW-202 Nightcap web experience runtime contract.
 - Do not put arc execution logic in FastAPI route handlers.
 - Do not put arc execution logic in TypeScript.
+- Do not make the selected web runtime a second canonical session authority.
 
 ## Architecture References
 
