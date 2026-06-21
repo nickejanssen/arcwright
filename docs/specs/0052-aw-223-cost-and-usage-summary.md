@@ -1,6 +1,6 @@
 # AW-223: Cost and Usage Summary
 
-**Status**: Draft
+**Status**: Approved
 
 **Author**: Claude Code | **Date**: 2026-06-21
 
@@ -233,7 +233,7 @@ per `docs/architecture/13-cost-model.md §13.5`).
 
 # Acceptance Criteria
 
-- [ ] **AC1**: `GET /v1/cost-summary?session_id={id}` returns `total_cost_usd` equal to
+- [ ] **AC1**: `GET /v1/sessions/{session_id}/cost-summary` returns `total_cost_usd` equal to
   the sum of `cost_usd` across all `generation_logs` rows for that session.
 - [ ] **AC2**: The response includes `by_task_type` (grouped by `task_type`) and
   `by_player_count` (grouped by `sessions.player_count`). Filtering by `arc_id`
