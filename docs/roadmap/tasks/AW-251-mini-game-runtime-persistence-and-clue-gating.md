@@ -17,6 +17,10 @@ behavioral output, and pause/resume persistence.
 - [ ] Pause/resume restores the exact run and definition snapshot.
 - [ ] Timeout fallback preserves a solvable clue path.
 - [ ] v1 behavioral output is not used by killer assignment or another session.
+- [ ] Unknown `mechanic_type` values are rejected at runtime resolution; dispatch
+  uses a closed registry of approved mechanic implementations.
+- [ ] Derived behavioral outputs are validated against non-derived siblings in
+  the resolved definition snapshot.
 
 ## Dependencies
 

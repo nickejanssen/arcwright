@@ -182,6 +182,24 @@ def test_beat_mini_game_binding_is_typed() -> None:
     assert isinstance(arc.beats[0].mini_games[0], MiniGameBinding)
 
 
+def test_duplicate_mini_game_binding_ids_in_beat_are_rejected() -> None:
+    payload = valid_arc_payload()
+    payload["beats"][0]["mini_games"] = [
+        {
+            "binding_id": "arrival-opener",
+            "game_id": "test-game",
+            "version": "0.1.0",
+        },
+        {
+            "binding_id": "arrival-opener",
+            "game_id": "other-game",
+            "version": "0.2.0",
+        },
+    ]
+
+    assert_invalid(payload, "duplicate mini-game binding_ids")
+
+
 def test_missing_required_field_is_rejected() -> None:
     payload = valid_arc_payload()
     del payload["arc_id"]

@@ -154,6 +154,16 @@ class BeatDefinition(BaseModel):
     audience_targets: List[str] = Field(default_factory=list)
     mini_games: Optional[List[MiniGameBinding]] = None
 
+    @model_validator(mode="after")
+    def validate_mini_game_binding_ids(self) -> "BeatDefinition":
+        if not self.mini_games:
+            return self
+        binding_ids = [binding.binding_id for binding in self.mini_games]
+        if len(binding_ids) != len(set(binding_ids)):
+            msg = f"beat {self.beat_id} has duplicate mini-game binding_ids"
+            raise ValueError(msg)
+        return self
+
 
 class ArcDefinition(BaseModel):
     model_config = ConfigDict(extra="forbid")

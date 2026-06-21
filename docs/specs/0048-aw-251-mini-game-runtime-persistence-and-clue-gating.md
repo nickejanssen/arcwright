@@ -52,6 +52,12 @@ submissions, scoring, clue gating, behavioral outputs, and pause/resume support.
 - [ ] Timeout follows the authored fallback and preserves a solvable clue path.
 - [ ] v1 behavioral output is not read by killer assignment or another session.
 - [ ] The migration applies and rolls back in supported test environments.
+- [ ] Unknown `mechanic_type` values are rejected at runtime resolution before
+  any run is created. Dispatch is keyed on a closed registry of approved
+  mechanic implementations.
+- [ ] A `derived` behavioral output is rejected if no non-derived sibling in the
+  same scope can express it. Derivation is validated against the resolved
+  definition snapshot, not at authoring time.
 
 ---
 
