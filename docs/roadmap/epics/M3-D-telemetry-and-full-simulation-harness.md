@@ -28,6 +28,7 @@ The technical scope is limited to the tasks listed below and the architecture re
 - [AW-222: Five MVP Telemetry Signals](../tasks/AW-222-five-mvp-telemetry-signals.md)
 - [AW-223: Cost And Usage Summary](../tasks/AW-223-cost-and-usage-summary.md)
 - [AW-224: Full API Batch Harness](../tasks/AW-224-full-api-batch-harness.md)
+- [AW-255: REST-Backed Nightcap Session Loop](../tasks/AW-255-rest-backed-nightcap-session-loop.md)
 
 ## Acceptance Criteria
 

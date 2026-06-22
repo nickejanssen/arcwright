@@ -365,7 +365,8 @@
       "tasks": [
         "AW-222",
         "AW-223",
-        "AW-224"
+        "AW-224",
+        "AW-255"
       ],
       "github": {
         "issue_number": 43,
@@ -1110,6 +1111,25 @@
       "github": {
         "issue_number": 77,
         "url": "https://github.com/nickejanssen/arcwright/issues/77"
+      },
+      "epic_id": "M3-D"
+    },
+    {
+      "id": "AW-255",
+      "title": "REST-Backed Nightcap Session Loop",
+      "milestone": "M3",
+      "epic": "M3-D",
+      "size": "L",
+      "depends_on": [
+        "AW-218",
+        "AW-220",
+        "AW-222",
+        "AW-224"
+      ],
+      "path": "docs/roadmap/tasks/AW-255-rest-backed-nightcap-session-loop.md",
+      "github": {
+        "issue_number": 152,
+        "url": "https://github.com/nickejanssen/arcwright/issues/152"
       },
       "epic_id": "M3-D"
     },

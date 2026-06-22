@@ -23,6 +23,7 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 ## Technical Scope
 
 Run repeated complete sessions through the API path. Likely files affected: engine/tests, api tests, scripts if needed.
+The current repo state still uses a detached `HarnessRunner` in the proof path; AW-255 tracks the remaining REST-backed session loop work that closes that gap.
 
 ## Acceptance Criteria
 
