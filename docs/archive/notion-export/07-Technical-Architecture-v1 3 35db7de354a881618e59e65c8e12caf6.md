@@ -29,7 +29,7 @@
 - `standing_score` per player and `accusation_token_used` boolean added to session state.
 - `victim_config` added to arc definition: `eligibility_mode` (npc_only / player_eligible by player count threshold), `designation_trigger: "killer_revelation"`, `victim_role_pool` (Witness, Specter, Informant, Conspirator).
 - `additional_kill_config` added: available in 6-slot sessions, proportionality-governed, dynamically expandable under specific story conditions.
-- `mini_game` added as a content type deliverable within beats 1-3. Supports phone-only and phone-plus-screen delivery. Mini-game outputs are named inputs to `killer_assignment_logic`.
+- `mini_game` added as a content type deliverable across any beat (beat range constraint intentionally removed; arc position is now configurable per session). Supports phone-only and phone-plus-screen delivery. Mini-game outputs are named inputs to `killer_assignment_logic` for games that fire before killer assignment; games that fire after serve defined session functions instead.
 - `murder_timing_range: [1, 3]` added to arc definition. Murder occurs within this beat range, not at a fixed point.
 - `session_duration_range: [30, 75]` replaces any session_mode concept. Duration is emergent from player behavior and pacing engine response, not a designed configuration.
 - Role types are now first-class platform objects in an extensible library. Arc definitions reference role types by ID. New role types can be added to the library without changing the arc schema.
