@@ -7,6 +7,6 @@
   "scripts": {
     "typecheck": "node ../node_modules/typescript/bin/tsc -p tsconfig.json --noEmit",
     "build": "node ../node_modules/typescript/bin/tsc -p tsconfig.json",
-    "test": "npm run build && node --test dist/tests/connector.test.js"
+    "test": "npm run build && node --test dist/tests/index.test.js"
   }
 }

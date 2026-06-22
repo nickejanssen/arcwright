@@ -1,4 +1,4 @@
-import type { ContentEvent } from "../../sdk/dist/index.js";
+import type { ContentEvent } from "./types.js";
 
 export type NightcapFetch = (
   input: RequestInfo | URL,
@@ -34,6 +34,17 @@ export interface EventSubscriptionOptions {
   sessionId: string;
   accessToken: string;
   since?: number;
+  maxReconnectAttempts?: number;
+  onError?: (error: EventSubscriptionError) => void;
+  retryBaseDelayMs?: number;
+}
+
+export interface EventSubscriptionError {
+  message: string;
+  sessionId: string;
+  attempt: number;
+  sequenceNumber: number;
+  retryDelayMs: number | null;
 }
 
 export interface ConnectedSession {
@@ -57,7 +68,7 @@ export class NightcapConnector {
   ): Promise<CreateSessionResponse> {
     return this.jsonRequest<CreateSessionResponse>("/v1/sessions", {
       method: "POST",
-      headers: this.apiHeaders(),
+      headers: this.apiHeaders(true),
       body: JSON.stringify(body),
     });
   }
@@ -65,7 +76,7 @@ export class NightcapConnector {
   async getSession(sessionId: string): Promise<SessionStateResponse> {
     return this.jsonRequest<SessionStateResponse>(`/v1/sessions/${sessionId}`, {
       method: "GET",
-      headers: this.apiHeaders(),
+      headers: this.apiHeaders(false),
     });
   }
 
@@ -87,10 +98,95 @@ export class NightcapConnector {
   ): () => void {
     let cancelled = false;
     let reader: ReadableStreamDefaultReader<Uint8Array> | null = null;
-    let reconnectAttempted = false;
+    let reconnectAttempts = 0;
     let lastSequenceNumber = options.since ?? 0;
+    const maxReconnectAttempts = options.maxReconnectAttempts ?? 5;
+    const retryBaseDelayMs = options.retryBaseDelayMs ?? 250;
 
-    const stream = async (isReconnect: boolean): Promise<void> => {
+    const sleep = async (ms: number): Promise<void> => {
+      await new Promise<void>((resolve) => {
+        setTimeout(resolve, ms);
+      });
+    };
+
+    const retryDelayFor = (attempt: number): number | null =>
+      attempt < maxReconnectAttempts ? retryBaseDelayMs * 2 ** attempt : null;
+
+    const emitError = (message: string, retryDelayMs: number | null): void => {
+      options.onError?.({
+        message,
+        sessionId: options.sessionId,
+        attempt: reconnectAttempts,
+        sequenceNumber: lastSequenceNumber,
+        retryDelayMs,
+      });
+    };
+
+    const scheduleRetry = async (message: string): Promise<boolean> => {
+      const retryDelayMs = retryDelayFor(reconnectAttempts);
+      emitError(message, retryDelayMs);
+      if (cancelled || retryDelayMs === null) {
+        return false;
+      }
+
+      reconnectAttempts += 1;
+      await sleep(retryDelayMs);
+      return !cancelled;
+    };
+
+    const parseBlock = (block: string): void => {
+      let eventName: string | null = null;
+      let eventId: string | null = null;
+      const dataLines: string[] = [];
+
+      for (const rawLine of block.split("\n")) {
+        const line = rawLine.replace(/\r$/, "");
+        if (!line || line.startsWith(":")) {
+          continue;
+        }
+
+        if (line.startsWith("event:")) {
+          eventName = line.slice(6).trim();
+          continue;
+        }
+
+        if (line.startsWith("id:")) {
+          eventId = line.slice(3).trim();
+          continue;
+        }
+
+        if (line.startsWith("data:")) {
+          dataLines.push(line.slice(5).replace(/^\s/, ""));
+        }
+      }
+
+      if (dataLines.length === 0) {
+        return;
+      }
+
+      try {
+        const event = JSON.parse(dataLines.join("\n")) as ContentEvent;
+        if (eventId) {
+          const parsedEventId = Number.parseInt(eventId, 10);
+          if (!Number.isNaN(parsedEventId)) {
+            lastSequenceNumber = Math.max(lastSequenceNumber, parsedEventId);
+          }
+        }
+
+        lastSequenceNumber = Math.max(
+          lastSequenceNumber,
+          event.sequence_number,
+        );
+        onEvent(event);
+      } catch {
+        emitError(
+          `Received malformed SSE payload${eventName ? ` for ${eventName}` : ""}.`,
+          null,
+        );
+      }
+    };
+
+    const stream = async (): Promise<void> => {
       const url = new URL(
         `${this.baseUrl}/v1/sessions/${options.sessionId}/events`,
       );
@@ -105,10 +201,20 @@ export class NightcapConnector {
           },
         });
       } catch {
+        if (await scheduleRetry("Failed to open event stream.")) {
+          await stream();
+        }
         return;
       }
 
       if (!response.ok || !response.body || cancelled) {
+        if (
+          await scheduleRetry(
+            `Event stream returned ${response.status} ${response.statusText}.`,
+          )
+        ) {
+          await stream();
+        }
         return;
       }
 
@@ -129,37 +235,25 @@ export class NightcapConnector {
           buffer = blocks.pop() ?? "";
 
           for (const block of blocks) {
-            for (const line of block.split("\n")) {
-              if (!line.startsWith("data:")) {
-                continue;
-              }
-
-              const payload = line.slice(5).trim();
-              if (!payload) {
-                continue;
-              }
-
-              try {
-                const event = JSON.parse(payload) as ContentEvent;
-                lastSequenceNumber = event.sequence_number;
-                onEvent(event);
-              } catch {
-                continue;
-              }
-            }
+            parseBlock(block);
           }
         }
       } finally {
+        if (buffer.length > 0) {
+          parseBlock(buffer);
+        }
         reader = null;
       }
 
-      if (!cancelled && !isReconnect && !reconnectAttempted) {
-        reconnectAttempted = true;
-        await stream(true);
+      if (
+        !cancelled &&
+        (await scheduleRetry("Event stream ended unexpectedly."))
+      ) {
+        await stream();
       }
     };
 
-    void stream(false);
+    void stream();
 
     return () => {
       cancelled = true;
@@ -167,10 +261,10 @@ export class NightcapConnector {
     };
   }
 
-  private apiHeaders(): HeadersInit {
+  private apiHeaders(includeContentType: boolean): HeadersInit {
     return {
       "X-Api-Key": this.apiKey,
-      "Content-Type": "application/json",
+      ...(includeContentType ? { "Content-Type": "application/json" } : {}),
     };
   }
 

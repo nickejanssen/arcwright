@@ -15,6 +15,15 @@ function responseJson(body: unknown): Response {
   });
 }
 
+function responseText(status: number, body: string): Response {
+  return new Response(body, {
+    status,
+    headers: {
+      "content-type": "text/plain; charset=utf-8",
+    },
+  });
+}
+
 function responseSse(payloads: unknown[]): Response {
   const stream = new ReadableStream<Uint8Array>({
     start(controller) {
@@ -25,6 +34,37 @@ function responseSse(payloads: unknown[]): Response {
         );
       }
       controller.close();
+    },
+  });
+
+  return new Response(stream, {
+    status: 200,
+    headers: {
+      "content-type": "text/event-stream",
+    },
+  });
+}
+
+function responseSseWithDelayedSecondEvent(payloads: unknown[]): Response {
+  let timer: ReturnType<typeof setTimeout> | null = null;
+  const stream = new ReadableStream<Uint8Array>({
+    start(controller) {
+      const encoder = new TextEncoder();
+      controller.enqueue(
+        encoder.encode(`data: ${JSON.stringify(payloads[0])}\n\n`),
+      );
+      timer = setTimeout(() => {
+        controller.enqueue(
+          encoder.encode(`data: ${JSON.stringify(payloads[1])}\n\n`),
+        );
+        controller.close();
+      }, 20);
+    },
+    cancel() {
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+      }
     },
   });
 
@@ -161,10 +201,201 @@ test("NightcapConnector calls session endpoints and streams scoped events", asyn
   assert.equal(calls[0]?.method, "POST");
   assert.equal(calls[0]?.path, "/v1/sessions");
   assert.equal(calls[0]?.headers.get("x-api-key"), "api-key-123");
+  assert.equal(calls[0]?.headers.get("content-type"), "application/json");
   assert.equal(calls[1]?.method, "GET");
   assert.equal(calls[1]?.path, "/v1/sessions/session-1");
   assert.equal(calls[1]?.headers.get("x-api-key"), "api-key-123");
+  assert.equal(calls[1]?.headers.get("content-type"), null);
   assert.equal(calls[2]?.method, "GET");
   assert.equal(calls[2]?.path, "/v1/sessions/session-1/events?since=0");
   assert.equal(calls[2]?.headers.get("authorization"), "Bearer player-token-1");
+  assert.equal(calls[2]?.headers.get("content-type"), null);
+});
+
+test("NightcapConnector retries failed event stream opens and reports errors", async () => {
+  const calls: Array<{ method: string; path: string }> = [];
+  const errors: Array<{ message: string; retryDelayMs: number | null }> = [];
+  let eventRequestCount = 0;
+
+  const eventPayload = {
+    event_id: "event-2",
+    session_id: "session-2",
+    timestamp: "2026-06-22T12:00:01.000Z",
+    category: "acknowledgement",
+    event_type: "clue_acknowledged",
+    actor_id: null,
+    target_audience: "shared_display",
+    target_player_id: null,
+    payload: { clue_id: "clue-2" },
+    presentation_hints: {
+      emotion: "warm",
+      urgency: "low",
+      voice_hint: null,
+      animation_hint: null,
+      lighting_hint: null,
+      pause_before_ms: 0,
+    },
+    sequence_number: 2,
+  };
+
+  const fetchImpl = async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> => {
+    const request =
+      input instanceof Request
+        ? input
+        : new Request(input instanceof URL ? input : String(input), init);
+    const url = new URL(request.url);
+    calls.push({
+      method: request.method,
+      path: `${url.pathname}${url.search}`,
+    });
+
+    if (url.pathname === "/v1/sessions/session-2/events") {
+      eventRequestCount += 1;
+      if (eventRequestCount === 1) {
+        return responseText(503, "temporary outage");
+      }
+
+      return responseSse([eventPayload]);
+    }
+
+    if (request.method === "GET" && url.pathname === "/v1/sessions/session-2") {
+      return responseJson({
+        session_id: "session-2",
+        status: "active",
+      });
+    }
+
+    return responseJson({
+      session_id: "session-2",
+      join_url: "https://arcwright.test/v1/sessions/session-2/join",
+      host_token: "host-token",
+    });
+  };
+
+  const connector = new NightcapConnector({
+    baseUrl: "https://arcwright.test",
+    apiKey: "api-key-123",
+    fetchImpl,
+  });
+
+  const received: unknown[] = [];
+  let unsubscribe = () => {};
+  const done = new Promise<void>((resolve) => {
+    unsubscribe = connector.subscribeToEvents(
+      {
+        sessionId: "session-2",
+        accessToken: "player-token-2",
+        maxReconnectAttempts: 2,
+        retryBaseDelayMs: 0,
+        onError: (error) => {
+          errors.push({
+            message: error.message,
+            retryDelayMs: error.retryDelayMs,
+          });
+        },
+      },
+      (event) => {
+        received.push(event);
+        unsubscribe();
+        resolve();
+      },
+    );
+  });
+
+  await done;
+
+  assert.equal(eventRequestCount, 2);
+  assert.equal(received.length, 1);
+  assert.equal(errors.length >= 1, true);
+  assert.match(errors[0]?.message ?? "", /503/);
+  assert.equal(errors[0]?.retryDelayMs, 0);
+});
+
+test("NightcapConnector unsubscribe stops later SSE events", async () => {
+  const connector = new NightcapConnector({
+    baseUrl: "https://arcwright.test",
+    apiKey: "api-key-123",
+    fetchImpl: async (input, init) => {
+      const request =
+        input instanceof Request
+          ? input
+          : new Request(input instanceof URL ? input : String(input), init);
+      const url = new URL(request.url);
+      if (url.pathname === "/v1/sessions/session-3/events") {
+        return responseSseWithDelayedSecondEvent([
+          {
+            event_id: "event-3",
+            session_id: "session-3",
+            timestamp: "2026-06-22T12:00:02.000Z",
+            category: "system",
+            event_type: "connect",
+            actor_id: null,
+            target_audience: "host_only",
+            target_player_id: null,
+            payload: {},
+            presentation_hints: {
+              emotion: null,
+              urgency: null,
+              voice_hint: null,
+              animation_hint: null,
+              lighting_hint: null,
+              pause_before_ms: 0,
+            },
+            sequence_number: 3,
+          },
+          {
+            event_id: "event-4",
+            session_id: "session-3",
+            timestamp: "2026-06-22T12:00:03.000Z",
+            category: "system",
+            event_type: "disconnect",
+            actor_id: null,
+            target_audience: "host_only",
+            target_player_id: null,
+            payload: {},
+            presentation_hints: {
+              emotion: null,
+              urgency: null,
+              voice_hint: null,
+              animation_hint: null,
+              lighting_hint: null,
+              pause_before_ms: 0,
+            },
+            sequence_number: 4,
+          },
+        ]);
+      }
+
+      return responseJson({
+        session_id: "session-3",
+        status: "active",
+      });
+    },
+  });
+
+  const received: Array<{ event_id: string }> = [];
+  let unsubscribe = () => {};
+  const done = new Promise<void>((resolve) => {
+    unsubscribe = connector.subscribeToEvents(
+      {
+        sessionId: "session-3",
+        accessToken: "player-token-3",
+        retryBaseDelayMs: 0,
+      },
+      (event) => {
+        received.push({ event_id: event.event_id });
+        unsubscribe();
+        resolve();
+      },
+    );
+  });
+
+  await done;
+  await new Promise((resolve) => setTimeout(resolve, 50));
+
+  assert.equal(received.length, 1);
+  assert.equal(received[0]?.event_id, "event-3");
 });

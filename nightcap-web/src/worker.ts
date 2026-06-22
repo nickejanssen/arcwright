@@ -34,6 +34,7 @@ export async function bootstrapSession(
   return json({
     session,
     runtime: {
+      // Reuse the session id as the room key for the DO namespace lookup.
       room_id: session.session_id,
       room_url: roomPath(session.session_id),
     },
