@@ -1,9 +1,12 @@
 import { NightcapConnector, type CreateSessionRequest } from "./connector.js";
 import { NightcapRoom } from "./room.js";
 
+export { NightcapRoom } from "./room.js";
+
 export interface NightcapWorkerEnv {
   ARCWRIGHT_API_BASE_URL: string;
   ARCWRIGHT_API_KEY: string;
+  BOOTSTRAP_TOKEN: string;
   ROOMS: DurableObjectNamespace<NightcapRoom>;
 }
 
@@ -24,6 +27,26 @@ function roomPath(sessionId: string): string {
 function parseSegment(pathname: string, index: number): string | null {
   const segment = pathname.split("/")[index];
   return segment && segment.length > 0 ? segment : null;
+}
+
+const BOOTSTRAP_TOKEN_HEADER = "x-arcwright-bootstrap-token";
+
+export function authorizeBootstrapSession(
+  request: Request,
+  env: NightcapWorkerEnv,
+): Response | null {
+  if (!env.BOOTSTRAP_TOKEN) {
+    return new Response("Bootstrap token is not configured", {
+      status: 503,
+    });
+  }
+
+  const providedToken = request.headers.get(BOOTSTRAP_TOKEN_HEADER);
+  if (providedToken !== env.BOOTSTRAP_TOKEN) {
+    return new Response("Unauthorized", { status: 401 });
+  }
+
+  return null;
 }
 
 export async function bootstrapSession(
@@ -63,6 +86,11 @@ export default {
     });
 
     if (request.method === "POST" && url.pathname === "/bootstrap/session") {
+      const denied = authorizeBootstrapSession(request, env);
+      if (denied) {
+        return denied;
+      }
+
       const body = (await request.json()) as CreateSessionRequest;
       return bootstrapSession(connector, body);
     }
