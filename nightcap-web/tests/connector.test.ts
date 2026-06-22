@@ -5,6 +5,10 @@ import {
   type CreateSessionRequest,
   type SessionStateResponse,
 } from "../src/connector.js";
+import {
+  isHostVisibleEvent,
+  isSharedDisplayVisibleEvent,
+} from "../src/filters.js";
 
 function responseJson(body: unknown): Response {
   return new Response(JSON.stringify(body), {
@@ -149,6 +153,34 @@ test("NightcapConnector calls session endpoints and streams scoped events", asyn
     }
 
     if (
+      request.method === "POST" &&
+      url.pathname === "/v1/sessions/session-1/start"
+    ) {
+      return responseJson({ ...sessionState, status: "active" });
+    }
+
+    if (
+      request.method === "POST" &&
+      url.pathname === "/v1/sessions/session-1/pause"
+    ) {
+      return responseJson({ ...sessionState, status: "paused" });
+    }
+
+    if (
+      request.method === "POST" &&
+      url.pathname === "/v1/sessions/session-1/resume"
+    ) {
+      return responseJson({ ...sessionState, status: "active" });
+    }
+
+    if (
+      request.method === "POST" &&
+      url.pathname === "/v1/sessions/session-1/end"
+    ) {
+      return responseJson({ ...sessionState, status: "completed" });
+    }
+
+    if (
       request.method === "GET" &&
       url.pathname === "/v1/sessions/session-1/events"
     ) {
@@ -175,6 +207,21 @@ test("NightcapConnector calls session endpoints and streams scoped events", asyn
   const loaded = await connector.getSession("session-1");
   assert.equal(loaded.current_beat_id, "arrival");
   assert.equal(loaded.player_count, 4);
+
+  const started = await connector.startSession("session-1", "host-token");
+  assert.equal(started.status, "active");
+
+  const paused = await connector.pauseSession("session-1", "host-token");
+  assert.equal(paused.status, "paused");
+
+  const resumed = await connector.resumeSession("session-1", "host-token");
+  assert.equal(resumed.status, "active");
+
+  const ended = await connector.endSession("session-1", "host-token", {
+    completion_type: "full_arc",
+    killer_identified: true,
+  });
+  assert.equal(ended.status, "completed");
 
   const received: Array<typeof eventPayload> = [];
   let unsubscribe = () => {};
@@ -206,10 +253,16 @@ test("NightcapConnector calls session endpoints and streams scoped events", asyn
   assert.equal(calls[1]?.path, "/v1/sessions/session-1");
   assert.equal(calls[1]?.headers.get("x-api-key"), "api-key-123");
   assert.equal(calls[1]?.headers.get("content-type"), null);
-  assert.equal(calls[2]?.method, "GET");
-  assert.equal(calls[2]?.path, "/v1/sessions/session-1/events?since=0");
-  assert.equal(calls[2]?.headers.get("authorization"), "Bearer player-token-1");
-  assert.equal(calls[2]?.headers.get("content-type"), null);
+  assert.equal(calls[2]?.path, "/v1/sessions/session-1/start");
+  assert.equal(calls[2]?.headers.get("authorization"), "Bearer host-token");
+  assert.equal(calls[3]?.path, "/v1/sessions/session-1/pause");
+  assert.equal(calls[4]?.path, "/v1/sessions/session-1/resume");
+  assert.equal(calls[5]?.path, "/v1/sessions/session-1/end");
+  assert.equal(calls[5]?.headers.get("authorization"), "Bearer host-token");
+  assert.equal(calls[6]?.method, "GET");
+  assert.equal(calls[6]?.path, "/v1/sessions/session-1/events?since=0");
+  assert.equal(calls[6]?.headers.get("authorization"), "Bearer player-token-1");
+  assert.equal(calls[6]?.headers.get("content-type"), null);
 });
 
 test("NightcapConnector retries failed event stream opens and reports errors", async () => {
@@ -398,4 +451,21 @@ test("NightcapConnector unsubscribe stops later SSE events", async () => {
 
   assert.equal(received.length, 1);
   assert.equal(received[0]?.event_id, "event-3");
+});
+
+test("shared display visibility helpers only allow public and shared events", () => {
+  assert.equal(isSharedDisplayVisibleEvent({ target_audience: "all" }), true);
+  assert.equal(
+    isSharedDisplayVisibleEvent({ target_audience: "shared_display" }),
+    true,
+  );
+  assert.equal(
+    isSharedDisplayVisibleEvent({ target_audience: "host_only" }),
+    false,
+  );
+  assert.equal(isHostVisibleEvent({ target_audience: "host_only" }), true);
+  assert.equal(
+    isHostVisibleEvent({ target_audience: "specific_player" }),
+    false,
+  );
 });

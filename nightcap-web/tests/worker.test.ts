@@ -8,8 +8,12 @@ import {
 import {
   authorizeBootstrapSession,
   bootstrapSession,
+  createHostSession,
   type NightcapRoom,
   type NightcapWorkerEnv,
+  proxySessionLifecycle,
+  renderHostPage,
+  renderSharedDisplayPage,
 } from "../src/worker.js";
 
 const roomNamespace = {
@@ -97,4 +101,168 @@ test("bootstrapSession forwards the Arcwright session id into room runtime state
     room_id: "session-123",
     room_url: "/rooms/session-123",
   });
+});
+
+test("createHostSession includes host and shared-display runtime URLs", async () => {
+  const createSessionCalls: CreateSessionRequest[] = [];
+  const connector = {
+    async createSession(request: CreateSessionRequest) {
+      createSessionCalls.push(request);
+      return {
+        session_id: "session-456",
+        room_url: "https://arcwright.invalid/rooms/session-456",
+        host_token: "host-token",
+      };
+    },
+  } as unknown as NightcapConnector;
+
+  const response = await createHostSession(connector, {
+    arc_id: "nightcap-v1",
+    personalization_intake: {
+      host_seed_1: "A",
+      player_prompt_1: "B",
+    },
+  });
+
+  assert.equal(response.status, 200);
+  assert.equal(createSessionCalls.length, 1);
+  const body = (await response.json()) as {
+    session: { session_id: string };
+    runtime: {
+      room_id: string;
+      room_url: string;
+      host_url: string;
+      shared_display_url: string;
+    };
+    personalization_intake: Record<string, unknown>;
+  };
+
+  assert.equal(body.session.session_id, "session-456");
+  assert.equal(body.runtime.room_id, "session-456");
+  assert.equal(body.runtime.room_url, "/rooms/session-456");
+  assert.equal(body.runtime.host_url, "/host?session_id=session-456");
+  assert.equal(
+    body.runtime.shared_display_url,
+    "/shared-display?session_id=session-456",
+  );
+  assert.deepEqual(body.personalization_intake, {
+    host_seed_1: "A",
+    player_prompt_1: "B",
+  });
+});
+
+test("proxySessionLifecycle forwards host bearer tokens to Arcwright lifecycle calls", async () => {
+  const events: string[] = [];
+  const connector = {
+    async startSession(sessionId: string, accessToken: string) {
+      events.push(`start:${sessionId}:${accessToken}`);
+      return {
+        session_id: sessionId,
+        status: "active",
+        current_beat_id: "arrival",
+        player_count: 4,
+      };
+    },
+    async pauseSession(sessionId: string, accessToken: string) {
+      events.push(`pause:${sessionId}:${accessToken}`);
+      return {
+        session_id: sessionId,
+        status: "paused",
+        current_beat_id: "arrival",
+        player_count: 4,
+      };
+    },
+    async resumeSession(sessionId: string, accessToken: string) {
+      events.push(`resume:${sessionId}:${accessToken}`);
+      return {
+        session_id: sessionId,
+        status: "active",
+        current_beat_id: "arrival",
+        player_count: 4,
+      };
+    },
+    async endSession(
+      sessionId: string,
+      accessToken: string,
+      body: { completion_type?: string; killer_identified?: boolean } = {},
+    ) {
+      events.push(
+        `end:${sessionId}:${accessToken}:${body.completion_type ?? ""}:${body.killer_identified ?? false}`,
+      );
+      return {
+        session_id: sessionId,
+        status: "completed",
+        current_beat_id: "arrival",
+        player_count: 4,
+      };
+    },
+  } as unknown as NightcapConnector;
+
+  const startResponse = await proxySessionLifecycle(
+    connector,
+    "session-789",
+    "start",
+    new Request("https://nightcap.test/host/api/sessions/session-789/start", {
+      method: "POST",
+      headers: { Authorization: "Bearer host-token" },
+    }),
+  );
+  const pauseResponse = await proxySessionLifecycle(
+    connector,
+    "session-789",
+    "pause",
+    new Request("https://nightcap.test/host/api/sessions/session-789/pause", {
+      method: "POST",
+      headers: { Authorization: "Bearer host-token" },
+    }),
+  );
+  const resumeResponse = await proxySessionLifecycle(
+    connector,
+    "session-789",
+    "resume",
+    new Request("https://nightcap.test/host/api/sessions/session-789/resume", {
+      method: "POST",
+      headers: { Authorization: "Bearer host-token" },
+    }),
+  );
+  const endResponse = await proxySessionLifecycle(
+    connector,
+    "session-789",
+    "end",
+    new Request("https://nightcap.test/host/api/sessions/session-789/end", {
+      method: "POST",
+      headers: {
+        Authorization: "Bearer host-token",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        completion_type: "interrupted",
+        killer_identified: true,
+      }),
+    }),
+  );
+
+  assert.equal(startResponse.status, 200);
+  assert.equal(pauseResponse.status, 200);
+  assert.equal(resumeResponse.status, 200);
+  assert.equal(endResponse.status, 200);
+  assert.deepEqual(events, [
+    "start:session-789:host-token",
+    "pause:session-789:host-token",
+    "resume:session-789:host-token",
+    "end:session-789:host-token:interrupted:true",
+  ]);
+});
+
+test("rendered runtime shells include host and shared-display controls", () => {
+  const hostHtml = renderHostPage("session-123");
+  const sharedHtml = renderSharedDisplayPage("session-123");
+
+  assert.match(hostHtml, /Create session/);
+  assert.match(hostHtml, /Start/);
+  assert.match(hostHtml, /Pause/);
+  assert.match(hostHtml, /Resume/);
+  assert.match(hostHtml, /End/);
+  assert.match(sharedHtml, /Shared display/);
+  assert.match(sharedHtml, /Only public or shared-display events/);
 });

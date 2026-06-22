@@ -24,6 +24,11 @@ export interface SessionStateResponse {
   [key: string]: unknown;
 }
 
+export interface EndSessionRequest {
+  completion_type?: "full_arc" | "interrupted" | "abandoned";
+  killer_identified?: boolean;
+}
+
 export interface NightcapConnectorOptions {
   baseUrl: string;
   apiKey: string;
@@ -78,6 +83,54 @@ export class NightcapConnector {
       method: "GET",
       headers: this.apiHeaders(false),
     });
+  }
+
+  async startSession(
+    sessionId: string,
+    accessToken: string,
+  ): Promise<SessionStateResponse> {
+    return this.authorizedJsonRequest<SessionStateResponse>(
+      `/v1/sessions/${sessionId}/start`,
+      accessToken,
+      { method: "POST" },
+    );
+  }
+
+  async pauseSession(
+    sessionId: string,
+    accessToken: string,
+  ): Promise<SessionStateResponse> {
+    return this.authorizedJsonRequest<SessionStateResponse>(
+      `/v1/sessions/${sessionId}/pause`,
+      accessToken,
+      { method: "POST" },
+    );
+  }
+
+  async resumeSession(
+    sessionId: string,
+    accessToken: string,
+  ): Promise<SessionStateResponse> {
+    return this.authorizedJsonRequest<SessionStateResponse>(
+      `/v1/sessions/${sessionId}/resume`,
+      accessToken,
+      { method: "POST" },
+    );
+  }
+
+  async endSession(
+    sessionId: string,
+    accessToken: string,
+    body: EndSessionRequest = {},
+  ): Promise<SessionStateResponse> {
+    return this.authorizedJsonRequest<SessionStateResponse>(
+      `/v1/sessions/${sessionId}/end`,
+      accessToken,
+      {
+        method: "POST",
+        body: JSON.stringify(body),
+      },
+    );
   }
 
   async attachToSession(
@@ -270,8 +323,43 @@ export class NightcapConnector {
     };
   }
 
+  private authorizedHeaders(
+    accessToken: string,
+    includeContentType: boolean,
+  ): HeadersInit {
+    return {
+      Authorization: `Bearer ${accessToken}`,
+      ...(includeContentType ? { "Content-Type": "application/json" } : {}),
+    };
+  }
+
   private async jsonRequest<T>(path: string, init: RequestInit): Promise<T> {
     const response = await this.fetchImpl(`${this.baseUrl}${path}`, init);
+    if (!response.ok) {
+      throw new Error(
+        `${init.method ?? "GET"} ${path} failed with ${response.status}`,
+      );
+    }
+
+    return response.json() as Promise<T>;
+  }
+
+  private async authorizedJsonRequest<T>(
+    path: string,
+    accessToken: string,
+    init: RequestInit,
+  ): Promise<T> {
+    const response = await this.fetchImpl(`${this.baseUrl}${path}`, {
+      ...init,
+      headers: {
+        ...this.authorizedHeaders(
+          accessToken,
+          init.body !== undefined || init.method === "POST",
+        ),
+        ...(init.headers ?? {}),
+      },
+    });
+
     if (!response.ok) {
       throw new Error(
         `${init.method ?? "GET"} ${path} failed with ${response.status}`,
