@@ -119,6 +119,11 @@ class EndSessionRequest(BaseModel):
     killer_identified: bool = False
 
 
+class ReplayIntentRequest(BaseModel):
+    intent: Literal["yes", "no", "maybe", "not_asked"]
+    collection_method: Literal["host_report", "in_app_prompt"]
+
+
 class TaskTypeCostRow(BaseModel):
     task_type: str
     generation_count: int

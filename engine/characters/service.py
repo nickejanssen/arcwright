@@ -138,6 +138,11 @@ class CharacterService:
             submitted_at=datetime.now(tz=timezone.utc),
         )
         self._inputs.setdefault(session_id, []).append(record)
+        await self.sessions.advance_live_session_on_input(
+            db,
+            session_id,
+            player_action_count=len(self._inputs[session_id]),
+        )
         return record
 
     def get_inputs(self, session_id: UUID) -> list[PlayerInputRecord]:
