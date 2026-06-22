@@ -187,69 +187,71 @@ export class NightcapConnector {
     };
 
     const stream = async (): Promise<void> => {
-      const url = new URL(
-        `${this.baseUrl}/v1/sessions/${options.sessionId}/events`,
-      );
-      url.searchParams.set("since", String(lastSequenceNumber));
+      while (!cancelled) {
+        const url = new URL(
+          `${this.baseUrl}/v1/sessions/${options.sessionId}/events`,
+        );
+        url.searchParams.set("since", String(lastSequenceNumber));
 
-      let response: Response;
-      try {
-        response = await this.fetchImpl(url, {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${options.accessToken}`,
-          },
-        });
-      } catch {
-        if (await scheduleRetry("Failed to open event stream.")) {
-          await stream();
-        }
-        return;
-      }
-
-      if (!response.ok || !response.body || cancelled) {
-        if (
-          await scheduleRetry(
-            `Event stream returned ${response.status} ${response.statusText}.`,
-          )
-        ) {
-          await stream();
-        }
-        return;
-      }
-
-      reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      try {
-        while (!cancelled) {
-          const { done, value } = await reader.read();
-          if (done) {
+        let response: Response;
+        try {
+          response = await this.fetchImpl(url, {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${options.accessToken}`,
+            },
+          });
+        } catch {
+          if (!(await scheduleRetry("Failed to open event stream."))) {
             break;
           }
+          continue;
+        }
 
-          buffer += decoder.decode(value, { stream: true });
-          buffer = buffer.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
-          const blocks = buffer.split("\n\n");
-          buffer = blocks.pop() ?? "";
-
-          for (const block of blocks) {
-            parseBlock(block);
+        if (!response.ok || !response.body || cancelled) {
+          if (
+            !(await scheduleRetry(
+              `Event stream returned ${response.status} ${response.statusText}.`,
+            ))
+          ) {
+            break;
           }
+          continue;
         }
-      } finally {
-        if (buffer.length > 0) {
-          parseBlock(buffer);
-        }
-        reader = null;
-      }
 
-      if (
-        !cancelled &&
-        (await scheduleRetry("Event stream ended unexpectedly."))
-      ) {
-        await stream();
+        reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = "";
+
+        try {
+          while (!cancelled) {
+            const { done, value } = await reader.read();
+            if (done) {
+              break;
+            }
+
+            buffer += decoder.decode(value, { stream: true });
+            buffer = buffer.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+            const blocks = buffer.split("\n\n");
+            buffer = blocks.pop() ?? "";
+
+            for (const block of blocks) {
+              parseBlock(block);
+            }
+          }
+        } finally {
+          if (buffer.length > 0) {
+            parseBlock(buffer);
+          }
+          reader = null;
+        }
+
+        if (
+          cancelled ||
+          !(await scheduleRetry("Event stream ended unexpectedly."))
+        ) {
+          break;
+        }
       }
     };
 

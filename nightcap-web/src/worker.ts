@@ -35,7 +35,7 @@ export function authorizeBootstrapSession(
   request: Request,
   env: NightcapWorkerEnv,
 ): Response | null {
-  if (!env.BOOTSTRAP_TOKEN) {
+  if (!env.BOOTSTRAP_TOKEN || env.BOOTSTRAP_TOKEN.trim().length === 0) {
     return new Response("Bootstrap token is not configured", {
       status: 503,
     });

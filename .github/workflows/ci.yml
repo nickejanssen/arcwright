@@ -45,7 +45,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json', 'sdk/package.json', 'dashboard/package.json', 'eslint.config.mjs', '.github/workflows/ci.yml') }}
+          key: ${{ runner.os }}-node-${{ env.NODE_VERSION }}-${{ hashFiles('package-lock.json', 'sdk/package.json', 'dashboard/package.json', 'nightcap-web/package.json', 'eslint.config.mjs', '.github/workflows/ci.yml') }}
           restore-keys: |
             ${{ runner.os }}-node-${{ env.NODE_VERSION }}-
 
@@ -62,6 +62,9 @@ jobs:
 
       - name: Install dashboard dependencies
         run: npm install --prefix dashboard
+
+      - name: Install nightcap-web dependencies
+        run: npm install --prefix nightcap-web
 
       - name: Lint Python
         run: python -m ruff check engine api
@@ -90,6 +93,10 @@ jobs:
         if: ${{ hashFiles('dashboard/src/**/*.ts', 'dashboard/src/**/*.tsx') != '' }}
         run: npm run typecheck --prefix dashboard
 
+      - name: Type check nightcap-web
+        if: ${{ hashFiles('nightcap-web/src/**/*.ts') != '' }}
+        run: npm run typecheck --prefix nightcap-web
+
       - name: Run Python tests
         run: pytest engine/tests
 
@@ -100,6 +107,10 @@ jobs:
       - name: Build dashboard
         if: ${{ hashFiles('dashboard/src/**/*.ts', 'dashboard/src/**/*.tsx', 'dashboard/index.html') != '' }}
         run: npm run build --prefix dashboard
+
+      - name: Test nightcap-web
+        if: ${{ hashFiles('nightcap-web/src/**/*.ts') != '' }}
+        run: npm test --prefix nightcap-web
 
       - name: Scan for secrets with gitleaks
         uses: gitleaks/gitleaks-action@v2

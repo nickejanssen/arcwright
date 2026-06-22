@@ -1,3 +1,4 @@
+// Mirrors sdk/src/types.ts — keep in sync until a shared import path is established.
 export type AudienceTarget =
   | "all"
   | "host_only"
