@@ -11,6 +11,8 @@ Firebase is mocked so tests run without GCP credentials.
 from __future__ import annotations
 
 from collections.abc import AsyncIterator, Iterator
+from datetime import datetime, timezone
+from decimal import Decimal
 from unittest.mock import patch
 from uuid import UUID, uuid4
 
@@ -33,7 +35,7 @@ from api.auth import (
 )
 from api.main import app
 from engine.db import get_async_session
-from engine.db.orm import ArcBeatState, Base, Event
+from engine.db.orm import ArcBeatState, Base, Event, GenerationLog
 from engine.db.orm import Session as OrmSession
 from engine.db.testing import patch_metadata_for_sqlite
 from engine.session.models import SessionStatus
@@ -120,6 +122,39 @@ class TestGetSession:
 
         assert resp.status_code == 200
         assert resp.json()["session_id"] == str(session_id)
+
+    def test_known_session_reports_logged_cost(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        session_id = _create_session(client)
+
+        async def _seed_generation_log() -> None:
+            async with db_factory() as db:
+                db.add(
+                    GenerationLog(
+                        session_id=session_id,
+                        timestamp=datetime.now(tz=timezone.utc),
+                        task_type="character_dialogue",
+                        quality_tier="standard",
+                        model_used="test-model",
+                        latency_ms=120,
+                        input_tokens=100,
+                        output_tokens=40,
+                        cost_usd=Decimal("0.125"),
+                    )
+                )
+                await db.commit()
+
+        import asyncio
+
+        asyncio.get_event_loop().run_until_complete(_seed_generation_log())
+
+        resp = client.get(f"/v1/sessions/{session_id}")
+
+        assert resp.status_code == 200
+        assert resp.json()["cost_consumed_usd"] == pytest.approx(0.125)
 
     def test_unknown_session_returns_404(self, client: TestClient) -> None:
         resp = client.get(f"/v1/sessions/{uuid4()}")
