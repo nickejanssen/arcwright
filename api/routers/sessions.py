@@ -47,6 +47,7 @@ from engine.session.service import (
     SessionStateError,
     _session_service,
 )
+from engine.telemetry.costs import get_cost_summary
 
 router = APIRouter(prefix="/sessions", tags=["sessions"])
 
@@ -101,7 +102,7 @@ async def get_session(
     session = await _session_service.get_session(db, session_id)
     if session is None:
         raise HTTPException(status_code=404, detail="Session not found")
-    return _session_to_state_response(session)
+    return await _session_to_state_response(db, session)
 
 
 @router.post("/{session_id}/start", response_model=SessionStateResponse)
@@ -118,7 +119,7 @@ async def start_session(
         raise HTTPException(status_code=404, detail="Session not found")
     except SessionStateError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
-    return _session_to_state_response(session)
+    return await _session_to_state_response(db, session)
 
 
 @router.post("/{session_id}/pause", response_model=SessionStateResponse)
@@ -135,7 +136,7 @@ async def pause_session(
         raise HTTPException(status_code=404, detail="Session not found")
     except SessionStateError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
-    return _session_to_state_response(session)
+    return await _session_to_state_response(db, session)
 
 
 @router.post("/{session_id}/resume", response_model=SessionStateResponse)
@@ -157,7 +158,7 @@ async def resume_session(
     )
     bus, _registry = _get_or_create_session_state(session_id)
     await bus.publish(bridge_event)
-    return _session_to_state_response(session)
+    return await _session_to_state_response(db, session)
 
 
 @router.post("/{session_id}/end", response_model=SessionStateResponse)
@@ -182,7 +183,7 @@ async def end_session(
         raise HTTPException(status_code=404, detail="Session not found")
     except SessionStateError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
-    return _session_to_state_response(session)
+    return await _session_to_state_response(db, session)
 
 
 @router.post("/{session_id}/players", response_model=AddPlayerResponse, status_code=201)
@@ -248,7 +249,8 @@ def _require_session_claim_match(session_id: UUID, claims: JwtClaims) -> None:
         )
 
 
-def _session_to_state_response(session) -> SessionStateResponse:  # type: ignore[no-untyped-def]
+async def _session_to_state_response(db: AsyncSession, session) -> SessionStateResponse:  # type: ignore[no-untyped-def]
+    cost_summary = await get_cost_summary(db, session_id=session.session_id)
     return SessionStateResponse(
         session_id=session.session_id,
         arc_id=session.arc_id,
@@ -259,5 +261,5 @@ def _session_to_state_response(session) -> SessionStateResponse:  # type: ignore
         created_at=session.created_at,
         started_at=session.started_at,
         completed_at=session.completed_at,
-        cost_consumed_usd=0.0,
+        cost_consumed_usd=float(cost_summary.total_cost_usd),
     )
