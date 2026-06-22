@@ -11,6 +11,7 @@ from unittest.mock import patch
 from uuid import UUID, uuid4
 
 import pytest_asyncio
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -27,8 +28,15 @@ from api.auth import (
     require_player_or_host_jwt,
 )
 from api.main import app
+from engine.arc.pacing import (
+    PacingIntervention,
+    PacingInterventionType,
+    PacingRecommendedAction,
+    PacingSignalSnapshot,
+)
 from engine.db import get_async_session
-from engine.db.orm import Base
+from engine.db.orm import Base, Event
+from engine.db.orm import Session as OrmSession
 from engine.db.testing import patch_metadata_for_sqlite
 from engine.session.service import SessionService
 
@@ -248,3 +256,118 @@ class TestSubmitInput:
                 json={"kind": "dialogue", "content": "display attempt"},
             )
         assert resp.status_code == 403
+
+
+class TestLiveProgression:
+    def test_player_input_advances_beat_and_emits_live_pacing_events(
+        self,
+        host_session: tuple[UUID, UUID, UUID, UUID],
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        session_id, player_a, char_a, _ = host_session
+
+        for c in _client_for_role("host", session_id, uuid4(), db_factory):
+            start_resp = c.post(f"/v1/sessions/{session_id}/start")
+        assert start_resp.status_code == 200
+
+        intervention = PacingIntervention(
+            intervention_type=PacingInterventionType.stall,
+            recommended_action=(PacingRecommendedAction.inject_clue_or_narrator_prompt),
+            beat_id="body",
+            tension_score_at_trigger=0.2,
+            threshold=0.3,
+            signal_snapshot=PacingSignalSnapshot(
+                beat_id="body",
+                time_pressure=0.1,
+                action_rate=0.1,
+                suspicion=0.1,
+                clue_coverage=0.1,
+            ),
+        )
+
+        with patch(
+            "engine.arc.pacing.evaluate_pacing_interventions",
+            return_value=[intervention],
+        ):
+            for c in _client_for_role("player", session_id, player_a, db_factory):
+                resp = c.post(
+                    f"/v1/sessions/{session_id}/characters/{char_a}/input",
+                    json={"kind": "dialogue", "content": "Advance the case."},
+                )
+
+        assert resp.status_code == 201
+        assert resp.json()["character_id"] == str(char_a)
+
+        for c in _client_for_role("player", session_id, player_a, db_factory):
+            state_resp = c.get(f"/v1/sessions/{session_id}")
+        assert state_resp.status_code == 200
+        assert state_resp.json()["current_beat_id"] == "body"
+
+        async def _read_rows() -> dict[str, int]:
+            async with db_factory() as db:
+                session_row = await db.get(OrmSession, session_id)
+                assert session_row is not None
+                beat_rows = (
+                    (
+                        await db.execute(
+                            select(Event).where(
+                                Event.session_id == session_id,
+                                Event.event_type == "beat_transition",
+                            )
+                        )
+                    )
+                    .scalars()
+                    .all()
+                )
+                tension_rows = (
+                    (
+                        await db.execute(
+                            select(Event).where(
+                                Event.session_id == session_id,
+                                Event.event_type == "tension_update",
+                            )
+                        )
+                    )
+                    .scalars()
+                    .all()
+                )
+                pacing_rows = (
+                    (
+                        await db.execute(
+                            select(Event).where(
+                                Event.session_id == session_id,
+                                Event.event_type == "pacing_intervention",
+                            )
+                        )
+                    )
+                    .scalars()
+                    .all()
+                )
+                outcome_rows = (
+                    (
+                        await db.execute(
+                            select(Event).where(
+                                Event.session_id == session_id,
+                                Event.event_type == "pacing_intervention_outcome",
+                            )
+                        )
+                    )
+                    .scalars()
+                    .all()
+                )
+                return {
+                    "beat_transition": len(beat_rows),
+                    "tension_update": len(tension_rows),
+                    "pacing_intervention": len(pacing_rows),
+                    "pacing_intervention_outcome": len(outcome_rows),
+                }
+
+        import asyncio
+
+        counts = asyncio.get_event_loop().run_until_complete(_read_rows())
+        assert counts == {
+            "beat_transition": 1,
+            "tension_update": 1,
+            "pacing_intervention": 1,
+            "pacing_intervention_outcome": 1,
+        }

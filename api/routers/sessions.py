@@ -11,6 +11,7 @@ Endpoint summary (base path /v1/sessions):
   POST   /{id}/pause             host JWT         Pause arc + snapshot
   POST   /{id}/resume            host JWT         Resume arc from snapshot
   POST   /{id}/end               host JWT         End session
+  POST   /{id}/replay-intent     host JWT         Record post-session replay intent
   GET    /{id}/join              public           Exchange join token for player JWT
 """
 
@@ -37,6 +38,7 @@ from api.schemas import (
     CreateSessionResponse,
     EndSessionRequest,
     JoinSessionResponse,
+    ReplayIntentRequest,
     SessionStateResponse,
 )
 from engine.db import get_async_session
@@ -184,6 +186,26 @@ async def end_session(
     except SessionStateError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
     return await _session_to_state_response(db, session)
+
+
+@router.post("/{session_id}/replay-intent", status_code=204)
+async def write_replay_intent(
+    session_id: UUID,
+    body: ReplayIntentRequest,
+    claims: JwtClaims = Depends(require_host_jwt),
+    db: AsyncSession = Depends(get_async_session),
+) -> None:
+    """Write the host-reported replay-intent telemetry signal."""
+    _require_session_claim_match(session_id, claims)
+    try:
+        await _session_service.write_replay_intent(
+            db,
+            session_id,
+            intent=body.intent,
+            collection_method=body.collection_method,
+        )
+    except SessionNotFoundError:
+        raise HTTPException(status_code=404, detail="Session not found")
 
 
 @router.post("/{session_id}/players", response_model=AddPlayerResponse, status_code=201)

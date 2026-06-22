@@ -426,6 +426,74 @@ class TestEndSession:
         assert resp.status_code == 422
 
 
+class TestReplayIntent:
+    def test_replay_intent_writes_event_without_ending_session(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        import asyncio
+
+        session_id = _create_session(client)
+        client.post(f"/v1/sessions/{session_id}/start")
+
+        resp = client.post(
+            f"/v1/sessions/{session_id}/replay-intent",
+            json={
+                "intent": "yes",
+                "collection_method": "host_report",
+            },
+        )
+        assert resp.status_code == 204
+
+        active_resp = client.get(f"/v1/sessions/{session_id}")
+        assert active_resp.status_code == 200
+        assert active_resp.json()["status"] == "active"
+
+        async def _event_counts() -> tuple[int, int]:
+            async with db_factory() as db:
+                replay_rows = (
+                    (
+                        await db.execute(
+                            select(Event).where(
+                                Event.session_id == session_id,
+                                Event.event_type == "replay_intent",
+                            )
+                        )
+                    )
+                    .scalars()
+                    .all()
+                )
+                completed_rows = (
+                    (
+                        await db.execute(
+                            select(Event).where(
+                                Event.session_id == session_id,
+                                Event.event_type == "session_completed",
+                            )
+                        )
+                    )
+                    .scalars()
+                    .all()
+                )
+                return len(replay_rows), len(completed_rows)
+
+        replay_count, completed_count = asyncio.get_event_loop().run_until_complete(
+            _event_counts()
+        )
+        assert replay_count == 1
+        assert completed_count == 0
+
+        end_resp = client.post(f"/v1/sessions/{session_id}/end")
+        assert end_resp.status_code == 200
+
+        replay_count, completed_count = asyncio.get_event_loop().run_until_complete(
+            _event_counts()
+        )
+        assert replay_count == 1
+        assert completed_count == 1
+
+
 class TestAddPlayer:
     def test_returns_201_with_join_token(self, client: TestClient) -> None:
         session_id = _create_session(client)

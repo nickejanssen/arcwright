@@ -1,20 +1,15 @@
-"""API-level batch harness test for AW-224.
+"""API-level batch harness test for AW-255.
 
-Runs 10 seeded Nightcap sessions through the HTTP lifecycle, keeps the
-``host_bypass`` signal inside the test harness, and verifies telemetry
-presence without widening the production input schema.
+Runs 10 seeded Nightcap sessions through the HTTP lifecycle, proves the live
+REST input path advances beat state, and records per-seed pass/fail status
+without using a detached HarnessRunner.
 """
 
 from __future__ import annotations
 
 import asyncio
-import random
 from collections.abc import AsyncIterator, Iterator
-from datetime import datetime, timezone
-from decimal import Decimal
-from pathlib import Path
-from typing import Any, Awaitable, TypeVar
-from unittest.mock import AsyncMock, patch
+from unittest.mock import patch
 from uuid import UUID, uuid4
 
 import pytest
@@ -36,25 +31,12 @@ from api.auth import (
     require_player_or_host_jwt,
 )
 from api.main import app
-from engine.arc import transition_name_for
-from engine.characters.service import InputKind, PlayerInputRecord, _character_service
 from engine.db import get_async_session
-from engine.db.orm import Base, Event, GenerationLog
+from engine.db.orm import Base, Event
 from engine.db.orm import SessionParticipant as OrmParticipant
 from engine.db.testing import patch_metadata_for_sqlite
-from engine.harness import HarnessAction, HarnessRunner
-from engine.routing import logging as routing_logging
-from engine.routing.router import RouteResult
 
 _FAKE_TOKEN = b"fake-firebase-custom-token"
-_ARC_PATH = Path(__file__).resolve().parents[2] / "nightcap" / "arc.json"
-_HOST_BYPASS = {
-    "host_bypass": {
-        "actor_id": "host-1",
-        "actor_role": "host",
-        "reason": "batch-harness-test",
-    }
-}
 _BEAT_SEQUENCE = [
     "arrival",
     "body",
@@ -65,17 +47,6 @@ _BEAT_SEQUENCE = [
     "close",
     "truth",
 ]
-_EXIT_CONDITIONS = {
-    "arrival": "all_players_ready",
-    "body": "body_discovered",
-    "opening_move": "private_clues_distributed",
-    "dig": "killer_revealed_to_themselves",
-    "thread": "first_convergence_reached",
-    "reckoning": "accusations_resolved",
-    "close": "final_accusation_committed",
-}
-_CLOSE_TO_TRUTH = transition_name_for("close", "truth")
-_T = TypeVar("_T")
 
 
 patch_metadata_for_sqlite()
@@ -145,10 +116,6 @@ def client(
         app.dependency_overrides.clear()
 
 
-def _run(coro: Awaitable[_T]) -> _T:
-    return asyncio.get_event_loop().run_until_complete(coro)
-
-
 def _create_session(client: TestClient) -> UUID:
     resp = client.post("/v1/sessions", json={"arc_id": "nightcap-v1"})
     assert resp.status_code == 201, resp.text
@@ -180,32 +147,7 @@ async def _load_participant(
         return participant
 
 
-def _advance_runner_to_truth(runner: HarnessRunner, participants: list[str]) -> None:
-    runner.start()
-    runner.set_participants(participants)
-
-    for current_beat, next_beat in zip(_BEAT_SEQUENCE, _BEAT_SEQUENCE[1:-1]):
-        payload: dict[str, object] = {"context": {_EXIT_CONDITIONS[current_beat]: True}}
-        runner.apply_action(
-            HarnessAction(
-                transition_name=transition_name_for(current_beat, next_beat),
-                payload=payload,
-            )
-        )
-
-    runner.apply_action(
-        HarnessAction(
-            transition_name=_CLOSE_TO_TRUTH,
-            payload=_HOST_BYPASS,
-        )
-    )
-
-    run = runner.current_run()
-    assert run.runtime_state.reveal_state.revealed_by == "host_bypass"
-    assert run.runtime_state.reveal_state.bypass_sequence == 1
-
-
-async def _count_rows(
+async def _count_events(
     db_factory: async_sessionmaker[AsyncSession],
     *,
     session_id: UUID,
@@ -221,168 +163,127 @@ async def _count_rows(
         return len(result.scalars().all())
 
 
-async def _count_generation_rows(
-    db_factory: async_sessionmaker[AsyncSession],
+def _set_host_claims(
+    auth_state: dict[str, JwtClaims],
     *,
     session_id: UUID,
-) -> int:
-    async with db_factory() as db:
-        result = await db.execute(
-            select(GenerationLog).where(GenerationLog.session_id == session_id)
-        )
-        return len(result.scalars().all())
+    participant_id: UUID,
+) -> None:
+    auth_state["host"] = JwtClaims(
+        uid="host-uid",
+        session_id=session_id,
+        player_id=participant_id,
+        role="host",
+    )
 
 
-@pytest.mark.parametrize("seed", range(10))
+def _set_player_claims(
+    auth_state: dict[str, JwtClaims],
+    *,
+    session_id: UUID,
+    participant_id: UUID,
+) -> None:
+    auth_state["player"] = JwtClaims(
+        uid="player-uid",
+        session_id=session_id,
+        player_id=participant_id,
+        role="player",
+    )
+
+
 def test_batch_session_completes(
-    seed: int,
     client: TestClient,
     db_factory: async_sessionmaker[AsyncSession],
     auth_state: dict[str, JwtClaims],
 ) -> None:
-    random.seed(seed)
+    records: list[dict[str, object]] = []
+    failures: list[str] = []
 
-    session_id = _create_session(client)
+    def _run_seed(seed: int) -> None:
+        session_id = _create_session(client)
 
-    host_participant = _run(
-        _load_participant(db_factory, session_id=session_id, surface_type="host")
-    )
-    auth_state["host"] = JwtClaims(
-        uid="host-uid",
-        session_id=session_id,
-        player_id=host_participant.participant_id,
-        role="host",
-    )
-
-    player_participant_ids = [_add_player(client, session_id) for _ in range(4)]
-    player_participant = _run(
-        _load_participant(
-            db_factory,
-            session_id=session_id,
-            participant_id=player_participant_ids[0],
-        )
-    )
-    auth_state["player"] = JwtClaims(
-        uid="player-uid",
-        session_id=session_id,
-        player_id=player_participant.participant_id,
-        role="player",
-    )
-
-    runner = HarnessRunner(arc_path=_ARC_PATH, seed=seed)
-    _advance_runner_to_truth(
-        runner,
-        [str(participant_id) for participant_id in player_participant_ids],
-    )
-
-    start_resp = client.post(f"/v1/sessions/{session_id}/start")
-    assert start_resp.status_code == 200, start_resp.text
-
-    async def _fake_generate(
-        db_session: AsyncSession,
-        *,
-        session_id: UUID,
-        task_type: str,
-        quality_tier: str,
-        messages: list[dict[str, Any]],
-        temperature: float = 0.7,
-        tension_score: float | None = None,
-        safety_policy_context: dict[str, Any] | str | None = None,
-        content_rails: Any = None,
-        nightcap_mode: bool = False,
-    ) -> RouteResult:
-        _ = messages, temperature, safety_policy_context, content_rails, nightcap_mode
-        db_session.add(
-            GenerationLog(
+        host_participant = asyncio.get_event_loop().run_until_complete(
+            _load_participant(
+                db_factory,
                 session_id=session_id,
-                timestamp=datetime.now(tz=timezone.utc),
-                task_type=task_type,
-                quality_tier=quality_tier,
-                model_used="test-model",
-                latency_ms=1,
-                input_tokens=100,
-                output_tokens=50,
-                cost_usd=Decimal("0.001"),
-                tension_score=tension_score,
+                surface_type="host",
             )
         )
-        await db_session.flush()
-        return RouteResult(
-            content="[mocked]",
-            model_used="test-model",
-            input_tokens=100,
-            output_tokens=50,
-            latency_ms=1,
-            used_fallback=False,
-        )
-
-    original_submit_input = _character_service.submit_input
-
-    async def _submit_input_with_generation(
-        db_session: AsyncSession,
-        session_id: UUID,
-        character_id: UUID,
-        requesting_participant_id: UUID,
-        kind: InputKind,
-        content: str,
-    ) -> PlayerInputRecord:
-        record = await original_submit_input(
-            db_session,
-            session_id,
-            character_id,
-            requesting_participant_id,
-            kind,
-            content,
-        )
-        await routing_logging.generate(
-            db_session,
+        _set_host_claims(
+            auth_state,
             session_id=session_id,
-            task_type="narrator_bridge",
-            quality_tier="standard",
-            messages=[
-                {
-                    "role": "system",
-                    "content": (
-                        f"seed={seed} host_bypass={_HOST_BYPASS['host_bypass']['reason']}"
-                    ),
+            participant_id=host_participant.participant_id,
+        )
+
+        player_participant_ids = [_add_player(client, session_id) for _ in range(4)]
+        player_participants = [
+            asyncio.get_event_loop().run_until_complete(
+                _load_participant(
+                    db_factory,
+                    session_id=session_id,
+                    participant_id=participant_id,
+                )
+            )
+            for participant_id in player_participant_ids
+        ]
+
+        start_resp = client.post(f"/v1/sessions/{session_id}/start")
+        assert start_resp.status_code == 200, start_resp.text
+
+        for index, source_beat in enumerate(_BEAT_SEQUENCE[:-1]):
+            target_beat = _BEAT_SEQUENCE[index + 1]
+            participant = player_participants[index % len(player_participants)]
+            _set_player_claims(
+                auth_state,
+                session_id=session_id,
+                participant_id=participant.participant_id,
+            )
+            input_resp = client.post(
+                f"/v1/sessions/{session_id}/characters/{participant.character_id}/input",
+                json={
+                    "kind": "dialogue",
+                    "content": f"seed {seed}: advance from {source_beat} to {target_beat}.",
                 },
-                {"role": "user", "content": "Continue the session."},
-            ],
-        )
-        return record
+            )
+            assert input_resp.status_code == 201, input_resp.text
 
-    with (
-        patch(
-            "engine.routing.logging.generate", new_callable=AsyncMock
-        ) as mock_generate,
-        patch(
-            "engine.characters.service._character_service.submit_input",
-            new=_submit_input_with_generation,
-        ),
-    ):
-        mock_generate.side_effect = _fake_generate
-        input_resp = client.post(
-            f"/v1/sessions/{session_id}/characters/{player_participant.character_id}/input",
-            json={
-                "kind": "dialogue",
-                "content": f"seed {seed}: carry the truth beat forward.",
-            },
-        )
-        assert input_resp.status_code == 201, input_resp.text
-        assert mock_generate.await_count == 1
+            state_resp = client.get(f"/v1/sessions/{session_id}")
+            assert state_resp.status_code == 200, state_resp.text
+            assert state_resp.json()["current_beat_id"] == target_beat
 
-    end_resp = client.post(
-        f"/v1/sessions/{session_id}/end",
-        json={"completion_type": "full_arc", "killer_identified": True},
-    )
-    assert end_resp.status_code == 200, end_resp.text
+        end_resp = client.post(f"/v1/sessions/{session_id}/end")
+        assert end_resp.status_code == 200, end_resp.text
 
-    assert (
-        _run(
-            _count_rows(
-                db_factory, session_id=session_id, event_type="session_completed"
+        beat_transition_count = asyncio.get_event_loop().run_until_complete(
+            _count_events(
+                db_factory,
+                session_id=session_id,
+                event_type="beat_transition",
             )
         )
-        == 1
-    )
-    assert _run(_count_generation_rows(db_factory, session_id=session_id)) > 0
+        session_completed_count = asyncio.get_event_loop().run_until_complete(
+            _count_events(
+                db_factory,
+                session_id=session_id,
+                event_type="session_completed",
+            )
+        )
+
+        assert beat_transition_count == len(_BEAT_SEQUENCE) - 1
+        assert session_completed_count == 1
+        records.append({"seed": seed, "passed": True})
+
+    with patch(
+        "litellm.acompletion",
+        side_effect=AssertionError("provider access is forbidden in the batch harness"),
+    ):
+        for seed in range(10):
+            try:
+                _run_seed(seed)
+            except Exception as exc:  # pragma: no cover - failure path
+                records.append({"seed": seed, "passed": False, "error": str(exc)})
+                failures.append(f"seed={seed}: {exc}")
+
+    assert len(records) == 10
+    assert all(record["passed"] is True for record in records)
+    assert not failures, "\n".join(failures)

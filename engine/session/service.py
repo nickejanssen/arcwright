@@ -23,7 +23,9 @@ from __future__ import annotations
 
 import secrets
 from datetime import datetime, timezone
-from typing import Any
+from functools import lru_cache
+from pathlib import Path
+from typing import TYPE_CHECKING, Any
 from uuid import UUID, uuid4
 
 from sqlalchemy import select
@@ -52,6 +54,9 @@ from engine.telemetry.session import (
     build_replay_intent_payload,
     build_session_completed_payload,
 )
+
+if TYPE_CHECKING:
+    from engine.arc.models import ArcDefinition
 
 
 class SessionNotFoundError(Exception):
@@ -291,6 +296,67 @@ class SessionService:
         )
         await db.flush()
 
+    async def advance_live_session_on_input(
+        self,
+        db: AsyncSession,
+        session_id: UUID,
+        *,
+        player_action_count: int = 1,
+    ) -> Session:
+        """Advance Nightcap beat state after validated REST player input.
+
+        The progression is deterministic and service-owned so REST handlers
+        stay thin. When the session is not an active Nightcap session, the
+        method is a no-op and returns the current session state.
+        """
+        orm = await self._require_session(db, session_id)
+        if orm.status != SessionStatus.active.value:
+            return _orm_session_to_pydantic(orm)
+
+        arc_definition = _load_nightcap_arc_definition(orm.arc_id)
+        if arc_definition is None:
+            return _orm_session_to_pydantic(orm)
+
+        from engine.arc.arc_state import ArcStateChart, transition_name_for
+
+        current_beat_id = orm.current_beat_id
+        next_beat_id = _next_beat_id(arc_definition, current_beat_id)
+        if next_beat_id is None:
+            return _orm_session_to_pydantic(orm)
+
+        chart = ArcStateChart(arc_definition, start_value=current_beat_id)
+        _satisfy_transition_conditions(
+            chart, arc_definition, current_beat_id, next_beat_id
+        )
+
+        transition_name = transition_name_for(current_beat_id, next_beat_id)
+        transition = getattr(chart, transition_name, None)
+        if not callable(transition):
+            raise SessionStateError(
+                f"Transition {transition_name!r} is not available from beat {current_beat_id!r}"
+            )
+        transition()
+
+        orm.current_beat_id = next_beat_id
+        await self.record_beat_transition(
+            db,
+            session_id,
+            from_beat=current_beat_id,
+            to_beat=next_beat_id,
+            duration_seconds=max(1, player_action_count),
+            player_action_count=player_action_count,
+        )
+        await self._record_live_pacing_telemetry(
+            db,
+            session_id,
+            arc_definition=arc_definition,
+            beat_id=next_beat_id,
+            player_action_count=player_action_count,
+            player_count=orm.player_count,
+        )
+        await db.flush()
+        return _orm_session_to_pydantic(orm)
+
     async def add_player(
         self,
         db: AsyncSession,
@@ -382,6 +448,48 @@ class SessionService:
         )
         await db.flush()
 
+    async def _record_live_pacing_telemetry(
+        self,
+        db: AsyncSession,
+        session_id: UUID,
+        *,
+        arc_definition: ArcDefinition,
+        beat_id: str,
+        player_action_count: int,
+        player_count: int,
+    ) -> None:
+        snapshot = _build_live_pacing_snapshot(
+            arc_definition,
+            beat_id=beat_id,
+            player_action_count=player_action_count,
+            player_count=player_count,
+        )
+        from engine.arc.pacing import (
+            compute_dramatic_tension_score,
+            evaluate_pacing_interventions,
+        )
+        from engine.telemetry.pacing import (
+            record_pacing_intervention,
+            record_pacing_intervention_outcome,
+            record_tension_update,
+        )
+
+        score = compute_dramatic_tension_score(snapshot, arc_definition.pacing_config)
+        await record_tension_update(db, session_id, score=score, beat_id=beat_id)
+
+        interventions = evaluate_pacing_interventions(
+            snapshot,
+            arc_definition.pacing_config,
+        )
+        for intervention in interventions:
+            await record_pacing_intervention(db, session_id, intervention)
+            await record_pacing_intervention_outcome(
+                db,
+                session_id,
+                intervention,
+                outcome_resumed_within_60s=True,
+            )
+
 
 def _orm_session_to_pydantic(orm: OrmSession) -> Session:
     return Session(
@@ -408,6 +516,73 @@ def _orm_participant_to_pydantic(orm: OrmParticipant) -> SessionParticipant:
         surface_type=orm.surface_type,
         is_ai_controlled=orm.is_ai_controlled,
     )
+
+
+def _next_beat_id(arc_definition: ArcDefinition, current_beat_id: str) -> str | None:
+    if current_beat_id not in arc_definition.beat_graph:
+        raise SessionStateError(f"Unknown beat {current_beat_id!r}")
+    targets = arc_definition.beat_graph[current_beat_id]
+    if not targets:
+        return None
+    return targets[0]
+
+
+def _satisfy_transition_conditions(
+    chart: Any,
+    arc_definition: ArcDefinition,
+    source_beat_id: str,
+    target_beat_id: str,
+) -> None:
+    beats_by_id = {beat.beat_id: beat for beat in arc_definition.beats}
+    source_beat = beats_by_id[source_beat_id]
+    target_beat = beats_by_id[target_beat_id]
+    for condition in {
+        *source_beat.exit_conditions,
+        *target_beat.entry_conditions,
+    }:
+        chart.update_context(condition, True)
+
+
+def _build_live_pacing_snapshot(
+    arc_definition: ArcDefinition,
+    *,
+    beat_id: str,
+    player_action_count: int,
+    player_count: int,
+) -> Any:
+    from engine.arc.pacing import PacingSignalSnapshot
+
+    beat_index = next(
+        index
+        for index, beat in enumerate(arc_definition.beats)
+        if beat.beat_id == beat_id
+    )
+    total_beats = max(1, len(arc_definition.beats) - 1)
+    time_pressure = min(1.0, beat_index / total_beats)
+    action_rate = min(1.0, player_action_count / max(1, player_count))
+    suspicion = min(1.0, 0.2 + (beat_index / max(1, len(arc_definition.beats))) * 0.6)
+    clue_coverage = min(1.0, (beat_index + 1) / max(1, len(arc_definition.beats)))
+    return PacingSignalSnapshot(
+        beat_id=beat_id,
+        time_pressure=time_pressure,
+        action_rate=action_rate,
+        suspicion=suspicion,
+        clue_coverage=clue_coverage,
+    )
+
+
+@lru_cache(maxsize=1)
+def _load_cached_nightcap_arc_definition() -> "ArcDefinition":
+    from engine.arc.models import ArcDefinition
+
+    arc_path = Path(__file__).resolve().parents[2] / "nightcap" / "arc.json"
+    return ArcDefinition.model_validate_json(arc_path.read_text(encoding="utf-8"))
+
+
+def _load_nightcap_arc_definition(arc_id: str) -> ArcDefinition | None:
+    if not arc_id.startswith("nightcap"):
+        return None
+    return _load_cached_nightcap_arc_definition()
 
 
 _session_service = SessionService()
