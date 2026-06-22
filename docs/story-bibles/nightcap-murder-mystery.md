@@ -255,7 +255,7 @@ Every Nightcap session tells a different story in the same shape.
 
 The gathering is in full swing. Characters are in their element. No one knows anything is wrong yet. Players receive their character cards privately. The room has the energy of any social gathering before it goes wrong.
 
-Before or alongside the social dynamics, players may engage in aesthetic-themed mini-games delivered to their phones, optionally mirrored on the shared display. These games are framed as part of the gathering itself. In v1, mini-games are timed, puzzle-gated interactions that gate clue access, drive competition, and create investigative leads across beats. They capture behavioral-read output in schema but do not feed killer assignment until v1.1. The murder may occur during this beat.
+Beat 1 is one possible position for mini-games, but mini-game placement is flexible across the arc: games may appear at any beat, run as session-spanning layers, or serve as the primary structure through which the mystery unfolds. When mini-games appear in this beat, players engage in aesthetic-themed activities delivered to their phones, optionally mirrored on the shared display. These games are framed as part of the gathering itself. In v1, mini-games are timed, puzzle-gated interactions that gate clue access, drive competition, and create investigative leads across beats. They capture behavioral-read output in schema but do not feed killer assignment until v1.1. The murder may occur during this beat.
 
 The pacing engine is observing but not intervening.
 
@@ -518,7 +518,7 @@ The victim was poisoned: a substance introduced to his private decanter before d
 
 **What Varies Per Session**
 
-Era and occasion type. Generated characters in each slot. Which player draws the killer role. Which beat the revelation fires in. Which beat the murder occurs in. Killer action opportunity configuration. The murder: victim, method, motivation. All clues, dialogue, story content. Whether a Conspirator role is active. Mini-game content and outputs. Whether additional kills occur in six-slot sessions. Victim role drawn from the pool.
+Era and occasion type. Generated characters in each slot. Which player draws the killer role. Which beat the revelation fires in. Which beat the murder occurs in. Killer action opportunity configuration. The murder: victim, method, motivation. All clues, dialogue, story content. Whether a Conspirator role is active. Mini-game content, outputs, and arc position. Whether additional kills occur in six-slot sessions. Victim role drawn from the pool.
 
 **What the Engine Enforces**
 
