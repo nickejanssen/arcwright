@@ -1,0 +1,4 @@
+interface:
+  display_name: "Arcwright Mini-game Integrator"
+  short_description: "Scaffold, validate, fit-check, test, and promote a mini-game package"
+  default_prompt: "Use $arcwright-minigame to bring a mini-game into the Arcwright repo: scaffold or import the package, validate it through the engine loader, fit-check it against the story bible and ADR 0009 boundary, run the available tests, and (when ready) promote its lifecycle. Keep all canonical state in Python; clients only render and submit."
