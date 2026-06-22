@@ -183,12 +183,10 @@ export async function proxySessionLifecycle(
       ),
     } satisfies NightcapLifecycleResponse);
   } catch (error) {
-    return new Response(
-      error instanceof Error ? error.message : String(error),
-      {
-        status: 502,
-      },
-    );
+    void error;
+    return new Response("Arcwright lifecycle request failed", {
+      status: 502,
+    });
   }
 }
 
