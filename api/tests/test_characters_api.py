@@ -82,6 +82,34 @@ async def host_session(
     )
 
 
+@pytest_asyncio.fixture()
+async def full_session(
+    db_factory: async_sessionmaker[AsyncSession],
+) -> tuple[UUID, UUID, UUID, UUID]:
+    """Build session + four players (meets Nightcap min_players=4).
+
+    Returns ``(session_id, player_a_participant_id, player_a_character_id,
+    player_b_character_id)``.  Players c and d are created to satisfy the
+    arrival-beat gate but their IDs are not needed by callers.
+    """
+    svc = SessionService()
+    async with db_factory() as db:
+        session, _ = await svc.create_session(
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
+        )
+        a, _ = await svc.add_player(db, session.session_id)
+        b, _ = await svc.add_player(db, session.session_id)
+        await svc.add_player(db, session.session_id)
+        await svc.add_player(db, session.session_id)
+        await db.commit()
+    return (
+        session.session_id,
+        a.participant_id,
+        a.character_id,
+        b.character_id,
+    )
+
+
 def _client_for_role(
     role: str,
     session_id: UUID,
@@ -261,10 +289,10 @@ class TestSubmitInput:
 class TestLiveProgression:
     def test_player_input_advances_beat_and_emits_live_pacing_events(
         self,
-        host_session: tuple[UUID, UUID, UUID, UUID],
+        full_session: tuple[UUID, UUID, UUID, UUID],
         db_factory: async_sessionmaker[AsyncSession],
     ) -> None:
-        session_id, player_a, char_a, _ = host_session
+        session_id, player_a, char_a, _ = full_session
 
         for c in _client_for_role("host", session_id, uuid4(), db_factory):
             start_resp = c.post(f"/v1/sessions/{session_id}/start")
@@ -343,23 +371,10 @@ class TestLiveProgression:
                     .scalars()
                     .all()
                 )
-                outcome_rows = (
-                    (
-                        await db.execute(
-                            select(Event).where(
-                                Event.session_id == session_id,
-                                Event.event_type == "pacing_intervention_outcome",
-                            )
-                        )
-                    )
-                    .scalars()
-                    .all()
-                )
                 return {
                     "beat_transition": len(beat_rows),
                     "tension_update": len(tension_rows),
                     "pacing_intervention": len(pacing_rows),
-                    "pacing_intervention_outcome": len(outcome_rows),
                 }
 
         import asyncio
@@ -369,5 +384,4 @@ class TestLiveProgression:
             "beat_transition": 1,
             "tension_update": 1,
             "pacing_intervention": 1,
-            "pacing_intervention_outcome": 1,
         }

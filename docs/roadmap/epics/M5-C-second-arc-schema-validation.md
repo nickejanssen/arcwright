@@ -25,6 +25,7 @@ The technical scope is limited to the tasks listed below and the architecture re
 
 ## Tasks
 
+- [AW-256: Remove game-specific beat ID hardcode from arc transition gate](../tasks/AW-256-remove-beat-id-hardcode-from-arc-transition-gate.md)
 - [AW-235: Second Arc Schema Design](../tasks/AW-235-second-arc-schema-design.md)
 - [AW-245: Second Arc Minimal Executable Product](../tasks/AW-245-second-arc-minimal-executable-product.md) (post-M6)
 

@@ -487,6 +487,7 @@
       "status": "planned",
       "path": "docs/roadmap/epics/M5-C-second-arc-schema-validation.md",
       "tasks": [
+        "AW-256",
         "AW-235",
         "AW-245"
       ],
@@ -1296,6 +1297,23 @@
         "url": "https://github.com/nickejanssen/arcwright/issues/87"
       },
       "epic_id": "M5-B"
+    },
+    {
+      "id": "AW-256",
+      "title": "Remove game-specific beat ID hardcode from arc transition gate",
+      "milestone": "M5",
+      "epic": "M5-C",
+      "size": "M",
+      "depends_on": [
+        "AW-203",
+        "AW-204"
+      ],
+      "path": "docs/roadmap/tasks/AW-256-remove-beat-id-hardcode-from-arc-transition-gate.md",
+      "github": {
+        "issue_number": 156,
+        "url": "https://github.com/nickejanssen/arcwright/issues/156"
+      },
+      "epic_id": "M5-C"
     },
     {
       "id": "AW-235",
