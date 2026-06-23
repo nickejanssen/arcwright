@@ -9,6 +9,8 @@ import {
   getSharedDisplayEventBody,
   getSharedDisplayEventLabel,
   getSharedDisplayPresentationHintTokens,
+  getPlayerEventBody,
+  getPlayerEventLabel,
   renderHostPage,
   renderPlayerJoinPage,
   renderSharedDisplayPage,
@@ -49,6 +51,32 @@ test("shared display body prefers narrator and group-visible text payloads", () 
       payload: { clue_id: "clue-7", note: "private" },
     }),
     "A private event was shared.",
+  );
+});
+
+test("player body preserves private payload text and raw structured payloads", () => {
+  assert.equal(
+    getPlayerEventBody({
+      event_type: "clue_delivery",
+      payload: { text: "Keep this clue private." },
+    }),
+    "Keep this clue private.",
+  );
+
+  assert.equal(
+    getPlayerEventBody({
+      event_type: "clue_delivery",
+      payload: { clue_id: "clue-7", note: "private" },
+    }),
+    JSON.stringify({ clue_id: "clue-7", note: "private" }, null, 2),
+  );
+
+  assert.equal(
+    getPlayerEventBody({
+      event_type: "clue_delivery",
+      payload: "Do not share this.",
+    } as never),
+    "Do not share this.",
   );
 });
 
@@ -99,6 +127,7 @@ test("shared display page reuses the canonical audience list", () => {
   assert.match(html, /getSharedDisplayEventBody/);
   assert.match(html, /getSharedDisplayPresentationHintTokens/);
   assert.match(html, /getSharedDisplayEventLabel/);
+  assert.ok(!html.includes("renderEventPayloadBody"));
 });
 
 test("shared display audience helper stays aligned with Arcwright routing", () => {
@@ -127,6 +156,16 @@ test("shared display labels stay readable for narrator events", () => {
   );
 });
 
+test("player labels stay readable for private events", () => {
+  assert.equal(
+    getPlayerEventLabel({
+      category: "private_delivery",
+      event_type: "clue_delivery",
+    }),
+    "clue delivery",
+  );
+});
+
 test("player join page exposes a join form and private player surface", () => {
   const html = renderPlayerJoinPage("session-123", "join-token-1");
 
@@ -139,6 +178,9 @@ test("player join page exposes a join form and private player surface", () => {
   assert.match(html, /player-event-feed/);
   assert.match(html, /Private feed/);
   assert.match(html, /Private events stay on your device/);
+  assert.match(html, /auth\/exchange/);
+  assert.match(html, /exchangeJoinTokenForBearerToken/);
+  assert.ok(!html.includes("player_token: data.player.player_token"));
   assert.ok(!html.includes("queueMicrotask(function()"));
   for (const prompt of PLAYER_JOIN_PROMPTS) {
     assert.ok(html.includes(prompt.label));
@@ -152,6 +194,8 @@ test("player join page includes reconnect-safe session storage hooks", () => {
   assert.match(html, /buildNightcapPlayerSessionStorageKey/);
   assert.match(html, /Private feed connected\./);
   assert.match(html, /resumeStoredSession/);
+  assert.ok(!html.includes("renderEventPayloadBody"));
+  assert.ok(!html.includes("getSharedDisplayEventLabel"));
 });
 
 test("player join page escapes dangerous tokens without inline script injection", () => {

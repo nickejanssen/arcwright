@@ -236,16 +236,16 @@ function pageShell(title: string, body: string): string {
 
 const SHARED_DISPLAY_UNKNOWN_PLACEHOLDER = "A private event was shared.";
 
-function renderEventPayloadBody(
-  payload: ContentEvent["payload"],
-  fallbackText: string | null,
+export function getSharedDisplayEventBody(
+  event: Pick<ContentEvent, "payload" | "event_type">,
 ): string {
+  const payload = event.payload;
   if (typeof payload === "string") {
     return payload;
   }
 
   if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
-    return fallbackText ?? JSON.stringify(payload, null, 2);
+    return SHARED_DISPLAY_UNKNOWN_PLACEHOLDER;
   }
 
   const fields = ["text", "message", "summary", "description"] as const;
@@ -256,38 +256,37 @@ function renderEventPayloadBody(
     }
   }
 
-  if (fallbackText) {
-    return fallbackText;
-  }
-
-  return JSON.stringify(payload, null, 2);
-}
-
-export function getSharedDisplayEventBody(
-  event: Pick<ContentEvent, "payload" | "event_type">,
-): string {
-  return renderEventPayloadBody(
-    event.payload,
-    SHARED_DISPLAY_UNKNOWN_PLACEHOLDER,
-  );
+  return SHARED_DISPLAY_UNKNOWN_PLACEHOLDER;
 }
 
 export function getPlayerEventBody(
   event: Pick<ContentEvent, "payload" | "event_type">,
 ): string {
-  return renderEventPayloadBody(event.payload, null);
+  const payload = event.payload;
+  if (typeof payload === "string") {
+    return payload;
+  }
+
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return JSON.stringify(payload, null, 2);
+  }
+
+  const fields = ["text", "message", "summary", "description"] as const;
+  for (const field of fields) {
+    const value = payload[field];
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value;
+    }
+  }
+
+  return JSON.stringify(payload, null, 2);
 }
 
 export function getPlayerEventLabel(
   event: Pick<ContentEvent, "category" | "event_type">,
 ): string {
-  return getSharedDisplayEventLabel(event);
-}
-
-export function getPlayerPresentationHintTokens(
-  hints: PresentationHints,
-): string[] {
-  return getSharedDisplayPresentationHintTokens(hints);
+  const label = event.event_type.replaceAll("_", " ").trim();
+  return label.length > 0 ? label : event.category.replaceAll("_", " ");
 }
 
 export function getSharedDisplayEventLabel(
@@ -959,6 +958,33 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
           return text ? JSON.parse(text) : null;
         }
 
+        async function exchangeJoinTokenForBearerToken(sessionId, playerToken) {
+          const response = await fetch(
+            '/player/api/sessions/' +
+              encodeURIComponent(sessionId) +
+              '/auth/exchange',
+            {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json',
+              },
+              body: JSON.stringify({
+                player_token: playerToken,
+              }),
+            },
+          );
+          const data = await readJson(response);
+          if (!response.ok) {
+            throw new Error((data && data.detail) || 'Player sign-in failed.');
+          }
+
+          if (!data || typeof data.player_token !== 'string') {
+            throw new Error('Player sign-in failed.');
+          }
+
+          return data.player_token;
+        }
+
         function sessionHeaders(includeContentType) {
           if (!state.session) {
             return {};
@@ -1221,11 +1247,17 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
             throw new Error((data && data.detail) || 'Join failed.');
           }
 
+          setStatus('Signing you in...', false);
+          const playerToken = await exchangeJoinTokenForBearerToken(
+            sessionId,
+            data.player.player_token,
+          );
+
           await activateSession({
             session_id: data.session_id,
             player_id: data.player.player_id,
             character_id: data.player.character_id,
-            player_token: data.player.player_token,
+            player_token: playerToken,
             last_sequence_number: 0,
           });
         }

@@ -43,6 +43,7 @@ const roomNamespace = {
 const env: NightcapWorkerEnv = {
   ARCWRIGHT_API_BASE_URL: "https://arcwright.invalid",
   ARCWRIGHT_API_KEY: "test-api-key",
+  FIREBASE_WEB_API_KEY: "firebase-web-api-key",
   BOOTSTRAP_TOKEN: "bootstrap-secret",
   ROOMS: roomNamespace,
 };
@@ -545,6 +546,77 @@ test("player api routes proxy scoped character fetch, input, and event replay", 
     assert.equal(fetchCalls[0]?.authorization, "Bearer player-token-abc");
     assert.equal(fetchCalls[1]?.authorization, "Bearer player-token-abc");
     assert.equal(fetchCalls[2]?.authorization, "Bearer player-token-abc");
+  } finally {
+    fetchGlobal.fetch = originalFetch;
+  }
+});
+
+test("player token exchange converts a join custom token into a bearer token", async () => {
+  const fetchGlobal = globalThis as typeof globalThis & {
+    fetch: typeof fetch;
+  };
+  const originalFetch = fetchGlobal.fetch;
+
+  fetchGlobal.fetch = async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> => {
+    const request =
+      input instanceof Request
+        ? input
+        : new Request(input instanceof URL ? input : String(input), init);
+    const url = new URL(request.url);
+    const body = request.method === "GET" ? null : await request.text();
+
+    if (
+      request.method === "POST" &&
+      url.hostname === "identitytoolkit.googleapis.com" &&
+      url.pathname === "/v1/accounts:signInWithCustomToken"
+    ) {
+      assert.equal(url.searchParams.get("key"), env.FIREBASE_WEB_API_KEY);
+      assert.deepEqual(JSON.parse(body ?? "{}"), {
+        token: "player-custom-token-abc",
+        returnSecureToken: true,
+      });
+      return new Response(
+        JSON.stringify({
+          idToken: "player-id-token-abc",
+          refreshToken: "refresh-token-abc",
+          expiresIn: "3600",
+          localId: "firebase-user-abc",
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json; charset=utf-8" },
+        },
+      );
+    }
+
+    return new Response("not found", { status: 404 });
+  };
+
+  try {
+    const response = await workerRuntime.fetch(
+      new Request(
+        "https://nightcap.test/player/api/sessions/session-abc/auth/exchange",
+        {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            player_token: "player-custom-token-abc",
+          }),
+        },
+      ),
+      env,
+      {} as ExecutionContext,
+    );
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), {
+      player_token: "player-id-token-abc",
+    });
   } finally {
     fetchGlobal.fetch = originalFetch;
   }

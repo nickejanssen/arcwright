@@ -34,8 +34,17 @@ export { NightcapRoom };
 export interface NightcapWorkerEnv {
   ARCWRIGHT_API_BASE_URL: string;
   ARCWRIGHT_API_KEY: string;
+  FIREBASE_WEB_API_KEY: string;
   BOOTSTRAP_TOKEN: string;
   ROOMS: DurableObjectNamespace<NightcapRoom>;
+}
+
+interface PlayerTokenExchangeRequest {
+  player_token: string;
+}
+
+interface PlayerTokenExchangeResponse {
+  player_token: string;
 }
 
 function json(value: unknown, init?: ResponseInit): Response {
@@ -88,6 +97,14 @@ async function readJsonBody<T>(request: Request): Promise<T | null> {
 async function readTextBody(request: Request): Promise<string | null> {
   try {
     return await request.text();
+  } catch {
+    return null;
+  }
+}
+
+async function readJsonResponse<T>(response: Response): Promise<T | null> {
+  try {
+    return (await response.json()) as T;
   } catch {
     return null;
   }
@@ -284,6 +301,58 @@ export async function joinPlayerSession(
     });
     return new Response("Player join failed", { status: 502 });
   }
+}
+
+export async function exchangePlayerToken(
+  env: NightcapWorkerEnv,
+  sessionId: string,
+  request: Request,
+): Promise<Response> {
+  const body = await readJsonBody<PlayerTokenExchangeRequest>(request);
+  const playerToken = body?.player_token?.trim() ?? "";
+  if (!playerToken) {
+    return new Response("Invalid player token exchange payload", {
+      status: 400,
+    });
+  }
+
+  const apiKey = env.FIREBASE_WEB_API_KEY.trim();
+  if (!apiKey) {
+    return new Response("Firebase web API key is not configured", {
+      status: 503,
+    });
+  }
+
+  const response = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${encodeURIComponent(apiKey)}`,
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        token: playerToken,
+        returnSecureToken: true,
+      }),
+    },
+  );
+  const data = await readJsonResponse<{
+    idToken?: string;
+    error?: { message?: string };
+  }>(response);
+
+  if (!response.ok || !data?.idToken) {
+    console.warn("Nightcap player token exchange failed", {
+      sessionId,
+      status: response.status,
+      error: data?.error?.message ?? "missing idToken",
+    });
+    return new Response("Player token exchange failed", { status: 502 });
+  }
+
+  return json({
+    player_token: data.idToken,
+  } satisfies PlayerTokenExchangeResponse);
 }
 
 export async function loadSession(
@@ -529,6 +598,18 @@ export default {
         return new Response("Not found", { status: 404 });
       }
       return proxySessionEvents(env, sessionId, request);
+    }
+
+    if (
+      request.method === "POST" &&
+      url.pathname.startsWith("/player/api/sessions/") &&
+      url.pathname.endsWith("/auth/exchange")
+    ) {
+      const sessionId = parseSegment(url.pathname, 4);
+      if (!sessionId) {
+        return new Response("Not found", { status: 404 });
+      }
+      return exchangePlayerToken(env, sessionId, request);
     }
 
     if (
