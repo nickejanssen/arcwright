@@ -212,6 +212,30 @@ test("NightcapConnector calls session endpoints and streams scoped events", asyn
 
     if (
       request.method === "GET" &&
+      url.pathname === "/v1/sessions/session-1/characters/character-1"
+    ) {
+      return responseJson({
+        session_id: "session-1",
+        character_id: "character-1",
+        participant_id: "player-1",
+        surface_type: "phone",
+        is_ai_controlled: false,
+      });
+    }
+
+    if (
+      request.method === "POST" &&
+      url.pathname === "/v1/sessions/session-1/characters/character-1/input"
+    ) {
+      assert.deepEqual(JSON.parse(body ?? "{}"), {
+        kind: "dialogue",
+        content: "I need a clue.",
+      });
+      return responseJson({ ok: true });
+    }
+
+    if (
+      request.method === "GET" &&
       url.pathname === "/v1/sessions/session-1/events"
     ) {
       return responseSse([eventPayload]);
@@ -269,6 +293,19 @@ test("NightcapConnector calls session endpoints and streams scoped events", asyn
   assert.equal(joined.character_id, "character-1");
   assert.equal(joined.player_token, "player-token-1");
 
+  const character = await connector.getCharacter(
+    "session-1",
+    "player-token-1",
+    "character-1",
+  );
+  assert.equal(character.surface_type, "phone");
+  assert.equal(character.is_ai_controlled, false);
+
+  await connector.submitInput("session-1", "player-token-1", "character-1", {
+    kind: "dialogue",
+    content: "I need a clue.",
+  });
+
   const received: Array<typeof eventPayload> = [];
   let unsubscribe = () => {};
   const done = new Promise<void>((resolve) => {
@@ -323,9 +360,23 @@ test("NightcapConnector calls session endpoints and streams scoped events", asyn
     },
   });
   assert.equal(calls[8]?.method, "GET");
-  assert.equal(calls[8]?.path, "/v1/sessions/session-1/events?since=0");
+  assert.equal(calls[8]?.path, "/v1/sessions/session-1/characters/character-1");
   assert.equal(calls[8]?.headers.get("authorization"), "Bearer player-token-1");
   assert.equal(calls[8]?.headers.get("content-type"), null);
+  assert.equal(calls[9]?.method, "POST");
+  assert.equal(
+    calls[9]?.path,
+    "/v1/sessions/session-1/characters/character-1/input",
+  );
+  assert.equal(calls[9]?.headers.get("authorization"), "Bearer player-token-1");
+  assert.equal(calls[9]?.headers.get("content-type"), "application/json");
+  assert.equal(calls[10]?.method, "GET");
+  assert.equal(calls[10]?.path, "/v1/sessions/session-1/events?since=0");
+  assert.equal(
+    calls[10]?.headers.get("authorization"),
+    "Bearer player-token-1",
+  );
+  assert.equal(calls[10]?.headers.get("content-type"), null);
 });
 
 test("NightcapConnector retries failed event stream opens and reports errors", async () => {
@@ -428,6 +479,115 @@ test("NightcapConnector retries failed event stream opens and reports errors", a
   assert.equal(errors.length >= 1, true);
   assert.match(errors[0]?.message ?? "", /503/);
   assert.equal(errors[0]?.retryDelayMs, 0);
+});
+
+test("NightcapConnector reconnects event streams with the last sequence number", async () => {
+  const calls: Array<{ path: string }> = [];
+  let eventRequestCount = 0;
+
+  const firstEvent = {
+    event_id: "event-5",
+    session_id: "session-5",
+    timestamp: "2026-06-22T12:00:05.000Z",
+    category: "private_delivery",
+    event_type: "clue_delivery",
+    actor_id: null,
+    target_audience: "specific_player",
+    target_player_id: "player-5",
+    payload: { clue_id: "clue-5", text: "First clue" },
+    presentation_hints: {
+      emotion: "tense",
+      urgency: "high",
+      voice_hint: null,
+      animation_hint: null,
+      lighting_hint: null,
+      pause_before_ms: 0,
+    },
+    sequence_number: 5,
+  };
+
+  const secondEvent = {
+    event_id: "event-6",
+    session_id: "session-5",
+    timestamp: "2026-06-22T12:00:06.000Z",
+    category: "private_delivery",
+    event_type: "clue_delivery",
+    actor_id: null,
+    target_audience: "specific_player",
+    target_player_id: "player-5",
+    payload: { clue_id: "clue-6", text: "Second clue" },
+    presentation_hints: {
+      emotion: "tense",
+      urgency: "high",
+      voice_hint: null,
+      animation_hint: null,
+      lighting_hint: null,
+      pause_before_ms: 0,
+    },
+    sequence_number: 6,
+  };
+
+  const fetchImpl = async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> => {
+    const request =
+      input instanceof Request
+        ? input
+        : new Request(input instanceof URL ? input : String(input), init);
+    const url = new URL(request.url);
+    calls.push({
+      path: `${url.pathname}${url.search}`,
+    });
+
+    if (url.pathname === "/v1/sessions/session-5/events") {
+      eventRequestCount += 1;
+      if (eventRequestCount === 1) {
+        return responseSse([firstEvent]);
+      }
+
+      return responseSse([secondEvent]);
+    }
+
+    return responseJson({
+      session_id: "session-5",
+      status: "active",
+    });
+  };
+
+  const connector = new NightcapConnector({
+    baseUrl: "https://arcwright.test",
+    apiKey: "api-key-123",
+    fetchImpl,
+  });
+
+  const received: Array<{ event_id: string }> = [];
+  let unsubscribe = () => {};
+  const done = new Promise<void>((resolve) => {
+    unsubscribe = connector.subscribeToEvents(
+      {
+        sessionId: "session-5",
+        accessToken: "player-token-5",
+        retryBaseDelayMs: 0,
+      },
+      (event) => {
+        received.push({ event_id: event.event_id });
+        if (received.length === 2) {
+          unsubscribe();
+          resolve();
+        }
+      },
+    );
+  });
+
+  await done;
+
+  assert.deepEqual(received, [
+    { event_id: "event-5" },
+    { event_id: "event-6" },
+  ]);
+  assert.equal(calls[0]?.path, "/v1/sessions/session-5/events?since=0");
+  assert.equal(calls[1]?.path, "/v1/sessions/session-5/events?since=5");
 });
 
 test("NightcapConnector unsubscribe stops later SSE events", async () => {

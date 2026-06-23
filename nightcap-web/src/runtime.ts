@@ -53,6 +53,14 @@ export interface NightcapPlayerJoinResponse {
   personalization_intake: Record<string, unknown>;
 }
 
+export interface NightcapPlayerSessionState {
+  session_id: string;
+  player_id: string;
+  character_id: string;
+  player_token: string;
+  last_sequence_number: number;
+}
+
 export function normalizePersonalizationIntake(
   value: unknown,
 ): Record<string, unknown> {
@@ -81,4 +89,43 @@ export function buildNightcapPlayerJoinUrl(
   url.searchParams.set("session_id", sessionId);
   url.searchParams.set("token", joinToken);
   return `${url.pathname}${url.search}`;
+}
+
+export function buildNightcapPlayerSessionStorageKey(
+  sessionId: string,
+): string {
+  return `nightcap.player.session.${sessionId}`;
+}
+
+export function normalizeNightcapPlayerSessionState(
+  value: unknown,
+): NightcapPlayerSessionState | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    return null;
+  }
+
+  const candidate = value as Partial<NightcapPlayerSessionState>;
+  if (
+    typeof candidate.session_id !== "string" ||
+    candidate.session_id.length === 0 ||
+    typeof candidate.player_id !== "string" ||
+    candidate.player_id.length === 0 ||
+    typeof candidate.character_id !== "string" ||
+    candidate.character_id.length === 0 ||
+    typeof candidate.player_token !== "string" ||
+    candidate.player_token.length === 0 ||
+    typeof candidate.last_sequence_number !== "number" ||
+    !Number.isFinite(candidate.last_sequence_number) ||
+    candidate.last_sequence_number < 0
+  ) {
+    return null;
+  }
+
+  return {
+    session_id: candidate.session_id,
+    player_id: candidate.player_id,
+    character_id: candidate.character_id,
+    player_token: candidate.player_token,
+    last_sequence_number: Math.floor(candidate.last_sequence_number),
+  };
 }

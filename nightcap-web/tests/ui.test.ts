@@ -135,11 +135,23 @@ test("player join page exposes a join form and private player surface", () => {
   assert.match(html, /Quick personalization/);
   assert.match(html, /Answer the prompts, then tap Join\./);
   assert.match(html, /No character assigned yet/);
-  assert.match(html, /player-surface/);
+  assert.match(html, /player-input-form/);
+  assert.match(html, /player-event-feed/);
+  assert.match(html, /Private feed/);
+  assert.match(html, /Private events stay on your device/);
   assert.ok(!html.includes("queueMicrotask(function()"));
   for (const prompt of PLAYER_JOIN_PROMPTS) {
     assert.ok(html.includes(prompt.label));
   }
+});
+
+test("player join page includes reconnect-safe session storage hooks", () => {
+  const html = renderPlayerJoinPage("session-123", "");
+
+  assert.match(html, /nightcap\.player\.active_session_id/);
+  assert.match(html, /buildNightcapPlayerSessionStorageKey/);
+  assert.match(html, /Private feed connected\./);
+  assert.match(html, /resumeStoredSession/);
 });
 
 test("player join page escapes dangerous tokens without inline script injection", () => {

@@ -85,6 +85,14 @@ async function readJsonBody<T>(request: Request): Promise<T | null> {
   }
 }
 
+async function readTextBody(request: Request): Promise<string | null> {
+  try {
+    return await request.text();
+  } catch {
+    return null;
+  }
+}
+
 async function verifyHostSession(
   env: NightcapWorkerEnv,
   sessionId: string,
@@ -367,6 +375,67 @@ export async function proxySessionEvents(
   });
 }
 
+export async function proxyPlayerCharacter(
+  env: NightcapWorkerEnv,
+  sessionId: string,
+  characterId: string,
+  request: Request,
+): Promise<Response> {
+  const url = new URL(
+    `${env.ARCWRIGHT_API_BASE_URL}/v1/sessions/${sessionId}/characters/${characterId}`,
+  );
+  const response = await fetch(url, {
+    method: request.method,
+    headers: request.headers.get("Authorization")
+      ? { Authorization: request.headers.get("Authorization") as string }
+      : {},
+  });
+
+  return new Response(response.body, {
+    status: response.status,
+    headers: {
+      "content-type":
+        response.headers.get("content-type") ??
+        "application/json; charset=utf-8",
+      "cache-control": "no-store",
+    },
+  });
+}
+
+export async function proxyPlayerInput(
+  env: NightcapWorkerEnv,
+  sessionId: string,
+  characterId: string,
+  request: Request,
+): Promise<Response> {
+  const url = new URL(
+    `${env.ARCWRIGHT_API_BASE_URL}/v1/sessions/${sessionId}/characters/${characterId}/input`,
+  );
+  const body = request.method === "POST" ? await readTextBody(request) : null;
+  const response = await fetch(url, {
+    method: request.method,
+    headers: {
+      ...(request.headers.get("Authorization")
+        ? { Authorization: request.headers.get("Authorization") as string }
+        : {}),
+      ...(request.headers.get("content-type")
+        ? { "content-type": request.headers.get("content-type") as string }
+        : {}),
+    },
+    body,
+  });
+
+  return new Response(response.body, {
+    status: response.status,
+    headers: {
+      "content-type":
+        response.headers.get("content-type") ??
+        "application/json; charset=utf-8",
+      "cache-control": "no-store",
+    },
+  });
+}
+
 function runtimeSessionId(url: URL): string {
   return url.searchParams.get("session_id") ?? "";
 }
@@ -448,6 +517,44 @@ export default {
         return new Response("Not found", { status: 404 });
       }
       return proxySessionEvents(env, sessionId, request);
+    }
+
+    if (
+      request.method === "GET" &&
+      url.pathname.startsWith("/player/api/sessions/") &&
+      url.pathname.endsWith("/events")
+    ) {
+      const sessionId = parseSegment(url.pathname, 4);
+      if (!sessionId) {
+        return new Response("Not found", { status: 404 });
+      }
+      return proxySessionEvents(env, sessionId, request);
+    }
+
+    if (
+      request.method === "GET" &&
+      url.pathname.startsWith("/player/api/sessions/") &&
+      /\/characters\/[^/]+$/.test(url.pathname)
+    ) {
+      const sessionId = parseSegment(url.pathname, 4);
+      const characterId = parseSegment(url.pathname, 6);
+      if (!sessionId || !characterId) {
+        return new Response("Not found", { status: 404 });
+      }
+      return proxyPlayerCharacter(env, sessionId, characterId, request);
+    }
+
+    if (
+      request.method === "POST" &&
+      url.pathname.startsWith("/player/api/sessions/") &&
+      /\/characters\/[^/]+\/input$/.test(url.pathname)
+    ) {
+      const sessionId = parseSegment(url.pathname, 4);
+      const characterId = parseSegment(url.pathname, 6);
+      if (!sessionId || !characterId) {
+        return new Response("Not found", { status: 404 });
+      }
+      return proxyPlayerInput(env, sessionId, characterId, request);
     }
 
     if (
