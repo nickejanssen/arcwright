@@ -1,0 +1,122 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import {
+  isSharedDisplayVisibleEvent,
+  SHARED_DISPLAY_VISIBLE_AUDIENCES,
+} from "../src/filters.js";
+import {
+  getSharedDisplayEventBody,
+  getSharedDisplayEventLabel,
+  getSharedDisplayPresentationHintTokens,
+  renderSharedDisplayPage,
+} from "../src/ui.js";
+
+test("shared display body prefers narrator and group-visible text payloads", () => {
+  assert.equal(
+    getSharedDisplayEventBody({
+      event_type: "narrator_bridge",
+      payload: { text: "The room falls silent." },
+    }),
+    "The room falls silent.",
+  );
+
+  assert.equal(
+    getSharedDisplayEventBody({
+      event_type: "clue_acknowledged",
+      payload: { message: "A clue has been passed to Rowan." },
+    }),
+    "A clue has been passed to Rowan.",
+  );
+
+  assert.equal(
+    getSharedDisplayEventBody({
+      event_type: "group_update",
+      payload: { summary: "The group is circling the kitchen." },
+    }),
+    "The group is circling the kitchen.",
+  );
+
+  assert.equal(
+    getSharedDisplayEventBody({
+      event_type: "clue_acknowledged",
+      payload: { clue_id: "clue-7", note: "private" },
+    }),
+    "A private event was shared.",
+  );
+});
+
+test("shared display presentation hints stay display-only", () => {
+  assert.deepEqual(
+    getSharedDisplayPresentationHintTokens({
+      emotion: "tense",
+      urgency: "high",
+      voice_hint: "low and hushed",
+      animation_hint: "slow fade",
+      lighting_hint: "blue wash",
+      pause_before_ms: 1500,
+    }),
+    [
+      "emotion: tense",
+      "urgency: high",
+      "voice: low and hushed",
+      "animation: slow fade",
+      "lighting: blue wash",
+      "pause: 1500ms",
+    ],
+  );
+
+  assert.deepEqual(
+    getSharedDisplayPresentationHintTokens({
+      emotion: null,
+      urgency: null,
+      voice_hint: null,
+      animation_hint: null,
+      lighting_hint: null,
+      pause_before_ms: 0,
+    }),
+    [],
+  );
+});
+
+test("shared display page reuses the canonical audience list", () => {
+  const html = renderSharedDisplayPage("session-123");
+
+  assert.equal(
+    SHARED_DISPLAY_VISIBLE_AUDIENCES.join(","),
+    "all,shared_display",
+  );
+  assert.match(
+    html,
+    /const sharedDisplayVisibleAudiences = \["all","shared_display"\];/,
+  );
+  assert.match(html, /getSharedDisplayEventBody/);
+  assert.match(html, /getSharedDisplayPresentationHintTokens/);
+  assert.match(html, /getSharedDisplayEventLabel/);
+});
+
+test("shared display audience helper stays aligned with Arcwright routing", () => {
+  assert.equal(isSharedDisplayVisibleEvent({ target_audience: "all" }), true);
+  assert.equal(
+    isSharedDisplayVisibleEvent({ target_audience: "shared_display" }),
+    true,
+  );
+  assert.equal(
+    isSharedDisplayVisibleEvent({ target_audience: "host_only" }),
+    false,
+  );
+  assert.equal(
+    isSharedDisplayVisibleEvent({ target_audience: "specific_player" }),
+    false,
+  );
+});
+
+test("shared display labels stay readable for narrator events", () => {
+  assert.equal(
+    getSharedDisplayEventLabel({
+      category: "narrative",
+      event_type: "narrator_bridge",
+    }),
+    "narrator bridge",
+  );
+});

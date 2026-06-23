@@ -1,4 +1,6 @@
+import { SHARED_DISPLAY_VISIBLE_AUDIENCES } from "./filters.js";
 import { buildNightcapRuntimeUrls } from "./runtime.js";
+import type { ContentEvent, PresentationHints } from "./types.js";
 
 function pageShell(title: string, body: string): string {
   return `<!doctype html>
@@ -105,12 +107,46 @@ function pageShell(title: string, body: string): string {
       border-radius: 14px;
       padding: 14px;
     }
-    .event strong { color: var(--accent); }
-    .event pre {
+    .event-header {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .event strong {
+      color: var(--accent);
+      text-transform: capitalize;
+    }
+    .event-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+      color: var(--muted);
+      font-size: 0.88rem;
+    }
+    .event-body {
+      margin: 10px 0 0;
       white-space: pre-wrap;
       word-break: break-word;
-      margin-bottom: 0;
       color: var(--text);
+    }
+    .hint-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .hint-pill {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      border: 1px solid rgba(125, 211, 252, 0.22);
+      padding: 4px 10px;
+      color: var(--accent);
+      background: rgba(8, 15, 30, 0.7);
+      font-size: 0.82rem;
     }
     .pill {
       display: inline-block;
@@ -136,6 +172,65 @@ function pageShell(title: string, body: string): string {
 
 function escapeJsonForTextarea(value: unknown): string {
   return JSON.stringify(value, null, 2);
+}
+
+const SHARED_DISPLAY_UNKNOWN_PLACEHOLDER = "A private event was shared.";
+
+export function getSharedDisplayEventBody(
+  event: Pick<ContentEvent, "payload" | "event_type">,
+): string {
+  const payload = event.payload;
+  if (typeof payload === "string") {
+    return payload;
+  }
+
+  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+    return JSON.stringify(payload, null, 2);
+  }
+
+  const fields = ["text", "message", "summary", "description"] as const;
+  for (const field of fields) {
+    const value = payload[field];
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value;
+    }
+  }
+
+  return SHARED_DISPLAY_UNKNOWN_PLACEHOLDER;
+}
+
+export function getSharedDisplayEventLabel(
+  event: Pick<ContentEvent, "category" | "event_type">,
+): string {
+  const label = event.event_type.replaceAll("_", " ").trim();
+  return label.length > 0 ? label : event.category.replaceAll("_", " ");
+}
+
+export function getSharedDisplayPresentationHintTokens(
+  hints: PresentationHints,
+): string[] {
+  const tokens: string[] = [];
+
+  if (hints.emotion) {
+    tokens.push(`emotion: ${hints.emotion}`);
+  }
+  if (hints.urgency) {
+    tokens.push(`urgency: ${hints.urgency}`);
+  }
+  if (hints.voice_hint) {
+    tokens.push(`voice: ${hints.voice_hint}`);
+  }
+  if (hints.animation_hint) {
+    tokens.push(`animation: ${hints.animation_hint}`);
+  }
+  if (hints.lighting_hint) {
+    tokens.push(`lighting: ${hints.lighting_hint}`);
+  }
+  if (hints.pause_before_ms > 0) {
+    tokens.push(`pause: ${hints.pause_before_ms}ms`);
+  }
+
+  return tokens;
 }
 
 export function renderLandingPage(): string {
@@ -400,6 +495,12 @@ export function renderSharedDisplayPage(sessionId = ""): string {
     </section>
     <script>
       (function() {
+        const sharedDisplayVisibleAudiences = ${JSON.stringify(
+          SHARED_DISPLAY_VISIBLE_AUDIENCES,
+        )};
+        const getSharedDisplayEventBody = ${getSharedDisplayEventBody.toString()};
+        const getSharedDisplayEventLabel = ${getSharedDisplayEventLabel.toString()};
+        const getSharedDisplayPresentationHintTokens = ${getSharedDisplayPresentationHintTokens.toString()};
         const sessionIdInput = document.getElementById('display-session-id');
         const tokenInput = document.getElementById('display-token');
         const connectButton = document.getElementById('connect-button');
@@ -413,43 +514,69 @@ export function renderSharedDisplayPage(sessionId = ""): string {
           status.className = isError ? 'status error' : 'status';
         }
 
-        function renderPayload(payload) {
-          if (!payload || typeof payload !== 'object') {
-            return '';
+        function shouldRender(event) {
+          return sharedDisplayVisibleAudiences.includes(event.target_audience);
+        }
+
+        function renderHintTokens(hints) {
+          const tokens = getSharedDisplayPresentationHintTokens(hints);
+          if (!tokens.length) {
+            return null;
           }
-          if (typeof payload.text === 'string') {
-            return payload.text;
-          }
-          if (typeof payload.message === 'string') {
-            return payload.message;
-          }
-          return JSON.stringify(payload, null, 2);
+
+          const hintRow = document.createElement('div');
+          hintRow.className = 'hint-row';
+          tokens.forEach(function(token) {
+            const pill = document.createElement('span');
+            pill.className = 'hint-pill';
+            pill.textContent = token;
+            hintRow.appendChild(pill);
+          });
+          return hintRow;
         }
 
         function renderEvent(event) {
           const card = document.createElement('article');
           card.className = 'event';
-          const heading = document.createElement('div');
-          const category = document.createElement('strong');
-          category.textContent = String(event.category);
-          const audience = document.createElement('span');
-          audience.className = 'pill';
-          audience.textContent = String(event.target_audience);
-          heading.appendChild(category);
-          heading.appendChild(document.createTextNode(' '));
-          heading.appendChild(audience);
-          const type = document.createElement('div');
-          type.textContent = event.event_type;
-          const payload = document.createElement('pre');
-          payload.textContent = renderPayload(event.payload);
-          card.appendChild(heading);
-          card.appendChild(type);
-          card.appendChild(payload);
-          eventFeed.prepend(card);
-        }
 
-        function shouldRender(event) {
-          return event.target_audience === 'all' || event.target_audience === 'shared_display';
+          const header = document.createElement('div');
+          header.className = 'event-header';
+
+          const title = document.createElement('strong');
+          title.textContent = getSharedDisplayEventLabel(event);
+
+          const sequence = document.createElement('span');
+          sequence.className = 'pill';
+          sequence.textContent = '#' + String(event.sequence_number);
+
+          header.appendChild(title);
+          header.appendChild(sequence);
+
+          const meta = document.createElement('div');
+          meta.className = 'event-meta';
+
+          const category = document.createElement('span');
+          category.textContent = String(event.category).replace(/_/g, ' ');
+          meta.appendChild(category);
+
+          const timestamp = document.createElement('span');
+          timestamp.textContent = new Date(event.timestamp).toLocaleString();
+          meta.appendChild(timestamp);
+
+          const body = document.createElement('div');
+          body.className = 'event-body';
+          body.textContent = getSharedDisplayEventBody(event);
+
+          const hintRow = renderHintTokens(event.presentation_hints);
+
+          card.appendChild(header);
+          card.appendChild(meta);
+          card.appendChild(body);
+          if (hintRow) {
+            card.appendChild(hintRow);
+          }
+
+          eventFeed.prepend(card);
         }
 
         function parseBlock(block) {

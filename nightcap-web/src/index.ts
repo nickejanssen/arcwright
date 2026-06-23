@@ -17,7 +17,12 @@ export {
   type NightcapLifecycleResponse,
   normalizePersonalizationIntake,
 } from "./runtime.js";
-export { isHostVisibleEvent, isSharedDisplayVisibleEvent } from "./filters.js";
+export {
+  isHostVisibleEvent,
+  isSharedDisplayVisibleEvent,
+  HOST_VISIBLE_AUDIENCES,
+  SHARED_DISPLAY_VISIBLE_AUDIENCES,
+} from "./filters.js";
 export {
   NightcapRoom,
   type NightcapRoomEnv,
@@ -26,6 +31,11 @@ export {
   type RoomMember,
   type RoomSnapshot,
 } from "./room.js";
+export {
+  getSharedDisplayEventBody,
+  getSharedDisplayEventLabel,
+  getSharedDisplayPresentationHintTokens,
+} from "./ui.js";
 export {
   authorizeBootstrapSession,
   bootstrapSession,
