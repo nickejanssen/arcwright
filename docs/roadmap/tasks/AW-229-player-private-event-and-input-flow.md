@@ -56,6 +56,7 @@ Cloudflare Pages, Workers, Durable Objects or PartyKit files, SDK usage if neede
 
 - docs/architecture/08-event-system.md
 - `docs/decisions/0003-nightcap-web-experience-runtime.md`
+- `docs/specs/0059-aw-229-player-private-event-and-input-flow.md`
 - `AGENTS.md`
 - `docs/architecture/15-development-guide.md`
 

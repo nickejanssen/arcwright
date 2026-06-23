@@ -34,8 +34,17 @@ export { NightcapRoom };
 export interface NightcapWorkerEnv {
   ARCWRIGHT_API_BASE_URL: string;
   ARCWRIGHT_API_KEY: string;
+  FIREBASE_WEB_API_KEY: string;
   BOOTSTRAP_TOKEN: string;
   ROOMS: DurableObjectNamespace<NightcapRoom>;
+}
+
+interface PlayerTokenExchangeRequest {
+  player_token: string;
+}
+
+interface PlayerTokenExchangeResponse {
+  player_token: string;
 }
 
 function json(value: unknown, init?: ResponseInit): Response {
@@ -80,6 +89,22 @@ function readBearerToken(request: Request): string | null {
 async function readJsonBody<T>(request: Request): Promise<T | null> {
   try {
     return (await request.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
+async function readTextBody(request: Request): Promise<string | null> {
+  try {
+    return await request.text();
+  } catch {
+    return null;
+  }
+}
+
+async function readJsonResponse<T>(response: Response): Promise<T | null> {
+  try {
+    return (await response.json()) as T;
   } catch {
     return null;
   }
@@ -278,6 +303,58 @@ export async function joinPlayerSession(
   }
 }
 
+export async function exchangePlayerToken(
+  env: NightcapWorkerEnv,
+  sessionId: string,
+  request: Request,
+): Promise<Response> {
+  const body = await readJsonBody<PlayerTokenExchangeRequest>(request);
+  const playerToken = body?.player_token?.trim() ?? "";
+  if (!playerToken) {
+    return new Response("Invalid player token exchange payload", {
+      status: 400,
+    });
+  }
+
+  const apiKey = env.FIREBASE_WEB_API_KEY.trim();
+  if (!apiKey) {
+    return new Response("Firebase web API key is not configured", {
+      status: 503,
+    });
+  }
+
+  const response = await fetch(
+    `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${encodeURIComponent(apiKey)}`,
+    {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        token: playerToken,
+        returnSecureToken: true,
+      }),
+    },
+  );
+  const data = await readJsonResponse<{
+    idToken?: string;
+    error?: { message?: string };
+  }>(response);
+
+  if (!response.ok || !data?.idToken) {
+    console.warn("Nightcap player token exchange failed", {
+      sessionId,
+      status: response.status,
+      error: data?.error?.message ?? "missing idToken",
+    });
+    return new Response("Player token exchange failed", { status: 502 });
+  }
+
+  return json({
+    player_token: data.idToken,
+  } satisfies PlayerTokenExchangeResponse);
+}
+
 export async function loadSession(
   connector: NightcapConnector,
   sessionId: string,
@@ -367,6 +444,67 @@ export async function proxySessionEvents(
   });
 }
 
+export async function proxyPlayerCharacter(
+  env: NightcapWorkerEnv,
+  sessionId: string,
+  characterId: string,
+  request: Request,
+): Promise<Response> {
+  const url = new URL(
+    `${env.ARCWRIGHT_API_BASE_URL}/v1/sessions/${sessionId}/characters/${characterId}`,
+  );
+  const response = await fetch(url, {
+    method: request.method,
+    headers: request.headers.get("Authorization")
+      ? { Authorization: request.headers.get("Authorization") as string }
+      : {},
+  });
+
+  return new Response(response.body, {
+    status: response.status,
+    headers: {
+      "content-type":
+        response.headers.get("content-type") ??
+        "application/json; charset=utf-8",
+      "cache-control": "no-store",
+    },
+  });
+}
+
+export async function proxyPlayerInput(
+  env: NightcapWorkerEnv,
+  sessionId: string,
+  characterId: string,
+  request: Request,
+): Promise<Response> {
+  const url = new URL(
+    `${env.ARCWRIGHT_API_BASE_URL}/v1/sessions/${sessionId}/characters/${characterId}/input`,
+  );
+  const body = request.method === "POST" ? await readTextBody(request) : null;
+  const response = await fetch(url, {
+    method: request.method,
+    headers: {
+      ...(request.headers.get("Authorization")
+        ? { Authorization: request.headers.get("Authorization") as string }
+        : {}),
+      ...(request.headers.get("content-type")
+        ? { "content-type": request.headers.get("content-type") as string }
+        : {}),
+    },
+    body,
+  });
+
+  return new Response(response.body, {
+    status: response.status,
+    headers: {
+      "content-type":
+        response.headers.get("content-type") ??
+        "application/json; charset=utf-8",
+      "cache-control": "no-store",
+    },
+  });
+}
+
 function runtimeSessionId(url: URL): string {
   return url.searchParams.get("session_id") ?? "";
 }
@@ -448,6 +586,56 @@ export default {
         return new Response("Not found", { status: 404 });
       }
       return proxySessionEvents(env, sessionId, request);
+    }
+
+    if (
+      request.method === "GET" &&
+      url.pathname.startsWith("/player/api/sessions/") &&
+      url.pathname.endsWith("/events")
+    ) {
+      const sessionId = parseSegment(url.pathname, 4);
+      if (!sessionId) {
+        return new Response("Not found", { status: 404 });
+      }
+      return proxySessionEvents(env, sessionId, request);
+    }
+
+    if (
+      request.method === "POST" &&
+      url.pathname.startsWith("/player/api/sessions/") &&
+      url.pathname.endsWith("/auth/exchange")
+    ) {
+      const sessionId = parseSegment(url.pathname, 4);
+      if (!sessionId) {
+        return new Response("Not found", { status: 404 });
+      }
+      return exchangePlayerToken(env, sessionId, request);
+    }
+
+    if (
+      request.method === "GET" &&
+      url.pathname.startsWith("/player/api/sessions/") &&
+      /\/characters\/[^/]+$/.test(url.pathname)
+    ) {
+      const sessionId = parseSegment(url.pathname, 4);
+      const characterId = parseSegment(url.pathname, 6);
+      if (!sessionId || !characterId) {
+        return new Response("Not found", { status: 404 });
+      }
+      return proxyPlayerCharacter(env, sessionId, characterId, request);
+    }
+
+    if (
+      request.method === "POST" &&
+      url.pathname.startsWith("/player/api/sessions/") &&
+      /\/characters\/[^/]+\/input$/.test(url.pathname)
+    ) {
+      const sessionId = parseSegment(url.pathname, 4);
+      const characterId = parseSegment(url.pathname, 6);
+      if (!sessionId || !characterId) {
+        return new Response("Not found", { status: 404 });
+      }
+      return proxyPlayerInput(env, sessionId, characterId, request);
     }
 
     if (

@@ -36,3 +36,16 @@ export interface ContentEvent {
   presentation_hints: PresentationHints;
   sequence_number: number;
 }
+
+export interface PlayerInput {
+  kind: "action" | "dialogue";
+  content: string;
+}
+
+export interface CharacterDetail {
+  session_id: string;
+  character_id: string;
+  participant_id: string;
+  surface_type: string;
+  is_ai_controlled: boolean;
+}

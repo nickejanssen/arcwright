@@ -2,6 +2,7 @@ export {
   NightcapConnector,
   type EndSessionRequest,
   type ConnectedSession,
+  type PlayerSession,
   type CreateSessionRequest,
   type CreateSessionResponse,
   type JoinSessionResponse,
@@ -20,9 +21,18 @@ export {
   type NightcapLifecycleResponse,
   type NightcapPlayerJoinRequest,
   type NightcapPlayerJoinResponse,
+  type NightcapPlayerSessionState,
   type NightcapPlayerSlotResponse,
+  buildNightcapPlayerSessionStorageKey,
   normalizePersonalizationIntake,
+  normalizeNightcapPlayerSessionState,
 } from "./runtime.js";
+export type {
+  CharacterDetail,
+  ContentEvent,
+  PlayerInput,
+  PresentationHints,
+} from "./types.js";
 export {
   isHostVisibleEvent,
   isSharedDisplayVisibleEvent,

@@ -43,6 +43,7 @@ const roomNamespace = {
 const env: NightcapWorkerEnv = {
   ARCWRIGHT_API_BASE_URL: "https://arcwright.invalid",
   ARCWRIGHT_API_KEY: "test-api-key",
+  FIREBASE_WEB_API_KEY: "firebase-web-api-key",
   BOOTSTRAP_TOKEN: "bootstrap-secret",
   ROOMS: roomNamespace,
 };
@@ -378,6 +379,249 @@ test("joinPlayerSession registers the player and returns the assigned character 
   });
 });
 
+test("player api routes proxy scoped character fetch, input, and event replay", async () => {
+  const fetchGlobal = globalThis as typeof globalThis & {
+    fetch: typeof fetch;
+  };
+  const originalFetch = fetchGlobal.fetch;
+  const fetchCalls: Array<{
+    url: string;
+    method: string;
+    authorization: string | null;
+    body: string | null;
+  }> = [];
+
+  fetchGlobal.fetch = async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> => {
+    const request =
+      input instanceof Request
+        ? input
+        : new Request(input instanceof URL ? input : String(input), init);
+    const url = new URL(request.url);
+    const body = request.method === "GET" ? null : await request.text();
+    fetchCalls.push({
+      url: request.url,
+      method: request.method,
+      authorization: request.headers.get("authorization"),
+      body,
+    });
+
+    if (
+      request.method === "GET" &&
+      url.pathname === "/v1/sessions/session-abc/characters/character-1"
+    ) {
+      return new Response(
+        JSON.stringify({
+          session_id: "session-abc",
+          character_id: "character-1",
+          participant_id: "player-1",
+          surface_type: "phone",
+          is_ai_controlled: false,
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json; charset=utf-8" },
+        },
+      );
+    }
+
+    if (
+      request.method === "POST" &&
+      url.pathname === "/v1/sessions/session-abc/characters/character-1/input"
+    ) {
+      assert.deepEqual(JSON.parse(body ?? "{}"), {
+        kind: "action",
+        content: "Look under the table.",
+      });
+      return new Response(JSON.stringify({ ok: true }), {
+        status: 200,
+        headers: { "content-type": "application/json; charset=utf-8" },
+      });
+    }
+
+    if (
+      request.method === "GET" &&
+      url.pathname === "/v1/sessions/session-abc/events"
+    ) {
+      assert.equal(url.searchParams.get("since"), "4");
+      return new Response(
+        `data: ${JSON.stringify({
+          event_id: "event-7",
+          session_id: "session-abc",
+          timestamp: "2026-06-22T12:00:07.000Z",
+          category: "private_delivery",
+          event_type: "clue_delivery",
+          actor_id: null,
+          target_audience: "specific_player",
+          target_player_id: "player-1",
+          payload: { clue_id: "clue-7", text: "Your clue" },
+          presentation_hints: {
+            emotion: "tense",
+            urgency: "high",
+            voice_hint: null,
+            animation_hint: null,
+            lighting_hint: null,
+            pause_before_ms: 0,
+          },
+          sequence_number: 7,
+        })}\n\n`,
+        {
+          status: 200,
+          headers: { "content-type": "text/event-stream" },
+        },
+      );
+    }
+
+    return new Response("not found", { status: 404 });
+  };
+
+  try {
+    const characterResponse = await workerRuntime.fetch(
+      new Request(
+        "https://nightcap.test/player/api/sessions/session-abc/characters/character-1",
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer player-token-abc",
+          },
+        },
+      ),
+      env,
+      {} as ExecutionContext,
+    );
+
+    assert.equal(characterResponse.status, 200);
+    const characterBody = (await characterResponse.json()) as {
+      character_id: string;
+      surface_type: string;
+    };
+    assert.equal(characterBody.character_id, "character-1");
+    assert.equal(characterBody.surface_type, "phone");
+
+    const inputResponse = await workerRuntime.fetch(
+      new Request(
+        "https://nightcap.test/player/api/sessions/session-abc/characters/character-1/input",
+        {
+          method: "POST",
+          headers: {
+            Authorization: "Bearer player-token-abc",
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            kind: "action",
+            content: "Look under the table.",
+          }),
+        },
+      ),
+      env,
+      {} as ExecutionContext,
+    );
+
+    assert.equal(inputResponse.status, 200);
+
+    const eventResponse = await workerRuntime.fetch(
+      new Request(
+        "https://nightcap.test/player/api/sessions/session-abc/events?since=4",
+        {
+          method: "GET",
+          headers: {
+            Authorization: "Bearer player-token-abc",
+          },
+        },
+      ),
+      env,
+      {} as ExecutionContext,
+    );
+
+    assert.equal(eventResponse.status, 200);
+    assert.equal(
+      eventResponse.headers.get("content-type"),
+      "text/event-stream",
+    );
+    const eventText = await eventResponse.text();
+    assert.match(eventText, /Your clue/);
+
+    assert.equal(fetchCalls[0]?.authorization, "Bearer player-token-abc");
+    assert.equal(fetchCalls[1]?.authorization, "Bearer player-token-abc");
+    assert.equal(fetchCalls[2]?.authorization, "Bearer player-token-abc");
+  } finally {
+    fetchGlobal.fetch = originalFetch;
+  }
+});
+
+test("player token exchange converts a join custom token into a bearer token", async () => {
+  const fetchGlobal = globalThis as typeof globalThis & {
+    fetch: typeof fetch;
+  };
+  const originalFetch = fetchGlobal.fetch;
+
+  fetchGlobal.fetch = async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> => {
+    const request =
+      input instanceof Request
+        ? input
+        : new Request(input instanceof URL ? input : String(input), init);
+    const url = new URL(request.url);
+    const body = request.method === "GET" ? null : await request.text();
+
+    if (
+      request.method === "POST" &&
+      url.hostname === "identitytoolkit.googleapis.com" &&
+      url.pathname === "/v1/accounts:signInWithCustomToken"
+    ) {
+      assert.equal(url.searchParams.get("key"), env.FIREBASE_WEB_API_KEY);
+      assert.deepEqual(JSON.parse(body ?? "{}"), {
+        token: "player-custom-token-abc",
+        returnSecureToken: true,
+      });
+      return new Response(
+        JSON.stringify({
+          idToken: "player-id-token-abc",
+          refreshToken: "refresh-token-abc",
+          expiresIn: "3600",
+          localId: "firebase-user-abc",
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json; charset=utf-8" },
+        },
+      );
+    }
+
+    return new Response("not found", { status: 404 });
+  };
+
+  try {
+    const response = await workerRuntime.fetch(
+      new Request(
+        "https://nightcap.test/player/api/sessions/session-abc/auth/exchange",
+        {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            player_token: "player-custom-token-abc",
+          }),
+        },
+      ),
+      env,
+      {} as ExecutionContext,
+    );
+
+    assert.equal(response.status, 200);
+    assert.deepEqual(await response.json(), {
+      player_token: "player-id-token-abc",
+    });
+  } finally {
+    fetchGlobal.fetch = originalFetch;
+  }
+});
+
 test("proxySessionLifecycle forwards host bearer tokens to Arcwright lifecycle calls", async () => {
   const events: string[] = [];
   const connector = {
@@ -538,4 +782,6 @@ test("rendered runtime shells include host and shared-display controls", () => {
   assert.match(playerHtml, /Join Nightcap/);
   assert.match(playerHtml, /Join code/);
   assert.match(playerHtml, /Your surface/);
+  assert.match(playerHtml, /Send input/);
+  assert.match(playerHtml, /Private feed/);
 });

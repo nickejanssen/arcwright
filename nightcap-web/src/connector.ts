@@ -1,4 +1,4 @@
-import type { ContentEvent } from "./types.js";
+import type { CharacterDetail, ContentEvent, PlayerInput } from "./types.js";
 
 export type NightcapFetch = (
   input: RequestInfo | URL,
@@ -69,6 +69,12 @@ export interface EventSubscriptionError {
 
 export interface ConnectedSession {
   session: SessionStateResponse;
+  subscribe: (onEvent: (event: ContentEvent) => void) => () => void;
+}
+
+export interface PlayerSession {
+  character: CharacterDetail;
+  submitInput: (input: PlayerInput) => Promise<void>;
   subscribe: (onEvent: (event: ContentEvent) => void) => () => void;
 }
 
@@ -183,6 +189,61 @@ export class NightcapConnector {
     const session = await this.getSession(sessionId);
     return {
       session,
+      subscribe: (onEvent) =>
+        this.subscribeToEvents({ sessionId, accessToken }, onEvent),
+    };
+  }
+
+  async getCharacter(
+    sessionId: string,
+    accessToken: string,
+    characterId: string,
+  ): Promise<CharacterDetail> {
+    return this.authorizedJsonRequest<CharacterDetail>(
+      `/v1/sessions/${sessionId}/characters/${characterId}`,
+      accessToken,
+      { method: "GET" },
+    );
+  }
+
+  async submitInput(
+    sessionId: string,
+    accessToken: string,
+    characterId: string,
+    input: PlayerInput,
+  ): Promise<void> {
+    const response = await this.fetchImpl(
+      `${this.baseUrl}/v1/sessions/${sessionId}/characters/${characterId}/input`,
+      {
+        method: "POST",
+        headers: {
+          ...this.authorizedHeaders(accessToken, true),
+        },
+        body: JSON.stringify(input),
+      },
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `POST /v1/sessions/${sessionId}/characters/${characterId}/input failed with ${response.status}`,
+      );
+    }
+  }
+
+  async attachPlayerSession(
+    sessionId: string,
+    accessToken: string,
+    characterId: string,
+  ): Promise<PlayerSession> {
+    const character = await this.getCharacter(
+      sessionId,
+      accessToken,
+      characterId,
+    );
+    return {
+      character,
+      submitInput: (input) =>
+        this.submitInput(sessionId, accessToken, characterId, input),
       subscribe: (onEvent) =>
         this.subscribeToEvents({ sessionId, accessToken }, onEvent),
     };
