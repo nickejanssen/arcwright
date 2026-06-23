@@ -49,6 +49,7 @@ test("NightcapRoom persists joins across room instances", async () => {
         session_id: "session-1",
         client_id: "client-1",
         participant_id: "participant-1",
+        character_id: "character-1",
         role: "player",
       }),
     }),
@@ -72,11 +73,12 @@ test("NightcapRoom persists joins across room instances", async () => {
   const snapshotBody = (await readJson(snapshotResponse)) as {
     member_count: number;
     session_id: string | null;
-    members: Array<{ client_id: string }>;
+    members: Array<{ client_id: string; character_id: string | null }>;
   };
   assert.equal(snapshotBody.member_count, 1);
   assert.equal(snapshotBody.session_id, "session-1");
   assert.equal(snapshotBody.members[0]?.client_id, "client-1");
+  assert.equal(snapshotBody.members[0]?.character_id, "character-1");
 });
 
 test("NightcapRoom rejects malformed join payloads", async () => {

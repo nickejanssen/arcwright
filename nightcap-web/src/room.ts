@@ -1,6 +1,7 @@
 export interface RoomMember {
   client_id: string;
   participant_id: string;
+  character_id: string | null;
   role: "host" | "player" | "display";
   joined_at: string;
 }
@@ -9,6 +10,7 @@ export interface RoomJoinRequest {
   session_id: string;
   client_id: string;
   participant_id: string;
+  character_id?: string | null;
   role: RoomMember["role"];
 }
 
@@ -126,6 +128,9 @@ export class NightcapRoom extends DurableObject {
       candidate.client_id.length === 0 ||
       typeof candidate.participant_id !== "string" ||
       candidate.participant_id.length === 0 ||
+      (candidate.character_id !== undefined &&
+        candidate.character_id !== null &&
+        typeof candidate.character_id !== "string") ||
       (candidate.role !== "host" &&
         candidate.role !== "player" &&
         candidate.role !== "display")
@@ -172,6 +177,7 @@ export class NightcapRoom extends DurableObject {
     this.members.set(body.client_id, {
       client_id: body.client_id,
       participant_id: body.participant_id,
+      character_id: body.character_id ?? null,
       role: body.role,
       joined_at: new Date().toISOString(),
     });

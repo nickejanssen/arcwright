@@ -24,6 +24,21 @@ export interface SessionStateResponse {
   [key: string]: unknown;
 }
 
+export interface PlayerSlotResponse {
+  participant_id: string;
+  join_token: string;
+  join_url: string;
+  [key: string]: unknown;
+}
+
+export interface JoinSessionResponse {
+  session_id: string;
+  player_id: string;
+  character_id: string;
+  player_token: string;
+  [key: string]: unknown;
+}
+
 export interface EndSessionRequest {
   completion_type?: "full_arc" | "interrupted" | "abandoned";
   killer_identified?: boolean;
@@ -82,6 +97,34 @@ export class NightcapConnector {
     return this.jsonRequest<SessionStateResponse>(`/v1/sessions/${sessionId}`, {
       method: "GET",
       headers: this.apiHeaders(false),
+    });
+  }
+
+  async createPlayerSlot(sessionId: string): Promise<PlayerSlotResponse> {
+    return this.jsonRequest<PlayerSlotResponse>(
+      `/v1/sessions/${sessionId}/players`,
+      {
+        method: "POST",
+        headers: this.apiHeaders(true),
+      },
+    );
+  }
+
+  async joinSession(
+    sessionId: string,
+    joinToken: string,
+    personalizationIntake: Record<string, unknown> = {},
+  ): Promise<JoinSessionResponse> {
+    const url = new URL(`/v1/sessions/${sessionId}/join`, this.baseUrl);
+    url.searchParams.set("token", joinToken);
+    return this.jsonRequest<JoinSessionResponse>(url.pathname + url.search, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        personalization_intake: personalizationIntake,
+      }),
     });
   }
 

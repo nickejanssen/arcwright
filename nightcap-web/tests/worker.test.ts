@@ -21,7 +21,10 @@ const {
   authorizeBootstrapSession,
   bootstrapSession,
   createHostSession,
+  createPlayerJoinLink,
+  joinPlayerSession,
   proxySessionLifecycle,
+  renderPlayerJoinPage,
   renderHostPage,
   renderSharedDisplayPage,
 } = workerModule;
@@ -84,6 +87,24 @@ test("host api bootstrap session requires the bootstrap token", async () => {
   );
 
   assert.equal(response.status, 401);
+});
+
+test("join page route renders the player join shell", async () => {
+  const response = await workerRuntime.fetch(
+    new Request(
+      "https://nightcap.test/join?session_id=session-123&token=join-token-1",
+      {
+        method: "GET",
+      },
+    ),
+    env,
+    {} as ExecutionContext,
+  );
+
+  assert.equal(response.status, 200);
+  const html = await response.text();
+  assert.match(html, /Join Nightcap/);
+  assert.match(html, /join-token-1/);
 });
 
 test("bootstrapSession forwards the Arcwright session id into room runtime state", async () => {
@@ -176,6 +197,184 @@ test("createHostSession includes host and shared-display runtime URLs", async ()
   assert.deepEqual(body.personalization_intake, {
     host_seed_1: "A",
     player_prompt_1: "B",
+  });
+});
+
+test("createPlayerJoinLink returns a runtime join URL for the player QR path", async () => {
+  const createPlayerCalls: string[] = [];
+  const connector = {
+    async createPlayerSlot(sessionId: string) {
+      createPlayerCalls.push(sessionId);
+      return {
+        participant_id: "participant-1",
+        join_token: "join-token-1",
+        join_url:
+          "https://arcwright.invalid/v1/sessions/session-join/join?token=join-token-1",
+      };
+    },
+  } as unknown as NightcapConnector;
+
+  const fetchGlobal = globalThis as typeof globalThis & {
+    fetch: typeof fetch;
+  };
+  const originalFetch = fetchGlobal.fetch;
+  const fetchCalls: Array<{ url: string; authorization: string | null }> = [];
+  fetchGlobal.fetch = async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> => {
+    const request =
+      input instanceof Request
+        ? input
+        : new Request(input instanceof URL ? input : String(input), init);
+    fetchCalls.push({
+      url: request.url,
+      authorization: request.headers.get("authorization"),
+    });
+    return new Response(JSON.stringify({ session_id: "session-join" }), {
+      status: 200,
+      headers: { "content-type": "application/json; charset=utf-8" },
+    });
+  };
+
+  try {
+    const response = await createPlayerJoinLink(
+      connector,
+      env,
+      "session-join",
+      new Request(
+        "https://nightcap.test/host/api/sessions/session-join/players",
+        {
+          method: "POST",
+          headers: { Authorization: "Bearer host-token" },
+        },
+      ),
+    );
+
+    assert.equal(response.status, 200);
+    assert.equal(createPlayerCalls.length, 1);
+    assert.equal(createPlayerCalls[0], "session-join");
+
+    const body = (await response.json()) as {
+      player: {
+        participant_id: string;
+        join_token: string;
+      };
+      runtime: {
+        room_id: string;
+        room_url: string;
+        host_url: string;
+        shared_display_url: string;
+        player_url: string;
+      };
+    };
+
+    assert.equal(body.player.participant_id, "participant-1");
+    assert.equal(body.player.join_token, "join-token-1");
+    assert.equal(body.runtime.room_id, "session-join");
+    assert.equal(
+      body.runtime.player_url,
+      "/join?session_id=session-join&token=join-token-1",
+    );
+    assert.equal(fetchCalls.length, 1);
+    assert.equal(
+      fetchCalls[0]?.url,
+      "https://arcwright.invalid/v1/sessions/session-join",
+    );
+    assert.equal(fetchCalls[0]?.authorization, "Bearer host-token");
+  } finally {
+    fetchGlobal.fetch = originalFetch;
+  }
+});
+
+test("joinPlayerSession registers the player and returns the assigned character context", async () => {
+  const roomJoins: unknown[] = [];
+  const roomStub = {
+    idFromName(name: string) {
+      return name;
+    },
+    get() {
+      return {
+        async fetch(request: Request): Promise<Response> {
+          roomJoins.push(await request.json());
+          return new Response(JSON.stringify({ ok: true }), {
+            headers: { "content-type": "application/json; charset=utf-8" },
+          });
+        },
+      };
+    },
+  } as unknown as DurableObjectNamespace<NightcapRoom>;
+
+  const joinCalls: Array<{
+    sessionId: string;
+    joinToken: string;
+    personalizationIntake: Record<string, unknown>;
+  }> = [];
+  const joinConnector = {
+    async joinSession(
+      sessionId: string,
+      joinToken: string,
+      personalizationIntake: Record<string, unknown>,
+    ) {
+      joinCalls.push({ sessionId, joinToken, personalizationIntake });
+      return {
+        session_id: sessionId,
+        player_id: "player-1",
+        character_id: "character-42",
+        player_token: "player-token-1",
+      };
+    },
+  } as unknown as NightcapConnector;
+
+  const response = await joinPlayerSession(
+    joinConnector,
+    {
+      ...env,
+      ROOMS: roomStub,
+    },
+    {
+      session_id: "session-join",
+      join_token: "join-token-1",
+      personalization_intake: {
+        notes: "opaque",
+      },
+    },
+  );
+
+  assert.equal(response.status, 200);
+  assert.deepEqual(joinCalls, [
+    {
+      sessionId: "session-join",
+      joinToken: "join-token-1",
+      personalizationIntake: { notes: "opaque" },
+    },
+  ]);
+
+  const body = (await response.json()) as {
+    session_id: string;
+    player: { player_id: string; character_id: string; player_token: string };
+    runtime: { room_id: string; player_url: string };
+    personalization_intake: Record<string, unknown>;
+  };
+
+  assert.equal(body.session_id, "session-join");
+  assert.equal(body.player.player_id, "player-1");
+  assert.equal(body.player.character_id, "character-42");
+  assert.equal(body.player.player_token, "player-token-1");
+  assert.equal(body.runtime.room_id, "session-join");
+  assert.equal(
+    body.runtime.player_url,
+    "/join?session_id=session-join&token=join-token-1",
+  );
+  assert.deepEqual(body.personalization_intake, { notes: "opaque" });
+  assert.deepEqual(joinCalls[0]?.personalizationIntake, { notes: "opaque" });
+  assert.equal(roomJoins.length, 1);
+  assert.deepEqual(roomJoins[0], {
+    session_id: "session-join",
+    client_id: "player-1",
+    participant_id: "player-1",
+    character_id: "character-42",
+    role: "player",
   });
 });
 
@@ -326,12 +525,17 @@ test("proxySessionLifecycle logs upstream failures and keeps the browser respons
 test("rendered runtime shells include host and shared-display controls", () => {
   const hostHtml = renderHostPage("session-123");
   const sharedHtml = renderSharedDisplayPage("session-123");
+  const playerHtml = renderPlayerJoinPage("session-123", "join-token-1");
 
   assert.match(hostHtml, /Create session/);
   assert.match(hostHtml, /Start/);
   assert.match(hostHtml, /Pause/);
   assert.match(hostHtml, /Resume/);
   assert.match(hostHtml, /End/);
+  assert.match(hostHtml, /Create player join link/);
   assert.match(sharedHtml, /Shared display/);
   assert.match(sharedHtml, /Only public or shared-display events/);
+  assert.match(playerHtml, /Join Nightcap/);
+  assert.match(playerHtml, /Join code/);
+  assert.match(playerHtml, /Your surface/);
 });
