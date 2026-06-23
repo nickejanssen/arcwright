@@ -2,6 +2,8 @@ import type {
   CreateSessionRequest,
   CreateSessionResponse,
   EndSessionRequest,
+  JoinSessionResponse,
+  PlayerSlotResponse,
   SessionStateResponse,
 } from "./connector.js";
 
@@ -32,6 +34,25 @@ export interface NightcapLifecycleResponse {
   session: SessionStateResponse;
 }
 
+export interface NightcapPlayerSlotResponse {
+  session_id: string;
+  player: PlayerSlotResponse;
+  runtime: NightcapRuntimeUrls & { room_id: string; player_url: string };
+}
+
+export interface NightcapPlayerJoinRequest {
+  session_id: string;
+  join_token: string;
+  personalization_intake?: Record<string, unknown>;
+}
+
+export interface NightcapPlayerJoinResponse {
+  session_id: string;
+  player: JoinSessionResponse;
+  runtime: NightcapRuntimeUrls & { room_id: string; player_url: string };
+  personalization_intake: Record<string, unknown>;
+}
+
 export function normalizePersonalizationIntake(
   value: unknown,
 ): Record<string, unknown> {
@@ -50,4 +71,14 @@ export function buildNightcapRuntimeUrls(
     host_url: `/host?session_id=${encodeURIComponent(sessionId)}`,
     shared_display_url: `/shared-display?session_id=${encodeURIComponent(sessionId)}`,
   };
+}
+
+export function buildNightcapPlayerJoinUrl(
+  sessionId: string,
+  joinToken: string,
+): string {
+  const url = new URL("https://nightcap.local/join");
+  url.searchParams.set("session_id", sessionId);
+  url.searchParams.set("token", joinToken);
+  return `${url.pathname}${url.search}`;
 }

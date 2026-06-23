@@ -181,6 +181,31 @@ test("NightcapConnector calls session endpoints and streams scoped events", asyn
     }
 
     if (
+      request.method === "POST" &&
+      url.pathname === "/v1/sessions/session-1/players"
+    ) {
+      return responseJson({
+        participant_id: "participant-1",
+        join_token: "join-token-1",
+        join_url:
+          "https://arcwright.test/v1/sessions/session-1/join?token=join-token-1",
+      });
+    }
+
+    if (
+      request.method === "GET" &&
+      url.pathname === "/v1/sessions/session-1/join"
+    ) {
+      assert.equal(url.searchParams.get("token"), "join-token-1");
+      return responseJson({
+        session_id: "session-1",
+        player_id: "player-1",
+        character_id: "character-1",
+        player_token: "player-token-1",
+      });
+    }
+
+    if (
       request.method === "GET" &&
       url.pathname === "/v1/sessions/session-1/events"
     ) {
@@ -223,6 +248,20 @@ test("NightcapConnector calls session endpoints and streams scoped events", asyn
   });
   assert.equal(ended.status, "completed");
 
+  const playerSlot = await connector.createPlayerSlot("session-1");
+  assert.equal(playerSlot.participant_id, "participant-1");
+  assert.equal(playerSlot.join_token, "join-token-1");
+  assert.equal(
+    playerSlot.join_url,
+    "https://arcwright.test/v1/sessions/session-1/join?token=join-token-1",
+  );
+
+  const joined = await connector.joinSession("session-1", "join-token-1");
+  assert.equal(joined.session_id, "session-1");
+  assert.equal(joined.player_id, "player-1");
+  assert.equal(joined.character_id, "character-1");
+  assert.equal(joined.player_token, "player-token-1");
+
   const received: Array<typeof eventPayload> = [];
   let unsubscribe = () => {};
   const done = new Promise<void>((resolve) => {
@@ -259,10 +298,20 @@ test("NightcapConnector calls session endpoints and streams scoped events", asyn
   assert.equal(calls[4]?.path, "/v1/sessions/session-1/resume");
   assert.equal(calls[5]?.path, "/v1/sessions/session-1/end");
   assert.equal(calls[5]?.headers.get("authorization"), "Bearer host-token");
-  assert.equal(calls[6]?.method, "GET");
-  assert.equal(calls[6]?.path, "/v1/sessions/session-1/events?since=0");
-  assert.equal(calls[6]?.headers.get("authorization"), "Bearer player-token-1");
-  assert.equal(calls[6]?.headers.get("content-type"), null);
+  assert.equal(calls[6]?.method, "POST");
+  assert.equal(calls[6]?.path, "/v1/sessions/session-1/players");
+  assert.equal(calls[6]?.headers.get("x-api-key"), "api-key-123");
+  assert.equal(calls[6]?.headers.get("content-type"), "application/json");
+  assert.equal(calls[7]?.method, "GET");
+  assert.equal(
+    calls[7]?.path,
+    "/v1/sessions/session-1/join?token=join-token-1",
+  );
+  assert.equal(calls[7]?.headers.get("content-type"), null);
+  assert.equal(calls[8]?.method, "GET");
+  assert.equal(calls[8]?.path, "/v1/sessions/session-1/events?since=0");
+  assert.equal(calls[8]?.headers.get("authorization"), "Bearer player-token-1");
+  assert.equal(calls[8]?.headers.get("content-type"), null);
 });
 
 test("NightcapConnector retries failed event stream opens and reports errors", async () => {

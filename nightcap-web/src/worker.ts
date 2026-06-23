@@ -5,20 +5,30 @@ import {
 } from "./connector.js";
 import {
   buildNightcapRuntimeUrls,
+  buildNightcapPlayerJoinUrl,
   normalizePersonalizationIntake,
   type NightcapBootstrapRequest,
   type NightcapBootstrapResponse,
   type NightcapLifecycleEndRequest,
   type NightcapLifecycleResponse,
+  type NightcapPlayerJoinRequest,
+  type NightcapPlayerJoinResponse,
+  type NightcapPlayerSlotResponse,
 } from "./runtime.js";
 import { NightcapRoom } from "./room.js";
 import {
   renderHostPage,
   renderLandingPage,
+  renderPlayerJoinPage,
   renderSharedDisplayPage,
 } from "./ui.js";
 
-export { renderHostPage, renderLandingPage, renderSharedDisplayPage };
+export {
+  renderHostPage,
+  renderLandingPage,
+  renderPlayerJoinPage,
+  renderSharedDisplayPage,
+};
 export { NightcapRoom };
 
 export interface NightcapWorkerEnv {
@@ -73,6 +83,31 @@ async function readJsonBody<T>(request: Request): Promise<T | null> {
   } catch {
     return null;
   }
+}
+
+async function verifyHostSession(
+  env: NightcapWorkerEnv,
+  sessionId: string,
+  accessToken: string,
+): Promise<Response | null> {
+  const response = await fetch(
+    `${env.ARCWRIGHT_API_BASE_URL}/v1/sessions/${sessionId}`,
+    {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    },
+  );
+
+  if (response.ok) {
+    return null;
+  }
+
+  const detail = (await response.text()).trim();
+  return new Response(detail || "Host token rejected", {
+    status: response.status,
+  });
 }
 
 const BOOTSTRAP_TOKEN_HEADER = "x-arcwright-bootstrap-token";
@@ -133,6 +168,109 @@ export async function createHostSession(
       personalization_intake,
     ),
   } satisfies NightcapBootstrapResponse);
+}
+
+export async function createPlayerJoinLink(
+  connector: NightcapConnector,
+  env: NightcapWorkerEnv,
+  sessionId: string,
+  request: Request,
+): Promise<Response> {
+  const accessToken = readBearerToken(request);
+  if (!accessToken) {
+    return new Response("Authorization header required", { status: 401 });
+  }
+
+  try {
+    const denied = await verifyHostSession(env, sessionId, accessToken);
+    if (denied) {
+      return denied;
+    }
+
+    const player = await connector.createPlayerSlot(sessionId);
+    const runtime = buildNightcapRuntimeUrls(sessionId);
+    return json({
+      session_id: sessionId,
+      player,
+      runtime: {
+        room_id: sessionId,
+        ...runtime,
+        player_url: buildNightcapPlayerJoinUrl(sessionId, player.join_token),
+      },
+    } satisfies NightcapPlayerSlotResponse);
+  } catch (error) {
+    console.error("Nightcap player join link creation failed", {
+      sessionId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return new Response("Player join link creation failed", { status: 502 });
+  }
+}
+
+async function registerJoinedPlayer(
+  env: NightcapWorkerEnv,
+  sessionId: string,
+  player: NightcapPlayerJoinResponse["player"],
+): Promise<void> {
+  try {
+    const room = env.ROOMS.get(env.ROOMS.idFromName(sessionId));
+    await room.fetch(
+      new Request(`https://nightcap-web.invalid/rooms/${sessionId}/join`, {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          session_id: sessionId,
+          client_id: player.player_id,
+          participant_id: player.player_id,
+          character_id: player.character_id,
+          role: "player",
+        }),
+      }),
+    );
+  } catch (error) {
+    console.warn("Nightcap room registration failed after join", {
+      sessionId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+  }
+}
+
+export async function joinPlayerSession(
+  connector: NightcapConnector,
+  env: NightcapWorkerEnv,
+  body: NightcapPlayerJoinRequest,
+): Promise<Response> {
+  const sessionId = body.session_id?.trim() ?? "";
+  const joinToken = body.join_token?.trim() ?? "";
+  if (!sessionId || !joinToken) {
+    return new Response("Invalid join payload", { status: 400 });
+  }
+
+  try {
+    const player = await connector.joinSession(sessionId, joinToken);
+    await registerJoinedPlayer(env, sessionId, player);
+
+    return json({
+      session_id: sessionId,
+      player,
+      runtime: {
+        room_id: sessionId,
+        ...buildNightcapRuntimeUrls(sessionId),
+        player_url: buildNightcapPlayerJoinUrl(sessionId, joinToken),
+      },
+      personalization_intake: normalizePersonalizationIntake(
+        body.personalization_intake,
+      ),
+    } satisfies NightcapPlayerJoinResponse);
+  } catch (error) {
+    console.error("Nightcap player join failed", {
+      sessionId,
+      error: error instanceof Error ? error.message : String(error),
+    });
+    return new Response("Player join failed", { status: 502 });
+  }
 }
 
 export async function loadSession(
@@ -250,6 +388,15 @@ export default {
       return html(renderSharedDisplayPage(runtimeSessionId(url)));
     }
 
+    if (request.method === "GET" && url.pathname === "/join") {
+      return html(
+        renderPlayerJoinPage(
+          runtimeSessionId(url),
+          url.searchParams.get("token") ?? "",
+        ),
+      );
+    }
+
     if (request.method === "POST" && url.pathname === "/bootstrap/session") {
       const denied = authorizeBootstrapSession(request, env);
       if (denied) {
@@ -272,6 +419,18 @@ export default {
       const body =
         (await readJsonBody<NightcapBootstrapRequest>(request)) ?? {};
       return createHostSession(connector, body);
+    }
+
+    if (
+      request.method === "POST" &&
+      url.pathname.startsWith("/host/api/sessions/") &&
+      url.pathname.endsWith("/players")
+    ) {
+      const sessionId = parseSegment(url.pathname, 4);
+      if (!sessionId) {
+        return new Response("Not found", { status: 404 });
+      }
+      return createPlayerJoinLink(connector, env, sessionId, request);
     }
 
     if (
@@ -313,6 +472,14 @@ export default {
         return new Response("Not found", { status: 404 });
       }
       return proxySessionLifecycle(connector, sessionId, action, request);
+    }
+
+    if (request.method === "POST" && url.pathname === "/join/api") {
+      const body = (await readJsonBody<NightcapPlayerJoinRequest>(request)) ?? {
+        session_id: "",
+        join_token: "",
+      };
+      return joinPlayerSession(connector, env, body);
     }
 
     if (request.method === "GET" && url.pathname.startsWith("/sessions/")) {

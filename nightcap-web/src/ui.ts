@@ -1,4 +1,9 @@
 import { SHARED_DISPLAY_VISIBLE_AUDIENCES } from "./filters.js";
+import {
+  HOST_SEED_PROMPTS,
+  PLAYER_JOIN_PROMPTS,
+  renderPersonalizationPromptFields,
+} from "./personalization.js";
 import { buildNightcapRuntimeUrls } from "./runtime.js";
 import type { ContentEvent, PresentationHints } from "./types.js";
 
@@ -158,6 +163,28 @@ function pageShell(title: string, body: string): string {
       font-size: 0.8rem;
       vertical-align: middle;
     }
+    .prompt-list {
+      display: grid;
+      gap: 12px;
+    }
+    .prompt-card {
+      display: grid;
+      gap: 8px;
+      margin: 0;
+      padding: 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(8, 15, 30, 0.55);
+    }
+    .prompt-title {
+      color: var(--text);
+      font-weight: 650;
+    }
+    .prompt-help {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.35;
+    }
     .hide { display: none; }
     @media (max-width: 900px) {
       .grid.two { grid-template-columns: 1fr; }
@@ -170,8 +197,13 @@ function pageShell(title: string, body: string): string {
 </html>`;
 }
 
-function escapeJsonForTextarea(value: unknown): string {
-  return JSON.stringify(value, null, 2);
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
 }
 
 const SHARED_DISPLAY_UNKNOWN_PLACEHOLDER = "A private event was shared.";
@@ -243,6 +275,7 @@ export function renderLandingPage(): string {
         <div class="actions">
           <a href="/host">Host controls</a>
           <a href="/shared-display">Shared display</a>
+          <a href="/join">Player join</a>
         </div>
       </div>
     </section>`,
@@ -271,12 +304,11 @@ export function renderHostPage(sessionId = ""): string {
                 <option value="premium">premium</option>
               </select>
             </label>
-            <label>
-              Personalization intake JSON
-              <textarea id="intake-json" name="personalization_intake">${escapeJsonForTextarea(
-                {},
-              )}</textarea>
-            </label>
+            <div class="card" style="margin: 0 0 12px; background: rgba(8, 15, 30, 0.55);">
+              <h3>Group personalization</h3>
+              <p class="muted">Three short answers seed character fit and narrator callbacks.</p>
+              ${renderPersonalizationPromptFields(HOST_SEED_PROMPTS)}
+            </div>
             <button type="submit">Create session</button>
           </form>
 
@@ -285,7 +317,9 @@ export function renderHostPage(sessionId = ""): string {
             <div id="host-status" class="status">No session created yet.</div>
             <label>
               Session ID
-              <input id="session-id" placeholder="session UUID" value="${sessionId}" />
+              <input id="session-id" placeholder="session UUID" value="${escapeHtml(
+                sessionId,
+              )}" />
             </label>
             <label>
               Host bearer token
@@ -311,6 +345,7 @@ export function renderHostPage(sessionId = ""): string {
               <button data-action="pause" type="button">Pause</button>
               <button data-action="resume" type="button">Resume</button>
               <button data-action="end" type="button">End</button>
+              <button id="create-player-link" type="button">Create player join link</button>
               <button id="refresh-session" type="button">Refresh</button>
             </div>
           </div>
@@ -324,20 +359,25 @@ export function renderHostPage(sessionId = ""): string {
         <h2>Runtime URLs</h2>
         <pre id="runtime-output" class="status">${JSON.stringify(urls, null, 2)}</pre>
       </div>
+      <div class="card">
+        <h2>Player join link</h2>
+        <pre id="player-link-output" class="status">No player join link created yet.</pre>
+      </div>
     </section>
     <script>
       (function() {
         const bootstrapForm = document.getElementById('bootstrap-form');
         const bootstrapOutput = document.getElementById('bootstrap-output');
         const runtimeOutput = document.getElementById('runtime-output');
+        const playerLinkOutput = document.getElementById('player-link-output');
         const hostStatus = document.getElementById('host-status');
         const sessionIdInput = document.getElementById('session-id');
         const hostTokenInput = document.getElementById('host-token');
         const arcIdInput = document.getElementById('arc-id');
         const qualityTierInput = document.getElementById('quality-tier');
-        const intakeJsonInput = document.getElementById('intake-json');
         const completionTypeInput = document.getElementById('completion-type');
         const killerIdentifiedInput = document.getElementById('killer-identified');
+        const createPlayerLinkButton = document.getElementById('create-player-link');
         const refreshSessionButton = document.getElementById('refresh-session');
 
         function setStatus(message, isError) {
@@ -345,20 +385,16 @@ export function renderHostPage(sessionId = ""): string {
           hostStatus.className = isError ? 'status error' : 'status';
         }
 
-        function readIntakePayload() {
-          const raw = intakeJsonInput.value.trim();
-          if (!raw) {
-            return {};
-          }
-          try {
-            const parsed = JSON.parse(raw);
-            if (!parsed || Array.isArray(parsed) || typeof parsed !== 'object') {
-              throw new Error('Personalization intake must be a JSON object.');
+        function readPersonalizationIntake(form) {
+          const payload = {};
+          form.querySelectorAll('[data-personalization-slot]').forEach(function(field) {
+            const key = field.getAttribute('data-personalization-slot');
+            const value = field.value.trim();
+            if (key && value) {
+              payload[key] = value;
             }
-            return parsed;
-          } catch (error) {
-            throw new Error('Personalization intake JSON must be valid.');
-          }
+          });
+          return payload;
         }
 
         async function readJson(response) {
@@ -373,7 +409,7 @@ export function renderHostPage(sessionId = ""): string {
             const payload = {
               arc_id: arcIdInput.value.trim(),
               quality_tier: qualityTierInput.value,
-              personalization_intake: readIntakePayload(),
+              personalization_intake: readPersonalizationIntake(bootstrapForm),
             };
             const response = await fetch('/host/api/bootstrap/session', {
               method: 'POST',
@@ -425,6 +461,32 @@ export function renderHostPage(sessionId = ""): string {
           setStatus(action + ' completed.', false);
         }
 
+        async function createPlayerJoinLink() {
+          const sessionId = sessionIdInput.value.trim();
+          const hostToken = hostTokenInput.value.trim();
+          if (!sessionId) {
+            throw new Error('Create or paste a session id first.');
+          }
+          if (!hostToken) {
+            throw new Error('Paste a host bearer token first.');
+          }
+
+          const response = await fetch('/host/api/sessions/' + encodeURIComponent(sessionId) + '/players', {
+            method: 'POST',
+            headers: {
+              'authorization': 'Bearer ' + hostToken,
+              'content-type': 'application/json',
+            },
+          });
+          const data = await readJson(response);
+          if (!response.ok) {
+            throw new Error((data && data.detail) || 'Player join link creation failed.');
+          }
+
+          playerLinkOutput.textContent = JSON.stringify(data, null, 2);
+          setStatus('Player join link created.', false);
+        }
+
         document.querySelectorAll('button[data-action]').forEach(function(button) {
           button.addEventListener('click', async function() {
             try {
@@ -433,6 +495,14 @@ export function renderHostPage(sessionId = ""): string {
               setStatus(error.message || String(error), true);
             }
           });
+        });
+
+        createPlayerLinkButton.addEventListener('click', async function() {
+          try {
+            await createPlayerJoinLink();
+          } catch (error) {
+            setStatus(error.message || String(error), true);
+          }
         });
 
         refreshSessionButton.addEventListener('click', async function() {
@@ -470,7 +540,9 @@ export function renderSharedDisplayPage(sessionId = ""): string {
             <h2>Connection</h2>
             <label>
               Session ID
-              <input id="display-session-id" value="${sessionId}" placeholder="session UUID" />
+              <input id="display-session-id" value="${escapeHtml(
+                sessionId,
+              )}" placeholder="session UUID" />
             </label>
             <label>
               Bearer token
@@ -663,6 +735,142 @@ export function renderSharedDisplayPage(sessionId = ""): string {
             setStatus(error.message || String(error), true);
           });
         });
+      })();
+    </script>`,
+  );
+}
+
+export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
+  return pageShell(
+    "Nightcap Player Join",
+    `<section class="shell">
+      <div class="card">
+        <h1>Join Nightcap</h1>
+        <p class="muted">Join with the QR link or the join code from the host. No account or app install required.</p>
+        <div class="grid two">
+          <div class="card" style="margin: 0; background: var(--panel-strong);">
+            <h2>Join code</h2>
+            <form id="player-join-form">
+              <label>
+                Session ID
+                <input id="join-session-id" placeholder="session UUID" value="${escapeHtml(
+                  sessionId,
+                )}" />
+              </label>
+              <label>
+                Join token
+                <input id="join-token" placeholder="join code or QR token" value="${escapeHtml(
+                  joinToken,
+                )}" />
+              </label>
+              <div class="card" style="margin: 0 0 12px; background: rgba(8, 15, 30, 0.55);">
+                <h2>Quick personalization</h2>
+                <p class="muted">Answer one required question and one optional follow-up so Arcwright can fit your character.</p>
+                ${renderPersonalizationPromptFields(PLAYER_JOIN_PROMPTS)}
+              </div>
+              <div class="actions">
+                <button id="join-button" type="submit">Join</button>
+              </div>
+            </form>
+            <div id="player-status" class="status">Waiting for a join code.</div>
+          </div>
+          <div class="card" style="margin: 0; background: var(--panel-strong);">
+            <h2>Your surface</h2>
+            <div id="player-surface" class="status">No character assigned yet.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <script>
+      (function() {
+        const initialSessionId = ${JSON.stringify(sessionId)};
+        const initialJoinToken = ${JSON.stringify(joinToken)};
+        const joinForm = document.getElementById('player-join-form');
+        const sessionIdInput = document.getElementById('join-session-id');
+        const joinTokenInput = document.getElementById('join-token');
+        const status = document.getElementById('player-status');
+        const playerSurface = document.getElementById('player-surface');
+
+        function setStatus(message, isError) {
+          status.textContent = message;
+          status.className = isError ? 'status error' : 'status';
+        }
+
+        function readPersonalizationIntake(form) {
+          const payload = {};
+          form.querySelectorAll('[data-personalization-slot]').forEach(function(field) {
+            const key = field.getAttribute('data-personalization-slot');
+            const value = field.value.trim();
+            if (key && value) {
+              payload[key] = value;
+            }
+          });
+          return payload;
+        }
+
+        async function readJson(response) {
+          const text = await response.text();
+          return text ? JSON.parse(text) : null;
+        }
+
+        function renderPlayerSurface(data) {
+          playerSurface.textContent = JSON.stringify({
+            character_id: data.player.character_id,
+          }, null, 2);
+        }
+
+        async function joinPlayer() {
+          const sessionId = sessionIdInput.value.trim();
+          const joinToken = joinTokenInput.value.trim();
+          if (!sessionId) {
+            throw new Error('Session id is required.');
+          }
+          if (!joinToken) {
+            throw new Error('Join token is required.');
+          }
+
+          setStatus('Joining session...', false);
+          const response = await fetch('/join/api', {
+            method: 'POST',
+            headers: {
+              'content-type': 'application/json',
+            },
+            body: JSON.stringify({
+              session_id: sessionId,
+              join_token: joinToken,
+              personalization_intake: readPersonalizationIntake(joinForm),
+            }),
+          });
+          const data = await readJson(response);
+          if (!response.ok) {
+            throw new Error((data && data.detail) || 'Join failed.');
+          }
+
+          renderPlayerSurface(data);
+          setStatus('Joined. You are on your private player surface.', false);
+
+          const url = new URL(window.location.href);
+          url.searchParams.set('session_id', sessionId);
+          url.searchParams.delete('token');
+          window.history.replaceState({}, '', url.pathname + url.search);
+        }
+
+        joinForm.addEventListener('submit', function(event) {
+          event.preventDefault();
+          joinPlayer().catch(function(error) {
+            setStatus(error.message || String(error), true);
+          });
+        });
+
+        sessionIdInput.value = initialSessionId;
+        joinTokenInput.value = initialJoinToken;
+        if (initialSessionId && initialJoinToken) {
+          queueMicrotask(function() {
+            joinPlayer().catch(function(error) {
+              setStatus(error.message || String(error), true);
+            });
+          });
+        }
       })();
     </script>`,
   );

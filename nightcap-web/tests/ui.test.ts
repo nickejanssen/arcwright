@@ -9,8 +9,14 @@ import {
   getSharedDisplayEventBody,
   getSharedDisplayEventLabel,
   getSharedDisplayPresentationHintTokens,
+  renderHostPage,
+  renderPlayerJoinPage,
   renderSharedDisplayPage,
 } from "../src/ui.js";
+import {
+  HOST_SEED_PROMPTS,
+  PLAYER_JOIN_PROMPTS,
+} from "../src/personalization.js";
 
 test("shared display body prefers narrator and group-visible text payloads", () => {
   assert.equal(
@@ -119,4 +125,26 @@ test("shared display labels stay readable for narrator events", () => {
     }),
     "narrator bridge",
   );
+});
+
+test("player join page exposes a join form and private player surface", () => {
+  const html = renderPlayerJoinPage("session-123", "join-token-1");
+
+  assert.match(html, /Join Nightcap/);
+  assert.match(html, /Join code/);
+  assert.match(html, /Quick personalization/);
+  assert.match(html, /No character assigned yet/);
+  assert.match(html, /player-surface/);
+  for (const prompt of PLAYER_JOIN_PROMPTS) {
+    assert.ok(html.includes(prompt.label));
+  }
+});
+
+test("host page renders the editable seed questions", () => {
+  const html = renderHostPage("session-123");
+
+  assert.match(html, /Group personalization/);
+  for (const prompt of HOST_SEED_PROMPTS) {
+    assert.ok(html.includes(prompt.label));
+  }
 });
