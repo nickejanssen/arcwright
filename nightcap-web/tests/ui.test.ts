@@ -36,6 +36,14 @@ test("shared display body prefers narrator and group-visible text payloads", () 
     }),
     "The group is circling the kitchen.",
   );
+
+  assert.equal(
+    getSharedDisplayEventBody({
+      event_type: "clue_acknowledged",
+      payload: { clue_id: "clue-7", note: "private" },
+    }),
+    "A private event was shared.",
+  );
 });
 
 test("shared display presentation hints stay display-only", () => {

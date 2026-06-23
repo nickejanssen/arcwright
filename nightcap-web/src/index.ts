@@ -20,6 +20,7 @@ export {
 export {
   isHostVisibleEvent,
   isSharedDisplayVisibleEvent,
+  HOST_VISIBLE_AUDIENCES,
   SHARED_DISPLAY_VISIBLE_AUDIENCES,
 } from "./filters.js";
 export {

@@ -174,6 +174,8 @@ function escapeJsonForTextarea(value: unknown): string {
   return JSON.stringify(value, null, 2);
 }
 
+const SHARED_DISPLAY_UNKNOWN_PLACEHOLDER = "A private event was shared.";
+
 export function getSharedDisplayEventBody(
   event: Pick<ContentEvent, "payload" | "event_type">,
 ): string {
@@ -194,7 +196,7 @@ export function getSharedDisplayEventBody(
     }
   }
 
-  return JSON.stringify(payload, null, 2);
+  return SHARED_DISPLAY_UNKNOWN_PLACEHOLDER;
 }
 
 export function getSharedDisplayEventLabel(
