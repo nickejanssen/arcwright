@@ -1,5 +1,6 @@
 export {
   NightcapConnector,
+  type EndSessionRequest,
   type ConnectedSession,
   type CreateSessionRequest,
   type CreateSessionResponse,
@@ -8,6 +9,16 @@ export {
   type SessionStateResponse,
 } from "./connector.js";
 export {
+  buildNightcapRuntimeUrls,
+  type NightcapBootstrapRequest,
+  type NightcapBootstrapResponse,
+  type NightcapLifecycleEndRequest,
+  type NightcapLifecycleRequest,
+  type NightcapLifecycleResponse,
+  normalizePersonalizationIntake,
+} from "./runtime.js";
+export { isHostVisibleEvent, isSharedDisplayVisibleEvent } from "./filters.js";
+export {
   NightcapRoom,
   type NightcapRoomEnv,
   type RoomActionResponse,
@@ -15,4 +26,14 @@ export {
   type RoomMember,
   type RoomSnapshot,
 } from "./room.js";
-export { bootstrapSession, loadSession } from "./worker.js";
+export {
+  authorizeBootstrapSession,
+  bootstrapSession,
+  createHostSession,
+  loadSession,
+  proxySessionEvents,
+  proxySessionLifecycle,
+  renderHostPage,
+  renderLandingPage,
+  renderSharedDisplayPage,
+} from "./worker.js";
