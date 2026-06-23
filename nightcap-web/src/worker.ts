@@ -183,7 +183,11 @@ export async function proxySessionLifecycle(
       ),
     } satisfies NightcapLifecycleResponse);
   } catch (error) {
-    void error;
+    console.error("Arcwright lifecycle request failed", {
+      action,
+      sessionId,
+      error: error instanceof Error ? error.message : String(error),
+    });
     return new Response("Arcwright lifecycle request failed", {
       status: 502,
     });
@@ -260,6 +264,11 @@ export default {
       request.method === "POST" &&
       url.pathname === "/host/api/bootstrap/session"
     ) {
+      const denied = authorizeBootstrapSession(request, env);
+      if (denied) {
+        return denied;
+      }
+
       const body =
         (await readJsonBody<NightcapBootstrapRequest>(request)) ?? {};
       return createHostSession(connector, body);

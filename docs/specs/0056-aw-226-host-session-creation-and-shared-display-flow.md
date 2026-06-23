@@ -1,6 +1,6 @@
 # AW-226: Host Session Creation And Shared Display Flow
 
-**Status**: Draft
+**Status**: Approved
 
 **Author**: Codex | **Date**: 2026-06-22
 
@@ -44,11 +44,11 @@ Build the Nightcap web runtime host-control flow and shared-display event feed o
 
 # Acceptance Criteria
 
-- [ ] Host-facing runtime surfaces can create a session and then call Arcwright start, pause, resume, and end endpoints through the worker-backed client flow.
-- [ ] Shared-display rendering excludes `host_only` and `specific_player` content and only surfaces public or shared-display events.
-- [ ] Browser host creation captures opaque personalization intake payloads without inventing the unresolved D-054 prompt set.
-- [ ] Host controls and shared-display playback are implemented as thin proxies over Arcwright APIs, not as local session-state authority.
-- [ ] Tests cover the new host control lifecycle methods and shared-display filtering behavior.
+- [x] Host-facing runtime surfaces can create a session and then call Arcwright start, pause, resume, and end endpoints through the worker-backed client flow.
+- [x] Shared-display rendering excludes `host_only` and `specific_player` content and only surfaces public or shared-display events.
+- [x] Browser host creation captures opaque personalization intake payloads without inventing the unresolved D-054 prompt set.
+- [x] Host controls and shared-display playback are implemented as thin proxies over Arcwright APIs, not as local session-state authority.
+- [x] Tests cover the new host control lifecycle methods and shared-display filtering behavior.
 
 ---
 
@@ -63,10 +63,12 @@ Build the Nightcap web runtime host-control flow and shared-display event feed o
 # Risks and Unknowns
 
 **Risks**:
+
 - Bootstrap and host-auth UX is still incomplete, so the runtime must not pretend the browser is the source of truth for session authority.
 - If shared-display filtering is only client-side, the worker must still proxy the scoped Arcwright stream and avoid introducing a second filtering authority.
 
 **Unknowns**:
+
 - D-054 exact host seed questions and join prompts remain unresolved, so the runtime must treat intake as opaque data until that decision lands.
 - The final host auth exchange path is still external to this task.
 

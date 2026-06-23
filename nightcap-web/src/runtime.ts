@@ -4,7 +4,6 @@ import type {
   EndSessionRequest,
   SessionStateResponse,
 } from "./connector.js";
-import type { ContentEvent } from "./types.js";
 
 export interface NightcapBootstrapRequest extends CreateSessionRequest {
   personalization_intake?: Record<string, unknown>;
@@ -51,13 +50,4 @@ export function buildNightcapRuntimeUrls(
     host_url: `/host?session_id=${encodeURIComponent(sessionId)}`,
     shared_display_url: `/shared-display?session_id=${encodeURIComponent(sessionId)}`,
   };
-}
-
-export function isArcwrightDisplayEvent(
-  event: Pick<ContentEvent, "target_audience">,
-): boolean {
-  return (
-    event.target_audience === "all" ||
-    event.target_audience === "shared_display"
-  );
 }

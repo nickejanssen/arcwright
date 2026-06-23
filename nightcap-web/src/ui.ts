@@ -313,7 +313,7 @@ export function renderHostPage(sessionId = ""): string {
             method: 'POST',
             headers: {
               'authorization': 'Bearer ' + hostToken,
-              'content-type': action === 'end' ? 'application/json' : 'application/json',
+              'content-type': 'application/json',
             },
             body: action === 'end' ? JSON.stringify({
               completion_type: completionTypeInput.value,
@@ -430,7 +430,14 @@ export function renderSharedDisplayPage(sessionId = ""): string {
           const card = document.createElement('article');
           card.className = 'event';
           const heading = document.createElement('div');
-          heading.innerHTML = '<strong>' + event.category + '</strong> <span class="pill">' + event.target_audience + '</span>';
+          const category = document.createElement('strong');
+          category.textContent = String(event.category);
+          const audience = document.createElement('span');
+          audience.className = 'pill';
+          audience.textContent = String(event.target_audience);
+          heading.appendChild(category);
+          heading.appendChild(document.createTextNode(' '));
+          heading.appendChild(audience);
           const type = document.createElement('div');
           type.textContent = event.event_type;
           const payload = document.createElement('pre');

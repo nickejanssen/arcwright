@@ -5,16 +5,28 @@ import {
   NightcapConnector,
   type CreateSessionRequest,
 } from "../src/connector.js";
-import {
+
+const DurableObjectStub = class {
+  constructor(state: unknown, env: unknown) {
+    void state;
+    void env;
+  }
+};
+
+// @ts-expect-error Node does not provide DurableObject at runtime.
+globalThis.DurableObject = DurableObjectStub;
+
+const workerModule = await import("../src/worker.js");
+const {
   authorizeBootstrapSession,
   bootstrapSession,
   createHostSession,
-  type NightcapRoom,
-  type NightcapWorkerEnv,
   proxySessionLifecycle,
   renderHostPage,
   renderSharedDisplayPage,
-} from "../src/worker.js";
+} = workerModule;
+const workerRuntime = workerModule.default;
+import type { NightcapRoom, NightcapWorkerEnv } from "../src/worker.js";
 
 const roomNamespace = {
   idFromName(name: string) {
@@ -56,6 +68,22 @@ test("authorizeBootstrapSession requires the configured bootstrap token", () => 
     env,
   );
   assert.equal(allowed, null);
+});
+
+test("host api bootstrap session requires the bootstrap token", async () => {
+  const response = await workerRuntime.fetch(
+    new Request("https://nightcap.test/host/api/bootstrap/session", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        arc_id: "nightcap-v1",
+      }),
+    }),
+    env,
+    {} as ExecutionContext,
+  );
+
+  assert.equal(response.status, 401);
 });
 
 test("bootstrapSession forwards the Arcwright session id into room runtime state", async () => {
@@ -252,6 +280,47 @@ test("proxySessionLifecycle forwards host bearer tokens to Arcwright lifecycle c
     "resume:session-789:host-token",
     "end:session-789:host-token:interrupted:true",
   ]);
+});
+
+test("proxySessionLifecycle logs upstream failures and keeps the browser response generic", async () => {
+  const connector = {
+    async startSession() {
+      throw new Error("boom");
+    },
+  } as unknown as NightcapConnector;
+
+  const originalError = console.error;
+  const logs: unknown[][] = [];
+  console.error = (...args: unknown[]) => {
+    logs.push(args);
+  };
+
+  try {
+    const response = await proxySessionLifecycle(
+      connector,
+      "session-999",
+      "start",
+      new Request("https://nightcap.test/host/api/sessions/session-999/start", {
+        method: "POST",
+        headers: { Authorization: "Bearer host-token" },
+      }),
+    );
+
+    assert.equal(response.status, 502);
+    assert.equal(await response.text(), "Arcwright lifecycle request failed");
+    assert.equal(logs.length, 1);
+    assert.match(
+      String(logs[0]?.[0] ?? ""),
+      /Arcwright lifecycle request failed/,
+    );
+    assert.deepEqual(logs[0]?.[1], {
+      action: "start",
+      sessionId: "session-999",
+      error: "boom",
+    });
+  } finally {
+    console.error = originalError;
+  }
 });
 
 test("rendered runtime shells include host and shared-display controls", () => {
