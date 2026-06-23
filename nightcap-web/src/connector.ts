@@ -113,11 +113,18 @@ export class NightcapConnector {
   async joinSession(
     sessionId: string,
     joinToken: string,
+    personalizationIntake: Record<string, unknown> = {},
   ): Promise<JoinSessionResponse> {
     const url = new URL(`/v1/sessions/${sessionId}/join`, this.baseUrl);
     url.searchParams.set("token", joinToken);
     return this.jsonRequest<JoinSessionResponse>(url.pathname + url.search, {
-      method: "GET",
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        personalization_intake: personalizationIntake,
+      }),
     });
   }
 

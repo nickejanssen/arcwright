@@ -305,10 +305,18 @@ test("joinPlayerSession registers the player and returns the assigned character 
     },
   } as unknown as DurableObjectNamespace<NightcapRoom>;
 
-  const joinCalls: Array<{ sessionId: string; joinToken: string }> = [];
+  const joinCalls: Array<{
+    sessionId: string;
+    joinToken: string;
+    personalizationIntake: Record<string, unknown>;
+  }> = [];
   const joinConnector = {
-    async joinSession(sessionId: string, joinToken: string) {
-      joinCalls.push({ sessionId, joinToken });
+    async joinSession(
+      sessionId: string,
+      joinToken: string,
+      personalizationIntake: Record<string, unknown>,
+    ) {
+      joinCalls.push({ sessionId, joinToken, personalizationIntake });
       return {
         session_id: sessionId,
         player_id: "player-1",
@@ -335,7 +343,11 @@ test("joinPlayerSession registers the player and returns the assigned character 
 
   assert.equal(response.status, 200);
   assert.deepEqual(joinCalls, [
-    { sessionId: "session-join", joinToken: "join-token-1" },
+    {
+      sessionId: "session-join",
+      joinToken: "join-token-1",
+      personalizationIntake: { notes: "opaque" },
+    },
   ]);
 
   const body = (await response.json()) as {
@@ -355,6 +367,7 @@ test("joinPlayerSession registers the player and returns the assigned character 
     "/join?session_id=session-join&token=join-token-1",
   );
   assert.deepEqual(body.personalization_intake, { notes: "opaque" });
+  assert.deepEqual(joinCalls[0]?.personalizationIntake, { notes: "opaque" });
   assert.equal(roomJoins.length, 1);
   assert.deepEqual(roomJoins[0], {
     session_id: "session-join",

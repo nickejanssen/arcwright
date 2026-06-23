@@ -25,6 +25,7 @@ Build the Nightcap player join path inside the Cloudflare-hosted `nightcap-web` 
 # Prompt Set
 
 Prompt copy is centralized in `nightcap-web/src/personalization.ts` so edits stay in one place.
+The QR path pre-fills session and token values, but the player must still answer the prompts and tap Join before the worker submits the exchange.
 
 - Host seed questions:
   - `How familiar is this group with one another?`
@@ -74,7 +75,7 @@ Prompt copy is centralized in `nightcap-web/src/personalization.ts` so edits sta
 
 - [ ] A new player can join by QR or code in under 30 seconds in rehearsal conditions.
 - [ ] Player join does not require a Firebase account or app install.
-- [ ] Player join captures one to two v1 personalization prompts using the resolved prompt set in `nightcap-web/src/personalization.ts`.
+- [ ] Player join captures one to two v1 personalization prompts using the resolved prompt set in `nightcap-web/src/personalization.ts`, and the worker forwards them in the Arcwright join exchange.
 - [ ] Player receives only their assigned character context after join.
 
 ---
@@ -90,7 +91,9 @@ Prompt copy is centralized in `nightcap-web/src/personalization.ts` so edits sta
 # Risks and Unknowns
 
 **Risks**:
+
 - If the player surface reuses shared-display components, private content could leak unless the surface rendering path stays explicit.
 
 **Unknowns**:
+
 - Whether later player-event and input work should exchange the custom player token in the worker or in the browser.

@@ -249,7 +249,14 @@ export async function joinPlayerSession(
   }
 
   try {
-    const player = await connector.joinSession(sessionId, joinToken);
+    const personalizationIntake = normalizePersonalizationIntake(
+      body.personalization_intake,
+    );
+    const player = await connector.joinSession(
+      sessionId,
+      joinToken,
+      personalizationIntake,
+    );
     await registerJoinedPlayer(env, sessionId, player);
 
     return json({
@@ -260,9 +267,7 @@ export async function joinPlayerSession(
         ...buildNightcapRuntimeUrls(sessionId),
         player_url: buildNightcapPlayerJoinUrl(sessionId, joinToken),
       },
-      personalization_intake: normalizePersonalizationIntake(
-        body.personalization_intake,
-      ),
+      personalization_intake: personalizationIntake,
     } satisfies NightcapPlayerJoinResponse);
   } catch (error) {
     console.error("Nightcap player join failed", {

@@ -193,10 +193,15 @@ test("NightcapConnector calls session endpoints and streams scoped events", asyn
     }
 
     if (
-      request.method === "GET" &&
+      request.method === "POST" &&
       url.pathname === "/v1/sessions/session-1/join"
     ) {
       assert.equal(url.searchParams.get("token"), "join-token-1");
+      assert.deepEqual(JSON.parse(body ?? "{}"), {
+        personalization_intake: {
+          host_familiarity: "mixed group",
+        },
+      });
       return responseJson({
         session_id: "session-1",
         player_id: "player-1",
@@ -256,7 +261,9 @@ test("NightcapConnector calls session endpoints and streams scoped events", asyn
     "https://arcwright.test/v1/sessions/session-1/join?token=join-token-1",
   );
 
-  const joined = await connector.joinSession("session-1", "join-token-1");
+  const joined = await connector.joinSession("session-1", "join-token-1", {
+    host_familiarity: "mixed group",
+  });
   assert.equal(joined.session_id, "session-1");
   assert.equal(joined.player_id, "player-1");
   assert.equal(joined.character_id, "character-1");
@@ -302,12 +309,19 @@ test("NightcapConnector calls session endpoints and streams scoped events", asyn
   assert.equal(calls[6]?.path, "/v1/sessions/session-1/players");
   assert.equal(calls[6]?.headers.get("x-api-key"), "api-key-123");
   assert.equal(calls[6]?.headers.get("content-type"), "application/json");
-  assert.equal(calls[7]?.method, "GET");
+  assert.equal(calls[7]?.method, "POST");
   assert.equal(
     calls[7]?.path,
     "/v1/sessions/session-1/join?token=join-token-1",
   );
-  assert.equal(calls[7]?.headers.get("content-type"), null);
+  assert.equal(calls[7]?.method, "POST");
+  assert.equal(calls[7]?.headers.get("content-type"), "application/json");
+  assert.ok(calls[7]?.body);
+  assert.deepEqual(JSON.parse(calls[7]?.body ?? "{}"), {
+    personalization_intake: {
+      host_familiarity: "mixed group",
+    },
+  });
   assert.equal(calls[8]?.method, "GET");
   assert.equal(calls[8]?.path, "/v1/sessions/session-1/events?since=0");
   assert.equal(calls[8]?.headers.get("authorization"), "Bearer player-token-1");

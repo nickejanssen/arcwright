@@ -4,6 +4,7 @@ import {
   PLAYER_JOIN_PROMPTS,
   renderPersonalizationPromptFields,
 } from "./personalization.js";
+import { escapeHtml } from "./html.js";
 import { buildNightcapRuntimeUrls } from "./runtime.js";
 import type { ContentEvent, PresentationHints } from "./types.js";
 
@@ -195,15 +196,6 @@ function pageShell(title: string, body: string): string {
   <main>${body}</main>
 </body>
 </html>`;
-}
-
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
 }
 
 const SHARED_DISPLAY_UNKNOWN_PLACEHOLDER = "A private event was shared.";
@@ -783,8 +775,6 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
     </section>
     <script>
       (function() {
-        const initialSessionId = ${JSON.stringify(sessionId)};
-        const initialJoinToken = ${JSON.stringify(joinToken)};
         const joinForm = document.getElementById('player-join-form');
         const sessionIdInput = document.getElementById('join-session-id');
         const joinTokenInput = document.getElementById('join-token');
@@ -862,14 +852,12 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
           });
         });
 
-        sessionIdInput.value = initialSessionId;
-        joinTokenInput.value = initialJoinToken;
-        if (initialSessionId && initialJoinToken) {
-          queueMicrotask(function() {
-            joinPlayer().catch(function(error) {
-              setStatus(error.message || String(error), true);
-            });
-          });
+        if (sessionIdInput.value.trim() && joinTokenInput.value.trim()) {
+          setStatus('Answer the prompts, then tap Join.', false);
+          const firstPrompt = joinForm.querySelector('[data-personalization-slot]');
+          if (firstPrompt instanceof HTMLElement) {
+            firstPrompt.focus();
+          }
         }
       })();
     </script>`,

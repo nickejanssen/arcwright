@@ -1,3 +1,5 @@
+import { escapeHtml } from "./html.js";
+
 export interface PersonalizationPrompt {
   readonly id: string;
   readonly label: string;
@@ -46,15 +48,6 @@ export const PLAYER_JOIN_PROMPTS = [
     required: false,
   },
 ] as const satisfies readonly PersonalizationPrompt[];
-
-function escapeHtml(value: string): string {
-  return value
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
-}
 
 function renderPersonalizationPrompt(prompt: PersonalizationPrompt): string {
   const requiredSuffix = prompt.required
