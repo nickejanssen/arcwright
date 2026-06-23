@@ -34,6 +34,7 @@ export { NightcapRoom };
 export interface NightcapWorkerEnv {
   ARCWRIGHT_API_BASE_URL: string;
   ARCWRIGHT_API_KEY: string;
+  FIREBASE_SIGN_IN_URL?: string;
   FIREBASE_WEB_API_KEY: string;
   BOOTSTRAP_TOKEN: string;
   ROOMS: DurableObjectNamespace<NightcapRoom>;
@@ -45,7 +46,11 @@ interface PlayerTokenExchangeRequest {
 
 interface PlayerTokenExchangeResponse {
   player_token: string;
+  expires_at: number;
 }
+
+const DEFAULT_FIREBASE_SIGN_IN_URL =
+  "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken";
 
 function json(value: unknown, init?: ResponseInit): Response {
   return new Response(JSON.stringify(value), {
@@ -323,8 +328,11 @@ export async function exchangePlayerToken(
     });
   }
 
+  const signInUrl =
+    env.FIREBASE_SIGN_IN_URL?.trim() || DEFAULT_FIREBASE_SIGN_IN_URL;
+
   const response = await fetch(
-    `https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken?key=${encodeURIComponent(apiKey)}`,
+    `${signInUrl}?key=${encodeURIComponent(apiKey)}`,
     {
       method: "POST",
       headers: {
@@ -338,6 +346,7 @@ export async function exchangePlayerToken(
   );
   const data = await readJsonResponse<{
     idToken?: string;
+    expiresIn?: string;
     error?: { message?: string };
   }>(response);
 
@@ -350,8 +359,15 @@ export async function exchangePlayerToken(
     return new Response("Player token exchange failed", { status: 502 });
   }
 
+  const expiresInSeconds = Number.parseInt(data.expiresIn ?? "0", 10);
+  const expiresAt =
+    Number.isFinite(expiresInSeconds) && expiresInSeconds > 0
+      ? Date.now() + expiresInSeconds * 1000
+      : Date.now() + 60 * 60 * 1000;
+
   return json({
     player_token: data.idToken,
+    expires_at: expiresAt,
   } satisfies PlayerTokenExchangeResponse);
 }
 
@@ -450,14 +466,19 @@ export async function proxyPlayerCharacter(
   characterId: string,
   request: Request,
 ): Promise<Response> {
+  const accessToken = readBearerToken(request);
+  if (!accessToken) {
+    return new Response("Authorization header required", { status: 401 });
+  }
+
   const url = new URL(
     `${env.ARCWRIGHT_API_BASE_URL}/v1/sessions/${sessionId}/characters/${characterId}`,
   );
   const response = await fetch(url, {
     method: request.method,
-    headers: request.headers.get("Authorization")
-      ? { Authorization: request.headers.get("Authorization") as string }
-      : {},
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
   });
 
   return new Response(response.body, {
@@ -477,6 +498,11 @@ export async function proxyPlayerInput(
   characterId: string,
   request: Request,
 ): Promise<Response> {
+  const accessToken = readBearerToken(request);
+  if (!accessToken) {
+    return new Response("Authorization header required", { status: 401 });
+  }
+
   const url = new URL(
     `${env.ARCWRIGHT_API_BASE_URL}/v1/sessions/${sessionId}/characters/${characterId}/input`,
   );
@@ -484,9 +510,7 @@ export async function proxyPlayerInput(
   const response = await fetch(url, {
     method: request.method,
     headers: {
-      ...(request.headers.get("Authorization")
-        ? { Authorization: request.headers.get("Authorization") as string }
-        : {}),
+      Authorization: `Bearer ${accessToken}`,
       ...(request.headers.get("content-type")
         ? { "content-type": request.headers.get("content-type") as string }
         : {}),

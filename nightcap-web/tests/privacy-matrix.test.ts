@@ -237,6 +237,9 @@ test("Nightcap privacy matrix keeps each audience on the intended device role", 
     fetchImpl,
   });
 
+  // Trust boundary: Arcwright owns audience filtering, and this matrix only
+  // proves the browser surfaces do not widen or leak what scoped streams send.
+
   const receivedByRole = new Map(
     await Promise.all(
       matrix.map(

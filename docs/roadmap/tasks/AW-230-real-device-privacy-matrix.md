@@ -56,6 +56,7 @@ test docs, Cloudflare Pages, Workers, Durable Objects or PartyKit files
 
 - docs/architecture/08-event-system.md S8.4-S8.5
 - `docs/decisions/0003-nightcap-web-experience-runtime.md`
+- `docs/specs/0060-aw-230-real-device-privacy-matrix.md`
 - `AGENTS.md`
 - `docs/architecture/15-development-guide.md`
 

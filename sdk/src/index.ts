@@ -5,6 +5,7 @@ export type {
   ContentEvent,
   PlayerInput,
   CharacterDetail,
+  SurfaceType,
 } from "./types.js";
 
 import type { ContentEvent, PlayerInput, CharacterDetail } from "./types.js";
