@@ -444,6 +444,7 @@
         "AW-251",
         "AW-252",
         "AW-253",
+        "AW-257",
         "AW-254"
       ],
       "github": {
@@ -1627,13 +1628,27 @@
       "size": "M",
       "depends_on": [
         "AW-253",
-        "AW-230"
+        "AW-230",
+        "AW-257"
       ],
       "path": "docs/roadmap/tasks/AW-254-first-production-nightcap-mini-game.md",
       "github": {
         "issue_number": 148,
         "url": "https://github.com/nickejanssen/arcwright/issues/148"
       },
+      "epic_id": "M4-E"
+    },
+    {
+      "id": "AW-257",
+      "title": "Author First Production Nightcap Mini-game Package",
+      "milestone": "M4",
+      "epic": "M4-E",
+      "size": "M",
+      "depends_on": [
+        "AW-249",
+        "AW-250"
+      ],
+      "path": "docs/roadmap/tasks/AW-257-author-first-production-nightcap-mini-game.md",
       "epic_id": "M4-E"
     }
   ],
