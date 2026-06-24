@@ -58,6 +58,7 @@ export interface NightcapPlayerSessionState {
   player_id: string;
   character_id: string;
   player_token: string;
+  expires_at: number;
   last_sequence_number: number;
 }
 
@@ -114,6 +115,9 @@ export function normalizeNightcapPlayerSessionState(
     candidate.character_id.length === 0 ||
     typeof candidate.player_token !== "string" ||
     candidate.player_token.length === 0 ||
+    typeof candidate.expires_at !== "number" ||
+    !Number.isFinite(candidate.expires_at) ||
+    candidate.expires_at < 0 ||
     typeof candidate.last_sequence_number !== "number" ||
     !Number.isFinite(candidate.last_sequence_number) ||
     candidate.last_sequence_number < 0
@@ -126,6 +130,14 @@ export function normalizeNightcapPlayerSessionState(
     player_id: candidate.player_id,
     character_id: candidate.character_id,
     player_token: candidate.player_token,
+    expires_at: Math.floor(candidate.expires_at),
     last_sequence_number: Math.floor(candidate.last_sequence_number),
   };
+}
+
+export function isNightcapPlayerSessionExpired(
+  session: NightcapPlayerSessionState,
+  now = Date.now(),
+): boolean {
+  return now >= session.expires_at;
 }

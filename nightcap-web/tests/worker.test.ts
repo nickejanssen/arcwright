@@ -43,10 +43,14 @@ const roomNamespace = {
 const env: NightcapWorkerEnv = {
   ARCWRIGHT_API_BASE_URL: "https://arcwright.invalid",
   ARCWRIGHT_API_KEY: "test-api-key",
+  FIREBASE_SIGN_IN_URL:
+    "https://firebase.test/v1/accounts:signInWithCustomToken",
   FIREBASE_WEB_API_KEY: "firebase-web-api-key",
   BOOTSTRAP_TOKEN: "bootstrap-secret",
   ROOMS: roomNamespace,
 };
+
+const firebaseSignInUrl = env.FIREBASE_SIGN_IN_URL ?? "";
 
 test("authorizeBootstrapSession requires the configured bootstrap token", () => {
   const missing = authorizeBootstrapSession(
@@ -551,6 +555,54 @@ test("player api routes proxy scoped character fetch, input, and event replay", 
   }
 });
 
+test("player api routes reject missing authorization before proxying", async () => {
+  const fetchGlobal = globalThis as typeof globalThis & {
+    fetch: typeof fetch;
+  };
+  const originalFetch = fetchGlobal.fetch;
+  const fetchCalls: string[] = [];
+  fetchGlobal.fetch = async () => {
+    fetchCalls.push("unexpected");
+    throw new Error("unexpected fetch");
+  };
+
+  try {
+    const characterResponse = await workerRuntime.fetch(
+      new Request(
+        "https://nightcap.test/player/api/sessions/session-abc/characters/character-1",
+        {
+          method: "GET",
+        },
+      ),
+      env,
+      {} as ExecutionContext,
+    );
+
+    assert.equal(characterResponse.status, 401);
+
+    const inputResponse = await workerRuntime.fetch(
+      new Request(
+        "https://nightcap.test/player/api/sessions/session-abc/characters/character-1/input",
+        {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            kind: "action",
+            content: "Look under the table.",
+          }),
+        },
+      ),
+      env,
+      {} as ExecutionContext,
+    );
+
+    assert.equal(inputResponse.status, 401);
+    assert.equal(fetchCalls.length, 0);
+  } finally {
+    fetchGlobal.fetch = originalFetch;
+  }
+});
+
 test("player token exchange converts a join custom token into a bearer token", async () => {
   const fetchGlobal = globalThis as typeof globalThis & {
     fetch: typeof fetch;
@@ -568,11 +620,7 @@ test("player token exchange converts a join custom token into a bearer token", a
     const url = new URL(request.url);
     const body = request.method === "GET" ? null : await request.text();
 
-    if (
-      request.method === "POST" &&
-      url.hostname === "identitytoolkit.googleapis.com" &&
-      url.pathname === "/v1/accounts:signInWithCustomToken"
-    ) {
+    if (request.method === "POST" && url.href.startsWith(firebaseSignInUrl)) {
       assert.equal(url.searchParams.get("key"), env.FIREBASE_WEB_API_KEY);
       assert.deepEqual(JSON.parse(body ?? "{}"), {
         token: "player-custom-token-abc",
@@ -614,10 +662,80 @@ test("player token exchange converts a join custom token into a bearer token", a
     );
 
     assert.equal(response.status, 200);
-    assert.deepEqual(await response.json(), {
-      player_token: "player-id-token-abc",
-    });
+    const body = (await response.json()) as {
+      player_token: string;
+      expires_at: number;
+    };
+    assert.equal(body.player_token, "player-id-token-abc");
+    assert.ok(Number.isFinite(body.expires_at));
   } finally {
+    fetchGlobal.fetch = originalFetch;
+  }
+});
+
+test("player token exchange hides Firebase failures behind a generic 502", async () => {
+  const fetchGlobal = globalThis as typeof globalThis & {
+    fetch: typeof fetch;
+  };
+  const originalFetch = fetchGlobal.fetch;
+
+  fetchGlobal.fetch = async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> => {
+    const request =
+      input instanceof Request
+        ? input
+        : new Request(input instanceof URL ? input : String(input), init);
+    const url = new URL(request.url);
+
+    if (request.method === "POST" && url.href.startsWith(firebaseSignInUrl)) {
+      return new Response(
+        JSON.stringify({
+          error: { message: "INVALID_CUSTOM_TOKEN" },
+        }),
+        {
+          status: 400,
+          headers: { "content-type": "application/json; charset=utf-8" },
+        },
+      );
+    }
+
+    return new Response("not found", { status: 404 });
+  };
+
+  const originalWarn = console.warn;
+  const warnings: unknown[][] = [];
+  console.warn = (...args: unknown[]) => {
+    warnings.push(args);
+  };
+
+  try {
+    const response = await workerRuntime.fetch(
+      new Request(
+        "https://nightcap.test/player/api/sessions/session-abc/auth/exchange",
+        {
+          method: "POST",
+          headers: {
+            "content-type": "application/json",
+          },
+          body: JSON.stringify({
+            player_token: "player-custom-token-abc",
+          }),
+        },
+      ),
+      env,
+      {} as ExecutionContext,
+    );
+
+    assert.equal(response.status, 502);
+    const text = await response.text();
+    assert.equal(text, "Player token exchange failed");
+    assert.ok(!text.includes("INVALID_CUSTOM_TOKEN"));
+    assert.equal(warnings.length, 1);
+    assert.equal(warnings[0]?.[0], "Nightcap player token exchange failed");
+  } finally {
+    console.warn = originalWarn;
     fetchGlobal.fetch = originalFetch;
   }
 });

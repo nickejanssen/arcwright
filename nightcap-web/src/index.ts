@@ -32,6 +32,7 @@ export type {
   ContentEvent,
   PlayerInput,
   PresentationHints,
+  SurfaceType,
 } from "./types.js";
 export {
   isHostVisibleEvent,

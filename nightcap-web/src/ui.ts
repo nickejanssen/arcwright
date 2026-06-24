@@ -8,6 +8,7 @@ import { escapeHtml } from "./html.js";
 import {
   buildNightcapPlayerSessionStorageKey,
   buildNightcapRuntimeUrls,
+  isNightcapPlayerSessionExpired,
   normalizeNightcapPlayerSessionState,
 } from "./runtime.js";
 import type { ContentEvent, PresentationHints } from "./types.js";
@@ -279,6 +280,7 @@ export function getPlayerEventBody(
     }
   }
 
+  // Player-private surfaces render the full structured payload intentionally.
   return JSON.stringify(payload, null, 2);
 }
 
@@ -854,6 +856,7 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
                 </label>
                 <div class="actions">
                   <button id="player-input-submit" type="submit" disabled>Send</button>
+                  <button id="player-feed-retry" type="button" disabled>Retry feed</button>
                 </div>
               </form>
               <section class="surface-panel">
@@ -869,6 +872,7 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
       (function() {
         const buildPlayerSessionStorageKey = ${buildNightcapPlayerSessionStorageKey.toString()};
         const normalizePlayerSessionState = ${normalizeNightcapPlayerSessionState.toString()};
+        const isNightcapPlayerSessionExpired = ${isNightcapPlayerSessionExpired.toString()};
         const getPlayerEventBody = ${getPlayerEventBody.toString()};
         const getPlayerEventLabel = ${getPlayerEventLabel.toString()};
         const joinForm = document.getElementById('player-join-form');
@@ -881,6 +885,7 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
         const playerInputKind = document.getElementById('player-input-kind');
         const playerInputContent = document.getElementById('player-input-content');
         const playerInputSubmit = document.getElementById('player-input-submit');
+        const playerFeedRetry = document.getElementById('player-feed-retry');
         const playerEventFeed = document.getElementById('player-event-feed');
         const activeSessionStorageKey = 'nightcap.player.active_session_id';
         const state = {
@@ -937,6 +942,7 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
             player_id: state.session.player_id,
             character_id: state.session.character_id,
             player_token: state.session.player_token,
+            expires_at: state.session.expires_at,
             last_sequence_number: state.since,
           });
         }
@@ -978,11 +984,18 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
             throw new Error((data && data.detail) || 'Player sign-in failed.');
           }
 
-          if (!data || typeof data.player_token !== 'string') {
+          if (
+            !data ||
+            typeof data.player_token !== 'string' ||
+            typeof data.expires_at !== 'number'
+          ) {
             throw new Error('Player sign-in failed.');
           }
 
-          return data.player_token;
+          return {
+            player_token: data.player_token,
+            expires_at: data.expires_at,
+          };
         }
 
         function sessionHeaders(includeContentType) {
@@ -1002,7 +1015,11 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
 
         function renderPlayerCharacter(character) {
           playerCharacterTitle.textContent = 'Character ' + character.character_id;
-          playerCharacterDetail.textContent = JSON.stringify(character, null, 2);
+          playerCharacterDetail.textContent = [
+            'Private character loaded.',
+            'Surface: ' + character.surface_type,
+            'Your private feed and input stay on this device.',
+          ].join('\\n');
         }
 
         function renderPlayerEvent(event) {
@@ -1083,7 +1100,18 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
         }
 
         function retryDelayFor(attempt) {
-          return attempt < 5 ? 250 * Math.pow(2, attempt) : null;
+          return attempt < 8 ? 250 * Math.pow(2, attempt) : null;
+        }
+
+        async function retryPlayerFeed() {
+          if (!state.session) {
+            throw new Error('Join the session first.');
+          }
+
+          setStatus('Retrying private feed...', false);
+          await disconnectPlayerStream();
+          state.reconnectAttempts = 0;
+          void connectPlayerStream();
         }
 
         async function connectPlayerStream() {
@@ -1104,7 +1132,7 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
             } catch {
               const retryDelayMs = retryDelayFor(state.reconnectAttempts);
               if (!retryDelayMs) {
-                setStatus('Private feed disconnected.', true);
+                setStatus('Private feed disconnected. Tap Retry feed or reload.', true);
                 break;
               }
               state.reconnectAttempts += 1;
@@ -1116,7 +1144,7 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
             if (!response.ok || !response.body) {
               const retryDelayMs = retryDelayFor(state.reconnectAttempts);
               if (!retryDelayMs) {
-                setStatus('Private feed failed with ' + response.status + '.', true);
+                setStatus('Private feed failed with ' + response.status + '. Tap Retry feed or reload.', true);
                 break;
               }
               state.reconnectAttempts += 1;
@@ -1157,7 +1185,7 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
 
             const retryDelayMs = retryDelayFor(state.reconnectAttempts);
             if (!retryDelayMs) {
-              setStatus('Private feed disconnected.', true);
+              setStatus('Private feed disconnected. Tap Retry feed or reload.', true);
               break;
             }
             state.reconnectAttempts += 1;
@@ -1197,6 +1225,7 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
           playerInputContent.value = '';
           playerInputContent.disabled = false;
           playerInputSubmit.disabled = false;
+          playerFeedRetry.disabled = false;
           setStatus('Joined. Private events stay on this device.', false);
           const url = new URL(window.location.href);
           url.searchParams.set('session_id', session.session_id);
@@ -1257,7 +1286,8 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
             session_id: data.session_id,
             player_id: data.player.player_id,
             character_id: data.player.character_id,
-            player_token: playerToken,
+            player_token: playerToken.player_token,
+            expires_at: playerToken.expires_at,
             last_sequence_number: 0,
           });
         }
@@ -1313,6 +1343,15 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
             return;
           }
 
+          if (isNightcapPlayerSessionExpired(stored)) {
+            sessionStorage.removeItem(activeSessionStorageKey);
+            sessionStorage.removeItem(
+              buildPlayerSessionStorageKey(stored.session_id),
+            );
+            setStatus('Your private session expired. Rejoin to continue.', true);
+            return;
+          }
+
           if (!sessionId) {
             sessionIdInput.value = stored.session_id;
           }
@@ -1333,6 +1372,14 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
             setStatus(error.message || String(error), true);
           });
         });
+
+        if (playerFeedRetry instanceof HTMLButtonElement) {
+          playerFeedRetry.addEventListener('click', function() {
+            retryPlayerFeed().catch(function(error) {
+              setStatus(error.message || String(error), true);
+            });
+          });
+        }
 
         if (sessionIdInput.value.trim() && joinTokenInput.value.trim()) {
           setStatus('Answer the prompts, then tap Join.', false);

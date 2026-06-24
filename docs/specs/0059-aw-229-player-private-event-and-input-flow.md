@@ -10,7 +10,7 @@
 
 - Related ADRs: `docs/decisions/0003-nightcap-web-experience-runtime.md`
 - Architecture sections: `docs/architecture/08-event-system.md` §8.1, §8.4, §8.6, `docs/architecture/09-developer-api.md` §9.2, §9.4, `docs/architecture/15-development-guide.md` §15.6, §15.9
-- Related specs: `docs/specs/0058-aw-228-player-join-flow-under-30-seconds.md`
+- Related specs: `docs/specs/0058-aw-228-player-join-flow-under-30-seconds.md`, `docs/specs/0060-aw-230-real-device-privacy-matrix.md`
 - PRD sections: `docs/prd/02-requirements.md`
 - Roadmap tasks: `docs/roadmap/tasks/AW-229-player-private-event-and-input-flow.md`
 

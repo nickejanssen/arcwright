@@ -45,6 +45,8 @@ export interface CharacterDetail {
   session_id: string;
   character_id: string;
   participant_id: string;
-  surface_type: string;
+  surface_type: SurfaceType;
   is_ai_controlled: boolean;
 }
+
+export type SurfaceType = "phone" | "shared_display" | "host";

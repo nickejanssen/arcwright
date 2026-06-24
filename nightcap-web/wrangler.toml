@@ -5,6 +5,7 @@ compatibility_date = "2026-06-22"
 [vars]
 # Intentional placeholder — override via Cloudflare dashboard or `wrangler secret` before deployment.
 ARCWRIGHT_API_BASE_URL = "https://arcwright.invalid"
+FIREBASE_SIGN_IN_URL = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken"
 
 [[durable_objects.bindings]]
 name = "ROOMS"

@@ -178,9 +178,15 @@ test("player join page exposes a join form and private player surface", () => {
   assert.match(html, /player-event-feed/);
   assert.match(html, /Private feed/);
   assert.match(html, /Private events stay on your device/);
+  assert.match(html, /Retry feed/);
+  assert.match(html, /Private character loaded\./);
+  assert.match(html, /Your private feed and input stay on this device\./);
   assert.match(html, /auth\/exchange/);
   assert.match(html, /exchangeJoinTokenForBearerToken/);
   assert.ok(!html.includes("player_token: data.player.player_token"));
+  assert.ok(!html.includes("JSON.stringify(character, null, 2)"));
+  assert.ok(!html.includes("participant_id"));
+  assert.ok(!html.includes("is_ai_controlled"));
   assert.ok(!html.includes("queueMicrotask(function()"));
   for (const prompt of PLAYER_JOIN_PROMPTS) {
     assert.ok(html.includes(prompt.label));
@@ -192,8 +198,11 @@ test("player join page includes reconnect-safe session storage hooks", () => {
 
   assert.match(html, /nightcap\.player\.active_session_id/);
   assert.match(html, /buildNightcapPlayerSessionStorageKey/);
+  assert.match(html, /isNightcapPlayerSessionExpired/);
   assert.match(html, /Private feed connected\./);
+  assert.match(html, /Your private session expired\. Rejoin to continue\./);
   assert.match(html, /resumeStoredSession/);
+  assert.match(html, /expires_at/);
   assert.ok(!html.includes("renderEventPayloadBody"));
   assert.ok(!html.includes("getSharedDisplayEventLabel"));
 });
