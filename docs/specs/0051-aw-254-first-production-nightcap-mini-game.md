@@ -1,8 +1,21 @@
 # AW-254: First Production Nightcap Mini-game And Rehearsal
 
-**Status**: Draft
+**Status**: Draft, blocked on AW-257
 
 **Author**: Codex | **Date**: 2026-06-20
+
+---
+
+# Gate Outcome (2026-06-24)
+
+A pre-implementation gate check found no founder-selected production game ID in
+canonical docs, specs, or decision records, and no `active`-lifecycle package in
+`nightcap/mini_games/` (only non-shipping `_fixtures/*` and `_template`). The
+Open Question below ("Which authored game package will the founder select?") is
+unresolved because no production package exists yet. Per founder direction
+(D-061), the first production game is authored as precursor task AW-257; AW-254
+depends on AW-257 and remains blocked until that package is authored, reviewed,
+and founder-approved. No runtime or test code was changed by this gate check.
 
 ---
 
