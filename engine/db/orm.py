@@ -467,6 +467,7 @@ class Session(Base):
         back_populates="session"
     )
     decision_logs: Mapped[list[DecisionLog]] = relationship(back_populates="session")
+    mini_game_runs: Mapped[list[MiniGameRun]] = relationship(back_populates="session")
 
 
 class SessionParticipant(Base):
@@ -601,3 +602,108 @@ class DecisionLog(Base):
     outcome: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
 
     session: Mapped[Session] = relationship(back_populates="decision_logs")
+
+
+class MiniGameRun(Base):
+    __tablename__ = "mini_game_runs"
+    __table_args__ = (
+        Index("ix_mini_game_runs_session_id_status", "session_id", "status"),
+    )
+
+    run_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        primary_key=True,
+        server_default=text("gen_random_uuid()"),
+    )
+    session_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("sessions.session_id"),
+        nullable=False,
+    )
+    game_id: Mapped[str] = mapped_column(Text, nullable=False)
+    definition_version: Mapped[str] = mapped_column(Text, nullable=False)
+    definition_snapshot: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    status: Mapped[str] = mapped_column(
+        Text,
+        nullable=False,
+        server_default=text("'pending'"),
+    )
+    revision: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        server_default=text("0"),
+    )
+    started_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    deadline: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    paused_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    pause_deadline_remaining_seconds: Mapped[Optional[float]] = mapped_column(
+        Float, nullable=True
+    )
+    completed_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    cancelled_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    outcome: Mapped[Optional[dict[str, Any]]] = mapped_column(JSONB, nullable=True)
+    behavioral_outputs: Mapped[Optional[dict[str, Any]]] = mapped_column(
+        JSONB, nullable=True
+    )
+    clue_unlock_record: Mapped[dict[str, Any]] = mapped_column(
+        JSONB,
+        nullable=False,
+        server_default=text("'{}'::jsonb"),
+    )
+
+    session: Mapped[Session] = relationship(back_populates="mini_game_runs")
+    submissions: Mapped[list[MiniGameSubmission]] = relationship(
+        back_populates="run",
+        order_by="MiniGameSubmission.submitted_at",
+    )
+
+
+class MiniGameSubmission(Base):
+    __tablename__ = "mini_game_submissions"
+    __table_args__ = (
+        UniqueConstraint(
+            "run_id",
+            "submission_id",
+            name="uq_mini_game_submissions_run_submission",
+        ),
+    )
+
+    submission_pk: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        primary_key=True,
+        server_default=text("gen_random_uuid()"),
+    )
+    run_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("mini_game_runs.run_id"),
+        nullable=False,
+    )
+    submission_id: Mapped[str] = mapped_column(Text, nullable=False)
+    character_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("characters.character_id"),
+        nullable=False,
+    )
+    submitted_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+    )
+    payload: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    is_accepted: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    rejection_reason: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    scored_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+
+    run: Mapped[MiniGameRun] = relationship(back_populates="submissions")
+    character: Mapped[Character] = relationship()
