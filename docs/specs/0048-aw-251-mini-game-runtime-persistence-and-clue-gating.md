@@ -1,6 +1,6 @@
 # AW-251: Mini-game Runtime, Persistence, And Clue Gating
 
-**Status**: Draft
+**Status**: Accepted
 
 **Author**: Codex | **Date**: 2026-06-20
 
