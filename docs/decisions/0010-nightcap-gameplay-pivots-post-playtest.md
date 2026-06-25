@@ -10,7 +10,7 @@ As we approach the first formal playtest for Nightcap, we are capturing two sign
 
 The current model is a multi-hour, turn-based experience where one player is secretly the killer. These proposals challenge that core assumption based on two hypotheses:
 1. A faster, more concentrated "couch game" experience might be more appealing to a broader audience than an extended role-playing session.
-2. A competitive deduction framework might generate more consistent moment-to-moment engagement than a cooperative (or deceptive) narrative one.
+2. A competitive deduction framework might generate more consistent moment-to-moment engagement than a cooperative (or deceptive) narrative one. In this case it is like a highly interactive audiobook and story telling session where the story is always different.
 
 ### Alternatives Considered
 - **Do nothing:** We could proceed with the current gameplay model without formally documenting these pivots. This was rejected because it risks losing valuable strategic insights and not having a framework to evaluate playtest feedback against potential product futures.
