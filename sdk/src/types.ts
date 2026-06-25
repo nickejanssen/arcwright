@@ -36,6 +36,28 @@ export interface ContentEvent {
   sequence_number: number;
 }
 
+export interface MiniGameSubmissionResult {
+  submissionId: string;
+  isAccepted: boolean;
+  rejectionReason?: string;
+}
+
+export interface MiniGameState {
+  runId: string;
+  gameId: string;
+  status:
+    | "pending"
+    | "active"
+    | "paused"
+    | "completed"
+    | "timed_out"
+    | "cancelled";
+  deadlineAt: string | null;
+  mySubmissions: MiniGameSubmissionResult[];
+}
+
+export type MiniGamePayload = Record<string, unknown>;
+
 export interface PlayerInput {
   kind: "action" | "dialogue";
   content: string;
