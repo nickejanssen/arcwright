@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "game_id": "evidence-locker-402",
   "title": "Evidence Locker #402",
-  "lifecycle": "draft",
+  "lifecycle": "playtest",
   "current_version": "0.1.0",
   "definition_path": "definitions/0.1.0.json",
   "asset_paths": []

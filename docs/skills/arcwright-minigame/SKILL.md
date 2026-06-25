@@ -95,12 +95,12 @@ The repo's authoring model is a version-controlled package copied from
      --experience nightcap --game-id my-game --title "My Game"
    ```
 
-   This copies `<experience>/mini_games/_template/` to
-   `<experience>/mini_games/my-game/`, stamps the `game_id` and `title` in both
-   `manifest.json` and `definitions/0.1.0.json`, and validates the result. If
-   the helper cannot run (for example on a host without Python), copy
-   `_template/` by hand and edit the two JSON files so their `game_id` matches
-   the directory name.
+This copies `<experience>/mini_games/_template/` to
+`<experience>/mini_games/my-game/`, stamps the `game_id` and `title` in both
+`manifest.json` and `definitions/0.1.0.json`, and validates the result. If
+the helper cannot run (for example on a host without Python), copy
+`_template/` by hand and edit the two JSON files so their `game_id` matches
+the directory name.
 3. Ask the author for the values that the schema needs, then edit
    `definitions/0.1.0.json`. Ask as a short multiple-choice batch, not a long
    interrogation, because each maps to a typed field:
@@ -152,7 +152,9 @@ load_mini_game_package(Path("nightcap/mini_games/my-game"))
 
 To check a whole experience catalog for duplicate IDs and directory/`game_id`
 mismatches, point the helper at the `mini_games/` directory (or pass
-`--catalog`); it calls `load_mini_game_catalog`.
+`--catalog`); it calls `load_mini_game_catalog`, which loads only
+`active` packages and skips `draft`, `playtest`, and `retired` authoring
+packages.
 
 Translate any failure into plain language and the fix. Common ones:
 
@@ -207,12 +209,10 @@ python -m ruff check engine
 python -m ruff format --check engine
 ```
 
-Expect one specific failure the first time a real package exists:
-`engine/tests/test_mini_game_models.py::test_reserved_directories_are_not_loaded_as_production_catalog`
-asserts the production catalog is empty, which is true only until the first
-non-`_` package lands. That assertion belongs to AW-254 (first production
-mini-game), not to authoring. Report it as an expected, known failure; do **not**
-weaken or rewrite that test as a side effect of adding a package.
+If the catalog test suite fails, check whether a package was promoted to
+`active` without the corresponding catalog expectations being updated. Draft
+and playtest packages are authoring-only and should stay out of the production
+catalog until promotion is intentional.
 
 Then state clearly: end-to-end runtime, persistence, API/SDK, and on-device
 usability tests **cannot run yet** because AW-250 through AW-254 are not built.

@@ -29,7 +29,8 @@ loader, template, and non-shipping fixtures for Nightcap mini-games.
 - `nightcap/mini_games/` authoring guide, template, and three fixtures
 - Typed `BeatDefinition.mini_games` bindings
 - Validation for IDs, semantic versions, package paths, package consistency,
-  composition mode, behavioral declarations, and delayed clue fallback
+  composition mode, behavioral declarations, delayed clue fallback, and
+  production-catalog lifecycle filtering
 - Canonical roadmap, decision, and future specification chain
 
 ---
@@ -50,8 +51,8 @@ loader, template, and non-shipping fixtures for Nightcap mini-games.
 - [ ] Duplicate IDs, invalid versions, missing definitions, unsafe paths, and
   invalid lifecycle values fail validation.
 - [ ] The canonical Nightcap arc still validates with typed mini-game bindings.
-- [ ] Reserved template and fixture directories are excluded from the
-  production catalog loader.
+- [ ] Reserved template and fixture directories, plus non-`active`
+  authoring packages, are excluded from the production catalog loader.
 - [ ] No fixture or template is referenced by `nightcap/arc.json`.
 - [ ] No dependencies, migrations, AI provider or model strings, secrets,
   runtime behavior, API, SDK, or Cloudflare code are added.
@@ -63,7 +64,8 @@ loader, template, and non-shipping fixtures for Nightcap mini-games.
 # Test Plan
 
 - Unit tests validate the template, all three fixtures, invalid inputs,
-  duplicate IDs, missing files, and reserved-directory exclusion.
+  duplicate IDs, missing files, lifecycle filtering, and reserved-directory
+  exclusion.
 - Arc model tests prove bindings are typed and the canonical arc remains valid.
 - Run the focused tests, full engine suite, Ruff lint and format checks, and
   mypy named by GitHub issue #143.
