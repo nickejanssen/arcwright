@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import uuid
+from dataclasses import replace
 from pathlib import Path
 from unittest.mock import AsyncMock, patch
 from uuid import UUID, uuid4
@@ -21,6 +22,7 @@ from engine.mini_games import (
     load_mini_game_package,
     resolve_loaded_mini_game_snapshot,
 )
+from engine.mini_games.resolver import _build_resolution_safety_policy_context
 from engine.routing.router import RouteResult, resolve_model_key
 from engine.safety import L2_BLOCK_SENTINEL, NEUTRAL_L2_BRIDGE
 
@@ -354,3 +356,31 @@ async def test_resolved_snapshot_output_is_rechecked_for_l1_hard_stops(
                 content_rails=_nightcap_content_rails(),
                 nightcap_mode=True,
             )
+
+
+def test_resolution_safety_policy_uses_configured_permitted_content() -> None:
+    loaded = load_mini_game_package(MINI_GAME_ROOT / "_fixtures" / "group")
+    definition = loaded.definition.model_copy(
+        update={
+            "generation_constraints": {
+                **(loaded.definition.generation_constraints or {}),
+                "permitted_content": [
+                    "fictional clue-game content",
+                    "surface-safe puzzle flavor",
+                ],
+            }
+        }
+    )
+    loaded = replace(loaded, definition=definition)
+
+    policy_context = _build_resolution_safety_policy_context(
+        loaded.definition,
+        _nightcap_content_rails(),
+        None,
+    )
+
+    assert isinstance(policy_context, dict)
+    assert policy_context["permitted"] == [
+        "fictional clue-game content",
+        "surface-safe puzzle flavor",
+    ]

@@ -1,8 +1,9 @@
 # AW-250: Mini-game Content Resolution And Safety
 
-**Status**: Draft
+**Status**: Approved
 
-**Author**: Codex | **Date**: 2026-06-20
+**Author**: Codex | **Date**: 2026-06-20 | **Last updated**: 2026-06-25
+**Founder sign-off**: Approved 2026-06-25
 
 ---
 
@@ -82,6 +83,10 @@ authored deterministic field.
 - Unit tests cover all modes and invalid resolved payloads.
 - Mocked routing and safety tests spend no provider tokens.
 - Approved eval cases cover schema adherence and safety regressions.
+- Founder approved the AW-250 mini-game resolution prompt surface on
+  2026-06-25. No eval changes are included in AW-250; eval work remains a
+  separate approval-gated follow-up if this resolver contract needs dedicated
+  regression coverage later.
 
 ---
 

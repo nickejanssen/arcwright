@@ -72,7 +72,7 @@ async def resolve_mini_game_package_snapshot(
     content_rails: "ContentRailsConfig | None" = None,
     adaptation_context: Mapping[str, Any] | None = None,
     session_context: Mapping[str, Any] | None = None,
-    safety_policy_context: Mapping[str, Any] | str | None = None,
+    safety_policy_context: dict[str, Any] | str | None = None,
     nightcap_mode: bool = False,
     temperature: float = 0.3,
 ) -> ResolvedMiniGameSnapshot:
@@ -100,7 +100,7 @@ async def resolve_loaded_mini_game_snapshot(
     content_rails: "ContentRailsConfig | None" = None,
     adaptation_context: Mapping[str, Any] | None = None,
     session_context: Mapping[str, Any] | None = None,
-    safety_policy_context: Mapping[str, Any] | str | None = None,
+    safety_policy_context: dict[str, Any] | str | None = None,
     nightcap_mode: bool = False,
     temperature: float = 0.3,
 ) -> ResolvedMiniGameSnapshot:
@@ -166,7 +166,7 @@ async def _resolve_generated_payload(
     authored_content: dict[str, Any],
     adaptation_context: Mapping[str, Any] | None,
     session_context: Mapping[str, Any] | None,
-    safety_policy_context: Mapping[str, Any] | str | None,
+    safety_policy_context: dict[str, Any] | str | None,
     nightcap_mode: bool,
     temperature: float,
 ) -> _GeneratedMiniGamePayload:
@@ -268,12 +268,13 @@ def build_mini_game_resolution_messages(
 def _build_resolution_safety_policy_context(
     definition: MiniGameDefinition,
     content_rails: "ContentRailsConfig | None",
-    explicit_context: Mapping[str, Any] | str | None,
-) -> Mapping[str, Any] | str:
+    explicit_context: dict[str, Any] | str | None,
+) -> dict[str, Any] | str:
     if explicit_context is not None:
         return explicit_context
 
     extra_safety: list[str] = []
+    permitted_content = _build_permitted_content_labels(definition)
     generation_constraints = definition.generation_constraints or {}
     safety_rules = generation_constraints.get("safety")
     if isinstance(safety_rules, list):
@@ -281,22 +282,30 @@ def _build_resolution_safety_policy_context(
 
     if content_rails is None:
         return {
-            "permitted": [
-                "fictional murder mystery mini-game content",
-                f"mechanic-specific content for {definition.mechanic_type}",
-            ],
+            "permitted": permitted_content,
             "warnings": [],
             "prohibited": extra_safety,
         }
 
     return {
-        "permitted": [
-            "fictional murder mystery mini-game content",
-            f"mechanic-specific content for {definition.mechanic_type}",
-        ],
+        "permitted": permitted_content,
         "warnings": list(content_rails.thematic_warnings),
         "prohibited": list(content_rails.prohibited_categories) + extra_safety,
     }
+
+
+def _build_permitted_content_labels(definition: MiniGameDefinition) -> list[str]:
+    generation_constraints = definition.generation_constraints or {}
+    configured_labels = generation_constraints.get("permitted_content")
+    if isinstance(configured_labels, list):
+        labels = [str(label) for label in configured_labels if str(label).strip()]
+        if labels:
+            return labels
+
+    return [
+        "fictional mini-game content",
+        f"mechanic-specific content for {definition.mechanic_type}",
+    ]
 
 
 def _load_json_object(content: str) -> dict[str, Any] | None:
