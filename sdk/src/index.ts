@@ -3,12 +3,22 @@ export type {
   EventCategory,
   PresentationHints,
   ContentEvent,
+  MiniGamePayload,
+  MiniGameState,
+  MiniGameSubmissionResult,
   PlayerInput,
   CharacterDetail,
   SurfaceType,
 } from "./types.js";
 
-import type { ContentEvent, PlayerInput, CharacterDetail } from "./types.js";
+import type {
+  ContentEvent,
+  MiniGamePayload,
+  MiniGameState,
+  MiniGameSubmissionResult,
+  PlayerInput,
+  CharacterDetail,
+} from "./types.js";
 
 export class ArcwrightClient {
   private readonly _sessionId: string;
@@ -62,6 +72,78 @@ export class ArcwrightClient {
       throw new Error(`getMyCharacter failed: ${res.status} ${res.statusText}`);
     }
     return res.json() as Promise<CharacterDetail>;
+  }
+
+  async getMiniGameState(sessionId: string): Promise<MiniGameState | null> {
+    const url = `${this._baseUrl}/v1/sessions/${sessionId}/mini-games/active`;
+    let res: Response;
+    try {
+      res = await fetch(url, {
+        headers: { Authorization: `Bearer ${this._playerToken}` },
+      });
+    } catch {
+      return null;
+    }
+    if (res.status === 404) return null;
+    if (!res.ok) {
+      throw new Error(
+        `getMiniGameState failed: ${res.status} ${res.statusText}`,
+      );
+    }
+    const data = (await res.json()) as {
+      run_id: string;
+      game_id: string;
+      status: MiniGameState["status"];
+      deadline_at: string | null;
+      my_submissions: Array<{
+        submission_id: string;
+        is_accepted: boolean;
+        rejection_reason?: string | null;
+      }>;
+    };
+    return {
+      runId: data.run_id,
+      gameId: data.game_id,
+      status: data.status,
+      deadlineAt: data.deadline_at,
+      mySubmissions: data.my_submissions.map((s) => ({
+        submissionId: s.submission_id,
+        isAccepted: s.is_accepted,
+        rejectionReason: s.rejection_reason ?? undefined,
+      })),
+    };
+  }
+
+  async submitMiniGameAction(
+    sessionId: string,
+    runId: string,
+    submissionId: string,
+    payload: MiniGamePayload,
+  ): Promise<MiniGameSubmissionResult> {
+    const url = `${this._baseUrl}/v1/sessions/${sessionId}/mini-games/${runId}/submissions`;
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${this._playerToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ submission_id: submissionId, payload }),
+    });
+    if (!res.ok) {
+      throw new Error(
+        `submitMiniGameAction failed: ${res.status} ${res.statusText}`,
+      );
+    }
+    const data = (await res.json()) as {
+      submission_id: string;
+      is_accepted: boolean;
+      rejection_reason?: string | null;
+    };
+    return {
+      submissionId: data.submission_id,
+      isAccepted: data.is_accepted,
+      rejectionReason: data.rejection_reason ?? undefined,
+    };
   }
 
   disconnect(): void {

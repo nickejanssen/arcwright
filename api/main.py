@@ -7,7 +7,7 @@ from __future__ import annotations
 
 from fastapi import FastAPI
 
-from api.routers import characters, costs, events, knowledge, sessions
+from api.routers import characters, costs, events, knowledge, mini_games, sessions
 
 
 def create_app() -> FastAPI:
@@ -17,6 +17,7 @@ def create_app() -> FastAPI:
     application.include_router(characters.router, prefix="/v1")
     application.include_router(knowledge.router, prefix="/v1")
     application.include_router(costs.router, prefix="/v1")
+    application.include_router(mini_games.router, prefix="/v1")
     return application
 
 

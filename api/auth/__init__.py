@@ -93,6 +93,26 @@ async def require_host_jwt(
     )
 
 
+async def require_player_jwt(
+    credentials: HTTPAuthorizationCredentials | None = Security(_bearer),
+) -> JwtClaims:
+    """Dependency: require a Firebase ID token with role=player only."""
+    if credentials is None:
+        raise HTTPException(status_code=401, detail="Authorization header required")
+    decoded = _decode_bearer(credentials.credentials)
+    role = decoded.get("arcwright_role", "")
+    if role != "player":
+        raise HTTPException(status_code=403, detail="Player token required")
+    session_id_str = decoded.get("arcwright_session_id")
+    player_id_str = decoded.get("arcwright_player_id")
+    return JwtClaims(
+        uid=decoded["uid"],
+        session_id=UUID(session_id_str) if session_id_str else None,
+        player_id=UUID(player_id_str) if player_id_str else None,
+        role=role,
+    )
+
+
 async def require_player_or_host_jwt(
     credentials: HTTPAuthorizationCredentials | None = Security(_bearer),
 ) -> JwtClaims:

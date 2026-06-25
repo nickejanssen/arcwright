@@ -124,6 +124,36 @@ class ReplayIntentRequest(BaseModel):
     collection_method: Literal["host_report", "in_app_prompt"]
 
 
+class MiniGameSubmissionResponse(BaseModel):
+    submission_id: str
+    is_accepted: bool
+    rejection_reason: Optional[str] = None
+
+
+class MiniGameRunResponse(BaseModel):
+    run_id: UUID
+    game_id: str
+    status: str
+    deadline_at: Optional[datetime] = None
+    my_submissions: list[MiniGameSubmissionResponse]
+
+
+class MiniGameSubmissionRequest(BaseModel):
+    submission_id: str = Field(min_length=1, max_length=256)
+    payload: dict[str, Any]
+
+
+class HostCommandRequest(BaseModel):
+    command: Literal["cancel", "resolve", "release_fallback"]
+    params: dict[str, Any] = Field(default_factory=dict)
+
+
+class HostCommandResponse(BaseModel):
+    run_id: UUID
+    game_id: str
+    status: str
+
+
 class TaskTypeCostRow(BaseModel):
     task_type: str
     generation_count: int

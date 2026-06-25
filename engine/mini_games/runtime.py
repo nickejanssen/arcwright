@@ -326,6 +326,8 @@ class MiniGameRuntime:
         submission_id: str,
         character_id: UUID,
         payload: dict[str, Any],
+        *,
+        participant_id: UUID | None = None,
     ) -> MiniGameSubmission:
         """Validate and record a player submission. Idempotent on submission_id.
 
@@ -382,9 +384,32 @@ class MiniGameRuntime:
         self._db.add(submission)
         await self._db.flush()
 
+        # Personal acknowledgement to the submitting player (AC3: specific_player)
+        if participant_id is not None:
+            await self._publish(
+                run,
+                category=EventCategory.acknowledgement,
+                event_type="mini_game_submission_accepted",
+                target_audience=AudienceTarget.specific_player,
+                target_player_id=participant_id,
+                payload={
+                    "submission_id": submission_id,
+                    "is_accepted": is_accepted,
+                    "rejection_reason": rejection_reason,
+                },
+            )
+
         # Check scoring threshold after accepted submission
         if is_accepted:
             accepted = await self._load_accepted_submissions(run_id)
+            # Progress count to shared display (no scores, no rankings per ADR-0008)
+            await self._publish(
+                run,
+                category=EventCategory.acknowledgement,
+                event_type="mini_game_submission_progress",
+                target_audience=AudienceTarget.shared_display,
+                payload={"submission_count": len(accepted)},
+            )
             if plugin.is_threshold_met(snapshot, accepted):
                 await self._finalize_run(run, status="completed")
 
@@ -484,7 +509,8 @@ class MiniGameRuntime:
             )
 
         now = self._clock()
-        eligible_character_ids = await self._eligible_character_ids(run.session_id)
+        eligible_participants = await self._eligible_participants(run.session_id)
+        eligible_character_ids = [char_id for char_id, _ in eligible_participants]
 
         unlock_record: dict[str, Any] = dict(run.clue_unlock_record or {})
         overrides: list[dict[str, Any]] = list(unlock_record.get("overrides", []))
@@ -505,15 +531,40 @@ class MiniGameRuntime:
             )
             overrides.append(entry)
 
+            clue_id = clue.get("clue_id", "")
+            # Private delivery to each participant (AC3: specific_player per recipient)
+            for _char_id, part_id in eligible_participants:
+                await self._publish(
+                    run,
+                    category=EventCategory.private_delivery,
+                    event_type="mini_game_clue_delivery",
+                    target_audience=AudienceTarget.specific_player,
+                    target_player_id=part_id,
+                    payload={
+                        "clue_id": clue_id,
+                        "release_type": "host_override",
+                        "variant": clue.get("variant", "full"),
+                        "content": clue.get("content", {}),
+                    },
+                )
+            # Public receipt for shared display — no clue content
             await self._publish(
                 run,
-                category=EventCategory.private_delivery,
-                event_type="mini_game_clue_unlocked",
-                target_audience=AudienceTarget.all,
+                category=EventCategory.acknowledgement,
+                event_type="mini_game_clue_acknowledged",
+                target_audience=AudienceTarget.shared_display,
+                payload={"message": "A clue was shared"},
+            )
+            # Full receipt for host — which clue, override by whom
+            await self._publish(
+                run,
+                category=EventCategory.acknowledgement,
+                event_type="mini_game_clue_acknowledged",
+                target_audience=AudienceTarget.host_only,
                 payload={
-                    "clue_id": clue.get("clue_id", ""),
+                    "clue_id": clue_id,
                     "release_type": "host_override",
-                    "variant": clue.get("variant", "full"),
+                    "host_account_id": str(host_account_id),
                 },
             )
 
@@ -545,7 +596,8 @@ class MiniGameRuntime:
         outcome = plugin.score(snapshot, submissions)
 
         now = self._clock()
-        eligible_character_ids = await self._eligible_character_ids(run.session_id)
+        eligible_participants = await self._eligible_participants(run.session_id)
+        eligible_character_ids = [char_id for char_id, _ in eligible_participants]
 
         clues_to_unlock: list[dict[str, Any]] = []
         release_type: str
@@ -581,16 +633,37 @@ class MiniGameRuntime:
             )
             unlocked.append(entry)
 
+            clue_id = clue.get("clue_id", "")
+            # Private delivery to each participant (AC3: specific_player per recipient)
+            for _char_id, part_id in eligible_participants:
+                await self._publish(
+                    run,
+                    category=EventCategory.private_delivery,
+                    event_type="mini_game_clue_delivery",
+                    target_audience=AudienceTarget.specific_player,
+                    target_player_id=part_id,
+                    payload={
+                        "clue_id": clue_id,
+                        "release_type": release_type,
+                        "variant": clue.get("variant", "full"),
+                        "content": clue.get("content", {}),
+                    },
+                )
+            # Public receipt for shared display — no clue content
             await self._publish(
                 run,
-                category=EventCategory.private_delivery,
-                event_type="mini_game_clue_unlocked",
-                target_audience=AudienceTarget.all,
-                payload={
-                    "clue_id": clue.get("clue_id", ""),
-                    "release_type": release_type,
-                    "variant": clue.get("variant", "full"),
-                },
+                category=EventCategory.acknowledgement,
+                event_type="mini_game_clue_acknowledged",
+                target_audience=AudienceTarget.shared_display,
+                payload={"message": "A clue was shared"},
+            )
+            # Full receipt for host — which clue, what release type
+            await self._publish(
+                run,
+                category=EventCategory.acknowledgement,
+                event_type="mini_game_clue_acknowledged",
+                target_audience=AudienceTarget.host_only,
+                payload={"clue_id": clue_id, "release_type": release_type},
             )
 
         unlock_record["unlocked"] = unlocked
@@ -627,6 +700,67 @@ class MiniGameRuntime:
                 "clues_released": len(clues_to_unlock),
             },
         )
+
+    # ------------------------------------------------------------------
+    # cancel_run
+    # ------------------------------------------------------------------
+
+    async def cancel_run(self, run_id: UUID) -> MiniGameRun:
+        """Cancel a run from any non-terminal state. Emits a cancellation event."""
+        run = await self._load_run(run_id)
+        if run.status in _TERMINAL_STATUSES:
+            raise RunStateError(
+                f"cancel_run is not allowed on a terminal run (status={run.status!r})"
+            )
+        now = self._clock()
+        await self._increment_revision(run)
+        run.status = "cancelled"
+        run.cancelled_at = now
+        await self._db.flush()
+        await self._publish(
+            run,
+            category=EventCategory.state_transition,
+            event_type="mini_game_cancelled",
+            target_audience=AudienceTarget.all,
+            payload={"game_id": run.game_id},
+        )
+        return run
+
+    # ------------------------------------------------------------------
+    # resolve_run
+    # ------------------------------------------------------------------
+
+    async def resolve_run(self, run_id: UUID) -> MiniGameRun:
+        """Force-complete an active run with full scoring outside the normal threshold."""
+        run = await self._load_run(run_id)
+        if run.status != "active":
+            raise RunStateError(
+                f"resolve_run requires status=active, got {run.status!r}"
+            )
+        await self._finalize_run(run, status="completed")
+        return run
+
+    # ------------------------------------------------------------------
+    # get_active_run
+    # ------------------------------------------------------------------
+
+    async def get_active_run(self, session_id: UUID) -> MiniGameRun | None:
+        """Return the current non-terminal run for the session, or None.
+
+        Submissions are eagerly loaded so callers can filter without a second
+        round-trip or an async lazy-load error.
+        """
+        from sqlalchemy.orm import selectinload
+
+        result = await self._db.execute(
+            select(MiniGameRun)
+            .where(
+                MiniGameRun.session_id == session_id,
+                MiniGameRun.status.not_in(list(_TERMINAL_STATUSES)),
+            )
+            .options(selectinload(MiniGameRun.submissions))
+        )
+        return result.scalar_one_or_none()
 
     # ------------------------------------------------------------------
     # Internal: helpers
@@ -693,16 +827,20 @@ class MiniGameRuntime:
             )
         run.revision = expected + 1
 
-    async def _eligible_character_ids(self, session_id: UUID) -> list[UUID]:
-        """Return all character IDs that are participants in the session."""
+    async def _eligible_participants(self, session_id: UUID) -> list[tuple[UUID, UUID]]:
+        """Return (character_id, participant_id) pairs for all session participants.
+
+        Used for knowledge assertion (character_id) and private event routing
+        (participant_id, which keys the SSE connection registry).
+        """
         from engine.db.orm import SessionParticipant
 
         result = await self._db.execute(
-            select(SessionParticipant.character_id).where(
-                SessionParticipant.session_id == session_id
-            )
+            select(
+                SessionParticipant.character_id, SessionParticipant.participant_id
+            ).where(SessionParticipant.session_id == session_id)
         )
-        return list(result.scalars().all())
+        return [(row[0], row[1]) for row in result.all()]
 
     async def _publish(
         self,
@@ -712,6 +850,7 @@ class MiniGameRuntime:
         event_type: str,
         target_audience: AudienceTarget,
         payload: dict[str, Any],
+        target_player_id: UUID | None = None,
     ) -> None:
         from engine.events.models import PresentationHints
 
@@ -721,6 +860,7 @@ class MiniGameRuntime:
             category=category,
             event_type=event_type,
             target_audience=target_audience,
+            target_player_id=target_player_id,
             payload=payload,
             presentation_hints=PresentationHints(),
         )
