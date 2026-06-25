@@ -1,0 +1,70 @@
+{
+  "schema_version": "1.0",
+  "game_id": "evidence-locker-402",
+  "version": "0.1.0",
+  "mechanic_type": "evidence-locker-breach",
+  "participation_mode": "individual",
+  "content_mode": "authored",
+  "min_players": 1,
+  "max_players": 1,
+  "duration_seconds": 60,
+  "rules": {
+    "theme": "Nightcap clue-gated evidence recovery",
+    "surface": "single-player device",
+    "difficulty_modes": {
+      "routine": {
+        "pins": 3,
+        "time_seconds": 30,
+        "tolerance_px": 16
+      },
+      "pressure": {
+        "pins": 4,
+        "time_seconds": 45,
+        "tolerance_px": 10
+      },
+      "redline": {
+        "pins": 5,
+        "time_seconds": 60,
+        "tolerance_px": 6
+      }
+    },
+    "success_condition": "Set the pins in the correct binding order before the timer expires.",
+    "failure_condition": "Run out of time or break the pick."
+  },
+  "authored_content": {
+    "title": "Evidence Locker #402",
+    "intro": "A locked evidence cabinet is holding the ledger page that can move the investigation forward.",
+    "instructions": [
+      "Tap a pin or use the arrows to select it.",
+      "Hold the lift control until the split lands on the green line, then release.",
+      "Set the pins in the right order to open the locker.",
+      "If you force a pin through the red zone, the pick snaps and the room gets the reduced fallback clue."
+    ],
+    "success_message": "Evidence secured. The locker opens before the room can clean up its story.",
+    "success_clue": "Recovered clue: the ledger was opened before the body was announced, and the name in the margin matches someone who should not have had the key.",
+    "fallback_message": "The lock holds. The host can still deliver the reduced clue.",
+    "fallback_clue": "Reduced clue: someone in the room had access to the locker before the announcement, but not the whole story."
+  },
+  "generation_constraints": null,
+  "behavioral_outputs": [
+    {
+      "key": "completion-time-ms",
+      "description": "Elapsed time before the locker opens or the fallback triggers.",
+      "value_type": "integer",
+      "scope": "participant",
+      "derived": false
+    },
+    {
+      "key": "pick-breaks",
+      "description": "Count of times the pick snapped during the attempt.",
+      "value_type": "integer",
+      "scope": "participant",
+      "derived": false
+    }
+  ],
+  "clue_fallback": {
+    "delay_seconds": 30,
+    "clue_variant": "reduced",
+    "host_override": true
+  }
+}

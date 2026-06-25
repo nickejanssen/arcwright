@@ -1,0 +1,953 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Evidence Locker #402</title>
+  <style>
+    :root {
+      --bg: #090b10;
+      --panel: rgba(18, 21, 30, 0.88);
+      --panel-2: rgba(255, 255, 255, 0.04);
+      --ink: #f4efe7;
+      --muted: #97a1b3;
+      --amber: #f1b24a;
+      --amber-soft: rgba(241, 178, 74, 0.18);
+      --green: #4fca88;
+      --green-soft: rgba(79, 202, 136, 0.18);
+      --red: #ff6b5d;
+      --red-soft: rgba(255, 107, 93, 0.2);
+      --line: rgba(255, 255, 255, 0.12);
+      --shadow: 0 26px 70px rgba(0, 0, 0, 0.55);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(241, 178, 74, 0.12), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(79, 202, 136, 0.08), transparent 28%),
+        linear-gradient(180deg, #0c0f16 0%, #090b10 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 24px 24px;
+      pointer-events: none;
+      opacity: 0.4;
+    }
+
+    .app {
+      width: min(100%, 720px);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 18px;
+      display: grid;
+      place-items: center;
+    }
+
+    .shell {
+      width: 100%;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      overflow: hidden;
+      backdrop-filter: blur(18px);
+    }
+
+    .hero {
+      padding: 22px 22px 18px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(241, 178, 74, 0.1), transparent 55%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 11px;
+      border: 1px solid rgba(241, 178, 74, 0.35);
+      border-radius: 999px;
+      color: var(--amber);
+      font-size: 0.74rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 14px 0 10px;
+      font-size: clamp(2rem, 5vw, 3.4rem);
+      line-height: 0.95;
+      letter-spacing: 0.03em;
+    }
+
+    .lede {
+      max-width: 54ch;
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .stage {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .panel-card {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 16px;
+    }
+
+    .card-title {
+      margin: 0 0 10px;
+      font-size: 0.85rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--amber);
+    }
+
+    .instructions {
+      margin: 0;
+      padding-left: 18px;
+      color: #d9deea;
+      line-height: 1.6;
+    }
+
+    .instructions li + li { margin-top: 8px; }
+
+    .modes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      background: none;
+      color: inherit;
+      font: inherit;
+    }
+
+    .mode-btn, .nav-btn, .lift-btn, .restart-btn {
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+      color: var(--ink);
+      cursor: pointer;
+      transition: transform 0.12s ease, border-color 0.12s ease, background 0.12s ease;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .mode-btn {
+      min-height: 82px;
+      padding: 14px 12px;
+      display: grid;
+      gap: 4px;
+      text-align: left;
+    }
+
+    .mode-btn strong {
+      display: block;
+      font-size: 1.05rem;
+      letter-spacing: 0.02em;
+    }
+
+    .mode-btn span, .hud-label, .meta, .fineprint {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .mode-btn.active {
+      border-color: rgba(241, 178, 74, 0.52);
+      background: linear-gradient(180deg, rgba(241, 178, 74, 0.16), rgba(255, 255, 255, 0.03));
+      box-shadow: 0 0 0 1px rgba(241, 178, 74, 0.08) inset;
+    }
+
+    .game {
+      display: none;
+      gap: 14px;
+    }
+
+    .hud {
+      display: grid;
+      grid-template-columns: 92px 1fr 92px;
+      gap: 10px;
+      align-items: end;
+    }
+
+    .hud-block {
+      padding: 12px 12px 10px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(0, 0, 0, 0.18);
+    }
+
+    .hud-value {
+      display: block;
+      margin-top: 6px;
+      font-size: 1.8rem;
+      line-height: 1;
+      color: var(--amber);
+    }
+
+    .integrity {
+      height: 12px;
+      margin-top: 10px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .integrity > div {
+      height: 100%;
+      width: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--amber), #ffdb82);
+      transition: width 0.14s linear, background 0.14s linear;
+    }
+
+    .lockbox {
+      position: relative;
+      height: 308px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%),
+        linear-gradient(180deg, #050608 0%, #11151d 100%);
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+    }
+
+    .zone {
+      position: absolute;
+      inset: auto 0 160px;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .sweet-spot {
+      position: absolute;
+      left: 0;
+      top: 98px;
+      width: 100%;
+      height: 20px;
+      background: rgba(79, 202, 136, 0.16);
+      border-top: 1px solid rgba(79, 202, 136, 0.4);
+      border-bottom: 1px solid rgba(79, 202, 136, 0.4);
+      transition: background 0.14s ease, box-shadow 0.14s ease;
+    }
+
+    .sweet-spot.on {
+      background: rgba(79, 202, 136, 0.24);
+      box-shadow: 0 0 22px rgba(79, 202, 136, 0.2);
+    }
+
+    .redline {
+      position: absolute;
+      inset: 0 0 auto;
+      height: 98px;
+      background: linear-gradient(180deg, rgba(255, 107, 93, 0.16), transparent);
+      border-bottom: 1px dashed rgba(255, 107, 93, 0.35);
+    }
+
+    .chambers {
+      position: absolute;
+      inset: 44px 0 48px;
+      display: flex;
+      gap: 10px;
+      justify-content: space-evenly;
+      padding: 0 10px;
+      z-index: 2;
+    }
+
+    .hitbox {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      height: 100%;
+      touch-action: none;
+      cursor: pointer;
+    }
+
+    .chamber {
+      width: 30px;
+      height: 100%;
+      border-radius: 16px;
+      background: rgba(0, 0, 0, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 8px 20px rgba(0, 0, 0, 0.8);
+      transition: border-color 0.12s ease, box-shadow 0.12s ease, transform 0.12s ease;
+    }
+
+    .chamber.active {
+      border-color: rgba(241, 178, 74, 0.7);
+      box-shadow:
+        inset 0 8px 20px rgba(0, 0, 0, 0.8),
+        0 0 14px rgba(241, 178, 74, 0.16);
+    }
+
+    .chamber.set {
+      opacity: 0.56;
+      border-color: rgba(79, 202, 136, 0.4);
+    }
+
+    .spring, .driver, .key, .pick-tip, .pick-shaft {
+      position: absolute;
+      left: 0;
+      width: 100%;
+    }
+
+    .spring {
+      top: 0;
+      left: 25%;
+      width: 50%;
+      background: repeating-linear-gradient(to bottom, transparent 0 4px, rgba(255, 255, 255, 0.24) 4px 6px);
+      transform-origin: top;
+    }
+
+    .driver {
+      bottom: 0;
+      height: 60px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #8390a7, #f1f4f9 50%, #59647b);
+      box-shadow: inset 0 -3px 5px rgba(0, 0, 0, 0.45);
+    }
+
+    .key {
+      bottom: 0;
+      border-radius: 6px 6px 12px 12px;
+      background: linear-gradient(90deg, #8b6511, var(--amber), #6e4d06);
+      box-shadow: inset 0 -4px 6px rgba(0, 0, 0, 0.42);
+    }
+
+    .pick {
+      position: absolute;
+      left: 0;
+      bottom: 12px;
+      width: 100%;
+      height: 28px;
+      z-index: 4;
+      pointer-events: none;
+      transition: left 0.12s cubic-bezier(0.2, 0.8, 0.2, 1), transform 0.12s linear;
+    }
+
+    .pick-tip {
+      bottom: 0;
+      left: 0;
+      width: 8px;
+      height: 28px;
+      border-radius: 5px 5px 0 0;
+      background: linear-gradient(90deg, #c2c9d6, #ffffff 45%, #76819b);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.48);
+    }
+
+    .pick-shaft {
+      bottom: 0;
+      left: 6px;
+      width: 1000px;
+      height: 8px;
+      border-radius: 0 6px 6px 0;
+      background: linear-gradient(180deg, #d7deea, #636f84);
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 74px 1fr 74px;
+      gap: 10px;
+    }
+
+    .nav-btn, .lift-btn {
+      min-height: 64px;
+      display: grid;
+      place-items: center;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .lift-btn {
+      border-color: rgba(241, 178, 74, 0.35);
+      color: var(--amber);
+      background: linear-gradient(180deg, rgba(241, 178, 74, 0.12), rgba(255, 255, 255, 0.03));
+    }
+
+    .lift-btn.active {
+      transform: translateY(4px);
+      background: linear-gradient(180deg, rgba(241, 178, 74, 0.08), rgba(255, 255, 255, 0.02));
+      box-shadow: inset 0 0 0 1px rgba(241, 178, 74, 0.16);
+    }
+
+    .note {
+      display: grid;
+      gap: 8px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(241, 178, 74, 0.18);
+      background: rgba(241, 178, 74, 0.06);
+      line-height: 1.55;
+    }
+
+    .note strong {
+      color: var(--amber);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .outcome {
+      display: none;
+      gap: 14px;
+    }
+
+    .outcome h2 {
+      margin: 0;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+    }
+
+    .outcome .tag {
+      color: var(--amber);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+    }
+
+    .outcome .card {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      line-height: 1.65;
+    }
+
+    .restart-btn {
+      min-height: 56px;
+      padding: 0 18px;
+      border-color: rgba(241, 178, 74, 0.35);
+      color: var(--ink);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .fineprint {
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .shake { animation: shake 0.14s linear 2; }
+
+    @keyframes shake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-4px); }
+      50% { transform: translateX(4px); }
+      75% { transform: translateX(-2px); }
+      100% { transform: translateX(0); }
+    }
+
+    @media (max-width: 640px) {
+      .app { padding: 10px; }
+      .hero, .stage { padding-left: 14px; padding-right: 14px; }
+      .modes { grid-template-columns: 1fr; }
+      .hud { grid-template-columns: 1fr; }
+      .controls { grid-template-columns: 64px 1fr 64px; }
+      .lockbox { height: 286px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="shell">
+      <section class="hero">
+        <div class="eyebrow">Nightcap clue gate</div>
+        <h1>Evidence Locker #402</h1>
+        <p class="lede">Crack the evidence locker, recover the ledger page, and hand the room a clue before the story seals itself back up.</p>
+      </section>
+
+      <section class="stage intro" id="intro-screen">
+        <div class="panel-card">
+          <h3 class="card-title">How it works</h3>
+          <ul class="instructions">
+            <li>Pick a breach tier. Each tier changes the number of pins, the tolerance window, and the timer.</li>
+            <li>Tap a chamber or use the arrows to select the active pin.</li>
+            <li>Hold the lift control until the split lands on the green band, then release.</li>
+            <li>Set the pins in the correct order. Overshoot the red zone and the pick snaps.</li>
+          </ul>
+        </div>
+
+        <div class="panel-card">
+          <h3 class="card-title">Breach tier</h3>
+          <div class="modes" id="mode-buttons"></div>
+        </div>
+      </section>
+
+      <section class="stage game" id="game-screen" aria-live="polite">
+        <div class="hud">
+          <div class="hud-block">
+            <div class="hud-label">Tools</div>
+            <span class="hud-value" id="lives">3</span>
+          </div>
+          <div class="hud-block">
+            <div class="hud-label" style="text-align:center">Pick integrity</div>
+            <div class="integrity"><div id="integrity-fill"></div></div>
+          </div>
+          <div class="hud-block" style="text-align:right">
+            <div class="hud-label">Clock</div>
+            <span class="hud-value" id="timer">30.00</span>
+          </div>
+        </div>
+
+        <div class="lockbox" id="lockbox">
+          <div class="redline"></div>
+          <div class="sweet-spot" id="sweet-spot"></div>
+          <div class="zone"></div>
+          <div class="chambers" id="chambers"></div>
+          <div class="pick" id="pick">
+            <div class="pick-tip"></div>
+            <div class="pick-shaft"></div>
+          </div>
+        </div>
+
+        <div class="note">
+          <strong id="feedback-title">Working the lock</strong>
+          <div id="feedback-text">Find the bind. Move carefully. Release on the green band.</div>
+        </div>
+
+        <div class="controls">
+          <button class="nav-btn" id="prev" aria-label="Previous pin">◀</button>
+          <button class="lift-btn" id="lift">Hold to lift</button>
+          <button class="nav-btn" id="next" aria-label="Next pin">▶</button>
+        </div>
+      </section>
+
+      <section class="stage outcome" id="outcome-screen">
+        <div class="tag" id="outcome-tag">Outcome</div>
+        <h2 id="outcome-title"></h2>
+        <div class="card" id="outcome-body"></div>
+        <button class="restart-btn" id="restart">Return to the room</button>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    const authored = {
+      successTitle: "Evidence secured",
+      successBody: "Recovered clue: the ledger was opened before the body was announced, and the name in the margin matches someone who should not have had the key.",
+      fallbackTitle: "Fallback clue delivered",
+      fallbackBody: "Reduced clue: someone in the room had access to the locker before the announcement, but not the whole story.",
+      failBody: "The lock holds. The host can still deliver the reduced clue and keep the case moving."
+    };
+
+    const modes = {
+      routine: { label: "Routine", hint: "3 pins, 30 sec", pins: 3, time: 30, tolerance: 16, lift: 140, drop: 360, damage: 25 },
+      pressure: { label: "Pressure", hint: "4 pins, 45 sec", pins: 4, time: 45, tolerance: 10, lift: 160, drop: 460, damage: 34 },
+      redline: { label: "Redline", hint: "5 pins, 60 sec", pins: 5, time: 60, tolerance: 6, lift: 180, drop: 560, damage: 44 }
+    };
+
+    const els = {
+      intro: document.getElementById("intro-screen"),
+      game: document.getElementById("game-screen"),
+      outcome: document.getElementById("outcome-screen"),
+      modeButtons: document.getElementById("mode-buttons"),
+      chambers: document.getElementById("chambers"),
+      sweetSpot: document.getElementById("sweet-spot"),
+      pick: document.getElementById("pick"),
+      lockbox: document.getElementById("lockbox"),
+      lives: document.getElementById("lives"),
+      integrity: document.getElementById("integrity-fill"),
+      timer: document.getElementById("timer"),
+      feedbackTitle: document.getElementById("feedback-title"),
+      feedbackText: document.getElementById("feedback-text"),
+      prev: document.getElementById("prev"),
+      next: document.getElementById("next"),
+      lift: document.getElementById("lift"),
+      restart: document.getElementById("restart"),
+      outcomeTag: document.getElementById("outcome-tag"),
+      outcomeTitle: document.getElementById("outcome-title"),
+      outcomeBody: document.getElementById("outcome-body")
+    };
+
+    const state = {
+      mode: "routine",
+      timer: 30,
+      lives: 3,
+      health: 100,
+      activePin: 0,
+      lifting: false,
+      broken: false,
+      done: false,
+      lastTime: 0,
+      lastBeat: 0,
+      sequenceIndex: 0,
+      bindingOrder: [],
+      pins: [],
+      frame: null
+    };
+
+    function randInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function shuffle(items) {
+      for (let i = items.length - 1; i > 0; i -= 1) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [items[i], items[j]] = [items[j], items[i]];
+      }
+      return items;
+    }
+
+    function haptic(pattern) {
+      if (navigator.vibrate) {
+        try { navigator.vibrate(pattern); } catch (err) {}
+      }
+    }
+
+    function show(screen) {
+      els.intro.style.display = screen === "intro" ? "grid" : "none";
+      els.game.style.display = screen === "game" ? "grid" : "none";
+      els.outcome.style.display = screen === "outcome" ? "grid" : "none";
+    }
+
+    function setFeedback(title, text) {
+      els.feedbackTitle.textContent = title;
+      els.feedbackText.textContent = text;
+    }
+
+    function buildModeButtons() {
+      els.modeButtons.innerHTML = "";
+      Object.entries(modes).forEach(([key, mode]) => {
+        const button = document.createElement("button");
+        button.className = `mode-btn${key === state.mode ? " active" : ""}`;
+        button.type = "button";
+        button.innerHTML = `<strong>${mode.label}</strong><span>${mode.hint}</span>`;
+        button.addEventListener("click", () => startGame(key));
+        els.modeButtons.appendChild(button);
+      });
+    }
+
+    function buildLock(mode) {
+      const config = modes[mode];
+      state.bindingOrder = shuffle(Array.from({ length: config.pins }, (_, index) => index));
+      state.pins = [];
+
+      const chamberHeight = 248;
+      const shearLine = 98;
+      const chamberOffset = 44;
+      const chamberSpan = chamberHeight - chamberOffset;
+
+      els.sweetSpot.style.top = `${shearLine - config.tolerance}px`;
+      els.sweetSpot.style.height = `${config.tolerance * 2}px`;
+
+      els.chambers.innerHTML = "";
+      for (let index = 0; index < config.pins; index += 1) {
+        const keyHeight = randInt(40, 78);
+        const targetLift = chamberSpan - keyHeight;
+        const springHeight = Math.max(30, chamberHeight - keyHeight - 60);
+
+        state.pins.push({
+          keyHeight,
+          targetLift,
+          springHeight,
+          currentLift: 0,
+          set: false
+        });
+
+        const hitbox = document.createElement("button");
+        hitbox.className = "hitbox";
+        hitbox.type = "button";
+        hitbox.dataset.index = String(index);
+        hitbox.innerHTML = `
+          <div class="chamber" id="chamber-${index}">
+            <div class="spring" id="spring-${index}" style="height:${springHeight}px"></div>
+            <div class="driver" id="driver-${index}" style="bottom:${keyHeight}px"></div>
+            <div class="key" id="key-${index}" style="height:${keyHeight}px"></div>
+          </div>
+        `;
+        hitbox.addEventListener("pointerdown", (event) => {
+          if (event.pointerType === "mouse" && event.button !== 0) return;
+          event.preventDefault();
+          selectPin(index);
+        });
+        els.chambers.appendChild(hitbox);
+      }
+
+      state.activePin = 0;
+      updateSelectedPin();
+    }
+
+    function selectPin(index) {
+      if (state.done || state.broken) return;
+      if (state.lifting) releaseLift();
+      if (index < 0 || index >= state.pins.length) return;
+      state.activePin = index;
+      updateSelectedPin();
+      haptic(10);
+      setFeedback("Working the lock", `Pin ${index + 1} of ${state.pins.length}. Find the bind.`);
+    }
+
+    function updateSelectedPin() {
+      document.querySelectorAll(".chamber").forEach((chamber, index) => {
+        chamber.classList.toggle("active", index === state.activePin);
+        chamber.classList.toggle("set", state.pins[index]?.set);
+      });
+      const chamber = document.getElementById(`chamber-${state.activePin}`);
+      if (chamber) {
+        const hitbox = chamber.parentElement;
+        const center = hitbox.offsetLeft + hitbox.offsetWidth / 2 - 4;
+        els.pick.style.left = `${center}px`;
+      }
+    }
+
+    function startGame(mode) {
+      state.mode = mode;
+      state.timer = modes[mode].time;
+      state.lives = 3;
+      state.health = 100;
+      state.activePin = 0;
+      state.lifting = false;
+      state.broken = false;
+      state.done = false;
+      state.lastTime = 0;
+      state.lastBeat = 0;
+      state.sequenceIndex = 0;
+
+      buildModeButtons();
+      buildLock(mode);
+      els.lives.textContent = String(state.lives);
+      els.integrity.style.width = "100%";
+      els.integrity.style.background = "linear-gradient(90deg, var(--amber), #ffdb82)";
+      els.timer.textContent = state.timer.toFixed(2);
+      setFeedback("Working the lock", "Find the bind. Move carefully. Release on the green band.");
+      show("game");
+      if (state.frame) cancelAnimationFrame(state.frame);
+      state.frame = requestAnimationFrame(loop);
+      haptic(30);
+    }
+
+    function returnToIntro() {
+      if (state.frame) cancelAnimationFrame(state.frame);
+      state.frame = null;
+      state.done = false;
+      state.broken = false;
+      show("intro");
+      buildModeButtons();
+    }
+
+    function movePin(delta) {
+      if (state.done || state.broken) return;
+      if (state.lifting) releaseLift();
+      const nextIndex = state.activePin + delta;
+      if (nextIndex < 0 || nextIndex >= state.pins.length) return;
+      state.activePin = nextIndex;
+      updateSelectedPin();
+      haptic(10);
+    }
+
+    function startLift() {
+      if (state.done || state.broken) return;
+      if (state.pins[state.activePin]?.set) return;
+      state.lifting = true;
+      els.lift.classList.add("active");
+      haptic(12);
+    }
+
+    function releaseLift() {
+      if (!state.lifting) return;
+      state.lifting = false;
+      els.lift.classList.remove("active");
+
+      const pin = state.pins[state.activePin];
+      const config = modes[state.mode];
+      const diff = Math.abs(pin.currentLift - pin.targetLift);
+      if (diff <= config.tolerance) {
+        if (state.activePin === state.bindingOrder[state.sequenceIndex]) {
+          pin.set = true;
+          state.sequenceIndex += 1;
+          setFeedback("PIN SET", "The binder catches. Keep going.");
+          haptic([12, 20, 12]);
+          if (state.pins.every((entry) => entry.set)) {
+            resolve(true);
+          }
+        } else {
+          setFeedback("NOT BINDING", "Wrong chamber. The pin drops clean.");
+          haptic(18);
+        }
+      } else {
+        setFeedback("DROP", "The split missed the band.");
+        haptic(18);
+      }
+    }
+
+    function snapPick() {
+      state.broken = true;
+      state.lives -= 1;
+      state.health = Math.max(0, state.health - 100);
+      els.lives.textContent = String(state.lives);
+      els.integrity.style.width = `${state.health}%`;
+      els.integrity.style.background = "linear-gradient(90deg, var(--red), #ff9a8f)";
+      setFeedback("PICK SNAP", "The pick breaks. Resetting the room.");
+      els.lockbox.classList.remove("shake");
+      void els.lockbox.offsetWidth;
+      els.lockbox.classList.add("shake");
+      haptic([60, 40, 60]);
+
+      state.sequenceIndex = 0;
+      state.pins.forEach((entry) => {
+        entry.set = false;
+        entry.currentLift = 0;
+      });
+
+      if (state.lives <= 0) {
+        resolve(false);
+        return;
+      }
+
+      setTimeout(() => {
+        state.broken = false;
+        state.health = 100;
+        els.integrity.style.width = "100%";
+        els.integrity.style.background = "linear-gradient(90deg, var(--amber), #ffdb82)";
+        updateSelectedPin();
+      }, 900);
+    }
+
+    function resolve(success) {
+      if (state.done) return;
+      state.done = true;
+      state.lifting = false;
+      els.lift.classList.remove("active");
+
+      if (state.frame) cancelAnimationFrame(state.frame);
+      state.frame = null;
+
+      show("outcome");
+      if (success) {
+        els.outcomeTag.textContent = "Success";
+        els.outcomeTitle.textContent = authored.successTitle;
+        els.outcomeTitle.style.color = "var(--green)";
+        els.outcomeBody.innerHTML = `<strong>${authored.successBody}</strong>`;
+      } else {
+        els.outcomeTag.textContent = "Fallback";
+        els.outcomeTitle.textContent = authored.fallbackTitle;
+        els.outcomeTitle.style.color = "var(--red)";
+        els.outcomeBody.innerHTML = `${authored.failBody}<br><br><strong>${authored.fallbackBody}</strong>`;
+      }
+      haptic(success ? [40, 30, 40] : [50, 30, 80]);
+    }
+
+    function updatePhysics(dt, now) {
+      if (state.done || state.broken && state.lives <= 0) return;
+
+      state.timer -= dt;
+      if (state.timer <= 0) {
+        state.timer = 0;
+        els.timer.textContent = "0.00";
+        setFeedback("TIME", "The locker stays sealed. The fallback clue routes to the host.");
+        resolve(false);
+        return;
+      }
+
+      if (state.timer <= 10 && now - state.lastBeat > (state.timer <= 5 ? 260 : 520)) {
+        state.lastBeat = now;
+        haptic([24, 24, 24]);
+      }
+
+      const config = modes[state.mode];
+      state.pins.forEach((pin, index) => {
+        if (index === state.activePin && state.lifting && !pin.set) {
+          pin.currentLift += config.lift * dt;
+          if (pin.currentLift > pin.targetLift + config.tolerance) {
+            if (!state.broken) snapPick();
+          }
+        } else if (pin.currentLift > 0) {
+          pin.currentLift -= config.drop * dt;
+          if (pin.currentLift < 0) pin.currentLift = 0;
+        }
+      });
+    }
+
+    function render() {
+      const config = modes[state.mode];
+      els.timer.textContent = state.timer.toFixed(2);
+      els.sweetSpot.classList.toggle("on", state.lifting && Math.abs(state.pins[state.activePin].currentLift - state.pins[state.activePin].targetLift) <= config.tolerance);
+
+      state.pins.forEach((pin, index) => {
+        const key = document.getElementById(`key-${index}`);
+        const driver = document.getElementById(`driver-${index}`);
+        const spring = document.getElementById(`spring-${index}`);
+        const chamber = document.getElementById(`chamber-${index}`);
+        if (!key || !driver || !spring || !chamber) return;
+
+        key.style.transform = `translateY(-${pin.currentLift}px)`;
+        driver.style.transform = `translateY(-${pin.currentLift}px)`;
+        spring.style.transform = `scaleY(${Math.max(0.2, (pin.springHeight - pin.currentLift) / pin.springHeight)})`;
+        chamber.classList.toggle("set", pin.set);
+        chamber.classList.toggle("active", index === state.activePin);
+      });
+
+      els.pick.style.transform = `translateY(-${state.pins[state.activePin].currentLift}px)`;
+      els.integrity.style.width = `${state.health}%`;
+      els.integrity.style.background = state.health < 35
+        ? "linear-gradient(90deg, var(--red), #ff9a8f)"
+        : "linear-gradient(90deg, var(--amber), #ffdb82)";
+    }
+
+    function loop(now) {
+      if (!state.lastTime) state.lastTime = now;
+      const dt = Math.min(0.1, (now - state.lastTime) / 1000);
+      state.lastTime = now;
+      updatePhysics(dt, now);
+      render();
+      if (!state.done) state.frame = requestAnimationFrame(loop);
+    }
+
+    els.prev.addEventListener("click", () => movePin(-1));
+    els.next.addEventListener("click", () => movePin(1));
+    els.lift.addEventListener("pointerdown", (event) => {
+      if (event.pointerType === "mouse" && event.button !== 0) return;
+      event.preventDefault();
+      startLift();
+    });
+    window.addEventListener("pointerup", releaseLift);
+    window.addEventListener("pointercancel", releaseLift);
+    window.addEventListener("blur", releaseLift);
+    els.restart.addEventListener("click", returnToIntro);
+
+    window.addEventListener("keydown", (event) => {
+      if (state.done) return;
+      if (event.key === "ArrowLeft" || event.key === "a") movePin(-1);
+      if (event.key === "ArrowRight" || event.key === "d") movePin(1);
+      if (event.key === " " || event.key === "ArrowUp" || event.key === "w") {
+        event.preventDefault();
+        if (!state.lifting) startLift();
+      }
+    });
+    window.addEventListener("keyup", (event) => {
+      if (event.key === " " || event.key === "ArrowUp" || event.key === "w") {
+        event.preventDefault();
+        releaseLift();
+      }
+    });
+
+    buildModeButtons();
+  </script>
+</body>
+</html>
