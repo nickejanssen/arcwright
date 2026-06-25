@@ -18,6 +18,7 @@ Endpoints:
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -44,6 +45,39 @@ from engine.mini_games.plugins import default_registry
 from engine.mini_games.runtime import MiniGameRuntime, MiniGameRuntimeError
 
 router = APIRouter(prefix="/sessions", tags=["mini-games"])
+
+
+@dataclass(frozen=True)
+class ParticipantContext:
+    claims: JwtClaims
+    character_id: UUID
+
+
+async def require_valid_participant(
+    session_id: UUID,
+    claims: JwtClaims = Depends(require_player_jwt),
+    db: AsyncSession = Depends(get_async_session),
+) -> ParticipantContext:
+    """Validate player JWT, session membership, and participant record in one step.
+
+    Raises 403 if the token's session_id does not match the path, or if the
+    authenticated player is not a participant in this session.
+    """
+    if claims.session_id is not None and claims.session_id != session_id:
+        raise HTTPException(
+            status_code=403,
+            detail="Token session_id does not match requested session",
+        )
+    result = await db.execute(
+        select(SessionParticipant.character_id).where(
+            SessionParticipant.session_id == session_id,
+            SessionParticipant.participant_id == claims.player_id,
+        )
+    )
+    character_id = result.scalar_one_or_none()
+    if character_id is None:
+        raise HTTPException(status_code=403, detail="Not a participant in this session")
+    return ParticipantContext(claims=claims, character_id=character_id)
 
 
 def _make_runtime(db: AsyncSession, session_id: UUID) -> MiniGameRuntime:
@@ -117,7 +151,7 @@ async def submit_mini_game_action(
     session_id: UUID,
     run_id: UUID,
     body: MiniGameSubmissionRequest,
-    claims: JwtClaims = Depends(require_player_jwt),
+    participant: ParticipantContext = Depends(require_valid_participant),
     db: AsyncSession = Depends(get_async_session),
 ) -> MiniGameSubmissionResponse:
     """Record a player submission. Idempotent on submission_id (AC2).
@@ -125,26 +159,14 @@ async def submit_mini_game_action(
     Scoped to the authenticated participant — host tokens and tokens from
     other sessions are rejected before reaching the runtime.
     """
-    _require_session_match(session_id, claims)
-
-    result = await db.execute(
-        select(SessionParticipant.character_id).where(
-            SessionParticipant.session_id == session_id,
-            SessionParticipant.participant_id == claims.player_id,
-        )
-    )
-    character_id = result.scalar_one_or_none()
-    if character_id is None:
-        raise HTTPException(status_code=403, detail="Not a participant in this session")
-
     runtime = _make_runtime(db, session_id)
     try:
         submission = await runtime.submit_action(
             run_id,
             body.submission_id,
-            character_id,
+            participant.character_id,
             body.payload,
-            participant_id=claims.player_id,
+            participant_id=participant.claims.player_id,
         )
     except MiniGameRuntimeError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
