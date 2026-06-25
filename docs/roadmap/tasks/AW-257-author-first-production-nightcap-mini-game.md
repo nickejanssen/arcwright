@@ -6,25 +6,28 @@
 
 ## Plain-English Summary
 
-Author one real, founder-approved production Nightcap mini-game package so
-AW-254 has a shippable game to promote and rehearse. This task produces content,
-not runtime code.
+Author the founder-selected Tell Me Something True production Nightcap
+mini-game package so AW-254 has a shippable game to promote and rehearse. This
+task produces content, not runtime code.
 
 ## Why This Task Exists
 
 AW-254 requires a founder-selected production game ID before its rehearsal can
-start. As of 2026-06-24 no production package exists: the repository contains
-only non-shipping `_fixtures/*` (lifecycle `playtest`) and `_template`
-(lifecycle `draft`), and no decision record names a production game. Founder
-direction (D-061) is to author the first production game as an explicit
-precursor rather than promote a fixture or invent content inside the rehearsal
-task.
+start. D-061 created AW-257 as the explicit precursor task because, as of
+2026-06-24, no production package existed and no decision record named a
+production game. D-062 now selects Tell Me Something True as the first
+production Nightcap mini-game candidate and points to the locked design in
+`docs/specs/0061-aw-258-tell-me-something-true.md`.
+
+This task still requires founder content approval before authoring is marked
+complete. D-062 approves the game ID and design direction, not final package
+content.
 
 ## Technical Scope
 
-- Author one production mini-game package under `nightcap/mini_games/<game_id>/`
-  using the AW-249 authoring schema and loader (manifest, versioned definition,
-  assets, client prototype).
+- Author the `tell-me-something-true` production mini-game package under
+  `nightcap/mini_games/tell-me-something-true/` using the AW-249 authoring
+  schema and loader (manifest, versioned definition, assets, client prototype).
 - Define an authored delayed clue fallback so timeout or failure cannot make the
   mystery unsolvable.
 - Pass content, asset, safety, and schema review through the AW-250 content
@@ -36,8 +39,8 @@ task.
 
 ## Acceptance Criteria
 
-- [ ] Founder approves the production game ID and content before authoring is
-  marked complete.
+- [ ] Founder approval of the production game ID is recorded in D-062, and
+  founder content approval is recorded before authoring is marked complete.
 - [ ] The package validates against the AW-249 schema and loader.
 - [ ] Content, asset, safety, and schema review pass via AW-250.
 - [ ] The definition declares an authored delayed clue fallback.
@@ -52,17 +55,20 @@ task.
 - AW-250 mini-game content resolution and safety
 - D-058 product approval
 - D-061 founder direction to author the first production game
+- D-062 founder selection of Tell Me Something True as the first production
+  Nightcap mini-game candidate
 
 ## Must Not Do
 
 - Do not promote a `_fixtures/*` or `_template` package as the production game.
-- Do not invent or ship content without founder approval.
+- Do not ship package content without founder approval.
 - Do not add execution, scoring, persistence, transport, or rendering logic.
 
 ## Architecture References
 
 - `docs/decisions/0009-mini-game-runtime-boundary.md`
 - `docs/specs/0046-aw-249-nightcap-mini-game-authoring-foundation.md`
+- `docs/specs/0061-aw-258-tell-me-something-true.md`
 - `docs/story-bibles/nightcap-murder-mystery.md`
 - `docs/architecture/15-development-guide.md`
 

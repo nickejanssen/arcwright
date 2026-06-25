@@ -29,19 +29,26 @@
 - Roadmap task:
   `docs/roadmap/tasks/AW-257-author-first-production-nightcap-mini-game.md`
 - Product decisions: `docs/product/decisions-log.csv` D-052, D-058, D-059,
-  D-060, D-061
+  D-060, D-061, D-062
 
 ---
 
 # Overview
 
-Define the locked MVP design for the first founder-selected Nightcap social
+Define the locked MVP design for the founder-selected Nightcap social
 mini-game candidate: **Tell Me Something True**.
 
 AW-258 is a spec-only task. It records the design, architecture boundaries,
 signal contract, and downstream implementation split. It does not add runtime,
 persistence, API, SDK, frontend, package, schema migration, dependency, or arc
 binding changes.
+
+D-062 is the durable product decision that selects Tell Me Something True as the
+first production Nightcap mini-game candidate. D-062 approves the game ID and
+design direction, not final shipped package content. AW-257 must still author
+the package, include an authored delayed clue fallback, pass content, asset,
+safety, and schema review, and receive founder content sign-off before authoring
+is marked complete.
 
 ---
 
@@ -60,6 +67,8 @@ binding changes.
 - `cmd /c make.cmd type` currently fails because default `python` resolves to
   Python 3.9.18, while repo syntax requires Python 3.11 or newer. The local
   `.aw102-venv` interpreter reports Python 3.11.15.
+- D-062 records founder selection of Tell Me Something True as the first
+  production Nightcap mini-game candidate.
 
 ---
 
@@ -343,20 +352,24 @@ Signals must not feed:
 - Use manifest lifecycle `draft` until content review passes.
 - Use content mode `hybrid`.
 - Define rules, authored framing scaffolds, generation constraints, player
-  count, duration, fallback record, and behavioral outputs.
+  count, duration, authored delayed clue fallback, and behavioral outputs.
 - Include presentation prototype files only if they contain no authoritative
   timing, scoring, outcomes, clue unlocking, or session state.
 - Do not bind the draft package into `nightcap/arc.json`.
 
-Schema compatibility note:
+Fallback contract:
 
-- AW-249 currently requires `clue_fallback` on every mini-game definition.
-- Because Tell Me Something True does not gate a clue, the AW-257 package must
-  include a schema-valid neutral fallback record for package validation.
-- Runtime behavior for this mechanic must not unlock, reduce, delay, or assert
-  any clue.
-- If the schema later adds explicit non-clue mini-game support, this spec should
-  be updated by the task that changes the schema.
+- AW-249, D-059, ADR 0009, and AW-257 require every production mini-game
+  definition to declare an authored delayed clue fallback.
+- Tell Me Something True is not a clue gate during normal completion. The
+  fallback still must be authored and real, because the production package must
+  remain valid under the existing mini-game contract.
+- The fallback for this game should preserve mystery solvability by advancing
+  the session without withholding required information and by providing the
+  authored fallback behavior selected during AW-257 content review.
+- AW-251 must ensure timeout and failure paths follow the authored fallback and
+  do not leave the arc waiting on this social opener.
+- No schema change is approved by AW-258.
 
 ## AW-251: Runtime
 
@@ -414,7 +427,9 @@ Schema compatibility note:
 - [ ] Spec captures the locked game name and ID.
 - [ ] Spec states that the game is a pure social opener for Beats 1 to 3.
 - [ ] Spec states that the game does not gate, unlock, reduce, delay, or assert
-  a clue.
+  a clue during normal completion.
+- [ ] Spec preserves the authored delayed clue fallback requirement for the
+  production package.
 - [ ] Spec states that scoring is internal and non-persistent.
 - [ ] Spec preserves ADR 0009: Python owns deterministic game authority.
 - [ ] Spec preserves surface agnosticism: engine emits audience-targeted events,
