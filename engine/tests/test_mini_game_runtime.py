@@ -346,6 +346,33 @@ async def test_start_run_rejects_non_pending(db: AsyncSession) -> None:
         await rt.start_run(run.run_id)
 
 
+async def test_submit_action_rejects_pending_run(db: AsyncSession) -> None:
+    """submit_action requires active status — pending run raises RunStateError."""
+    session_id, char_id, _ = await _setup_session_with_participant(db)
+    rt = make_runtime(db)
+    run = await rt.create_run(session_id, make_snapshot())
+    # run is pending, never started
+
+    with pytest.raises(RunStateError, match="active"):
+        await rt.submit_action(run.run_id, "sub-1", char_id, {})
+
+
+async def test_submit_action_rejects_completed_run(db: AsyncSession) -> None:
+    """submit_action requires active status — completed run raises RunStateError."""
+    session_id, char_id, _ = await _setup_session_with_participant(db)
+    plugin = StubPlugin(threshold_met=True, score_result={})
+    rt = MiniGameRuntime(db, make_bus(), make_registry(plugin), clock=frozen_clock(T0))
+    run = await rt.create_run(session_id, make_snapshot())
+    await rt.start_run(run.run_id)
+
+    with patch("engine.mini_games.runtime.assert_knowledge", new_callable=AsyncMock):
+        await rt.submit_action(run.run_id, "sub-first", char_id, {})
+
+    # run is now completed; a second attempt with a new submission_id must fail
+    with pytest.raises(RunStateError, match="active"):
+        await rt.submit_action(run.run_id, "sub-second", char_id, {})
+
+
 # ---------------------------------------------------------------------------
 # AC2: Idempotency
 # ---------------------------------------------------------------------------
