@@ -1,0 +1,586 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Crime Scene Smash</title>
+  <style>
+    :root {
+      --bg: #090b10;
+      --panel: rgba(15, 18, 26, 0.92);
+      --panel-soft: rgba(255, 255, 255, 0.04);
+      --ink: #f5efe6;
+      --muted: #9aa4b3;
+      --gold: #e5b84a;
+      --teal: #45c5b0;
+      --rose: #e56d7d;
+      --violet: #8d7ae6;
+      --line: rgba(255, 255, 255, 0.11);
+      --shadow: 0 28px 70px rgba(0, 0, 0, 0.58);
+      --tile: 52px;
+      --gap: 8px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(229, 184, 74, 0.12), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(69, 197, 176, 0.11), transparent 28%),
+        linear-gradient(180deg, #0d1017 0%, #090b10 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.3;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+      background-size: 26px 26px;
+    }
+
+    .app {
+      width: min(100%, 1280px);
+      margin: 0 auto;
+      min-height: 100vh;
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .shell, .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 22px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(229, 184, 74, 0.13), rgba(69, 197, 176, 0.04) 55%, transparent);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(229, 184, 74, 0.28);
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.74rem;
+    }
+
+    h1 {
+      margin: 14px 0 8px;
+      font-size: clamp(2rem, 4.8vw, 4rem);
+      line-height: 0.96;
+      letter-spacing: 0.01em;
+    }
+
+    .lede {
+      margin: 0;
+      max-width: 64ch;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+    }
+
+    .stage {
+      display: grid;
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .section-title {
+      margin: 0 0 10px;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      font-size: 0.8rem;
+    }
+
+    .note, .copy, .meta {
+      color: #d9deea;
+      line-height: 1.58;
+      margin: 0;
+    }
+
+    .copy + .copy { margin-top: 10px; }
+
+    .surface-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .surface {
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--panel-soft);
+      min-height: 110px;
+    }
+
+    .surface strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.98rem;
+    }
+
+    .board-shell {
+      padding: 16px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.04), transparent 40%),
+        linear-gradient(180deg, #06070b 0%, #121521 100%);
+    }
+
+    .board-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .board-head .title {
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .chip {
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--muted);
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
+    }
+
+    .board {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: var(--gap);
+    }
+
+    .tile {
+      aspect-ratio: 1;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: grid;
+      place-items: center;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.92);
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18), 0 8px 18px rgba(0, 0, 0, 0.22);
+    }
+
+    .tile::before {
+      content: attr(data-label);
+      position: relative;
+      z-index: 1;
+    }
+
+    .tile::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), transparent 45%);
+      opacity: 0.9;
+    }
+
+    .tile.clue { background: linear-gradient(180deg, #285a8c, #18324d); }
+    .tile.evidence { background: linear-gradient(180deg, #7a6220, #44340d); }
+    .tile.motive { background: linear-gradient(180deg, #6d2f3d, #32141a); }
+    .tile.alibi { background: linear-gradient(180deg, #2c5949, #173028); }
+    .tile.witness { background: linear-gradient(180deg, #4a4d75, #25263e); }
+    .tile.red-herring { background: linear-gradient(180deg, #533e7c, #241a35); }
+
+    .tile.pulse {
+      animation: pulse 2.4s ease-in-out infinite;
+    }
+
+    .tile.spark {
+      animation: spark 2.8s ease-in-out infinite;
+    }
+
+    .tile.shift {
+      animation: shift 3.6s ease-in-out infinite;
+    }
+
+    .tile.still {
+      opacity: 0.94;
+    }
+
+    .panel-stack {
+      display: grid;
+      gap: 16px;
+    }
+
+    .leaderboard {
+      padding: 16px;
+    }
+
+    .rows {
+      display: grid;
+      gap: 10px;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 48px 1fr 80px;
+      gap: 10px;
+      align-items: center;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: var(--panel-soft);
+      border: 1px solid var(--line);
+    }
+
+    .rank {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.07);
+      color: var(--gold);
+      font-weight: 800;
+    }
+
+    .player {
+      display: grid;
+      gap: 2px;
+    }
+
+    .player strong { font-size: 0.96rem; }
+    .player span { color: var(--muted); font-size: 0.82rem; }
+
+    .score {
+      justify-self: end;
+      font-variant-numeric: tabular-nums;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+    }
+
+    .narrator, .host, .brief {
+      padding: 16px;
+    }
+
+    .quote {
+      margin: 0;
+      line-height: 1.65;
+      color: #e7ebf5;
+    }
+
+    .callouts {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .callout {
+      padding: 12px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      color: #d9deea;
+      line-height: 1.55;
+    }
+
+    .callout strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      font-size: 0.76rem;
+    }
+
+    .status-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .status {
+      padding: 12px 10px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: var(--panel-soft);
+      line-height: 1.45;
+    }
+
+    .status strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--teal);
+    }
+
+    .fineprint {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translateY(0); filter: brightness(1); }
+      50% { transform: translateY(-2px); filter: brightness(1.14); }
+    }
+
+    @keyframes spark {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.03); }
+    }
+
+    @keyframes shift {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(1px); }
+    }
+
+    @media (max-width: 960px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .app { padding: 10px; }
+      .hero, .stage, .leaderboard, .narrator, .host, .brief { padding: 14px; }
+      .surface-grid, .status-grid { grid-template-columns: 1fr; }
+      .row { grid-template-columns: 42px 1fr 68px; }
+      .board { gap: 6px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="shell">
+      <section class="hero">
+        <div class="eyebrow">Nightcap match-3 clue gate</div>
+        <h1>Crime Scene Smash</h1>
+        <p class="lede">A Nightcap-tailored competitive clue run. Each player gets a private board. The shared display tracks the leaderboard, the narrator, and the session-safe state. The runtime will later own timing, scoring, clue unlocks, and fallback behavior.</p>
+      </section>
+
+      <div class="grid">
+        <section class="stage">
+          <div class="card brief">
+            <h2 class="section-title">Surface contract</h2>
+            <div class="surface-grid">
+              <div class="surface">
+                <strong>Phone</strong>
+                <p class="meta">Private board, score, countdown, swap feedback, combo run, and result state.</p>
+              </div>
+              <div class="surface">
+                <strong>Shared display</strong>
+                <p class="meta">Leaderboard, session status, and narrator commentary. No private board leakage.</p>
+              </div>
+              <div class="surface">
+                <strong>Host</strong>
+                <p class="meta">Progress, tie resolution, fallback state, and the controls the runtime will eventually expose.</p>
+              </div>
+              <div class="surface">
+                <strong>Final copy needed</strong>
+                <p class="meta">Narrator intro, success line, fallback line, tie line, and leaderboard callouts still need authored text.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="card board-shell">
+            <div class="board-head">
+              <div class="title">Player board mock</div>
+              <div class="chips">
+                <span class="chip">timed run</span>
+                <span class="chip">4 to 8 players</span>
+                <span class="chip">leaderboard</span>
+                <span class="chip">fallback clue</span>
+              </div>
+            </div>
+            <div class="board" aria-label="Sample board">
+              <div class="tile clue pulse" data-label="clue"></div>
+              <div class="tile evidence" data-label="evidence"></div>
+              <div class="tile motive shift" data-label="motive"></div>
+              <div class="tile alibi" data-label="alibi"></div>
+              <div class="tile witness" data-label="witness"></div>
+              <div class="tile red-herring spark" data-label="false"></div>
+              <div class="tile clue" data-label="clue"></div>
+              <div class="tile evidence" data-label="evidence"></div>
+
+              <div class="tile evidence" data-label="evidence"></div>
+              <div class="tile motive" data-label="motive"></div>
+              <div class="tile alibi pulse" data-label="alibi"></div>
+              <div class="tile witness" data-label="witness"></div>
+              <div class="tile red-herring" data-label="false"></div>
+              <div class="tile clue shift" data-label="clue"></div>
+              <div class="tile evidence" data-label="evidence"></div>
+              <div class="tile motive spark" data-label="motive"></div>
+
+              <div class="tile motive" data-label="motive"></div>
+              <div class="tile alibi" data-label="alibi"></div>
+              <div class="tile witness pulse" data-label="witness"></div>
+              <div class="tile red-herring" data-label="false"></div>
+              <div class="tile clue" data-label="clue"></div>
+              <div class="tile evidence shift" data-label="evidence"></div>
+              <div class="tile motive" data-label="motive"></div>
+              <div class="tile alibi" data-label="alibi"></div>
+
+              <div class="tile alibi" data-label="alibi"></div>
+              <div class="tile witness" data-label="witness"></div>
+              <div class="tile red-herring pulse" data-label="false"></div>
+              <div class="tile clue" data-label="clue"></div>
+              <div class="tile evidence" data-label="evidence"></div>
+              <div class="tile motive" data-label="motive"></div>
+              <div class="tile alibi shift" data-label="alibi"></div>
+              <div class="tile witness" data-label="witness"></div>
+
+              <div class="tile witness" data-label="witness"></div>
+              <div class="tile red-herring" data-label="false"></div>
+              <div class="tile clue spark" data-label="clue"></div>
+              <div class="tile evidence" data-label="evidence"></div>
+              <div class="tile motive" data-label="motive"></div>
+              <div class="tile alibi" data-label="alibi"></div>
+              <div class="tile witness shift" data-label="witness"></div>
+              <div class="tile red-herring" data-label="false"></div>
+
+              <div class="tile red-herring" data-label="false"></div>
+              <div class="tile clue" data-label="clue"></div>
+              <div class="tile evidence pulse" data-label="evidence"></div>
+              <div class="tile motive" data-label="motive"></div>
+              <div class="tile alibi" data-label="alibi"></div>
+              <div class="tile witness" data-label="witness"></div>
+              <div class="tile red-herring" data-label="false"></div>
+              <div class="tile clue shift" data-label="clue"></div>
+
+              <div class="tile clue" data-label="clue"></div>
+              <div class="tile evidence" data-label="evidence"></div>
+              <div class="tile motive" data-label="motive"></div>
+              <div class="tile alibi" data-label="alibi"></div>
+              <div class="tile witness spark" data-label="witness"></div>
+              <div class="tile red-herring" data-label="false"></div>
+              <div class="tile clue" data-label="clue"></div>
+              <div class="tile evidence" data-label="evidence"></div>
+
+              <div class="tile evidence" data-label="evidence"></div>
+              <div class="tile motive" data-label="motive"></div>
+              <div class="tile alibi" data-label="alibi"></div>
+              <div class="tile witness" data-label="witness"></div>
+              <div class="tile red-herring pulse" data-label="false"></div>
+              <div class="tile clue" data-label="clue"></div>
+              <div class="tile evidence shift" data-label="evidence"></div>
+              <div class="tile motive" data-label="motive"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel-stack">
+          <div class="card leaderboard">
+            <h2 class="section-title">Shared display leaderboard</h2>
+            <div class="rows">
+              <div class="row">
+                <div class="rank">1</div>
+                <div class="player">
+                  <strong>Top score</strong>
+                  <span>Primary investigative lead</span>
+                </div>
+                <div class="score">12,480</div>
+              </div>
+              <div class="row">
+                <div class="rank">2</div>
+                <div class="player">
+                  <strong>Close second</strong>
+                  <span>Tie pressure building</span>
+                </div>
+                <div class="score">12,120</div>
+              </div>
+              <div class="row">
+                <div class="rank">3</div>
+                <div class="player">
+                  <strong>Chasing</strong>
+                  <span>Still in play</span>
+                </div>
+                <div class="score">11,060</div>
+              </div>
+              <div class="row">
+                <div class="rank">4</div>
+                <div class="player">
+                  <strong>Midfield</strong>
+                  <span>Fallback still live</span>
+                </div>
+                <div class="score">10,700</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card narrator">
+            <h2 class="section-title">Narrator feed</h2>
+            <p class="quote">The room gets a cleaner story when somebody lands the right chain. Until then, the table keeps grinding for the lead and the mystery keeps the fallback ready.</p>
+            <div class="callouts">
+              <div class="callout">
+                <strong>Success path</strong>
+                Highest score gets the primary lead or full clue.
+              </div>
+              <div class="callout">
+                <strong>Fallback path</strong>
+                Failure or timeout still yields a reduced clue so the session cannot dead-end.
+              </div>
+              <div class="callout">
+                <strong>Tie path</strong>
+                The narrative decides the winner when the story can make the better choice.
+              </div>
+            </div>
+          </div>
+
+          <div class="card host">
+            <h2 class="section-title">Host view</h2>
+            <div class="status-grid">
+              <div class="status">
+                <strong>Timer</strong>
+                Runtime-owned
+              </div>
+              <div class="status">
+                <strong>Score</strong>
+                Runtime-owned
+              </div>
+              <div class="status">
+                <strong>Fallback</strong>
+                Reduced clue ready
+              </div>
+            </div>
+            <p class="fineprint" style="margin-top: 12px;">This mock keeps the board local to each player. The shared display only surfaces the room-level story, the ranking, and the cues the host needs to keep the mystery moving.</p>
+          </div>
+        </section>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
