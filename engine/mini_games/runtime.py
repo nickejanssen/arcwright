@@ -21,10 +21,11 @@ from __future__ import annotations
 
 from collections.abc import Callable, Sequence
 from datetime import datetime, timezone
-from typing import Any, Protocol, runtime_checkable
+from typing import Any, Protocol, cast, runtime_checkable
 from uuid import UUID
 
 from sqlalchemy import select, update
+from sqlalchemy.engine import CursorResult
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from engine.db.orm import MiniGameRun, MiniGameSubmission
@@ -674,15 +675,18 @@ class MiniGameRuntime:
         conflict.
         """
         expected = run.revision
-        result = await self._db.execute(
-            update(MiniGameRun)
-            .where(
-                MiniGameRun.run_id == run.run_id,
-                MiniGameRun.revision == expected,
-            )
-            .values(revision=expected + 1)
+        cursor = cast(
+            CursorResult[Any],
+            await self._db.execute(
+                update(MiniGameRun)
+                .where(
+                    MiniGameRun.run_id == run.run_id,
+                    MiniGameRun.revision == expected,
+                )
+                .values(revision=expected + 1)
+            ),
         )
-        if result.rowcount == 0:
+        if cursor.rowcount == 0:
             raise RevisionConflictError(
                 f"revision conflict on run {run.run_id}: "
                 f"expected revision {expected} but it was already updated"
