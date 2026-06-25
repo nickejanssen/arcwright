@@ -49,6 +49,7 @@ from engine.mini_games.models import (
     BehavioralScope,
     BehavioralValueType,
     ClueVariant,
+    ContentMode,
     DelayedClueFallback,
 )
 from engine.mini_games.resolver import ResolvedMiniGameSnapshot
@@ -118,7 +119,7 @@ def _make_snapshot_dict() -> dict[str, Any]:
     snap = ResolvedMiniGameSnapshot(
         game_id="test-game",
         definition_version="0.1.0",
-        source_content_mode="authored",
+        source_content_mode=ContentMode.authored,
         mechanic_type="match-3-clue-race",
         participation_mode="individual",
         min_players=1,
