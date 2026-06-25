@@ -9,15 +9,22 @@ description: Add, import, validate, fit-check, test, and promote a mini-game pac
 
 Bring one mini-game into the repo, or move one along its lifecycle, as a single
 ordered workflow with pause points between phases. The phases are
-**scaffold/import → validate → fit-check → test → promote**. Each phase has a
-clear stop-and-report gate so a human can steer before the next phase changes
-more state.
+**design-intake → scaffold/import → validate → fit-check → test → promote**.
+Each phase has a clear stop-and-report gate so a human can steer before the
+next phase changes more state.
 
 This skill is deliberately one workflow rather than five separate skills. The
 phases share one piece of state (the package path), the surface is small, and a
 single mental model avoids cold-start re-derivation on every step. Run only the
 phases the user needs; you do not have to start at phase 1 every time. If the
 user says "validate my package", jump to phase 2.
+
+When the user brings a game concept, sample web game, pasted prototype, or
+design sketch, begin with Phase 0 unless they explicitly ask to skip design and
+implement. A browser game can be a useful reference, but it is not the
+authoritative mini-game runtime. Treat it as material to extract mechanics,
+visual direction, assets, and player intent from, then map those into the
+Arcwright package and runtime boundary.
 
 ### What already exists vs. what does not
 
@@ -64,6 +71,25 @@ preference. Source: `docs/decisions/0009-mini-game-runtime-boundary.md` and
 If a requested mini-game needs any of those guarantees broken, stop and say so.
 Do not design around the boundary.
 
+## How to collaborate on design
+
+Mini-game design is a product and architecture pass before it is an
+implementation pass. Be direct, push back on weak fit, and flag scope creep,
+privacy risk, IP concern, and boundary violations early. Ask concise questions
+instead of filling important blanks. Prefer a clear recommendation with brief
+reasoning over a neutral list when the trade-off is obvious.
+
+Respect creative ownership. Mechanics, systems, scoring, schemas, edge cases,
+player-count scaling, and structural in-world justification are in scope for
+the agent. Final narrator voice, scripted prose, character content, and
+worldbuilding belong to the human author unless they explicitly delegate them.
+For diegetic framing, propose scaffolding and mark where the author should
+write final copy.
+
+Keep design passes credit-conscious. Read the smallest canonical docs needed,
+say which files you read, and say plainly when a file could not be read. Do not
+silently infer engine contracts from memory.
+
 ## Choosing the experience
 
 Packages are experience-scoped. Default to `nightcap/mini_games/` because that
@@ -74,6 +100,75 @@ has a `mini_games/` directory with a `_template/`. Do not invent a new
 experience tree on your own; cross-experience sharing and any third-party studio
 packaging story are unbuilt and out of MVP scope. If the user asks for that,
 name it as out of scope and ask whether to proceed single-experience for now.
+
+## Phase 0: Design Intake and Lock
+
+Goal: turn a concept or sample game into a locked mini-game brief before files
+are created or changed. Do not start coding in this phase unless the user
+explicitly asks for implementation.
+
+First, read the relevant canonical docs: `docs/README.md`,
+`docs/prd/02-requirements.md`, `docs/decisions/0009-mini-game-runtime-boundary.md`,
+`docs/story-bibles/nightcap-murder-mystery.md`, and the relevant mini-game
+specs. If the game may touch surfaces, events, or arc execution, also read
+`docs/architecture/03-arc-execution.md` and
+`docs/architecture/08-event-system.md`.
+
+Then walk the user through the smallest useful set of decisions. For a mature
+concept, ask only what is missing. For a loose concept, work through these in
+order:
+
+- **Concept:** working title, logline, core verb, and why it belongs in a
+  murder mystery party game.
+- **Nightcap role:** target beat range, clue-gate vs pure social opener,
+  investigative payload, and in-world justification.
+- **Player model:** individual, collaborative, group, competitive, or mixed;
+  player-count behavior for 4, 5, 6, 7, and 8 players.
+- **Scoring and outcomes:** what earns points, whether score is throwaway
+  per-game feedback or affects standing later, success, failure, tie, timeout,
+  and abort behavior.
+- **Two-surface contract:** what appears on phone, shared display, and host
+  view; which information must remain private; what the browser may render or
+  submit.
+- **Authoritative rules:** which timers, scoring, submissions, randomization,
+  clue unlocks, and fallback decisions Python must own.
+- **Content strategy:** authored, generative, or hybrid content; provenance of
+  any facts, clues, symbols, boards, prompts, or level seeds.
+- **Behavioral outputs:** neutral v1 metrics to log, with names and payload
+  shape; confirm they are not wired into killer assignment until approved v1.1
+  work.
+- **Fallback:** delayed clue fallback, clue variant, host override, and how the
+  story remains solvable if every player fails or stalls.
+- **Replay variance:** what changes between sessions without changing the
+  authored contract.
+- **Assets and prototype intake:** source files, art, sound, interaction
+  affordances, IP ownership, and any existing browser logic that must be moved
+  behind the engine boundary.
+
+For competitive arcade-style games, be especially strict about score meaning.
+A high score can create table energy, but it should either gate a clue, create
+an investigative lead, or produce a neutral behavioral signal. If it is only a
+detached arcade score, recommend a stronger Nightcap framing before packaging.
+
+End this phase with a compact locked brief:
+
+- game ID and title
+- package lifecycle target
+- participation mode, content mode, player count, and target duration
+- target beat or beat range
+- clue, fallback, and outcome contract
+- two-surface contract
+- authoritative engine responsibilities
+- allowed client responsibilities
+- behavioral outputs
+- unresolved human-authored copy or story items
+- docs, spec, issue, or ADR needs
+
+If the user asks for a handoff prompt instead of implementation, generate a
+copy-paste-ready build prompt from the locked brief. The handoff must require
+the next agent to read `AGENTS.md`, read canonical docs, inspect existing
+mini-games, create or update a spec before implementation when scope is new,
+respect ADR 0009, run validation, and avoid em dashes.
 
 ## Phase 1: Scaffold or Import
 
@@ -95,15 +190,16 @@ The repo's authoring model is a version-controlled package copied from
      --experience nightcap --game-id my-game --title "My Game"
    ```
 
-This copies `<experience>/mini_games/_template/` to
-`<experience>/mini_games/my-game/`, stamps the `game_id` and `title` in both
-`manifest.json` and `definitions/0.1.0.json`, and validates the result. If
-the helper cannot run (for example on a host without Python), copy
-`_template/` by hand and edit the two JSON files so their `game_id` matches
-the directory name.
-3. Ask the author for the values that the schema needs, then edit
-   `definitions/0.1.0.json`. Ask as a short multiple-choice batch, not a long
-   interrogation, because each maps to a typed field:
+   This copies `<experience>/mini_games/_template/` to
+   `<experience>/mini_games/my-game/`, stamps the `game_id` and `title` in both
+   `manifest.json` and `definitions/0.1.0.json`, and validates the result. If
+   the helper cannot run (for example on a host without Python), copy
+   `_template/` by hand and edit the two JSON files so their `game_id` matches
+   the directory name.
+3. If Phase 0 produced a locked brief, map those decisions into
+   `definitions/0.1.0.json`. If not, ask the author for the values that the
+   schema needs, then edit the definition. Ask as a short multiple-choice batch,
+   not a long interrogation, because each maps to a typed field:
 
    - `mechanic_type` (kebab-case label for the puzzle type)
    - `participation_mode`: `individual` | `collaborative` | `group`
@@ -117,7 +213,9 @@ the directory name.
      `host_override`. This is required and is the safety net.
 4. Put presentation prototypes in `client/` and static files in `assets/`. Add
    every asset path to `manifest.json.asset_paths`; the loader fails if a listed
-   asset is missing.
+   asset is missing. Client files may demonstrate presentation and input shape,
+   but must not decide authoritative timers, scores, outcomes, clue fallback, or
+   clue unlocks.
 
 ### Zip / external import
 
@@ -127,7 +225,10 @@ package shape above (scaffold first, then move authored rules into
 `definitions/<semver>.json`, presentation into `client/`, static files into
 `assets/`). Once it is a normal package, the rest of the workflow is identical.
 Flag anything in the import that assumes client-side scoring/timing/state, since
-that violates the boundary and must be reworked before it can ship.
+that violates the boundary and must be reworked before it can ship. If the
+prototype is an interactive browser game, preserve useful visuals and input
+affordances, but move authoritative game semantics into the locked definition
+and future Python runtime contract.
 
 **Pause and report** the package path, the chosen field values, and anything
 the author still has to fill in. Then continue.
@@ -189,6 +290,9 @@ Check and record evidence for each:
 - **Boundary compliance:** delayed clue fallback present and sane; no
   canonical-state logic implied on the client; behavioral outputs neutral and
   game-scoped; no killer-assignment or cross-session influence.
+- **Diegetic fit:** the game has a structural in-world reason to happen at the
+  selected beat. The author can supply final voice, but the interaction cannot
+  feel like an unrelated arcade mode dropped into the room.
 - **Playability sanity:** player count and duration are realistic for a party
   session; failure or timeout still advances the arc via the fallback.
 
@@ -235,6 +339,9 @@ retired`. Rules:
   (`definitions/<new-semver>.json`) and point `manifest.current_version` and
   `definition_path` at it. Never edit a playtested definition in place.
 - Bump `lifecycle` in `manifest.json` one step at a time and re-run phase 2.
+- `draft` and `playtest` packages are authoring-only and stay out of the
+  production catalog. `active` packages are discoverable through
+  `load_mini_game_catalog`.
 - Only when promoting to a lifecycle the implementing spec requires, add a
   version-pinned `MiniGameBinding` (`binding_id`, `game_id`, `version`) to the
   experience arc (for Nightcap, `nightcap/arc.json`). A draft package must never
@@ -250,6 +357,7 @@ an arc binding was added.
   assignment).
 - A new mechanic or scope with no durable approval evidence.
 - A package that will not load through the engine loader.
+- A concept that cannot explain its Nightcap purpose beyond "fun on its own".
 - A request to create a brand-new experience tree or cross-experience/
   third-party sharing model (out of MVP scope) without explicit direction.
 
