@@ -8,7 +8,11 @@ from typing import TypeVar
 
 from pydantic import ValidationError
 
-from engine.mini_games.models import MiniGameDefinition, MiniGameManifest
+from engine.mini_games.models import (
+    MiniGameDefinition,
+    MiniGameLifecycle,
+    MiniGameManifest,
+)
 
 _ModelT = TypeVar("_ModelT", MiniGameManifest, MiniGameDefinition)
 
@@ -54,7 +58,7 @@ def load_mini_game_package(package_path: Path) -> LoadedMiniGame:
 
 
 def load_mini_game_catalog(root_path: Path) -> dict[str, LoadedMiniGame]:
-    """Load non-reserved package directories and reject duplicate game IDs."""
+    """Load active packages only and reject duplicate game IDs."""
     resolved_root = root_path.resolve()
     if not resolved_root.is_dir():
         raise MiniGamePackageError(f"mini-game catalog does not exist: {root_path}")
@@ -67,6 +71,8 @@ def load_mini_game_catalog(root_path: Path) -> dict[str, LoadedMiniGame]:
     )
     for package_path in package_paths:
         loaded = load_mini_game_package(package_path)
+        if loaded.manifest.lifecycle is not MiniGameLifecycle.active:
+            continue
         game_id = loaded.manifest.game_id
         if package_path.name != game_id:
             raise MiniGamePackageError(

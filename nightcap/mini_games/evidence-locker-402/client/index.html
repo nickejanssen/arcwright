@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Evidence Locker #402</title>
+  <style>
+    :root {
+      --bg: #090b10;
+      --panel: rgba(18, 21, 30, 0.9);
+      --panel-2: rgba(255, 255, 255, 0.05);
+      --ink: #f5efe6;
+      --muted: #98a1b1;
+      --amber: #f1b24a;
+      --amber-soft: rgba(241, 178, 74, 0.16);
+      --green: #4fca88;
+      --green-soft: rgba(79, 202, 136, 0.16);
+      --red: #ff6b5d;
+      --line: rgba(255, 255, 255, 0.11);
+      --shadow: 0 26px 70px rgba(0, 0, 0, 0.55);
+    }
+
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
+    body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(241, 178, 74, 0.12), transparent 30%),
+        radial-gradient(circle at bottom right, rgba(79, 202, 136, 0.1), transparent 28%),
+        linear-gradient(180deg, #0c0f16 0%, #090b10 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: 0.36;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.024) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.024) 1px, transparent 1px);
+      background-size: 24px 24px;
+    }
+
+    .app {
+      width: min(100%, 1100px);
+      min-height: 100vh;
+      margin: 0 auto;
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .shell, .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      box-shadow: var(--shadow), inset 0 1px 0 rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(18px);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 22px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(241, 178, 74, 0.12), transparent 60%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 11px;
+      border: 1px solid rgba(241, 178, 74, 0.3);
+      border-radius: 999px;
+      color: var(--amber);
+      font-size: 0.74rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 14px 0 10px;
+      font-size: clamp(2rem, 5vw, 4rem);
+      line-height: 0.95;
+      letter-spacing: 0.02em;
+    }
+
+    .lede {
+      max-width: 60ch;
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 16px;
+    }
+
+    .stage {
+      padding: 18px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .card {
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 16px;
+    }
+
+    .card-title {
+      margin: 0 0 10px;
+      font-size: 0.82rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--amber);
+    }
+
+    .copy {
+      margin: 0;
+      color: #d9deea;
+      line-height: 1.6;
+    }
+
+    .copy + .copy { margin-top: 10px; }
+
+    .instructions {
+      margin: 0;
+      padding-left: 18px;
+      color: #d9deea;
+      line-height: 1.6;
+    }
+
+    .instructions li + li { margin-top: 8px; }
+
+    .modes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .mode {
+      min-height: 88px;
+      padding: 14px 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.03));
+    }
+
+    .mode strong {
+      display: block;
+      font-size: 1.04rem;
+      letter-spacing: 0.02em;
+      margin-bottom: 4px;
+    }
+
+    .meta {
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.45;
+    }
+
+    .lockbox {
+      position: relative;
+      height: 336px;
+      border-radius: 22px;
+      border: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.03), transparent 40%),
+        linear-gradient(180deg, #050608 0%, #11151d 100%);
+      overflow: hidden;
+    }
+
+    .redline {
+      position: absolute;
+      inset: 0 0 auto;
+      height: 100px;
+      background: linear-gradient(180deg, rgba(255, 107, 93, 0.16), transparent);
+      border-bottom: 1px dashed rgba(255, 107, 93, 0.35);
+    }
+
+    .sweet-spot {
+      position: absolute;
+      left: 0;
+      top: 100px;
+      width: 100%;
+      height: 22px;
+      background: rgba(79, 202, 136, 0.2);
+      border-top: 1px solid rgba(79, 202, 136, 0.45);
+      border-bottom: 1px solid rgba(79, 202, 136, 0.45);
+      box-shadow: 0 0 24px rgba(79, 202, 136, 0.16);
+    }
+
+    .chambers {
+      position: absolute;
+      inset: 48px 0 48px;
+      display: flex;
+      gap: 10px;
+      justify-content: space-evenly;
+      padding: 0 10px;
+      z-index: 2;
+    }
+
+    .chamber {
+      width: 30px;
+      height: 100%;
+      border-radius: 16px;
+      background: rgba(0, 0, 0, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+      overflow: hidden;
+      box-shadow: inset 0 8px 20px rgba(0, 0, 0, 0.8);
+    }
+
+    .chamber.active {
+      border-color: rgba(241, 178, 74, 0.75);
+      box-shadow:
+        inset 0 8px 20px rgba(0, 0, 0, 0.8),
+        0 0 14px rgba(241, 178, 74, 0.18);
+    }
+
+    .chamber.set {
+      opacity: 0.64;
+      border-color: rgba(79, 202, 136, 0.44);
+    }
+
+    .spring, .driver, .key, .pick-tip, .pick-shaft {
+      position: absolute;
+      left: 0;
+      width: 100%;
+    }
+
+    .spring {
+      top: 0;
+      left: 25%;
+      width: 50%;
+      height: 110px;
+      background: repeating-linear-gradient(to bottom, transparent 0 4px, rgba(255, 255, 255, 0.24) 4px 6px);
+    }
+
+    .driver {
+      bottom: 0;
+      height: 60px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #8390a7, #f1f4f9 50%, #59647b);
+      box-shadow: inset 0 -3px 5px rgba(0, 0, 0, 0.45);
+    }
+
+    .key {
+      bottom: 0;
+      height: 62px;
+      border-radius: 6px 6px 12px 12px;
+      background: linear-gradient(90deg, #8b6511, var(--amber), #6e4d06);
+      box-shadow: inset 0 -4px 6px rgba(0, 0, 0, 0.42);
+    }
+
+    .pick {
+      position: absolute;
+      left: 0;
+      bottom: 12px;
+      width: 100%;
+      height: 28px;
+      z-index: 4;
+    }
+
+    .pick-tip {
+      bottom: 0;
+      left: 0;
+      width: 8px;
+      height: 28px;
+      border-radius: 5px 5px 0 0;
+      background: linear-gradient(90deg, #c2c9d6, #ffffff 45%, #76819b);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.48);
+    }
+
+    .pick-shaft {
+      bottom: 0;
+      left: 6px;
+      width: 100%;
+      height: 8px;
+      border-radius: 0 6px 6px 0;
+      background: linear-gradient(180deg, #d7deea, #636f84);
+    }
+
+    .callout {
+      display: grid;
+      gap: 8px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      border: 1px solid rgba(241, 178, 74, 0.18);
+      background: rgba(241, 178, 74, 0.07);
+      line-height: 1.55;
+    }
+
+    .callout strong {
+      color: var(--amber);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .outcomes {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .outcome {
+      padding: 14px 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.04);
+      line-height: 1.55;
+    }
+
+    .outcome.success { border-color: rgba(79, 202, 136, 0.28); }
+    .outcome.fallback { border-color: rgba(241, 178, 74, 0.28); }
+    .outcome.fail { border-color: rgba(255, 107, 93, 0.28); }
+
+    .outcome h3 {
+      margin: 0 0 6px;
+      font-size: 0.94rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .outcome.success h3 { color: var(--green); }
+    .outcome.fallback h3 { color: var(--amber); }
+    .outcome.fail h3 { color: var(--red); }
+
+    .fineprint {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 640px) {
+      .app { padding: 10px; }
+      .hero, .stage { padding-left: 14px; padding-right: 14px; }
+      .modes, .outcomes { grid-template-columns: 1fr; }
+      .lockbox { height: 300px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="shell">
+      <section class="hero">
+        <div class="eyebrow">Nightcap clue gate</div>
+        <h1>Evidence Locker #402</h1>
+        <p class="lede">Presentation prototype for a clue-gated lock-breach moment. This page is visual only. The Nightcap runtime will own timing, scoring, clue unlocking, and outcomes when the build is ready.</p>
+      </section>
+
+      <div class="grid">
+        <section class="stage">
+          <div class="card">
+            <h2 class="card-title">How it fits Nightcap</h2>
+            <ul class="instructions">
+              <li>Individual device puzzle.</li>
+              <li>Delivers a clue that keeps the investigation moving.</li>
+              <li>Fallback clue guarantees the mystery stays solvable.</li>
+              <li>Presentation only until the runtime is wired in.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <h2 class="card-title">Breach tiers</h2>
+            <div class="modes">
+              <div class="mode">
+                <strong>Routine</strong>
+                <div class="meta">3 pins, 30 sec</div>
+                <div class="meta">Good for a quick, low-pressure clue gate.</div>
+              </div>
+              <div class="mode">
+                <strong>Pressure</strong>
+                <div class="meta">4 pins, 45 sec</div>
+                <div class="meta">Steadier tension for the middle of the arc.</div>
+              </div>
+              <div class="mode">
+                <strong>Redline</strong>
+                <div class="meta">5 pins, 60 sec</div>
+                <div class="meta">Hardest version for a peak-investigation beat.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2 class="card-title">Authorial note</h2>
+            <p class="copy">The visual language stays noir and evidence-room adjacent so it can sit inside Nightcap without fighting the setting.</p>
+            <p class="copy">The runtime will later supply the actual puzzle state, the authoritative timer, and the private clue routing.</p>
+          </div>
+        </section>
+
+        <section class="stage">
+          <div class="lockbox" aria-label="Static lock visualization">
+            <div class="redline"></div>
+            <div class="sweet-spot"></div>
+            <div class="chambers">
+              <div class="chamber set">
+                <div class="spring"></div>
+                <div class="driver"></div>
+                <div class="key"></div>
+              </div>
+              <div class="chamber active">
+                <div class="spring"></div>
+                <div class="driver"></div>
+                <div class="key"></div>
+              </div>
+              <div class="chamber">
+                <div class="spring"></div>
+                <div class="driver"></div>
+                <div class="key"></div>
+              </div>
+              <div class="chamber">
+                <div class="spring"></div>
+                <div class="driver"></div>
+                <div class="key"></div>
+              </div>
+              <div class="chamber">
+                <div class="spring"></div>
+                <div class="driver"></div>
+                <div class="key"></div>
+              </div>
+            </div>
+            <div class="pick">
+              <div class="pick-tip"></div>
+              <div class="pick-shaft"></div>
+            </div>
+          </div>
+
+          <div class="callout">
+            <strong>Fallback rule</strong>
+            <div>When the lock fails or the timer expires, the host can still deliver a reduced clue so the case never dead-ends.</div>
+          </div>
+
+          <div class="outcomes">
+            <div class="outcome success">
+              <h3>Success</h3>
+              <div>Evidence secured. The locker opens before the room can clean up its story.</div>
+            </div>
+            <div class="outcome fallback">
+              <h3>Fallback</h3>
+              <div>Someone in the room had access to the locker before the announcement, but not the whole story.</div>
+            </div>
+            <div class="outcome fail">
+              <h3>Failure</h3>
+              <div>The lock holds. The host still routes the reduced clue to keep the night moving.</div>
+            </div>
+          </div>
+
+          <p class="fineprint">No local gameplay logic lives here. This file is only a presentation mock for the package review and future Nightcap wiring.</p>
+        </section>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

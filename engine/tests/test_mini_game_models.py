@@ -49,23 +49,61 @@ def test_reserved_directories_are_not_loaded_as_production_catalog() -> None:
     assert load_mini_game_catalog(MINI_GAME_ROOT) == {}
 
 
+def test_non_active_packages_are_not_loaded_into_production_catalog(
+    tmp_path: Path,
+) -> None:
+    _write_package(
+        tmp_path / "draft-game", game_id="draft-game", lifecycle=MiniGameLifecycle.draft
+    )
+    _write_package(
+        tmp_path / "playtest-game",
+        game_id="playtest-game",
+        lifecycle=MiniGameLifecycle.playtest,
+    )
+    _write_package(
+        tmp_path / "active-game",
+        game_id="active-game",
+        lifecycle=MiniGameLifecycle.active,
+    )
+
+    catalog = load_mini_game_catalog(tmp_path)
+
+    assert set(catalog) == {"active-game"}
+
+
 def test_duplicate_game_ids_are_rejected(tmp_path: Path) -> None:
-    _write_package(tmp_path / "duplicate-game", game_id="duplicate-game")
-    _write_package(tmp_path / "duplicate-game-copy", game_id="duplicate-game")
+    _write_package(
+        tmp_path / "duplicate-game",
+        game_id="duplicate-game",
+        lifecycle=MiniGameLifecycle.active,
+    )
+    _write_package(
+        tmp_path / "duplicate-game-copy",
+        game_id="duplicate-game",
+        lifecycle=MiniGameLifecycle.active,
+    )
 
     with pytest.raises(MiniGamePackageError, match="does not match"):
         load_mini_game_catalog(tmp_path)
 
 
 def test_directory_name_must_match_manifest_game_id(tmp_path: Path) -> None:
-    _write_package(tmp_path / "directory-name", game_id="different-id")
+    _write_package(
+        tmp_path / "directory-name",
+        game_id="different-id",
+        lifecycle=MiniGameLifecycle.active,
+    )
 
     with pytest.raises(MiniGamePackageError, match="does not match"):
         load_mini_game_catalog(tmp_path)
 
 
 def test_matching_directory_and_game_id_loads(tmp_path: Path) -> None:
-    _write_package(tmp_path / "matching-game", game_id="matching-game")
+    _write_package(
+        tmp_path / "matching-game",
+        game_id="matching-game",
+        lifecycle=MiniGameLifecycle.active,
+    )
 
     catalog = load_mini_game_catalog(tmp_path)
 
@@ -119,10 +157,18 @@ def test_content_mode_requires_matching_content_inputs() -> None:
         MiniGameDefinition.model_validate(payload)
 
 
-def _write_package(package_path: Path, *, game_id: str) -> None:
+def _write_package(
+    package_path: Path,
+    *,
+    game_id: str,
+    lifecycle: MiniGameLifecycle = MiniGameLifecycle.draft,
+) -> None:
     definitions_path = package_path / "definitions"
     definitions_path.mkdir(parents=True)
-    _write_json(package_path / "manifest.json", _manifest_payload(game_id))
+    _write_json(
+        package_path / "manifest.json",
+        _manifest_payload(game_id, lifecycle=lifecycle),
+    )
     _write_json(definitions_path / "0.1.0.json", _definition_payload(game_id))
 
 
@@ -130,12 +176,16 @@ def _write_json(path: Path, payload: dict[str, object]) -> None:
     path.write_text(json.dumps(payload), encoding="utf-8")
 
 
-def _manifest_payload(game_id: str) -> dict[str, object]:
+def _manifest_payload(
+    game_id: str,
+    *,
+    lifecycle: MiniGameLifecycle = MiniGameLifecycle.draft,
+) -> dict[str, object]:
     return {
         "schema_version": "1.0",
         "game_id": game_id,
         "title": "Test Game",
-        "lifecycle": "draft",
+        "lifecycle": lifecycle.value,
         "current_version": "0.1.0",
         "definition_path": "definitions/0.1.0.json",
         "asset_paths": [],
