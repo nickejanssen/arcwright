@@ -1,6 +1,7 @@
 # Crime Scene Smash
 
-Draft Nightcap mini-game package for a competitive match-3 clue run.
+Draft Nightcap mini-game package for a competitive match-3 clue run with
+individual player boards and a shared leaderboard.
 
 This package is intentionally designed as a Nightcap skin, not a generic arcade
 wrapper. The browser client is presentation only. Python will later own timing,
@@ -13,4 +14,3 @@ Final authored copy still needed:
 - fallback line
 - tie line
 - leaderboard callouts
-
