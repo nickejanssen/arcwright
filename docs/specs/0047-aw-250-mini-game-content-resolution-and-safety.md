@@ -32,6 +32,33 @@ validated snapshot before deterministic execution.
 
 ---
 
+# Resolved Snapshot Contract
+
+All three content modes resolve to the same runtime contract:
+
+- `snapshot_schema_version`
+- `game_id`
+- `definition_version`
+- `source_content_mode`
+- `mechanic_type`
+- `participation_mode`
+- `min_players`
+- `max_players`
+- `duration_seconds`
+- `rules`
+- `behavioral_outputs`
+- `clue_fallback`
+- `resolved_content`
+- `presentation`
+
+`rules`, `behavioral_outputs`, and `clue_fallback` remain authored and
+immutable at resolution time. Generative and hybrid resolution may populate
+only `resolved_content` and `presentation`. Hybrid resolution may fill
+placeholder copy or add compatible content fields, but it may not overwrite an
+authored deterministic field.
+
+---
+
 # Out Of Scope
 
 - Runtime state, scoring, clue unlocking, persistence, transport, or rendering
