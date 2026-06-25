@@ -29,3 +29,11 @@ Visual creator tooling, internally referred to as Visual Storyworld, is staged a
 ## Business Model Architecture
 
 Arcwright uses four pricing tiers for the future developer platform: Free Developer, Indie, Studio, and Enterprise. Free Developer includes limited credits, full API access, rate limits, and prototyping use. Indie is designed for solo and small-team indie studios, with substantial included credits and community support. Studio is designed for studios of 5 to 50 people, with generous credits, priority support, and basic SLA. Enterprise uses custom annual contracts, SLA, eventually SOC 2 when achievable, and white-label or co-brand options. Action credits are abstracted as narrative actions, such as character dialogue generation, beat selection or transition, fate event evaluation, knowledge state query, or arc state update. Nightcap's temporary pricing north star is host-pays-per-session, anchored above the roughly $30 static murder-mystery-kit price point. Credit packs are a later retention or average-order optimization only if repeat purchase appears. The engine must support per-session charging and per-session cost tracking. Numeric launch price remains deferred until real per-session AI cost and early willingness-to-pay signal are available.
+
+---
+
+# Future Directions (Post-MVP)
+
+The following strategic pivots are explicitly out of scope for the v1 MVP, but are being formally documented for consideration based on the results of the first wave of formal playtests.
+
+- **Gameplay Model Pivots:** Two alternative gameplay models for Nightcap—a "Couch Game" fast-paced model and a "Competitive Investigator" model—are under consideration as potential future directions. For full details, see [ADR-0010: Nightcap Gameplay Pivots Post-Playtest](../decisions/0010-nightcap-gameplay-pivots-post-playtest.md).
