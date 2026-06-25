@@ -26,10 +26,10 @@
   `docs/specs/0049-aw-252-mini-game-api-events-and-sdk.md`,
   `docs/specs/0050-aw-253-nightcap-web-mini-game-rendering.md`,
   `docs/specs/0051-aw-254-first-production-nightcap-mini-game.md`
-- Roadmap task:
+- Roadmap context:
   `docs/roadmap/tasks/AW-257-author-first-production-nightcap-mini-game.md`
 - Product decisions: `docs/product/decisions-log.csv` D-052, D-058, D-059,
-  D-060, D-061, D-062
+  D-060, D-061, D-062, D-063
 
 ---
 
@@ -43,12 +43,12 @@ signal contract, and downstream implementation split. It does not add runtime,
 persistence, API, SDK, frontend, package, schema migration, dependency, or arc
 binding changes.
 
-D-062 is the durable product decision that selects Tell Me Something True as the
-first production Nightcap mini-game candidate. D-062 approves the game ID and
-design direction, not final shipped package content. AW-257 must still author
-the package, include an authored delayed clue fallback, pass content, asset,
-safety, and schema review, and receive founder content sign-off before authoring
-is marked complete.
+D-063 is the durable product decision that approves Tell Me Something True as a
+Nightcap social opener mini-game design candidate. D-063 approves the game ID
+and design direction for AW-258, not final shipped package content and not a
+replacement for the first production package decision in D-062. Crime Scene
+Smash remains the first production Nightcap mini-game package under AW-257 and
+AW-254.
 
 ---
 
@@ -67,8 +67,10 @@ is marked complete.
 - `cmd /c make.cmd type` currently fails because default `python` resolves to
   Python 3.9.18, while repo syntax requires Python 3.11 or newer. The local
   `.aw102-venv` interpreter reports Python 3.11.15.
-- D-062 records founder selection of Tell Me Something True as the first
-  production Nightcap mini-game candidate.
+- D-062 records Crime Scene Smash as the first production Nightcap mini-game
+  package.
+- D-063 records founder approval of Tell Me Something True as a Nightcap social
+  opener mini-game design candidate.
 
 ---
 
@@ -77,13 +79,13 @@ is marked complete.
 - Locked game design for `tell-me-something-true`.
 - Phase, surface, scoring, edge-case, and replay-variance contracts.
 - v1 signal data contract for future analysis only.
-- Mapping to existing mini-game roadmap boundaries:
-  - AW-257 for production package authoring.
+- Mapping to future implementation boundaries if this candidate is scheduled:
+  - future package authoring for production package files and content review.
   - AW-251 for deterministic runtime, persistence, submissions, scoring, and
     signal computation.
   - AW-252 for API, events, and SDK.
   - AW-253 for web rendering and device integration.
-  - AW-254 for promotion and rehearsal.
+  - a future promotion and rehearsal task after package approval.
 - Explicit no-clue-gate behavior.
 - Explicit v1 prohibition on killer-assignment, cross-session, or persistent
   standing effects.
@@ -346,9 +348,10 @@ Signals must not feed:
 
 # Implementation Split
 
-## AW-257: Production Package Authoring
+## Future Package Authoring
 
-- Create `nightcap/mini_games/tell-me-something-true/`.
+- Create `nightcap/mini_games/tell-me-something-true/` only under an approved
+  future package-authoring task.
 - Use manifest lifecycle `draft` until content review passes.
 - Use content mode `hybrid`.
 - Define rules, authored framing scaffolds, generation constraints, player
@@ -359,14 +362,15 @@ Signals must not feed:
 
 Fallback contract:
 
-- AW-249, D-059, ADR 0009, and AW-257 require every production mini-game
-  definition to declare an authored delayed clue fallback.
+- AW-249, D-059, and ADR 0009 require every production mini-game definition to
+  declare an authored delayed clue fallback.
 - Tell Me Something True is not a clue gate during normal completion. The
-  fallback still must be authored and real, because the production package must
-  remain valid under the existing mini-game contract.
+  fallback still must be authored and real if it is authored as a production
+  package, because the package must remain valid under the existing mini-game
+  contract.
 - The fallback for this game should preserve mystery solvability by advancing
   the session without withholding required information and by providing the
-  authored fallback behavior selected during AW-257 content review.
+  authored fallback behavior selected during future content review.
 - AW-251 must ensure timeout and failure paths follow the authored fallback and
   do not leave the arc waiting on this social opener.
 - No schema change is approved by AW-258.
@@ -412,7 +416,7 @@ Fallback contract:
 - Preserve accessibility and degraded-network states.
 - Do not add canonical timing, scoring, outcome, or state logic to web clients.
 
-## AW-254: Promotion And Rehearsal
+## Future Promotion And Rehearsal
 
 - Promote only after founder content approval.
 - Verify complete flow on supported devices.
@@ -429,7 +433,7 @@ Fallback contract:
 - [ ] Spec states that the game does not gate, unlock, reduce, delay, or assert
   a clue during normal completion.
 - [ ] Spec preserves the authored delayed clue fallback requirement for the
-  production package.
+  future production package.
 - [ ] Spec states that scoring is internal and non-persistent.
 - [ ] Spec preserves ADR 0009: Python owns deterministic game authority.
 - [ ] Spec preserves surface agnosticism: engine emits audience-targeted events,
@@ -452,7 +456,8 @@ Fallback contract:
 ## AW-258 Verification
 
 - Run `git status --short --branch` before and after the change.
-- Confirm only the AW-258 spec file changed.
+- Confirm only the AW-258 spec file, decision log, and directly affected
+  roadmap records changed.
 - Confirm no agent-local files are staged.
 - Confirm the new spec contains no em dash characters.
 - Confirm the new spec contains no secrets, API keys, provider names, or model
@@ -480,8 +485,8 @@ Fallback contract:
 **Risks**:
 
 - Current mini-game authoring schema requires a clue fallback record even though
-  this mechanic does not gate a clue. AW-257 and AW-251 must preserve no-clue
-  runtime behavior while remaining schema-valid.
+  this mechanic does not gate a clue. Future package authoring and AW-251 must
+  preserve no-clue runtime behavior while remaining schema-valid.
 - `deflection_tendency` is map-shaped, while current authoring declarations are
   scalar. AW-251 must resolve the structured-output representation without
   weakening validation.
@@ -493,7 +498,8 @@ Fallback contract:
 - Final narrator copy for each diegetic wrapper remains human-authored unless
   explicitly delegated.
 - The exact point schedule belongs to AW-251.
-- The final package lifecycle target belongs to AW-257 and AW-254.
+- The final package lifecycle target belongs to a future package and promotion
+  task.
 
 ---
 
