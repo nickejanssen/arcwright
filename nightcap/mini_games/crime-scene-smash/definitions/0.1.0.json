@@ -1,0 +1,189 @@
+{
+  "schema_version": "1.0",
+  "game_id": "crime-scene-smash",
+  "version": "0.1.0",
+  "mechanic_type": "match-3-clue-race",
+  "participation_mode": "individual",
+  "content_mode": "hybrid",
+  "min_players": 4,
+  "max_players": 8,
+  "duration_seconds": 90,
+  "rules": {
+    "round_mode": "timed",
+    "board_size": 8,
+    "match_length": 3,
+    "shared_board": false,
+    "leaderboard_surface": "shared_display",
+    "board_surface": "phone",
+    "host_surface": "host",
+    "scoring": {
+      "primary_reward": "highest score wins the investigative lead",
+      "secondary_reward": "score contributes to an end-of-game award later"
+    },
+    "tile_roles": [
+      "case-file",
+      "fingerprint",
+      "motive",
+      "alibi",
+      "witness",
+      "red-herring"
+    ],
+    "specials": [
+      "lead-burst",
+      "pressure-shift",
+      "reveal-chain"
+    ],
+    "failure_policy": {
+      "timeout_fallback": "reduced clue",
+      "abort_fallback": "reduced clue",
+      "tie_break": "narrative"
+    },
+    "player_count_behavior": {
+      "4": "full simultaneous individual boards with leaderboard",
+      "5": "same as four players, slightly tighter leaderboard spread",
+      "6": "same as four players, with higher pressure on the top rank",
+      "7": "same as four players, but shorter visible scoring windows",
+      "8": "same as four players, but shorter visible scoring windows"
+    },
+    "replay_variance": [
+      "board seed",
+      "tile mix",
+      "special-tile triggers",
+      "leaderboard order",
+      "clue flavor",
+      "narrator commentary"
+    ]
+  },
+  "authored_content": {
+    "package_summary": "A Nightcap-safe match-3 clue run that awards the best score with the primary investigative lead.",
+    "surface_contract": {
+      "phone": "private board, timer, personal score, combo feedback, and result",
+      "shared_display": "leaderboard, narrator commentary, and session-safe status",
+      "host": "controls, progress, tie handling, and fallback state"
+    },
+    "tile_language": {
+      "case-file": "evidence in the case archive",
+      "fingerprint": "a hard clue trace",
+      "motive": "a pressure point in the room",
+      "alibi": "a claim that must hold up",
+      "witness": "a person or source that saw something",
+      "red-herring": "a false trail"
+    },
+    "copy_needed": {
+      "narrator_intro": "[final authored copy needed]",
+      "success_line": "[final authored copy needed]",
+      "fallback_line": "[final authored copy needed]",
+      "tie_line": "[final authored copy needed]",
+      "leaderboard_callouts": "[final authored copy needed]"
+    }
+  },
+  "generation_constraints": {
+    "tone": [
+      "wry",
+      "tense",
+      "playful"
+    ],
+    "allowed_session_personalization": [
+      "tile labels",
+      "leaderboard names",
+      "narrator quips",
+      "clue flavor",
+      "board palette accents"
+    ],
+    "surface_rules": {
+      "shared_display": "never reveal private board state or private clues",
+      "phone": "may show only the local player's board and result state",
+      "host": "may show scoring, fallback, and tie resolution state"
+    },
+    "runtime_boundaries": [
+      "Python owns timing",
+      "Python owns scoring",
+      "Python owns match resolution",
+      "Python owns fallback selection",
+      "Python owns clue unlocks",
+      "Python owns persistence"
+    ],
+    "safety": [
+      "no graphic violence",
+      "no real-person targeting",
+      "no private clue leakage to the shared display"
+    ]
+  },
+  "behavioral_outputs": [
+    {
+      "key": "final-score",
+      "description": "Final score earned by the participant.",
+      "value_type": "integer",
+      "scope": "participant",
+      "derived": false
+    },
+    {
+      "key": "swap-count",
+      "description": "Number of swaps attempted by the participant.",
+      "value_type": "integer",
+      "scope": "participant",
+      "derived": false
+    },
+    {
+      "key": "combo-count",
+      "description": "Number of combo chains achieved by the participant.",
+      "value_type": "integer",
+      "scope": "participant",
+      "derived": false
+    },
+    {
+      "key": "max-chain-depth",
+      "description": "Longest cascade chain reached during the run.",
+      "value_type": "integer",
+      "scope": "participant",
+      "derived": false
+    },
+    {
+      "key": "invalid-swap-count",
+      "description": "Number of attempted swaps that produced no match.",
+      "value_type": "integer",
+      "scope": "participant",
+      "derived": false
+    },
+    {
+      "key": "final-rank",
+      "description": "Final leaderboard position for the participant.",
+      "value_type": "integer",
+      "scope": "participant",
+      "derived": false
+    },
+    {
+      "key": "lead-margin",
+      "description": "Score difference between the top two leaderboard positions.",
+      "value_type": "integer",
+      "scope": "run",
+      "derived": false
+    },
+    {
+      "key": "timeout-used",
+      "description": "Whether the run ended by timeout.",
+      "value_type": "boolean",
+      "scope": "run",
+      "derived": false
+    },
+    {
+      "key": "fallback-used",
+      "description": "Whether the reduced fallback clue was required.",
+      "value_type": "boolean",
+      "scope": "run",
+      "derived": false
+    },
+    {
+      "key": "special-tile-activations",
+      "description": "Count of special-tile activations achieved by the participant.",
+      "value_type": "integer",
+      "scope": "participant",
+      "derived": false
+    }
+  ],
+  "clue_fallback": {
+    "delay_seconds": 30,
+    "clue_variant": "reduced",
+    "host_override": true
+  }
+}
