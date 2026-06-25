@@ -1,6 +1,6 @@
 # AW-252: Mini-game API, Events, And TypeScript SDK
 
-**Status**: Draft
+**Status**: Approved
 
 **Author**: Codex | **Date**: 2026-06-20
 
@@ -42,13 +42,13 @@ game-owned ContentEvent types, and typed SDK methods.
 
 # Acceptance Criteria
 
-- [ ] Handlers authenticate, validate, call engine services, and return typed
+- [x] Handlers authenticate, validate, call engine services, and return typed
   responses without arc logic.
-- [ ] Submissions are scoped to the authorized participant and run.
-- [ ] Events preserve `target_audience` privacy and use open game-owned event
+- [x] Submissions are scoped to the authorized participant and run.
+- [x] Events preserve `target_audience` privacy and use open game-owned event
   types under existing platform categories.
-- [ ] Reconnect recovers authorized active state without exposing private data.
-- [ ] Public SDK types contain no `any` and no deterministic game logic.
+- [x] Reconnect recovers authorized active state without exposing private data.
+- [x] Public SDK types contain no `any` and no deterministic game logic.
 
 ---
 

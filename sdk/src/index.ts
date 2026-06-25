@@ -74,8 +74,8 @@ export class ArcwrightClient {
     return res.json() as Promise<CharacterDetail>;
   }
 
-  async getMiniGameState(sessionId: string): Promise<MiniGameState | null> {
-    const url = `${this._baseUrl}/v1/sessions/${sessionId}/mini-games/active`;
+  async getMiniGameState(): Promise<MiniGameState | null> {
+    const url = `${this._baseUrl}/v1/sessions/${this._sessionId}/mini-games/active`;
     let res: Response;
     try {
       res = await fetch(url, {
@@ -115,12 +115,11 @@ export class ArcwrightClient {
   }
 
   async submitMiniGameAction(
-    sessionId: string,
     runId: string,
     submissionId: string,
     payload: MiniGamePayload,
   ): Promise<MiniGameSubmissionResult> {
-    const url = `${this._baseUrl}/v1/sessions/${sessionId}/mini-games/${runId}/submissions`;
+    const url = `${this._baseUrl}/v1/sessions/${this._sessionId}/mini-games/${runId}/submissions`;
     const res = await fetch(url, {
       method: "POST",
       headers: {

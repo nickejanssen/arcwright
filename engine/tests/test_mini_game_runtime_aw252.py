@@ -14,6 +14,7 @@ from uuid import UUID, uuid4
 
 import pytest
 from sqlalchemy import select
+from sqlalchemy import update as sql_update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from engine.db.orm import (
@@ -39,6 +40,7 @@ from engine.mini_games.runtime import (
     MechanicRegistry,
     MiniGameRuntime,
     MiniGameSubmission,
+    RevisionConflictError,
     RunStateError,
 )
 
@@ -269,6 +271,68 @@ class TestCancelRun:
 
         with pytest.raises(RunStateError, match="terminal"):
             await rt.cancel_run(run.run_id)
+
+
+# ---------------------------------------------------------------------------
+# Optimistic concurrency
+# ---------------------------------------------------------------------------
+
+
+class TestRevisionConflict:
+    async def test_concurrent_update_raises_revision_conflict(
+        self, db: AsyncSession
+    ) -> None:
+        """RevisionConflictError is raised when a concurrent writer advances the
+        revision between our load and our guarded write.
+
+        We simulate this by directly updating the DB revision, then using
+        set_committed_value to revert the in-memory attribute to the stale value
+        WITHOUT marking it dirty (which would cause SQLAlchemy autoflush to write
+        it back before our guarded UPDATE runs, negating the test).
+        The WHERE-guarded UPDATE finds 0 rows and raises RevisionConflictError.
+        """
+        from sqlalchemy.orm.attributes import set_committed_value
+
+        session_id, _ = await _setup(db)
+        rt = MiniGameRuntime(db, make_bus(), make_registry(), clock=frozen_clock())
+        run = await rt.create_run(session_id, make_snapshot())
+
+        stale_revision = run.revision
+
+        # Simulate a concurrent writer advancing the revision in the DB.
+        await db.execute(
+            sql_update(MiniGameRun)
+            .where(MiniGameRun.run_id == run.run_id)
+            .values(revision=stale_revision + 1)
+        )
+        await db.flush()
+
+        # Reset in-memory revision to stale WITHOUT marking the ORM object dirty.
+        # A regular assignment (run.revision = stale_revision) would cause autoflush
+        # to overwrite the DB value before our guarded UPDATE executes.
+        set_committed_value(run, "revision", stale_revision)
+
+        # The guarded UPDATE uses WHERE revision=stale_revision, finds 0 rows.
+        with pytest.raises(RevisionConflictError):
+            await rt._increment_revision(run)
+
+    async def test_revision_conflict_propagates_through_cancel_run(
+        self, db: AsyncSession
+    ) -> None:
+        """cancel_run does not silently swallow RevisionConflictError."""
+        from unittest.mock import AsyncMock, patch
+
+        session_id, _ = await _setup(db)
+        rt = MiniGameRuntime(db, make_bus(), make_registry(), clock=frozen_clock())
+        run = await rt.create_run(session_id, make_snapshot())
+
+        with patch.object(
+            rt,
+            "_increment_revision",
+            new=AsyncMock(side_effect=RevisionConflictError("simulated conflict")),
+        ):
+            with pytest.raises(RevisionConflictError):
+                await rt.cancel_run(run.run_id)
 
 
 # ---------------------------------------------------------------------------

@@ -226,9 +226,7 @@ class TestGetActiveMiniGame:
         client: TestClient,
         db_factory: async_sessionmaker[AsyncSession],
     ) -> None:
-        session_id, run_id = asyncio.get_event_loop().run_until_complete(
-            _seed_session_and_run(db_factory)
-        )
+        session_id, run_id = asyncio.run(_seed_session_and_run(db_factory))
         resp = client.get(f"/v1/sessions/{session_id}/mini-games/active")
 
         assert resp.status_code == 200
@@ -243,9 +241,7 @@ class TestGetActiveMiniGame:
         db_factory: async_sessionmaker[AsyncSession],
     ) -> None:
         """Reconnect path: player recovers only their own submissions (AC5)."""
-        session_id, run_id = asyncio.get_event_loop().run_until_complete(
-            _seed_session_and_run(db_factory)
-        )
+        session_id, run_id = asyncio.run(_seed_session_and_run(db_factory))
         # Submit as this player first
         client.post(
             f"/v1/sessions/{session_id}/mini-games/{run_id}/submissions",
@@ -272,7 +268,7 @@ class TestGetActiveMiniGame:
                 )
                 await db.commit()
 
-        asyncio.get_event_loop().run_until_complete(_seed_other_sub())
+        asyncio.run(_seed_other_sub())
 
         resp = client.get(f"/v1/sessions/{session_id}/mini-games/active")
 
@@ -319,9 +315,7 @@ class TestSubmitMiniGameAction:
         client: TestClient,
         db_factory: async_sessionmaker[AsyncSession],
     ) -> None:
-        _, run_id = asyncio.get_event_loop().run_until_complete(
-            _seed_session_and_run(db_factory)
-        )
+        _, run_id = asyncio.run(_seed_session_and_run(db_factory))
         resp = client.post(
             f"/v1/sessions/{_SESSION_ID}/mini-games/{run_id}/submissions",
             json={"submission_id": "sub-1", "payload": {"answer": 42}},
@@ -338,9 +332,7 @@ class TestSubmitMiniGameAction:
         db_factory: async_sessionmaker[AsyncSession],
     ) -> None:
         """AC2: submitting the same submission_id twice returns identical response."""
-        _, run_id = asyncio.get_event_loop().run_until_complete(
-            _seed_session_and_run(db_factory)
-        )
+        _, run_id = asyncio.run(_seed_session_and_run(db_factory))
         url = f"/v1/sessions/{_SESSION_ID}/mini-games/{run_id}/submissions"
         body = {"submission_id": "dup-sub", "payload": {}}
 
@@ -357,9 +349,7 @@ class TestSubmitMiniGameAction:
         db_factory: async_sessionmaker[AsyncSession],
     ) -> None:
         """Host JWT cannot reach the submission endpoint (player-only)."""
-        _, run_id = asyncio.get_event_loop().run_until_complete(
-            _seed_session_and_run(db_factory)
-        )
+        _, run_id = asyncio.run(_seed_session_and_run(db_factory))
         app.dependency_overrides[require_player_jwt] = lambda: (_ for _ in ()).throw(
             __import__("fastapi").HTTPException(
                 status_code=403, detail="Player token required"
@@ -380,9 +370,7 @@ class TestSubmitMiniGameAction:
         db_factory: async_sessionmaker[AsyncSession],
     ) -> None:
         """Player from a different session (or not in participant table) gets 403."""
-        _, run_id = asyncio.get_event_loop().run_until_complete(
-            _seed_session_and_run(db_factory)
-        )
+        _, run_id = asyncio.run(_seed_session_and_run(db_factory))
         outsider_id = uuid4()
         app.dependency_overrides[require_player_jwt] = lambda: JwtClaims(
             uid="outsider", session_id=_SESSION_ID, player_id=outsider_id, role="player"
@@ -401,9 +389,7 @@ class TestSubmitMiniGameAction:
         client: TestClient,
         db_factory: async_sessionmaker[AsyncSession],
     ) -> None:
-        _, run_id = asyncio.get_event_loop().run_until_complete(
-            _seed_session_and_run(db_factory)
-        )
+        _, run_id = asyncio.run(_seed_session_and_run(db_factory))
         wrong_session = uuid4()
         app.dependency_overrides[require_player_jwt] = lambda: _player_claims(
             session_id=wrong_session
@@ -429,9 +415,7 @@ class TestHostCommands:
         client: TestClient,
         db_factory: async_sessionmaker[AsyncSession],
     ) -> None:
-        _, run_id = asyncio.get_event_loop().run_until_complete(
-            _seed_session_and_run(db_factory)
-        )
+        _, run_id = asyncio.run(_seed_session_and_run(db_factory))
         resp = client.post(
             f"/v1/sessions/{_SESSION_ID}/mini-games/{run_id}/host-commands",
             json={"command": "cancel", "params": {}},
@@ -447,9 +431,7 @@ class TestHostCommands:
     ) -> None:
         # plugin.score is scaffolded as NotImplementedError pending full implementation;
         # mock it here to test the API routing behaviour in isolation.
-        _, run_id = asyncio.get_event_loop().run_until_complete(
-            _seed_session_and_run(db_factory)
-        )
+        _, run_id = asyncio.run(_seed_session_and_run(db_factory))
         with patch(
             "engine.mini_games.plugins._match_3_clue_race.Match3ClueRacePlugin.score",
             return_value={},
@@ -467,9 +449,7 @@ class TestHostCommands:
         client: TestClient,
         db_factory: async_sessionmaker[AsyncSession],
     ) -> None:
-        _, run_id = asyncio.get_event_loop().run_until_complete(
-            _seed_session_and_run(db_factory)
-        )
+        _, run_id = asyncio.run(_seed_session_and_run(db_factory))
         resp = client.post(
             f"/v1/sessions/{_SESSION_ID}/mini-games/{run_id}/host-commands",
             json={
@@ -490,9 +470,7 @@ class TestHostCommands:
         client: TestClient,
         db_factory: async_sessionmaker[AsyncSession],
     ) -> None:
-        _, run_id = asyncio.get_event_loop().run_until_complete(
-            _seed_session_and_run(db_factory)
-        )
+        _, run_id = asyncio.run(_seed_session_and_run(db_factory))
         app.dependency_overrides[require_host_jwt] = lambda: (_ for _ in ()).throw(
             __import__("fastapi").HTTPException(
                 status_code=403, detail="Host token required"
@@ -507,14 +485,31 @@ class TestHostCommands:
         finally:
             app.dependency_overrides[require_host_jwt] = lambda: _host_claims()
 
+    def test_resolve_returns_501_when_scoring_not_implemented(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        """Unimplemented plugin.score() must surface as 501, not 500.
+
+        The real Match3ClueRacePlugin.score raises NotImplementedError.
+        This test exercises the unpatched path to verify the router converts
+        it to a 501 rather than leaking an unhandled 500.
+        """
+        _, run_id = asyncio.run(_seed_session_and_run(db_factory))
+        resp = client.post(
+            f"/v1/sessions/{_SESSION_ID}/mini-games/{run_id}/host-commands",
+            json={"command": "resolve", "params": {}},
+        )
+        assert resp.status_code == 501
+        assert "not yet implemented" in resp.json()["detail"].lower()
+
     def test_unknown_command_returns_422(
         self,
         client: TestClient,
         db_factory: async_sessionmaker[AsyncSession],
     ) -> None:
-        _, run_id = asyncio.get_event_loop().run_until_complete(
-            _seed_session_and_run(db_factory)
-        )
+        _, run_id = asyncio.run(_seed_session_and_run(db_factory))
         resp = client.post(
             f"/v1/sessions/{_SESSION_ID}/mini-games/{run_id}/host-commands",
             json={"command": "teleport", "params": {}},
@@ -536,9 +531,7 @@ class TestContentEventEmission:
         """AC4: submission acknowledgement uses EventCategory.acknowledgement."""
         from api.routers.events import _buses
 
-        _, run_id = asyncio.get_event_loop().run_until_complete(
-            _seed_session_and_run(db_factory)
-        )
+        _, run_id = asyncio.run(_seed_session_and_run(db_factory))
         client.post(
             f"/v1/sessions/{_SESSION_ID}/mini-games/{run_id}/submissions",
             json={"submission_id": "ev-sub", "payload": {}},

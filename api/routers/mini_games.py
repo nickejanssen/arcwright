@@ -41,7 +41,7 @@ from api.schemas import (
 from engine.db import get_async_session
 from engine.db.orm import SessionParticipant
 from engine.mini_games.plugins import default_registry
-from engine.mini_games.runtime import MiniGameRuntime, RunStateError
+from engine.mini_games.runtime import MiniGameRuntime, MiniGameRuntimeError
 
 router = APIRouter(prefix="/sessions", tags=["mini-games"])
 
@@ -146,7 +146,7 @@ async def submit_mini_game_action(
             body.payload,
             participant_id=claims.player_id,
         )
-    except RunStateError as exc:
+    except MiniGameRuntimeError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
 
     return MiniGameSubmissionResponse(
@@ -194,8 +194,10 @@ async def send_host_command(
                     detail="Host token missing arcwright_player_id claim",
                 )
             run = await runtime.override_clue_release(run_id, clues, host_account_id)
-    except RunStateError as exc:
+    except MiniGameRuntimeError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
+    except NotImplementedError as exc:
+        raise HTTPException(status_code=501, detail=str(exc))
 
     return HostCommandResponse(
         run_id=run.run_id,
