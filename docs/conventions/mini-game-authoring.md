@@ -229,7 +229,7 @@ export default defineRenderer({
       }, ["--:--"]);
 
       const guard = createSubmissionGuard({
-        submit: (id, payload) => ctx.submit(payload),
+        submit: (id, payload) => ctx.submit(payload, id),
       });
 
       const buttons: HTMLButtonElement[] = [];

@@ -102,6 +102,18 @@ function toSubmissionResult(
   return { submissionId, isAccepted };
 }
 
+function generateSubmissionId(
+  state: MiniGameState,
+  stream: StreamState,
+  view: Window | null,
+): string {
+  const cryptoGlobal = (
+    globalThis as { crypto?: { randomUUID?: () => string } }
+  ).crypto;
+  if (cryptoGlobal?.randomUUID) return cryptoGlobal.randomUUID();
+  return `${state.runId}-${stream.lastSequence}-${performanceNow(view)}`;
+}
+
 export async function bootMiniGameStage(
   stage: HTMLElement,
   opts: StageBootOptions,
@@ -242,13 +254,9 @@ export async function bootMiniGameStage(
     characterId: opts.characterId,
     state,
     definition,
-    submit: async (payload) => {
-      const submissionId =
-        (
-          globalThis as { crypto?: { randomUUID?: () => string } }
-        ).crypto?.randomUUID?.() ??
-        `${state.runId}-${stream.lastSequence}-${performanceNow(view)}`;
-      return submitAction(state.runId, submissionId, payload);
+    submit: async (payload, submissionId) => {
+      const id = submissionId ?? generateSubmissionId(state, stream, view);
+      return submitAction(state.runId, id, payload);
     },
     onEvent: subscribe,
     reportPerf: (name, value) => perf.report(name, value),

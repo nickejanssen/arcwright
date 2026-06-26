@@ -58,7 +58,16 @@ export interface MiniGameContext {
   characterId: string;
   state: MiniGameState;
   definition: MiniGameDefinition;
-  submit(payload: MiniGamePayload): Promise<MiniGameSubmissionResult>;
+  /**
+   * Submit an action to the engine. If `submissionId` is provided, it is
+   * used end-to-end; otherwise a UUID is generated locally. Pass a stable
+   * submissionId (typically from createSubmissionGuard) when you need
+   * server-side idempotency across reconnects.
+   */
+  submit(
+    payload: MiniGamePayload,
+    submissionId?: string,
+  ): Promise<MiniGameSubmissionResult>;
   onEvent(handler: (event: ContentEvent) => void): () => void;
   reportPerf(name: string, value: number): void;
 }

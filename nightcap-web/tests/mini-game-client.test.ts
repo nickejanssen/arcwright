@@ -250,6 +250,89 @@ test("client: refresh remounts when runId changes", async () => {
   controller.unmount();
 });
 
+test("client: caller-supplied submissionId reaches the server unchanged", async () => {
+  const window = new HappyWindow();
+  const doc = window.document as unknown as Document;
+  const stage = doc.createElement("section");
+  const submissions: { submission_id: string; payload: unknown }[] = [];
+
+  const captured: { submit?: (id: string) => Promise<unknown> } = {};
+  const registry = new RendererRegistry();
+  registry.register(
+    defineRenderer({
+      gameId: "test-game",
+      phone: {
+        mount(_, ctx): SurfaceLifecycle {
+          captured.submit = (id) => ctx.submit({ choice: "a" }, id);
+          return {
+            update: () => {},
+            handleEvent: () => {},
+            unmount: () => {},
+          };
+        },
+      },
+    }),
+  );
+
+  const fetcher = (async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> => {
+    const url = typeof input === "string" ? input : input.toString();
+    if (url.includes("/mini-games/active")) {
+      return new Response(
+        JSON.stringify({
+          run_id: "run-1",
+          game_id: "test-game",
+          status: "active",
+          deadline_at: null,
+          my_submissions: [],
+        }),
+        { status: 200 },
+      );
+    }
+    if (url.includes("/events?since=")) {
+      return makeStreamingResponse("");
+    }
+    if (url.includes("/submissions")) {
+      const body = init?.body ? JSON.parse(String(init.body)) : null;
+      submissions.push(body);
+      return new Response(
+        JSON.stringify({
+          submission_id: body.submission_id,
+          is_accepted: true,
+        }),
+        { status: 200 },
+      );
+    }
+    return new Response("Not found", { status: 404 });
+  }) as typeof fetch;
+
+  const controller = await bootMiniGameStage(stage, {
+    registry,
+    baseUrl: "https://arcwright.test",
+    sessionId: "session-1",
+    token: "token-x",
+    surface: "phone",
+    participantId: "p-1",
+    characterId: "c-1",
+    loadDefinition: async () => makeDefinition("test-game"),
+    view: window as unknown as Window,
+    fetcher,
+    perfTransport: "none",
+  });
+
+  await captured.submit?.("caller-controlled-id");
+  assert.equal(submissions.length, 1);
+  assert.equal(
+    submissions[0]?.submission_id,
+    "caller-controlled-id",
+    "caller's submissionId must reach the server, not be replaced by a generated one",
+  );
+
+  controller.unmount();
+});
+
 test("client: submits action with generated submission id", async () => {
   const window = new HappyWindow();
   const doc = window.document as unknown as Document;

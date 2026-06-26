@@ -121,7 +121,7 @@ export default defineRenderer({
 
       const guard = createSubmissionGuard({
         submit: async (submissionId, payload) =>
-          ctx.submit(payload).catch(() => ({
+          ctx.submit(payload, submissionId).catch(() => ({
             submissionId,
             isAccepted: false,
             rejectionReason: "network",
