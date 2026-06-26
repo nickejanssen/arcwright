@@ -60,6 +60,122 @@ function makeOneShotStreamingResponse(body: string): Response {
   return new Response(stream, { status: 200 });
 }
 
+test("client: stale refresh skips mount when loadDefinition is still in flight", async () => {
+  // Reproduces the deeper race: refresh A enters mountRenderer and awaits
+  // loadDefinition (held); refresh B fires while A is suspended. Without the
+  // sequence check inside mountRenderer, both A and B subscribe + mount and
+  // A's listener leaks (its active object is overwritten by B's).
+
+  const window = new HappyWindow();
+  const doc = window.document as unknown as Document;
+  const stage = doc.createElement("section");
+
+  let mountCount = 0;
+  const subscribedRuns: string[] = [];
+
+  const registry = new RendererRegistry();
+  registry.register(
+    defineRenderer({
+      gameId: "test",
+      phone: {
+        mount(root, ctx): SurfaceLifecycle {
+          mountCount += 1;
+          subscribedRuns.push(ctx.state.runId);
+          root.setAttribute("data-mounted-run", ctx.state.runId);
+          return {
+            update: () => {},
+            handleEvent: () => {},
+            unmount: () => {},
+          };
+        },
+      },
+    }),
+  );
+
+  let runId = "run-1";
+  let activeReturnsGame = false;
+  const fetcher = (async (input: RequestInfo | URL): Promise<Response> => {
+    const url = typeof input === "string" ? input : input.toString();
+    if (url.includes("/mini-games/active")) {
+      // Until the test flips activeReturnsGame to true, every fetchActiveState
+      // call (boot + streamLoop after stream open) returns 404 so the stage
+      // stays idle and streamLoop suspends on `await reader.read()`. Then the
+      // test drives concurrent refreshes by toggling the flag.
+      if (!activeReturnsGame) {
+        return new Response("", { status: 404 });
+      }
+      return new Response(
+        JSON.stringify({
+          run_id: runId,
+          game_id: "test",
+          status: "active",
+          deadline_at: null,
+          my_submissions: [],
+        }),
+        { status: 200 },
+      );
+    }
+    if (url.includes("/events?since=")) {
+      return makeOpenStreamingResponse();
+    }
+    return new Response("Not found", { status: 404 });
+  }) as typeof fetch;
+
+  // Hold the first loadDefinition; let subsequent calls resolve immediately.
+  let loadCalls = 0;
+  let releaseFirstLoad: () => void = () => {};
+  const firstHeld = new Promise<void>((resolve) => {
+    releaseFirstLoad = resolve;
+  });
+
+  const controller = await bootMiniGameStage(stage, {
+    registry,
+    baseUrl: "https://arcwright.test",
+    sessionId: "session-1",
+    token: "token-x",
+    surface: "phone",
+    participantId: "p-1",
+    characterId: "c-1",
+    loadDefinition: async () => {
+      loadCalls += 1;
+      if (loadCalls === 1) {
+        await firstHeld;
+      }
+      return makeDefinition("test");
+    },
+    view: window as unknown as Window,
+    fetcher,
+    perfTransport: "none",
+  });
+
+  // Flip the flag so subsequent fetchActiveState calls return a game state.
+  activeReturnsGame = true;
+
+  // Fire refresh A: enters mountRenderer for run-1, suspended on
+  // loadDefinition.
+  const refreshA = controller.refresh();
+  // Tick so refreshA reaches its loadDefinition await.
+  await new Promise((r) => setTimeout(r, 5));
+  // Fire refresh B for run-2 while A is still suspended.
+  runId = "run-2";
+  const refreshB = controller.refresh();
+  // Let B reach its mountRenderer await.
+  await new Promise((r) => setTimeout(r, 5));
+  // Release A's loadDefinition. A should detect a newer sequence and abort.
+  releaseFirstLoad();
+  await Promise.all([refreshA, refreshB]);
+
+  assert.equal(mountCount, 1, "only the latest mount completes");
+  assert.deepEqual(
+    subscribedRuns,
+    ["run-2"],
+    "only the newer run's renderer subscribes",
+  );
+  assert.equal(stage.getAttribute("data-mounted-run"), "run-2");
+
+  controller.unmount();
+});
+
 test("client: concurrent refresh() calls do not double-mount", async () => {
   const window = new HappyWindow();
   const doc = window.document as unknown as Document;

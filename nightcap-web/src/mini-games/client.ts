@@ -265,7 +265,16 @@ export async function bootMiniGameStage(
     active = null;
   };
 
-  const mountRenderer = async (state: MiniGameState): Promise<void> => {
+  // mountRenderer is sequence-aware: if a newer refresh begins while we are
+  // awaiting loadDefinition, this mount aborts before subscribing or setting
+  // active. Otherwise two concurrent state_transition events could both pass
+  // their refresh()-level sequence check (since active is still null) and
+  // both subscribe, leaking the first listener when the second overwrites
+  // `active`.
+  const mountRenderer = async (
+    state: MiniGameState,
+    mySeq: number,
+  ): Promise<void> => {
     if (!opts.registry.has(state.gameId)) {
       setStageState(stage, StageStates.UnknownGame);
       return;
@@ -275,9 +284,11 @@ export async function bootMiniGameStage(
     try {
       definition = await opts.loadDefinition(state.gameId, "latest");
     } catch {
+      if (mySeq !== refreshSequence) return;
       setStageState(stage, StageStates.DefinitionError);
       return;
     }
+    if (mySeq !== refreshSequence) return;
 
     const perf = perfReporterFor(state.gameId);
     const startedAt = performanceNow(view);
@@ -327,7 +338,7 @@ export async function bootMiniGameStage(
     }
     unmountActive();
     if (mySeq !== refreshSequence) return;
-    await mountRenderer(state);
+    await mountRenderer(state, mySeq);
   };
 
   const maybeReactToStateTransition = (event: ContentEvent): void => {
