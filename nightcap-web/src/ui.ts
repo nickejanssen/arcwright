@@ -11,6 +11,11 @@ import {
   isNightcapPlayerSessionExpired,
   normalizeNightcapPlayerSessionState,
 } from "./runtime.js";
+import {
+  renderMiniGameScriptTag,
+  renderMiniGameStage,
+  renderMiniGameStageStyles,
+} from "./mini-games/stage.js";
 import type { ContentEvent, PresentationHints } from "./types.js";
 
 function pageShell(title: string, body: string): string {
@@ -423,7 +428,10 @@ export function renderHostPage(sessionId = ""): string {
         <h2>Player join link</h2>
         <pre id="player-link-output" class="status">No player join link created yet.</pre>
       </div>
+      ${renderMiniGameStage("host")}
     </section>
+    ${renderMiniGameStageStyles()}
+    ${renderMiniGameScriptTag()}
     <script>
       (function() {
         const bootstrapForm = document.getElementById('bootstrap-form');
@@ -624,7 +632,10 @@ export function renderSharedDisplayPage(sessionId = ""): string {
         <h2>Visible events</h2>
         <div id="event-feed" class="event-feed"></div>
       </div>
+      ${renderMiniGameStage("shared_display")}
     </section>
+    ${renderMiniGameStageStyles()}
+    ${renderMiniGameScriptTag()}
     <script>
       (function() {
         const sharedDisplayVisibleAudiences = ${JSON.stringify(
@@ -867,7 +878,10 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
           </div>
         </div>
       </div>
+      ${renderMiniGameStage("phone")}
     </section>
+    ${renderMiniGameStageStyles()}
+    ${renderMiniGameScriptTag()}
     <script>
       (function() {
         const buildPlayerSessionStorageKey = ${buildNightcapPlayerSessionStorageKey.toString()};

@@ -28,4 +28,10 @@ declare global {
   interface ExecutionContext {
     waitUntil(promise: Promise<unknown>): void;
   }
+
+  // Service-style binding used by Cloudflare's [assets] directive and any
+  // other Worker-to-Worker fetch. We model only what the worker calls.
+  interface Fetcher {
+    fetch(request: Request): Promise<Response>;
+  }
 }

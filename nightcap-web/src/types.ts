@@ -51,3 +51,27 @@ export interface CharacterDetail {
 }
 
 export type SurfaceType = "phone" | "shared_display" | "host";
+
+export type MiniGameStatus =
+  | "pending"
+  | "active"
+  | "paused"
+  | "completed"
+  | "timed_out"
+  | "cancelled";
+
+export interface MiniGameSubmissionResult {
+  submissionId: string;
+  isAccepted: boolean;
+  rejectionReason?: string;
+}
+
+export interface MiniGameState {
+  runId: string;
+  gameId: string;
+  status: MiniGameStatus;
+  deadlineAt: string | null;
+  mySubmissions: MiniGameSubmissionResult[];
+}
+
+export type MiniGamePayload = Record<string, unknown>;

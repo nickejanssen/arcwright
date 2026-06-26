@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "rootDir": "..",
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "@arcwright/mini-game-kit": ["src/mini-game-kit/index.ts"],
+      "@arcwright/mini-game-kit/*": ["src/mini-game-kit/*"]
+    }
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "../nightcap/mini_games/*/client/**/*.ts",
+    "../nightcap/mini_games/_fixtures/*/client/**/*.ts"
+  ]
+}

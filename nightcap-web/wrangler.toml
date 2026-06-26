@@ -7,6 +7,14 @@ compatibility_date = "2026-06-22"
 ARCWRIGHT_API_BASE_URL = "https://arcwright.invalid"
 FIREBASE_SIGN_IN_URL = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken"
 
+[assets]
+directory = "./dist/static"
+binding = "ASSETS"
+# /mini-games.js and /mini-games/definitions/<id>/<version>.json are produced
+# by scripts/discover-mini-games.mjs. The URL path maps 1:1 to the file path
+# inside the directory above; do not add an extra /static/ prefix to script
+# tags or fetch URLs or the asset binding will look for dist/static/static/*.
+
 [[durable_objects.bindings]]
 name = "ROOMS"
 class_name = "NightcapRoom"

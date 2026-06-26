@@ -38,6 +38,9 @@ export interface NightcapWorkerEnv {
   FIREBASE_WEB_API_KEY: string;
   BOOTSTRAP_TOKEN: string;
   ROOMS: DurableObjectNamespace<NightcapRoom>;
+  // Cloudflare static assets binding. Hosts the bundled mini-game module and
+  // each mini-game definition JSON. Configured via wrangler.toml [assets].
+  ASSETS?: Fetcher;
 }
 
 interface PlayerTokenExchangeRequest {
@@ -542,6 +545,20 @@ export default {
     void _ctx;
     const url = new URL(request.url);
     const connector = connectorFor(env);
+
+    if (
+      request.method === "GET" &&
+      (url.pathname === "/mini-games.js" ||
+        url.pathname.startsWith("/mini-games/definitions/"))
+    ) {
+      if (env.ASSETS) {
+        return env.ASSETS.fetch(request);
+      }
+      // Cloudflare's [assets] binding intercepts these paths before the
+      // worker fetch handler runs, so this 404 only fires in mis-configured
+      // or local setups where the binding is absent.
+      return new Response("Static assets are not configured", { status: 404 });
+    }
 
     if (request.method === "GET" && url.pathname === "/") {
       return html(renderLandingPage());

@@ -13,7 +13,13 @@
     "verbatimModuleSyntax": true,
     "declaration": true,
     "outDir": "dist",
-    "rootDir": "."
+    "rootDir": ".",
+    "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
+    "paths": {
+      "@arcwright/mini-game-kit": ["src/mini-game-kit/index.ts"],
+      "@arcwright/mini-game-kit/*": ["src/mini-game-kit/*"]
+    }
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "tests/**/*.ts", "tests/**/*.d.ts"]
 }
