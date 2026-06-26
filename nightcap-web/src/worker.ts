@@ -550,6 +550,9 @@ export default {
       if (env.ASSETS) {
         return env.ASSETS.fetch(request);
       }
+      // Cloudflare's [assets] binding intercepts /static/* before the worker
+      // fetch handler runs, so this 404 only fires in mis-configured or local
+      // setups where the binding is absent.
       return new Response("Static assets are not configured", { status: 404 });
     }
 

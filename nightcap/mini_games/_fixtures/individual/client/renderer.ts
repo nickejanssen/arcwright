@@ -9,6 +9,7 @@ import {
   useCountdown,
   formatRemaining,
   createSubmissionGuard,
+  createHostStatusCard,
   el,
   on,
   setText,
@@ -277,60 +278,12 @@ export default defineRenderer({
 
   host: {
     mount(root, ctx): SurfaceLifecycle {
-      const doc = root.ownerDocument;
-      clearChildren(root);
-
-      const badge = el(
-        doc,
-        "span",
-        {
-          class: "mg-host-badge",
-          "data-role": "status",
-        },
-        [ctx.state.status],
-      );
-
-      const count = el(
-        doc,
-        "p",
-        {
-          class: "mg-host-count",
-          "data-role": "count",
-        },
-        ["0 answered"],
-      );
-
-      const fallback = el(doc, "p", {
-        class: "mg-host-fallback",
-        "data-role": "fallback",
+      return createHostStatusCard(root, {
+        state: ctx.state,
+        definition: ctx.definition,
+        countLabel: (n) => `${n} answered`,
+        countEventType: "mini_game_submission_accepted",
       });
-
-      const clueFallback = ctx.definition.clue_fallback;
-      setText(
-        fallback,
-        `Clue fallback: ${clueFallback.delay_seconds}s, variant ${clueFallback.clue_variant}.`,
-      );
-
-      root.appendChild(badge);
-      root.appendChild(count);
-      root.appendChild(fallback);
-
-      let answered = 0;
-
-      return {
-        update(state) {
-          setText(badge, state.status);
-        },
-        handleEvent(event) {
-          if (event.event_type === "mini_game_submission_accepted") {
-            answered += 1;
-            setText(count, `${answered} answered`);
-          }
-        },
-        unmount() {
-          clearChildren(root);
-        },
-      };
     },
   },
 });

@@ -13,3 +13,6 @@ import "./mini-game-client.test.js";
 import "./mini-game-stage.test.js";
 import "./mini-game-privacy-matrix.test.js";
 import "./mini-game-perf.test.js";
+import "./mini-game-client-race.test.js";
+import "./mini-game-host-status-card.test.js";
+import "./mini-game-submission-crypto.test.js";

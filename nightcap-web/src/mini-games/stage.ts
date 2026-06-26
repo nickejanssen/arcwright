@@ -7,20 +7,39 @@ import type { Surface } from "../mini-game-kit/index.js";
 
 const STAGE_BUNDLE_PATH = "/static/mini-games.js";
 
+// Stage states emitted via data-mini-game-state. Shared with client.ts and
+// browser-entry.ts so the CSS, the boot loop, and the renderer error paths
+// stay aligned.
+export const StageStates = {
+  Idle: "idle",
+  InvalidConfig: "invalid-config",
+  BootError: "boot-error",
+  UnknownGame: "unknown-game",
+  DefinitionError: "definition-error",
+  RenderError: "render-error",
+} as const;
+
+export type StageState =
+  | (typeof StageStates)[keyof typeof StageStates]
+  | `active:${string}`;
+
+export function buildActiveStageState(gameId: string): StageState {
+  return `active:${gameId}`;
+}
+
 export function renderMiniGameStage(surface: Surface): string {
-  // Initial state is "idle"; browser-entry takes over once data attributes
-  // are populated by the surrounding page JS or page render context.
+  // Initial state is idle; browser-entry takes over once data attributes
+  // are populated by the surrounding page JS or page render context. The
+  // "no mini-game in progress" placeholder is rendered via CSS ::before so
+  // it survives a renderer's clearChildren on unmount.
   return `<section
   class="card mini-game-stage"
   data-mini-game-stage
   data-surface="${surface}"
-  data-mini-game-state="idle"
+  data-mini-game-state="${StageStates.Idle}"
   aria-label="Mini-game stage"
 >
   <h2>Mini-game</h2>
-  <p class="muted mini-game-stage-empty" data-mini-game-empty>
-    No mini-game in progress.
-  </p>
 </section>`;
 }
 
@@ -37,13 +56,14 @@ export function renderMiniGameStageStyles(): string {
   display: grid;
   gap: 14px;
 }
-.mini-game-stage[data-mini-game-state="idle"] [data-role],
-.mini-game-stage[data-mini-game-state="idle"] .mg-choices,
-.mini-game-stage[data-mini-game-state="idle"] .mg-options {
+.mini-game-stage[data-mini-game-state="${StageStates.Idle}"] .mg-choices,
+.mini-game-stage[data-mini-game-state="${StageStates.Idle}"] .mg-options {
   display: none;
 }
-.mini-game-stage[data-mini-game-state^="active"] .mini-game-stage-empty {
-  display: none;
+.mini-game-stage[data-mini-game-state="${StageStates.Idle}"]::after {
+  content: "No mini-game in progress.";
+  color: var(--muted, #98a3c7);
+  font-size: 0.95rem;
 }
 .mini-game-stage .mg-choices,
 .mini-game-stage .mg-options {
@@ -54,10 +74,11 @@ export function renderMiniGameStageStyles(): string {
   min-height: 44px;
   min-width: 44px;
 }
-.mini-game-stage[data-mini-game-state="boot-error"]::after,
-.mini-game-stage[data-mini-game-state="unknown-game"]::after,
-.mini-game-stage[data-mini-game-state="definition-error"]::after,
-.mini-game-stage[data-mini-game-state="render-error"]::after {
+.mini-game-stage[data-mini-game-state="${StageStates.BootError}"]::after,
+.mini-game-stage[data-mini-game-state="${StageStates.UnknownGame}"]::after,
+.mini-game-stage[data-mini-game-state="${StageStates.DefinitionError}"]::after,
+.mini-game-stage[data-mini-game-state="${StageStates.RenderError}"]::after,
+.mini-game-stage[data-mini-game-state="${StageStates.InvalidConfig}"]::after {
   content: attr(data-mini-game-state);
   color: var(--danger, #fb7185);
   font-size: 0.85rem;

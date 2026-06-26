@@ -21,7 +21,17 @@ import {
   createPerfReporter,
   type PerfTransport,
 } from "../mini-game-kit/perf.js";
+import {
+  StageStates,
+  buildActiveStageState,
+  type StageState,
+} from "./stage.js";
 import type { RendererRegistry } from "./registry.js";
+
+export interface RetryPolicy {
+  maxRetries?: number;
+  initialDelayMs?: number;
+}
 
 export interface StageBootOptions {
   registry: RendererRegistry;
@@ -36,6 +46,7 @@ export interface StageBootOptions {
   fetcher?: typeof fetch;
   now?: () => number;
   perfTransport?: PerfTransport;
+  retry?: RetryPolicy;
 }
 
 export interface StageController {
@@ -57,10 +68,20 @@ interface ActiveMount {
 }
 
 const STAGE_STATE_ATTR = "data-mini-game-state";
-const RECONNECT_MAX_RETRIES = 3;
-const RECONNECT_INITIAL_DELAY_MS = 250;
+const DEFAULT_RECONNECT_MAX_RETRIES = 3;
+const DEFAULT_RECONNECT_INITIAL_DELAY_MS = 250;
 
-function setStageState(stage: HTMLElement, state: string): void {
+// State-transition event types that drive a stage refresh.
+const STATE_TRANSITION_EVENT_TYPES = new Set([
+  "mini_game_started",
+  "mini_game_completed",
+  "mini_game_timed_out",
+  "mini_game_cancelled",
+  "mini_game_paused",
+  "mini_game_resumed",
+]);
+
+function setStageState(stage: HTMLElement, state: StageState): void {
   stage.setAttribute(STAGE_STATE_ATTR, state);
 }
 
@@ -88,6 +109,9 @@ export async function bootMiniGameStage(
   const view = opts.view ?? (typeof window !== "undefined" ? window : null);
   const doFetch = opts.fetcher ?? fetch;
   const baseUrl = opts.baseUrl.replace(/\/$/, "");
+  const maxRetries = opts.retry?.maxRetries ?? DEFAULT_RECONNECT_MAX_RETRIES;
+  const initialDelayMs =
+    opts.retry?.initialDelayMs ?? DEFAULT_RECONNECT_INITIAL_DELAY_MS;
   const stream: StreamState = {
     cancelled: false,
     lastSequence: 0,
@@ -95,6 +119,11 @@ export async function bootMiniGameStage(
   };
   const eventListeners: Array<(event: ContentEvent) => void> = [];
   let active: ActiveMount | null = null;
+  // Monotonic sequence used to invalidate stale in-flight refresh() calls.
+  // Each refresh() captures its sequence at the start; after every await it
+  // checks that no newer refresh has begun. This prevents double-mount on
+  // concurrent state_transition events and on the boot/streamLoop overlap.
+  let refreshSequence = 0;
 
   const perfReporterFor = (gameId: string) =>
     createPerfReporter({
@@ -108,9 +137,12 @@ export async function bootMiniGameStage(
       ...(opts.perfTransport ? { transport: opts.perfTransport } : {}),
     });
 
+  // Iterating over a snapshot (slice) keeps event handlers that unsubscribe
+  // mid-dispatch (via refresh → unmountActive → unsubscribeEvents) from
+  // skipping their siblings in the original array.
   const dispatchEvent = (event: ContentEvent): void => {
     stream.lastSequence = Math.max(stream.lastSequence, event.sequence_number);
-    for (const listener of eventListeners) {
+    for (const listener of eventListeners.slice()) {
       try {
         listener(event);
       } catch {
@@ -235,7 +267,7 @@ export async function bootMiniGameStage(
 
   const mountRenderer = async (state: MiniGameState): Promise<void> => {
     if (!opts.registry.has(state.gameId)) {
-      setStageState(stage, "unknown-game");
+      setStageState(stage, StageStates.UnknownGame);
       return;
     }
     const renderer: MiniGameRenderer = opts.registry.get(state.gameId);
@@ -243,7 +275,7 @@ export async function bootMiniGameStage(
     try {
       definition = await opts.loadDefinition(state.gameId, "latest");
     } catch {
-      setStageState(stage, "definition-error");
+      setStageState(stage, StageStates.DefinitionError);
       return;
     }
 
@@ -260,13 +292,13 @@ export async function bootMiniGameStage(
       mountedLifecycle = renderer.mount(stage, ctx);
     } catch {
       unsubscribe();
-      setStageState(stage, "render-error");
+      setStageState(stage, StageStates.RenderError);
       return;
     }
 
     const mountElapsed = performanceNow(view) - startedAt;
     perf.report("mount_to_paint_ms", mountElapsed);
-    setStageState(stage, `active:${state.gameId}`);
+    setStageState(stage, buildActiveStageState(state.gameId));
 
     active = {
       gameId: state.gameId,
@@ -277,10 +309,12 @@ export async function bootMiniGameStage(
   };
 
   const refresh = async (): Promise<void> => {
+    const mySeq = ++refreshSequence;
     const state = await fetchActiveState();
+    if (mySeq !== refreshSequence) return;
     if (!state) {
       unmountActive();
-      setStageState(stage, "idle");
+      setStageState(stage, StageStates.Idle);
       return;
     }
     if (
@@ -292,7 +326,15 @@ export async function bootMiniGameStage(
       return;
     }
     unmountActive();
+    if (mySeq !== refreshSequence) return;
     await mountRenderer(state);
+  };
+
+  const maybeReactToStateTransition = (event: ContentEvent): void => {
+    if (event.category !== "state_transition") return;
+    if (STATE_TRANSITION_EVENT_TYPES.has(event.event_type)) {
+      void refresh();
+    }
   };
 
   const streamLoop = async (): Promise<void> => {
@@ -305,13 +347,13 @@ export async function bootMiniGameStage(
           headers: { Authorization: `Bearer ${opts.token}` },
         });
       } catch {
-        if (++retries > RECONNECT_MAX_RETRIES) return;
-        await delay(RECONNECT_INITIAL_DELAY_MS * 2 ** (retries - 1), view);
+        if (++retries > maxRetries) return;
+        await delay(initialDelayMs * 2 ** (retries - 1), view);
         continue;
       }
       if (!res.ok || !res.body) {
-        if (++retries > RECONNECT_MAX_RETRIES) return;
-        await delay(RECONNECT_INITIAL_DELAY_MS * 2 ** (retries - 1), view);
+        if (++retries > maxRetries) return;
+        await delay(initialDelayMs * 2 ** (retries - 1), view);
         continue;
       }
       retries = 0;
@@ -348,20 +390,6 @@ export async function bootMiniGameStage(
       if (stream.cancelled) return;
       // Stream ended unexpectedly; re-fetch state then reconnect.
       await refresh();
-    }
-  };
-
-  const maybeReactToStateTransition = (event: ContentEvent): void => {
-    if (event.category !== "state_transition") return;
-    if (
-      event.event_type === "mini_game_started" ||
-      event.event_type === "mini_game_completed" ||
-      event.event_type === "mini_game_timed_out" ||
-      event.event_type === "mini_game_cancelled" ||
-      event.event_type === "mini_game_paused" ||
-      event.event_type === "mini_game_resumed"
-    ) {
-      void refresh();
     }
   };
 

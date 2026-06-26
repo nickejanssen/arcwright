@@ -9,6 +9,7 @@ import {
   useCountdown,
   formatRemaining,
   createSubmissionGuard,
+  createHostStatusCard,
   el,
   on,
   setText,
@@ -265,60 +266,12 @@ export default defineRenderer({
 
   host: {
     mount(root, ctx): SurfaceLifecycle {
-      const doc = root.ownerDocument;
-      clearChildren(root);
-
-      const badge = el(
-        doc,
-        "span",
-        {
-          class: "mg-host-badge",
-          "data-role": "status",
-        },
-        [ctx.state.status],
-      );
-
-      const submissions = el(
-        doc,
-        "p",
-        {
-          class: "mg-host-count",
-          "data-role": "count",
-        },
-        ["0 responses received"],
-      );
-
-      const fallback = el(
-        doc,
-        "p",
-        {
-          class: "mg-host-fallback",
-        },
-        [
-          `Clue fallback: ${ctx.definition.clue_fallback.delay_seconds}s, variant ${ctx.definition.clue_fallback.clue_variant}.`,
-        ],
-      );
-
-      root.appendChild(badge);
-      root.appendChild(submissions);
-      root.appendChild(fallback);
-
-      let count = 0;
-
-      return {
-        update(state) {
-          setText(badge, state.status);
-        },
-        handleEvent(event) {
-          if (event.event_type === "mini_game_submission_accepted") {
-            count += 1;
-            setText(submissions, `${count} responses received`);
-          }
-        },
-        unmount() {
-          clearChildren(root);
-        },
-      };
+      return createHostStatusCard(root, {
+        state: ctx.state,
+        definition: ctx.definition,
+        countLabel: (n) => `${n} responses received`,
+        countEventType: "mini_game_submission_accepted",
+      });
     },
   },
 });

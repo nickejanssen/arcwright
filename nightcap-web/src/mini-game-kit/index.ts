@@ -12,6 +12,10 @@ export {
 } from "./audience.js";
 export { createPerfReporter, type PerfReporter } from "./perf.js";
 export {
+  createHostStatusCard,
+  type HostStatusCardOptions,
+} from "./host-status-card.js";
+export {
   el,
   on,
   setText,

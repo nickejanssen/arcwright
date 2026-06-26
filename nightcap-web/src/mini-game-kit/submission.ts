@@ -20,15 +20,35 @@ export interface SubmissionGuard {
 }
 
 function fallbackSubmissionId(): string {
-  // Workers and modern browsers expose crypto.randomUUID. Fallback covers
-  // happy-dom environments without crypto.
+  // Submission IDs are the engine's idempotency key. Prefer crypto.randomUUID
+  // when available, fall through to crypto.getRandomValues + RFC 4122 v4
+  // formatting, and only as a last resort use Math.random (very unlikely
+  // path: a browser without Web Crypto).
   const cryptoGlobal = (
-    globalThis as { crypto?: { randomUUID?: () => string } }
+    globalThis as {
+      crypto?: {
+        randomUUID?: () => string;
+        getRandomValues?: <T extends ArrayBufferView>(array: T) => T;
+      };
+    }
   ).crypto;
-  if (cryptoGlobal && typeof cryptoGlobal.randomUUID === "function") {
+  if (cryptoGlobal?.randomUUID) {
     return cryptoGlobal.randomUUID();
   }
-  // RFC 4122 v4 stub; sufficient for non-cryptographic deduplication.
+  if (cryptoGlobal?.getRandomValues) {
+    const bytes = new Uint8Array(16);
+    cryptoGlobal.getRandomValues(bytes);
+    // RFC 4122 v4: set version (4) and variant (10x) bits.
+    bytes[6] = ((bytes[6] ?? 0) & 0x0f) | 0x40;
+    bytes[8] = ((bytes[8] ?? 0) & 0x3f) | 0x80;
+    const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join(
+      "",
+    );
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
+  }
+  // Math.random last resort. Not collision-resistant under adversarial
+  // conditions, but acceptable as a deduplication key when the engine also
+  // validates submissions server-side.
   let value = "";
   for (let i = 0; i < 32; i++) {
     if (i === 8 || i === 12 || i === 16 || i === 20) value += "-";
