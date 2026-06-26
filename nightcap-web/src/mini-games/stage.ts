@@ -29,18 +29,19 @@ export function buildActiveStageState(gameId: string): StageState {
 
 export function renderMiniGameStage(surface: Surface): string {
   // Initial state is idle; browser-entry takes over once data attributes
-  // are populated by the surrounding page JS or page render context. The
-  // "no mini-game in progress" placeholder is rendered via CSS ::before so
-  // it survives a renderer's clearChildren on unmount.
+  // are populated. The "no mini-game in progress" placeholder, the section
+  // label, and the error labels are all rendered via CSS ::after so they
+  // survive a renderer's clearChildren on unmount and remain inert during
+  // active mounts. aria-label provides the accessible region name; no
+  // child header is needed (a renderer's first action is clearChildren on
+  // this element, so any committed children would be discarded anyway).
   return `<section
   class="card mini-game-stage"
   data-mini-game-stage
   data-surface="${surface}"
   data-mini-game-state="${StageStates.Idle}"
   aria-label="Mini-game stage"
->
-  <h2>Mini-game</h2>
-</section>`;
+></section>`;
 }
 
 export function renderMiniGameScriptTag(): string {

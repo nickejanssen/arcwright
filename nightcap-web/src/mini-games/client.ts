@@ -299,17 +299,24 @@ export async function bootMiniGameStage(
 
     let mountedLifecycle: SurfaceLifecycle | null = null;
     const ctx = buildContext(state, definition, perf);
+    // Flip the stage to its active state *before* renderer.mount so the
+    // CSS idle placeholder cannot paint adjacent to the renderer's DOM
+    // during a frame boundary between mount and the post-mount attribute
+    // write.
+    setStageState(stage, buildActiveStageState(state.gameId));
     try {
       mountedLifecycle = renderer.mount(stage, ctx);
     } catch {
       unsubscribe();
+      // Wipe any partial DOM the renderer left behind before signaling
+      // error so the error label is not interleaved with broken markup.
+      stage.replaceChildren();
       setStageState(stage, StageStates.RenderError);
       return;
     }
 
     const mountElapsed = performanceNow(view) - startedAt;
     perf.report("mount_to_paint_ms", mountElapsed);
-    setStageState(stage, buildActiveStageState(state.gameId));
 
     active = {
       gameId: state.gameId,
@@ -416,6 +423,9 @@ export async function bootMiniGameStage(
         stream.reader = null;
       }
       unmountActive();
+      // Leave the stage in idle state so the CSS placeholder reappears and
+      // the data attribute does not advertise a stale active run.
+      setStageState(stage, StageStates.Idle);
     },
   };
 }
