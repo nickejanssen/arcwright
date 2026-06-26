@@ -38,6 +38,9 @@ export interface NightcapWorkerEnv {
   FIREBASE_WEB_API_KEY: string;
   BOOTSTRAP_TOKEN: string;
   ROOMS: DurableObjectNamespace<NightcapRoom>;
+  // Cloudflare static assets binding. Hosts the bundled mini-game module and
+  // each mini-game definition JSON. Configured via wrangler.toml [assets].
+  ASSETS?: { fetch(request: Request): Promise<Response> };
 }
 
 interface PlayerTokenExchangeRequest {
@@ -542,6 +545,13 @@ export default {
     void _ctx;
     const url = new URL(request.url);
     const connector = connectorFor(env);
+
+    if (request.method === "GET" && url.pathname.startsWith("/static/")) {
+      if (env.ASSETS) {
+        return env.ASSETS.fetch(request);
+      }
+      return new Response("Static assets are not configured", { status: 404 });
+    }
 
     if (request.method === "GET" && url.pathname === "/") {
       return html(renderLandingPage());

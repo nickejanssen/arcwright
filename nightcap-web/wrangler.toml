@@ -7,6 +7,12 @@ compatibility_date = "2026-06-22"
 ARCWRIGHT_API_BASE_URL = "https://arcwright.invalid"
 FIREBASE_SIGN_IN_URL = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken"
 
+[assets]
+directory = "./dist/static"
+binding = "ASSETS"
+# /static/mini-games.js and /static/mini-games/definitions/<id>/<version>.json
+# are produced by scripts/discover-mini-games.mjs.
+
 [[durable_objects.bindings]]
 name = "ROOMS"
 class_name = "NightcapRoom"
