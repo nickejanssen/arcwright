@@ -268,6 +268,10 @@ test("client: handler unsubscribing mid-dispatch does not skip siblings", async 
 
   let secondHandlerCalls = 0;
   let unsubscribeFirst: (() => void) | null = null;
+  let signalSecond: () => void = () => {};
+  const secondFired = new Promise<void>((resolve) => {
+    signalSecond = resolve;
+  });
 
   registry.register(
     defineRenderer({
@@ -285,6 +289,7 @@ test("client: handler unsubscribing mid-dispatch does not skip siblings", async 
           });
           ctx.onEvent(() => {
             secondHandlerCalls += 1;
+            signalSecond();
           });
           return {
             update: () => {},
@@ -358,7 +363,7 @@ test("client: handler unsubscribing mid-dispatch does not skip siblings", async 
     perfTransport: "none",
   });
 
-  await new Promise((r) => setTimeout(r, 50));
+  await secondFired;
 
   assert.equal(
     secondHandlerCalls,
