@@ -48,9 +48,12 @@ const DEFINITIONS_OUT = resolve(
   "definitions",
 );
 
-// Budgets per spec 0050 Design Notes.
-const PER_PACKAGE_GZIP_BUDGET_BYTES = 30 * 1024;
-const TOTAL_UNCOMPRESSED_BUDGET_BYTES = 100 * 1024;
+// Budgets per spec 0050 Design Notes. esbuild emits one bundled JS for all
+// registered renderers, so the gzip ceiling here covers the entire shipped
+// payload. When mini-games start shipping as separate chunks the per-package
+// budget will be enforced per output instead.
+const BUNDLE_GZIP_BUDGET_BYTES = 30 * 1024;
+const BUNDLE_UNCOMPRESSED_BUDGET_BYTES = 100 * 1024;
 
 async function listDirEntries(dir) {
   if (!existsSync(dir)) return [];
@@ -205,21 +208,18 @@ async function checkBudgets(metafile) {
     totalBytes += info.bytes;
     const buf = await readFile(path);
     const gz = gzipSync(buf).length;
-    if (gz > PER_PACKAGE_GZIP_BUDGET_BYTES) {
-      // The whole bundle is reported as one output by esbuild; this is the
-      // bundle-wide gzip check (not per-package). The per-package gate is
-      // enforced via the total uncompressed bundle ceiling.
+    if (gz > BUNDLE_GZIP_BUDGET_BYTES) {
       breaches.push(
-        `bundle gzip ${bytesToKb(gz)}KB exceeds budget ${bytesToKb(PER_PACKAGE_GZIP_BUDGET_BYTES)}KB`,
+        `bundle gzip ${bytesToKb(gz)}KB exceeds budget ${bytesToKb(BUNDLE_GZIP_BUDGET_BYTES)}KB`,
       );
     }
     console.log(
       `[discover] bundle ${relative(REPO_ROOT, path)}: ${bytesToKb(info.bytes)}KB uncompressed, ${bytesToKb(gz)}KB gzipped`,
     );
   }
-  if (totalBytes > TOTAL_UNCOMPRESSED_BUDGET_BYTES) {
+  if (totalBytes > BUNDLE_UNCOMPRESSED_BUDGET_BYTES) {
     breaches.push(
-      `total uncompressed ${bytesToKb(totalBytes)}KB exceeds budget ${bytesToKb(TOTAL_UNCOMPRESSED_BUDGET_BYTES)}KB`,
+      `total uncompressed ${bytesToKb(totalBytes)}KB exceeds budget ${bytesToKb(BUNDLE_UNCOMPRESSED_BUDGET_BYTES)}KB`,
     );
   }
   if (breaches.length > 0) {

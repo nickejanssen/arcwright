@@ -40,7 +40,7 @@ export interface NightcapWorkerEnv {
   ROOMS: DurableObjectNamespace<NightcapRoom>;
   // Cloudflare static assets binding. Hosts the bundled mini-game module and
   // each mini-game definition JSON. Configured via wrangler.toml [assets].
-  ASSETS?: { fetch(request: Request): Promise<Response> };
+  ASSETS?: Fetcher;
 }
 
 interface PlayerTokenExchangeRequest {
