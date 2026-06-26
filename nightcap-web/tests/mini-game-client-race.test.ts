@@ -122,10 +122,16 @@ test("client: stale refresh skips mount when loadDefinition is still in flight",
   }) as typeof fetch;
 
   // Hold the first loadDefinition; let subsequent calls resolve immediately.
+  // Use a barrier promise so the test waits for A to actually enter
+  // loadDefinition instead of relying on a setTimeout being long enough.
   let loadCalls = 0;
   let releaseFirstLoad: () => void = () => {};
   const firstHeld = new Promise<void>((resolve) => {
     releaseFirstLoad = resolve;
+  });
+  let signalFirstEntered: () => void = () => {};
+  const firstEntered = new Promise<void>((resolve) => {
+    signalFirstEntered = resolve;
   });
 
   const controller = await bootMiniGameStage(stage, {
@@ -139,6 +145,7 @@ test("client: stale refresh skips mount when loadDefinition is still in flight",
     loadDefinition: async () => {
       loadCalls += 1;
       if (loadCalls === 1) {
+        signalFirstEntered();
         await firstHeld;
       }
       return makeDefinition("test");
@@ -154,16 +161,17 @@ test("client: stale refresh skips mount when loadDefinition is still in flight",
   // Fire refresh A: enters mountRenderer for run-1, suspended on
   // loadDefinition.
   const refreshA = controller.refresh();
-  // Tick so refreshA reaches its loadDefinition await.
-  await new Promise((r) => setTimeout(r, 5));
+  // Wait until A has actually entered loadDefinition.
+  await firstEntered;
   // Fire refresh B for run-2 while A is still suspended.
   runId = "run-2";
   const refreshB = controller.refresh();
-  // Let B reach its mountRenderer await.
-  await new Promise((r) => setTimeout(r, 5));
+  // refreshB's loadDefinition resolves immediately; await it so B has
+  // already subscribed and set `active` before A releases.
+  await refreshB;
   // Release A's loadDefinition. A should detect a newer sequence and abort.
   releaseFirstLoad();
-  await Promise.all([refreshA, refreshB]);
+  await refreshA;
 
   assert.equal(mountCount, 1, "only the latest mount completes");
   assert.deepEqual(
