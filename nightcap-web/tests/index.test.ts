@@ -16,3 +16,4 @@ import "./mini-game-perf.test.js";
 import "./mini-game-client-race.test.js";
 import "./mini-game-host-status-card.test.js";
 import "./mini-game-submission-crypto.test.js";
+import "./mini-game-asset-route.test.js";

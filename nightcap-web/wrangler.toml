@@ -10,8 +10,10 @@ FIREBASE_SIGN_IN_URL = "https://identitytoolkit.googleapis.com/v1/accounts:signI
 [assets]
 directory = "./dist/static"
 binding = "ASSETS"
-# /static/mini-games.js and /static/mini-games/definitions/<id>/<version>.json
-# are produced by scripts/discover-mini-games.mjs.
+# /mini-games.js and /mini-games/definitions/<id>/<version>.json are produced
+# by scripts/discover-mini-games.mjs. The URL path maps 1:1 to the file path
+# inside the directory above; do not add an extra /static/ prefix to script
+# tags or fetch URLs or the asset binding will look for dist/static/static/*.
 
 [[durable_objects.bindings]]
 name = "ROOMS"

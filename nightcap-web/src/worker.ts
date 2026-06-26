@@ -546,13 +546,17 @@ export default {
     const url = new URL(request.url);
     const connector = connectorFor(env);
 
-    if (request.method === "GET" && url.pathname.startsWith("/static/")) {
+    if (
+      request.method === "GET" &&
+      (url.pathname === "/mini-games.js" ||
+        url.pathname.startsWith("/mini-games/definitions/"))
+    ) {
       if (env.ASSETS) {
         return env.ASSETS.fetch(request);
       }
-      // Cloudflare's [assets] binding intercepts /static/* before the worker
-      // fetch handler runs, so this 404 only fires in mis-configured or local
-      // setups where the binding is absent.
+      // Cloudflare's [assets] binding intercepts these paths before the
+      // worker fetch handler runs, so this 404 only fires in mis-configured
+      // or local setups where the binding is absent.
       return new Response("Static assets are not configured", { status: 404 });
     }
 

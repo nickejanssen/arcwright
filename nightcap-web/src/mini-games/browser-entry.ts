@@ -41,7 +41,7 @@ async function loadDefinition(
   gameId: string,
   version: string,
 ): Promise<MiniGameDefinition> {
-  const url = `/static/mini-games/definitions/${encodeURIComponent(gameId)}/${encodeURIComponent(version)}.json`;
+  const url = `/mini-games/definitions/${encodeURIComponent(gameId)}/${encodeURIComponent(version)}.json`;
   const res = await fetch(url);
   if (!res.ok) {
     throw new Error(

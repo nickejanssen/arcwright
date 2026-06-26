@@ -5,7 +5,11 @@
 
 import type { Surface } from "../mini-game-kit/index.js";
 
-const STAGE_BUNDLE_PATH = "/static/mini-games.js";
+// Bundle path. Served by the Cloudflare [assets] binding rooted at
+// nightcap-web/dist/static — the URL maps 1:1 to a file inside that
+// directory, so the bundle lives at /mini-games.js (no extra /static/
+// prefix).
+const STAGE_BUNDLE_PATH = "/mini-games.js";
 
 // Stage states emitted via data-mini-game-state. Shared with client.ts and
 // browser-entry.ts so the CSS, the boot loop, and the renderer error paths
