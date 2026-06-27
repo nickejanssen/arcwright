@@ -196,8 +196,7 @@ class InitiativeScheduler:
             threshold = effective_initiative_threshold(profile, threshold_overrides)
             if social_pressure_by_character is not None:
                 pressure = social_pressure_by_character.get(profile.character_id, 0.0)
-                if pressure > 0.0:
-                    threshold = modulate_threshold_for_pressure(threshold, pressure)
+                threshold = modulate_threshold_for_pressure(threshold, pressure)
             if score < threshold:
                 continue
 

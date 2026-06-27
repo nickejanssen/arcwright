@@ -319,8 +319,7 @@ def _format_pressure_block(social_pressure: float, crumble_threshold: float) -> 
             f"social_pressure: {social_pressure:.2f}",
             f"crumble_threshold: {crumble_threshold:.2f}",
             "Your concealment is showing strain under accumulated suspicion.",
-            "Express this through over-precise answers, more aggressive deflection,",
-            "and small errors consistent with your tells.",
+            "Express this through over-precise answers, more aggressive deflection, and small errors consistent with your tells.",
             "Do not confess. Become more yourself under stress.",
             "[END SOCIAL PRESSURE]",
         )
