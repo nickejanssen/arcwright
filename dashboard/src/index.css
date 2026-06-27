@@ -1,0 +1,34 @@
+:root {
+  --bg: #0a0a0f;
+  --surface: #13131a;
+  --border: #2a2a3a;
+  --accent: #c8a96e;
+  --accent-dim: #7a6540;
+  --text: #e8e4dc;
+  --text-muted: #8a8070;
+  --red: #c84a4a;
+  --code-size: clamp(3rem, 8vw, 7rem);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Georgia", serif;
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+}
+
+input {
+  font-family: inherit;
+}

@@ -92,23 +92,84 @@ cd ..
 
 ---
 
-### Step 5 - Install cloudflared
+### Step 5 - Install cloudflared and set up a named tunnel
 
-`cloudflared` creates the public tunnel so players can reach your local server from their phones.
+`cloudflared` creates the public tunnel so players can reach your local server from their phones. There are two modes:
+
+**Quick tunnel (no account, random URL):** URL changes every restart. Fine for solo testing, not for a rehearsal where you're texting people a link.
+
+**Named tunnel (recommended for Rehearsal 1):** Fixed URL, runs under your Cloudflare account. Set this up once; the URL never changes.
+
+#### 5a - Install cloudflared
 
 Check if it is already installed:
-
 ```powershell
 cloudflared --version
 ```
 
-If not found, install it:
-
+If not found:
 1. Go to: developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
 2. Download the Windows AMD64 `.exe`.
-3. Save it somewhere on your PATH (e.g. `C:\Windows\System32\cloudflared.exe`), or note the path and use the full path when the runbook says `cloudflared`.
+3. Save it to a directory on your PATH (e.g. `C:\Windows\System32\cloudflared.exe`).
 
-Verify: `cloudflared --version` prints a version number.
+#### 5b - Create a free Cloudflare account (if you do not have one)
+
+1. Go to cloudflare.com and sign up for a free account.
+2. You do NOT need to buy a domain. Cloudflare gives you a free `*.cfargotunnel.com` subdomain for tunnels, or you can use a domain you already own.
+
+#### 5c - Log in with cloudflared
+
+```powershell
+cloudflared tunnel login
+```
+
+This opens a browser. Authorize cloudflared with your Cloudflare account. A credentials file is saved at `~/.cloudflared/cert.pem`. You only do this once per machine.
+
+#### 5d - Create a named tunnel
+
+```powershell
+cloudflared tunnel create nightcap-rehearsal
+```
+
+Expected output: a tunnel ID (UUID). Note it — you will need it in the next step.
+
+#### 5e - Create the config file
+
+Create the file `~/.cloudflared/config.yml` (or `C:\Users\<you>\.cloudflared\config.yml` on Windows):
+
+```yaml
+tunnel: nightcap-rehearsal
+credentials-file: C:\Users\<your-username>\.cloudflared\<tunnel-id>.json
+
+ingress:
+  - hostname: nightcap.<your-subdomain>.cfargotunnel.com
+    service: http://localhost:5173
+  - service: http_status:404
+```
+
+Replace `<your-username>` and `<tunnel-id>` with your actual values. The `hostname` can be any subdomain under `cfargotunnel.com` as long as you add a DNS record for it.
+
+#### 5f - Add a DNS record
+
+```powershell
+cloudflared tunnel route dns nightcap-rehearsal nightcap.<your-subdomain>.cfargotunnel.com
+```
+
+This creates a CNAME in your Cloudflare DNS. After this step, your fixed URL is:
+`https://nightcap.<your-subdomain>.cfargotunnel.com`
+
+Send this URL to players in advance. It does not change between runs.
+
+#### 5g - Test the tunnel (quick check, no config file needed)
+
+If you just want to verify cloudflared is working before setting up the named tunnel:
+```powershell
+cloudflared tunnel --url http://localhost:5173
+```
+
+Note the `https://*.trycloudflare.com` URL. This is the quick-tunnel mode — valid for solo testing only. The URL changes every time you restart.
+
+> **Vite and external hostnames:** If you see "Blocked request. This host is not allowed" in the browser, it means Vite's dev server is rejecting the tunnel URL. This is already fixed in the dashboard config (`allowedHosts: true` in `dashboard/vite.config.ts`). Make sure you are running the latest version of the dashboard code.
 
 ---
 
@@ -215,13 +276,15 @@ uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
 
 Wait for the line: `Application startup complete.`
 
-Verify it is reachable:
+Verify it is reachable (open a new terminal tab, leave uvicorn running in Terminal 3):
 
 ```powershell
-curl -s http://localhost:8000/health
+curl.exe http://localhost:8000/health
 ```
 
-Expected: `{"status":"ok"}` or similar. Leave this terminal running.
+Expected: `{"status":"ok"}`
+
+> **Why `curl.exe` not `curl`:** PowerShell aliases `curl` to `Invoke-WebRequest`. The `.exe` suffix bypasses the alias and calls the real curl binary.
 
 > **If uvicorn is not found:** you are not in the right Python env. Run `conda activate base` first.
 
