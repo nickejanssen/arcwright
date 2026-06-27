@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
 from typing import Any
 from uuid import UUID
@@ -16,6 +17,8 @@ from engine.db.orm import (
     SessionParticipant,
 )
 from engine.knowledge import get_character_knowledge
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -161,6 +164,13 @@ def _build_behavior_profile_context(
         if isinstance(secrets, list)
         else ()
     )
+    for s in secrets_list:
+        raw = s.get("crumble_threshold")
+        if raw is not None and not isinstance(raw, (int, float)):
+            logger.warning(
+                "crumble_threshold value %r is not numeric; defaulting to 1.0 for this secret",
+                raw,
+            )
     crumble_threshold = min(
         (
             float(s["crumble_threshold"])
