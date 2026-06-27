@@ -271,10 +271,12 @@ Expected: one or more `Running upgrade` lines, ending cleanly. No errors.
 ### Terminal 3 - API engine
 
 ```powershell
-uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload --env-file .env
 ```
 
 Wait for the line: `Application startup complete.`
+
+> **Why `--env-file .env`:** The API reads `os.environ` directly (no `load_dotenv()` call). Without this flag, `POSTGRES_*` and `ARCWRIGHT_API_KEY` are not visible to uvicorn, so the engine falls back to defaults and the database connection fails.
 
 Verify it is reachable (open a new terminal tab, leave uvicorn running in Terminal 3):
 
