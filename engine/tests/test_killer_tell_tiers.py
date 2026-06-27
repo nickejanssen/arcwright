@@ -125,6 +125,20 @@ def test_select_active_tells_boundary_at_7_players() -> None:
     assert "deep tell" not in result
 
 
+def test_select_active_tells_boundary_at_1_player() -> None:
+    result = select_active_tells(_TIERED_TELLS, player_count=1)
+    assert "surface tell" in result
+    assert "mid tell" in result
+    assert "deep tell" in result
+
+
+def test_select_active_tells_boundary_at_6_players() -> None:
+    result = select_active_tells(_TIERED_TELLS, player_count=6)
+    assert "surface tell" in result
+    assert "mid tell" in result
+    assert "deep tell" not in result
+
+
 # ---------------------------------------------------------------------------
 # _build_behavior_profile_context — integration with player_count
 # ---------------------------------------------------------------------------

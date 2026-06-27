@@ -106,13 +106,12 @@ async def build_character_generation_context(
     *,
     session_id: UUID,
     character_id: UUID,
-    player_count: int = 0,
+    player_count: int | None = None,
 ) -> CharacterGenerationContext:
     """Build the only sanctioned generation-time character context."""
-    if player_count == 0:
+    if player_count is None:
         db_session = await session.get(Session, session_id)
-        if db_session is not None:
-            player_count = db_session.player_count
+        player_count = db_session.player_count if db_session is not None else 0
 
     character = await session.get(Character, character_id)
     profile_data = dict(character.behavior_profile) if character is not None else {}
