@@ -1,5 +1,5 @@
 {
-  "version": "1.2",
+  "version": "1.3",
   "status": "active",
   "canonical_readme": "docs/roadmap/README.md",
   "aliases": [
@@ -144,7 +144,9 @@
         "M5-A",
         "M5-B",
         "M5-C",
-        "M5-D"
+        "M5-D",
+        "M5-F",
+        "M5-G"
       ],
       "github": {
         "milestone_number": 5,
@@ -527,6 +529,39 @@
       "github": {
         "issue_number": 123,
         "url": "https://github.com/nickejanssen/arcwright/issues/123"
+      }
+    },
+    {
+      "id": "M5-F",
+      "milestone": "M5",
+      "title": "Tell Me Something True Social Opener Implementation",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M5-F-tell-me-something-true-social-opener.md",
+      "tasks": [
+        "AW-262",
+        "AW-263",
+        "AW-264",
+        "AW-265",
+        "AW-266"
+      ],
+      "github": {
+        "issue_number": 186,
+        "url": "https://github.com/nickejanssen/arcwright/issues/186"
+      }
+    },
+    {
+      "id": "M5-G",
+      "milestone": "M5",
+      "title": "Nightcap Visual Identity and Polish",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M5-G-nightcap-visual-identity-and-polish.md",
+      "tasks": [
+        "AW-267",
+        "AW-268"
+      ],
+      "github": {
+        "issue_number": 187,
+        "url": "https://github.com/nickejanssen/arcwright/issues/187"
       }
     },
     {
@@ -1640,7 +1675,7 @@
     },
     {
       "id": "AW-257",
-      "title": "Author First Production Nightcap Mini-game Package",
+      "title": "Promote Crime Scene Smash and Evidence Locker to active",
       "milestone": "M4",
       "epic": "M4-E",
       "size": "M",
@@ -1648,8 +1683,181 @@
         "AW-249",
         "AW-250"
       ],
-      "path": "docs/roadmap/tasks/AW-257-author-first-production-nightcap-mini-game.md",
+      "path": "docs/roadmap/tasks/AW-257-promote-crime-scene-smash-and-evidence-locker.md",
+      "github": {
+        "issue_number": 175,
+        "url": "https://github.com/nickejanssen/arcwright/issues/175"
+      },
       "epic_id": "M4-E"
+    },
+    {
+      "id": "AW-259",
+      "title": "Rehearsal 1 - M4 Exit, First Real-Human Nightcap Session",
+      "milestone": "M4",
+      "epic": null,
+      "size": "L",
+      "depends_on": [
+        "AW-257",
+        "AW-260",
+        "AW-261",
+        "AW-254",
+        "AW-231"
+      ],
+      "path": "docs/roadmap/tasks/AW-259-rehearsal-1-m4-exit.md",
+      "github": {
+        "issue_number": 176,
+        "url": "https://github.com/nickejanssen/arcwright/issues/176"
+      },
+      "epic_id": null
+    },
+    {
+      "id": "AW-260",
+      "title": "Founder Rehearsal Runbook and Blocker Log",
+      "milestone": "M4",
+      "epic": "M4-D",
+      "size": "S",
+      "depends_on": [
+        "AW-202",
+        "AW-230"
+      ],
+      "path": "docs/roadmap/tasks/AW-260-founder-rehearsal-runbook-and-blocker-log.md",
+      "github": {
+        "issue_number": 177,
+        "url": "https://github.com/nickejanssen/arcwright/issues/177"
+      },
+      "epic_id": "M4-D"
+    },
+    {
+      "id": "AW-261",
+      "title": "ADR-0003 Cloudflare vs GCP Validation Decision",
+      "milestone": "M4",
+      "epic": "M4-A",
+      "size": "S",
+      "depends_on": [
+        "AW-225"
+      ],
+      "path": "docs/roadmap/tasks/AW-261-adr-0003-cloudflare-vs-gcp-validation-decision.md",
+      "github": {
+        "issue_number": 178,
+        "url": "https://github.com/nickejanssen/arcwright/issues/178"
+      },
+      "epic_id": "M4-A"
+    },
+    {
+      "id": "AW-262",
+      "title": "TMST Package Authoring and Schema Resolution",
+      "milestone": "M5",
+      "epic": "M5-F",
+      "size": "M",
+      "depends_on": [
+        "AW-249",
+        "AW-250",
+        "AW-258"
+      ],
+      "path": "docs/roadmap/tasks/AW-262-tmst-package-authoring-and-schema-resolution.md",
+      "github": {
+        "issue_number": 179,
+        "url": "https://github.com/nickejanssen/arcwright/issues/179"
+      },
+      "epic_id": "M5-F"
+    },
+    {
+      "id": "AW-263",
+      "title": "TMST Runtime - social-truth-bluff Mechanic",
+      "milestone": "M5",
+      "epic": "M5-F",
+      "size": "M",
+      "depends_on": [
+        "AW-262",
+        "AW-251"
+      ],
+      "path": "docs/roadmap/tasks/AW-263-tmst-runtime-social-truth-bluff-mechanic.md",
+      "github": {
+        "issue_number": 180,
+        "url": "https://github.com/nickejanssen/arcwright/issues/180"
+      },
+      "epic_id": "M5-F"
+    },
+    {
+      "id": "AW-264",
+      "title": "TMST API, Events, and SDK",
+      "milestone": "M5",
+      "epic": "M5-F",
+      "size": "M",
+      "depends_on": [
+        "AW-263",
+        "AW-252"
+      ],
+      "path": "docs/roadmap/tasks/AW-264-tmst-api-events-and-sdk.md",
+      "github": {
+        "issue_number": 181,
+        "url": "https://github.com/nickejanssen/arcwright/issues/181"
+      },
+      "epic_id": "M5-F"
+    },
+    {
+      "id": "AW-265",
+      "title": "TMST Web Rendering for Four Phases",
+      "milestone": "M5",
+      "epic": "M5-F",
+      "size": "M",
+      "depends_on": [
+        "AW-264",
+        "AW-253"
+      ],
+      "path": "docs/roadmap/tasks/AW-265-tmst-web-rendering-four-phases.md",
+      "github": {
+        "issue_number": 182,
+        "url": "https://github.com/nickejanssen/arcwright/issues/182"
+      },
+      "epic_id": "M5-F"
+    },
+    {
+      "id": "AW-266",
+      "title": "Rehearsal 2 - TMST Real-Human Session",
+      "milestone": "M5",
+      "epic": "M5-F",
+      "size": "M",
+      "depends_on": [
+        "AW-265",
+        "AW-259"
+      ],
+      "path": "docs/roadmap/tasks/AW-266-rehearsal-2-tmst-real-human-session.md",
+      "github": {
+        "issue_number": 183,
+        "url": "https://github.com/nickejanssen/arcwright/issues/183"
+      },
+      "epic_id": "M5-F"
+    },
+    {
+      "id": "AW-267",
+      "title": "Nightcap Art Direction Brief",
+      "milestone": "M5",
+      "epic": "M5-G",
+      "size": "S",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-267-nightcap-art-direction-brief.md",
+      "github": {
+        "issue_number": 184,
+        "url": "https://github.com/nickejanssen/arcwright/issues/184"
+      },
+      "epic_id": "M5-G"
+    },
+    {
+      "id": "AW-268",
+      "title": "Nightcap Asset Pipeline and Motion System",
+      "milestone": "M5",
+      "epic": "M5-G",
+      "size": "M",
+      "depends_on": [
+        "AW-267"
+      ],
+      "path": "docs/roadmap/tasks/AW-268-nightcap-asset-pipeline-and-motion-system.md",
+      "github": {
+        "issue_number": 185,
+        "url": "https://github.com/nickejanssen/arcwright/issues/185"
+      },
+      "epic_id": "M5-G"
     }
   ],
   "superseded_sources": [
