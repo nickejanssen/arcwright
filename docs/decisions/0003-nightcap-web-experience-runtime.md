@@ -1,7 +1,7 @@
 # 0003 - Nightcap Web Experience Runtime
 
 **Date:** 2026-06-08
-**Status:** Accepted
+**Status:** Accepted, validation complete (AW-261, 2026-06-27)
 **Architecture reference:** `docs/architecture/01-overview.md`, `docs/architecture/08-event-system.md`, `docs/architecture/09-developer-api.md`, `docs/architecture/15-development-guide.md`
 **Spec reference:** `docs/specs/0022-aw-202-nightcap-web-experience-runtime-decision.md`
 **Scope:** Nightcap Layer 3 browser experience runtime for M4
@@ -154,3 +154,53 @@ superseding decision.
 - Cloudflare Durable Objects pricing: https://developers.cloudflare.com/durable-objects/platform/pricing/
 - Cloudflare Durable Objects WebSockets: https://developers.cloudflare.com/durable-objects/best-practices/websockets/
 - PartyKit: https://www.partykit.io/
+
+---
+
+# Validation Outcome (AW-261, 2026-06-27)
+
+The Revisit Trigger above required validating Cloudflare against a GCP-only
+alternative (Cloud Run + Firebase + Cloud CDN) before adding
+Cloudflare-specific dependencies. This section records that comparison.
+
+## What Cloudflare provides that GCP-only does not
+
+- Workers + Durable Objects: ephemeral room presence with strong
+  consistency at the edge, lower coordination latency than Cloud Run
+  cold-starts for sparse, bursty session rooms.
+- Pages: static-asset hosting integrated with Workers for routes that
+  combine static + dynamic content with no separate CDN config.
+- Free / low-cost tier suitable for Arcwright's MVP and Horizon-1 volume.
+- Hibernatable WebSockets in Durable Objects, which keeps cost flat for
+  idle rooms (a Nightcap session is mostly waiting on humans).
+
+## What GCP-only provides that Cloudflare does not
+
+- Single-vendor billing and IAM aligned with the existing Arcwright engine
+  deployment (Cloud Run + Cloud SQL + Firebase Auth).
+- Firebase Auth integration without a cross-provider auth bridge.
+- No vendor lock-in to Workers-specific primitives (Durable Objects do not
+  have a clean GCP equivalent).
+
+## What Rehearsal 1 does not tell us
+
+Rehearsal 1 runs on local Docker + cloudflared tunnel per D-065. It does
+not exercise either cloud path. The decision below is forward-looking only;
+Rehearsal 1's blockers do not feed it.
+
+## Decision criteria for the actual cloud deploy
+
+The cloud deploy (AW-269) will be evaluated against:
+1. Per-session cost at the M6 qualifying volume (5 outside groups).
+2. Time-to-first-byte for player join under realistic mobile network
+   conditions.
+3. Operational simplicity for a solo-founder operator.
+4. Vendor lock-in risk for the Layer-2 narrative runtime contract.
+
+## Chosen path
+
+**Stay with Cloudflare** as the canonical Nightcap web-experience runtime,
+per the original ADR-0003 decision. Cost, edge coordination via Workers +
+hibernatable Durable Objects, and free-tier suitability for MVP volume
+outweigh the cross-vendor auth bridging cost. The actual implementation
+lives in AW-269 (M5 follow-on).

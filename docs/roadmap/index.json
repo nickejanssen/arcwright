@@ -1858,6 +1858,23 @@
         "url": "https://github.com/nickejanssen/arcwright/issues/185"
       },
       "epic_id": "M5-G"
+    },
+    {
+      "id": "AW-269",
+      "title": "Nightcap Cloud Deploy (Cloudflare + GCP backend)",
+      "milestone": "M5",
+      "epic": null,
+      "size": "L",
+      "depends_on": [
+        "AW-261",
+        "AW-259"
+      ],
+      "path": "docs/roadmap/tasks/AW-269-nightcap-cloud-deploy.md",
+      "github": {
+        "issue_number": 188,
+        "url": "https://github.com/nickejanssen/arcwright/issues/188"
+      },
+      "epic_id": null
     }
   ],
   "superseded_sources": [
