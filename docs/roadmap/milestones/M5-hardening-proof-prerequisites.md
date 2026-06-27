@@ -14,6 +14,8 @@ This milestone closes the gap between a technically working product and a produc
 - [M5-C: Second Arc Schema And Executable Follow-Through](../epics/M5-C-second-arc-schema-validation.md)
 - [M5-D: Visual Storyworld Knowledge Graph Inspection](../epics/M5-D-visual-storyworld-phase-1-inspection.md)
 - [M5-E: Character Behavior Engine Hardening](../epics/M5-E-character-behavior-engine-hardening.md)
+- [M5-F: Tell Me Something True Social Opener Implementation](../epics/M5-F-tell-me-something-true-social-opener.md)
+- [M5-G: Nightcap Visual Identity and Polish](../epics/M5-G-nightcap-visual-identity-and-polish.md)
 
 ## Exit Gate
 

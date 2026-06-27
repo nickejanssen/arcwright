@@ -24,3 +24,15 @@ The roadmap notes that the UI is built as a separate Nightcap web experience con
 - Private information never appears on the shared display
 - One approved production mini-game completes on real devices through both its
   normal and delayed clue fallback paths
+
+## Closure
+
+M4 closes via the AW-259 parent task. The four M4 close items are:
+
+- [AW-257: Promote Crime Scene Smash and Evidence Locker to active](../tasks/AW-257-promote-crime-scene-smash-and-evidence-locker.md)
+- [AW-260: Founder Rehearsal Runbook and Blocker Log](../tasks/AW-260-founder-rehearsal-runbook-and-blocker-log.md)
+- [AW-261: ADR-0003 Cloudflare vs GCP Validation Decision](../tasks/AW-261-adr-0003-cloudflare-vs-gcp-validation-decision.md)
+- [AW-259: Rehearsal 1 - M4 Exit, First Real-Human Nightcap Session](../tasks/AW-259-rehearsal-1-m4-exit.md) (parent; consumes AW-254 and AW-231 as sub-issues)
+
+AW-254 and AW-231 retain their original issue numbers (#148, #84) but their
+scope is rewritten per `docs/superpowers/specs/2026-06-26-m4-exit-rehearsal-design.md`.
