@@ -1,66 +1,87 @@
-# AW-231: M4 Real-Human Rehearsal
+# AW-231: Execute Real-Human Nightcap Rehearsal 1
 
-**Milestone / Epic:** M4 / M4-D  
-**Size:** M  
-**Status:** Planned
+**Milestone / Epic:** M4 / M4-D
+**Size:** M
+**Status:** Planned (repurposed 2026-06-26)
+**Parent:** AW-259
+
+## Repurpose Note
+
+This task's scope was rewritten on 2026-06-26 per
+`docs/superpowers/specs/2026-06-26-m4-exit-rehearsal-design.md`. The original
+"non-qualifying real-device rehearsal" scope is preserved and extended with
+explicit runbook + blocker-triage discipline (AW-260 owns the runbook;
+AW-231 executes the rehearsal).
 
 ## Plain-English Summary
 
-Run a non-qualifying real-device rehearsal and log blockers.
+Run the first real-human Nightcap session using both promoted mini-games,
+following the runbook, and triaging every blocker into a new GitHub issue
+before closing.
 
 ## Why This Matters
 
-This task advances the documented M2-M6 path to first qualifying Nightcap playtests. It exists because `docs/roadmap/milestones/M4-nightcap-experience-layer.md` defines this capability or gate as part of the Arcwright MVP path.
+This is the M4 exit gate. Real humans on real devices producing real
+blockers is the only signal the platform is honest with itself.
 
 ## Player Impact
 
-Players benefit when this task reduces session failure, privacy risk, safety risk, pacing problems, or proof ambiguity before outside groups play Nightcap.
+Four-plus humans play Nightcap end-to-end and provide the first ground-truth
+data about the experience.
 
 ## Business Value
 
-This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove the platform through a real game before expanding into broader platform scope.
+Closes M4. Establishes rehearsal cadence + blocker-triage discipline that
+Rehearsal 2 and M6 qualifying sessions inherit. Outputs triaged blockers
+that drive M5 hardening priorities.
 
 ## Technical Scope
 
-Run a non-qualifying real-device rehearsal on the Nightcap web experience runtime selected by AW-202 and log blockers. Likely files affected: docs/playtest notes or GitHub issue comments, docs/roadmap if needed.
+- Run the rehearsal per `docs/roadmap/operations/rehearsal-1-runbook.md`.
+- Founder + at least 3 invitees (4-player floor required for Crime Scene
+  Smash).
+- Record: join timing for every player, privacy results during the
+  rehearsal, mini-game completion or fallback for each game, session
+  completion state, every blocker (using the AW-260 blocker template).
+- After the rehearsal: triage every blocker into a new GitHub issue with a
+  milestone assignment (M5 hardening, M5-G polish, M6 ops, or `wontfix`).
 
 ## Acceptance Criteria
 
-- [ ] A non-qualifying real-human rehearsal is attempted on real devices.
-- [ ] Join timing, privacy result, mini-game completion or fallback, completion state, and blockers are recorded.
-- [ ] Every blocker is triaged into a follow-up issue before M5 begins.
+- [ ] Rehearsal occurred with at least 4 real humans on real devices.
+- [ ] All recorded data (join timing, privacy, completion, blockers) is
+  saved in the blocker log.
+- [ ] Every blocker has a corresponding new GitHub issue with milestone
+  assignment.
+- [ ] M4 milestone is marked complete in `docs/roadmap/index.json`.
 
 ## Tests/Verification
 
-- Run the smallest automated tests that prove this task where product code is changed.
-- For documentation, tracker, or playtest-operation tasks, provide review evidence, JSON validation, GitHub state confirmation, or runbook approval as appropriate.
-- Follow `docs/conventions/ai-contributions.md`: tests are written with code changes, not later.
+- Rehearsal artifacts (blocker log, session export, recording if any) are
+  archived in `docs/roadmap/operations/rehearsal-1-artifacts/`.
+- Blocker triage issues exist in GitHub.
 
 ## Dependencies
 
-- AW-230
-- AW-254
-
-## Likely Files Affected
-
-docs/playtest notes or GitHub issue comments, docs/roadmap if needed
+- AW-254 (both games verified on device matrix)
+- AW-260 (runbook + blocker template authored)
 
 ## Must Not Do
 
-- Do not implement product code outside this task scope.
-- Do not duplicate closed M1 work.
-- Do not hardcode secrets or API keys.
-- Do not bypass the AW-202 Nightcap web experience runtime contract.
-- Do not run the M4 rehearsal using only non-shipping mini-game fixtures.
+- Do not run with fixtures only.
+- Do not bypass the AW-202 web runtime contract.
+- Do not bypass the AW-260 runbook (if the runbook is wrong, fix the
+  runbook and re-run pre-flight).
+- Do not close AW-231 without triaging every blocker.
 
 ## Architecture References
 
-- docs/roadmap/milestones/M4-nightcap-experience-layer.md
+- `docs/roadmap/operations/rehearsal-1-runbook.md`
+- `docs/roadmap/operations/blocker-log-template.md`
 - `docs/decisions/0003-nightcap-web-experience-runtime.md`
-- `docs/decisions/0009-mini-game-runtime-boundary.md`
-- `AGENTS.md`
-- `docs/architecture/15-development-guide.md`
+- `docs/superpowers/specs/2026-06-26-m4-exit-rehearsal-design.md`
 
 ## Playtest Relevance
 
-This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+This rehearsal closes M4. Its blockers drive M5 hardening priorities and
+seed Rehearsal 2.
