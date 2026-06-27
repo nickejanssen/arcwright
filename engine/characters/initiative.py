@@ -24,16 +24,13 @@ from engine.characters.dialogue import (
     _format_pressure_block,
     _format_relationship_block,
     _format_scene_block,
+    _is_safety_blocked_result,
+    _safety_layer_from_sentinel,
     find_unknown_fact_leak,
     generate_character_dialogue,
 )
 from engine.db.orm import Event
 from engine.routing import generate
-from engine.safety import (
-    L1_HARD_STOP_SENTINEL,
-    L2_BLOCK_SENTINEL,
-    L3_BLOCK_SENTINEL,
-)
 
 if TYPE_CHECKING:
     from engine.arc.models import ContentRailsConfig
@@ -641,21 +638,3 @@ def _build_turn_payload(
             ],
         },
     }
-
-
-def _is_safety_blocked_result(model_used: str) -> bool:
-    return model_used in {
-        L1_HARD_STOP_SENTINEL,
-        L2_BLOCK_SENTINEL,
-        L3_BLOCK_SENTINEL,
-    }
-
-
-def _safety_layer_from_sentinel(model_used: str) -> str:
-    if model_used == L1_HARD_STOP_SENTINEL:
-        return "L1"
-    if model_used == L2_BLOCK_SENTINEL:
-        return "L2"
-    if model_used == L3_BLOCK_SENTINEL:
-        return "L3"
-    return "unknown"
