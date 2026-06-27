@@ -70,11 +70,17 @@
       "red-herring": "a false trail"
     },
     "copy_needed": {
-      "narrator_intro": "[final authored copy needed]",
-      "success_line": "[final authored copy needed]",
-      "fallback_line": "[final authored copy needed]",
-      "tie_line": "[final authored copy needed]",
-      "leaderboard_callouts": "[final authored copy needed]"
+      "narrator_intro": "The body's still warm and the room's already lying. Sort the evidence fast. First one to make sense of the chaos hears what really happened.",
+      "success_line": "{winner_name} cracked it open. The room leans in. Here's the lead.",
+      "fallback_line": "Time's up. Nobody put the pieces together fast enough, so we'll have to settle for what slipped through.",
+      "tie_line": "Two of you arrived at the truth at the same second. The room can't tell who got there first. Split the lead between you.",
+      "leaderboard_callouts": [
+        "Standings. Sharpest eyes first.",
+        "The room saw who put it together fastest.",
+        "Order of insight. Don't get comfortable.",
+        "Top of the pile takes the lead. The rest take notes.",
+        "Scores in. Someone just bought themselves the next clue."
+      ]
     }
   },
   "generation_constraints": {

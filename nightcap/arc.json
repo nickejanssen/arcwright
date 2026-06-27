@@ -142,7 +142,13 @@
         "all",
         "specific_player"
       ],
-      "mini_games": []
+      "mini_games": [
+        {
+          "binding_id": "opening-move-crime-scene-smash",
+          "game_id": "crime-scene-smash",
+          "version": "0.1.0"
+        }
+      ]
     },
     {
       "beat_id": "dig",
@@ -176,7 +182,13 @@
         "all",
         "specific_player"
       ],
-      "mini_games": []
+      "mini_games": [
+        {
+          "binding_id": "dig-evidence-locker",
+          "game_id": "evidence-locker-402",
+          "version": "0.1.0"
+        }
+      ]
     },
     {
       "beat_id": "thread",

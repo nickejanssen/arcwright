@@ -46,7 +46,13 @@ def test_authoring_template_validates() -> None:
 
 
 def test_reserved_directories_are_not_loaded_as_production_catalog() -> None:
-    assert load_mini_game_catalog(MINI_GAME_ROOT) == {}
+    catalog = load_mini_game_catalog(MINI_GAME_ROOT)
+    assert set(catalog.keys()) == {"crime-scene-smash", "evidence-locker-402"}
+    for game_id, loaded in catalog.items():
+        assert loaded.manifest.lifecycle is MiniGameLifecycle.active, (
+            f"production catalog must contain only active packages; "
+            f"{game_id} is {loaded.manifest.lifecycle.value}"
+        )
 
 
 def test_non_active_packages_are_not_loaded_into_production_catalog(

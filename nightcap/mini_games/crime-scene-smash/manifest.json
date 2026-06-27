@@ -2,7 +2,7 @@
   "schema_version": "1.0",
   "game_id": "crime-scene-smash",
   "title": "Crime Scene Smash",
-  "lifecycle": "draft",
+  "lifecycle": "active",
   "current_version": "0.1.0",
   "definition_path": "definitions/0.1.0.json",
   "asset_paths": []

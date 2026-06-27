@@ -197,14 +197,16 @@ async def test_hybrid_mode_fills_placeholders_without_overwriting_authored_conte
 ) -> None:
     session_row = await _make_session_row(db_session)
     loaded = load_mini_game_package(MINI_GAME_ROOT / "crime-scene-smash")
+    # CSS was promoted to production with fully authored copy_needed fields
+    # (D-062, AW-257). Reset to placeholders here to exercise hybrid-fill
+    # behavior without depending on pre-production package state.
+    loaded.definition.authored_content["copy_needed"] = {
+        "narrator_intro": "[final authored copy needed]",
+    }
     generated_payload = {
         "content": {
             "copy_needed": {
                 "narrator_intro": "The board lights up like the room just remembered a lie.",
-                "success_line": "You cracked the pattern before the cover story could settle.",
-                "fallback_line": "The clock beat the board, but the room still learns enough to move.",
-                "tie_line": "The board refuses a single winner, so the clue lands as a shared suspicion.",
-                "leaderboard_callouts": "First place gets the lead, second place gets the nerves.",
             },
             "leaderboard_banner": "Case pressure is rising.",
         },
