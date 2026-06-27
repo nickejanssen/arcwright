@@ -19,3 +19,6 @@ evals/reports/*
 !.claude/commands/
 !.claude/settings.json
 .cursor/
+
+# Local environment - contains API keys, never commit
+.env

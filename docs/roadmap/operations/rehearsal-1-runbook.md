@@ -6,119 +6,343 @@
 > **Owner:** Founder
 > **Related:** [blocker-log-template.md](blocker-log-template.md), [rehearsal-1-failure-cheat-sheet.md](rehearsal-1-failure-cheat-sheet.md)
 
-## 0. Before the day
+---
 
-- [ ] Crime Scene Smash + Evidence Locker manifests at `lifecycle: active`.
-- [ ] Both packages bound in `nightcap/arc.json`.
-- [ ] Engine tests pass: `pytest engine/tests/ -k "mini_game or arc" -v`.
-- [ ] Docker Desktop installed and running.
-- [ ] `ANTHROPIC_API_KEY` and `GROQ_API_KEY` set in `.env` at repo root.
-- [ ] `cloudflared` installed (`cloudflared --version` returns a version).
-- [ ] At least 3 invitees RSVPed (you + 3 = 4-player floor for Crime Scene Smash).
-- [ ] Invitees told: "Bring a phone (iOS or Android). I'll send a join link the night of."
+## 0. Before the day - one-time machine setup
+
+Do this once, at least the day before. Everything here is a prerequisite for the pre-flight in Section 1.
+
+### Step 1 - Create your .env file
+
+The engine and database both read from a `.env` file at the repo root. It does not exist yet; you need to create it from the template.
+
+Open PowerShell at the repo root and run:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Then open `.env` in any text editor and fill in your real API keys:
+
+```
+ANTHROPIC_API_KEY=sk-ant-...your key here...
+GROQ_API_KEY=gsk_...your key here...
+```
+
+Leave everything else as-is. The Postgres values (`arcwright` / `arcwright` / `arcwright`) are correct for local dev. The `DATABASE_URL` line can stay blank - the engine assembles it from the individual `POSTGRES_*` values.
+
+> **How to get the keys:**
+> - Anthropic key: console.anthropic.com - API Keys section
+> - Groq key: console.groq.com - API Keys section
+
+**Verify:** open `.env` and confirm neither key line ends with `=` alone.
+
+---
+
+### Step 2 - Verify Docker Desktop is installed and running
+
+1. Open Docker Desktop from your Start menu.
+2. Wait until the whale icon in the taskbar tray is solid (not animated). This means the engine is up.
+3. In PowerShell, confirm: `docker version` - you should see both Client and Server sections.
+
+If Docker Desktop is not installed: download it from docker.com/products/docker-desktop. Install, restart your machine, then come back here.
+
+---
+
+### Step 3 - Verify Python environment
+
+The engine runs on Python 3.11+. In PowerShell:
+
+```powershell
+python --version
+```
+
+Expected: `Python 3.11.x` or higher. If you see 3.10 or lower, activate your conda env first:
+
+```powershell
+conda activate base
+```
+
+Then install engine dependencies (if you have not done this already):
+
+```powershell
+pip install -r requirements.txt
+```
+
+This only needs to run once, or after pulling changes that update `requirements.txt`.
+
+---
+
+### Step 4 - Verify Node / npm for the dashboard
+
+```powershell
+node --version   # expect v18 or higher
+npm --version    # expect 9 or higher
+```
+
+If Node is not installed: download LTS from nodejs.org and install.
+
+Install dashboard dependencies (once, or after `npm` changes):
+
+```powershell
+cd dashboard
+npm install
+cd ..
+```
+
+---
+
+### Step 5 - Install cloudflared
+
+`cloudflared` creates the public tunnel so players can reach your local server from their phones.
+
+Check if it is already installed:
+
+```powershell
+cloudflared --version
+```
+
+If not found, install it:
+
+1. Go to: developers.cloudflare.com/cloudflare-one/connections/connect-networks/downloads/
+2. Download the Windows AMD64 `.exe`.
+3. Save it somewhere on your PATH (e.g. `C:\Windows\System32\cloudflared.exe`), or note the path and use the full path when the runbook says `cloudflared`.
+
+Verify: `cloudflared --version` prints a version number.
+
+---
+
+### Step 6 - Run the engine tests
+
+This confirms both mini-games are properly promoted and the engine is healthy.
+
+```powershell
+pytest engine/tests/ -k "mini_game or arc" -v
+```
+
+Expected: all tests pass. One test is skipped (the database integration test that requires a live Postgres - that is fine and expected). Zero failures.
+
+> **If tests fail:** ping me before the rehearsal day. Do not proceed until tests are green.
+
+---
+
+### Step 7 - Verify mini-game lifecycle and arc bindings
+
+```powershell
+python -c "
+from pathlib import Path
+import json
+root = Path('nightcap/mini_games')
+for d in sorted(root.iterdir()):
+    m = d / 'manifest.json'
+    if m.exists():
+        data = json.loads(m.read_text())
+        print(data['game_id'], '->', data['lifecycle'])
+"
+```
+
+Expected output includes:
+```
+crime-scene-smash -> active
+evidence-locker-402 -> active
+```
+
+And confirm arc bindings:
+
+```powershell
+python -c "
+import json
+arc = json.loads(open('nightcap/arc.json').read())
+for beat in arc['beats']:
+    if beat['mini_games']:
+        print(beat['beat_id'], '->', [g['game_id'] for g in beat['mini_games']])
+"
+```
+
+Expected:
+```
+opening_move -> ['crime-scene-smash']
+dig -> ['evidence-locker-402']
+```
+
+---
+
+### Step 8 - Confirm invitees
+
+- At least 3 people have confirmed they are coming (you + 3 = 4-player minimum for Crime Scene Smash).
+- They know to bring a phone (iOS Safari or Android Chrome).
+- You have a way to message them a URL the night of (group chat, iMessage, WhatsApp, etc.).
+
+---
 
 ## 1. Pre-flight (30 minutes before)
 
-1. Open a terminal at repo root.
+All five terminals below can be PowerShell tabs. Open them now.
 
-2. Start Postgres + engine:
+### Terminal 1 - Database
 
-   ```bash
-   docker compose up -d
-   ```
+```powershell
+docker compose up -d
+```
 
-   Wait for `docker compose ps` to show both services `running (healthy)`.
+Wait 10 seconds, then check:
 
-3. Apply migrations:
+```powershell
+docker compose ps
+```
 
-   ```bash
-   alembic upgrade head
-   ```
+Expected: `arcwright-postgres` is `running (healthy)`. If it shows `starting`, wait another 10 seconds and check again. If it shows `exited`, run `docker compose logs postgres` and look for the error.
 
-   Expected: zero or more "Running upgrade" lines, no errors.
+> **Common issue:** Docker Desktop not running. Open it from Start menu and wait for the tray icon to go solid before running `docker compose up -d`.
 
-4. Verify engine is reachable:
+### Terminal 2 - Migrations
 
-   ```bash
-   curl -s http://localhost:8000/health | jq .
-   ```
+```powershell
+alembic upgrade head
+```
 
-   Expected: `{"status": "ok"}` (or equivalent healthy payload).
+Expected: one or more `Running upgrade` lines, ending cleanly. No errors.
 
-5. Start the Nightcap web app:
+> **If you see "Database configuration is missing":** your `.env` file is missing or the `POSTGRES_*` variables are blank. Re-do Section 0, Step 1.
 
-   ```bash
-   cd web && npm run dev
-   ```
+> **If you see "Connection refused":** Postgres is not healthy yet. Wait 15 more seconds and try again.
 
-   Note the port (default 5173). Leave running.
+### Terminal 3 - API engine
 
-6. Start the cloudflared quick-tunnel in a separate terminal:
+```powershell
+uvicorn api.main:app --host 0.0.0.0 --port 8000 --reload
+```
 
-   ```bash
-   cloudflared tunnel --url http://localhost:5173
-   ```
+Wait for the line: `Application startup complete.`
 
-   Note the printed `https://<random>.trycloudflare.com` URL. **This is the join URL for players.**
+Verify it is reachable:
 
-7. On the shared display device, navigate to:
+```powershell
+curl -s http://localhost:8000/health
+```
 
-   `https://<random>.trycloudflare.com/host`
+Expected: `{"status":"ok"}` or similar. Leave this terminal running.
 
-   Sign in as host (use the existing Firebase test account or follow the auth flow).
+> **If uvicorn is not found:** you are not in the right Python env. Run `conda activate base` first.
 
-8. Verify the host page loads cleanly: no console errors, no missing assets.
+### Terminal 4 - Dashboard
+
+```powershell
+cd dashboard
+npm run dev
+```
+
+Wait for: `Local: http://localhost:5173/`
+
+Open `http://localhost:5173` in your browser and confirm the dashboard loads. Leave this terminal running.
+
+> **If you see module errors:** run `npm install` first, then try again.
+
+### Terminal 5 - Cloudflared tunnel
+
+```powershell
+cloudflared tunnel --url http://localhost:5173
+```
+
+Within 10 seconds you will see:
+
+```
+Your quick Tunnel has been created! Visit it at (it may take some time to be reachable):
+https://some-random-words.trycloudflare.com
+```
+
+**Write down or copy that URL.** This is the join URL you will send to players. Leave this terminal running.
+
+> **The URL changes every time you restart cloudflared.** Do not restart it unless something breaks - players will lose access.
+
+> **If cloudflared is not found:** use the full path, e.g. `C:\path\to\cloudflared.exe tunnel --url http://localhost:5173`
+
+---
 
 ## 2. Session setup (5 minutes before players arrive)
 
-1. On the shared display, create a new session. Pick arc: **Nightcap**. Pick diegetic frame: High Society / Corporate / Sci-Fi (your call).
-2. Note the 6-character join code shown on the shared display.
-3. Send to players in the group chat: "Open `https://<random>.trycloudflare.com` and enter join code `XXXXXX`."
-4. As each player joins, confirm their name appears on the shared display lobby.
-5. Wait until at least 4 players are in the lobby.
-6. Start the session.
+1. On the shared display (laptop screen / TV / monitor that everyone can see), open Chrome and navigate to:
+
+   `https://<your-tunnel-url>/host`
+
+2. Sign in as host using the Firebase test account (email: see your password manager, or use the "play as guest" flow if auth is not wired yet).
+
+3. Create a new session:
+   - Arc: **Nightcap**
+   - Diegetic frame: your pick - High Society, Corporate, or Sci-Fi all work
+
+4. The shared display shows a 6-character join code (example: `WREN42`).
+
+5. Message players: "Open `https://<your-tunnel-url>` on your phone and enter code `WREN42`."
+
+6. Watch the lobby on the shared display. As each player joins, their name appears.
+
+7. Wait until at least 4 players are in the lobby, then press Start.
+
+---
 
 ## 3. In-session checks
 
-Run these at the moments listed. Note any failure in the blocker log.
+Log any failure in the blocker log. Do not stop the session unless the failure is marked P0.
 
-| Checkpoint | What to look for | If wrong |
-|---|---|---|
-| Player join | Each join under 30 seconds | Log P1, continue |
-| Private event | Each player's role / clue appears on their device, NOT on shared display | Log P0, STOP the session |
-| Crime Scene Smash launch | All players see the match-3 board; shared display shows leaderboard | Log P1, continue if board is usable |
-| Crime Scene Smash completion | Highest score gets the lead clue; others get nothing | Log P1, host narrates fallback if needed |
-| Evidence Locker launch | The current solo player sees the pin-lock UI | Log P1, host narrates fallback if needed |
-| Evidence Locker completion | Success: solo player gets clue. Failure: authored delayed-clue fallback fires automatically | Log P1 if neither path fires |
-| Accusation | Every player can submit a killer vote | Log P0 if voting is broken |
-| Reveal | Killer identity shown on shared display only after all votes are in | Log P0 if revealed early |
+| Checkpoint | What to look for | Severity if wrong | Recovery |
+|---|---|---|---|
+| Player join | Each join under 30 seconds | P1 | Log it; continue |
+| Private event delivery | Each player's role / clue shows on THEIR device only, NOT on shared display | P0 | **STOP. Do not resume without an engineering fix.** |
+| Crime Scene Smash launch | All players see the match-3 board; shared display shows leaderboard | P1 | Log it; if board is broken for all players, skip to narrator fallback |
+| Crime Scene Smash completion | Highest score player gets the lead clue; others do not | P1 | Log it; narrator reads the clue aloud as fallback |
+| Beat transition (opening_move to dig) | Narrator acknowledges the transition on shared display | P1 | Log it; host narrates manually |
+| Evidence Locker launch | The current solo player sees the pin-lock UI on their phone | P1 | Log it; host narrates the clue instead |
+| Evidence Locker - success path | Solo player cracks the lock; gets the clue privately | P1 | Log it |
+| Evidence Locker - fallback path | If timer runs out: authored delayed-clue fires automatically | P1 | Log it if neither path fires |
+| Accusation | Every player can submit a killer vote from their device | P0 | **STOP if voting is broken for any player.** |
+| Reveal | Killer identity shown on shared display only after all votes are in | P0 | **STOP if revealed early - this is a privacy P0.** |
+
+---
 
 ## 4. Wrap
 
-1. After the killer reveal, ask players for spoken feedback. Take notes.
+1. **Verbal debrief.** After the killer reveal, ask the room two questions:
+   - "What felt fun?"
+   - "What was confusing or broke?"
+   Take notes or voice-memo while it is fresh.
 
-2. Export the session log (replace `<session-id>` and `<host-token>`):
+2. **Export the session log** (replace `<session-id>` and `<host-token>`):
 
-   ```bash
-   mkdir -p docs/roadmap/operations/rehearsal-1-artifacts
-   curl -s "http://localhost:8000/api/sessions/<session-id>/export" \
-     -H "Authorization: Bearer <host-token>" \
-     > docs/roadmap/operations/rehearsal-1-artifacts/session-$(date +%Y%m%d).json
+   ```powershell
+   New-Item -ItemType Directory -Force docs/roadmap/operations/rehearsal-1-artifacts
+   $date = Get-Date -Format "yyyyMMdd"
+   Invoke-RestMethod `
+     -Uri "http://localhost:8000/api/sessions/<session-id>/export" `
+     -Headers @{ Authorization = "Bearer <host-token>" } `
+     | ConvertTo-Json -Depth 20 `
+     | Out-File "docs/roadmap/operations/rehearsal-1-artifacts/session-$date.json"
    ```
 
-3. Tear down:
+3. **Tear down:**
 
-   ```bash
-   docker compose down
-   ```
+   - Terminal 5 (cloudflared): Ctrl+C
+   - Terminal 4 (dashboard): Ctrl+C
+   - Terminal 3 (uvicorn): Ctrl+C
+   - Terminal 1 (docker): `docker compose down`
 
-   Stop cloudflared (Ctrl+C). Stop the web dev server (Ctrl+C).
+4. **Save the blocker log.** Copy your notes from the session into:
 
-4. Save the blocker log to `docs/roadmap/operations/rehearsal-1-artifacts/blockers-<YYYYMMDD>.md`.
+   `docs/roadmap/operations/rehearsal-1-artifacts/blockers-<YYYYMMDD>.md`
 
-5. Post a comment on AW-231 GitHub issue with: number of players, number of blockers by severity, link to artifacts.
+   Use [blocker-log-template.md](blocker-log-template.md) as the format.
 
-6. Triage every blocker into a new GitHub issue (M5 / M5-G / M6 / wontfix). See AW-231 step 5.
+5. **Post on AW-231** (GitHub issue): number of players, number of blockers by severity (P0 / P1 / P2), link to the artifacts folder.
+
+6. **Triage every blocker** into a new GitHub issue with the right milestone:
+   - Engineering bug → M5 hardening
+   - Visual / UX issue → M5-G polish
+   - Operational / infra → M6 ops
+   - Not worth fixing → wontfix
+
+   After all blockers are triaged, close M4 in `docs/roadmap/index.json` and close AW-231 and AW-259 on GitHub.
+
+---
 
 ## See also
 
