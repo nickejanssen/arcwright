@@ -61,6 +61,7 @@ async def generate_character_dialogue(
     safety_policy_context: dict[str, Any] | str | None = None,
     content_rails: "ContentRailsConfig | None" = None,
     nightcap_mode: bool = False,
+    social_pressure: float | None = None,
 ) -> CharacterDialogueEvent:
     """Generate one dialogue response after assembling knowledge constraints."""
     context = await build_character_generation_context(
@@ -73,6 +74,7 @@ async def generate_character_dialogue(
         player_input=player_input,
         current_beat_id=current_beat_id,
         scene_goal=scene_goal,
+        social_pressure=social_pressure,
     )
 
     result = await generate(
@@ -160,19 +162,27 @@ def build_dialogue_messages(
     player_input: str,
     current_beat_id: str | None = None,
     scene_goal: str | None = None,
+    social_pressure: float | None = None,
 ) -> list[dict[str, Any]]:
     """Build prompt messages with explicit known and not-known blocks."""
-    system_prompt = "\n\n".join(
-        (
-            _format_identity_block(context),
-            _format_known_block(context.known_facts),
-            _format_not_known_block(context.unknown_facts),
-            _format_relationship_block(context.relationship_dispositions),
-            _format_scene_block(current_beat_id, scene_goal),
+    blocks = [
+        _format_identity_block(context),
+        _format_known_block(context.known_facts),
+        _format_not_known_block(context.unknown_facts),
+        _format_relationship_block(context.relationship_dispositions),
+    ]
+    if (
+        social_pressure is not None
+        and social_pressure >= context.behavior_profile.crumble_threshold
+    ):
+        blocks.append(
+            _format_pressure_block(
+                social_pressure, context.behavior_profile.crumble_threshold
+            )
         )
-    )
+    blocks.append(_format_scene_block(current_beat_id, scene_goal))
     return [
-        {"role": "system", "content": system_prompt},
+        {"role": "system", "content": "\n\n".join(blocks)},
         {"role": "user", "content": player_input},
     ]
 
@@ -300,6 +310,20 @@ def _format_relationship_block(
         )
     lines.append("[END RELATIONSHIP CONTEXT]")
     return "\n".join(lines)
+
+
+def _format_pressure_block(social_pressure: float, crumble_threshold: float) -> str:
+    return "\n".join(
+        (
+            "[SOCIAL PRESSURE]",
+            f"social_pressure: {social_pressure:.2f}",
+            f"crumble_threshold: {crumble_threshold:.2f}",
+            "Your concealment is showing strain under accumulated suspicion.",
+            "Express this through over-precise answers, more aggressive deflection, and small errors consistent with your tells.",
+            "Do not confess. Become more yourself under stress.",
+            "[END SOCIAL PRESSURE]",
+        )
+    )
 
 
 def _format_scene_block(current_beat_id: str | None, scene_goal: str | None) -> str:

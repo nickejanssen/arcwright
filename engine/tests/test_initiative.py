@@ -804,3 +804,132 @@ async def test_schedule_initiative_tasks_returns_immediately_without_blocking() 
     session_released.set()
     with pytest.raises((asyncio.CancelledError, BaseException)):
         await tasks[0]
+
+
+# ---------------------------------------------------------------------------
+# Social pressure end-to-end: generate_npc_npc_exchange flows pressure into prompt
+# ---------------------------------------------------------------------------
+
+
+async def test_npc_npc_exchange_pressure_block_in_prompt_when_speaker_above_threshold(
+    session: AsyncSession,
+) -> None:
+    """Social pressure_by_character flows through generate_npc_npc_exchange."""
+    session_row = await _make_session_row(session)
+
+    # Speaker has crumble_threshold 0.5 — will show strain at pressure >= 0.5
+    speaker = Character(
+        character_id=uuid4(),
+        behavior_profile={
+            "personality": {"traits": ["evasive"], "communication_style": "terse"},
+            "goals": ["Protect the secret"],
+            "secrets": [{"content": "the ledger debt", "crumble_threshold": 0.5}],
+            "tells": ["Pauses before answering"],
+        },
+    )
+    partner = Character(
+        character_id=uuid4(),
+        behavior_profile={
+            "personality": {"traits": ["confident"], "communication_style": "direct"},
+            "goals": ["Find the truth"],
+            "secrets": [],
+            "tells": [],
+        },
+    )
+    session.add(speaker)
+    session.add(partner)
+    await session.flush()
+
+    await _make_participant(
+        session,
+        session_id=session_row.session_id,
+        character_id=speaker.character_id,
+    )
+    await _make_participant(
+        session,
+        session_id=session_row.session_id,
+        character_id=partner.character_id,
+    )
+
+    captured_messages: list[list[dict]] = []
+
+    async def _capture(*args, **kwargs):
+        captured_messages.append(kwargs.get("messages", []))
+        return _route_result("I was in the library all evening.")
+
+    with patch("engine.characters.initiative.generate", side_effect=_capture):
+        await generate_npc_npc_exchange(
+            session,
+            session_id=session_row.session_id,
+            initiating_character_id=speaker.character_id,
+            target_character_id=partner.character_id,
+            quality_tier="standard",
+            max_turns=1,
+            social_pressure_by_character={speaker.character_id: 0.7},
+        )
+
+    assert len(captured_messages) == 1
+    system_prompt = captured_messages[0][0]["content"]
+    assert "[SOCIAL PRESSURE]" in system_prompt
+    assert "[END SOCIAL PRESSURE]" in system_prompt
+
+
+async def test_npc_npc_exchange_no_pressure_block_when_speaker_below_threshold(
+    session: AsyncSession,
+) -> None:
+    """Pressure below crumble_threshold produces no pressure block in prompt."""
+    session_row = await _make_session_row(session)
+
+    speaker = Character(
+        character_id=uuid4(),
+        behavior_profile={
+            "personality": {"traits": ["calm"], "communication_style": "measured"},
+            "goals": ["Stay composed"],
+            "secrets": [{"content": "nothing serious", "crumble_threshold": 0.8}],
+            "tells": [],
+        },
+    )
+    partner = Character(
+        character_id=uuid4(),
+        behavior_profile={
+            "personality": {"traits": ["curious"], "communication_style": "probing"},
+            "goals": ["Ask questions"],
+            "secrets": [],
+            "tells": [],
+        },
+    )
+    session.add(speaker)
+    session.add(partner)
+    await session.flush()
+
+    await _make_participant(
+        session,
+        session_id=session_row.session_id,
+        character_id=speaker.character_id,
+    )
+    await _make_participant(
+        session,
+        session_id=session_row.session_id,
+        character_id=partner.character_id,
+    )
+
+    captured_messages: list[list[dict]] = []
+
+    async def _capture(*args, **kwargs):
+        captured_messages.append(kwargs.get("messages", []))
+        return _route_result("Perfectly calm response.")
+
+    with patch("engine.characters.initiative.generate", side_effect=_capture):
+        await generate_npc_npc_exchange(
+            session,
+            session_id=session_row.session_id,
+            initiating_character_id=speaker.character_id,
+            target_character_id=partner.character_id,
+            quality_tier="standard",
+            max_turns=1,
+            social_pressure_by_character={speaker.character_id: 0.5},
+        )
+
+    assert len(captured_messages) == 1
+    system_prompt = captured_messages[0][0]["content"]
+    assert "[SOCIAL PRESSURE]" not in system_prompt
