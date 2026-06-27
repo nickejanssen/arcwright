@@ -1697,9 +1697,9 @@
       "epic": null,
       "size": "L",
       "depends_on": [
+        "AW-261",
         "AW-257",
         "AW-260",
-        "AW-261",
         "AW-254",
         "AW-231"
       ],

@@ -68,8 +68,8 @@ Sub-issues:
 
 ## Dependencies
 
-- AW-257 (sub-issue)
 - AW-261 (sub-issue)
+- AW-257 (sub-issue)
 - AW-260 (sub-issue)
 - AW-254 (sub-issue, repurposed)
 - AW-231 (sub-issue, repurposed)

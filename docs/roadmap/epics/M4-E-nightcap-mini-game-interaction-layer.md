@@ -20,7 +20,7 @@ gate clues, create competition, and produce investigative leads across the arc.
 - [AW-251: Mini-game Runtime, Persistence, And Clue Gating](../tasks/AW-251-mini-game-runtime-persistence-and-clue-gating.md)
 - [AW-252: Mini-game API, Events, And TypeScript SDK](../tasks/AW-252-mini-game-api-events-and-sdk.md)
 - [AW-253: Nightcap Web Mini-game Rendering And Device Integration](../tasks/AW-253-nightcap-web-mini-game-rendering.md)
-- [AW-257: Author First Production Nightcap Mini-game Package](../tasks/AW-257-author-first-production-nightcap-mini-game.md)
+- [AW-257: Promote Crime Scene Smash and Evidence Locker to active](../tasks/AW-257-promote-crime-scene-smash-and-evidence-locker.md)
 - [AW-254: First Production Nightcap Mini-game And Rehearsal](../tasks/AW-254-first-production-nightcap-mini-game.md)
 
 ## Acceptance Criteria

@@ -27,7 +27,7 @@
   `docs/specs/0050-aw-253-nightcap-web-mini-game-rendering.md`,
   `docs/specs/0051-aw-254-first-production-nightcap-mini-game.md`
 - Roadmap context:
-  `docs/roadmap/tasks/AW-257-author-first-production-nightcap-mini-game.md`
+  `docs/roadmap/tasks/AW-257-promote-crime-scene-smash-and-evidence-locker.md`
 - Product decisions: `docs/product/decisions-log.csv` D-052, D-058, D-059,
   D-060, D-061, D-062, D-063
 
