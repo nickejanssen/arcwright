@@ -168,8 +168,8 @@ def _build_behavior_profile_context(
         raw = s.get("crumble_threshold")
         if raw is not None and not isinstance(raw, (int, float)):
             logger.warning(
-                "crumble_threshold value %r is not numeric; defaulting to 1.0 for this secret",
-                raw,
+                "crumble_threshold has non-numeric type %s; defaulting to 1.0 for this secret",
+                type(raw).__name__,
             )
     crumble_threshold = min(
         (
