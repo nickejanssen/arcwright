@@ -21,7 +21,6 @@ _HOST_BYPASS_KEY = "host_bypass"
 _HOST_ROLE = "host"
 _KILLER_ROLE = "killer"
 _KILLER_ASSIGNMENT_KEY = "killer_assignment"
-_ARRIVAL_BEAT_ID = "arrival"
 _REVEAL_BEAT_ID = "truth"
 
 
@@ -29,16 +28,22 @@ class HarnessRunner:
     def __init__(
         self,
         *,
-        arc_path: Path,
+        arc_path: Path | None = None,
+        arc_definition: ArcDefinition | None = None,
         seed: int,
         generate: Callable[..., Any] | None = None,
     ) -> None:
-        self._arc_path = arc_path
+        if arc_definition is not None:
+            self._arc_definition = arc_definition
+        elif arc_path is not None:
+            self._arc_definition = ArcDefinition.model_validate_json(
+                arc_path.read_text(encoding="utf-8")
+            )
+        else:
+            msg = "HarnessRunner requires either arc_path or arc_definition."
+            raise ValueError(msg)
         self._seed = seed
         self._rng = random.Random(seed)
-        self._arc_definition = ArcDefinition.model_validate_json(
-            arc_path.read_text(encoding="utf-8")
-        )
         self._chart = ArcStateChart(self._arc_definition)
         self._assignment_rng = random.Random(seed)
         self._transition_edges = self._build_transition_edges()
@@ -164,8 +169,9 @@ class HarnessRunner:
             return
         if not run.participants:
             return
-        if sorted(self._chart.configuration_values) != [_ARRIVAL_BEAT_ID]:
-            msg = "killer assignment must resolve during arrival setup."
+        initial_beat_id = self._arc_definition.beats[0].beat_id
+        if sorted(self._chart.configuration_values) != [initial_beat_id]:
+            msg = f"killer assignment must resolve during the initial beat ({initial_beat_id!r})."
             raise RuntimeError(msg)
 
         assigned_participant = self._assignment_rng.choice(run.participants)

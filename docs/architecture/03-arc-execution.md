@@ -52,6 +52,16 @@ All four patterns are native to python-statemachine v3.0. No custom graph traver
 
 Arc definitions specify the beat graph as `beat_graph: dict[str, list[str]]` (beat_id to valid next beat_ids) plus `entry_conditions` and `exit_conditions` per beat. The StateChart class is generated at session start from the arc definition, not written statically per arc. This means new arcs require only a new arc definition JSON file, not a new StateChart subclass.
 
+### Generic exit-condition evaluation contract
+
+The engine derives the initial beat and evaluates all exit/entry conditions generically from the arc definition — it never hardcodes beat IDs or condition names:
+
+- **Initial beat**: `arc_definition.beats[0].beat_id` is the initial state for every arc. The session service and harness runner both read this value from the arc definition at runtime; no fallback constant exists.
+- **Transition guards**: the guard for each transition evaluates `source_beat.exit_conditions` and `target_beat.entry_conditions` as string keys in the session context. A condition is satisfied when its key maps to `True` in the context. The engine never interprets condition names — it only checks their boolean state.
+- **Beat-level gates**: optional per-beat constraints (e.g., minimum player count) are encoded as fields on `BeatDefinition` and evaluated generically by the guard logic. No beat ID string may appear in guard or transition code.
+
+Any engine code that references a beat ID by name (such as `"arrival"` or any other arc-specific beat name) is an architecture violation.
+
 ## 3.3 Pacing Engine
 
 The pacing engine runs as a single asyncio background task per session. It computes a `dramatic_tension_score` (0.0 to 1.0) on a configurable interval (default: 30 seconds) and drives all pacing decisions from that one score.
