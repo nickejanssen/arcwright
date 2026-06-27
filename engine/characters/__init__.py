@@ -5,6 +5,7 @@ from engine.characters.context import (
     RelationshipDispositionContext,
     UnknownFactContext,
     build_character_generation_context,
+    select_active_tells,
 )
 from engine.characters.dialogue import (
     CharacterDialogueEvent,
@@ -61,5 +62,6 @@ __all__ = [
     "generate_npc_npc_exchange",
     "modulate_threshold_for_pressure",
     "schedule_initiative_tasks",
+    "select_active_tells",
     "select_initiative_target",
 ]
