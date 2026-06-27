@@ -440,6 +440,7 @@ class Session(Base):
     current_beat_id: Mapped[str] = mapped_column(Text, nullable=False)
     quality_tier: Mapped[str] = mapped_column(Text, nullable=False)
     player_count: Mapped[int] = mapped_column(Integer, nullable=False)
+    join_code: Mapped[Optional[str]] = mapped_column(Text, nullable=True, unique=True)
 
     host_account: Mapped[Account] = relationship(
         back_populates="hosted_sessions",
@@ -500,6 +501,7 @@ class SessionParticipant(Base):
         nullable=False,
         server_default=text("false"),
     )
+    display_name: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
 
     session: Mapped[Session] = relationship(back_populates="session_participants")
     character: Mapped[Character] = relationship(back_populates="session_participants")

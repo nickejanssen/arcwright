@@ -1,0 +1,39 @@
+{
+  "planPath": "docs/superpowers/plans/2026-06-27-nightcap-rehearsal-lobby.md",
+  "tasks": [
+    {
+      "id": 21,
+      "subject": "Task 1: DB schema + Alembic migration for lobby fields",
+      "status": "pending",
+      "description": "**Goal:** Add `join_code` to sessions and `display_name` to session_participants, with ORM + pydantic updates so the service layer can use them.\n\n**Files:**\n- Create: `migrations/versions/0004_add_lobby_fields.py`\n- Modify: `engine/db/orm.py`\n- Modify: `engine/session/models.py`\n- Modify: `engine/session/service.py`\n\n**Acceptance Criteria:**\n- [ ] `alembic upgrade head` runs without error\n- [ ] `alembic downgrade -1` reverses without error\n- [ ] `Session.join_code` is accessible on ORM object after `create_session`\n- [ ] `SessionParticipant.display_name` is nullable Text in the DB\n\n**Verify:** `alembic upgrade head` → no errors\n\n```json:metadata\n{\"files\": [\"migrations/versions/0004_add_lobby_fields.py\", \"engine/db/orm.py\", \"engine/session/models.py\", \"engine/session/service.py\"], \"verifyCommand\": \"alembic upgrade head\", \"acceptanceCriteria\": [\"alembic upgrade head runs without error\", \"alembic downgrade -1 reverses without error\", \"Session.join_code populated after create_session\", \"SessionParticipant.display_name is nullable Text\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 22,
+      "subject": "Task 2: Lobby API endpoints (public lobby state + lobby-join)",
+      "status": "pending",
+      "blockedBy": [21],
+      "description": "**Goal:** Expose two public (no auth) endpoints — GET /v1/sessions/{id}/lobby and POST /v1/lobby-join — plus CORS middleware.\n\n**Files:**\n- Create: `api/routers/lobby.py`\n- Modify: `api/schemas/__init__.py`\n- Modify: `api/main.py`\n- Modify: `engine/session/service.py`\n\n**Acceptance Criteria:**\n- [ ] GET /v1/sessions/{id}/lobby returns lobby state without auth\n- [ ] POST /v1/lobby-join with valid code creates participant and returns {participant_id, session_id, display_name}\n- [ ] POST /v1/lobby-join with wrong code returns 404\n- [ ] player_count increments on each join\n\n**Verify:** `curl.exe -s http://localhost:8000/v1/sessions/<session-id>/lobby` → JSON with join_code field\n\n```json:metadata\n{\"files\": [\"api/routers/lobby.py\", \"api/schemas/__init__.py\", \"api/main.py\", \"engine/session/service.py\"], \"verifyCommand\": \"curl.exe -s http://localhost:8000/v1/sessions/<id>/lobby\", \"acceptanceCriteria\": [\"GET /v1/sessions/{id}/lobby returns lobby state without auth\", \"POST /v1/lobby-join with valid code creates participant\", \"POST /v1/lobby-join with wrong code returns 404\", \"player_count increments on each join\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 23,
+      "subject": "Task 3: Dashboard scaffold (Vite entry, router, API client, base CSS)",
+      "status": "pending",
+      "description": "**Goal:** Create the Vite entry files, URL-based router, API client module, and base CSS theme.\n\n**Files:**\n- Create: `dashboard/index.html`\n- Create: `dashboard/src/main.tsx`\n- Create: `dashboard/src/App.tsx`\n- Create: `dashboard/src/index.css`\n- Create: `dashboard/src/api/lobby.ts`\n- Modify: `dashboard/vite.config.ts`\n\n**Acceptance Criteria:**\n- [ ] npm run dev starts without error\n- [ ] localhost:5173 renders text not 404\n- [ ] localhost:5173/display/test-id routes to display content\n- [ ] npm run typecheck passes with 0 errors\n\n**Verify:** `cd dashboard && npm run typecheck` → `Found 0 errors.`\n\n```json:metadata\n{\"files\": [\"dashboard/index.html\", \"dashboard/src/main.tsx\", \"dashboard/src/App.tsx\", \"dashboard/src/index.css\", \"dashboard/src/api/lobby.ts\", \"dashboard/vite.config.ts\"], \"verifyCommand\": \"cd dashboard && npm run typecheck\", \"acceptanceCriteria\": [\"npm run dev starts without error\", \"localhost:5173 renders text not 404\", \"localhost:5173/display/test-id routes correctly\", \"npm run typecheck passes with 0 errors\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 24,
+      "subject": "Task 4: Display screen (TV lobby — join code, QR, live player list)",
+      "status": "pending",
+      "blockedBy": [22, 23],
+      "description": "**Goal:** Build the shared TV display screen with join code, QR code, and live player list polling every 2 seconds.\n\n**Files:**\n- Create: `dashboard/src/screens/DisplayScreen.tsx`\n\n**Acceptance Criteria:**\n- [ ] Join code visible in large gold text\n- [ ] QR code image loads from qrserver.com\n- [ ] Player list updates within 3s of join\n- [ ] No console errors\n\n**Verify:** Open `http://localhost:5173/display/<session-id>` in Chrome — join code visible, QR loads, player list updates after joining via curl.\n\n```json:metadata\n{\"files\": [\"dashboard/src/screens/DisplayScreen.tsx\"], \"verifyCommand\": \"Open http://localhost:5173/display/<session-id> and confirm join code + QR visible\", \"acceptanceCriteria\": [\"Join code visible in large gold text\", \"QR code image loads\", \"Player list updates within 3s of join\", \"No console errors\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 25,
+      "subject": "Task 5: Join and waiting screens (player phone flow)",
+      "status": "pending",
+      "blockedBy": [22, 23],
+      "description": "**Goal:** Build the player phone experience — name input form at /join?code=<code> and confirmation screen at /waiting.\n\n**Files:**\n- Create: `dashboard/src/screens/JoinScreen.tsx`\n- Create: `dashboard/src/screens/WaitingScreen.tsx`\n\n**Acceptance Criteria:**\n- [ ] Join form loads at /join?code=ABC123 on mobile\n- [ ] Valid name+code submission redirects to /waiting with name in URL\n- [ ] Invalid code shows error without crash\n- [ ] Waiting screen shows player name and waiting message\n- [ ] npm run typecheck 0 errors\n\n**Verify:** On phone browser via cloudflared tunnel: scan QR → name form appears → submit name → see confirmation screen.\n\n```json:metadata\n{\"files\": [\"dashboard/src/screens/JoinScreen.tsx\", \"dashboard/src/screens/WaitingScreen.tsx\"], \"verifyCommand\": \"cd dashboard && npm run typecheck\", \"acceptanceCriteria\": [\"Join form loads at /join?code=ABC123\", \"Valid submission redirects to /waiting\", \"Invalid code shows error\", \"Waiting screen shows player name\", \"npm run typecheck 0 errors\"], \"modelTier\": \"standard\"}\n```"
+    }
+  ],
+  "lastUpdated": "2026-06-27T00:00:00Z"
+}

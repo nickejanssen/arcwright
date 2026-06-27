@@ -65,6 +65,7 @@ class Session(BaseModel):
     current_beat_id: str
     quality_tier: QualityTier
     player_count: int
+    join_code: Optional[str] = None
 
 
 class SessionParticipant(BaseModel):

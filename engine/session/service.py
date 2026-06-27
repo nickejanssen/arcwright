@@ -21,7 +21,9 @@ documented AC3 exception.
 
 from __future__ import annotations
 
+import random
 import secrets
+import string
 from datetime import datetime, timezone
 from functools import lru_cache
 from pathlib import Path
@@ -34,6 +36,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from engine.db.orm import (
     Account,
     ArcBeatState,
+    Character,
     Event,
 )
 from engine.db.orm import (
@@ -74,6 +77,10 @@ class SessionCapacityError(Exception):
 _DEFAULT_INITIAL_BEAT_ID = "arrival"
 
 
+def _generate_join_code() -> str:
+    return "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
+
+
 class SessionService:
     """Stateless facade over the ORM session lifecycle tables.
 
@@ -108,6 +115,7 @@ class SessionService:
             current_beat_id=_DEFAULT_INITIAL_BEAT_ID,
             quality_tier=quality_tier.value,
             player_count=0,
+            join_code=_generate_join_code(),
         )
         db.add(orm_session)
         await db.flush()
@@ -430,6 +438,48 @@ class SessionService:
         orm = result.scalars().first()
         return _orm_participant_to_pydantic(orm) if orm is not None else None
 
+    async def lobby_join(
+        self,
+        db: AsyncSession,
+        *,
+        join_code: str,
+        display_name: str,
+    ) -> SessionParticipant:
+        """Find a session by join_code and add a named player.
+
+        Raises SessionNotFoundError if no session matches the code.
+        Raises SessionStateError if the session is in a terminal state.
+        """
+        result = await db.execute(
+            select(OrmSession).where(OrmSession.join_code == join_code)
+        )
+        orm = result.scalars().first()
+        if orm is None:
+            raise SessionNotFoundError(f"No session with join_code {join_code!r}")
+        if orm.status in (
+            SessionStatus.completed.value,
+            SessionStatus.abandoned.value,
+        ):
+            raise SessionStateError(f"Cannot join session in status {orm.status!r}")
+
+        character = Character(behavior_profile={})
+        db.add(character)
+        await db.flush()
+
+        participant = OrmParticipant(
+            participant_id=uuid4(),
+            session_id=orm.session_id,
+            character_id=character.character_id,
+            join_token=secrets.token_urlsafe(32),
+            surface_type="player",
+            is_ai_controlled=False,
+            display_name=display_name,
+        )
+        db.add(participant)
+        orm.player_count += 1
+        await db.flush()
+        return _orm_participant_to_pydantic(participant)
+
     async def _require_session(self, db: AsyncSession, session_id: UUID) -> OrmSession:
         orm = await db.get(OrmSession, session_id)
         if orm is None:
@@ -503,6 +553,7 @@ def _orm_session_to_pydantic(orm: OrmSession) -> Session:
         current_beat_id=orm.current_beat_id,
         quality_tier=QualityTier(orm.quality_tier),
         player_count=orm.player_count,
+        join_code=orm.join_code,
     )
 
 

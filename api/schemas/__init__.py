@@ -181,3 +181,27 @@ class CostSummaryResponse(BaseModel):
     arc_id: Optional[str] = None
     by_task_type: list[TaskTypeCostRow]
     by_player_count: list[PlayerCountCostRow]
+
+
+class LobbyPlayerEntry(BaseModel):
+    participant_id: UUID
+    display_name: Optional[str] = None
+
+
+class LobbyStateResponse(BaseModel):
+    session_id: UUID
+    join_code: Optional[str]
+    status: str
+    player_count: int
+    players: list[LobbyPlayerEntry]
+
+
+class LobbyJoinRequest(BaseModel):
+    name: str = Field(min_length=1, max_length=64)
+    join_code: str = Field(min_length=1, max_length=8)
+
+
+class LobbyJoinResponse(BaseModel):
+    participant_id: UUID
+    session_id: UUID
+    display_name: str
