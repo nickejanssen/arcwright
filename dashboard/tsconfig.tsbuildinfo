@@ -1,0 +1,1 @@
+{"root":["./src/app.tsx","./src/main.tsx","./src/api/lobby.ts","./src/screens/displayscreen.tsx","./src/screens/joinscreen.tsx","./src/screens/waitingscreen.tsx"],"version":"5.9.3"}
