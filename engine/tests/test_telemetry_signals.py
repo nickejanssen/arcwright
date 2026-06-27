@@ -137,7 +137,7 @@ class TestSignal1BeatTransition:
         self, svc: SessionService, db: AsyncSession
     ) -> None:
         session, _ = await svc.create_session(
-            db, arc_id="test-arc", host_account_id=uuid4()
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
         )
         await svc.record_beat_transition(
             db,
@@ -170,7 +170,7 @@ class TestSignal2PacingEvents:
         self, svc: SessionService, db: AsyncSession
     ) -> None:
         session, _ = await svc.create_session(
-            db, arc_id="test-arc", host_account_id=uuid4()
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
         )
         await record_tension_update(
             db, session.session_id, score=0.42, beat_id="investigation"
@@ -189,7 +189,7 @@ class TestSignal2PacingEvents:
         self, svc: SessionService, db: AsyncSession
     ) -> None:
         session, _ = await svc.create_session(
-            db, arc_id="test-arc", host_account_id=uuid4()
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
         )
         await record_pacing_intervention(db, session.session_id, _stall_intervention())
         await db.flush()
@@ -205,7 +205,7 @@ class TestSignal2PacingEvents:
         self, svc: SessionService, db: AsyncSession
     ) -> None:
         session, _ = await svc.create_session(
-            db, arc_id="test-arc", host_account_id=uuid4()
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
         )
         await record_pacing_intervention_outcome(
             db,
@@ -227,7 +227,7 @@ class TestSignal2PacingEvents:
         self, svc: SessionService, db: AsyncSession
     ) -> None:
         session, _ = await svc.create_session(
-            db, arc_id="test-arc", host_account_id=uuid4()
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
         )
         await record_pacing_intervention(
             db, session.session_id, _quality_upgrade_intervention()
@@ -249,7 +249,7 @@ class TestSignal3KnowledgeConstraint:
         self, svc: SessionService, db: AsyncSession
     ) -> None:
         session, _ = await svc.create_session(
-            db, arc_id="test-arc", host_account_id=uuid4()
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
         )
         character_id = uuid4()
         await assert_knowledge(
@@ -282,7 +282,7 @@ class TestSignal3KnowledgeConstraint:
         self, svc: SessionService, db: AsyncSession
     ) -> None:
         session, _ = await svc.create_session(
-            db, arc_id="test-arc", host_account_id=uuid4()
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
         )
         character_id = uuid4()
 
@@ -313,7 +313,7 @@ class TestSignal4SessionCompleted:
         self, svc: SessionService, db: AsyncSession
     ) -> None:
         session, _ = await svc.create_session(
-            db, arc_id="test-arc", host_account_id=uuid4()
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
         )
         await svc.start_session(db, session.session_id)
         await svc.end_session(
@@ -342,7 +342,7 @@ class TestSignal4SessionCompleted:
         os.environ.pop("CONTENT_LOGGING_ENABLED", None)
 
         session, _ = await svc.create_session(
-            db, arc_id="test-arc", host_account_id=uuid4()
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
         )
         await svc.end_session(db, session.session_id)
         await db.flush()
@@ -363,7 +363,7 @@ class TestSignal5ReplayIntent:
         self, svc: SessionService, db: AsyncSession
     ) -> None:
         session, _ = await svc.create_session(
-            db, arc_id="test-arc", host_account_id=uuid4()
+            db, arc_id="nightcap-v1", host_account_id=uuid4()
         )
         await svc.write_replay_intent(
             db,

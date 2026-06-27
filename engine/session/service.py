@@ -74,9 +74,6 @@ class SessionCapacityError(Exception):
     pass
 
 
-_DEFAULT_INITIAL_BEAT_ID = "arrival"
-
-
 def _generate_join_code() -> str:
     return "".join(random.choices(string.ascii_uppercase + string.digits, k=6))
 
@@ -104,6 +101,10 @@ class SessionService:
         Returns ``(session, host_join_token)``. The host token is the same
         out-of-band token format used for player joins (§9.2 GET /join).
         """
+        arc_def = _load_nightcap_arc_definition(arc_id)
+        if arc_def is None:
+            raise SessionStateError(f"Unknown arc: {arc_id!r}")
+        initial_beat_id = arc_def.beats[0].beat_id
         await self._ensure_account_row(db, host_account_id)
         host_join_token = secrets.token_urlsafe(32)
         orm_session = OrmSession(
@@ -112,7 +113,7 @@ class SessionService:
             status=SessionStatus.created.value,
             host_account_id=host_account_id,
             created_at=datetime.now(tz=timezone.utc),
-            current_beat_id=_DEFAULT_INITIAL_BEAT_ID,
+            current_beat_id=initial_beat_id,
             quality_tier=quality_tier.value,
             player_count=0,
             join_code=_generate_join_code(),
