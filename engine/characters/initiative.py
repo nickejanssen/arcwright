@@ -21,6 +21,7 @@ from engine.characters.dialogue import (
     _format_identity_block,
     _format_known_block,
     _format_not_known_block,
+    _format_pressure_block,
     _format_relationship_block,
     _format_scene_block,
     find_unknown_fact_leak,
@@ -109,6 +110,14 @@ def effective_initiative_threshold(
     return character_profile.initiative_threshold
 
 
+def modulate_threshold_for_pressure(threshold: float, social_pressure: float) -> float:
+    """Lower effective threshold proportionally to social pressure.
+
+    High pressure makes characters more likely to act (deflect, redirect).
+    """
+    return max(0.0, threshold * (1.0 - social_pressure))
+
+
 def select_initiative_target(
     *,
     initiating_character_id: UUID,
@@ -171,6 +180,7 @@ class InitiativeScheduler:
         relationships_by_character: (
             dict[UUID, list[RelationshipDispositionContext]] | None
         ) = None,
+        social_pressure_by_character: dict[UUID, float] | None = None,
     ) -> list[ScheduledInitiativeAction]:
         score = compute_initiative_score(session_state)
         eligible_targets_lookup = eligible_targets_by_character or {}
@@ -184,6 +194,10 @@ class InitiativeScheduler:
             if not profile.is_ai_controlled:
                 continue
             threshold = effective_initiative_threshold(profile, threshold_overrides)
+            if social_pressure_by_character is not None:
+                pressure = social_pressure_by_character.get(profile.character_id, 0.0)
+                if pressure > 0.0:
+                    threshold = modulate_threshold_for_pressure(threshold, pressure)
             if score < threshold:
                 continue
 
@@ -218,6 +232,7 @@ def build_npc_npc_messages(
     current_beat_id: str | None,
     scene_goal: str | None,
     prior_turns: list[NpcNpcExchangeTurn],
+    speaker_social_pressure: float | None = None,
 ) -> list[dict[str, Any]]:
     """Assemble the combined two-character system prompt for one NPC-NPC turn."""
     speaker_identity = (
@@ -283,17 +298,28 @@ def build_npc_npc_messages(
     )
     scene_block = _format_scene_block(current_beat_id, scene_goal)
 
-    system_prompt = "\n\n".join(
-        (
-            speaker_identity,
-            speaker_known,
-            speaker_unknown,
-            partner_identity,
-            partner_known,
-            relationship_block,
-            scene_block,
+    blocks = [
+        speaker_identity,
+        speaker_known,
+        speaker_unknown,
+        partner_identity,
+        partner_known,
+        relationship_block,
+    ]
+    if (
+        speaker_social_pressure is not None
+        and speaker_social_pressure
+        >= speaker_context.behavior_profile.crumble_threshold
+    ):
+        blocks.append(
+            _format_pressure_block(
+                speaker_social_pressure,
+                speaker_context.behavior_profile.crumble_threshold,
+            )
         )
-    )
+    blocks.append(scene_block)
+
+    system_prompt = "\n\n".join(blocks)
 
     messages: list[dict[str, Any]] = [{"role": "system", "content": system_prompt}]
     if not prior_turns:
@@ -335,6 +361,7 @@ async def generate_npc_npc_exchange(
     safety_policy_context: dict[str, Any] | str | None = None,
     content_rails: "ContentRailsConfig | None" = None,
     nightcap_mode: bool = False,
+    social_pressure_by_character: dict[UUID, float] | None = None,
 ) -> NpcNpcExchangeEvent:
     """Generate an NPC-to-NPC exchange of one or more alternating turns.
 
@@ -367,12 +394,18 @@ async def generate_npc_npc_exchange(
             character_id=partner_id,
         )
 
+        speaker_pressure = (
+            social_pressure_by_character.get(speaker_id)
+            if social_pressure_by_character is not None
+            else None
+        )
         messages = build_npc_npc_messages(
             speaker_context=speaker_context,
             partner_context=partner_context,
             current_beat_id=current_beat_id,
             scene_goal=scene_goal,
             prior_turns=turns,
+            speaker_social_pressure=speaker_pressure,
         )
 
         result = await generate(
@@ -480,6 +513,7 @@ def schedule_initiative_tasks(
     safety_policy_context: dict[str, Any] | str | None = None,
     content_rails: "ContentRailsConfig | None" = None,
     nightcap_mode: bool = False,
+    social_pressure_by_character: dict[UUID, float] | None = None,
 ) -> list[asyncio.Task[NpcNpcExchangeEvent | CharacterDialogueEvent]]:
     """Dispatch each action as its own asyncio task. Returns immediately.
 
@@ -501,6 +535,7 @@ def schedule_initiative_tasks(
             safety_policy_context=safety_policy_context,
             content_rails=content_rails,
             nightcap_mode=nightcap_mode,
+            social_pressure_by_character=social_pressure_by_character,
         )
         tasks.append(asyncio.create_task(coro))
     return tasks
@@ -519,6 +554,7 @@ async def _run_initiative_action(
     safety_policy_context: dict[str, Any] | str | None,
     content_rails: "ContentRailsConfig | None",
     nightcap_mode: bool,
+    social_pressure_by_character: dict[UUID, float] | None = None,
 ) -> NpcNpcExchangeEvent | CharacterDialogueEvent:
     async with session_factory() as db_session:
         if action.target_type == "npc" and action.target_character_id is not None:
@@ -535,10 +571,16 @@ async def _run_initiative_action(
                 safety_policy_context=safety_policy_context,
                 content_rails=content_rails,
                 nightcap_mode=nightcap_mode,
+                social_pressure_by_character=social_pressure_by_character,
             )
             await db_session.commit()
             return exchange
 
+        character_pressure = (
+            social_pressure_by_character.get(action.initiating_character_id)
+            if social_pressure_by_character is not None
+            else None
+        )
         dialogue = await generate_character_dialogue(
             db_session,
             session_id=session_id,
@@ -556,6 +598,7 @@ async def _run_initiative_action(
             safety_policy_context=safety_policy_context,
             content_rails=content_rails,
             nightcap_mode=nightcap_mode,
+            social_pressure=character_pressure,
         )
         await db_session.commit()
         return dialogue

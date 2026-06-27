@@ -41,6 +41,7 @@ class BehaviorProfileContext:
     goals: tuple[str, ...]
     secrets: tuple[dict[str, Any], ...]
     tells: tuple[str, ...]
+    crumble_threshold: float = 1.0
 
 
 @dataclass(frozen=True)
@@ -155,15 +156,28 @@ def _build_behavior_profile_context(
     secrets = profile_data.get("secrets")
     tells = profile_data.get("tells")
 
+    secrets_list: tuple[dict[str, Any], ...] = (
+        tuple(dict(item) for item in secrets if isinstance(item, dict))
+        if isinstance(secrets, list)
+        else ()
+    )
+    crumble_threshold = min(
+        (
+            float(s["crumble_threshold"])
+            for s in secrets_list
+            if isinstance(s.get("crumble_threshold"), (int, float))
+        ),
+        default=1.0,
+    )
+
     return BehaviorProfileContext(
         personality=dict(personality) if isinstance(personality, dict) else {},
         goals=tuple(item for item in goals if isinstance(item, str))
         if isinstance(goals, list)
         else (),
-        secrets=tuple(dict(item) for item in secrets if isinstance(item, dict))
-        if isinstance(secrets, list)
-        else (),
+        secrets=secrets_list,
         tells=tuple(item for item in tells if isinstance(item, str))
         if isinstance(tells, list)
         else (),
+        crumble_threshold=crumble_threshold,
     )

@@ -24,8 +24,14 @@ from engine.characters.initiative import (
     compute_initiative_score,
     effective_initiative_threshold,
     generate_npc_npc_exchange,
+    modulate_threshold_for_pressure,
     schedule_initiative_tasks,
     select_initiative_target,
+)
+from engine.characters.pressure import (
+    SocialPressureSignals,
+    SocialPressureWeights,
+    compute_social_pressure,
 )
 
 __all__ = [
@@ -41,15 +47,19 @@ __all__ = [
     "NpcNpcExchangeTurn",
     "RelationshipDispositionContext",
     "ScheduledInitiativeAction",
+    "SocialPressureSignals",
+    "SocialPressureWeights",
     "UnknownFactContext",
     "build_character_generation_context",
     "build_dialogue_messages",
     "build_npc_npc_messages",
     "compute_initiative_score",
+    "compute_social_pressure",
     "effective_initiative_threshold",
     "find_unknown_fact_leak",
     "generate_character_dialogue",
     "generate_npc_npc_exchange",
+    "modulate_threshold_for_pressure",
     "schedule_initiative_tasks",
     "select_initiative_target",
 ]
