@@ -1,0 +1,6 @@
+**/dist/**
+**/node_modules/**
+dashboard/vite.config.js
+dashboard/vite.config.d.ts
+dashboard/tsconfig.tsbuildinfo
+dashboard/tsconfig.node.tsbuildinfo
