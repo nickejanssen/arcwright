@@ -215,7 +215,7 @@ class SessionService:
         if snapshot is not None:
             orm.current_beat_id = snapshot.beat_id
         # else: no snapshot — current_beat_id stays at its existing value
-        # (created_at -> "arrival" default). AC3 exception.
+        # (the initial beat derived from beats[0] at session creation). AC3 exception.
         orm.status = SessionStatus.active.value
         await db.flush()
         return _orm_session_to_pydantic(orm), snapshot

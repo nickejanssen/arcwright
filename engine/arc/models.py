@@ -181,7 +181,7 @@ class ArcDefinition(BaseModel):
     narrator: NarratorConfig
     quality_tier_default: QualityTier
     characters: List[Dict[str, Any]] = Field(default_factory=list)
-    beats: List[BeatDefinition]
+    beats: List[BeatDefinition] = Field(min_length=1)
     beat_graph: Dict[str, List[str]]
     generative_elements: GenerativeConfig
     content_rails: ContentRailsConfig

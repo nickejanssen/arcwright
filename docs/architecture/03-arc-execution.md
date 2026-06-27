@@ -60,7 +60,7 @@ The engine derives the initial beat and evaluates all exit/entry conditions gene
 - **Transition guards**: the guard for each transition evaluates `source_beat.exit_conditions` and `target_beat.entry_conditions` as string keys in the session context. A condition is satisfied when its key maps to `True` in the context. The engine never interprets condition names — it only checks their boolean state.
 - **Beat-level gates**: optional per-beat constraints (e.g., minimum player count) are encoded as fields on `BeatDefinition` and evaluated generically by the guard logic. No beat ID string may appear in guard or transition code.
 
-Any engine code that references a beat ID by name (such as `"arrival"`, `"truth"`, or any arc-specific value) is an architecture violation.
+Any engine code that references a beat ID by name (such as `"arrival"` or any other arc-specific beat name) is an architecture violation.
 
 ## 3.3 Pacing Engine
 
