@@ -144,6 +144,13 @@
   },
   "behavioral_outputs": [
     {
+      "key": "participation-recorded",
+      "description": "Non-derived sentinel confirming the participant completed or received an authoritative input resolution for the round.",
+      "value_type": "boolean",
+      "scope": "participant",
+      "derived": false
+    },
+    {
       "key": "truth-accuracy-rate",
       "description": "Percentage of a participant's truth submissions that the table correctly identified as truth.",
       "value_type": "number",
@@ -177,6 +184,13 @@
       "value_type": "boolean",
       "scope": "run",
       "derived": true
+    },
+    {
+      "key": "round-resolved",
+      "description": "Non-derived sentinel confirming the round reached deterministic resolution in runtime.",
+      "value_type": "boolean",
+      "scope": "run",
+      "derived": false
     },
     {
       "key": "all-lie-round",

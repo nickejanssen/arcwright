@@ -7,6 +7,7 @@ wires them into the closed registry consumed by ``MiniGameRuntime``.
 
 from engine.mini_games.plugins._evidence_locker_breach import EvidenceLockerBreachPlugin
 from engine.mini_games.plugins._match_3_clue_race import Match3ClueRacePlugin
+from engine.mini_games.plugins._social_truth_bluff import SocialTruthBluffPlugin
 from engine.mini_games.runtime import MechanicRegistry
 
 
@@ -16,6 +17,7 @@ def default_registry() -> MechanicRegistry:
         [
             Match3ClueRacePlugin(),
             EvidenceLockerBreachPlugin(),
+            SocialTruthBluffPlugin(),
         ]
     )
 
@@ -23,5 +25,6 @@ def default_registry() -> MechanicRegistry:
 __all__ = [
     "EvidenceLockerBreachPlugin",
     "Match3ClueRacePlugin",
+    "SocialTruthBluffPlugin",
     "default_registry",
 ]
