@@ -482,13 +482,16 @@ class MiniGameRuntime:
         # Check scoring threshold after accepted submission
         if is_accepted:
             accepted = await self._load_accepted_submissions(run_id)
-            progress = await self._apply_stateful_submission_progress(
-                run,
-                snapshot,
-                submission,
-                accepted,
-                now,
-            )
+            try:
+                progress = await self._apply_stateful_submission_progress(
+                    run,
+                    snapshot,
+                    submission,
+                    accepted,
+                    now,
+                )
+            except ValueError as exc:
+                raise RunStateError(str(exc)) from exc
             # Progress count to shared display (no scores, no rankings per ADR-0008)
             await self._publish(
                 run,

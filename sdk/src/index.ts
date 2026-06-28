@@ -1,18 +1,36 @@
+export { isTmstEvent } from "./types.js";
+
 export type {
   AudienceTarget,
   EventCategory,
   PresentationHints,
   ContentEvent,
+  GenericContentEvent,
   MiniGamePayload,
   MiniGameState,
   MiniGameSubmissionResult,
   PlayerInput,
   CharacterDetail,
   SurfaceType,
+  TmstContentEvent,
+  TmstInputActionPayload,
+  TmstInputPhaseState,
+  TmstPhaseStartedPayload,
+  TmstPhaseState,
+  TmstPresenceActionPayload,
+  TmstPrivatePromptReadyPayload,
+  TmstRevealResolvedPayload,
+  TmstScoreboardReadyPayload,
+  TmstSpotlightPhaseState,
+  TmstSpotlightSkippedPayload,
+  TmstSpotlightStartedPayload,
+  TmstSubmissionPayload,
+  TmstVoteActionPayload,
+  TypedContentEvent,
 } from "./types.js";
 
 import type {
-  ContentEvent,
+  TypedContentEvent,
   MiniGamePayload,
   MiniGameState,
   MiniGameSubmissionResult,
@@ -42,7 +60,7 @@ export class ArcwrightClient {
     this._baseUrl = baseUrl.replace(/\/$/, "");
   }
 
-  onEvent(callback: (event: ContentEvent) => void): () => void {
+  onEvent(callback: (event: TypedContentEvent) => void): () => void {
     this._connected = true;
     void this._streamEvents(callback, false);
     return () => this.disconnect();
@@ -93,8 +111,10 @@ export class ArcwrightClient {
     const data = (await res.json()) as {
       run_id: string;
       game_id: string;
+      mechanic_type: string | null;
       status: MiniGameState["status"];
       deadline_at: string | null;
+      phase_state: MiniGameState["phaseState"];
       my_submissions: Array<{
         submission_id: string;
         is_accepted: boolean;
@@ -104,8 +124,10 @@ export class ArcwrightClient {
     return {
       runId: data.run_id,
       gameId: data.game_id,
+      mechanicType: data.mechanic_type,
       status: data.status,
       deadlineAt: data.deadline_at,
+      phaseState: data.phase_state,
       mySubmissions: data.my_submissions.map((s) => ({
         submissionId: s.submission_id,
         isAccepted: s.is_accepted,
@@ -154,7 +176,7 @@ export class ArcwrightClient {
   }
 
   private async _streamEvents(
-    callback: (event: ContentEvent) => void,
+    callback: (event: TypedContentEvent) => void,
     isReconnect: boolean,
   ): Promise<void> {
     const url = `${this._baseUrl}/v1/sessions/${this._sessionId}/events?since=${this._lastSequenceNumber}`;
@@ -189,7 +211,7 @@ export class ArcwrightClient {
               const json = line.slice(5).trim();
               if (!json) continue;
               try {
-                const event = JSON.parse(json) as ContentEvent;
+                const event = JSON.parse(json) as TypedContentEvent;
                 this._lastSequenceNumber = event.sequence_number;
                 callback(event);
               } catch {
