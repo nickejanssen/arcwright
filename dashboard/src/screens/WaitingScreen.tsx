@@ -1,8 +1,84 @@
 import type { CSSProperties } from "react";
+import { useEffect, useRef, useState } from "react";
+import { ArcwrightClient } from "@arcwright/sdk";
+import type { MiniGameState } from "@arcwright/sdk";
+import TmstPlayerScreen from "./tmst/TmstPlayerScreen";
+
+const TMST_GAME_ID = "tell-me-something-true";
+
+function readParams(): {
+  name: string;
+  sessionId: string | null;
+  playerToken: string | null;
+  characterId: string | null;
+} {
+  const p = new URLSearchParams(window.location.search);
+  return {
+    name: p.get("name") ?? "You",
+    sessionId: p.get("session_id"),
+    playerToken: p.get("player_token"),
+    characterId: p.get("character_id"),
+  };
+}
 
 export default function WaitingScreen() {
-  const params = new URLSearchParams(window.location.search);
-  const name = params.get("name") ?? "You";
+  const { name, sessionId, playerToken, characterId } = readParams();
+
+  const [miniGameState, setMiniGameState] = useState<MiniGameState | null>(
+    null,
+  );
+  const clientRef = useRef<ArcwrightClient | null>(null);
+
+  const hasCredentials =
+    sessionId !== null && playerToken !== null && characterId !== null;
+
+  // When the player has credentials, poll for an active mini-game so we
+  // know when to hand off to the TMST player screen.
+  useEffect(() => {
+    if (!hasCredentials) return;
+
+    const client = new ArcwrightClient(
+      sessionId!,
+      playerToken!,
+      characterId!,
+      "",
+    );
+    clientRef.current = client;
+
+    async function poll() {
+      try {
+        const mgState = await client.getMiniGameState();
+        setMiniGameState(mgState);
+      } catch {
+        // Swallow and retry on next tick; disconnected state handled inside TmstPlayerScreen
+      }
+    }
+
+    poll();
+    const interval = setInterval(poll, 2000);
+
+    return () => {
+      clearInterval(interval);
+      client.disconnect();
+      clientRef.current = null;
+    };
+  }, [hasCredentials, sessionId, playerToken, characterId]);
+
+  const isTmstActive =
+    hasCredentials &&
+    miniGameState !== null &&
+    miniGameState.gameId === TMST_GAME_ID &&
+    miniGameState.status === "active";
+
+  if (isTmstActive) {
+    return (
+      <TmstPlayerScreen
+        sessionId={sessionId!}
+        playerToken={playerToken!}
+        characterId={characterId!}
+      />
+    );
+  }
 
   return (
     <div style={styles.root}>

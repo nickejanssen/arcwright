@@ -17,6 +17,10 @@ export interface LobbyJoinResult {
   participant_id: string;
   session_id: string;
   display_name: string;
+  // Optional auth fields returned by the engine once player auth is active.
+  // Required for ArcwrightClient initialization on the player device.
+  player_token?: string;
+  character_id?: string;
 }
 
 export async function fetchLobbyState(sessionId: string): Promise<LobbyState> {
