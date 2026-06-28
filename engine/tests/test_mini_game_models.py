@@ -50,6 +50,8 @@ def test_tmst_package_validates() -> None:
 
     assert loaded.manifest.lifecycle is MiniGameLifecycle.draft
     assert loaded.manifest.game_id == "tell-me-something-true"
+    assert loaded.definition.content_mode is ContentMode.hybrid
+    assert len(loaded.definition.behavioral_outputs) == 6
 
 
 def test_reserved_directories_are_not_loaded_as_production_catalog() -> None:

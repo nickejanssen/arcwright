@@ -7,7 +7,7 @@
   "content_mode": "hybrid",
   "min_players": 4,
   "max_players": 8,
-  "duration_seconds": 180,
+  "duration_seconds": 240,
   "rules": {
     "round_mode": "single-round",
     "phases": [
@@ -55,6 +55,11 @@
       "afk_voting": "count as abstain",
       "disconnect_spotlight": "skip the disconnected player's spotlight",
       "normal_clue_gate": "none"
+    },
+    "playtest_calibration": {
+      "duration_seconds_status": "estimate",
+      "rationale": "240 seconds covers one 45-second input window plus sequential spotlights, reveals, and scoreboard overhead at the 4 to 8 player range.",
+      "follow_up": "Recalibrate after playtest timing data confirms real spotlight pacing."
     }
   },
   "authored_content": {
@@ -63,6 +68,22 @@
       "phone": "private fact prompt with one blank, text entry, submit-action buttons, vote buttons when eligible, and personal result feedback",
       "shared_display": "narrator-led framing, timer, current spotlight, vote breakdown, degenerate-case commentary, and final leaderboard",
       "host": "progress visibility, fallback visibility, and moderator-safe status without private fact leakage"
+    },
+    "signal_contract": {
+      "deflection_tendency": {
+        "authoring_declaration_key": "deflection-tendency",
+        "authoring_value_type": "integer",
+        "runtime_payload_status": "deferred",
+        "runtime_payload_shape": "{target_player_id: lie_vote_count}",
+        "note": "The canonical spec and runtime signal name remains deflection_tendency. The authored declaration key uses a hyphen only because the AW-249 slug validator rejects underscores."
+      }
+    },
+    "fallback_contract": {
+      "behavior": "If the social opener times out or aborts, the host advances immediately without awarding or withholding a clue. The game resolves as flavor only and the arc continues with no clue gate applied.",
+      "shared_display_line": "We'll call that calibration complete enough for one evening. No revelation lost, no trail delayed. Back to the case.",
+      "host_line": "Advance the session immediately. Tell Me Something True does not hold or unlock a clue on fallback.",
+      "player_device_line": "Time. The room moves on, and so does the case.",
+      "clue_outcome": "none"
     },
     "diegetic_wrappers": {
       "high-society": {
@@ -145,7 +166,7 @@
     },
     {
       "key": "deflection-tendency",
-      "description": "Scalar sentinel declaration retained for AW-249 validation compatibility; runtime event payloads may expand this signal into target-specific lie vote counts.",
+      "description": "Scalar sentinel declaration for the canonical deflection_tendency signal. The authored key stays hyphenated only to satisfy current AW-249 slug validation.",
       "value_type": "integer",
       "scope": "participant",
       "derived": true
