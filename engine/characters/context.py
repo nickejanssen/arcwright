@@ -14,11 +14,46 @@ from engine.db.orm import (
     Character,
     Fact,
     RelationshipState,
+    Session,
     SessionParticipant,
 )
 from engine.knowledge import get_character_knowledge
 
 logger = logging.getLogger(__name__)
+
+# Tier thresholds derived from docs/architecture/07-character-behavior.md §7.5.
+# Larger groups: more surface tells (more eyes); smaller groups: more mid/deep tells (harder game).
+_SMALL_GROUP_MAX = 4  # <= 4 players: all tiers active
+_MID_GROUP_MAX = 7  # 5-7 players: surface + mid only; >= 8: surface only
+
+
+def select_active_tells(tells_raw: list[Any], player_count: int) -> tuple[str, ...]:
+    """Return the active tell subset for the given player count.
+
+    Plain-string tells pass through unconditionally (backward-compatible).
+    Tier-annotated tells ({"text": str, "tier": "surface"|"mid"|"deep"}) are
+    filtered by the player-count thresholds defined in §7.5:
+      - player_count <= 4: surface + mid + deep
+      - 5 <= player_count <= 7: surface + mid
+      - player_count >= 8: surface only
+    """
+    if player_count >= _MID_GROUP_MAX + 1:
+        active_tiers: frozenset[str] = frozenset({"surface"})
+    elif player_count >= _SMALL_GROUP_MAX + 1:
+        active_tiers = frozenset({"surface", "mid"})
+    else:
+        active_tiers = frozenset({"surface", "mid", "deep"})
+
+    result: list[str] = []
+    for item in tells_raw:
+        if isinstance(item, str):
+            result.append(item)
+        elif isinstance(item, dict):
+            text = item.get("text")
+            tier = item.get("tier")
+            if isinstance(text, str) and tier in active_tiers:
+                result.append(text)
+    return tuple(result)
 
 
 @dataclass(frozen=True)
@@ -71,11 +106,18 @@ async def build_character_generation_context(
     *,
     session_id: UUID,
     character_id: UUID,
+    player_count: int | None = None,
 ) -> CharacterGenerationContext:
     """Build the only sanctioned generation-time character context."""
+    if player_count is None:
+        db_session = await session.get(Session, session_id)
+        player_count = db_session.player_count if db_session is not None else 0
+
     character = await session.get(Character, character_id)
     profile_data = dict(character.behavior_profile) if character is not None else {}
-    behavior_profile = _build_behavior_profile_context(profile_data)
+    behavior_profile = _build_behavior_profile_context(
+        profile_data, player_count=player_count
+    )
 
     participant_result = await session.execute(
         select(SessionParticipant)
@@ -153,6 +195,7 @@ async def build_character_generation_context(
 
 def _build_behavior_profile_context(
     profile_data: dict[str, Any],
+    player_count: int = 0,
 ) -> BehaviorProfileContext:
     personality = profile_data.get("personality")
     goals = profile_data.get("goals")
@@ -186,7 +229,7 @@ def _build_behavior_profile_context(
         if isinstance(goals, list)
         else (),
         secrets=secrets_list,
-        tells=tuple(item for item in tells if isinstance(item, str))
+        tells=select_active_tells(tells, player_count)
         if isinstance(tells, list)
         else (),
         crumble_threshold=crumble_threshold,
