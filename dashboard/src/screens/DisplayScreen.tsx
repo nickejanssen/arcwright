@@ -1,39 +1,194 @@
 import type { CSSProperties } from "react";
 import { useEffect, useRef, useState } from "react";
+import { isTmstEvent } from "@arcwright/sdk";
+import type {
+  MiniGameState,
+  TmstRevealResolvedEvent,
+  TmstScoreboardReadyEvent,
+  TmstSpotlightStartedEvent,
+  TypedContentEvent,
+} from "@arcwright/sdk";
 import { fetchLobbyState } from "../api/lobby";
 import type { LobbyState } from "../api/lobby";
+import { fetchDisplayMiniGameState } from "../api/miniGame";
+import TmstDisplayScreen from "./tmst/TmstDisplayScreen";
+
+const TMST_GAME_ID = "tell-me-something-true";
 
 interface Props {
   sessionId: string;
 }
 
+interface TmstEventState {
+  revealEvent: TmstRevealResolvedEvent | null;
+  scoreboardEvent: TmstScoreboardReadyEvent | null;
+  currentSpotlightEvent: TmstSpotlightStartedEvent | null;
+  skippedCharacterId: string | null;
+}
+
 export default function DisplayScreen({ sessionId }: Props) {
   const [lobby, setLobby] = useState<LobbyState | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [miniGameState, setMiniGameState] = useState<MiniGameState | null>(
+    null,
+  );
+  const [tmstEvents, setTmstEvents] = useState<TmstEventState>({
+    revealEvent: null,
+    scoreboardEvent: null,
+    currentSpotlightEvent: null,
+    skippedCharacterId: null,
+  });
+  const [lobbyError, setLobbyError] = useState<string | null>(null);
+  const [disconnected, setDisconnected] = useState(false);
 
+  const skippedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const sseActiveRef = useRef(true);
+  const sseSeqRef = useRef(0);
+
+  // Lobby + mini-game state polling
   useEffect(() => {
     async function poll() {
+      // Lobby poll (for pre-game display)
       try {
         const state = await fetchLobbyState(sessionId);
         setLobby(state);
-        setError(null);
+        setLobbyError(null);
       } catch (e) {
-        setError(e instanceof Error ? e.message : "Connection error");
+        setLobbyError(e instanceof Error ? e.message : "Connection error");
+      }
+
+      // Mini-game poll (unauthenticated — display surface)
+      try {
+        const mgState = await fetchDisplayMiniGameState(sessionId);
+        setMiniGameState(mgState);
+        setDisconnected(false);
+      } catch {
+        setDisconnected(true);
       }
     }
 
     poll();
-    intervalRef.current = setInterval(poll, 2000);
+    const interval = setInterval(poll, 2000);
+    return () => clearInterval(interval);
+  }, [sessionId]);
+
+  // SSE event subscription for the display surface (no auth; best-effort).
+  // Provides within-phase real-time updates for reveal/scoreboard/skipped events.
+  useEffect(() => {
+    sseActiveRef.current = true;
+
+    function handleEvent(event: TypedContentEvent) {
+      if (!isTmstEvent(event)) return;
+
+      if (event.event_type === "tmst_spotlight_started") {
+        const ev = event as TmstSpotlightStartedEvent;
+        setTmstEvents((prev) => ({
+          ...prev,
+          currentSpotlightEvent: ev,
+          revealEvent: null,
+          skippedCharacterId: null,
+        }));
+      } else if (event.event_type === "tmst_reveal_resolved") {
+        setTmstEvents((prev) => ({
+          ...prev,
+          revealEvent: event as TmstRevealResolvedEvent,
+          skippedCharacterId: null,
+        }));
+      } else if (event.event_type === "tmst_scoreboard_ready") {
+        setTmstEvents((prev) => ({
+          ...prev,
+          scoreboardEvent: event as TmstScoreboardReadyEvent,
+        }));
+      } else if (event.event_type === "tmst_spotlight_skipped") {
+        const characterId = (event.payload as { target_character_id: string })
+          .target_character_id;
+        setTmstEvents((prev) => ({ ...prev, skippedCharacterId: characterId }));
+        if (skippedTimerRef.current) clearTimeout(skippedTimerRef.current);
+        skippedTimerRef.current = setTimeout(() => {
+          setTmstEvents((prev) => ({ ...prev, skippedCharacterId: null }));
+        }, 3000);
+      }
+    }
+
+    async function streamDisplayEvents() {
+      const url = `/v1/sessions/${sessionId}/events?since=${sseSeqRef.current}`;
+      let res: Response;
+      try {
+        res = await fetch(url);
+      } catch {
+        return;
+      }
+      if (!res.ok || !res.body) return;
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buf = "";
+
+      try {
+        while (sseActiveRef.current) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buf += decoder.decode(value, { stream: true });
+          buf = buf.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+          const blocks = buf.split("\n\n");
+          buf = blocks.pop() ?? "";
+          for (const block of blocks) {
+            for (const line of block.split("\n")) {
+              if (line.startsWith("data:")) {
+                const json = line.slice(5).trim();
+                if (!json) continue;
+                try {
+                  const event = JSON.parse(json) as TypedContentEvent;
+                  sseSeqRef.current = event.sequence_number;
+                  handleEvent(event);
+                } catch {
+                  // malformed SSE; skip
+                }
+              }
+            }
+          }
+        }
+      } finally {
+        reader.cancel().catch(() => undefined);
+      }
+
+      // Retry after a short delay if still active
+      if (sseActiveRef.current) {
+        setTimeout(streamDisplayEvents, 3000);
+      }
+    }
+
+    streamDisplayEvents();
+
     return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
+      sseActiveRef.current = false;
+      if (skippedTimerRef.current) clearTimeout(skippedTimerRef.current);
     };
   }, [sessionId]);
 
-  if (error) {
+  const isTmstActive =
+    miniGameState !== null &&
+    miniGameState.gameId === TMST_GAME_ID &&
+    miniGameState.status === "active";
+
+  if (isTmstActive) {
+    return (
+      <TmstDisplayScreen
+        miniGameState={miniGameState}
+        revealEvent={tmstEvents.revealEvent}
+        scoreboardEvent={tmstEvents.scoreboardEvent}
+        currentSpotlightEvent={tmstEvents.currentSpotlightEvent}
+        skippedCharacterId={tmstEvents.skippedCharacterId}
+        disconnected={disconnected}
+      />
+    );
+  }
+
+  // ---- Lobby view (pre-game or non-TMST state) ----
+
+  if (lobbyError) {
     return (
       <div style={styles.centered}>
-        <p style={{ color: "var(--red)", fontSize: "1.2rem" }}>{error}</p>
+        <p style={{ color: "var(--red)", fontSize: "1.2rem" }}>{lobbyError}</p>
         <p style={{ color: "var(--text-muted)", marginTop: "0.5rem" }}>
           Make sure the engine is running at localhost:8000
         </p>

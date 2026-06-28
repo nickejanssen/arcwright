@@ -84,4 +84,5 @@ async def lobby_join(
         participant_id=participant.participant_id,
         session_id=participant.session_id,
         display_name=body.name,
+        character_id=participant.character_id,
     )

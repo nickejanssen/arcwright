@@ -18,7 +18,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sse_starlette.sse import EventSourceResponse
 
-from api.auth import JwtClaims, require_player_or_host_jwt
+from api.auth import JwtClaims, optional_player_or_host_jwt
 from engine.events.bus import SessionEventBus
 from engine.events.fanout import SessionConnectionRegistry, run_fanout
 
@@ -57,36 +57,37 @@ async def session_events_stream(
     since: int = Query(
         default=0, ge=0, description="Last seen sequence number; 0 for full replay."
     ),
-    claims: JwtClaims = Depends(require_player_or_host_jwt),
+    claims: JwtClaims | None = Depends(optional_player_or_host_jwt),
 ) -> EventSourceResponse:
     """Stream ContentEvents for ``session_id`` as Server-Sent Events.
 
-    Identity and role are extracted from the Firebase JWT in the Authorization
-    header. On connect, missed events (sequence_number > ``since``) are replayed
-    first. Live events follow with no duplication.
+    Authenticated players and hosts receive their role-filtered view. A missing
+    Authorization header is treated as a display surface connection (no private
+    events). Production auth enforcement is deferred to M5 (AW-269).
     """
-    if claims.session_id is not None and claims.session_id != session_id:
-        raise HTTPException(
-            status_code=403,
-            detail="Token session_id does not match requested session",
-        )
-
-    if claims.role in ("player", "host") and claims.player_id is None:
-        raise HTTPException(
-            status_code=400,
-            detail="Player/host tokens must include arcwright_player_id claim",
-        )
+    if claims is not None:
+        if claims.session_id is not None and claims.session_id != session_id:
+            raise HTTPException(
+                status_code=403,
+                detail="Token session_id does not match requested session",
+            )
+        if claims.role in ("player", "host") and claims.player_id is None:
+            raise HTTPException(
+                status_code=400,
+                detail="Player/host tokens must include arcwright_player_id claim",
+            )
 
     bus, registry = _get_or_create_session_state(session_id)
 
     async def generator() -> AsyncGenerator[dict[str, str], None]:
-        player_id = claims.player_id
-        if claims.role == "player":
-            assert player_id is not None  # validated above
-            conn = registry.register_player(player_id)
+        if claims is None:
+            conn = registry.register_display()
+        elif claims.role == "player":
+            assert claims.player_id is not None  # validated above
+            conn = registry.register_player(claims.player_id)
         elif claims.role == "host":
-            assert player_id is not None  # validated above
-            conn = registry.register_host(player_id)
+            assert claims.player_id is not None  # validated above
+            conn = registry.register_host(claims.player_id)
         else:
             conn = registry.register_display()
 

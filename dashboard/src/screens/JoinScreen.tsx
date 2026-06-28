@@ -25,8 +25,13 @@ export default function JoinScreen() {
     setError(null);
     try {
       const result = await joinLobby(name.trim(), code.trim());
-      const next = `/waiting?name=${encodeURIComponent(result.display_name)}&session_id=${result.session_id}`;
-      window.location.href = next;
+      const params = new URLSearchParams({
+        name: result.display_name,
+        session_id: result.session_id,
+      });
+      if (result.player_token) params.set("player_token", result.player_token);
+      if (result.character_id) params.set("character_id", result.character_id);
+      window.location.href = `/waiting?${params.toString()}`;
     } catch (e) {
       setError(
         e instanceof Error ? e.message : "Something went wrong. Try again.",

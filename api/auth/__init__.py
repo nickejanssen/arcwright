@@ -133,6 +133,31 @@ async def require_player_or_host_jwt(
     )
 
 
+async def optional_player_or_host_jwt(
+    credentials: HTTPAuthorizationCredentials | None = Security(_bearer),
+) -> "JwtClaims | None":
+    """Dependency: validate a Firebase ID token if present; return None otherwise.
+
+    Endpoints that serve both authenticated participants and unauthenticated
+    display surfaces use this. A missing Authorization header returns None.
+    Production auth enforcement is deferred to M5 (AW-269).
+    """
+    if credentials is None:
+        return None
+    decoded = _decode_bearer(credentials.credentials)
+    role = decoded.get("arcwright_role", "")
+    if role not in ("player", "host", "display"):
+        raise HTTPException(status_code=403, detail="Valid participant token required")
+    session_id_str = decoded.get("arcwright_session_id")
+    player_id_str = decoded.get("arcwright_player_id")
+    return JwtClaims(
+        uid=decoded["uid"],
+        session_id=UUID(session_id_str) if session_id_str else None,
+        player_id=UUID(player_id_str) if player_id_str else None,
+        role=role,
+    )
+
+
 async def require_api_key_or_host_jwt(request: Request) -> ApiCaller | JwtClaims:
     """Dependency: accept either an API key or a host JWT."""
     api_key = request.headers.get("X-Api-Key")
