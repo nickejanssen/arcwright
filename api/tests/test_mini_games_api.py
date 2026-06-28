@@ -34,6 +34,7 @@ from api.auth import (
     require_player_or_host_jwt,
 )
 from api.main import app
+from api.schemas import TmstInputPhaseState, TmstSpotlightPhaseState
 from engine.db import get_async_session
 from engine.db.orm import (
     Account,
@@ -65,6 +66,8 @@ _SESSION_ID = uuid4()
 _PART_ID = uuid4()
 _CHAR_ID = uuid4()
 _HOST_PART_ID = uuid4()
+_OTHER_PART_ID = uuid4()
+_OTHER_CHAR_ID = uuid4()
 
 
 def _player_claims(
@@ -149,6 +152,36 @@ def _make_snapshot_dict() -> dict[str, Any]:
     return snap.model_dump(mode="json")
 
 
+def _make_tmst_snapshot_dict() -> dict[str, Any]:
+    snap = ResolvedMiniGameSnapshot(
+        game_id="tell-me-something-true",
+        definition_version="0.1.0",
+        source_content_mode=ContentMode.hybrid,
+        mechanic_type="social-truth-bluff",
+        participation_mode="group",
+        min_players=4,
+        max_players=8,
+        duration_seconds=240,
+        rules={},
+        behavioral_outputs=(
+            BehavioralOutputDeclaration(
+                key="participation-recorded",
+                description="sentinel",
+                value_type=BehavioralValueType.boolean,
+                scope=BehavioralScope.participant,
+                derived=False,
+            ),
+        ),
+        clue_fallback=DelayedClueFallback(
+            delay_seconds=30,
+            clue_variant=ClueVariant.reduced,
+            host_override=True,
+        ),
+        resolved_content={},
+    )
+    return snap.model_dump(mode="json")
+
+
 async def _seed_session_and_run(
     factory: async_sessionmaker[AsyncSession],
     *,
@@ -206,6 +239,92 @@ async def _seed_session_and_run(
                 clue_unlock_record={},
             )
         )
+        await db.commit()
+
+    return _SESSION_ID, run_id
+
+
+async def _seed_tmst_session_and_run(
+    factory: async_sessionmaker[AsyncSession],
+    *,
+    runtime_state: dict[str, Any],
+    deadline: datetime | None = None,
+    submissions: list[dict[str, Any]] | None = None,
+) -> tuple[UUID, UUID]:
+    async with factory() as db:
+        account_id = uuid4()
+        db.add(Account(account_id=account_id, firebase_uid="host-firebase-uid"))
+        await db.flush()
+
+        db.add(
+            Session(
+                session_id=_SESSION_ID,
+                arc_id="nightcap-v1",
+                status="active",
+                host_account_id=account_id,
+                current_beat_id="beat-1",
+                quality_tier="standard",
+                player_count=4,
+            )
+        )
+        db.add(Character(character_id=_CHAR_ID, behavior_profile={}))
+        db.add(Character(character_id=_OTHER_CHAR_ID, behavior_profile={}))
+        await db.flush()
+
+        db.add(
+            SessionParticipant(
+                participant_id=_PART_ID,
+                session_id=_SESSION_ID,
+                character_id=_CHAR_ID,
+                join_token="tok-player",
+                surface_type="phone",
+                is_ai_controlled=False,
+            )
+        )
+        db.add(
+            SessionParticipant(
+                participant_id=_OTHER_PART_ID,
+                session_id=_SESSION_ID,
+                character_id=_OTHER_CHAR_ID,
+                join_token="tok-other",
+                surface_type="phone",
+                is_ai_controlled=False,
+            )
+        )
+        await db.flush()
+
+        run_id = uuid4()
+        db.add(
+            MiniGameRun(
+                run_id=run_id,
+                session_id=_SESSION_ID,
+                game_id="tell-me-something-true",
+                definition_version="0.1.0",
+                definition_snapshot=_make_tmst_snapshot_dict(),
+                status="active",
+                revision=0,
+                started_at=datetime.now(tz=timezone.utc),
+                deadline=deadline,
+                clue_unlock_record={"runtime_state": runtime_state},
+            )
+        )
+        if submissions:
+            from engine.db.orm import MiniGameSubmission
+
+            for submission in submissions:
+                db.add(
+                    MiniGameSubmission(
+                        run_id=run_id,
+                        submission_id=submission["submission_id"],
+                        character_id=submission["character_id"],
+                        submitted_at=submission.get(
+                            "submitted_at", datetime.now(tz=timezone.utc)
+                        ),
+                        payload=submission["payload"],
+                        is_accepted=submission.get("is_accepted", True),
+                        rejection_reason=submission.get("rejection_reason"),
+                    )
+                )
         await db.commit()
 
     return _SESSION_ID, run_id
@@ -302,6 +421,104 @@ class TestGetActiveMiniGame:
             app.dependency_overrides[require_player_or_host_jwt] = lambda: (
                 _player_claims()
             )
+
+    def test_tmst_input_phase_state_is_typed_for_player_reconnect(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        session_id, _run_id = asyncio.run(
+            _seed_tmst_session_and_run(
+                db_factory,
+                runtime_state={
+                    "phase": "input",
+                    "presence": {
+                        str(_CHAR_ID): True,
+                        str(_OTHER_CHAR_ID): True,
+                    },
+                    "input_closed": False,
+                    "current_spotlight_index": 0,
+                    "spotlight_order": [],
+                },
+                deadline=datetime(2026, 6, 28, 16, 0, tzinfo=timezone.utc),
+            )
+        )
+
+        resp = client.get(f"/v1/sessions/{session_id}/mini-games/active")
+
+        assert resp.status_code == 200
+        phase_state = TmstInputPhaseState.model_validate(resp.json()["phase_state"])
+        assert phase_state.phase == "input"
+        assert phase_state.prompt_ready is True
+        assert phase_state.submitted is False
+
+    def test_tmst_spotlight_phase_state_is_authorized_for_reconnect(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        session_id, run_id = asyncio.run(
+            _seed_tmst_session_and_run(
+                db_factory,
+                runtime_state={
+                    "phase": "spotlight",
+                    "presence": {
+                        str(_CHAR_ID): True,
+                        str(_OTHER_CHAR_ID): True,
+                    },
+                    "input_closed": True,
+                    "current_spotlight_index": 0,
+                    "spotlight_order": [str(_OTHER_CHAR_ID)],
+                },
+                deadline=datetime(2026, 6, 28, 16, 15, tzinfo=timezone.utc),
+                submissions=[
+                    {
+                        "submission_id": "tmst-input-self",
+                        "character_id": _CHAR_ID,
+                        "payload": {
+                            "action": "input",
+                            "statement_text": "Self statement",
+                            "declared_truth": True,
+                        },
+                    },
+                    {
+                        "submission_id": "tmst-input-target",
+                        "character_id": _OTHER_CHAR_ID,
+                        "payload": {
+                            "action": "input",
+                            "statement_text": "Other statement",
+                            "declared_truth": False,
+                        },
+                    },
+                    {
+                        "submission_id": "tmst-vote-1",
+                        "character_id": _CHAR_ID,
+                        "payload": {
+                            "action": "vote",
+                            "target_character_id": str(_OTHER_CHAR_ID),
+                            "vote": "truth",
+                        },
+                    },
+                ],
+            )
+        )
+
+        resp = client.get(f"/v1/sessions/{session_id}/mini-games/active")
+
+        assert resp.status_code == 200
+        body = resp.json()
+        phase_state = TmstSpotlightPhaseState.model_validate(body["phase_state"])
+        assert phase_state.phase == "spotlight"
+        assert phase_state.target_character_id == _OTHER_CHAR_ID
+        assert phase_state.can_vote is True
+        assert phase_state.has_voted is True
+        assert body["my_submissions"] == [
+            {
+                "submission_id": "tmst-vote-1",
+                "is_accepted": True,
+                "rejection_reason": None,
+            }
+        ]
 
 
 # ---------------------------------------------------------------------------
@@ -402,6 +619,67 @@ class TestSubmitMiniGameAction:
             assert resp.status_code == 403
         finally:
             app.dependency_overrides[require_player_jwt] = lambda: _player_claims()
+
+    def test_tmst_malformed_payload_returns_422(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        _, run_id = asyncio.run(
+            _seed_tmst_session_and_run(
+                db_factory,
+                runtime_state={
+                    "phase": "input",
+                    "presence": {str(_CHAR_ID): True, str(_OTHER_CHAR_ID): True},
+                    "input_closed": False,
+                    "current_spotlight_index": 0,
+                    "spotlight_order": [],
+                },
+            )
+        )
+
+        resp = client.post(
+            f"/v1/sessions/{_SESSION_ID}/mini-games/{run_id}/submissions",
+            json={
+                "submission_id": "bad-input",
+                "payload": {"action": "input", "declared_truth": True},
+            },
+        )
+
+        assert resp.status_code == 422
+
+    def test_tmst_out_of_phase_action_returns_409(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        _, run_id = asyncio.run(
+            _seed_tmst_session_and_run(
+                db_factory,
+                runtime_state={
+                    "phase": "spotlight",
+                    "presence": {str(_CHAR_ID): True, str(_OTHER_CHAR_ID): True},
+                    "input_closed": True,
+                    "current_spotlight_index": 0,
+                    "spotlight_order": [str(_OTHER_CHAR_ID)],
+                },
+            )
+        )
+
+        resp = client.post(
+            f"/v1/sessions/{_SESSION_ID}/mini-games/{run_id}/submissions",
+            json={
+                "submission_id": "late-input",
+                "payload": {
+                    "action": "input",
+                    "statement_text": "Too late",
+                    "declared_truth": True,
+                },
+            },
+        )
+
+        assert resp.status_code == 409
+        assert "input phase" in resp.json()["detail"]
 
 
 # ---------------------------------------------------------------------------

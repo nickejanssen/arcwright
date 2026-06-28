@@ -7,10 +7,10 @@ from __future__ import annotations
 
 from datetime import datetime
 from decimal import Decimal
-from typing import Any, Literal, Optional
+from typing import Annotated, Any, Literal, Optional, Union
 from uuid import UUID
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, TypeAdapter
 
 from engine.session.models import QualityTier, SessionStatus
 
@@ -124,6 +124,103 @@ class ReplayIntentRequest(BaseModel):
     collection_method: Literal["host_report", "in_app_prompt"]
 
 
+class TmstVoteBreakdown(BaseModel):
+    truth: int = Field(ge=0)
+    lie: int = Field(ge=0)
+    abstain: int = Field(ge=0)
+
+
+class TmstInputActionPayload(BaseModel):
+    action: Literal["input"]
+    statement_text: str = Field(min_length=1, max_length=4000)
+    declared_truth: bool
+
+
+class TmstVoteActionPayload(BaseModel):
+    action: Literal["vote"]
+    target_character_id: UUID
+    vote: Literal["truth", "lie"]
+
+
+class TmstPresenceActionPayload(BaseModel):
+    action: Literal["presence"]
+    connected: bool
+
+
+TmstSubmissionPayload = Annotated[
+    Union[
+        TmstInputActionPayload,
+        TmstVoteActionPayload,
+        TmstPresenceActionPayload,
+    ],
+    Field(discriminator="action"),
+]
+TMST_SUBMISSION_PAYLOAD_ADAPTER = TypeAdapter(TmstSubmissionPayload)
+
+
+class TmstPhaseStartedPayload(BaseModel):
+    phase: Literal["input"]
+    deadline: datetime
+    participant_count: int = Field(ge=0)
+
+
+class TmstPrivatePromptReadyPayload(BaseModel):
+    phase: Literal["input"]
+
+
+class TmstInputPhaseState(BaseModel):
+    phase: Literal["input"]
+    deadline_at: Optional[datetime] = None
+    prompt_ready: bool
+    submitted: bool
+
+
+class TmstSpotlightStartedPayload(BaseModel):
+    phase: Literal["spotlight"]
+    target_character_id: UUID
+    eligible_voter_ids: list[UUID]
+    deadline: datetime
+
+
+class TmstSpotlightSkippedPayload(BaseModel):
+    target_character_id: UUID
+    reason: Literal["disconnected"]
+
+
+class TmstSpotlightPhaseState(BaseModel):
+    phase: Literal["spotlight"]
+    deadline_at: Optional[datetime] = None
+    target_character_id: UUID
+    connected_character_ids: list[UUID]
+    eligible_voter_ids: list[UUID]
+    is_spotlighted_player: bool
+    can_vote: bool
+    has_voted: bool
+
+
+class TmstRevealResolvedPayload(BaseModel):
+    phase: Literal["reveal"]
+    target_character_id: UUID
+    declared_truth: bool
+    statement_text: str
+    vote_breakdown: TmstVoteBreakdown
+    abstaining_character_ids: list[UUID]
+
+
+class TmstScoreboardReadyPayload(BaseModel):
+    phase: Literal["scoreboard"]
+    scores: dict[str, int]
+    all_truth_round: bool
+    all_lie_round: bool
+    deflection_tendency: dict[str, dict[str, int]]
+
+
+TmstPhaseState = Annotated[
+    Union[TmstInputPhaseState, TmstSpotlightPhaseState],
+    Field(discriminator="phase"),
+]
+
+
 class MiniGameSubmissionResponse(BaseModel):
     submission_id: str
     is_accepted: bool
@@ -134,7 +231,9 @@ class MiniGameRunResponse(BaseModel):
     run_id: UUID
     game_id: str
     status: str
+    mechanic_type: Optional[str] = None
     deadline_at: Optional[datetime] = None
+    phase_state: Optional[TmstPhaseState] = None
     my_submissions: list[MiniGameSubmissionResponse]
 
 

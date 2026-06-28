@@ -5,6 +5,14 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from uuid import UUID
 
+from api.schemas import (
+    TmstPhaseStartedPayload,
+    TmstPrivatePromptReadyPayload,
+    TmstRevealResolvedPayload,
+    TmstScoreboardReadyPayload,
+    TmstSpotlightSkippedPayload,
+    TmstSpotlightStartedPayload,
+)
 from engine.mini_games.loader import load_mini_game_package
 from engine.mini_games.models import ClueVariant
 from engine.mini_games.plugins import default_registry
@@ -282,3 +290,138 @@ def test_score_output_is_identical_for_identical_fixture_and_has_no_clue_release
     assert first == second
     assert first["round-resolved"] is True
     assert _extract_authored_clues(snapshot, ClueVariant.full) == []
+
+
+def test_tmst_input_phase_events_validate_against_api_schema() -> None:
+    plugin = SocialTruthBluffPlugin()
+    snapshot = load_tmst_snapshot()
+    progress = plugin.initialize_state(snapshot, participants=PARTICIPANTS, now=T0)
+
+    phase_started = next(
+        event for event in progress.events if event.event_type == "tmst_phase_started"
+    )
+    private_prompt_ready = next(
+        event
+        for event in progress.events
+        if event.event_type == "tmst_private_prompt_ready"
+    )
+
+    assert phase_started.target_audience.value == "all"
+    assert private_prompt_ready.target_audience.value == "specific_player"
+    assert all(
+        event.target_audience.value != "shared_display"
+        for event in progress.events
+        if event.event_type == "tmst_private_prompt_ready"
+    )
+    TmstPhaseStartedPayload.model_validate(phase_started.payload)
+    TmstPrivatePromptReadyPayload.model_validate(private_prompt_ready.payload)
+
+
+def test_tmst_spotlight_and_reveal_events_validate_against_api_schema() -> None:
+    plugin = SocialTruthBluffPlugin()
+    snapshot = load_tmst_snapshot(run_seed="schema-seed")
+    state = (
+        plugin.initialize_state(snapshot, participants=PARTICIPANTS, now=T0).state or {}
+    )
+    accepted = [
+        make_input_submission(
+            plugin, PARTICIPANTS[0][0], statement_text="A", declared_truth=False
+        ),
+        make_input_submission(
+            plugin, PARTICIPANTS[1][0], statement_text="B", declared_truth=True
+        ),
+        make_input_submission(
+            plugin, PARTICIPANTS[2][0], statement_text="C", declared_truth=True
+        ),
+        make_input_submission(
+            plugin, PARTICIPANTS[3][0], statement_text="D", declared_truth=True
+        ),
+    ]
+    spotlight = plugin.on_deadline_expired(
+        snapshot,
+        state=state,
+        participants=PARTICIPANTS,
+        accepted_submissions=accepted,
+        now=T0 + timedelta(seconds=46),
+    )
+    spotlight_started = next(
+        event
+        for event in spotlight.events
+        if event.event_type == "tmst_spotlight_started"
+    )
+    TmstSpotlightStartedPayload.model_validate(spotlight_started.payload)
+
+    spotlight_state = spotlight.state or {}
+    target = UUID(spotlight_state["spotlight_order"][0])
+    reveal = plugin.on_deadline_expired(
+        snapshot,
+        state=spotlight_state,
+        participants=PARTICIPANTS,
+        accepted_submissions=[
+            *accepted,
+            make_vote_submission(
+                plugin,
+                PARTICIPANTS[1][0],
+                target_character_id=target,
+                vote="truth",
+            ),
+        ],
+        now=T0 + timedelta(seconds=62),
+    )
+    reveal_resolved = next(
+        event for event in reveal.events if event.event_type == "tmst_reveal_resolved"
+    )
+    TmstRevealResolvedPayload.model_validate(reveal_resolved.payload)
+
+
+def test_tmst_skip_and_scoreboard_events_validate_against_api_schema() -> None:
+    plugin = SocialTruthBluffPlugin()
+    snapshot = load_tmst_snapshot(run_seed="skip-schema-seed")
+    state = (
+        plugin.initialize_state(snapshot, participants=PARTICIPANTS, now=T0).state or {}
+    )
+    accepted = [
+        make_input_submission(
+            plugin, character_id, statement_text=str(index), declared_truth=True
+        )
+        for index, (character_id, _participant_id) in enumerate(PARTICIPANTS, start=1)
+    ]
+    spotlight = plugin.on_deadline_expired(
+        snapshot,
+        state=state,
+        participants=PARTICIPANTS,
+        accepted_submissions=accepted,
+        now=T0 + timedelta(seconds=46),
+    )
+    spotlight_state = spotlight.state or {}
+    first_target = UUID(spotlight_state["spotlight_order"][0])
+    skipped = plugin.on_submission(
+        snapshot,
+        state=spotlight_state,
+        participants=PARTICIPANTS,
+        submission=plugin._synthetic_submission(
+            first_target, {"action": "presence", "connected": False}
+        ),
+        accepted_submissions=accepted,
+        now=T0 + timedelta(seconds=47),
+    )
+    skip_event = next(
+        event
+        for event in skipped.events
+        if event.event_type == "tmst_spotlight_skipped"
+    )
+    TmstSpotlightSkippedPayload.model_validate(skip_event.payload)
+
+    scoreboard = plugin._scoreboard_progress(
+        snapshot,
+        accepted,
+        T0 + timedelta(seconds=90),
+        [],
+        {"phase": "spotlight"},
+    )
+    scoreboard_ready = next(
+        event
+        for event in scoreboard.events
+        if event.event_type == "tmst_scoreboard_ready"
+    )
+    TmstScoreboardReadyPayload.model_validate(scoreboard_ready.payload)
