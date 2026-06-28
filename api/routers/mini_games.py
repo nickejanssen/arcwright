@@ -19,10 +19,11 @@ Endpoints:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
+from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -55,7 +56,6 @@ from engine.mini_games.runtime import MiniGameRuntime, MiniGameRuntimeError
 
 router = APIRouter(prefix="/sessions", tags=["mini-games"])
 _TMST_GAME_ID = "tell-me-something-true"
-_TMST_MECHANIC_TYPE = "social-truth-bluff"
 
 
 @dataclass(frozen=True)
@@ -272,17 +272,25 @@ async def _load_run_or_404(
     session_id: UUID,
     run_id: UUID,
 ) -> MiniGameRun:
-    runtime = _make_runtime(db, session_id)
-    run = await runtime._load_run(run_id)
-    if run.session_id != session_id:
+    result = await db.execute(
+        select(MiniGameRun).where(
+            MiniGameRun.run_id == run_id,
+            MiniGameRun.session_id == session_id,
+        )
+    )
+    run = result.scalar_one_or_none()
+    if run is None:
         raise HTTPException(status_code=404, detail="Mini-game run not found")
     return run
 
 
 def _validate_tmst_submission_payload(payload: dict[str, Any]) -> TmstSubmissionPayload:
     try:
-        return TMST_SUBMISSION_PAYLOAD_ADAPTER.validate_python(payload)
-    except Exception as exc:
+        return cast(
+            TmstSubmissionPayload,
+            TMST_SUBMISSION_PAYLOAD_ADAPTER.validate_python(payload),
+        )
+    except ValidationError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 

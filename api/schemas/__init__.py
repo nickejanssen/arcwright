@@ -155,7 +155,9 @@ TmstSubmissionPayload = Annotated[
     ],
     Field(discriminator="action"),
 ]
-TMST_SUBMISSION_PAYLOAD_ADAPTER = TypeAdapter(TmstSubmissionPayload)
+TMST_SUBMISSION_PAYLOAD_ADAPTER: TypeAdapter[TmstSubmissionPayload] = TypeAdapter(
+    TmstSubmissionPayload
+)
 
 
 class TmstPhaseStartedPayload(BaseModel):
