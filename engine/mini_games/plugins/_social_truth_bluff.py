@@ -103,7 +103,7 @@ class SocialTruthBluffPlugin:
         lie_success_rate: dict[str, float] = {}
         for participant_id, submission in input_map.items():
             key = str(participant_id)
-            reveal = next(
+            reveal: dict[str, Any] | None = next(
                 (
                     item
                     for item in reveals
