@@ -396,9 +396,11 @@ async def submit_mini_game_action(
     other sessions are rejected before reaching the runtime.
     """
     run = await _load_run_or_404(db, session_id=session_id, run_id=run_id)
+    action_payload: dict[str, Any] = body.payload
     if run.game_id == _TMST_GAME_ID:
-        payload = _validate_tmst_submission_payload(body.payload)
-        _ensure_tmst_phase_accepts_action(run, payload)
+        validated = _validate_tmst_submission_payload(body.payload)
+        _ensure_tmst_phase_accepts_action(run, validated)
+        action_payload = validated.model_dump()
 
     runtime = _make_runtime(db, session_id)
     try:
@@ -406,7 +408,7 @@ async def submit_mini_game_action(
             run_id,
             body.submission_id,
             participant.character_id,
-            body.payload,
+            action_payload,
             participant_id=participant.claims.player_id,
         )
     except MiniGameRuntimeError as exc:

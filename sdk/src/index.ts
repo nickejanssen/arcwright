@@ -1,3 +1,5 @@
+export { isTmstEvent } from "./types.js";
+
 export type {
   AudienceTarget,
   EventCategory,

@@ -153,6 +153,21 @@ export interface GenericContentEvent {
 
 export type TypedContentEvent = TmstContentEvent | GenericContentEvent;
 
+const _TMST_EVENT_TYPES: ReadonlySet<string> = new Set([
+  "tmst_phase_started",
+  "tmst_private_prompt_ready",
+  "tmst_spotlight_started",
+  "tmst_spotlight_skipped",
+  "tmst_reveal_resolved",
+  "tmst_scoreboard_ready",
+]);
+
+export function isTmstEvent(
+  event: TypedContentEvent,
+): event is TmstContentEvent {
+  return _TMST_EVENT_TYPES.has(event.event_type);
+}
+
 export interface MiniGameSubmissionResult {
   submissionId: string;
   isAccepted: boolean;
