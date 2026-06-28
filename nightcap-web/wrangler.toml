@@ -22,3 +22,8 @@ class_name = "NightcapRoom"
 [[migrations]]
 tag = "v1"
 new_classes = ["NightcapRoom"]
+
+[env.production]
+name = "nightcap-web-prod"
+# Set ARCWRIGHT_API_BASE_URL and FIREBASE_WEB_API_KEY with
+# `wrangler secret put ... --env production`.

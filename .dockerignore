@@ -1,0 +1,12 @@
+.env
+.git
+__pycache__
+*.pyc
+.venv
+docs/
+dashboard/
+sdk/
+nightcap-web/
+evals/
+.claude/
+.codex/
