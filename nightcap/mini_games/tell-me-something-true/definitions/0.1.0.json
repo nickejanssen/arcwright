@@ -1,0 +1,173 @@
+{
+  "schema_version": "1.0",
+  "game_id": "tell-me-something-true",
+  "version": "0.1.0",
+  "mechanic_type": "social-truth-bluff",
+  "participation_mode": "group",
+  "content_mode": "hybrid",
+  "min_players": 4,
+  "max_players": 8,
+  "duration_seconds": 180,
+  "rules": {
+    "round_mode": "single-round",
+    "phases": [
+      "input",
+      "spotlight",
+      "reveal",
+      "scoreboard"
+    ],
+    "voting": {
+      "options": [
+        "truth",
+        "lie"
+      ],
+      "self_vote_allowed": false,
+      "abstention_policy": "no vote before deadline counts as abstain",
+      "disconnected_players": "cannot vote while disconnected and are shown as unavailable"
+    },
+    "submit_actions": [
+      "Submit Truth",
+      "Submit Lie"
+    ],
+    "fact_categories": [
+      "past_transgressions",
+      "social_embarrassments",
+      "professional_tells",
+      "odd_habits",
+      "minor_rivalries",
+      "party_gossip"
+    ],
+    "replay_variance": [
+      "fact category rotation",
+      "dynamic blank phrase type",
+      "spotlight order from run seed",
+      "narrator commentary on revealed lies"
+    ],
+    "player_count_behavior": {
+      "4": "single shared input window followed by three-voter spotlights",
+      "5": "single shared input window followed by four-voter spotlights",
+      "6": "single shared input window followed by five-voter spotlights",
+      "7": "single shared input window followed by six-voter spotlights",
+      "8": "single shared input window followed by seven-voter spotlights"
+    },
+    "failure_policy": {
+      "afk_input": "auto-submit the true statement as truth",
+      "afk_voting": "count as abstain",
+      "disconnect_spotlight": "skip the disconnected player's spotlight",
+      "normal_clue_gate": "none"
+    }
+  },
+  "authored_content": {
+    "package_summary": "A Nightcap social opener where each player fills a blank in a true character fact, then chooses whether to present it honestly or as a lie for the table to judge.",
+    "surface_contract": {
+      "phone": "private fact prompt with one blank, text entry, submit-action buttons, vote buttons when eligible, and personal result feedback",
+      "shared_display": "narrator-led framing, timer, current spotlight, vote breakdown, degenerate-case commentary, and final leaderboard",
+      "host": "progress visibility, fallback visibility, and moderator-safe status without private fact leakage"
+    },
+    "diegetic_wrappers": {
+      "high-society": {
+        "title": "The Host's Parlor Game",
+        "narrator_intro": "Welcome, darlings. A proper gathering deserves at least one dangerous little honesty exercise. Fill the missing detail, decide how brave you feel, and let the room pretend it can still recognize sincerity when it hears it.",
+        "narrator_reveal": "The cards are on the velvet now. Some of you offered confession, some performance, and the room applauded both with equal bad judgment.",
+        "degenerate_truth_line": "A breathtaking outbreak of sincerity. Either the room has found its conscience, or none of you had the nerve to be interesting.",
+        "degenerate_lie_line": "Marvelous. Every soul at the table chose deceit on purpose. We can stop pretending this evening was ever going to remain respectable."
+      },
+      "corporate": {
+        "title": "Mandatory Synergy",
+        "narrator_intro": "Welcome to Mandatory Synergy, where trust is a deliverable and embarrassment is a team exercise. Complete the sentence, tag it truth or lie, and let's see which of your colleagues mistakes confidence for integrity.",
+        "narrator_reveal": "Outstanding collaboration. By which I mean several of you weaponized vulnerability and the rest signed off on it with alarming enthusiasm.",
+        "degenerate_truth_line": "Incredible. A full-table commitment to honesty. HR will call this growth. Everyone else will call it suspicious.",
+        "degenerate_lie_line": "Excellent alignment. Every participant selected deception as the shared strategy, which is frankly the most realistic corporate outcome available."
+      },
+      "sci-fi": {
+        "title": "Biometric Calibration",
+        "narrator_intro": "Biometric Calibration is now in progress. Supply the missing data point, classify your statement as true or fabricated, and allow the chamber to observe how quickly social certainty collapses under light pressure.",
+        "narrator_reveal": "Calibration complete. Truth signatures were noisy, fabricated signatures were elegant, and the room once again overestimated its ability to detect either.",
+        "degenerate_truth_line": "Unexpected result. Universal truth reporting detected. Either the chamber inspired honesty, or your species has become dramatically less fun.",
+        "degenerate_lie_line": "Expectedly grim result. Universal fabrication detected. The chamber appreciates your efficiency, if not your character."
+      }
+    }
+  },
+  "generation_constraints": {
+    "tone": [
+      "wry",
+      "socially-tense",
+      "playful"
+    ],
+    "allowed_session_personalization": [
+      "fact blank selection",
+      "spotlight order",
+      "narrator wrapper emphasis",
+      "narrator reveal commentary"
+    ],
+    "surface_rules": {
+      "shared_display": "never reveal private fact prompts or unrevealed typed inputs",
+      "phone": "may show only the local player's prompt during input and voting controls when eligible",
+      "host": "may show progress and fallback state without exposing private fact text"
+    },
+    "runtime_boundaries": [
+      "Python owns input deadline",
+      "Python owns submission truth-state authority",
+      "Python owns spotlight order",
+      "Python owns vote acceptance and reveal timing",
+      "Python owns score computation",
+      "Python owns signal computation"
+    ],
+    "safety": [
+      "facts must come from character profile data only",
+      "no real-world player identity facts",
+      "no protected-trait inference",
+      "no private fact leakage to shared display before reveal",
+      "no graphic violence"
+    ]
+  },
+  "behavioral_outputs": [
+    {
+      "key": "truth-accuracy-rate",
+      "description": "Percentage of a participant's truth submissions that the table correctly identified as truth.",
+      "value_type": "number",
+      "scope": "participant",
+      "derived": true
+    },
+    {
+      "key": "lie-success-rate",
+      "description": "Percentage of non-abstaining votes on a participant's lie submission that were fooled into voting Truth.",
+      "value_type": "number",
+      "scope": "participant",
+      "derived": true
+    },
+    {
+      "key": "vote-consistency",
+      "description": "Rate at which a participant's votes matched the spotlighted statement's true or lie result across the round.",
+      "value_type": "number",
+      "scope": "participant",
+      "derived": true
+    },
+    {
+      "key": "deflection-tendency",
+      "description": "Scalar sentinel declaration retained for AW-249 validation compatibility; runtime event payloads may expand this signal into target-specific lie vote counts.",
+      "value_type": "integer",
+      "scope": "participant",
+      "derived": true
+    },
+    {
+      "key": "all-truth-round",
+      "description": "Whether every submitted statement in the run was marked Truth.",
+      "value_type": "boolean",
+      "scope": "run",
+      "derived": true
+    },
+    {
+      "key": "all-lie-round",
+      "description": "Whether every submitted statement in the run was marked Lie.",
+      "value_type": "boolean",
+      "scope": "run",
+      "derived": true
+    }
+  ],
+  "clue_fallback": {
+    "delay_seconds": 30,
+    "clue_variant": "reduced",
+    "host_override": true
+  }
+}

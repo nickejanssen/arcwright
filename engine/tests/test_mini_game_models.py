@@ -45,6 +45,13 @@ def test_authoring_template_validates() -> None:
     assert loaded.definition.version == "0.1.0"
 
 
+def test_tmst_package_validates() -> None:
+    loaded = load_mini_game_package(MINI_GAME_ROOT / "tell-me-something-true")
+
+    assert loaded.manifest.lifecycle is MiniGameLifecycle.draft
+    assert loaded.manifest.game_id == "tell-me-something-true"
+
+
 def test_reserved_directories_are_not_loaded_as_production_catalog() -> None:
     catalog = load_mini_game_catalog(MINI_GAME_ROOT)
     assert set(catalog.keys()) == {"crime-scene-smash", "evidence-locker-402"}
