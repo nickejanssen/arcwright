@@ -1,0 +1,9 @@
+{
+  "schema_version": "1.0",
+  "game_id": "tell-me-something-true",
+  "title": "Tell Me Something True",
+  "lifecycle": "draft",
+  "current_version": "0.1.0",
+  "definition_path": "definitions/0.1.0.json",
+  "asset_paths": []
+}
