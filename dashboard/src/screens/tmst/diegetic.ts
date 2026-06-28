@@ -47,11 +47,18 @@ const WRAPPERS: Record<string, DiegeticWrapper> = {
 
 const DEFAULT_WRAPPER = WRAPPERS["high-society"];
 
-// TODO: wrapper_id should come from a session-level field once the API
-// exposes it. Currently gameId is always "tell-me-something-true" so wrapper
-// selection falls back to high-society. Check for a variant suffix on gameId
-// (e.g. "tell-me-something-true:corporate") as a forward-compatible path.
-export function getDiegeticWrapper(gameId: string): DiegeticWrapper {
+// Select the diegetic wrapper for the current session.
+//
+// gameVariant is the arc-level wrapper identifier ("high-society", "corporate",
+// "sci-fi"). It is not yet returned by the API — pass it as undefined until the
+// engine exposes it (tracked in AW-265 follow-up). gameId is used as a
+// fallback: the engine may append a variant suffix
+// (e.g. "tell-me-something-true:corporate") for forward-compatibility.
+export function getDiegeticWrapper(
+  gameId: string,
+  gameVariant?: string,
+): DiegeticWrapper {
+  if (gameVariant && WRAPPERS[gameVariant]) return WRAPPERS[gameVariant];
   for (const key of Object.keys(WRAPPERS)) {
     if (gameId.includes(key)) return WRAPPERS[key];
   }

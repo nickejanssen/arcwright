@@ -828,3 +828,131 @@ class TestContentEventEmission:
             assert evt.category.value == "acknowledgement"
             assert evt.target_audience.value == "specific_player"
             assert evt.target_player_id == _PART_ID
+
+
+# ---------------------------------------------------------------------------
+# GET /active/display — unauthenticated shared-display and player-device path
+# (AW-265)
+# ---------------------------------------------------------------------------
+
+
+class TestGetActiveMiniGameDisplay:
+    """Tests for the public /display endpoint (no auth required)."""
+
+    def test_returns_404_when_no_active_run(self, client: TestClient) -> None:
+        resp = client.get(f"/v1/sessions/{_SESSION_ID}/mini-games/active/display")
+        assert resp.status_code == 404
+
+    def test_returns_200_without_auth_header(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        """Shared display can fetch state with no Authorization header."""
+        asyncio.run(_seed_session_and_run(db_factory))
+        resp = client.get(f"/v1/sessions/{_SESSION_ID}/mini-games/active/display")
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["status"] == "active"
+        assert body["my_submissions"] == []
+
+    def test_display_input_phase_state_has_no_private_fields(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        """Shared display (no character_id) sees prompt_ready=False."""
+        asyncio.run(
+            _seed_tmst_session_and_run(
+                db_factory,
+                runtime_state={"phase": "input", "presence": {}, "input_closed": False},
+            )
+        )
+        resp = client.get(f"/v1/sessions/{_SESSION_ID}/mini-games/active/display")
+        assert resp.status_code == 200
+        ps = TmstInputPhaseState.model_validate(resp.json()["phase_state"])
+        assert ps.phase == "input"
+        assert ps.prompt_ready is False
+        assert ps.submitted is False
+
+    def test_player_device_input_phase_state_with_character_id(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        """Player device sees prompt_ready=True when character_id is supplied."""
+        asyncio.run(
+            _seed_tmst_session_and_run(
+                db_factory,
+                runtime_state={"phase": "input", "presence": {}, "input_closed": False},
+            )
+        )
+        resp = client.get(
+            f"/v1/sessions/{_SESSION_ID}/mini-games/active/display"
+            f"?character_id={_CHAR_ID}"
+        )
+        assert resp.status_code == 200
+        ps = TmstInputPhaseState.model_validate(resp.json()["phase_state"])
+        assert ps.phase == "input"
+        assert ps.prompt_ready is True
+        assert ps.submitted is False
+
+    def test_player_device_submitted_flag_reflects_accepted_submission(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        """submitted=True after the player's input submission is accepted."""
+        asyncio.run(
+            _seed_tmst_session_and_run(
+                db_factory,
+                runtime_state={"phase": "input", "presence": {}, "input_closed": False},
+                submissions=[
+                    {
+                        "submission_id": "input-sub",
+                        "character_id": _CHAR_ID,
+                        "payload": {
+                            "action": "input",
+                            "statement_text": "I ate __ hotdogs",
+                            "declared_truth": True,
+                        },
+                        "is_accepted": True,
+                    }
+                ],
+            )
+        )
+        resp = client.get(
+            f"/v1/sessions/{_SESSION_ID}/mini-games/active/display"
+            f"?character_id={_CHAR_ID}"
+        )
+        assert resp.status_code == 200
+        ps = TmstInputPhaseState.model_validate(resp.json()["phase_state"])
+        assert ps.submitted is True
+
+    def test_display_spotlight_phase_state_no_personalization(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        """Shared display gets is_spotlighted_player=False and can_vote=False."""
+        asyncio.run(
+            _seed_tmst_session_and_run(
+                db_factory,
+                runtime_state={
+                    "phase": "spotlight",
+                    "presence": {
+                        str(_CHAR_ID): True,
+                        str(_OTHER_CHAR_ID): True,
+                    },
+                    "input_closed": True,
+                    "current_spotlight_index": 0,
+                    "spotlight_order": [str(_CHAR_ID)],
+                },
+            )
+        )
+        resp = client.get(f"/v1/sessions/{_SESSION_ID}/mini-games/active/display")
+        assert resp.status_code == 200
+        ps = TmstSpotlightPhaseState.model_validate(resp.json()["phase_state"])
+        assert ps.phase == "spotlight"
+        assert ps.is_spotlighted_player is False
+        assert ps.can_vote is False

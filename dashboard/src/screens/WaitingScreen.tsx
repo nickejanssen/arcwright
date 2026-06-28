@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
-import { useEffect, useRef, useState } from "react";
-import { ArcwrightClient } from "@arcwright/sdk";
+import { useEffect, useState } from "react";
 import type { MiniGameState } from "@arcwright/sdk";
+import { fetchPlayerMiniGameState } from "../api/miniGame";
 import TmstPlayerScreen from "./tmst/TmstPlayerScreen";
 
 const TMST_GAME_ID = "tell-me-something-true";
@@ -27,42 +27,31 @@ export default function WaitingScreen() {
   const [miniGameState, setMiniGameState] = useState<MiniGameState | null>(
     null,
   );
-  const clientRef = useRef<ArcwrightClient | null>(null);
 
-  const hasCredentials =
-    sessionId !== null && playerToken !== null && characterId !== null;
+  // character_id is sufficient to poll game state via the public /display
+  // endpoint. player_token (Firebase ID token) is only required for action
+  // submissions and is not available until M5 auth (AW-269).
+  const hasCredentials = sessionId !== null && characterId !== null;
 
-  // When the player has credentials, poll for an active mini-game so we
-  // know when to hand off to the TMST player screen.
   useEffect(() => {
     if (!hasCredentials) return;
 
-    const client = new ArcwrightClient(
-      sessionId!,
-      playerToken!,
-      characterId!,
-      "",
-    );
-    clientRef.current = client;
-
     async function poll() {
       try {
-        const mgState = await client.getMiniGameState();
+        const mgState = await fetchPlayerMiniGameState(
+          sessionId!,
+          characterId!,
+        );
         setMiniGameState(mgState);
       } catch {
-        // Swallow and retry on next tick; disconnected state handled inside TmstPlayerScreen
+        // Swallow; TmstPlayerScreen handles disconnected state internally
       }
     }
 
     poll();
     const interval = setInterval(poll, 2000);
-
-    return () => {
-      clearInterval(interval);
-      client.disconnect();
-      clientRef.current = null;
-    };
-  }, [hasCredentials, sessionId, playerToken, characterId]);
+    return () => clearInterval(interval);
+  }, [hasCredentials, sessionId, characterId]);
 
   const isTmstActive =
     hasCredentials &&
@@ -74,7 +63,7 @@ export default function WaitingScreen() {
     return (
       <TmstPlayerScreen
         sessionId={sessionId!}
-        playerToken={playerToken!}
+        playerToken={playerToken ?? ""}
         characterId={characterId!}
       />
     );

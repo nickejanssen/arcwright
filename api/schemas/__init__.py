@@ -306,3 +306,4 @@ class LobbyJoinResponse(BaseModel):
     participant_id: UUID
     session_id: UUID
     display_name: str
+    character_id: UUID

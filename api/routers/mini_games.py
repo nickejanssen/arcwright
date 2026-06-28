@@ -19,10 +19,10 @@ Endpoints:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any, cast
+from typing import Any, Optional, cast
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Query
 from pydantic import ValidationError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -376,6 +376,73 @@ async def get_active_mini_game(
             )
             for s in visible_submissions
         ],
+    )
+
+
+@router.get(
+    "/{session_id}/mini-games/active/display", response_model=MiniGameRunResponse
+)
+async def get_active_mini_game_display(
+    session_id: UUID,
+    character_id: Optional[UUID] = Query(
+        default=None,
+        description=(
+            "Player character UUID for a personalized view. "
+            "Omit for a shared-display view. "
+            "M4 pre-auth path — production auth via JWT at M5 (AW-269)."
+        ),
+    ),
+    db: AsyncSession = Depends(get_async_session),
+) -> MiniGameRunResponse:
+    """Return active mini-game state for unauthenticated display surfaces.
+
+    Shared display surfaces call this without character_id. Player devices
+    call it with their character_id to receive a personalized phase state
+    (is_spotlighted_player, can_vote, has_voted, submitted). No auth is
+    required because production auth is deferred to M5 (AW-269).
+    Private submissions are never included in this response.
+    """
+    runtime = _make_runtime(db, session_id)
+    run = await runtime.get_active_run(session_id)
+    if run is None:
+        raise HTTPException(status_code=404, detail="No active mini-game")
+
+    participant_character_ids = await _participant_character_ids(db, session_id)
+
+    if character_id is not None:
+        # Player-device path: personalized phase state with no JWT.
+        display_claims = JwtClaims(
+            uid=f"display:{character_id}",
+            session_id=session_id,
+            player_id=None,
+            role="player",
+        )
+    else:
+        # Shared-display path: role=display so prompt_ready / can_vote are False.
+        display_claims = JwtClaims(
+            uid="display",
+            session_id=session_id,
+            player_id=None,
+            role="display",
+        )
+
+    return MiniGameRunResponse(
+        run_id=run.run_id,
+        game_id=run.game_id,
+        status=run.status,
+        mechanic_type=run.definition_snapshot.get("mechanic_type")
+        if isinstance(run.definition_snapshot, dict)
+        else None,
+        deadline_at=run.deadline,
+        phase_state=_build_tmst_phase_state(
+            run,
+            claims=display_claims,
+            character_id=character_id,
+            participant_character_ids=participant_character_ids,
+        )
+        if run.game_id == _TMST_GAME_ID
+        else None,
+        my_submissions=[],
     )
 
 

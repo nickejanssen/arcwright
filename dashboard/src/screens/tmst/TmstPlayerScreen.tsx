@@ -9,6 +9,7 @@ import type {
   TmstInputPhaseState,
   TmstSpotlightPhaseState,
 } from "@arcwright/sdk";
+import { fetchPlayerMiniGameState } from "../../api/miniGame";
 
 interface Props {
   sessionId: string;
@@ -115,7 +116,14 @@ export default function TmstPlayerScreen({
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    const client = new ArcwrightClient(sessionId, playerToken, characterId, "");
+    // M5+: playerToken is a Firebase ID token; use ArcwrightClient for auth'd
+    // polling and SSE events.
+    // M4 (pre-auth, AW-269): playerToken is absent; fall back to the public
+    // /display endpoint for read-only polling. Action submissions are skipped.
+    const hasToken = Boolean(playerToken);
+    const client = hasToken
+      ? new ArcwrightClient(sessionId, playerToken, characterId, "")
+      : null;
     clientRef.current = client;
 
     let latestMgState: MiniGameState | null = null;
@@ -146,7 +154,9 @@ export default function TmstPlayerScreen({
     // Poll for phase transitions
     async function poll() {
       try {
-        const mgState = await client.getMiniGameState();
+        const mgState = client
+          ? await client.getMiniGameState()
+          : await fetchPlayerMiniGameState(sessionId, characterId);
         latestMgState = mgState;
         setState((prev) => ({
           ...prev,
@@ -160,6 +170,13 @@ export default function TmstPlayerScreen({
 
     poll();
     const interval = setInterval(poll, 2000);
+
+    // Real-time events require auth; skip SSE in M4 pre-auth mode.
+    if (!client) {
+      return () => {
+        clearInterval(interval);
+      };
+    }
 
     // Subscribe to real-time events for within-phase updates
     const unsubscribe = client.onEvent((event) => {
@@ -203,7 +220,7 @@ export default function TmstPlayerScreen({
     return () => {
       clearInterval(interval);
       unsubscribe();
-      client.disconnect();
+      client?.disconnect();
       clientRef.current = null;
     };
   }, [sessionId, playerToken, characterId]);
@@ -416,16 +433,14 @@ function InputPhasePlayer({
 
   return (
     <div style={styles.inputBlock}>
-      {/* TODO: the player's fact with the blank should come from
-          TmstPrivatePromptReady event payload once the engine sends it.
-          Currently showing a placeholder. */}
       <p style={styles.factLabel}>YOUR STATEMENT</p>
       <p style={styles.factText}>
-        [Your character&apos;s fact with one word blanked out will appear here.]
+        Write a fact about yourself with one word left blank. For example:
+        &ldquo;I once ate __ hotdogs in one sitting.&rdquo;
       </p>
 
       <label htmlFor="blank-input" style={styles.fieldLabel}>
-        Fill in the blank
+        Your statement (include the blank as __)
       </label>
       <input
         id="blank-input"
