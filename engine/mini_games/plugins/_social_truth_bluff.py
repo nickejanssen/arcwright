@@ -103,7 +103,7 @@ class SocialTruthBluffPlugin:
         lie_success_rate: dict[str, float] = {}
         for participant_id, submission in input_map.items():
             key = str(participant_id)
-            reveal: dict[str, Any] | None = next(
+            participant_reveal: dict[str, Any] | None = next(
                 (
                     item
                     for item in reveals
@@ -111,14 +111,16 @@ class SocialTruthBluffPlugin:
                 ),
                 None,
             )
-            if reveal is None:
+            if participant_reveal is None:
                 truth_accuracy_rate[key] = 0.0
                 lie_success_rate[key] = 0.0
                 continue
-            non_abstaining = len(reveal["votes"])
+            non_abstaining = len(participant_reveal["votes"])
             if submission["declared_truth"]:
                 correct_truth_votes = sum(
-                    1 for vote in reveal["votes"].values() if vote == "truth"
+                    1
+                    for vote in participant_reveal["votes"].values()
+                    if vote == "truth"
                 )
                 truth_accuracy_rate[key] = (
                     correct_truth_votes / non_abstaining if non_abstaining else 0.0
@@ -126,7 +128,9 @@ class SocialTruthBluffPlugin:
                 lie_success_rate[key] = 0.0
             else:
                 fooled_votes = sum(
-                    1 for vote in reveal["votes"].values() if vote == "truth"
+                    1
+                    for vote in participant_reveal["votes"].values()
+                    if vote == "truth"
                 )
                 lie_success_rate[key] = (
                     fooled_votes / non_abstaining if non_abstaining else 0.0
