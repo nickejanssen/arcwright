@@ -20,6 +20,7 @@ Invariants (non-negotiable, per AGENTS.md):
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from typing import Any, Protocol, cast, runtime_checkable
 from uuid import UUID
@@ -104,6 +105,78 @@ class MechanicPlugin(Protocol):
         submissions: list[MiniGameSubmission],
     ) -> dict[str, Any]:
         """Return the scoring outcome dict. Called only on finalization."""
+        ...
+
+
+@dataclass(frozen=True)
+class MechanicEventDirective:
+    """Surface-agnostic event emitted by a mechanic-specific runtime hook."""
+
+    category: EventCategory
+    event_type: str
+    target_audience: AudienceTarget
+    payload: dict[str, Any]
+    target_player_id: UUID | None = None
+
+
+@dataclass(frozen=True)
+class MechanicProgress:
+    """Optional mechanic-owned state transition applied by the runtime."""
+
+    state: dict[str, Any] | None = None
+    deadline: datetime | None = None
+    finalize_status: str | None = None
+    events: tuple[MechanicEventDirective, ...] = ()
+    synthetic_submissions: tuple["MechanicSyntheticSubmission", ...] = ()
+
+
+@dataclass(frozen=True)
+class MechanicSyntheticSubmission:
+    """Mechanic-authored accepted submission inserted by the runtime."""
+
+    submission_id: str
+    character_id: UUID
+    payload: dict[str, Any]
+    submitted_at: datetime
+
+
+@runtime_checkable
+class StatefulMechanicPlugin(Protocol):
+    """Optional extension for mechanics that need multi-phase runtime authority."""
+
+    def initialize_state(
+        self,
+        snapshot: ResolvedMiniGameSnapshot,
+        *,
+        participants: list[tuple[UUID, UUID]],
+        now: datetime,
+    ) -> MechanicProgress:
+        """Return initial state and any start-of-run events for the mechanic."""
+        ...
+
+    def on_submission(
+        self,
+        snapshot: ResolvedMiniGameSnapshot,
+        *,
+        state: dict[str, Any],
+        participants: list[tuple[UUID, UUID]],
+        submission: MiniGameSubmission,
+        accepted_submissions: list[MiniGameSubmission],
+        now: datetime,
+    ) -> MechanicProgress:
+        """Advance mechanic state after an accepted submission is recorded."""
+        ...
+
+    def on_deadline_expired(
+        self,
+        snapshot: ResolvedMiniGameSnapshot,
+        *,
+        state: dict[str, Any],
+        participants: list[tuple[UUID, UUID]],
+        accepted_submissions: list[MiniGameSubmission],
+        now: datetime,
+    ) -> MechanicProgress:
+        """Advance the mechanic when the current authoritative deadline expires."""
         ...
 
 
@@ -314,6 +387,7 @@ class MiniGameRuntime:
                 "duration_seconds": snapshot.duration_seconds,
             },
         )
+        await self._initialize_mechanic_state(run, snapshot, now)
         return run
 
     # ------------------------------------------------------------------
@@ -346,10 +420,16 @@ class MiniGameRuntime:
 
         # Check for timeout before processing submission
         if run.deadline and now > run.deadline:
-            await self._finalize_run(run, status="timed_out")
-            raise RunStateError(
-                "submission rejected: run deadline exceeded and run timed out"
-            )
+            handled = await self._handle_deadline_transition(run, now)
+            if handled:
+                await self._db.flush()
+                run = await self._load_run(run_id)
+            elif run.status == "active":
+                await self._finalize_run(run, status="timed_out")
+            if run.status != "active":
+                raise RunStateError(
+                    "submission rejected: run deadline exceeded and run transitioned"
+                )
 
         # Idempotency: return existing record for duplicate submission_id
         existing = await self._find_submission(run_id, submission_id)
@@ -402,6 +482,13 @@ class MiniGameRuntime:
         # Check scoring threshold after accepted submission
         if is_accepted:
             accepted = await self._load_accepted_submissions(run_id)
+            progress = await self._apply_stateful_submission_progress(
+                run,
+                snapshot,
+                submission,
+                accepted,
+                now,
+            )
             # Progress count to shared display (no scores, no rankings per ADR-0008)
             await self._publish(
                 run,
@@ -410,7 +497,9 @@ class MiniGameRuntime:
                 target_audience=AudienceTarget.shared_display,
                 payload={"submission_count": len(accepted)},
             )
-            if plugin.is_threshold_met(snapshot, accepted):
+            if progress and progress.finalize_status is not None:
+                await self._finalize_run(run, status=progress.finalize_status)
+            elif plugin.is_threshold_met(snapshot, accepted):
                 await self._finalize_run(run, status="completed")
 
         return submission
@@ -425,7 +514,9 @@ class MiniGameRuntime:
         if run.status != "active":
             return None
         if run.deadline and self._clock() > run.deadline:
-            await self._finalize_run(run, status="timed_out")
+            handled = await self._handle_deadline_transition(run, self._clock())
+            if not handled and run.status == "active":
+                await self._finalize_run(run, status="timed_out")
             return run
         return None
 
@@ -865,6 +956,124 @@ class MiniGameRuntime:
             presentation_hints=PresentationHints(),
         )
         await self._bus.publish(event)
+
+    async def _initialize_mechanic_state(
+        self,
+        run: MiniGameRun,
+        snapshot: ResolvedMiniGameSnapshot,
+        now: datetime,
+    ) -> None:
+        plugin = self._registry.get(snapshot.mechanic_type)
+        if not isinstance(plugin, StatefulMechanicPlugin):
+            return
+
+        participants = await self._eligible_participants(run.session_id)
+        progress = plugin.initialize_state(
+            snapshot,
+            participants=participants,
+            now=now,
+        )
+        await self._apply_mechanic_progress(run, progress)
+
+    async def _apply_stateful_submission_progress(
+        self,
+        run: MiniGameRun,
+        snapshot: ResolvedMiniGameSnapshot,
+        submission: MiniGameSubmission,
+        accepted_submissions: list[MiniGameSubmission],
+        now: datetime,
+    ) -> MechanicProgress | None:
+        plugin = self._registry.get(snapshot.mechanic_type)
+        if not isinstance(plugin, StatefulMechanicPlugin):
+            return None
+
+        state = self._mechanic_state(run)
+        participants = await self._eligible_participants(run.session_id)
+        progress = plugin.on_submission(
+            snapshot,
+            state=state,
+            participants=participants,
+            submission=submission,
+            accepted_submissions=accepted_submissions,
+            now=now,
+        )
+        await self._apply_mechanic_progress(run, progress)
+        return progress
+
+    async def _handle_deadline_transition(
+        self,
+        run: MiniGameRun,
+        now: datetime,
+    ) -> bool:
+        snapshot = self._decode_snapshot(run)
+        plugin = self._registry.get(snapshot.mechanic_type)
+        if not isinstance(plugin, StatefulMechanicPlugin):
+            return False
+
+        progress = plugin.on_deadline_expired(
+            snapshot,
+            state=self._mechanic_state(run),
+            participants=await self._eligible_participants(run.session_id),
+            accepted_submissions=await self._load_accepted_submissions(run.run_id),
+            now=now,
+        )
+        await self._apply_mechanic_progress(run, progress)
+        if progress.finalize_status is not None:
+            await self._finalize_run(run, status=progress.finalize_status)
+        return True
+
+    async def _apply_mechanic_progress(
+        self,
+        run: MiniGameRun,
+        progress: MechanicProgress,
+    ) -> None:
+        record = dict(run.clue_unlock_record or {})
+        if progress.state is not None:
+            record["runtime_state"] = progress.state
+            run.clue_unlock_record = record
+        if progress.deadline is not None or progress.state is not None:
+            await self._increment_revision(run)
+            if progress.deadline is not None:
+                run.deadline = progress.deadline
+            run.clue_unlock_record = record
+            await self._db.flush()
+        if progress.synthetic_submissions:
+            for synthetic in progress.synthetic_submissions:
+                existing = await self._find_submission(
+                    run.run_id, synthetic.submission_id
+                )
+                if existing is not None:
+                    continue
+                self._db.add(
+                    MiniGameSubmission(
+                        run_id=run.run_id,
+                        submission_id=synthetic.submission_id,
+                        character_id=synthetic.character_id,
+                        submitted_at=synthetic.submitted_at,
+                        payload=synthetic.payload,
+                        is_accepted=True,
+                        rejection_reason=None,
+                        scored_at=None,
+                    )
+                )
+            await self._db.flush()
+        for event in progress.events:
+            await self._publish(
+                run,
+                category=event.category,
+                event_type=event.event_type,
+                target_audience=event.target_audience,
+                payload=event.payload,
+                target_player_id=event.target_player_id,
+            )
+
+    @staticmethod
+    def _mechanic_state(run: MiniGameRun) -> dict[str, Any]:
+        record = dict(run.clue_unlock_record or {})
+        state = record.get("runtime_state")
+        if isinstance(state, dict):
+            return dict(state)
+        return {}
 
     @staticmethod
     def _decode_snapshot(run: MiniGameRun) -> ResolvedMiniGameSnapshot:
