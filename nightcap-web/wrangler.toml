@@ -19,6 +19,21 @@ binding = "ASSETS"
 name = "ROOMS"
 class_name = "NightcapRoom"
 
+# [[migrations]] is a top-level config that applies to all environments.
+# Do not re-declare it under [env.production] or any other env block;
+# doing so would register the migration a second time.
 [[migrations]]
 tag = "v1"
 new_classes = ["NightcapRoom"]
+
+[env.production]
+name = "nightcap-web-prod"
+# Set ARCWRIGHT_API_BASE_URL and FIREBASE_WEB_API_KEY with
+# `wrangler secret put ... --env production`.
+
+  [env.production.vars]
+  FIREBASE_SIGN_IN_URL = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken"
+
+  [[env.production.durable_objects.bindings]]
+  name = "ROOMS"
+  class_name = "NightcapRoom"
