@@ -27,3 +27,10 @@ new_classes = ["NightcapRoom"]
 name = "nightcap-web-prod"
 # Set ARCWRIGHT_API_BASE_URL and FIREBASE_WEB_API_KEY with
 # `wrangler secret put ... --env production`.
+
+  [env.production.vars]
+  FIREBASE_SIGN_IN_URL = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken"
+
+  [[env.production.durable_objects.bindings]]
+  name = "ROOMS"
+  class_name = "NightcapRoom"

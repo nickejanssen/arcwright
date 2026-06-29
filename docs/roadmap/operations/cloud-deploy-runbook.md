@@ -20,8 +20,9 @@
 4. Enable the `vector` extension in the application database after provisioning.
 5. Create the `arcwright` database and an application user with a least-privilege password.
 6. Build the `DATABASE_URL` from the same Postgres names used in `docker-compose.yml`: `POSTGRES_DB`, `POSTGRES_USER`, and `POSTGRES_PASSWORD`.
-7. Create Secret Manager secrets named `DATABASE_URL`, `ANTHROPIC_API_KEY`, `GROQ_API_KEY`, and `FIREBASE_SERVICE_ACCOUNT_JSON`.
+7. Create Secret Manager secrets named `DATABASE_URL`, `ARCWRIGHT_API_KEY`, `ANTHROPIC_API_KEY`, `GROQ_API_KEY`, and `FIREBASE_SERVICE_ACCOUNT_JSON`.
 8. Create a Workload Identity pool and provider for this GitHub repository, then allow the GitHub deployer service account to impersonate through that provider.
+9. Before the first production deploy, record the unresolved API-service to worker-service communication decision from `docs/architecture/05-session-persistence.md`. This PR only deploys `arcwright-api`; do not treat AW-269 as production-complete until that prerequisite is documented.
 
 ## 3. GitHub Actions Secrets
 
@@ -35,7 +36,8 @@
 
 1. Create or connect the Cloudflare Pages project for this repository.
 2. From `nightcap-web/`, set the production API base URL with `wrangler secret put ARCWRIGHT_API_BASE_URL --env production` using the Cloud Run service URL after the first backend deploy.
-3. From `nightcap-web/`, set the Firebase web key with `wrangler secret put FIREBASE_WEB_API_KEY --env production`.
+3. From `nightcap-web/`, set the Arcwright server API key with `wrangler secret put ARCWRIGHT_API_KEY --env production`.
+4. From `nightcap-web/`, set the Firebase web key with `wrangler secret put FIREBASE_WEB_API_KEY --env production`.
 
 ## 5. Firebase Auth
 
@@ -43,11 +45,11 @@
 2. Enable custom token sign-in.
 3. Enable anonymous sign-in.
 4. Create a Firebase service account JSON credential and store it in Secret Manager as `FIREBASE_SERVICE_ACCOUNT_JSON`.
-5. Confirm the Cloud Run deploy command in `.github/workflows/deploy-api.yml` includes `FIREBASE_SERVICE_ACCOUNT_JSON=FIREBASE_SERVICE_ACCOUNT_JSON:latest` in `--set-secrets`.
+5. Confirm the Cloud Run deploy command in `.github/workflows/deploy-api.yml` includes both `ARCWRIGHT_API_KEY=ARCWRIGHT_API_KEY:latest` and `FIREBASE_SERVICE_ACCOUNT_JSON=FIREBASE_SERVICE_ACCOUNT_JSON:latest` in `--set-secrets`.
 
 ## 6. Smoke Test
 
-1. Deploy the API and web targets from `main`.
+1. Deploy the API and web targets from `main` only after the worker-service prerequisite above is resolved and documented.
 2. Create a session through `POST /v1/sessions`.
 3. Join the session from a real phone using the Pages URL.
 4. Verify SSE event delivery on the phone client.
