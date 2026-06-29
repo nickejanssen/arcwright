@@ -19,6 +19,9 @@ binding = "ASSETS"
 name = "ROOMS"
 class_name = "NightcapRoom"
 
+# [[migrations]] is a top-level config that applies to all environments.
+# Do not re-declare it under [env.production] or any other env block;
+# doing so would register the migration a second time.
 [[migrations]]
 tag = "v1"
 new_classes = ["NightcapRoom"]

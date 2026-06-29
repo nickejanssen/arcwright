@@ -20,7 +20,7 @@
 4. Enable the `vector` extension in the application database after provisioning.
 5. Create the `arcwright` database and an application user with a least-privilege password.
 6. Build the `DATABASE_URL` from the same Postgres names used in `docker-compose.yml`: `POSTGRES_DB`, `POSTGRES_USER`, and `POSTGRES_PASSWORD`.
-7. Create Secret Manager secrets named `DATABASE_URL`, `ARCWRIGHT_API_KEY`, `ANTHROPIC_API_KEY`, `GROQ_API_KEY`, and `FIREBASE_SERVICE_ACCOUNT_JSON`.
+7. Create Secret Manager secrets named `DATABASE_URL`, `ARCWRIGHT_API_KEY`, `PRIMARY_LLM_API_KEY`, `SECONDARY_LLM_API_KEY`, and `FIREBASE_SERVICE_ACCOUNT_JSON`. The names `PRIMARY_LLM_API_KEY` and `SECONDARY_LLM_API_KEY` are provider-neutral; store the actual Anthropic API key under `PRIMARY_LLM_API_KEY` and the Groq API key under `SECONDARY_LLM_API_KEY`. Do not use provider names in Secret Manager secret names.
 8. Create a Workload Identity pool and provider for this GitHub repository, then allow the GitHub deployer service account to impersonate through that provider.
 9. Before the first production deploy, record the unresolved API-service to worker-service communication decision from `docs/architecture/05-session-persistence.md`. This PR only deploys `arcwright-api`; do not treat AW-269 as production-complete until that prerequisite is documented.
 
@@ -55,3 +55,30 @@
 4. Verify SSE event delivery on the phone client.
 5. Complete one TMST round end to end.
 6. Set a GCP budget alert at `$100/month`.
+
+## 7. Post-Deploy Verification Checklist
+
+Run these three steps manually after every deploy to confirm the core acceptance criteria are met before declaring the deploy successful.
+
+**Step 1 — Engine health endpoint**
+
+```bash
+curl -f https://<CLOUD_RUN_SERVICE_URL>/health
+```
+
+Expected: HTTP 200. A non-200 or connection error means the Cloud Run service did not start correctly. Check Cloud Run logs in GCP Console.
+
+**Step 2 — Web app reachability**
+
+Open the Cloudflare Pages production URL (visible in the Cloudflare dashboard or in the `wrangler deploy` output) in a browser. Confirm the Nightcap landing page renders without a 5xx error or broken asset load.
+
+**Step 3 — Scripted session ping**
+
+```bash
+curl -sf -X POST https://<CLOUD_RUN_SERVICE_URL>/v1/sessions \
+  -H "Content-Type: application/json" \
+  -d '{"arc_id": "nightcap-v1"}' \
+  | jq '.session_id'
+```
+
+Expected: a non-empty session ID string is printed. A 4xx or 5xx response means the API is reachable but session creation is broken — check database connectivity and Secret Manager secret bindings in the Cloud Run service configuration.
