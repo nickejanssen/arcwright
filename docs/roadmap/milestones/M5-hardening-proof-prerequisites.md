@@ -16,6 +16,7 @@ This milestone closes the gap between a technically working product and a produc
 - [M5-E: Character Behavior Engine Hardening](../epics/M5-E-character-behavior-engine-hardening.md)
 - [M5-F: Tell Me Something True Social Opener Implementation](../epics/M5-F-tell-me-something-true-social-opener.md)
 - [M5-G: Nightcap Visual Identity and Polish](../epics/M5-G-nightcap-visual-identity-and-polish.md)
+- [M5-H: Narrative Fidelity Layer](../epics/M5-H-narrative-fidelity-layer.md)
 
 ## Exit Gate
 
@@ -23,3 +24,4 @@ This milestone closes the gap between a technically working product and a produc
 - Per-session gross margin known at each supported human player count
 - A Daily Case second arc schema exists and post-M6 executable follow-through is queued
 - The live knowledge graph inspection surface is live; read-only arc structure, live event stream, and character state inspection may ship as logs or defer until after proof
+- The continuity and coherence eval suite (AW-272) runs against a synthetic session batch and reports knowledge-leak rate and contradiction count
