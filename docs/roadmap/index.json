@@ -1896,7 +1896,7 @@
     {
       "id": "AW-270",
       "title": "Authorial Intent Block and Intent Fidelity Telemetry",
-      "milestone": "M5",
+      "milestone": "Post-M6",
       "epic": "M5-H",
       "size": "M",
       "depends_on": [],
@@ -1910,7 +1910,7 @@
     {
       "id": "AW-271",
       "title": "Narrative Obligations Model and Reveal-Readiness Condition",
-      "milestone": "M5",
+      "milestone": "Post-M6",
       "epic": "M5-H",
       "size": "M",
       "depends_on": [],
