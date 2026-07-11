@@ -14,7 +14,7 @@
 - No em dashes in any created or edited file (AGENTS.md, bound on all agents).
 - Platform docs stay game-agnostic: Nightcap appears only as an example, never as an engine-level assumption.
 
-**Repo rules that bind every task:** branch off `main` first; commit per task; never stage `.claude/`/tool-local files; `docs/roadmap/operations/cloud-deploy-runbook.md` has pre-existing uncommitted changes that must NOT be staged.
+**Repo rules that bind every task:** branch off `main` first; commit per task; never stage `.claude/`/tool-local files. The working tree starts clean: the previously uncommitted cloud-deploy-runbook expansion was parked on branch `docs/cloud-deploy-runbook-expansion` (commit `e198ecd`) at planning handoff and is not part of this rollout.
 
 ---
 
@@ -885,7 +885,7 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 
 **Acceptance Criteria:**
 - [ ] Every file path referenced by the new/edited docs exists (specs reference tasks, tasks reference specs, epic references tasks, ADR references hold)
-- [ ] `git status` shows no staged agent-local files and `docs/roadmap/operations/cloud-deploy-runbook.md` remains unstaged/untouched by this branch
+- [ ] `git status` shows no staged agent-local files and nothing uncommitted that this plan did not create
 - [ ] No em dash in any file added or edited on this branch
 - [ ] PR opened against `main`
 
@@ -925,7 +925,7 @@ Expected: `OK`
 - [ ] **Step 2: Confirm clean status**
 
 Run: `git status --short`
-Expected: only ` M docs/roadmap/operations/cloud-deploy-runbook.md` (pre-existing, leave alone) and nothing else uncommitted; no `.claude/` entries.
+Expected: empty output (everything committed); no `.claude/` entries. The cloud-deploy-runbook expansion lives on branch `docs/cloud-deploy-runbook-expansion` and must not appear here.
 
 - [ ] **Step 3: Push and open PR**
 
