@@ -66,7 +66,7 @@
     {
       "id": 8,
       "subject": "Task 8: Consistency sweep + PR",
-      "status": "in_progress",
+      "status": "completed",
       "blockedBy": [
         7
       ],
