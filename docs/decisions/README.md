@@ -45,6 +45,7 @@ When proposing changes:
 - `0009-mini-game-runtime-boundary.md` - AW-249 separates reusable deterministic mini-game contracts from Nightcap presentation and records the v1 behavioral and clue fallback boundaries
 - `0010-nightcap-gameplay-pivots-post-playtest.md` - post-playtest gameplay pivots for Nightcap
 - `0011-single-cloudrun-service-at-mvp.md` - AW-269 defers arcwright-worker from initial cloud deploy automation until the inter-service communication mechanism is resolved
+- `0012-authorial-intent-obligations-continuity-evals.md` - adopts authorial intent block, narrative obligations model with reveal-readiness signal, and continuity evals from the dissertation-draft comparison; defers post-generation continuity classifier and host rollback to open questions
 
 ## Current Decision Categories
 
