@@ -1,0 +1,77 @@
+{
+  "planPath": "docs/superpowers/plans/2026-07-11-adr-0012-docs-rollout.md",
+  "tasks": [
+    {
+      "id": 1,
+      "subject": "Task 1: Branch + roadmap task files AW-270/271/272",
+      "status": "completed",
+      "description": "**Goal:** Create branch docs/adr-0012-rollout and the three canonical task files in the AW-267 format.\n\n**Files:**\n- Create: docs/roadmap/tasks/AW-270-authorial-intent-block-and-fidelity-telemetry.md\n- Create: docs/roadmap/tasks/AW-271-narrative-obligations-model.md\n- Create: docs/roadmap/tasks/AW-272-continuity-coherence-eval-suite.md\n\n**Acceptance Criteria:** branch checked out; three task files with 12 standard sections; AW-270/271 post-M6 flagged; no em dashes.\n\n**Verify:** grep -l $'\\u2014' docs/roadmap/tasks/AW-27[012]*.md || echo CLEAN -> CLEAN\n\n**Steps:** Full file contents in plan doc Task 1 Steps 2-4; commit per Step 5.\n\n```json:metadata\n{\"files\": [\"docs/roadmap/tasks/AW-270-authorial-intent-block-and-fidelity-telemetry.md\", \"docs/roadmap/tasks/AW-271-narrative-obligations-model.md\", \"docs/roadmap/tasks/AW-272-continuity-coherence-eval-suite.md\"], \"verifyCommand\": \"grep -l $'\\\\u2014' docs/roadmap/tasks/AW-27[012]*.md || echo CLEAN\", \"acceptanceCriteria\": [\"branch docs/adr-0012-rollout checked out\", \"three task files with 12 sections each\", \"AW-270/271 post-M6 flagged\", \"no em dashes\"], \"modelTier\": \"mechanical\"}\n```"
+    },
+    {
+      "id": 2,
+      "subject": "Task 2: Epic M5-H file + M5 milestone update",
+      "status": "completed",
+      "blockedBy": [
+        1
+      ],
+      "description": "**Goal:** Create the M5-H epic file and register it in the M5 milestone file with the AW-272 exit-gate line.\n\n**Files:**\n- Create: docs/roadmap/epics/M5-H-narrative-fidelity-layer.md\n- Modify: docs/roadmap/milestones/M5-hardening-proof-prerequisites.md\n\n**Acceptance Criteria:** epic file in M5-C format; milestone lists M5-H after M5-G; exit gate includes continuity eval line; no em dashes.\n\n**Verify:** grep -c \"M5-H\" docs/roadmap/milestones/M5-hardening-proof-prerequisites.md -> 1\n\n**Steps:** Full epic content and milestone edit lines in plan doc Task 2.\n\n```json:metadata\n{\"files\": [\"docs/roadmap/epics/M5-H-narrative-fidelity-layer.md\", \"docs/roadmap/milestones/M5-hardening-proof-prerequisites.md\"], \"verifyCommand\": \"grep -c \\\"M5-H\\\" docs/roadmap/milestones/M5-hardening-proof-prerequisites.md\", \"acceptanceCriteria\": [\"epic file in M5-C format\", \"milestone epic list + exit gate updated\", \"no em dashes\"], \"modelTier\": \"mechanical\"}\n```"
+    },
+    {
+      "id": 3,
+      "subject": "Task 3: index.json manifest entries",
+      "status": "completed",
+      "blockedBy": [
+        2
+      ],
+      "description": "**Goal:** Register M5-H and AW-270/271/272 in docs/roadmap/index.json (M5 epics array, epic entry, three task entries, github null until Task 7).\n\n**Files:**\n- Modify: docs/roadmap/index.json\n\n**Acceptance Criteria:** M5-H in M5 epics array; epic entry with tasks [AW-272, AW-270, AW-271] github null; three task entries size M depends_on [] epic/epic_id M5-H github null; JSON parses.\n\n**Verify:** python assert script in plan Task 3 -> OK\n\n**Steps:** Python script in plan doc Task 3 Step 1; match neighboring key order.\n\n```json:metadata\n{\"files\": [\"docs/roadmap/index.json\"], \"verifyCommand\": \"python -c \\\"import json; d=json.load(open('docs/roadmap/index.json',encoding='utf-8-sig')); assert 'M5-H' in [e['id'] for e in d['epics']]; assert {'AW-270','AW-271','AW-272'} <= {t['id'] for t in d['tasks']}; print('OK')\\\"\", \"acceptanceCriteria\": [\"M5-H in M5 epics array\", \"epic + 3 task entries added\", \"JSON parses\"], \"modelTier\": \"mechanical\"}\n```"
+    },
+    {
+      "id": 4,
+      "subject": "Task 4: Spec files 0064, 0065, 0066",
+      "status": "completed",
+      "blockedBy": [
+        1
+      ],
+      "description": "**Goal:** Author three per-feature specs from docs/specs/0000-template.md with the content cores in plan doc Task 4 (0064: authorial_intent JSON contract; 0065: obligations DDL + lifecycle; 0066: eval metrics + report format).\n\n**Files:**\n- Create: docs/specs/0064-aw-270-authorial-intent-block.md\n- Create: docs/specs/0065-aw-271-narrative-obligations-model.md\n- Create: docs/specs/0066-aw-272-continuity-coherence-evals.md\n\n**Acceptance Criteria:** Status Approved, Author Founder + Claude (ADR-0012 rollout), Date 2026-07-11; each references ADR-0012 + AW task + architecture sections; exact contracts included; no em dashes.\n\n**Verify:** grep -l \"0012-authorial-intent\" docs/specs/006[456]*.md | wc -l -> 3\n\n```json:metadata\n{\"files\": [\"docs/specs/0064-aw-270-authorial-intent-block.md\", \"docs/specs/0065-aw-271-narrative-obligations-model.md\", \"docs/specs/0066-aw-272-continuity-coherence-evals.md\"], \"verifyCommand\": \"grep -l \\\"0012-authorial-intent\\\" docs/specs/0064*.md docs/specs/0065*.md docs/specs/0066*.md | wc -l\", \"acceptanceCriteria\": [\"three specs from template\", \"exact contracts included\", \"ADR-0012 referenced in all\"], \"modelTier\": \"mechanical\"}\n```"
+    },
+    {
+      "id": 5,
+      "subject": "Task 5: Architecture section updates",
+      "status": "completed",
+      "blockedBy": [
+        4
+      ],
+      "description": "**Goal:** Append Section 3.8 to 03-arc-execution.md, Section 11.8 to 11-telemetry.md, obligations table section to supplemental-schemas.md.\n\n**Files:**\n- Modify: docs/architecture/03-arc-execution.md\n- Modify: docs/architecture/11-telemetry.md\n- Modify: docs/architecture/supplemental-schemas.md\n\n**Acceptance Criteria:** 3.8 covers intent + obligations contracts with spec pointers; 11.8 covers target_score, intent_fidelity_summary, obligation_created, obligation_resolved; DDL matches spec 0065; no em dashes in appended content.\n\n**Verify:** grep -c \"ADR-0012\" on all three files -> nonzero each\n\n**Steps:** Exact markdown blocks in plan doc Task 5 Steps 1-3.\n\n```json:metadata\n{\"files\": [\"docs/architecture/03-arc-execution.md\", \"docs/architecture/11-telemetry.md\", \"docs/architecture/supplemental-schemas.md\"], \"verifyCommand\": \"grep -c \\\"ADR-0012\\\" docs/architecture/03-arc-execution.md docs/architecture/11-telemetry.md docs/architecture/supplemental-schemas.md\", \"acceptanceCriteria\": [\"3.8 appended\", \"11.8 appended\", \"obligations DDL appended matching spec 0065\"], \"modelTier\": \"mechanical\"}\n```"
+    },
+    {
+      "id": 6,
+      "subject": "Task 6: PRD updates",
+      "status": "completed",
+      "blockedBy": [
+        2
+      ],
+      "description": "**Goal:** Append the Narrative fidelity (ADR-0012) paragraph to 02-requirements.md (end of What the Platform Must Do) and the Future Directions bullet to 03-scope.md.\n\n**Files:**\n- Modify: docs/prd/02-requirements.md\n- Modify: docs/prd/03-scope.md\n\n**Acceptance Criteria:** both additions verbatim from plan doc Task 6; no em dashes.\n\n**Verify:** grep -c \"ADR-0012\" docs/prd/02-requirements.md docs/prd/03-scope.md -> 1 each or more\n\n```json:metadata\n{\"files\": [\"docs/prd/02-requirements.md\", \"docs/prd/03-scope.md\"], \"verifyCommand\": \"grep -c \\\"ADR-0012\\\" docs/prd/02-requirements.md docs/prd/03-scope.md\", \"acceptanceCriteria\": [\"requirements paragraph appended\", \"scope bullet appended\"], \"modelTier\": \"mechanical\"}\n```"
+    },
+    {
+      "id": 7,
+      "subject": "Task 7: GitHub issues + manifest backfill",
+      "status": "completed",
+      "blockedBy": [
+        3,
+        5,
+        6
+      ],
+      "description": "**Goal:** Create 1 epic + 3 task issues (labels Epic/task, size:M, M5; milestone M5: Hardening + Proof Prerequisites; bodies from roadmap files), then backfill issue numbers into index.json.\n\n**Files:**\n- Modify: docs/roadmap/index.json (github objects for M5-H, AW-270, AW-271, AW-272)\n\n**Acceptance Criteria:** four issues with correct titles/labels/milestone/bodies; index.json github objects carry issue_number + url; JSON parses.\n\n**Verify:** gh issue list --repo nickejanssen/arcwright --label M5 --search \"AW-27\" shows the three tasks; python check in plan Task 7 Step 3 -> OK\n\n**Steps:** Exact gh commands in plan doc Task 7 Step 1; backfill script in Step 2.\n\n```json:metadata\n{\"files\": [\"docs/roadmap/index.json\"], \"verifyCommand\": \"python -c \\\"import json; d=json.load(open('docs/roadmap/index.json',encoding='utf-8-sig')); e=[x for x in d['epics'] if x['id']=='M5-H'][0]; assert e['github']['issue_number']; print('OK')\\\"\", \"acceptanceCriteria\": [\"4 issues created with correct labels/milestone\", \"manifest backfilled\"], \"modelTier\": \"mechanical\"}\n```"
+    },
+    {
+      "id": 8,
+      "subject": "Task 8: Consistency sweep + PR",
+      "status": "completed",
+      "blockedBy": [
+        7
+      ],
+      "description": "**Goal:** Run the cross-reference check script, confirm clean git status (no agent-local files; working tree fully committed; the cloud-deploy-runbook expansion lives on branch docs/cloud-deploy-runbook-expansion and must not appear), push branch, open PR, hand off to review-pr skill.\n\n**Files:** none created; verification and PR only.\n\n**Acceptance Criteria:** cross-ref script prints OK; git status is empty; PR open against main with approval-evidence body from plan Task 8 Step 3.\n\n**Verify:** gh pr view --json url returns URL\n\n```json:metadata\n{\"files\": [], \"verifyCommand\": \"gh pr view --json url\", \"acceptanceCriteria\": [\"cross-ref script OK\", \"clean status\", \"PR open\"], \"modelTier\": \"mechanical\"}\n```"
+    }
+  ],
+  "lastUpdated": "2026-07-11T23:45:00Z"
+}

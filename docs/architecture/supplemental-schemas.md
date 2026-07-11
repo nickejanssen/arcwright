@@ -161,3 +161,26 @@ embedding         VECTOR(1536)   -- NULL; populated when embedding collection ac
 
 Additional columns (name, arc_id, session_id) are not defined in any architecture document.
 Do not add them until specified.
+
+---
+
+## `obligations`
+
+Adopted by ADR-0012, implemented post-M6 by AW-271 with a reviewed migration. Tracks narrative obligations as durable session state.
+
+```sql
+CREATE TABLE obligations (
+    obligation_id  UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    session_id     UUID NOT NULL REFERENCES sessions(session_id),
+    source_type    TEXT NOT NULL,   -- "authored" | "pacing_misdirection" | "generative"
+    source_ref     JSONB NOT NULL DEFAULT '{}',  -- fact_id, event_id, or arc element id
+    description    TEXT NOT NULL,
+    mandatory      BOOLEAN NOT NULL DEFAULT false,
+    status         TEXT NOT NULL DEFAULT 'open', -- "open" | "resolved" | "expired"
+    created_beat   TEXT NOT NULL,
+    resolved_beat  TEXT,
+    created_at     TIMESTAMPTZ NOT NULL DEFAULT now(),
+    resolved_at    TIMESTAMPTZ
+);
+CREATE INDEX ON obligations (session_id, status);
+```

@@ -146,7 +146,8 @@
         "M5-C",
         "M5-D",
         "M5-F",
-        "M5-G"
+        "M5-G",
+        "M5-H"
       ],
       "github": {
         "milestone_number": 5,
@@ -606,6 +607,22 @@
       "github": {
         "issue_number": 54,
         "url": "https://github.com/nickejanssen/arcwright/issues/54"
+      }
+    },
+    {
+      "id": "M5-H",
+      "milestone": "M5",
+      "title": "Narrative Fidelity Layer",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M5-H-narrative-fidelity-layer.md",
+      "tasks": [
+        "AW-272",
+        "AW-270",
+        "AW-271"
+      ],
+      "github": {
+        "issue_number": 201,
+        "url": "https://github.com/nickejanssen/arcwright/issues/201"
       }
     }
   ],
@@ -1875,6 +1892,48 @@
         "url": "https://github.com/nickejanssen/arcwright/issues/188"
       },
       "epic_id": null
+    },
+    {
+      "id": "AW-270",
+      "title": "Authorial Intent Block and Intent Fidelity Telemetry",
+      "milestone": "Post-M6",
+      "epic": "M5-H",
+      "size": "M",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-270-authorial-intent-block-and-fidelity-telemetry.md",
+      "github": {
+        "issue_number": 202,
+        "url": "https://github.com/nickejanssen/arcwright/issues/202"
+      },
+      "epic_id": "M5-H"
+    },
+    {
+      "id": "AW-271",
+      "title": "Narrative Obligations Model and Reveal-Readiness Condition",
+      "milestone": "Post-M6",
+      "epic": "M5-H",
+      "size": "M",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-271-narrative-obligations-model.md",
+      "github": {
+        "issue_number": 203,
+        "url": "https://github.com/nickejanssen/arcwright/issues/203"
+      },
+      "epic_id": "M5-H"
+    },
+    {
+      "id": "AW-272",
+      "title": "Continuity and Coherence Eval Suite",
+      "milestone": "M5",
+      "epic": "M5-H",
+      "size": "M",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-272-continuity-coherence-eval-suite.md",
+      "github": {
+        "issue_number": 204,
+        "url": "https://github.com/nickejanssen/arcwright/issues/204"
+      },
+      "epic_id": "M5-H"
     }
   ],
   "superseded_sources": [
