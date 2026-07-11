@@ -620,7 +620,10 @@
         "AW-270",
         "AW-271"
       ],
-      "github": null
+      "github": {
+        "issue_number": 201,
+        "url": "https://github.com/nickejanssen/arcwright/issues/201"
+      }
     }
   ],
   "tasks": [
@@ -1898,7 +1901,10 @@
       "size": "M",
       "depends_on": [],
       "path": "docs/roadmap/tasks/AW-270-authorial-intent-block-and-fidelity-telemetry.md",
-      "github": null,
+      "github": {
+        "issue_number": 202,
+        "url": "https://github.com/nickejanssen/arcwright/issues/202"
+      },
       "epic_id": "M5-H"
     },
     {
@@ -1909,7 +1915,10 @@
       "size": "M",
       "depends_on": [],
       "path": "docs/roadmap/tasks/AW-271-narrative-obligations-model.md",
-      "github": null,
+      "github": {
+        "issue_number": 203,
+        "url": "https://github.com/nickejanssen/arcwright/issues/203"
+      },
       "epic_id": "M5-H"
     },
     {
@@ -1920,7 +1929,10 @@
       "size": "M",
       "depends_on": [],
       "path": "docs/roadmap/tasks/AW-272-continuity-coherence-eval-suite.md",
-      "github": null,
+      "github": {
+        "issue_number": 204,
+        "url": "https://github.com/nickejanssen/arcwright/issues/204"
+      },
       "epic_id": "M5-H"
     }
   ],
