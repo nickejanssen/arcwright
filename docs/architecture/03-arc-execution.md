@@ -153,3 +153,30 @@ The coordinator never blocks. All AI generation calls are `await`-ed as asyncio 
 | Reckoning | `reckoning` | Accusation pressure, standing shifts, balance checks | Shared display: accusation mechanics; phones: private prompts |
 | Close | `close` | Final convergence and reveal readiness checks | Shared display: closing tension; phones: final private context |
 | Truth | `truth` | Killer confession narrative and full evidence accounting | Shared display: reveal scene; phones: outcome summary |
+
+## 3.8 Authorial Intent and Narrative Obligations (ADR-0012, post-M6)
+
+Adopted in `docs/decisions/0012-authorial-intent-obligations-continuity-evals.md`.
+Implementation is sequenced post-M6 under epic M5-H; this section records the
+architectural contract so schema and engine work land against a stable design.
+
+**Authorial intent block.** Arc definitions may declare an optional
+`authorial_intent` block: `theme`, `tone`, and `emotional_targets` (a list of
+`{beat_id, target_tension, note}` entries validated against the arc's beat
+graph). When present, the block is injected into generation context assembly
+as a static, cacheable context layer, and the pacing engine compares the live
+`dramatic_tension_score` against the declared per-beat target. Intent is
+generation context and telemetry comparison only: it never overrides
+deterministic state transitions and it is never interpreted by the engine
+beyond validation. Contract details: `docs/specs/0064-aw-270-authorial-intent-block.md`.
+
+**Narrative obligations.** The engine tracks narrative obligations (authored
+setups registered from the arc definition at session start, and any
+pacing-engine misdirection injection, which auto-creates a record) as durable
+rows in the `obligations` table (see `docs/architecture/supplemental-schemas.md`).
+Only deterministic engine paths mutate obligation state; AI output never
+creates or resolves an obligation directly. The session context exposes
+`all_mandatory_obligations_resolved`, which arcs may reference in
+`exit_conditions` exactly like any other condition key under the generic
+evaluation contract in Section 3.2. The engine never interprets the key name.
+Contract details: `docs/specs/0065-aw-271-narrative-obligations-model.md`.

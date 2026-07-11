@@ -133,3 +133,20 @@ The Tier 2 transition (fine-tuned models replacing managed API calls for specifi
 - **Break-even:** per-session cost from `generation_logs` at current managed API rates vs projected fine-tuned inference cost
 
 The Tier 2 transition cannot be evaluated without this data. Arcwright starts collecting it from session one.
+
+## 11.8 Narrative Fidelity Signals (ADR-0012)
+
+Adopted in `docs/decisions/0012-authorial-intent-obligations-continuity-evals.md`.
+The runtime signals below land with AW-270 and AW-271 (post-M6). The offline
+continuity eval suite (AW-272, pre-M6) is the first consumer of the Tier 2
+"behavior consistency score" signal listed in Section 11.6.
+
+| Event | Payload | Emitted when |
+| --- | --- | --- |
+| `tension_update` (extended) | existing payload plus optional `target_score` | Arc declares an emotional target for the current beat |
+| `intent_fidelity_summary` | `{beat_id, target_score, mean_score, mean_abs_deviation}` | Beat exit, for beats with a declared target |
+| `obligation_created` | `{obligation_id, source_type, mandatory, beat_id}` | Authored setup registration or pacing misdirection injection |
+| `obligation_resolved` | `{obligation_id, resolution_beat, open_duration_seconds}` | Deterministic resolution trigger fires |
+
+Realized-versus-intended tension curves and obligation lifecycle data are
+additional Tier 2 training signals collected at near-zero marginal cost.
