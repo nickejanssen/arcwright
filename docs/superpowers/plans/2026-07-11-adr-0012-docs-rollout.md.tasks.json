@@ -4,13 +4,13 @@
     {
       "id": 1,
       "subject": "Task 1: Branch + roadmap task files AW-270/271/272",
-      "status": "pending",
+      "status": "completed",
       "description": "**Goal:** Create branch docs/adr-0012-rollout and the three canonical task files in the AW-267 format.\n\n**Files:**\n- Create: docs/roadmap/tasks/AW-270-authorial-intent-block-and-fidelity-telemetry.md\n- Create: docs/roadmap/tasks/AW-271-narrative-obligations-model.md\n- Create: docs/roadmap/tasks/AW-272-continuity-coherence-eval-suite.md\n\n**Acceptance Criteria:** branch checked out; three task files with 12 standard sections; AW-270/271 post-M6 flagged; no em dashes.\n\n**Verify:** grep -l $'\\u2014' docs/roadmap/tasks/AW-27[012]*.md || echo CLEAN -> CLEAN\n\n**Steps:** Full file contents in plan doc Task 1 Steps 2-4; commit per Step 5.\n\n```json:metadata\n{\"files\": [\"docs/roadmap/tasks/AW-270-authorial-intent-block-and-fidelity-telemetry.md\", \"docs/roadmap/tasks/AW-271-narrative-obligations-model.md\", \"docs/roadmap/tasks/AW-272-continuity-coherence-eval-suite.md\"], \"verifyCommand\": \"grep -l $'\\\\u2014' docs/roadmap/tasks/AW-27[012]*.md || echo CLEAN\", \"acceptanceCriteria\": [\"branch docs/adr-0012-rollout checked out\", \"three task files with 12 sections each\", \"AW-270/271 post-M6 flagged\", \"no em dashes\"], \"modelTier\": \"mechanical\"}\n```"
     },
     {
       "id": 2,
       "subject": "Task 2: Epic M5-H file + M5 milestone update",
-      "status": "pending",
+      "status": "completed",
       "blockedBy": [
         1
       ],
@@ -19,7 +19,7 @@
     {
       "id": 3,
       "subject": "Task 3: index.json manifest entries",
-      "status": "pending",
+      "status": "completed",
       "blockedBy": [
         2
       ],
@@ -28,7 +28,7 @@
     {
       "id": 4,
       "subject": "Task 4: Spec files 0064, 0065, 0066",
-      "status": "pending",
+      "status": "completed",
       "blockedBy": [
         1
       ],
@@ -37,7 +37,7 @@
     {
       "id": 5,
       "subject": "Task 5: Architecture section updates",
-      "status": "pending",
+      "status": "completed",
       "blockedBy": [
         4
       ],
@@ -46,7 +46,7 @@
     {
       "id": 6,
       "subject": "Task 6: PRD updates",
-      "status": "pending",
+      "status": "completed",
       "blockedBy": [
         2
       ],
@@ -55,7 +55,7 @@
     {
       "id": 7,
       "subject": "Task 7: GitHub issues + manifest backfill",
-      "status": "pending",
+      "status": "completed",
       "blockedBy": [
         3,
         5,
@@ -66,12 +66,12 @@
     {
       "id": 8,
       "subject": "Task 8: Consistency sweep + PR",
-      "status": "pending",
+      "status": "in_progress",
       "blockedBy": [
         7
       ],
       "description": "**Goal:** Run the cross-reference check script, confirm clean git status (no agent-local files; working tree fully committed; the cloud-deploy-runbook expansion lives on branch docs/cloud-deploy-runbook-expansion and must not appear), push branch, open PR, hand off to review-pr skill.\n\n**Files:** none created; verification and PR only.\n\n**Acceptance Criteria:** cross-ref script prints OK; git status is empty; PR open against main with approval-evidence body from plan Task 8 Step 3.\n\n**Verify:** gh pr view --json url returns URL\n\n```json:metadata\n{\"files\": [], \"verifyCommand\": \"gh pr view --json url\", \"acceptanceCriteria\": [\"cross-ref script OK\", \"clean status\", \"PR open\"], \"modelTier\": \"mechanical\"}\n```"
     }
   ],
-  "lastUpdated": "2026-07-11T00:00:00Z"
+  "lastUpdated": "2026-07-11T23:45:00Z"
 }
