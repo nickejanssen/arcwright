@@ -3,7 +3,8 @@
 > Current version: v1.0
 > Last updated: 2026-07-11
 > Status: Approved
-> Canonical path: docs/superpowers/specs/2026-07-11-development-survey-and-path-to-first-playtest-design.md
+> Canonical path: docs/specs/0067-development-survey-and-path-to-first-playtest.md
+> Next artifact: implementation plan at docs/superpowers/plans/2026-07-11-phase0-cleanup-and-one-command-rehearsal.md
 
 ## Purpose
 
@@ -178,9 +179,9 @@ Each phase maps to a session you start and a skill you invoke. One phase per
 session; review the PR each produces.
 
 1. **Phase 0 session**: start a new Claude Code session in this repo and say
-   "Execute Phase 0 of docs/superpowers/specs/2026-07-11-development-survey-and-path-to-first-playtest-design.md
-   using the implementation plan" (the plan file pairs with this spec). The
-   session uses `/superpowers-extended-cc:execute-plan`.
+   "Execute Phase 0 of docs/specs/0067-development-survey-and-path-to-first-playtest.md
+   using docs/superpowers/plans/2026-07-11-phase0-cleanup-and-one-command-rehearsal.md."
+   The session uses `/superpowers-extended-cc:execute-plan`.
 2. **Phase 1 session**: same pattern for Phase 1. When it completes, you run
    `make rehearsal` yourself, do the 15-minute solo smoke test, then schedule
    real humans.
