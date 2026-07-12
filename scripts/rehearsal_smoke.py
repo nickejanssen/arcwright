@@ -5,7 +5,6 @@ from __future__ import annotations
 import json
 import os
 import sys
-import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -117,29 +116,6 @@ def exchange_host_token(custom_token: str, web_api_key: str) -> str:
     return str(token)
 
 
-def wait_for_event(session_id: str, timeout_s: int = 30) -> dict[str, Any]:
-    request = urllib.request.Request(f"{BASE}/v1/sessions/{session_id}/events?since=0")
-    try:
-        with urllib.request.urlopen(request, timeout=timeout_s) as response:
-            deadline = time.monotonic() + timeout_s
-            while time.monotonic() < deadline:
-                line = response.readline().decode("utf-8", errors="replace").strip()
-                if not line.startswith("data:"):
-                    continue
-                payload = line[5:].strip()
-                if payload:
-                    event = json.loads(payload)
-                    print("[ok] read-events -> 200")
-                    return event
-    except urllib.error.HTTPError as exc:
-        detail = exc.read().decode("utf-8", errors="replace").strip()
-        fail("read-events", f"HTTP {exc.code}\n{detail}")
-    except urllib.error.URLError as exc:
-        fail("read-events", str(exc.reason))
-    fail("read-events", f"timed out waiting for first event after {timeout_s}s")
-    return {}
-
-
 def main() -> None:
     ensure_python()
     env = read_env()
@@ -174,15 +150,20 @@ def main() -> None:
     host_id_token = exchange_host_token(
         str(session["host_token"]), env["FIREBASE_WEB_API_KEY"]
     )
-    call(
+    started = call(
         "start-session",
         "POST",
         f"/v1/sessions/{session_id}/start",
         headers={"Authorization": f"Bearer {host_id_token}"},
     )
 
-    event = wait_for_event(session_id)
-    print(f"[ok] first-event-type -> {event.get('event_type', 'unknown')}")
+    # POST /start flips session status to "active" and returns the new state.
+    # It does not itself publish a ContentEvent, so assert the state transition
+    # rather than waiting for an event that the start path never emits.
+    status = str(started.get("status"))
+    if status != "active":
+        fail("start-session", f"expected status 'active', got {status!r}")
+    print(f"[ok] session-active -> status={status}")
     print("SMOKE PASS")
 
 

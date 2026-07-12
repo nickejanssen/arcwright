@@ -42,9 +42,12 @@ Expected: `SMOKE PASS`. If it fails, the failing step and response are printed.
 1. Open the printed display URL on the shared display.
 2. Send the printed player join URL to players' phones.
 3. Wait for at least 4 players to appear in the lobby.
-4. Play end-to-end through join, private events, both mini-games, accusation,
+4. Start the arc: in a second terminal, run `make rehearsal-start`. (The
+   dashboard has no host-start control; this exchanges the host token and
+   calls the start endpoint. Requires `FIREBASE_WEB_API_KEY` in `.env`.)
+5. Play end-to-end through join, private events, both mini-games, accusation,
    and killer reveal.
-5. When something breaks or feels wrong, log the timestamp, who it affected,
+6. When something breaks or feels wrong, log the timestamp, who it affected,
    and what happened.
 
 ## Wrap-up

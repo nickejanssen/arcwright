@@ -28,11 +28,15 @@ SHARED_ROOT = (
 ENV_FILE = REPO_ROOT / ".env"
 SHARED_ENV_FILE = SHARED_ROOT / ".env"
 ENV_EXAMPLE = REPO_ROOT / ".env.example"
+ROUTING_TABLE = REPO_ROOT / "config" / "routing_table.json"
 STATE_DIR = REPO_ROOT / ".rehearsal"
 STATE_FILE = STATE_DIR / "current-session.json"
 API_PORT = 8000
 WEB_PORT = 5173
 DEFAULT_ARC_ID = "nightcap-v1"
+# Provider-neutral required keys. Provider API-key names are derived from the
+# routing table at runtime (see required_provider_keys) so provider names stay
+# out of this script per AGENTS.md rule 8.
 REQUIRED_KEYS = (
     "POSTGRES_HOST",
     "POSTGRES_PORT",
@@ -40,10 +44,31 @@ REQUIRED_KEYS = (
     "POSTGRES_USER",
     "POSTGRES_PASSWORD",
     "ARCWRIGHT_API_KEY",
-    "ANTHROPIC_API_KEY",
-    "GROQ_API_KEY",
 )
 OPTIONAL_KEYS = ("FIREBASE_WEB_API_KEY",)
+
+
+def required_provider_keys() -> list[str]:
+    """Derive the provider API-key env var names the active routing table needs.
+
+    Reads ``config/routing_table.json`` (the canonical home for provider
+    identifiers) and maps each ``provider/model`` prefix to LiteLLM's
+    ``{PROVIDER}_API_KEY`` convention. Keeps provider names out of this
+    ops script so a routing change is the only edit needed to add a provider.
+    """
+    if not ROUTING_TABLE.exists():
+        return []
+    table = json.loads(ROUTING_TABLE.read_text(encoding="utf-8"))
+    providers: set[str] = set()
+    for tier_map in table.values():
+        if not isinstance(tier_map, dict):
+            continue
+        for model in tier_map.values():
+            if isinstance(model, str) and "/" in model:
+                providers.add(model.split("/", 1)[0])
+    return [f"{provider.upper()}_API_KEY" for provider in sorted(providers)]
+
+
 TUNNEL_URL_RE = re.compile(r"https://[a-z0-9-]+\.trycloudflare\.com")
 
 children: list[subprocess.Popen[str]] = []
@@ -117,7 +142,8 @@ def read_env() -> dict[str, str]:
         key, _, value = line.partition("=")
         env[key.strip()] = value.strip()
 
-    missing = [key for key in REQUIRED_KEYS if not env.get(key)]
+    required = [*REQUIRED_KEYS, *required_provider_keys()]
+    missing = [key for key in required if not env.get(key)]
     if missing:
         fail(
             ".env",
@@ -370,11 +396,13 @@ def main() -> None:
     print(f"JOIN CODE:                 {session['join_code']}")
     if env.get("FIREBASE_WEB_API_KEY"):
         print(
-            "Host start token exchange is available for rehearsal-smoke and manual lifecycle calls."
+            "When players have joined, run `make rehearsal-start` (in another "
+            "terminal) to begin the arc."
         )
     else:
         print(
-            "FIREBASE_WEB_API_KEY is blank; host lifecycle smoke/start calls will fail until it is set."
+            "FIREBASE_WEB_API_KEY is blank; `make rehearsal-start` and "
+            "rehearsal-smoke will fail until it is set."
         )
     print(f"Session details saved to:   {STATE_FILE}")
     print(

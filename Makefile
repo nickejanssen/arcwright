@@ -1,6 +1,6 @@
 PYTHON ?= python
 
-.PHONY: lint type test migrate rehearsal rehearsal-stop rehearsal-smoke
+.PHONY: lint type test migrate rehearsal rehearsal-start rehearsal-stop rehearsal-smoke
 
 lint:
 	$(PYTHON) -m ruff check --config pyproject.toml engine api
@@ -16,6 +16,9 @@ migrate:
 
 rehearsal:
 	$(PYTHON) scripts/rehearsal.py
+
+rehearsal-start:
+	$(PYTHON) scripts/rehearsal_start.py
 
 rehearsal-stop:
 	docker compose down
