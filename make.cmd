@@ -9,6 +9,9 @@ if /I "%~1"=="lint" goto lint
 if /I "%~1"=="type" goto type
 if /I "%~1"=="test" goto test
 if /I "%~1"=="migrate" goto migrate
+if /I "%~1"=="rehearsal" goto rehearsal
+if /I "%~1"=="rehearsal-stop" goto rehearsal-stop
+if /I "%~1"=="rehearsal-smoke" goto rehearsal-smoke
 
 echo Unknown target: %~1
 goto help
@@ -29,6 +32,18 @@ exit /b %ERRORLEVEL%
 %PYTHON% -m alembic upgrade head
 exit /b %ERRORLEVEL%
 
+:rehearsal
+%PYTHON% scripts\rehearsal.py
+exit /b %ERRORLEVEL%
+
+:rehearsal-stop
+docker compose down
+exit /b %ERRORLEVEL%
+
+:rehearsal-smoke
+%PYTHON% scripts\rehearsal_smoke.py
+exit /b %ERRORLEVEL%
+
 :help
-echo Usage: make ^<lint^|type^|test^|migrate^>
+echo Usage: make ^<lint^|type^|test^|migrate^|rehearsal^|rehearsal-stop^|rehearsal-smoke^>
 exit /b 1

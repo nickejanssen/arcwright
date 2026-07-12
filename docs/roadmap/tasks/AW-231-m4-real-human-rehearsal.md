@@ -2,7 +2,7 @@
 
 **Milestone / Epic:** M4 / M4-D
 **Size:** M
-**Status:** Planned (repurposed 2026-06-26)
+**Status:** Complete
 **Parent:** AW-259
 
 ## Repurpose Note

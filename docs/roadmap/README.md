@@ -60,3 +60,11 @@ For an AI agent handed a GitHub issue number or URL:
 - After the Markdown updates, update `index.json` so agents can still locate the right file quickly.
 - When a live GitHub issue or milestone is created for a roadmap item, add the cross-reference in `index.json` rather than editing every Markdown file.
 - M2 through M6 are decomposed into agent-sized task files as of AW-201. M4 implementation tasks follow the AW-202 Nightcap web experience runtime contract.
+
+## Task ID hygiene
+
+AW numbers are never reused. Historical exception: closed issue #190
+("Nightcap Rehearsal Lobby", June 2026) was mistakenly labeled AW-270 before
+AW-270 was permanently assigned to "Authorial Intent Block" (#202, ADR-0012).
+Any reference to AW-270 dated before 2026-07-11 may mean the lobby work;
+verify against the issue number, not the AW label.

@@ -1,5 +1,10 @@
 # Rehearsal 1 - Founder Runbook
 
+> **Superseded for day-of use (2026-07-11):** start with
+> [rehearsal-quickstart.md](rehearsal-quickstart.md) — the stack is now one
+> command (`make rehearsal`). This document remains as the deep
+> troubleshooting reference; its five-terminal manual procedure is obsolete.
+
 > **Status:** Active
 > **Last updated:** 2026-06-27
 > **For:** First real-human Nightcap session (M4 exit, AW-231)

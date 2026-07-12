@@ -2,7 +2,11 @@
 
 **Milestone / Epic:** M4 (parent task; consolidates M4-D and M4-E close work)
 **Size:** L
-**Status:** Planned
+**Status:** Closed unexecuted (see AW-273)
+
+> **Execution note (2026-07-11):** Issue #176 was closed on 2026-06-27
+> without the rehearsal being run. The real-human execution is tracked by
+> AW-273 (docs/roadmap/tasks/AW-273-rehearsal-1-execution.md).
 
 ## Plain-English Summary
 

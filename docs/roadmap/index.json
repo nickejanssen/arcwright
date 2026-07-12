@@ -71,7 +71,7 @@
     {
       "id": "M1",
       "title": "Deterministic platform core",
-      "status": "active",
+      "status": "complete",
       "path": "docs/roadmap/milestones/M1-deterministic-platform-core.md",
       "github": {
         "milestone_number": 1,
@@ -88,7 +88,7 @@
     {
       "id": "M2",
       "title": "Arc Engine + Nightcap Arc + Safety",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/milestones/M2-arc-engine-nightcap-arc-safety.md",
       "epics": [
         "M2-A",
@@ -105,7 +105,7 @@
     {
       "id": "M3",
       "title": "Events, API, Persistence, Telemetry",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/milestones/M3-events-api-persistence-telemetry.md",
       "epics": [
         "M3-A",
@@ -121,7 +121,7 @@
     {
       "id": "M4",
       "title": "Nightcap Experience Layer",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/milestones/M4-nightcap-experience-layer.md",
       "epics": [
         "M4-A",
@@ -138,7 +138,7 @@
     {
       "id": "M5",
       "title": "Hardening + Proof Prerequisites",
-      "status": "planned",
+      "status": "active",
       "path": "docs/roadmap/milestones/M5-hardening-proof-prerequisites.md",
       "epics": [
         "M5-A",
@@ -175,7 +175,7 @@
       "id": "M1-A",
       "milestone": "M1",
       "title": "Scaffolding and infrastructure",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/epics/M1-A-scaffolding-and-infrastructure.md",
       "github": {
         "issue_number": 1,
@@ -190,7 +190,7 @@
       "id": "M1-B",
       "milestone": "M1",
       "title": "Data model",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/epics/M1-B-data-model.md",
       "github": {
         "issue_number": 4,
@@ -239,7 +239,7 @@
       "id": "M2-A",
       "milestone": "M2",
       "title": "Nightcap Web Experience Runtime Decision Gate",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/epics/M2-A-external-platform-decision-gate.md",
       "tasks": [
         "AW-202"
@@ -253,7 +253,7 @@
       "id": "M2-B",
       "milestone": "M2",
       "title": "Arc Execution Engine",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/epics/M2-B-arc-execution-engine.md",
       "tasks": [
         "AW-203",
@@ -270,7 +270,7 @@
       "id": "M2-C",
       "milestone": "M2",
       "title": "Nightcap Arc Runtime",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/epics/M2-C-nightcap-arc-runtime.md",
       "tasks": [
         "AW-205",
@@ -285,7 +285,7 @@
       "id": "M2-D",
       "milestone": "M2",
       "title": "Content Safety Pipeline",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/epics/M2-D-content-safety-pipeline.md",
       "tasks": [
         "AW-208",
@@ -301,7 +301,7 @@
       "id": "M2-E",
       "milestone": "M2",
       "title": "Character Behavior Engine",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/epics/M2-E-character-behavior-engine.md",
       "tasks": [
         "AW-211",
@@ -317,7 +317,7 @@
       "id": "M3-A",
       "milestone": "M3",
       "title": "Content Event System",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/epics/M3-A-content-event-system.md",
       "tasks": [
         "AW-215",
@@ -332,7 +332,7 @@
       "id": "M3-B",
       "milestone": "M3",
       "title": "API, Auth, And TypeScript SDK",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/epics/M3-B-api-auth-and-typescript-sdk.md",
       "tasks": [
         "AW-217",
@@ -348,7 +348,7 @@
       "id": "M3-C",
       "milestone": "M3",
       "title": "Session Persistence And Resume",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/epics/M3-C-session-persistence-and-resume.md",
       "tasks": [
         "AW-220",
@@ -363,7 +363,7 @@
       "id": "M3-D",
       "milestone": "M3",
       "title": "Telemetry And Full Simulation Harness",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/epics/M3-D-telemetry-and-full-simulation-harness.md",
       "tasks": [
         "AW-222",
@@ -380,7 +380,7 @@
       "id": "M4-A",
       "milestone": "M4",
       "title": "Nightcap Web Experience Runtime Integration",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/epics/M4-A-nightcap-external-platform-integration.md",
       "tasks": [
         "AW-225"
@@ -394,7 +394,7 @@
       "id": "M4-B",
       "milestone": "M4",
       "title": "Nightcap Host And Shared Display Experience",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/epics/M4-B-nightcap-host-and-shared-display-experience.md",
       "tasks": [
         "AW-226",
@@ -409,7 +409,7 @@
       "id": "M4-C",
       "milestone": "M4",
       "title": "Nightcap Player Device Experience",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/epics/M4-C-nightcap-player-device-experience.md",
       "tasks": [
         "AW-228",
@@ -424,7 +424,7 @@
       "id": "M4-D",
       "milestone": "M4",
       "title": "Real-Device Privacy And Join Validation",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/epics/M4-D-real-device-privacy-and-join-validation.md",
       "tasks": [
         "AW-230",
@@ -439,7 +439,7 @@
       "id": "M4-E",
       "milestone": "M4",
       "title": "Nightcap Mini-game Interaction Layer",
-      "status": "planned",
+      "status": "complete",
       "path": "docs/roadmap/epics/M4-E-nightcap-mini-game-interaction-layer.md",
       "tasks": [
         "AW-249",
@@ -536,7 +536,7 @@
       "id": "M5-F",
       "milestone": "M5",
       "title": "Tell Me Something True Social Opener Implementation",
-      "status": "planned",
+      "status": "active",
       "path": "docs/roadmap/epics/M5-F-tell-me-something-true-social-opener.md",
       "tasks": [
         "AW-262",
@@ -1934,6 +1934,20 @@
         "url": "https://github.com/nickejanssen/arcwright/issues/204"
       },
       "epic_id": "M5-H"
+    },
+    {
+      "id": "AW-273",
+      "title": "Rehearsal 1 Execution - First Real-Human Nightcap Session",
+      "milestone": "M5",
+      "epic": null,
+      "size": "M",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-273-rehearsal-1-execution.md",
+      "epic_id": null,
+      "github": {
+        "issue_number": 207,
+        "url": "https://github.com/nickejanssen/arcwright/issues/207"
+      }
     }
   ],
   "superseded_sources": [
