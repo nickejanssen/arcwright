@@ -514,10 +514,15 @@ class TestGetActiveMiniGame:
         assert phase_state.has_voted is True
         assert body["my_submissions"] == [
             {
+                "submission_id": "tmst-input-self",
+                "is_accepted": True,
+                "rejection_reason": None,
+            },
+            {
                 "submission_id": "tmst-vote-1",
                 "is_accepted": True,
                 "rejection_reason": None,
-            }
+            },
         ]
 
 
