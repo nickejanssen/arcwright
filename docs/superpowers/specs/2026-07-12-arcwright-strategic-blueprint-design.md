@@ -1,7 +1,9 @@
 # Arcwright Strategic Blueprint
 
-> Current version: v1.0
+> Current version: v1.1
 > Last updated: 2026-07-12
+> v1.1: game design deep-dive extracted into spec 0068 (game experience
+> quality bar) + fun-observation rubric; §3 and §10 updated accordingly
 > Status: Proposal — strategy brainstorm output, NOT approved build scope
 > Canonical path: docs/superpowers/specs/2026-07-12-arcwright-strategic-blueprint-design.md
 
@@ -115,6 +117,15 @@ violation, same severity as skipping tests.
 ---
 
 ## 3. Games People Love (Game Designer + Artist View)
+
+> **Executable version of this section:** the concrete quality bars, content
+> standards, aesthetic charter, and instrumentation now live in
+> `docs/specs/0068-game-experience-quality-bar.md` (fun pillars, per-beat
+> moment map, identity-card/clue/narrator writing standards, killer
+> experience standard, mini-game feel rules, M5-G aesthetic charter) and
+> `docs/roadmap/operations/fun-observation-rubric.md` (used at every human
+> session from Rehearsal 1 onward). This section keeps the strategic
+> rationale; spec 0068 is the doc implementers work from.
 
 ### 3.1 Nightcap: the two moments that decide everything
 
@@ -460,6 +471,9 @@ is the systemic fix.
 | 3 | Engage trademark counsel on Nightcap | Cheapest catastrophe insurance | Counsel opinion on file | Founder action |
 | 4 | Adopt evidence-or-it-didn't-happen gate rule | Prevent repeat of AW-259 | Decisions-log entry | [NEEDS APPROVAL] |
 | 5 | Add latency measurements to Rehearsal 1 observation list | Feeds §4.3 ADR with real numbers | Latency notes in blocker log | Trivial |
+| 5a | Approve spec 0068 (game experience quality bar) | Makes "extremely fun" testable before humans arrive | Spec status → Approved | [NEEDS APPROVAL] |
+| 5b | Use fun-observation rubric at Rehearsal 1 | Fun signal + personalization-perception quotes captured | Filled rubric committed | Done (wired into quickstart) |
+| 5c | Pre-rehearsal content pass against 0068 §3 (identity cards, clues, narrator lines) | The words players read are the cheapest quality lever available now | Content review notes; prompt changes via Hard Rules flow | Gated on #5a |
 
 **NEXT (30–90 days)**
 
@@ -469,7 +483,7 @@ is the systemic fix.
 | 7 | 0067 Phase 3 cloud deploy + Rehearsal 2 | M6 prerequisite | Cloud dry-run + blocker log | Approved (0067) |
 | 8 | Latency-budget ADR from rehearsal data | §4.3 | ADR accepted | [NEEDS APPROVAL] |
 | 9 | Enterprise + IP-partner interviews once demo footage exists (10 + 2–3) | Already-required H1 item, extended | Interview records in docs | Partially approved (PRD); IP extension [NEEDS APPROVAL] |
-| 10 | Craft pass on narrator voice + reveal staging + shared display | §3.5; strangers judge polish | Post-Rehearsal-2 review | Within M5-G scope |
+| 10 | Craft pass on narrator voice + reveal staging + shared display, per 0068 §6 charter (polish priority: B8 → B2 → B6) | §3.5; strangers judge polish | Post-Rehearsal-2 review against 0068 acceptance criteria | Within M5-G scope |
 | 11 | Pricing offers embedded in M6 runbook ($19/$29/$39 across groups) | Real willingness-to-pay data | Offer outcomes recorded | [NEEDS APPROVAL — M6-A] |
 | 12 | Age-rating / audience statement decision | §8.5 | Decisions-log entry | [NEEDS APPROVAL] |
 
@@ -510,4 +524,6 @@ Restated so the not-doing is as documented as the doing:
 - Architecture: `docs/architecture/01-overview.md`, `13-cost-model.md`
 - Story bibles: `docs/story-bibles/nightcap-murder-mystery.md`, `daily-case.md`, `monster-rpg.md`
 - Current path to playtest: `docs/specs/0067-development-survey-and-path-to-first-playtest.md`
+- Game experience quality bar: `docs/specs/0068-game-experience-quality-bar.md`
+- Fun instrumentation: `docs/roadmap/operations/fun-observation-rubric.md`
 - Decisions cited: D-034 (wedge), D-046 (enterprise adaptation), D-051/ADR-0006 (Continuity v1.1), ADR-0010 (gameplay pivots), ADR-0012 (narrative fidelity)

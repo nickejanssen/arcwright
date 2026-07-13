@@ -43,3 +43,4 @@ This directory contains detailed specs for implementing features and systems. Ea
 - **Knowledge Graph**: Character state, fact storage, inference
 - **Session Management**: Creation, persistence, recovery
 - **Content Events**: Schema, routing, SSE delivery
+- **Experience Quality**: Game-layer quality bar, content standards, fun instrumentation (0068)

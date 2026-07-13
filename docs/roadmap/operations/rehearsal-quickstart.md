@@ -1,7 +1,7 @@
 # Rehearsal Quickstart
 
-> Current version: v1.0
-> Last updated: 2026-07-11
+> Current version: v1.1
+> Last updated: 2026-07-12
 > Status: Current
 > Canonical path: docs/roadmap/operations/rehearsal-quickstart.md
 > Serves: AW-273 (Rehearsal 1 execution) and later rehearsals
@@ -49,14 +49,20 @@ Expected: `SMOKE PASS`. If it fails, the failing step and response are printed.
    and killer reveal.
 6. When something breaks or feels wrong, log the timestamp, who it affected,
    and what happened.
+7. Keep `fun-observation-rubric.md` open (or printed) and tally as you go —
+   laughs, lean-ins, dead air, and verbatim quotes that reference
+   personalized details. The quotes are the personalization-perception
+   evidence the PRD gates require.
 
 ## Wrap-up
 
 1. Copy `blocker-log-template.md` to `rehearsal-1-blocker-log.md` in this
    directory and fill it from your notes.
-2. Paste the highlights into the AW-273 GitHub issue.
-3. Stop the app stack with Ctrl+C in the rehearsal terminal.
-4. Stop Postgres:
+2. Fill the wrap-up section of `fun-observation-rubric.md` within an hour and
+   commit it as `rehearsal-1-fun-rubric.md` beside the blocker log.
+3. Paste the highlights into the AW-273 GitHub issue.
+4. Stop the app stack with Ctrl+C in the rehearsal terminal.
+5. Stop Postgres:
 
 ```powershell
 make rehearsal-stop
