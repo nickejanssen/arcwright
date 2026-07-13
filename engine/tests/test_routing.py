@@ -14,6 +14,7 @@ from engine.routing import RouteResult, route_generation
 from engine.routing.router import (
     ROUTING_TABLE_PATH,
     compute_cost,
+    hydrate_provider_credentials,
     resolve_fallback_model_key,
     resolve_model_key,
 )
@@ -272,6 +273,37 @@ def test_compute_cost_clamps_sub_precision_positive_cost_to_minimum() -> None:
     # rounds to zero without the minimum-cost clamp.
     cost = compute_cost(PACING_STANDARD_MODEL, 1, 1)
     assert cost == Decimal("0.000001")
+
+
+def test_hydrate_provider_credentials_maps_generic_slots_to_provider_vars() -> None:
+    env = {
+        "PRIMARY_LLM_API_KEY": "anthropic-secret",
+        "SECONDARY_LLM_API_KEY": "groq-secret",
+    }
+
+    hydrate_provider_credentials(env)
+
+    assert env["ANTHROPIC_API_KEY"] == "anthropic-secret"
+    assert env["GROQ_API_KEY"] == "groq-secret"
+
+
+def test_hydrate_provider_credentials_does_not_override_existing_provider_var() -> None:
+    env = {
+        "PRIMARY_LLM_API_KEY": "generic-secret",
+        "ANTHROPIC_API_KEY": "local-dev-secret",
+    }
+
+    hydrate_provider_credentials(env)
+
+    assert env["ANTHROPIC_API_KEY"] == "local-dev-secret"
+
+
+def test_hydrate_provider_credentials_is_a_noop_without_generic_slots() -> None:
+    env: dict[str, str] = {}
+
+    hydrate_provider_credentials(env)
+
+    assert env == {}
 
 
 def test_cost_rates_cover_all_routing_table_models() -> None:
