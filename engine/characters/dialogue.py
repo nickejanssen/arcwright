@@ -26,7 +26,7 @@ from engine.safety import (
 )
 
 if TYPE_CHECKING:
-    from engine.arc.models import ContentRailsConfig
+    from engine.arc.models import AuthorialIntent, ContentRailsConfig
 
 
 @dataclass(frozen=True)
@@ -61,6 +61,7 @@ async def generate_character_dialogue(
     safety_policy_context: dict[str, Any] | str | None = None,
     content_rails: "ContentRailsConfig | None" = None,
     social_pressure: float | None = None,
+    authorial_intent: "AuthorialIntent | None" = None,
 ) -> CharacterDialogueEvent:
     """Generate one dialogue response after assembling knowledge constraints."""
     context = await build_character_generation_context(
@@ -74,6 +75,7 @@ async def generate_character_dialogue(
         current_beat_id=current_beat_id,
         scene_goal=scene_goal,
         social_pressure=social_pressure,
+        authorial_intent=authorial_intent,
     )
 
     result = await generate(
@@ -161,14 +163,24 @@ def build_dialogue_messages(
     current_beat_id: str | None = None,
     scene_goal: str | None = None,
     social_pressure: float | None = None,
+    authorial_intent: "AuthorialIntent | None" = None,
 ) -> list[dict[str, Any]]:
     """Build prompt messages with explicit known and not-known blocks."""
     blocks = [
         _format_identity_block(context),
-        _format_known_block(context.known_facts),
-        _format_not_known_block(context.unknown_facts),
-        _format_relationship_block(context.relationship_dispositions),
     ]
+    if authorial_intent is not None:
+        # Arc-stable authoring context. Placed in the stable region of the
+        # system prompt so it lives inside the cacheable context layer
+        # (spec 0064; prompt-caching requirement).
+        blocks.append(_format_authorial_intent_block(authorial_intent))
+    blocks.extend(
+        (
+            _format_known_block(context.known_facts),
+            _format_not_known_block(context.unknown_facts),
+            _format_relationship_block(context.relationship_dispositions),
+        )
+    )
     if (
         social_pressure is not None
         and social_pressure >= context.behavior_profile.crumble_threshold
@@ -236,6 +248,29 @@ def _safety_layer_from_sentinel(model_used: str) -> str:
     if model_used == L3_BLOCK_SENTINEL:
         return "L3"
     return "unknown"
+
+
+def _format_authorial_intent_block(intent: "AuthorialIntent") -> str:
+    """Render the arc author's declared theme, tone, and tension curve.
+
+    The block is static for the lifetime of an arc definition, so it can sit
+    in the cacheable stable region of the system prompt. It is guidance for
+    generation only; it never encodes state.
+    """
+    lines = [
+        "[AUTHORIAL INTENT]",
+        f"theme: {intent.theme}",
+        f"tone: {intent.tone}",
+    ]
+    if intent.emotional_targets:
+        lines.append("intended emotional progression (beat: target tension 0.0-1.0):")
+        for target in intent.emotional_targets:
+            entry = f"- {target.beat_id}: {target.target_tension}"
+            if target.note:
+                entry += f" ({target.note})"
+            lines.append(entry)
+    lines.append("[END AUTHORIAL INTENT]")
+    return "\n".join(lines)
 
 
 def _format_identity_block(context: CharacterGenerationContext) -> str:

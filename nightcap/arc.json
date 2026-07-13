@@ -486,5 +486,51 @@
         ["truth", 8, "Change"]
       ]
     }
+  },
+  "authorial_intent": {
+    "theme": "Everyone at this party has something to hide; the truth surfaces through wit and social pressure, never gore.",
+    "tone": "Irreverent, suspenseful dark comedy - a cosy murder mystery with high wit density.",
+    "emotional_targets": [
+      {
+        "beat_id": "arrival",
+        "target_tension": 0.2,
+        "note": "curious"
+      },
+      {
+        "beat_id": "body",
+        "target_tension": 0.35,
+        "note": "alarmed"
+      },
+      {
+        "beat_id": "opening_move",
+        "target_tension": 0.5,
+        "note": "engaged"
+      },
+      {
+        "beat_id": "dig",
+        "target_tension": 0.6,
+        "note": "tense"
+      },
+      {
+        "beat_id": "thread",
+        "target_tension": 0.7,
+        "note": "charged"
+      },
+      {
+        "beat_id": "reckoning",
+        "target_tension": 0.85,
+        "note": "high_stakes"
+      },
+      {
+        "beat_id": "close",
+        "target_tension": 0.95,
+        "note": "decisive"
+      },
+      {
+        "beat_id": "truth",
+        "target_tension": 0.2,
+        "note": "satisfied"
+      }
+    ]
   }
 }
