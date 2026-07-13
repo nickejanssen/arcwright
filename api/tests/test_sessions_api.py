@@ -627,7 +627,13 @@ class TestAddPlayer:
 
 
 class TestJoinSession:
-    def test_valid_token_returns_player_token(self, client: TestClient) -> None:
+    """Both GET (documented contract, docs/architecture/09-developer-api.md
+    §9.2) and POST (what nightcap-web's Worker actually sends) must work —
+    the endpoint is an idempotent lookup either way."""
+
+    def test_valid_token_returns_player_token_via_post(
+        self, client: TestClient
+    ) -> None:
         session_id = _create_session(client)
         add = client.post(f"/v1/sessions/{session_id}/players")
         join_token = add.json()["join_token"]
@@ -636,9 +642,23 @@ class TestJoinSession:
         assert resp.status_code == 200
         assert "player_token" in resp.json()
 
-    def test_invalid_token_returns_403(self, client: TestClient) -> None:
+    def test_valid_token_returns_player_token_via_get(self, client: TestClient) -> None:
+        session_id = _create_session(client)
+        add = client.post(f"/v1/sessions/{session_id}/players")
+        join_token = add.json()["join_token"]
+        resp = client.get(f"/v1/sessions/{session_id}/join?token={join_token}")
+
+        assert resp.status_code == 200
+        assert "player_token" in resp.json()
+
+    def test_invalid_token_returns_403_via_post(self, client: TestClient) -> None:
         session_id = _create_session(client)
         resp = client.post(f"/v1/sessions/{session_id}/join?token=not-a-real-token")
+        assert resp.status_code == 403
+
+    def test_invalid_token_returns_403_via_get(self, client: TestClient) -> None:
+        session_id = _create_session(client)
+        resp = client.get(f"/v1/sessions/{session_id}/join?token=not-a-real-token")
         assert resp.status_code == 403
 
 

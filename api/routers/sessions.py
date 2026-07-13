@@ -13,7 +13,8 @@ Endpoint summary (base path /v1/sessions):
   POST   /{id}/resume            host JWT         Resume arc from snapshot
   POST   /{id}/end               host JWT         End session
   POST   /{id}/replay-intent     host JWT         Record post-session replay intent
-  POST   /{id}/join              public           Exchange join token for player JWT
+  GET    /{id}/join              public           Exchange join token for player JWT
+  POST   /{id}/join              public           Same as above (nightcap-web sends POST)
 """
 
 from __future__ import annotations
@@ -260,7 +261,9 @@ async def add_player(
     )
 
 
-@router.post("/{session_id}/join", response_model=JoinSessionResponse)
+@router.api_route(
+    "/{session_id}/join", methods=["GET", "POST"], response_model=JoinSessionResponse
+)
 async def join_session(
     session_id: UUID,
     token: str = Query(
@@ -268,7 +271,15 @@ async def join_session(
     ),
     db: AsyncSession = Depends(get_async_session),
 ) -> JoinSessionResponse:
-    """Validate a join token and return a Firebase custom token for the player."""
+    """Validate a join token and return a Firebase custom token for the player.
+
+    Documented as GET (docs/architecture/09-developer-api.md §9.2,
+    specs 0041/0044) and side-effect-free — it looks up an existing
+    participant by join token, it doesn't create one. Also accepts POST
+    because nightcap-web's Worker sends POST with a JSON body carrying
+    personalization_intake, which this handler doesn't read yet — both
+    methods hit the same idempotent lookup.
+    """
     participant = await _session_service.validate_join_token(db, session_id, token)
     if participant is None:
         raise HTTPException(status_code=403, detail="Invalid join token")
