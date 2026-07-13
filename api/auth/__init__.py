@@ -36,9 +36,38 @@ _bearer = HTTPBearer(auto_error=False)
 
 
 def _ensure_firebase_app() -> None:
-    """Initialise Firebase Admin app using ADC if not already initialised."""
+    """Initialise Firebase Admin app using ADC if not already initialised.
+
+    Two settings matter when the runtime service account lives in a
+    different GCP project than the Firebase Auth project (e.g. a
+    disposable Cloud Run project verifying tokens from arcwright-53ea3):
+
+    - ``projectId`` (FIREBASE_PROJECT_ID): without it, ADC infers the
+      Firebase project from the runtime's own project, and verify_id_token
+      rejects every real token with an "incorrect aud claim" error.
+    - ``serviceAccountId`` (FIREBASE_TOKEN_SIGNING_SERVICE_ACCOUNT):
+      Firebase's signInWithCustomToken rejects tokens signed by a service
+      account outside the Firebase project, regardless of IAM roles
+      granted on that project — this is a hard Google-side restriction,
+      not a permissions gap. Without it, create_custom_token silently
+      signs as the runtime's own (wrong-project) service account and the
+      client-side token exchange fails with CREDENTIAL_MISMATCH. Setting
+      it makes the Admin SDK sign custom tokens via IAM signBlob
+      impersonation of a service account that actually belongs to the
+      Firebase project; the runtime service account needs
+      roles/iam.serviceAccountTokenCreator on that target service account.
+    """
     if not firebase_admin._apps:
-        firebase_admin.initialize_app()
+        options: dict[str, str] = {}
+        project_id = os.environ.get("FIREBASE_PROJECT_ID")
+        if project_id:
+            options["projectId"] = project_id
+        signing_service_account = os.environ.get(
+            "FIREBASE_TOKEN_SIGNING_SERVICE_ACCOUNT"
+        )
+        if signing_service_account:
+            options["serviceAccountId"] = signing_service_account
+        firebase_admin.initialize_app(options=options or None)
 
 
 @dataclass(frozen=True)
@@ -54,6 +83,21 @@ class JwtClaims:
     role: str  # "host" | "player" | "display"
 
 
+@dataclass(frozen=True)
+class FirebaseAccount:
+    """A verified Firebase account identity, not scoped to any session.
+
+    Distinct from JwtClaims: account tokens come directly from the
+    Firebase client SDK (Email/Password, Google, or Phone sign-in) and
+    carry no ``arcwright_role`` custom claim. They authenticate "this is
+    a specific human account" for host session creation, not "this
+    token is authorized for session X".
+    """
+
+    uid: str
+    email: str | None
+
+
 async def require_api_key(
     x_api_key: str = Header(alias="X-Api-Key"),
 ) -> ApiCaller:
@@ -62,6 +106,25 @@ async def require_api_key(
     if not expected or x_api_key != expected:
         raise HTTPException(status_code=401, detail="Invalid API key")
     return ApiCaller(api_key=x_api_key)
+
+
+async def require_firebase_account(
+    credentials: HTTPAuthorizationCredentials | None = Security(_bearer),
+) -> FirebaseAccount:
+    """Dependency: require a Firebase ID token identifying a human account.
+
+    Unlike ``require_host_jwt``, this does not require an
+    ``arcwright_role`` custom claim: it accepts any valid Firebase ID
+    token issued directly by the client SDK (Email/Password, Google, or
+    Phone sign-in). Used to authenticate host session creation by a
+    stable Firebase account identity rather than a session-scoped
+    custom token. Token verification (signature, expiry, project
+    audience) is identical to the other dependencies in this module.
+    """
+    if credentials is None:
+        raise HTTPException(status_code=401, detail="Authorization header required")
+    decoded = _decode_bearer(credentials.credentials)
+    return FirebaseAccount(uid=decoded["uid"], email=decoded.get("email"))
 
 
 def _decode_bearer(token: str) -> dict[str, Any]:

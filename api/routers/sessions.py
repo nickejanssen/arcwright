@@ -6,13 +6,14 @@ No arc execution logic here.
 
 Endpoint summary (base path /v1/sessions):
   POST   /                      API key          Create session
+  POST   /host                   Firebase account Create session (authenticated host)
   GET    /{id}                   API key|host JWT Session state
   POST   /{id}/start             host JWT         Start arc
   POST   /{id}/pause             host JWT         Pause arc + snapshot
   POST   /{id}/resume            host JWT         Resume arc from snapshot
   POST   /{id}/end               host JWT         End session
   POST   /{id}/replay-intent     host JWT         Record post-session replay intent
-  GET    /{id}/join              public           Exchange join token for player JWT
+  POST   /{id}/join              public           Exchange join token for player JWT
 """
 
 from __future__ import annotations
@@ -25,10 +26,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.auth import (
     ApiCaller,
+    FirebaseAccount,
     JwtClaims,
     _ensure_firebase_app,
     require_api_key,
     require_api_key_or_host_jwt,
+    require_firebase_account,
     require_host_jwt,
 )
 from api.routers.events import _get_or_create_session_state
@@ -60,12 +63,38 @@ async def create_session(
     caller: ApiCaller = Depends(require_api_key),
     db: AsyncSession = Depends(get_async_session),
 ) -> CreateSessionResponse:
-    """Create a new session from an arc definition.
+    """Create a new session from an arc definition (developer API-key path).
 
     Returns session_id, a join URL for players, and a host_token (Firebase custom
     token) the host exchanges for an ID token via the Firebase client SDK.
+    Each call mints a fresh anonymous host identity; developer tooling has
+    no stable Firebase account to attach the session to.
     """
-    host_account_id = uuid4()
+    return await _create_session_response(db, body, host_account_id=uuid4())
+
+
+@router.post("/host", response_model=CreateSessionResponse, status_code=201)
+async def create_host_session(
+    body: CreateSessionRequest,
+    account: FirebaseAccount = Depends(require_firebase_account),
+    db: AsyncSession = Depends(get_async_session),
+) -> CreateSessionResponse:
+    """Create a new session authenticated by a Firebase host account token.
+
+    Unlike POST / (developer API-key path), this persists the caller's
+    stable Firebase account identity as ``host_account_id`` — repeat
+    sessions from the same signed-in host reuse the same account row
+    instead of minting a new anonymous host identity every time.
+    """
+    host_account_id = await _session_service.ensure_account_for_firebase_uid(
+        db, firebase_uid=account.uid, email=account.email
+    )
+    return await _create_session_response(db, body, host_account_id=host_account_id)
+
+
+async def _create_session_response(
+    db: AsyncSession, body: CreateSessionRequest, host_account_id: UUID
+) -> CreateSessionResponse:
     session, host_join_token = await _session_service.create_session(
         db,
         arc_id=body.arc_id,
@@ -231,7 +260,7 @@ async def add_player(
     )
 
 
-@router.get("/{session_id}/join", response_model=JoinSessionResponse)
+@router.post("/{session_id}/join", response_model=JoinSessionResponse)
 async def join_session(
     session_id: UUID,
     token: str = Query(
