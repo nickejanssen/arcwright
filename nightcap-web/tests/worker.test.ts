@@ -4,17 +4,8 @@ import test from "node:test";
 import {
   NightcapConnector,
   type CreateSessionRequest,
+  type CreateSessionResponse,
 } from "../src/connector.js";
-
-const DurableObjectStub = class {
-  constructor(state: unknown, env: unknown) {
-    void state;
-    void env;
-  }
-};
-
-// @ts-expect-error Node does not provide DurableObject at runtime.
-globalThis.DurableObject = DurableObjectStub;
 
 const workerModule = await import("../src/worker.js");
 const {
@@ -46,6 +37,9 @@ const env: NightcapWorkerEnv = {
   FIREBASE_SIGN_IN_URL:
     "https://firebase.test/v1/accounts:signInWithCustomToken",
   FIREBASE_WEB_API_KEY: "firebase-web-api-key",
+  FIREBASE_AUTH_DOMAIN: "arcwright-53ea3.firebaseapp.com",
+  FIREBASE_PROJECT_ID: "arcwright-53ea3",
+  FIREBASE_TOKEN_EXCHANGE_API_KEY: "firebase-token-exchange-api-key",
   BOOTSTRAP_TOKEN: "bootstrap-secret",
   ROOMS: roomNamespace,
 };
@@ -155,6 +149,154 @@ test("bootstrapSession forwards the Arcwright session id into room runtime state
     room_id: "session-123",
     room_url: "/rooms/session-123",
   });
+});
+
+test("host session route requires an Authorization header", async () => {
+  const response = await workerRuntime.fetch(
+    new Request("https://nightcap.test/host/api/session", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ arc_id: "nightcap-v1" }),
+    }),
+    env,
+    {} as ExecutionContext,
+  );
+
+  assert.equal(response.status, 401);
+});
+
+test("host session route proxies the Firebase account token to Arcwright and never sends the developer API key", async () => {
+  const fetchGlobal = globalThis as typeof globalThis & {
+    fetch: typeof fetch;
+  };
+  const originalFetch = fetchGlobal.fetch;
+  const seenRequests: Request[] = [];
+
+  fetchGlobal.fetch = async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> => {
+    const request =
+      input instanceof Request
+        ? input
+        : new Request(input instanceof URL ? input : String(input), init);
+    seenRequests.push(request.clone());
+    const url = new URL(request.url);
+
+    if (request.method === "POST" && url.pathname === "/v1/sessions/host") {
+      const body = {
+        session_id: "session-host-1",
+        join_url: "/v1/sessions/session-host-1/join",
+        host_token: "session-scoped-host-custom-token",
+        host_join_token: "host-join-token",
+      } satisfies CreateSessionResponse;
+      return new Response(JSON.stringify(body), {
+        status: 201,
+        headers: { "content-type": "application/json" },
+      });
+    }
+
+    return new Response("not found", { status: 404 });
+  };
+
+  try {
+    const response = await workerRuntime.fetch(
+      new Request("https://nightcap.test/host/api/session", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+          authorization: "Bearer firebase-account-id-token",
+        },
+        body: JSON.stringify({ arc_id: "nightcap-v1" }),
+      }),
+      env,
+      {} as ExecutionContext,
+    );
+
+    assert.equal(response.status, 200);
+    const body = (await response.json()) as {
+      session: { session_id: string; host_token: string };
+      runtime: { room_id: string };
+    };
+    assert.equal(body.session.session_id, "session-host-1");
+    assert.equal(body.session.host_token, "session-scoped-host-custom-token");
+    assert.equal(body.runtime.room_id, "session-host-1");
+
+    assert.equal(seenRequests.length, 1);
+    const upstream = seenRequests[0]!;
+    assert.equal(
+      upstream.headers.get("authorization"),
+      "Bearer firebase-account-id-token",
+    );
+    assert.equal(upstream.headers.get("x-api-key"), null);
+  } finally {
+    fetchGlobal.fetch = originalFetch;
+  }
+});
+
+test("host token exchange converts a session-scoped custom token into a bearer token", async () => {
+  const fetchGlobal = globalThis as typeof globalThis & {
+    fetch: typeof fetch;
+  };
+  const originalFetch = fetchGlobal.fetch;
+
+  fetchGlobal.fetch = async (
+    input: RequestInfo | URL,
+    init?: RequestInit,
+  ): Promise<Response> => {
+    const request =
+      input instanceof Request
+        ? input
+        : new Request(input instanceof URL ? input : String(input), init);
+    const url = new URL(request.url);
+    const body = await request.text();
+
+    if (request.method === "POST" && url.href.startsWith(firebaseSignInUrl)) {
+      assert.deepEqual(JSON.parse(body), {
+        token: "session-scoped-host-custom-token",
+        returnSecureToken: true,
+      });
+      return new Response(
+        JSON.stringify({
+          idToken: "host-id-token-abc",
+          expiresIn: "3600",
+        }),
+        {
+          status: 200,
+          headers: { "content-type": "application/json; charset=utf-8" },
+        },
+      );
+    }
+
+    return new Response("not found", { status: 404 });
+  };
+
+  try {
+    const response = await workerRuntime.fetch(
+      new Request(
+        "https://nightcap.test/host/api/sessions/session-host-1/auth/exchange",
+        {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({
+            host_token: "session-scoped-host-custom-token",
+          }),
+        },
+      ),
+      env,
+      {} as ExecutionContext,
+    );
+
+    assert.equal(response.status, 200);
+    const data = (await response.json()) as {
+      host_token: string;
+      expires_at: number;
+    };
+    assert.equal(data.host_token, "host-id-token-abc");
+    assert.ok(Number.isFinite(data.expires_at));
+  } finally {
+    fetchGlobal.fetch = originalFetch;
+  }
 });
 
 test("createHostSession includes host and shared-display runtime URLs", async () => {
@@ -621,7 +763,10 @@ test("player token exchange converts a join custom token into a bearer token", a
     const body = request.method === "GET" ? null : await request.text();
 
     if (request.method === "POST" && url.href.startsWith(firebaseSignInUrl)) {
-      assert.equal(url.searchParams.get("key"), env.FIREBASE_WEB_API_KEY);
+      assert.equal(
+        url.searchParams.get("key"),
+        env.FIREBASE_TOKEN_EXCHANGE_API_KEY,
+      );
       assert.deepEqual(JSON.parse(body ?? "{}"), {
         token: "player-custom-token-abc",
         returnSecureToken: true,
@@ -733,7 +878,7 @@ test("player token exchange hides Firebase failures behind a generic 502", async
     assert.equal(text, "Player token exchange failed");
     assert.ok(!text.includes("INVALID_CUSTOM_TOKEN"));
     assert.equal(warnings.length, 1);
-    assert.equal(warnings[0]?.[0], "Nightcap player token exchange failed");
+    assert.equal(warnings[0]?.[0], "Nightcap token exchange failed");
   } finally {
     console.warn = originalWarn;
     fetchGlobal.fetch = originalFetch;
