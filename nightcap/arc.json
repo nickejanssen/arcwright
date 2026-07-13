@@ -373,7 +373,13 @@
       "deception",
       "dark_motives"
     ],
-    "age_floor": 18
+    "age_floor": 18,
+    "extra_prohibitions": [
+      "Do not graphically depict the murder itself or describe violence in explicit physical detail.",
+      "Do not include sexual content between any characters.",
+      "Do not provide real-world harmful information while speaking in character.",
+      "Do not produce content that directly accuses or targets a real, named person."
+    ]
   },
   "knowledge_rules": {
     "killer_knows_they_did_it": true,

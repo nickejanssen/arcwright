@@ -25,14 +25,13 @@ import random
 import secrets
 import string
 from datetime import datetime, timezone
-from functools import lru_cache
-from pathlib import Path
 from typing import TYPE_CHECKING, Any
 from uuid import UUID, uuid4
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from engine.arc.registry import load_arc_definition
 from engine.db.orm import (
     Account,
     ArcBeatState,
@@ -101,7 +100,7 @@ class SessionService:
         Returns ``(session, host_join_token)``. The host token is the same
         out-of-band token format used for player joins (§9.2 GET /join).
         """
-        arc_def = _load_nightcap_arc_definition(arc_id)
+        arc_def = load_arc_definition(arc_id)
         if arc_def is None:
             raise SessionStateError(f"Unknown arc: {arc_id!r}")
         initial_beat_id = arc_def.beats[0].beat_id
@@ -312,17 +311,18 @@ class SessionService:
         *,
         player_action_count: int = 1,
     ) -> Session:
-        """Advance Nightcap beat state after validated REST player input.
+        """Advance arc beat state after validated REST player input.
 
         The progression is deterministic and service-owned so REST handlers
-        stay thin. When the session is not an active Nightcap session, the
-        method is a no-op and returns the current session state.
+        stay thin. When the session is not active, or its arc is not in the
+        arc registry, the method is a no-op and returns the current session
+        state.
         """
         orm = await self._require_session(db, session_id)
         if orm.status != SessionStatus.active.value:
             return _orm_session_to_pydantic(orm)
 
-        arc_definition = _load_nightcap_arc_definition(orm.arc_id)
+        arc_definition = load_arc_definition(orm.arc_id)
         if arc_definition is None:
             return _orm_session_to_pydantic(orm)
 
@@ -621,20 +621,6 @@ def _build_live_pacing_snapshot(
         suspicion=suspicion,
         clue_coverage=clue_coverage,
     )
-
-
-@lru_cache(maxsize=1)
-def _load_cached_nightcap_arc_definition() -> "ArcDefinition":
-    from engine.arc.models import ArcDefinition
-
-    arc_path = Path(__file__).resolve().parents[2] / "nightcap" / "arc.json"
-    return ArcDefinition.model_validate_json(arc_path.read_text(encoding="utf-8"))
-
-
-def _load_nightcap_arc_definition(arc_id: str) -> ArcDefinition | None:
-    if not arc_id.startswith("nightcap"):
-        return None
-    return _load_cached_nightcap_arc_definition()
 
 
 _session_service = SessionService()

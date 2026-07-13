@@ -1,0 +1,8 @@
+{
+  "arcs": [
+    {
+      "id_prefix": "nightcap",
+      "path": "nightcap/arc.json"
+    }
+  ]
+}

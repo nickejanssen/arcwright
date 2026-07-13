@@ -34,7 +34,6 @@ from engine.safety import (
     NEUTRAL_L3_BRIDGE,
     build_l3_blocked_route_result,
     build_l3_policy_block,
-    build_nightcap_l3_policy_block,
     inject_l3_policy_block,
 )
 
@@ -183,70 +182,54 @@ def test_build_l3_policy_block_returns_empty_string_when_no_prohibitions() -> No
     assert block == ""
 
 
-def test_build_nightcap_l3_policy_block_includes_arc_prohibited_categories() -> None:
-    """Nightcap policy block must include any categories from the arc rails.
+def test_build_l3_policy_block_includes_extra_prohibitions() -> None:
+    """Arc-authored extra_prohibitions sentences appear verbatim in the block.
 
-    This is the key acceptance criterion: the Nightcap policy must be sourced
-    from arc rails, not hardcoded.  If the arc designer adds a new prohibited
-    category, it must appear in the injected block.
-    """
-    content_rails = ContentRailsConfig(
-        prohibited_categories=["real-world weapon construction"],
-        thematic_warnings=["graphic violence"],
-        age_floor=18,
-    )
-
-    block = build_nightcap_l3_policy_block(content_rails)
-
-    # Arc-defined prohibition must be present.
-    assert "real-world weapon construction" in block
-    # The block must have a policy header.
-    assert "CONTENT POLICY" in block
-
-
-def test_build_nightcap_l3_policy_block_includes_nightcap_specific_rules() -> None:
-    """The Nightcap policy block must include the Nightcap-specific extra rules.
-
-    These rules are defined in the l3 module rather than in the arc JSON
-    because they are specific to the Nightcap game experience (no graphic
-    depiction of the murder, no sexual content, etc.) and should apply to
-    every Nightcap session regardless of what the arc designer puts in rails.
-
-    This test proves those rules are present in the injected block.
-    """
-    content_rails = ContentRailsConfig(
-        prohibited_categories=[],
-        thematic_warnings=[],
-        age_floor=18,
-    )
-
-    block = build_nightcap_l3_policy_block(content_rails)
-
-    # These phrases come from the Nightcap-specific prohibitions in l3.py.
-    assert "murder" in block.lower()
-    assert "sexual content" in block.lower()
-    assert "real-world harmful information" in block.lower()
-    assert "real, named person" in block.lower()
-
-
-def test_nightcap_policy_block_arc_rails_override_is_additive() -> None:
-    """Arc rails and Nightcap rules both appear together in the final block.
-
-    The Nightcap builder adds arc rules AND Nightcap-specific rules.  It
-    must not replace one with the other.
+    Extra prohibitions are how a game tightens its content rules beyond the
+    category list. They live in the arc JSON, never in engine code, so any
+    game can define its own L3 rules without an engine change. The block is
+    additive: category rules and extra sentences appear together.
     """
     content_rails = ContentRailsConfig(
         prohibited_categories=["real-person doxxing"],
         thematic_warnings=[],
         age_floor=18,
+        extra_prohibitions=[
+            "Do not include sexual content between any characters.",
+        ],
     )
 
-    block = build_nightcap_l3_policy_block(content_rails)
+    block = build_l3_policy_block(content_rails)
 
-    # Arc rule is present.
+    # Category rule and arc-authored sentence both appear: additive, not
+    # replacing one with the other.
     assert "real-person doxxing" in block
-    # At least one Nightcap-specific rule is also present.
+    assert "Do not include sexual content between any characters." in block
+    assert "CONTENT POLICY" in block
+
+
+def test_nightcap_arc_rails_carry_game_specific_rules() -> None:
+    """The Nightcap arc definition supplies its game-specific rules via config.
+
+    These rules used to live as constants in the engine's l3 module. They
+    are game-tone decisions (no graphic depiction of the murder, no sexual
+    content, etc.), so they belong to the arc definition. This test proves
+    the shipped Nightcap arc still injects all of them, sourced from
+    nightcap/arc.json rather than engine code.
+    """
+    from pathlib import Path
+
+    from engine.arc.models import ArcDefinition
+
+    arc_path = Path(__file__).resolve().parents[2] / "nightcap" / "arc.json"
+    arc = ArcDefinition.model_validate_json(arc_path.read_text(encoding="utf-8"))
+
+    block = build_l3_policy_block(arc.content_rails)
+
+    assert "murder" in block.lower()
     assert "sexual content" in block.lower()
+    assert "real-world harmful information" in block.lower()
+    assert "real, named person" in block.lower()
 
 
 # ---------------------------------------------------------------------------
@@ -352,18 +335,21 @@ def test_inject_l3_policy_block_returns_original_when_no_prohibitions() -> None:
     assert result is messages
 
 
-def test_inject_l3_policy_block_nightcap_mode_includes_nightcap_rules() -> None:
-    """In Nightcap mode, the injected block includes Nightcap-specific rules."""
+def test_inject_l3_policy_block_includes_extra_prohibitions() -> None:
+    """Arc extra_prohibitions produce a block even with no category rules."""
     content_rails = ContentRailsConfig(
         prohibited_categories=[],
         thematic_warnings=[],
         age_floor=18,
+        extra_prohibitions=[
+            "Do not graphically depict the murder itself or describe violence in explicit physical detail.",
+        ],
     )
     messages = [{"role": "system", "content": "You are a suspect."}]
 
-    result = inject_l3_policy_block(messages, content_rails, nightcap_mode=True)
+    result = inject_l3_policy_block(messages, content_rails)
 
-    # Nightcap mode produces a non-empty block even with no arc prohibitions.
+    # Extra prohibitions produce a non-empty block even with no categories.
     # Policy is appended to the existing system message (not a new one).
     assert len(result) == 1
     assert "CONTENT POLICY" in result[0]["content"]
@@ -439,21 +425,24 @@ async def test_generate_injects_l3_policy_block_before_main_call(
     assert "You are a detective." in main_messages[0]["content"]
 
 
-async def test_generate_nightcap_mode_injects_nightcap_rules(
+async def test_generate_injects_extra_prohibitions_from_rails(
     db_session: AsyncSession,
 ) -> None:
-    """In Nightcap mode, the main call receives the Nightcap-specific policy.
+    """The main call receives arc-authored extra prohibitions from the rails.
 
-    This test proves the Nightcap L3 policy is sourced from the arc rails
-    (the `content_rails` object) and not from a hardcoded string.  The
+    This test proves the whole L3 policy is sourced from the arc rails
+    (the `content_rails` object) and not from hardcoded engine strings.  The
     prohibited category we pass ("real-person doxxing") must appear alongside
-    the Nightcap-specific rules in the injected message.
+    the arc's extra prohibition sentences in the injected message.
     """
     sess_row = await _make_session_row(db_session)
     content_rails = ContentRailsConfig(
         prohibited_categories=["real-person doxxing"],
         thematic_warnings=[],
         age_floor=18,
+        extra_prohibitions=[
+            "Do not include sexual content between any characters.",
+        ],
     )
     original_messages = [{"role": "system", "content": "You are a suspect."}]
     captured_main_messages: list[list[dict]] = []
@@ -475,14 +464,13 @@ async def test_generate_nightcap_mode_injects_nightcap_rules(
             quality_tier="standard",
             messages=original_messages,
             content_rails=content_rails,
-            nightcap_mode=True,
         )
 
     assert len(captured_main_messages) == 1
     policy_text = captured_main_messages[0][0]["content"]
     # Arc-level prohibited category is present (sourced from content_rails).
     assert "real-person doxxing" in policy_text
-    # Nightcap-specific rule is also present.
+    # Arc-authored extra prohibition is also present.
     assert "sexual content" in policy_text.lower()
 
 

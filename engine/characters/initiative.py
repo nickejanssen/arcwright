@@ -356,7 +356,6 @@ async def generate_npc_npc_exchange(
     tension_score: float | None = None,
     safety_policy_context: dict[str, Any] | str | None = None,
     content_rails: "ContentRailsConfig | None" = None,
-    nightcap_mode: bool = False,
     social_pressure_by_character: dict[UUID, float] | None = None,
 ) -> NpcNpcExchangeEvent:
     """Generate an NPC-to-NPC exchange of one or more alternating turns.
@@ -414,7 +413,6 @@ async def generate_npc_npc_exchange(
             tension_score=tension_score,
             safety_policy_context=safety_policy_context,
             content_rails=content_rails,
-            nightcap_mode=nightcap_mode,
         )
 
         if _is_safety_blocked_result(result.model_used):
@@ -508,7 +506,6 @@ def schedule_initiative_tasks(
     tension_score: float | None = None,
     safety_policy_context: dict[str, Any] | str | None = None,
     content_rails: "ContentRailsConfig | None" = None,
-    nightcap_mode: bool = False,
     social_pressure_by_character: dict[UUID, float] | None = None,
 ) -> list[asyncio.Task[NpcNpcExchangeEvent | CharacterDialogueEvent]]:
     """Dispatch each action as its own asyncio task. Returns immediately.
@@ -530,7 +527,6 @@ def schedule_initiative_tasks(
             tension_score=tension_score,
             safety_policy_context=safety_policy_context,
             content_rails=content_rails,
-            nightcap_mode=nightcap_mode,
             social_pressure_by_character=social_pressure_by_character,
         )
         tasks.append(asyncio.create_task(coro))
@@ -549,7 +545,6 @@ async def _run_initiative_action(
     tension_score: float | None,
     safety_policy_context: dict[str, Any] | str | None,
     content_rails: "ContentRailsConfig | None",
-    nightcap_mode: bool,
     social_pressure_by_character: dict[UUID, float] | None = None,
 ) -> NpcNpcExchangeEvent | CharacterDialogueEvent:
     async with session_factory() as db_session:
@@ -566,7 +561,6 @@ async def _run_initiative_action(
                 tension_score=tension_score,
                 safety_policy_context=safety_policy_context,
                 content_rails=content_rails,
-                nightcap_mode=nightcap_mode,
                 social_pressure_by_character=social_pressure_by_character,
             )
             await db_session.commit()
@@ -593,7 +587,6 @@ async def _run_initiative_action(
             tension_score=tension_score,
             safety_policy_context=safety_policy_context,
             content_rails=content_rails,
-            nightcap_mode=nightcap_mode,
             social_pressure=character_pressure,
         )
         await db_session.commit()

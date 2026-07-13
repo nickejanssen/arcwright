@@ -7,10 +7,9 @@ from typing import Any, Callable
 
 from pydantic import BaseModel, Field
 
+from engine.arc.registry import default_arc_path
 from engine.harness.models import HarnessAction, HarnessRun
 from engine.harness.runner import HarnessRunner
-
-ARC_PATH = Path(__file__).resolve().parents[2] / "nightcap" / "arc.json"
 
 
 class ScenarioValidationError(Exception):
@@ -49,11 +48,11 @@ class ScenarioExecutor:
     def __init__(
         self,
         *,
-        arc_path: Path = ARC_PATH,
+        arc_path: Path | None = None,
         runner_factory: Callable[[Path, int], HarnessRunner] | None = None,
         preflight_runner_factory: Callable[[Path, int], HarnessRunner] | None = None,
     ) -> None:
-        self._arc_path = arc_path
+        self._arc_path = arc_path if arc_path is not None else default_arc_path()
         self._runner_factory = runner_factory
         self._preflight_runner_factory = preflight_runner_factory
 
