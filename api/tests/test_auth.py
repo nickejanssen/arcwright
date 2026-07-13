@@ -91,3 +91,42 @@ class TestRequireFirebaseAccount:
             await require_firebase_account(None)
 
         assert exc_info.value.status_code == 401
+
+    @pytest.mark.asyncio
+    async def test_session_scoped_token_is_rejected(self) -> None:
+        """A player/display token exchanged to a real ID token still carries
+        arcwright_role — it must not be usable as an account token."""
+        with (
+            patch("api.auth._ensure_firebase_app"),
+            patch(
+                "firebase_admin.auth.verify_id_token",
+                return_value={
+                    "uid": "session:abc:player:def",
+                    "arcwright_role": "player",
+                    "arcwright_session_id": "abc",
+                    "arcwright_player_id": "def",
+                },
+            ),
+        ):
+            with pytest.raises(HTTPException) as exc_info:
+                await require_firebase_account(_credentials("player-session-token"))
+
+        assert exc_info.value.status_code == 401
+
+    @pytest.mark.asyncio
+    async def test_host_session_scoped_token_is_rejected(self) -> None:
+        with (
+            patch("api.auth._ensure_firebase_app"),
+            patch(
+                "firebase_admin.auth.verify_id_token",
+                return_value={
+                    "uid": "session:abc:host",
+                    "arcwright_role": "host",
+                    "arcwright_session_id": "abc",
+                },
+            ),
+        ):
+            with pytest.raises(HTTPException) as exc_info:
+                await require_firebase_account(_credentials("host-session-token"))
+
+        assert exc_info.value.status_code == 401

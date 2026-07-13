@@ -120,10 +120,22 @@ async def require_firebase_account(
     stable Firebase account identity rather than a session-scoped
     custom token. Token verification (signature, expiry, project
     audience) is identical to the other dependencies in this module.
+
+    Rejects tokens that carry an ``arcwright_role`` claim. Player and
+    display tokens are Arcwright-minted custom tokens exchanged for a
+    real ID token via signInWithCustomToken, so they verify as valid
+    Firebase ID tokens too — without this check, a player could use
+    their own session token to call the host session-creation endpoint
+    and mint host sessions without ever signing in as an account.
     """
     if credentials is None:
         raise HTTPException(status_code=401, detail="Authorization header required")
     decoded = _decode_bearer(credentials.credentials)
+    if decoded.get("arcwright_role"):
+        raise HTTPException(
+            status_code=401,
+            detail="Session-scoped tokens are not valid for account authentication",
+        )
     return FirebaseAccount(uid=decoded["uid"], email=decoded.get("email"))
 
 
