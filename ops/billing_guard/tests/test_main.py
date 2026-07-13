@@ -11,7 +11,10 @@ from ops.billing_guard import main
 
 
 def _envelope(
-    payload: dict | None, valid_json: bool = True, valid_base64: bool = True
+    payload: dict | None,
+    valid_json: bool = True,
+    valid_base64: bool = True,
+    billing_account_id: str | None = "010472-A5F484-E66D1D",
 ) -> dict:
     if payload is None:
         return {"message": {}}
@@ -21,12 +24,17 @@ def _envelope(
         data = "not-valid-base64!!!"
     else:
         data = base64.b64encode(json.dumps(payload).encode()).decode()
-    return {"message": {"data": data}}
+    attributes = {}
+    if billing_account_id is not None:
+        attributes["billingAccountId"] = billing_account_id
+    return {"message": {"data": data, "attributes": attributes}}
 
 
+# billingAccountId is a real Cloud Billing notification is a Pub/Sub message
+# *attribute*, not part of the data payload — see _envelope's
+# billing_account_id parameter.
 VALID_PAYLOAD = {
     "budgetDisplayName": "rehearsal2-cloudsql",
-    "billingAccountId": "010472-A5F484-E66D1D",
     "costAmount": 9.0,
     "budgetAmount": 10.0,
     "currencyCode": "USD",
@@ -85,9 +93,14 @@ def test_should_trigger_shutdown_rejects_unrecognized_budget_name():
 
 def test_should_trigger_shutdown_rejects_wrong_billing_account():
     notification = main.parse_notification(
-        _envelope({**VALID_PAYLOAD, "billingAccountId": "999999-WRONG-ACCOUNT"})
+        _envelope(VALID_PAYLOAD, billing_account_id="999999-WRONG-ACCOUNT")
     )
     assert main.should_trigger_shutdown(notification) is False
+
+
+def test_parse_notification_rejects_missing_billing_account_attribute():
+    with pytest.raises(main.InvalidNotification):
+        main.parse_notification(_envelope(VALID_PAYLOAD, billing_account_id=None))
 
 
 def test_should_trigger_shutdown_rejects_below_threshold():

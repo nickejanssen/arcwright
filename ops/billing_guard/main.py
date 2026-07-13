@@ -74,6 +74,13 @@ class InvalidNotification(ValueError):
 def parse_notification(envelope: dict) -> BudgetNotification:
     """Parse and validate a Cloud Billing budget Pub/Sub envelope.
 
+    Real Cloud Billing notifications split the payload across two
+    places: identifier fields (billingAccountId, budgetId,
+    schemaVersion) are Pub/Sub message *attributes*, while budget
+    details (display name, amounts, currency) are in the base64-encoded
+    message *data* JSON. See
+    https://docs.cloud.google.com/billing/docs/how-to/budgets-programmatic-notifications#notification_format
+
     Raises InvalidNotification for anything malformed, missing required
     fields, or not shaped like a budget notification. Callers must treat
     InvalidNotification as a safe no-op, not an error to retry.
@@ -81,6 +88,11 @@ def parse_notification(envelope: dict) -> BudgetNotification:
     message = envelope.get("message") if envelope else None
     if not message or "data" not in message:
         raise InvalidNotification("envelope missing message.data")
+
+    attributes = message.get("attributes") or {}
+    billing_account_id = attributes.get("billingAccountId")
+    if not billing_account_id:
+        raise InvalidNotification("message.attributes missing billingAccountId")
 
     try:
         raw = base64.b64decode(message["data"]).decode("utf-8")
@@ -90,7 +102,7 @@ def parse_notification(envelope: dict) -> BudgetNotification:
             f"message.data is not valid base64 JSON: {exc}"
         ) from exc
 
-    required = ("budgetDisplayName", "billingAccountId", "costAmount", "budgetAmount")
+    required = ("budgetDisplayName", "costAmount", "budgetAmount")
     missing = [field for field in required if field not in payload]
     if missing:
         raise InvalidNotification(f"payload missing required fields: {missing}")
@@ -98,7 +110,7 @@ def parse_notification(envelope: dict) -> BudgetNotification:
     try:
         return BudgetNotification(
             budget_display_name=str(payload["budgetDisplayName"]),
-            billing_account_id=str(payload["billingAccountId"]),
+            billing_account_id=str(billing_account_id),
             cost_amount=float(payload["costAmount"]),
             budget_amount=float(payload["budgetAmount"]),
             currency_code=str(payload.get("currencyCode", "USD")),
