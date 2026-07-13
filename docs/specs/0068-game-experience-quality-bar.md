@@ -1,8 +1,8 @@
 # 0068 — Game Experience Quality Bar
 
 > Current version: v1.0
-> Last updated: 2026-07-12
-> Status: Draft (founder review → Approved)
+> Last updated: 2026-07-13
+> Status: Approved (founder, 2026-07-13)
 > Author: Strategy/design session 2026-07-12
 > Canonical path: docs/specs/0068-game-experience-quality-bar.md
 

@@ -1,8 +1,8 @@
 # 0069 — Nightcap Visual Design System (UI, Animation, Aesthetic)
 
 > Current version: v1.0
-> Last updated: 2026-07-12
-> Status: Draft (founder review → Approved)
+> Last updated: 2026-07-13
+> Status: Approved (founder, 2026-07-13)
 > Author: Design session 2026-07-12
 > Canonical path: docs/specs/0069-nightcap-visual-design-system.md
 
