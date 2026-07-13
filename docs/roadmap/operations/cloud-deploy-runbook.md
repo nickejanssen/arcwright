@@ -356,8 +356,8 @@ The current API workflow must bind all of these secrets into Cloud Run:
 
 - `DATABASE_URL=DATABASE_URL:latest`
 - `ARCWRIGHT_API_KEY=ARCWRIGHT_API_KEY:latest`
-- `PRIMARY_LLM_API_KEY=PRIMARY_LLM_API_KEY:latest`
-- `SECONDARY_LLM_API_KEY=SECONDARY_LLM_API_KEY:latest`
+- `ANTHROPIC_API_KEY=PRIMARY_LLM_API_KEY:latest`
+- `GROQ_API_KEY=SECONDARY_LLM_API_KEY:latest`
 - `FIREBASE_SERVICE_ACCOUNT_JSON=FIREBASE_SERVICE_ACCOUNT_JSON:latest`
 
 Verify that list in [deploy-api.yml](/C:/Users/nicke/OneDrive/Desktop/arcwright/.github/workflows/deploy-api.yml) before your first production push.
