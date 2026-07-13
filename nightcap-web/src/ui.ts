@@ -17,8 +17,11 @@ import {
   renderMiniGameStageStyles,
 } from "./mini-games/stage.js";
 import type { ContentEvent, PresentationHints } from "./types.js";
+import { renderDesignTokenCss, surfaceBodyClass } from "./design/index.js";
+import type { SurfaceMode } from "./design/index.js";
 
-function pageShell(title: string, body: string): string {
+function pageShell(title: string, body: string, surface?: SurfaceMode): string {
+  const bodyClass = surfaceBodyClass(surface);
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -26,28 +29,18 @@ function pageShell(title: string, body: string): string {
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${title}</title>
   <style>
+    ${renderDesignTokenCss()}
     :root {
-      color-scheme: dark;
-      --bg: #0b1020;
-      --panel: rgba(16, 22, 43, 0.88);
-      --panel-strong: #121a33;
-      --line: rgba(163, 183, 255, 0.18);
-      --text: #eef2ff;
-      --muted: #98a3c7;
-      --accent: #7dd3fc;
-      --accent-strong: #38bdf8;
-      --danger: #fb7185;
-      --success: #34d399;
-      font-family: Inter, "Segoe UI", system-ui, sans-serif;
+      font-family: var(--font-ui);
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
       background:
-        radial-gradient(circle at top, rgba(56, 189, 248, 0.18), transparent 36%),
-        linear-gradient(160deg, #050814 0%, #0b1020 55%, #10162d 100%);
-      color: var(--text);
+        radial-gradient(circle at 50% -10%, color-mix(in srgb, var(--theme-glow) 12%, transparent), transparent 42%),
+        var(--stage-0);
+      color: var(--ink-primary);
     }
     main {
       max-width: 1200px;
@@ -56,37 +49,53 @@ function pageShell(title: string, body: string): string {
     }
     .shell {
       display: grid;
-      gap: 18px;
+      gap: var(--space-4);
     }
     .card {
-      background: var(--panel);
+      background: var(--stage-1-glass);
       border: 1px solid var(--line);
-      border-radius: 18px;
-      padding: 18px;
-      box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
+      border-radius: var(--radius-card);
+      padding: var(--space-4);
+      box-shadow: var(--shadow-stage);
       backdrop-filter: blur(16px);
     }
+    .card-strong {
+      margin: 0;
+      background: var(--stage-2);
+    }
+    .card-inset {
+      margin: 0 0 var(--space-3);
+      background: var(--veil);
+    }
     h1, h2, h3, p { margin-top: 0; }
-    h1 { font-size: clamp(2rem, 4vw, 3.5rem); margin-bottom: 8px; }
-    h2 { font-size: 1.2rem; margin-bottom: 10px; }
+    h1 {
+      font-family: var(--font-display);
+      font-weight: 600;
+      letter-spacing: 0.01em;
+      font-size: var(--type-title);
+      margin-bottom: var(--space-2);
+    }
+    h2 { font-size: var(--type-heading); margin-bottom: 10px; }
     p, label, button, input, textarea, select, summary {
       font: inherit;
     }
-    label { display: grid; gap: 8px; margin-bottom: 12px; color: var(--muted); }
+    p { font-size: var(--type-body); }
+    label { display: grid; gap: var(--space-2); margin-bottom: var(--space-3); color: var(--ink-muted); }
     input, textarea, select, button {
-      border-radius: 12px;
+      border-radius: var(--radius-control);
       border: 1px solid var(--line);
-      background: rgba(6, 10, 24, 0.75);
-      color: var(--text);
+      background: var(--veil);
+      color: var(--ink-primary);
       padding: 12px 14px;
     }
     textarea { min-height: 120px; resize: vertical; }
     button {
       cursor: pointer;
       font-weight: 650;
-      background: linear-gradient(135deg, rgba(56, 189, 248, 0.18), rgba(125, 211, 252, 0.08));
+      background: linear-gradient(135deg, color-mix(in srgb, var(--theme-glow) 16%, transparent), color-mix(in srgb, var(--theme-glow) 6%, transparent));
+      transition: border-color var(--t-quick), background-color var(--t-quick);
     }
-    button:hover { border-color: rgba(125, 211, 252, 0.45); }
+    button:hover { border-color: color-mix(in srgb, var(--theme-glow) 45%, transparent); }
     .grid {
       display: grid;
       gap: 16px;
@@ -99,19 +108,19 @@ function pageShell(title: string, body: string): string {
       flex-wrap: wrap;
       gap: 10px;
     }
-    .muted { color: var(--muted); }
+    .muted { color: var(--ink-muted); }
     .status {
       padding: 10px 12px;
-      border-radius: 12px;
-      background: rgba(59, 130, 246, 0.08);
-      border: 1px solid rgba(59, 130, 246, 0.2);
-      color: var(--accent);
+      border-radius: var(--radius-control);
+      background: color-mix(in srgb, var(--theme-glow) 7%, transparent);
+      border: 1px solid color-mix(in srgb, var(--theme-glow) 22%, transparent);
+      color: var(--theme-glow);
       white-space: pre-wrap;
     }
     .status.error {
-      background: rgba(244, 63, 94, 0.08);
-      border-color: rgba(244, 63, 94, 0.2);
-      color: var(--danger);
+      background: color-mix(in srgb, var(--accuse) 10%, transparent);
+      border-color: color-mix(in srgb, var(--accuse) 30%, transparent);
+      color: var(--accuse);
     }
     .event-feed {
       display: grid;
@@ -119,7 +128,7 @@ function pageShell(title: string, body: string): string {
     }
     .event {
       border: 1px solid var(--line);
-      background: rgba(7, 11, 24, 0.78);
+      background: var(--veil);
       border-radius: 14px;
       padding: 14px;
     }
@@ -131,7 +140,7 @@ function pageShell(title: string, body: string): string {
       justify-content: space-between;
     }
     .event strong {
-      color: var(--accent);
+      color: var(--theme-glow);
       text-transform: capitalize;
     }
     .event-meta {
@@ -139,14 +148,15 @@ function pageShell(title: string, body: string): string {
       flex-wrap: wrap;
       gap: 8px;
       margin-top: 10px;
-      color: var(--muted);
-      font-size: 0.88rem;
+      color: var(--ink-muted);
+      font-size: var(--type-detail);
     }
     .event-body {
       margin: 10px 0 0;
       white-space: pre-wrap;
       word-break: break-word;
-      color: var(--text);
+      color: var(--ink-primary);
+      font-size: var(--type-body);
     }
     .hint-row {
       display: flex;
@@ -157,20 +167,20 @@ function pageShell(title: string, body: string): string {
     .hint-pill {
       display: inline-flex;
       align-items: center;
-      border-radius: 999px;
-      border: 1px solid rgba(125, 211, 252, 0.22);
+      border-radius: var(--radius-pill);
+      border: 1px solid color-mix(in srgb, var(--theme-glow) 24%, transparent);
       padding: 4px 10px;
-      color: var(--accent);
-      background: rgba(8, 15, 30, 0.7);
+      color: var(--theme-glow);
+      background: var(--veil);
       font-size: 0.82rem;
     }
     .pill {
       display: inline-block;
       margin-left: 8px;
       padding: 2px 8px;
-      border-radius: 999px;
+      border-radius: var(--radius-pill);
       border: 1px solid var(--line);
-      color: var(--muted);
+      color: var(--ink-muted);
       font-size: 0.8rem;
       vertical-align: middle;
     }
@@ -185,14 +195,14 @@ function pageShell(title: string, body: string): string {
       padding: 14px;
       border-radius: 14px;
       border: 1px solid var(--line);
-      background: rgba(8, 15, 30, 0.55);
+      background: var(--veil);
     }
     .prompt-title {
-      color: var(--text);
+      color: var(--ink-primary);
       font-weight: 650;
     }
     .prompt-help {
-      color: var(--muted);
+      color: var(--ink-muted);
       font-size: 0.92rem;
       line-height: 1.35;
     }
@@ -203,19 +213,19 @@ function pageShell(title: string, body: string): string {
     .surface-panel {
       border: 1px solid var(--line);
       border-radius: 14px;
-      background: rgba(8, 15, 30, 0.55);
+      background: var(--veil);
       padding: 14px;
     }
     .surface-title {
       margin-bottom: 4px;
-      font-size: 1rem;
-      color: var(--text);
+      font-size: var(--type-body);
+      color: var(--ink-primary);
     }
     .surface-detail {
       margin: 0;
       white-space: pre-wrap;
       word-break: break-word;
-      color: var(--muted);
+      color: var(--ink-muted);
     }
     .surface-feed {
       display: grid;
@@ -234,7 +244,7 @@ function pageShell(title: string, body: string): string {
     }
   </style>
 </head>
-<body>
+<body${bodyClass ? ` class="${bodyClass}"` : ""}>
   <main>${body}</main>
 </body>
 </html>`;
@@ -356,7 +366,7 @@ export function renderHostPage(sessionId = ""): string {
         <h1>Host controls</h1>
         <p class="muted">Creates sessions and forwards lifecycle actions to Arcwright. The browser does not own session state.</p>
         <div class="grid two">
-          <form id="bootstrap-form" class="card" style="margin: 0; background: var(--panel-strong);">
+          <form id="bootstrap-form" class="card card-strong">
             <h2>Create session</h2>
             <label>
               Arc ID
@@ -369,7 +379,7 @@ export function renderHostPage(sessionId = ""): string {
                 <option value="premium">premium</option>
               </select>
             </label>
-            <div class="card" style="margin: 0 0 12px; background: rgba(8, 15, 30, 0.55);">
+            <div class="card card-inset">
               <h3>Group personalization</h3>
               <p class="muted">Three short answers seed character fit and narrator callbacks.</p>
               ${renderPersonalizationPromptFields(HOST_SEED_PROMPTS)}
@@ -377,7 +387,7 @@ export function renderHostPage(sessionId = ""): string {
             <button type="submit">Create session</button>
           </form>
 
-          <div class="card" style="margin: 0; background: var(--panel-strong);">
+          <div class="card card-strong">
             <h2>Session state</h2>
             <div id="host-status" class="status">No session created yet.</div>
             <label>
@@ -604,7 +614,7 @@ export function renderSharedDisplayPage(sessionId = ""): string {
         <h1>Shared display</h1>
         <p class="muted">Only public or shared-display events are rendered here.</p>
         <div class="grid two">
-          <div class="card" style="margin: 0; background: var(--panel-strong);">
+          <div class="card card-strong">
             <h2>Connection</h2>
             <label>
               Session ID
@@ -622,7 +632,7 @@ export function renderSharedDisplayPage(sessionId = ""): string {
             </div>
             <div id="display-status" class="status">Disconnected.</div>
           </div>
-          <div class="card" style="margin: 0; background: var(--panel-strong);">
+          <div class="card card-strong">
             <h2>Runtime URLs</h2>
             <pre class="status">${JSON.stringify(urls, null, 2)}</pre>
           </div>
@@ -808,6 +818,7 @@ export function renderSharedDisplayPage(sessionId = ""): string {
         });
       })();
     </script>`,
+    "display",
   );
 }
 
@@ -819,7 +830,7 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
         <h1>Join Nightcap</h1>
         <p class="muted">Join with the QR link or the join code from the host. No account or app install required. Private events stay on your device. Input stays on your device too.</p>
         <div class="grid two">
-          <div class="card" style="margin: 0; background: var(--panel-strong);">
+          <div class="card card-strong">
             <h2>Join code</h2>
             <form id="player-join-form">
               <label>
@@ -834,7 +845,7 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
                   joinToken,
                 )}" />
               </label>
-              <div class="card" style="margin: 0 0 12px; background: rgba(8, 15, 30, 0.55);">
+              <div class="card card-inset">
                 <h2>Quick personalization</h2>
                 <p class="muted">Answer one required question and one optional follow-up so Arcwright can fit your character.</p>
                 ${renderPersonalizationPromptFields(PLAYER_JOIN_PROMPTS)}
@@ -845,7 +856,7 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
             </form>
             <div id="player-status" class="status">Waiting for a join code.</div>
           </div>
-          <div class="card" style="margin: 0; background: var(--panel-strong);">
+          <div class="card card-strong">
             <h2>Your surface</h2>
             <div id="player-surface" class="surface-stack">
               <section class="surface-panel">
@@ -1408,5 +1419,6 @@ export function renderPlayerJoinPage(sessionId = "", joinToken = ""): string {
         });
       })();
     </script>`,
+    "phone",
   );
 }

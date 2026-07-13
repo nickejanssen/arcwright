@@ -67,7 +67,7 @@ export function renderMiniGameStageStyles(): string {
 }
 .mini-game-stage[data-mini-game-state="${StageStates.Idle}"]::after {
   content: "No mini-game in progress.";
-  color: var(--muted, #98a3c7);
+  color: var(--ink-muted);
   font-size: 0.95rem;
 }
 .mini-game-stage .mg-choices,
@@ -85,13 +85,13 @@ export function renderMiniGameStageStyles(): string {
 .mini-game-stage[data-mini-game-state="${StageStates.RenderError}"]::after,
 .mini-game-stage[data-mini-game-state="${StageStates.InvalidConfig}"]::after {
   content: attr(data-mini-game-state);
-  color: var(--danger, #fb7185);
+  color: var(--accuse);
   font-size: 0.85rem;
 }
 .mini-game-stage .mg-timer {
   font-variant-numeric: tabular-nums;
   font-size: 1.4rem;
-  color: var(--accent, #7dd3fc);
+  color: var(--theme-glow);
 }
 @media (prefers-reduced-motion: reduce) {
   .mini-game-stage * {
