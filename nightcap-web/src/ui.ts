@@ -529,6 +529,40 @@ export function renderHostPage(
         let phoneConfirmation = null;
         let recaptchaVerifier = null;
 
+        const hostTokenStorageKey = 'nightcap.host.session_token';
+
+        function persistHostToken(sessionId, hostToken, expiresAt) {
+          sessionStorage.setItem(hostTokenStorageKey, JSON.stringify({
+            session_id: sessionId,
+            host_token: hostToken,
+            expires_at: expiresAt,
+          }));
+        }
+
+        function clearPersistedHostToken() {
+          sessionStorage.removeItem(hostTokenStorageKey);
+        }
+
+        function readPersistedHostToken(sessionId) {
+          const raw = sessionStorage.getItem(hostTokenStorageKey);
+          if (!raw) {
+            return null;
+          }
+          try {
+            const stored = JSON.parse(raw);
+            if (
+              stored.session_id !== sessionId ||
+              !stored.host_token ||
+              !(stored.expires_at > Date.now())
+            ) {
+              return null;
+            }
+            return stored.host_token;
+          } catch {
+            return null;
+          }
+        }
+
         function setStatus(message, isError) {
           hostStatus.textContent = message;
           hostStatus.className = isError ? 'status error' : 'status';
@@ -563,6 +597,15 @@ export function renderHostPage(
             signedInAs.textContent = 'Signed in as ' + (user.email || user.phoneNumber || user.uid);
             createSessionButton.disabled = false;
             setAuthStatus('Signed in.', false);
+
+            const existingSessionId = sessionIdInput.value.trim();
+            if (existingSessionId) {
+              const restored = readPersistedHostToken(existingSessionId);
+              if (restored) {
+                sessionHostToken = restored;
+                setStatus('Restored host control for this session.', false);
+              }
+            }
           } else {
             signedOutControls.classList.remove('hide');
             signedInControls.classList.add('hide');
@@ -623,6 +666,7 @@ export function renderHostPage(
           try {
             await signOut(auth);
             sessionHostToken = '';
+            clearPersistedHostToken();
           } catch (error) {
             setAuthStatus(error.message || String(error), true);
           }
@@ -671,6 +715,7 @@ export function renderHostPage(
               throw new Error((exchangeData && exchangeData.detail) || 'Host token exchange failed.');
             }
             sessionHostToken = exchangeData.host_token;
+            persistHostToken(data.session.session_id, exchangeData.host_token, exchangeData.expires_at);
             setStatus('Session created.', false);
           } catch (error) {
             setStatus(error.message || String(error), true);
