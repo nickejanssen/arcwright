@@ -34,9 +34,13 @@ new_sqlite_classes = ["NightcapRoom"]
 [env.production]
 name = "nightcap-web-prod"
 workers_dev = true
-routes = [
-  { pattern = "nightcap-rehearsal.arcwright-studio.com", custom_domain = true }
-]
+# Intentional placeholder — this repo is public; do not commit the real
+# rehearsal/production hostname. Add your own custom_domain route locally
+# (not tracked) before deploying, e.g.:
+#   routes = [{ pattern = "your-hostname.example.com", custom_domain = true }]
+# The already-deployed rehearsal Worker keeps its live custom domain route
+# until it is explicitly changed via `wrangler deploy` with that route
+# present, or removed via the Cloudflare dashboard.
 # Set with `wrangler secret put <NAME> --env production`:
 #   ARCWRIGHT_API_KEY               server-side Arcwright API key
 #   FIREBASE_WEB_API_KEY            referrer-restricted browser key (client Firebase config)
