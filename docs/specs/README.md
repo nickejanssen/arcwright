@@ -44,3 +44,4 @@ This directory contains detailed specs for implementing features and systems. Ea
 - **Session Management**: Creation, persistence, recovery
 - **Content Events**: Schema, routing, SSE delivery
 - **Experience Quality**: Game-layer quality bar, content standards, fun instrumentation (0068)
+- **Visual Design System**: Nightcap UI, animation, tokens, theme skins (0069)

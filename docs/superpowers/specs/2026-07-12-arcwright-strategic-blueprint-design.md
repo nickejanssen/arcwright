@@ -483,7 +483,7 @@ is the systemic fix.
 | 7 | 0067 Phase 3 cloud deploy + Rehearsal 2 | M6 prerequisite | Cloud dry-run + blocker log | Approved (0067) |
 | 8 | Latency-budget ADR from rehearsal data | §4.3 | ADR accepted | [NEEDS APPROVAL] |
 | 9 | Enterprise + IP-partner interviews once demo footage exists (10 + 2–3) | Already-required H1 item, extended | Interview records in docs | Partially approved (PRD); IP extension [NEEDS APPROVAL] |
-| 10 | Craft pass on narrator voice + reveal staging + shared display, per 0068 §6 charter (polish priority: B8 → B2 → B6) | §3.5; strangers judge polish | Post-Rehearsal-2 review against 0068 acceptance criteria | Within M5-G scope |
+| 10 | Visual design system Stage A (token extraction + "midnight" base restyle per spec 0069) before Rehearsal 2; Stages B (five staged sequences) and C (two theme skins) in the M5-G/M6 window, sized by Rehearsal 1 evidence | §3.5; strangers judge polish; polish priority B8 → B2 → B6 | Stage A screenshots; Stage B sequence captures; 0068/0069 acceptance criteria | Within M5-G scope; spec 0069 [NEEDS APPROVAL] |
 | 11 | Pricing offers embedded in M6 runbook ($19/$29/$39 across groups) | Real willingness-to-pay data | Offer outcomes recorded | [NEEDS APPROVAL — M6-A] |
 | 12 | Age-rating / audience statement decision | §8.5 | Decisions-log entry | [NEEDS APPROVAL] |
 
@@ -525,5 +525,6 @@ Restated so the not-doing is as documented as the doing:
 - Story bibles: `docs/story-bibles/nightcap-murder-mystery.md`, `daily-case.md`, `monster-rpg.md`
 - Current path to playtest: `docs/specs/0067-development-survey-and-path-to-first-playtest.md`
 - Game experience quality bar: `docs/specs/0068-game-experience-quality-bar.md`
+- Visual design system: `docs/specs/0069-nightcap-visual-design-system.md`
 - Fun instrumentation: `docs/roadmap/operations/fun-observation-rubric.md`
 - Decisions cited: D-034 (wedge), D-046 (enterprise adaptation), D-051/ADR-0006 (Continuity v1.1), ADR-0010 (gameplay pivots), ADR-0012 (narrative fidelity)

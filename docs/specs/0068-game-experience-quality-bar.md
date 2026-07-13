@@ -211,6 +211,11 @@ Within the existing runtime (no new games), every mini-game moment meets:
 
 ## 6. Aesthetic Direction Charter (input to M5-G)
 
+> Execution-level detail (tokens, typography, color, layout, motion
+> choreography, theme skins, refactor path) lives in
+> `docs/specs/0069-nightcap-visual-design-system.md`. This section states
+> the principles that spec implements.
+
 Principles, so M5-G execution has a target instead of taste-by-committee:
 
 - **Theme is the art director.** Era + occasion drive palette, type flavor,
