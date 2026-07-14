@@ -361,6 +361,10 @@ export interface FirebaseWebConfig {
   apiKey: string;
   authDomain: string;
   projectId: string;
+  // Rehearsal-only allowlist: phone sign-in rejects any number not in this
+  // list client-side, rather than relying solely on the Firebase console's
+  // SMS region policy as the only backstop against live SMS being sent.
+  allowedTestPhoneNumbers?: string[];
 }
 
 export function renderHostPage(
@@ -368,9 +372,14 @@ export function renderHostPage(
   firebaseConfig?: FirebaseWebConfig,
 ): string {
   const urls = buildNightcapRuntimeUrls(sessionId || "session");
-  const firebaseConfigJson = JSON.stringify(
-    firebaseConfig ?? { apiKey: "", authDomain: "", projectId: "" },
-  );
+  const { allowedTestPhoneNumbers = [], ...firebaseSdkConfig } =
+    firebaseConfig ?? {
+      apiKey: "",
+      authDomain: "",
+      projectId: "",
+    };
+  const firebaseConfigJson = JSON.stringify(firebaseSdkConfig);
+  const allowedTestPhoneNumbersJson = JSON.stringify(allowedTestPhoneNumbers);
   return pageShell(
     "Nightcap Host Controls",
     `<section class="shell">
@@ -509,6 +518,7 @@ export function renderHostPage(
 
       (function() {
         const firebaseConfig = ${firebaseConfigJson};
+        const allowedTestPhoneNumbers = ${allowedTestPhoneNumbersJson};
         const firebaseApp = initializeApp(firebaseConfig);
         const auth = getAuth(firebaseApp);
 
@@ -650,11 +660,15 @@ export function renderHostPage(
 
         document.getElementById('phone-send-code').addEventListener('click', async function() {
           try {
+            const phoneNumber = phoneNumberInput.value.trim();
+            if (!allowedTestPhoneNumbers.includes(phoneNumber)) {
+              throw new Error('This rehearsal only accepts the configured test phone number.');
+            }
             if (recaptchaVerifier) {
               recaptchaVerifier.clear();
             }
             recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'invisible' });
-            phoneConfirmation = await signInWithPhoneNumber(auth, phoneNumberInput.value.trim(), recaptchaVerifier);
+            phoneConfirmation = await signInWithPhoneNumber(auth, phoneNumber, recaptchaVerifier);
             setAuthStatus('Verification code sent.', false);
           } catch (error) {
             setAuthStatus(error.message || String(error), true);
