@@ -130,3 +130,23 @@ class TestRequireFirebaseAccount:
                 await require_firebase_account(_credentials("host-session-token"))
 
         assert exc_info.value.status_code == 401
+
+    @pytest.mark.asyncio
+    async def test_anonymous_sign_in_token_is_rejected(self) -> None:
+        """The identity project has Anonymous auth enabled for the rehearsal
+        phone-sign-in flow — without this check, signInAnonymously() would
+        mint host sessions with no real account behind them."""
+        with (
+            patch("api.auth._ensure_firebase_app"),
+            patch(
+                "firebase_admin.auth.verify_id_token",
+                return_value={
+                    "uid": "anon-uid-789",
+                    "firebase": {"sign_in_provider": "anonymous"},
+                },
+            ),
+        ):
+            with pytest.raises(HTTPException) as exc_info:
+                await require_firebase_account(_credentials("anonymous-token"))
+
+        assert exc_info.value.status_code == 401
