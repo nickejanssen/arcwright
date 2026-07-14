@@ -493,7 +493,8 @@
       "tasks": [
         "AW-256",
         "AW-235",
-        "AW-245"
+        "AW-245",
+        "AW-274"
       ],
       "github": {
         "issue_number": 50,
@@ -1948,6 +1949,20 @@
         "issue_number": 207,
         "url": "https://github.com/nickejanssen/arcwright/issues/207"
       }
+    },
+    {
+      "id": "AW-274",
+      "title": "Platform-Agnostic Role, Knowledge-Seeding, and Session-Outcome Vocabulary",
+      "milestone": "M5",
+      "epic": "M5-C",
+      "size": "M",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-274-platform-agnostic-role-outcome-vocabulary.md",
+      "github": {
+        "issue_number": 220,
+        "url": "https://github.com/nickejanssen/arcwright/issues/220"
+      },
+      "epic_id": "M5-C"
     }
   ],
   "superseded_sources": [
