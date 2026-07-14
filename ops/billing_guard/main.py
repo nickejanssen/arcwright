@@ -24,6 +24,7 @@ from __future__ import annotations
 import base64
 import json
 import logging
+import math
 import os
 from dataclasses import dataclass
 
@@ -61,6 +62,7 @@ def _assert_invariants() -> None:
 @dataclass(frozen=True)
 class BudgetNotification:
     budget_display_name: str
+    budget_id: str
     billing_account_id: str
     cost_amount: float
     budget_amount: float
@@ -93,6 +95,9 @@ def parse_notification(envelope: dict) -> BudgetNotification:
     billing_account_id = attributes.get("billingAccountId")
     if not billing_account_id:
         raise InvalidNotification("message.attributes missing billingAccountId")
+    budget_id = attributes.get("budgetId")
+    if not budget_id:
+        raise InvalidNotification("message.attributes missing budgetId")
 
     try:
         raw = base64.b64decode(message["data"]).decode("utf-8")
@@ -108,21 +113,44 @@ def parse_notification(envelope: dict) -> BudgetNotification:
         raise InvalidNotification(f"payload missing required fields: {missing}")
 
     try:
-        return BudgetNotification(
-            budget_display_name=str(payload["budgetDisplayName"]),
-            billing_account_id=str(billing_account_id),
-            cost_amount=float(payload["costAmount"]),
-            budget_amount=float(payload["budgetAmount"]),
-            currency_code=str(payload.get("currencyCode", "USD")),
-        )
+        cost_amount = float(payload["costAmount"])
+        budget_amount = float(payload["budgetAmount"])
     except (TypeError, ValueError) as exc:
         raise InvalidNotification(
             f"payload fields have unexpected types: {exc}"
         ) from exc
 
+    # float() accepts "NaN"/"Infinity" strings and non-finite JSON numbers.
+    # A NaN cost or budget would otherwise sail through every numeric guard
+    # below (NaN comparisons are always False), reaching execute_shutdown.
+    if not (math.isfinite(cost_amount) and math.isfinite(budget_amount)):
+        raise InvalidNotification(
+            f"non-finite amount: costAmount={cost_amount!r} budgetAmount={budget_amount!r}"
+        )
+    if cost_amount < 0 or budget_amount < 0:
+        raise InvalidNotification(
+            f"negative amount: costAmount={cost_amount!r} budgetAmount={budget_amount!r}"
+        )
 
-def _allowed_budget_names() -> frozenset[str]:
-    raw = os.environ.get("ALLOWED_BUDGET_NAMES", "")
+    return BudgetNotification(
+        budget_display_name=str(payload["budgetDisplayName"]),
+        budget_id=str(budget_id),
+        billing_account_id=str(billing_account_id),
+        cost_amount=cost_amount,
+        budget_amount=budget_amount,
+        currency_code=str(payload.get("currencyCode", "USD")),
+    )
+
+
+def _allowed_budget_ids() -> frozenset[str]:
+    """Immutable Cloud Billing budget resource IDs this guard may act on.
+
+    Deliberately not budgetDisplayName: display names are mutable and can
+    collide with another budget in the same billing account, letting an
+    unrelated budget's alert trigger this project's shutdown. budgetId is
+    the immutable resource ID assigned at budget creation.
+    """
+    raw = os.environ.get("ALLOWED_BUDGET_IDS", "")
     return frozenset(name.strip() for name in raw.split(",") if name.strip())
 
 
@@ -136,9 +164,10 @@ def should_trigger_shutdown(notification: BudgetNotification) -> bool:
     Every check here is a precondition. Any single failed check means "do
     not act" — there is no partial-trust path.
     """
-    if notification.budget_display_name not in _allowed_budget_names():
+    if notification.budget_id not in _allowed_budget_ids():
         logger.info(
-            "ignoring notification for unrecognized budget %r (not in allow-list)",
+            "ignoring notification for unrecognized budget id %r (name %r, not in allow-list)",
+            notification.budget_id,
             notification.budget_display_name,
         )
         return False
@@ -222,10 +251,12 @@ def execute_shutdown(dry_run: bool) -> dict:
         result["actions"].append("dry_run:would_disable_billing")
         return result
 
-    if _is_billing_already_disabled(TARGET_PROJECT_ID):
-        result["actions"].append("noop:billing_already_disabled")
-        return result
-
+    # Cloud SQL stop is attempted on every invocation, independent of
+    # whether billing is already disabled: patching an already-stopped
+    # instance to activationPolicy=NEVER is a safe no-op, but skipping it
+    # entirely once billing is disabled means a first-attempt SQL stop
+    # failure is never retried on redelivery — leaving the instance
+    # running (and billing) while the handler reports success.
     try:
         _stop_cloud_sql_instance(TARGET_PROJECT_ID, TARGET_SQL_INSTANCE)
         result["actions"].append("stopped_cloud_sql")
@@ -234,6 +265,10 @@ def execute_shutdown(dry_run: bool) -> dict:
             "failed to stop Cloud SQL instance; continuing to billing disable"
         )
         result["actions"].append("failed_stop_cloud_sql")
+
+    if _is_billing_already_disabled(TARGET_PROJECT_ID):
+        result["actions"].append("noop:billing_already_disabled")
+        return result
 
     _disable_billing(TARGET_PROJECT_ID)
     result["actions"].append("disabled_billing")

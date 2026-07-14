@@ -1,3 +1,5 @@
 BILLING_GUARD_DRY_RUN: "true"
-ALLOWED_BUDGET_NAMES: "rehearsal2-cloudrun,rehearsal2-cloudsql,rehearsal2-artifactregistry,rehearsal2-cloudlogging,rehearsal2-secretmanager,rehearsal2-pubsub"
+# Immutable Cloud Billing budget resource IDs (not display names — display
+# names are mutable and can collide across budgets in the same account).
+ALLOWED_BUDGET_IDS: "e24a2acf-ca1a-47c5-973f-1336eb64cd18,937d66a3-d08c-424a-a0c3-e469c3e1c36f,ee9ca145-3479-4147-85b7-285296dc877e,a5268197-80ae-482f-95f1-2fe9c67bb394,bdbd3c37-91b6-49f7-b027-c2e7cec5f94c,d3735c85-340a-4de1-a640-375ffae39f92"
 EXPECTED_BILLING_ACCOUNT_ID: "010472-A5F484-E66D1D"

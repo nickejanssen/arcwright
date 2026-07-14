@@ -48,6 +48,11 @@ export interface NightcapWorkerEnv {
   // custom-token -> ID-token exchange REST call. Never sent to the browser.
   // Worker Secret only — see docs/roadmap/operations/cloud-deploy-runbook.md.
   FIREBASE_TOKEN_EXCHANGE_API_KEY: string;
+  // Comma-separated Firebase test phone numbers this rehearsal's host page
+  // accepts. Not secret — enforced client-side alongside (not instead of)
+  // the Firebase console's SMS region policy, so a code-level guard exists
+  // even if that console setting is ever loosened or misconfigured.
+  ALLOWED_TEST_PHONE_NUMBERS?: string;
   BOOTSTRAP_TOKEN: string;
   ROOMS: DurableObjectNamespace<NightcapRoom>;
   // Cloudflare static assets binding. Hosts the bundled mini-game module and
@@ -663,6 +668,10 @@ export default {
           apiKey: env.FIREBASE_WEB_API_KEY,
           authDomain: env.FIREBASE_AUTH_DOMAIN,
           projectId: env.FIREBASE_PROJECT_ID,
+          allowedTestPhoneNumbers: (env.ALLOWED_TEST_PHONE_NUMBERS ?? "")
+            .split(",")
+            .map((number) => number.trim())
+            .filter(Boolean),
         }),
       );
     }

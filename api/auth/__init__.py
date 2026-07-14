@@ -35,12 +35,30 @@ logger = logging.getLogger(__name__)
 _bearer = HTTPBearer(auto_error=False)
 
 
+class FirebaseMisconfiguredError(RuntimeError):
+    """Raised when required cross-project Firebase settings are missing.
+
+    Fails closed rather than silently falling back to ADC project
+    inference: without ``projectId`` set correctly, ADC infers the
+    Firebase project from the runtime's own (wrong) project and
+    verify_id_token rejects every real token; without
+    ``serviceAccountId``, create_custom_token silently signs as the
+    runtime's own service account and the client-side token exchange
+    fails with CREDENTIAL_MISMATCH. Both failure modes are confusing to
+    debug from their downstream Firebase errors, so this checks the
+    precondition explicitly at startup instead.
+    """
+
+
 def _ensure_firebase_app() -> None:
     """Initialise Firebase Admin app using ADC if not already initialised.
 
-    Two settings matter when the runtime service account lives in a
-    different GCP project than the Firebase Auth project (e.g. a
-    disposable Cloud Run project verifying tokens from arcwright-53ea3):
+    Two settings matter whenever the runtime service account lives in a
+    different GCP project than the Firebase Auth project — true for every
+    documented Arcwright deployment (the canonical production Firebase
+    project is ``arcwright-prod`` per
+    docs/roadmap/operations/cloud-deploy-runbook.md §5.1; disposable
+    rehearsal deployments use their own project instead):
 
     - ``projectId`` (FIREBASE_PROJECT_ID): without it, ADC infers the
       Firebase project from the runtime's own project, and verify_id_token
@@ -56,18 +74,34 @@ def _ensure_firebase_app() -> None:
       impersonation of a service account that actually belongs to the
       Firebase project; the runtime service account needs
       roles/iam.serviceAccountTokenCreator on that target service account.
+
+    Both settings are required and checked before initialisation: leaving
+    either unset must raise immediately, not silently produce an app that
+    fails to verify or sign tokens correctly. Neither value is hardcoded
+    here — the expected Firebase project differs per deployment
+    (production vs. a disposable rehearsal project vs. any future
+    environment), so this only enforces that both are explicitly
+    configured, not that either equals one specific value.
     """
     if not firebase_admin._apps:
-        options: dict[str, str] = {}
         project_id = os.environ.get("FIREBASE_PROJECT_ID")
-        if project_id:
-            options["projectId"] = project_id
         signing_service_account = os.environ.get(
             "FIREBASE_TOKEN_SIGNING_SERVICE_ACCOUNT"
         )
-        if signing_service_account:
-            options["serviceAccountId"] = signing_service_account
-        firebase_admin.initialize_app(options=options or None)
+        if not project_id:
+            raise FirebaseMisconfiguredError(
+                "FIREBASE_PROJECT_ID must be set to this deployment's Firebase project"
+            )
+        if not signing_service_account:
+            raise FirebaseMisconfiguredError(
+                "FIREBASE_TOKEN_SIGNING_SERVICE_ACCOUNT must be set to the "
+                "Firebase project's signing service account"
+            )
+        options = {
+            "projectId": project_id,
+            "serviceAccountId": signing_service_account,
+        }
+        firebase_admin.initialize_app(options=options)
 
 
 @dataclass(frozen=True)
@@ -127,6 +161,12 @@ async def require_firebase_account(
     Firebase ID tokens too — without this check, a player could use
     their own session token to call the host session-creation endpoint
     and mint host sessions without ever signing in as an account.
+
+    Also rejects anonymous sign-in tokens. The identity project has
+    Anonymous auth enabled (for the rehearsal test flow), so without this
+    check any client could call getAuth().signInAnonymously(), obtain a
+    valid ID token, and create host sessions with no real account behind
+    them.
     """
     if credentials is None:
         raise HTTPException(status_code=401, detail="Authorization header required")
@@ -135,6 +175,11 @@ async def require_firebase_account(
         raise HTTPException(
             status_code=401,
             detail="Session-scoped tokens are not valid for account authentication",
+        )
+    if decoded.get("firebase", {}).get("sign_in_provider") == "anonymous":
+        raise HTTPException(
+            status_code=401,
+            detail="Anonymous sign-in is not valid for account authentication",
         )
     return FirebaseAccount(uid=decoded["uid"], email=decoded.get("email"))
 

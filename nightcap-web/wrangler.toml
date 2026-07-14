@@ -11,6 +11,11 @@ FIREBASE_SIGN_IN_URL = "https://identitytoolkit.googleapis.com/v1/accounts:signI
 # arcwright-53ea3 regardless of which GCP project hosts Cloud Run.
 FIREBASE_AUTH_DOMAIN = "arcwright-53ea3.firebaseapp.com"
 FIREBASE_PROJECT_ID = "arcwright-53ea3"
+# Comma-separated Firebase test phone numbers the host page's phone
+# sign-in accepts, enforced client-side. Not secret. Set your configured
+# Firebase console test number(s) here or via `wrangler secret put` if you
+# prefer not to commit even test numbers.
+ALLOWED_TEST_PHONE_NUMBERS = ""
 
 [assets]
 directory = "./dist/static"
@@ -53,6 +58,8 @@ workers_dev = true
   FIREBASE_SIGN_IN_URL = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken"
   FIREBASE_AUTH_DOMAIN = "arcwright-53ea3.firebaseapp.com"
   FIREBASE_PROJECT_ID = "arcwright-53ea3"
+  # Set to your configured Firebase console test number(s), comma-separated.
+  ALLOWED_TEST_PHONE_NUMBERS = ""
 
   [[env.production.durable_objects.bindings]]
   name = "ROOMS"

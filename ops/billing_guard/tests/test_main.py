@@ -9,12 +9,16 @@ import pytest
 
 from ops.billing_guard import main
 
+CLOUDSQL_BUDGET_ID = "937d66a3-d08c-424a-a0c3-e469c3e1c36f"
+CLOUDRUN_BUDGET_ID = "e24a2acf-ca1a-47c5-973f-1336eb64cd18"
+
 
 def _envelope(
     payload: dict | None,
     valid_json: bool = True,
     valid_base64: bool = True,
     billing_account_id: str | None = "010472-A5F484-E66D1D",
+    budget_id: str | None = CLOUDSQL_BUDGET_ID,
 ) -> dict:
     if payload is None:
         return {"message": {}}
@@ -27,12 +31,14 @@ def _envelope(
     attributes = {}
     if billing_account_id is not None:
         attributes["billingAccountId"] = billing_account_id
+    if budget_id is not None:
+        attributes["budgetId"] = budget_id
     return {"message": {"data": data, "attributes": attributes}}
 
 
-# billingAccountId is a real Cloud Billing notification is a Pub/Sub message
-# *attribute*, not part of the data payload — see _envelope's
-# billing_account_id parameter.
+# billingAccountId and budgetId are real Cloud Billing notification Pub/Sub
+# message *attributes*, not part of the data payload — see _envelope's
+# billing_account_id / budget_id parameters.
 VALID_PAYLOAD = {
     "budgetDisplayName": "rehearsal2-cloudsql",
     "costAmount": 9.0,
@@ -44,7 +50,7 @@ VALID_PAYLOAD = {
 @pytest.fixture(autouse=True)
 def _env(monkeypatch):
     monkeypatch.setenv(
-        "ALLOWED_BUDGET_NAMES", "rehearsal2-cloudsql,rehearsal2-cloudrun"
+        "ALLOWED_BUDGET_IDS", f"{CLOUDSQL_BUDGET_ID},{CLOUDRUN_BUDGET_ID}"
     )
     monkeypatch.setenv("EXPECTED_BILLING_ACCOUNT_ID", "010472-A5F484-E66D1D")
     monkeypatch.setenv("BILLING_GUARD_DRY_RUN", "true")
@@ -84,9 +90,48 @@ def test_parse_notification_accepts_valid_payload():
     assert notification.cost_amount == 9.0
 
 
-def test_should_trigger_shutdown_rejects_unrecognized_budget_name():
+@pytest.mark.parametrize("bad_cost", ["NaN", "Infinity", "-Infinity"])
+def test_parse_notification_rejects_non_finite_cost_amount(bad_cost):
+    """NaN/Infinity comparisons are always False, so a non-finite
+    costAmount would otherwise sail past every numeric guard in
+    should_trigger_shutdown (never triggering, but also never being
+    rejected as malformed) instead of being refused up front."""
+    with pytest.raises(main.InvalidNotification):
+        main.parse_notification(_envelope({**VALID_PAYLOAD, "costAmount": bad_cost}))
+
+
+@pytest.mark.parametrize("bad_budget", ["NaN", "Infinity", "-Infinity"])
+def test_parse_notification_rejects_non_finite_budget_amount(bad_budget):
+    with pytest.raises(main.InvalidNotification):
+        main.parse_notification(
+            _envelope({**VALID_PAYLOAD, "budgetAmount": bad_budget})
+        )
+
+
+def test_parse_notification_rejects_negative_cost_amount():
+    with pytest.raises(main.InvalidNotification):
+        main.parse_notification(_envelope({**VALID_PAYLOAD, "costAmount": -1.0}))
+
+
+def test_should_trigger_shutdown_rejects_unrecognized_budget_id():
     notification = main.parse_notification(
-        _envelope({**VALID_PAYLOAD, "budgetDisplayName": "some-other-budget"})
+        _envelope(
+            {**VALID_PAYLOAD, "budgetDisplayName": "some-other-budget"},
+            budget_id="00000000-0000-0000-0000-000000000000",
+        )
+    )
+    assert main.should_trigger_shutdown(notification) is False
+
+
+def test_should_trigger_shutdown_rejects_display_name_collision_with_wrong_id():
+    """A budgetDisplayName that matches the allowlist's expected name is not
+    enough — the display name is mutable and can collide across budgets.
+    Only the immutable budget_id authorizes shutdown."""
+    notification = main.parse_notification(
+        _envelope(
+            VALID_PAYLOAD,  # budgetDisplayName: "rehearsal2-cloudsql"
+            budget_id="00000000-0000-0000-0000-000000000000",
+        )
     )
     assert main.should_trigger_shutdown(notification) is False
 
@@ -152,6 +197,10 @@ def test_execute_shutdown_dry_run_takes_no_real_action():
 
 
 def test_execute_shutdown_is_idempotent_when_already_disabled():
+    """Billing-disable is skipped once already disabled, but Cloud SQL stop
+    is still attempted every time — a first-attempt SQL failure must be
+    retried on redelivery instead of being silently abandoned once billing
+    is off."""
     with (
         mock.patch.object(
             main, "_is_billing_already_disabled", return_value=True
@@ -161,9 +210,9 @@ def test_execute_shutdown_is_idempotent_when_already_disabled():
     ):
         result = main.execute_shutdown(dry_run=False)
     billing_disabled.assert_called_once_with(main.TARGET_PROJECT_ID)
-    stop_sql.assert_not_called()
+    stop_sql.assert_called_once_with(main.TARGET_PROJECT_ID, main.TARGET_SQL_INSTANCE)
     disable_billing.assert_not_called()
-    assert result["actions"] == ["noop:billing_already_disabled"]
+    assert result["actions"] == ["stopped_cloud_sql", "noop:billing_already_disabled"]
 
 
 def test_execute_shutdown_stops_sql_then_disables_billing():
@@ -205,7 +254,10 @@ def test_handle_budget_notification_ignores_malformed_message():
 
 def test_handle_budget_notification_ignores_unrelated_budget():
     event = _FakeCloudEvent(
-        data=_envelope({**VALID_PAYLOAD, "budgetDisplayName": "unrelated-budget"})
+        data=_envelope(
+            {**VALID_PAYLOAD, "budgetDisplayName": "unrelated-budget"},
+            budget_id="00000000-0000-0000-0000-000000000000",
+        )
     )
     result = main.handle_budget_notification(event)
     assert result["action"] == "ignored"

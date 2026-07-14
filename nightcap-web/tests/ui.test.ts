@@ -234,6 +234,26 @@ test("host page renders the editable seed questions", () => {
   }
 });
 
+test("host page phone sign-in rejects numbers outside the configured allowlist", () => {
+  const htmlWithAllowlist = renderHostPage("session-123", {
+    apiKey: "key",
+    authDomain: "example.firebaseapp.com",
+    projectId: "example",
+    allowedTestPhoneNumbers: ["+16505551234"],
+  });
+  assert.match(
+    htmlWithAllowlist,
+    /const allowedTestPhoneNumbers = \["\+16505551234"\];/,
+  );
+  assert.match(
+    htmlWithAllowlist,
+    /allowedTestPhoneNumbers\.includes\(phoneNumber\)/,
+  );
+
+  const htmlWithoutAllowlist = renderHostPage("session-123");
+  assert.match(htmlWithoutAllowlist, /const allowedTestPhoneNumbers = \[\];/);
+});
+
 test("host page persists and restores the exchanged host token across reload", () => {
   const html = renderHostPage("session-123");
 
