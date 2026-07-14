@@ -6,6 +6,11 @@ compatibility_date = "2026-06-22"
 # Intentional placeholder — override via Cloudflare dashboard or `wrangler secret` before deployment.
 ARCWRIGHT_API_BASE_URL = "https://arcwright.invalid"
 FIREBASE_SIGN_IN_URL = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken"
+# Public Firebase client config (not secret — Firebase web config is designed
+# to be embedded in browser clients). The identity project stays
+# arcwright-53ea3 regardless of which GCP project hosts Cloud Run.
+FIREBASE_AUTH_DOMAIN = "arcwright-53ea3.firebaseapp.com"
+FIREBASE_PROJECT_ID = "arcwright-53ea3"
 
 [assets]
 directory = "./dist/static"
@@ -24,15 +29,30 @@ class_name = "NightcapRoom"
 # doing so would register the migration a second time.
 [[migrations]]
 tag = "v1"
-new_classes = ["NightcapRoom"]
+new_sqlite_classes = ["NightcapRoom"]
 
 [env.production]
 name = "nightcap-web-prod"
-# Set ARCWRIGHT_API_BASE_URL and FIREBASE_WEB_API_KEY with
-# `wrangler secret put ... --env production`.
+workers_dev = true
+# Intentional placeholder — this repo is public; do not commit the real
+# rehearsal/production hostname. Add your own custom_domain route locally
+# (not tracked) before deploying, e.g.:
+#   routes = [{ pattern = "your-hostname.example.com", custom_domain = true }]
+# The already-deployed rehearsal Worker keeps its live custom domain route
+# until it is explicitly changed via `wrangler deploy` with that route
+# present, or removed via the Cloudflare dashboard.
+# Set with `wrangler secret put <NAME> --env production`:
+#   ARCWRIGHT_API_KEY               server-side Arcwright API key
+#   FIREBASE_WEB_API_KEY            referrer-restricted browser key (client Firebase config)
+#   FIREBASE_TOKEN_EXCHANGE_API_KEY unrestricted, Identity-Toolkit-only key —
+#                                    server-side custom-token exchange ONLY,
+#                                    never sent to the browser
+# ARCWRIGHT_API_BASE_URL is also set as a secret so it isn't tied to [vars].
 
   [env.production.vars]
   FIREBASE_SIGN_IN_URL = "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken"
+  FIREBASE_AUTH_DOMAIN = "arcwright-53ea3.firebaseapp.com"
+  FIREBASE_PROJECT_ID = "arcwright-53ea3"
 
   [[env.production.durable_objects.bindings]]
   name = "ROOMS"

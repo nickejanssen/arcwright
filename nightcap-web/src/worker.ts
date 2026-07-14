@@ -35,7 +35,19 @@ export interface NightcapWorkerEnv {
   ARCWRIGHT_API_BASE_URL: string;
   ARCWRIGHT_API_KEY: string;
   FIREBASE_SIGN_IN_URL?: string;
+  // Referrer-restricted key embedded in the host sign-in page's client-side
+  // Firebase config. Public by design — Firebase web config is meant to be
+  // embedded in browser clients — but restricted to this Worker's own
+  // authorized domains and to the Identity Toolkit / Secure Token APIs.
   FIREBASE_WEB_API_KEY: string;
+  // Public Firebase client config for the host sign-in page. Not secret —
+  // Firebase web config is designed to be embedded in browser clients.
+  FIREBASE_AUTH_DOMAIN: string;
+  FIREBASE_PROJECT_ID: string;
+  // Separate, non-referrer-restricted key used ONLY server-side for the
+  // custom-token -> ID-token exchange REST call. Never sent to the browser.
+  // Worker Secret only — see docs/roadmap/operations/cloud-deploy-runbook.md.
+  FIREBASE_TOKEN_EXCHANGE_API_KEY: string;
   BOOTSTRAP_TOKEN: string;
   ROOMS: DurableObjectNamespace<NightcapRoom>;
   // Cloudflare static assets binding. Hosts the bundled mini-game module and
@@ -49,6 +61,15 @@ interface PlayerTokenExchangeRequest {
 
 interface PlayerTokenExchangeResponse {
   player_token: string;
+  expires_at: number;
+}
+
+interface HostTokenExchangeRequest {
+  host_token: string;
+}
+
+interface HostTokenExchangeResponse {
+  host_token: string;
   expires_at: number;
 }
 
@@ -203,6 +224,29 @@ export async function createHostSession(
   } satisfies NightcapBootstrapResponse);
 }
 
+export async function createAuthenticatedHostSession(
+  connector: NightcapConnector,
+  body: NightcapBootstrapRequest,
+  hostIdToken: string,
+): Promise<Response> {
+  const { personalization_intake, ...sessionBody } = body;
+  const session = await connector.createHostSessionAuthenticated(
+    sessionBody,
+    hostIdToken,
+  );
+  const runtime = buildNightcapRuntimeUrls(session.session_id);
+  return json({
+    session,
+    runtime: {
+      room_id: session.session_id,
+      ...runtime,
+    },
+    personalization_intake: normalizePersonalizationIntake(
+      personalization_intake,
+    ),
+  } satisfies NightcapBootstrapResponse);
+}
+
 export async function createPlayerJoinLink(
   connector: NightcapConnector,
   env: NightcapWorkerEnv,
@@ -311,24 +355,28 @@ export async function joinPlayerSession(
   }
 }
 
-export async function exchangePlayerToken(
-  env: NightcapWorkerEnv,
-  sessionId: string,
-  request: Request,
-): Promise<Response> {
-  const body = await readJsonBody<PlayerTokenExchangeRequest>(request);
-  const playerToken = body?.player_token?.trim() ?? "";
-  if (!playerToken) {
-    return new Response("Invalid player token exchange payload", {
-      status: 400,
-    });
-  }
+interface CustomTokenExchangeResult {
+  idToken: string;
+  expiresAt: number;
+}
 
-  const apiKey = env.FIREBASE_WEB_API_KEY.trim();
+/** Exchange a Firebase custom token (minted by the Arcwright API) for a
+ * usable ID token via the Identity Toolkit REST API. Shared by both the
+ * player join flow and the authenticated host flow — the Arcwright API
+ * mints session-scoped custom tokens carrying an ``arcwright_role``
+ * claim for both surfaces (see api/routers/sessions.py). */
+async function exchangeCustomToken(
+  env: NightcapWorkerEnv,
+  customToken: string,
+  logContext: Record<string, unknown>,
+): Promise<CustomTokenExchangeResult | null> {
+  const apiKey = env.FIREBASE_TOKEN_EXCHANGE_API_KEY.trim();
   if (!apiKey) {
-    return new Response("Firebase web API key is not configured", {
-      status: 503,
-    });
+    console.warn(
+      "Nightcap token exchange failed: Firebase token-exchange API key is not configured",
+      logContext,
+    );
+    return null;
   }
 
   const signInUrl =
@@ -342,7 +390,7 @@ export async function exchangePlayerToken(
         "content-type": "application/json",
       },
       body: JSON.stringify({
-        token: playerToken,
+        token: customToken,
         returnSecureToken: true,
       }),
     },
@@ -354,12 +402,12 @@ export async function exchangePlayerToken(
   }>(response);
 
   if (!response.ok || !data?.idToken) {
-    console.warn("Nightcap player token exchange failed", {
-      sessionId,
+    console.warn("Nightcap token exchange failed", {
+      ...logContext,
       status: response.status,
       error: data?.error?.message ?? "missing idToken",
     });
-    return new Response("Player token exchange failed", { status: 502 });
+    return null;
   }
 
   const expiresInSeconds = Number.parseInt(data.expiresIn ?? "0", 10);
@@ -368,10 +416,55 @@ export async function exchangePlayerToken(
       ? Date.now() + expiresInSeconds * 1000
       : Date.now() + 60 * 60 * 1000;
 
+  return { idToken: data.idToken, expiresAt };
+}
+
+export async function exchangePlayerToken(
+  env: NightcapWorkerEnv,
+  sessionId: string,
+  request: Request,
+): Promise<Response> {
+  const body = await readJsonBody<PlayerTokenExchangeRequest>(request);
+  const playerToken = body?.player_token?.trim() ?? "";
+  if (!playerToken) {
+    return new Response("Invalid player token exchange payload", {
+      status: 400,
+    });
+  }
+
+  const result = await exchangeCustomToken(env, playerToken, { sessionId });
+  if (!result) {
+    return new Response("Player token exchange failed", { status: 502 });
+  }
+
   return json({
-    player_token: data.idToken,
-    expires_at: expiresAt,
+    player_token: result.idToken,
+    expires_at: result.expiresAt,
   } satisfies PlayerTokenExchangeResponse);
+}
+
+export async function exchangeHostToken(
+  env: NightcapWorkerEnv,
+  sessionId: string,
+  request: Request,
+): Promise<Response> {
+  const body = await readJsonBody<HostTokenExchangeRequest>(request);
+  const hostToken = body?.host_token?.trim() ?? "";
+  if (!hostToken) {
+    return new Response("Invalid host token exchange payload", {
+      status: 400,
+    });
+  }
+
+  const result = await exchangeCustomToken(env, hostToken, { sessionId });
+  if (!result) {
+    return new Response("Host token exchange failed", { status: 502 });
+  }
+
+  return json({
+    host_token: result.idToken,
+    expires_at: result.expiresAt,
+  } satisfies HostTokenExchangeResponse);
 }
 
 export async function loadSession(
@@ -565,7 +658,13 @@ export default {
     }
 
     if (request.method === "GET" && url.pathname === "/host") {
-      return html(renderHostPage(runtimeSessionId(url)));
+      return html(
+        renderHostPage(runtimeSessionId(url), {
+          apiKey: env.FIREBASE_WEB_API_KEY,
+          authDomain: env.FIREBASE_AUTH_DOMAIN,
+          projectId: env.FIREBASE_PROJECT_ID,
+        }),
+      );
     }
 
     if (request.method === "GET" && url.pathname === "/shared-display") {
@@ -603,6 +702,31 @@ export default {
       const body =
         (await readJsonBody<NightcapBootstrapRequest>(request)) ?? {};
       return createHostSession(connector, body);
+    }
+
+    if (request.method === "POST" && url.pathname === "/host/api/session") {
+      const hostIdToken = readBearerToken(request);
+      if (!hostIdToken) {
+        return new Response("Authorization header required", {
+          status: 401,
+        });
+      }
+
+      const body =
+        (await readJsonBody<NightcapBootstrapRequest>(request)) ?? {};
+      return createAuthenticatedHostSession(connector, body, hostIdToken);
+    }
+
+    if (
+      request.method === "POST" &&
+      url.pathname.startsWith("/host/api/sessions/") &&
+      url.pathname.endsWith("/auth/exchange")
+    ) {
+      const sessionId = parseSegment(url.pathname, 4);
+      if (!sessionId) {
+        return new Response("Not found", { status: 404 });
+      }
+      return exchangeHostToken(env, sessionId, request);
     }
 
     if (

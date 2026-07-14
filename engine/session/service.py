@@ -119,10 +119,13 @@ class SessionService:
         )
         db.add(orm_session)
         await db.flush()
+        host_character = Character(behavior_profile={})
+        db.add(host_character)
+        await db.flush()
         host_participant = OrmParticipant(
             participant_id=uuid4(),
             session_id=orm_session.session_id,
-            character_id=uuid4(),
+            character_id=host_character.character_id,
             account_id=host_account_id,
             join_token=host_join_token,
             surface_type="host",
@@ -395,10 +398,13 @@ class SessionService:
                 f"Session is at capacity ({max_players} players)"
             )
         join_token = secrets.token_urlsafe(32)
+        character = Character(behavior_profile={})
+        db.add(character)
+        await db.flush()
         participant = OrmParticipant(
             participant_id=uuid4(),
             session_id=session_id,
-            character_id=uuid4(),
+            character_id=character.character_id,
             join_token=join_token,
             surface_type=surface_type,
             is_ai_controlled=False,
@@ -489,6 +495,29 @@ class SessionService:
         orm.player_count += 1
         await db.flush()
         return _orm_participant_to_pydantic(participant)
+
+    async def ensure_account_for_firebase_uid(
+        self, db: AsyncSession, *, firebase_uid: str, email: str | None = None
+    ) -> UUID:
+        """Look up or create the stable ``accounts`` row for a Firebase identity.
+
+        Authenticated hosts reuse the same ``account_id`` across every
+        session they create instead of minting a fresh anonymous host
+        identity per session (AW-269 host identity bridge). Unlike
+        ``_ensure_account_row`` (keyed by ``account_id`` for the
+        developer API-key path), this looks up by the unique
+        ``firebase_uid`` column first.
+        """
+        result = await db.execute(
+            select(Account).where(Account.firebase_uid == firebase_uid)
+        )
+        existing = result.scalars().first()
+        if existing is not None:
+            return existing.account_id
+        account = Account(account_id=uuid4(), firebase_uid=firebase_uid, email=email)
+        db.add(account)
+        await db.flush()
+        return account.account_id
 
     async def _require_session(self, db: AsyncSession, session_id: UUID) -> OrmSession:
         orm = await db.get(OrmSession, session_id)

@@ -1,16 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-const DurableObjectStub = class {
-  constructor(state: unknown, env: unknown) {
-    void state;
-    void env;
-  }
-};
-
-// @ts-expect-error Node does not provide DurableObject at runtime.
-globalThis.DurableObject = DurableObjectStub;
-
 const { NightcapRoom } = await import("../src/room.js");
 
 function createRoomState(roomId = "room-1") {

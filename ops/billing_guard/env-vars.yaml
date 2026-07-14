@@ -1,0 +1,3 @@
+BILLING_GUARD_DRY_RUN: "true"
+ALLOWED_BUDGET_NAMES: "rehearsal2-cloudrun,rehearsal2-cloudsql,rehearsal2-artifactregistry,rehearsal2-cloudlogging,rehearsal2-secretmanager,rehearsal2-pubsub"
+EXPECTED_BILLING_ACCOUNT_ID: "010472-A5F484-E66D1D"
