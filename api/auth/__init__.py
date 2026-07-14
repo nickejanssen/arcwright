@@ -34,12 +34,6 @@ logger = logging.getLogger(__name__)
 
 _bearer = HTTPBearer(auto_error=False)
 
-# The single Firebase Auth project for every Arcwright environment
-# (production, staging, disposable rehearsals). Runtime Cloud Run projects
-# vary; this does not. Matches billing_guard's FORBIDDEN_PROJECT_ID, which
-# hardcodes the same constant as the project shutdown must never touch.
-EXPECTED_FIREBASE_PROJECT_ID = "arcwright-53ea3"
-
 
 class FirebaseMisconfiguredError(RuntimeError):
     """Raised when required cross-project Firebase settings are missing.
@@ -59,9 +53,12 @@ class FirebaseMisconfiguredError(RuntimeError):
 def _ensure_firebase_app() -> None:
     """Initialise Firebase Admin app using ADC if not already initialised.
 
-    Two settings matter because the runtime service account always lives
-    in a different GCP project than the Firebase Auth project
-    (arcwright-53ea3):
+    Two settings matter whenever the runtime service account lives in a
+    different GCP project than the Firebase Auth project — true for every
+    documented Arcwright deployment (the canonical production Firebase
+    project is ``arcwright-prod`` per
+    docs/roadmap/operations/cloud-deploy-runbook.md §5.1; disposable
+    rehearsal deployments use their own project instead):
 
     - ``projectId`` (FIREBASE_PROJECT_ID): without it, ADC infers the
       Firebase project from the runtime's own project, and verify_id_token
@@ -80,17 +77,20 @@ def _ensure_firebase_app() -> None:
 
     Both settings are required and checked before initialisation: leaving
     either unset must raise immediately, not silently produce an app that
-    fails to verify or sign tokens correctly.
+    fails to verify or sign tokens correctly. Neither value is hardcoded
+    here — the expected Firebase project differs per deployment
+    (production vs. a disposable rehearsal project vs. any future
+    environment), so this only enforces that both are explicitly
+    configured, not that either equals one specific value.
     """
     if not firebase_admin._apps:
         project_id = os.environ.get("FIREBASE_PROJECT_ID")
         signing_service_account = os.environ.get(
             "FIREBASE_TOKEN_SIGNING_SERVICE_ACCOUNT"
         )
-        if project_id != EXPECTED_FIREBASE_PROJECT_ID:
+        if not project_id:
             raise FirebaseMisconfiguredError(
-                "FIREBASE_PROJECT_ID must be set to "
-                f"{EXPECTED_FIREBASE_PROJECT_ID!r}, got {project_id!r}"
+                "FIREBASE_PROJECT_ID must be set to this deployment's Firebase project"
             )
         if not signing_service_account:
             raise FirebaseMisconfiguredError(

@@ -16,7 +16,12 @@ from fastapi import HTTPException
 from fastapi.security import HTTPAuthorizationCredentials
 from firebase_admin import exceptions as firebase_exceptions
 
-from api.auth import FirebaseAccount, require_firebase_account
+from api.auth import (
+    FirebaseAccount,
+    FirebaseMisconfiguredError,
+    _ensure_firebase_app,
+    require_firebase_account,
+)
 
 
 def _credentials(token: str) -> HTTPAuthorizationCredentials:
@@ -150,3 +155,49 @@ class TestRequireFirebaseAccount:
                 await require_firebase_account(_credentials("anonymous-token"))
 
         assert exc_info.value.status_code == 401
+
+
+class TestEnsureFirebaseApp:
+    """The expected Firebase project varies per deployment (production is
+    arcwright-prod per docs/roadmap/operations/cloud-deploy-runbook.md
+    §5.1; disposable rehearsal deployments use their own project). These
+    checks only require both settings to be explicitly configured, not
+    that either equals one hardcoded value."""
+
+    def test_raises_when_project_id_unset(self, monkeypatch) -> None:
+        monkeypatch.delenv("FIREBASE_PROJECT_ID", raising=False)
+        monkeypatch.setenv(
+            "FIREBASE_TOKEN_SIGNING_SERVICE_ACCOUNT",
+            "sa@example.iam.gserviceaccount.com",
+        )
+        with patch("firebase_admin._apps", []):
+            with pytest.raises(FirebaseMisconfiguredError):
+                _ensure_firebase_app()
+
+    def test_raises_when_signing_service_account_unset(self, monkeypatch) -> None:
+        monkeypatch.setenv("FIREBASE_PROJECT_ID", "any-configured-project")
+        monkeypatch.delenv("FIREBASE_TOKEN_SIGNING_SERVICE_ACCOUNT", raising=False)
+        with patch("firebase_admin._apps", []):
+            with pytest.raises(FirebaseMisconfiguredError):
+                _ensure_firebase_app()
+
+    def test_accepts_the_deployments_own_configured_project_id(
+        self, monkeypatch
+    ) -> None:
+        monkeypatch.setenv("FIREBASE_PROJECT_ID", "arcwright-prod")
+        monkeypatch.setenv(
+            "FIREBASE_TOKEN_SIGNING_SERVICE_ACCOUNT",
+            "sa@example.iam.gserviceaccount.com",
+        )
+        with (
+            patch("firebase_admin._apps", []),
+            patch("firebase_admin.initialize_app") as init_app,
+        ):
+            _ensure_firebase_app()
+
+        init_app.assert_called_once_with(
+            options={
+                "projectId": "arcwright-prod",
+                "serviceAccountId": "sa@example.iam.gserviceaccount.com",
+            }
+        )
