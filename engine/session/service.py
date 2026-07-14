@@ -145,6 +145,16 @@ class SessionService:
             raise SessionStateError(f"Cannot start session in status {orm.status!r}")
         orm.status = SessionStatus.active.value
         orm.started_at = datetime.now(tz=timezone.utc)
+        arc_definition = load_arc_definition(orm.arc_id)
+        if arc_definition is not None:
+            from engine.session.obligations import register_authored_obligations
+
+            await register_authored_obligations(
+                db,
+                session_id,
+                arc_definition,
+                created_beat=orm.current_beat_id,
+            )
         await db.flush()
         return _orm_session_to_pydantic(orm)
 
@@ -238,6 +248,11 @@ class SessionService:
             raise SessionStateError(f"Session already ended with status {orm.status!r}")
         orm.status = SessionStatus.completed.value
         orm.completed_at = datetime.now(tz=timezone.utc)
+        from engine.session.obligations import expire_open_obligations
+
+        # Spec 0065 default: unresolved obligations expire at completion so
+        # lifecycle telemetry can distinguish delivered from dropped payoffs.
+        await expire_open_obligations(db, session_id)
         await db.flush()
         total_duration_seconds = 0
         if orm.started_at is not None:
@@ -330,6 +345,11 @@ class SessionService:
             return _orm_session_to_pydantic(orm)
 
         from engine.arc.arc_state import ArcStateChart, transition_name_for
+        from engine.session.obligations import (
+            REVEAL_READINESS_CONTEXT_KEY,
+            all_mandatory_obligations_resolved,
+            resolve_obligations_on_beat_entry,
+        )
 
         current_beat_id = orm.current_beat_id
         next_beat_id = _next_beat_id(arc_definition, current_beat_id)
@@ -337,8 +357,20 @@ class SessionService:
             return _orm_session_to_pydantic(orm)
 
         chart = ArcStateChart(arc_definition, start_value=current_beat_id)
+        # Platform-computed context keys carry their real values into the
+        # chart; every other authored condition is satisfied by the REST
+        # loop's simplified deterministic progression.
+        computed_conditions = {
+            REVEAL_READINESS_CONTEXT_KEY: await all_mandatory_obligations_resolved(
+                db, session_id
+            ),
+        }
         _satisfy_transition_conditions(
-            chart, arc_definition, current_beat_id, next_beat_id
+            chart,
+            arc_definition,
+            current_beat_id,
+            next_beat_id,
+            computed_conditions=computed_conditions,
         )
 
         transition_name = transition_name_for(current_beat_id, next_beat_id)
@@ -348,6 +380,12 @@ class SessionService:
                 f"Transition {transition_name!r} is not available from beat {current_beat_id!r}"
             )
         transition()
+        if next_beat_id not in chart.configuration_values:
+            # The StateChart ignores events whose guard fails rather than
+            # raising. A platform-computed exit condition (e.g. reveal
+            # readiness) is not satisfied: the gate holds and the session
+            # stays at the current beat. Deterministic no-op, not an error.
+            return _orm_session_to_pydantic(orm)
 
         # Beat exit: summarize realized-versus-intended tension for the beat
         # being left, when the arc author declared a target for it (spec 0064).
@@ -359,6 +397,11 @@ class SessionService:
         )
 
         orm.current_beat_id = next_beat_id
+        # Deterministic beat-entry resolution trigger for authored
+        # obligations configured with resolve_on_beat_entry (spec 0065).
+        await resolve_obligations_on_beat_entry(
+            db, session_id, entered_beat_id=next_beat_id
+        )
         await self.record_beat_transition(
             db,
             session_id,
@@ -608,12 +651,26 @@ class SessionService:
             db, session_id, score=score, beat_id=beat_id, target_score=target_score
         )
 
+        from engine.arc.pacing import PacingInterventionType
+        from engine.session.obligations import create_misdirection_obligation
+
         interventions = evaluate_pacing_interventions(
             snapshot,
             arc_definition.pacing_config,
         )
         for intervention in interventions:
             await record_pacing_intervention(db, session_id, intervention)
+            if intervention.intervention_type is PacingInterventionType.misdirection:
+                # ADR-0012: every misdirection injection becomes durable
+                # obligation state so it cannot dangle unacknowledged.
+                await create_misdirection_obligation(
+                    db,
+                    session_id,
+                    intervention,
+                    mandatory=(
+                        arc_definition.pacing_config.misdirection_obligation_mandatory
+                    ),
+                )
             await record_pacing_intervention_outcome(
                 db,
                 session_id,
@@ -664,7 +721,17 @@ def _satisfy_transition_conditions(
     arc_definition: ArcDefinition,
     source_beat_id: str,
     target_beat_id: str,
+    *,
+    computed_conditions: dict[str, bool] | None = None,
 ) -> None:
+    """Seed chart context for the REST loop's simplified progression.
+
+    Authored conditions are satisfied unconditionally (the REST loop owns
+    deterministic advancement); platform-computed keys supplied via
+    ``computed_conditions`` carry their real values so they can gate the
+    transition.
+    """
+    computed = computed_conditions or {}
     beats_by_id = {beat.beat_id: beat for beat in arc_definition.beats}
     source_beat = beats_by_id[source_beat_id]
     target_beat = beats_by_id[target_beat_id]
@@ -672,7 +739,7 @@ def _satisfy_transition_conditions(
         *source_beat.exit_conditions,
         *target_beat.entry_conditions,
     }:
-        chart.update_context(condition, True)
+        chart.update_context(condition, computed.get(condition, True))
 
 
 def _build_live_pacing_snapshot(

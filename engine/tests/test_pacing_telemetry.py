@@ -142,6 +142,7 @@ def test_decision_log_payload_contains_reproducible_input_context() -> None:
             "stall_threshold": 0.25,
             "misdirection_threshold": 0.8,
             "premium_threshold": 0.85,
+            "misdirection_obligation_mandatory": False,
             "w_time": 0.3,
             "w_action": 0.3,
             "w_suspicion": 0.2,

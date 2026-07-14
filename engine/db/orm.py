@@ -709,3 +709,51 @@ class MiniGameSubmission(Base):
 
     run: Mapped[MiniGameRun] = relationship(back_populates="submissions")
     character: Mapped[Character] = relationship()
+
+
+class Obligation(Base):
+    """Narrative obligation tracked as durable session state (spec 0065).
+
+    Only deterministic engine paths mutate rows: authored setups register at
+    session start, pacing misdirection injection auto-creates one, resolution
+    fires on deterministic triggers, and session completion expires the rest.
+    """
+
+    __tablename__ = "obligations"
+    __table_args__ = (
+        Index("ix_obligations_session_id_status", "session_id", "status"),
+    )
+
+    obligation_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        primary_key=True,
+        server_default=text("gen_random_uuid()"),
+    )
+    session_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("sessions.session_id"),
+        nullable=False,
+    )
+    source_type: Mapped[str] = mapped_column(Text, nullable=False)
+    source_ref: Mapped[dict[str, Any]] = mapped_column(
+        JSONB,
+        nullable=False,
+        server_default=text("'{}'::jsonb"),
+    )
+    description: Mapped[str] = mapped_column(Text, nullable=False)
+    mandatory: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default=text("false")
+    )
+    status: Mapped[str] = mapped_column(
+        Text, nullable=False, server_default=text("'open'")
+    )
+    created_beat: Mapped[str] = mapped_column(Text, nullable=False)
+    resolved_beat: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=text("now()"),
+    )
+    resolved_at: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
