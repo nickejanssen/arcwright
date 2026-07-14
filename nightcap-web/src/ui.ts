@@ -347,15 +347,71 @@ export function renderLandingPage(): string {
   );
 }
 
-export function renderHostPage(sessionId = ""): string {
+export interface FirebaseWebConfig {
+  apiKey: string;
+  authDomain: string;
+  projectId: string;
+}
+
+export function renderHostPage(
+  sessionId = "",
+  firebaseConfig?: FirebaseWebConfig,
+): string {
   const urls = buildNightcapRuntimeUrls(sessionId || "session");
+  const firebaseConfigJson = JSON.stringify(
+    firebaseConfig ?? { apiKey: "", authDomain: "", projectId: "" },
+  );
   return pageShell(
     "Nightcap Host Controls",
     `<section class="shell">
       <div class="card">
         <h1>Host controls</h1>
-        <p class="muted">Creates sessions and forwards lifecycle actions to Arcwright. The browser does not own session state.</p>
+        <p class="muted">Sign in to create sessions and forward lifecycle actions to Arcwright. The browser does not own session state or any Arcwright API key.</p>
         <div class="grid two">
+          <div id="auth-card" class="card" style="margin: 0; background: var(--panel-strong);">
+            <h2>Host sign-in</h2>
+            <div id="auth-status" class="status">Not signed in.</div>
+            <div id="signed-out-controls">
+              <label>
+                Email
+                <input id="auth-email" type="email" placeholder="you@example.com" />
+              </label>
+              <label>
+                Password
+                <input id="auth-password" type="password" placeholder="Password" />
+              </label>
+              <div class="actions">
+                <button id="email-sign-in" type="button">Sign in</button>
+                <button id="email-register" type="button">Register</button>
+                <button id="google-sign-in" type="button">Sign in with Google</button>
+              </div>
+              <details style="margin-top: 12px;">
+                <summary>Test phone sign-in (rehearsal only)</summary>
+                <label>
+                  Phone number
+                  <input id="phone-number" placeholder="+1 650-555-1234" />
+                </label>
+                <div class="actions">
+                  <button id="phone-send-code" type="button">Send code</button>
+                </div>
+                <label>
+                  Verification code
+                  <input id="phone-code" placeholder="123456" />
+                </label>
+                <div class="actions">
+                  <button id="phone-verify-code" type="button">Verify</button>
+                </div>
+                <div id="recaptcha-container"></div>
+              </details>
+            </div>
+            <div id="signed-in-controls" class="hide">
+              <p class="muted" id="signed-in-as"></p>
+              <div class="actions">
+                <button id="sign-out" type="button">Sign out</button>
+              </div>
+            </div>
+          </div>
+
           <form id="bootstrap-form" class="card" style="margin: 0; background: var(--panel-strong);">
             <h2>Create session</h2>
             <label>
@@ -374,45 +430,40 @@ export function renderHostPage(sessionId = ""): string {
               <p class="muted">Three short answers seed character fit and narrator callbacks.</p>
               ${renderPersonalizationPromptFields(HOST_SEED_PROMPTS)}
             </div>
-            <button type="submit">Create session</button>
+            <button id="create-session-button" type="submit" disabled>Create session</button>
           </form>
-
-          <div class="card" style="margin: 0; background: var(--panel-strong);">
-            <h2>Session state</h2>
-            <div id="host-status" class="status">No session created yet.</div>
-            <label>
-              Session ID
-              <input id="session-id" placeholder="session UUID" value="${escapeHtml(
-                sessionId,
-              )}" />
-            </label>
-            <label>
-              Host bearer token
-              <input id="host-token" placeholder="Bearer token from Arcwright" />
-            </label>
-            <label>
-              End completion type
-              <select id="completion-type">
-                <option value="full_arc" selected>full_arc</option>
-                <option value="interrupted">interrupted</option>
-                <option value="abandoned">abandoned</option>
-              </select>
-            </label>
-            <label>
-              Killer identified
-              <select id="killer-identified">
-                <option value="false" selected>false</option>
-                <option value="true">true</option>
-              </select>
-            </label>
-            <div class="actions">
-              <button data-action="start" type="button">Start</button>
-              <button data-action="pause" type="button">Pause</button>
-              <button data-action="resume" type="button">Resume</button>
-              <button data-action="end" type="button">End</button>
-              <button id="create-player-link" type="button">Create player join link</button>
-              <button id="refresh-session" type="button">Refresh</button>
-            </div>
+        </div>
+        <div class="card" style="margin: 18px 0 0; background: var(--panel-strong);">
+          <h2>Session state</h2>
+          <div id="host-status" class="status">No session created yet.</div>
+          <label>
+            Session ID
+            <input id="session-id" placeholder="session UUID" value="${escapeHtml(
+              sessionId,
+            )}" />
+          </label>
+          <label>
+            End completion type
+            <select id="completion-type">
+              <option value="full_arc" selected>full_arc</option>
+              <option value="interrupted">interrupted</option>
+              <option value="abandoned">abandoned</option>
+            </select>
+          </label>
+          <label>
+            Killer identified
+            <select id="killer-identified">
+              <option value="false" selected>false</option>
+              <option value="true">true</option>
+            </select>
+          </label>
+          <div class="actions">
+            <button data-action="start" type="button">Start</button>
+            <button data-action="pause" type="button">Pause</button>
+            <button data-action="resume" type="button">Resume</button>
+            <button data-action="end" type="button">End</button>
+            <button id="create-player-link" type="button">Create player join link</button>
+            <button id="refresh-session" type="button">Refresh</button>
           </div>
         </div>
       </div>
@@ -432,25 +483,94 @@ export function renderHostPage(sessionId = ""): string {
     </section>
     ${renderMiniGameStageStyles()}
     ${renderMiniGameScriptTag()}
-    <script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+      import {
+        getAuth,
+        onAuthStateChanged,
+        signInWithEmailAndPassword,
+        createUserWithEmailAndPassword,
+        GoogleAuthProvider,
+        signInWithPopup,
+        RecaptchaVerifier,
+        signInWithPhoneNumber,
+        signOut,
+      } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
       (function() {
+        const firebaseConfig = ${firebaseConfigJson};
+        const firebaseApp = initializeApp(firebaseConfig);
+        const auth = getAuth(firebaseApp);
+
         const bootstrapForm = document.getElementById('bootstrap-form');
         const bootstrapOutput = document.getElementById('bootstrap-output');
         const runtimeOutput = document.getElementById('runtime-output');
         const playerLinkOutput = document.getElementById('player-link-output');
         const hostStatus = document.getElementById('host-status');
+        const authStatus = document.getElementById('auth-status');
         const sessionIdInput = document.getElementById('session-id');
-        const hostTokenInput = document.getElementById('host-token');
         const arcIdInput = document.getElementById('arc-id');
         const qualityTierInput = document.getElementById('quality-tier');
         const completionTypeInput = document.getElementById('completion-type');
         const killerIdentifiedInput = document.getElementById('killer-identified');
         const createPlayerLinkButton = document.getElementById('create-player-link');
         const refreshSessionButton = document.getElementById('refresh-session');
+        const createSessionButton = document.getElementById('create-session-button');
+        const signedOutControls = document.getElementById('signed-out-controls');
+        const signedInControls = document.getElementById('signed-in-controls');
+        const signedInAs = document.getElementById('signed-in-as');
+        const emailInput = document.getElementById('auth-email');
+        const passwordInput = document.getElementById('auth-password');
+        const phoneNumberInput = document.getElementById('phone-number');
+        const phoneCodeInput = document.getElementById('phone-code');
+
+        // Exchanged session-scoped host token (never a manually pasted value).
+        let sessionHostToken = '';
+        let phoneConfirmation = null;
+        let recaptchaVerifier = null;
+
+        const hostTokenStorageKey = 'nightcap.host.session_token';
+
+        function persistHostToken(sessionId, hostToken, expiresAt) {
+          sessionStorage.setItem(hostTokenStorageKey, JSON.stringify({
+            session_id: sessionId,
+            host_token: hostToken,
+            expires_at: expiresAt,
+          }));
+        }
+
+        function clearPersistedHostToken() {
+          sessionStorage.removeItem(hostTokenStorageKey);
+        }
+
+        function readPersistedHostToken(sessionId) {
+          const raw = sessionStorage.getItem(hostTokenStorageKey);
+          if (!raw) {
+            return null;
+          }
+          try {
+            const stored = JSON.parse(raw);
+            if (
+              stored.session_id !== sessionId ||
+              !stored.host_token ||
+              !(stored.expires_at > Date.now())
+            ) {
+              return null;
+            }
+            return stored.host_token;
+          } catch {
+            return null;
+          }
+        }
 
         function setStatus(message, isError) {
           hostStatus.textContent = message;
           hostStatus.className = isError ? 'status error' : 'status';
+        }
+
+        function setAuthStatus(message, isError) {
+          authStatus.textContent = message;
+          authStatus.className = isError ? 'status error' : 'status';
         }
 
         function readPersonalizationIntake(form) {
@@ -470,28 +590,132 @@ export function renderHostPage(sessionId = ""): string {
           return text ? JSON.parse(text) : null;
         }
 
+        onAuthStateChanged(auth, function(user) {
+          if (user) {
+            signedOutControls.classList.add('hide');
+            signedInControls.classList.remove('hide');
+            signedInAs.textContent = 'Signed in as ' + (user.email || user.phoneNumber || user.uid);
+            createSessionButton.disabled = false;
+            setAuthStatus('Signed in.', false);
+
+            const existingSessionId = sessionIdInput.value.trim();
+            if (existingSessionId) {
+              const restored = readPersistedHostToken(existingSessionId);
+              if (restored) {
+                sessionHostToken = restored;
+                setStatus('Restored host control for this session.', false);
+              }
+            }
+          } else {
+            signedOutControls.classList.remove('hide');
+            signedInControls.classList.add('hide');
+            createSessionButton.disabled = true;
+            setAuthStatus('Not signed in.', false);
+          }
+        });
+
+        document.getElementById('email-sign-in').addEventListener('click', async function() {
+          try {
+            await signInWithEmailAndPassword(auth, emailInput.value.trim(), passwordInput.value);
+          } catch (error) {
+            setAuthStatus(error.message || String(error), true);
+          }
+        });
+
+        document.getElementById('email-register').addEventListener('click', async function() {
+          try {
+            await createUserWithEmailAndPassword(auth, emailInput.value.trim(), passwordInput.value);
+          } catch (error) {
+            setAuthStatus(error.message || String(error), true);
+          }
+        });
+
+        document.getElementById('google-sign-in').addEventListener('click', async function() {
+          try {
+            await signInWithPopup(auth, new GoogleAuthProvider());
+          } catch (error) {
+            setAuthStatus(error.message || String(error), true);
+          }
+        });
+
+        document.getElementById('phone-send-code').addEventListener('click', async function() {
+          try {
+            if (recaptchaVerifier) {
+              recaptchaVerifier.clear();
+            }
+            recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', { size: 'invisible' });
+            phoneConfirmation = await signInWithPhoneNumber(auth, phoneNumberInput.value.trim(), recaptchaVerifier);
+            setAuthStatus('Verification code sent.', false);
+          } catch (error) {
+            setAuthStatus(error.message || String(error), true);
+          }
+        });
+
+        document.getElementById('phone-verify-code').addEventListener('click', async function() {
+          try {
+            if (!phoneConfirmation) {
+              throw new Error('Send a verification code first.');
+            }
+            await phoneConfirmation.confirm(phoneCodeInput.value.trim());
+          } catch (error) {
+            setAuthStatus(error.message || String(error), true);
+          }
+        });
+
+        document.getElementById('sign-out').addEventListener('click', async function() {
+          try {
+            await signOut(auth);
+            sessionHostToken = '';
+            clearPersistedHostToken();
+          } catch (error) {
+            setAuthStatus(error.message || String(error), true);
+          }
+        });
+
         bootstrapForm.addEventListener('submit', async function(event) {
           event.preventDefault();
           try {
+            if (!auth.currentUser) {
+              throw new Error('Sign in first.');
+            }
             setStatus('Creating session...', false);
+            const hostIdToken = await auth.currentUser.getIdToken();
             const payload = {
               arc_id: arcIdInput.value.trim(),
               quality_tier: qualityTierInput.value,
               personalization_intake: readPersonalizationIntake(bootstrapForm),
             };
-            const response = await fetch('/host/api/bootstrap/session', {
+            const response = await fetch('/host/api/session', {
               method: 'POST',
-              headers: { 'content-type': 'application/json' },
+              headers: {
+                'content-type': 'application/json',
+                'authorization': 'Bearer ' + hostIdToken,
+              },
               body: JSON.stringify(payload),
             });
             const data = await readJson(response);
             if (!response.ok) {
-              throw new Error((data && data.detail) || 'Session bootstrap failed.');
+              throw new Error((data && data.detail) || 'Session creation failed.');
             }
             sessionIdInput.value = data.session.session_id;
-            hostTokenInput.value = data.session.host_token;
             bootstrapOutput.textContent = JSON.stringify(data, null, 2);
             runtimeOutput.textContent = JSON.stringify(data.runtime, null, 2);
+
+            setStatus('Exchanging session token...', false);
+            const exchangeResponse = await fetch(
+              '/host/api/sessions/' + encodeURIComponent(data.session.session_id) + '/auth/exchange',
+              {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ host_token: data.session.host_token }),
+              },
+            );
+            const exchangeData = await readJson(exchangeResponse);
+            if (!exchangeResponse.ok || !exchangeData || !exchangeData.host_token) {
+              throw new Error((exchangeData && exchangeData.detail) || 'Host token exchange failed.');
+            }
+            sessionHostToken = exchangeData.host_token;
+            persistHostToken(data.session.session_id, exchangeData.host_token, exchangeData.expires_at);
             setStatus('Session created.', false);
           } catch (error) {
             setStatus(error.message || String(error), true);
@@ -500,18 +724,17 @@ export function renderHostPage(sessionId = ""): string {
 
         async function sendControl(action) {
           const sessionId = sessionIdInput.value.trim();
-          const hostToken = hostTokenInput.value.trim();
           if (!sessionId) {
             throw new Error('Create or paste a session id first.');
           }
-          if (!hostToken) {
-            throw new Error('Paste a host bearer token first.');
+          if (!sessionHostToken) {
+            throw new Error('Create a session (while signed in) first.');
           }
 
           const init = {
             method: 'POST',
             headers: {
-              'authorization': 'Bearer ' + hostToken,
+              'authorization': 'Bearer ' + sessionHostToken,
               'content-type': 'application/json',
             },
             body: action === 'end' ? JSON.stringify({
@@ -531,18 +754,17 @@ export function renderHostPage(sessionId = ""): string {
 
         async function createPlayerJoinLink() {
           const sessionId = sessionIdInput.value.trim();
-          const hostToken = hostTokenInput.value.trim();
           if (!sessionId) {
             throw new Error('Create or paste a session id first.');
           }
-          if (!hostToken) {
-            throw new Error('Paste a host bearer token first.');
+          if (!sessionHostToken) {
+            throw new Error('Create a session (while signed in) first.');
           }
 
           const response = await fetch('/host/api/sessions/' + encodeURIComponent(sessionId) + '/players', {
             method: 'POST',
             headers: {
-              'authorization': 'Bearer ' + hostToken,
+              'authorization': 'Bearer ' + sessionHostToken,
               'content-type': 'application/json',
             },
           });
