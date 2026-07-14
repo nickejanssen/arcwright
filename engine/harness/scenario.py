@@ -7,10 +7,11 @@ from typing import Any, Callable
 
 from pydantic import BaseModel, Field
 
+from engine.arc.registry import default_arc_path
 from engine.harness.models import HarnessAction, HarnessRun
 from engine.harness.runner import HarnessRunner
 
-ARC_PATH = Path(__file__).resolve().parents[2] / "nightcap" / "arc.json"
+ARC_PATH = default_arc_path()
 
 
 class ScenarioValidationError(Exception):

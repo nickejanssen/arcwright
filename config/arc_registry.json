@@ -1,0 +1,9 @@
+{
+  "default_arc_id": "nightcap",
+  "arcs": [
+    {
+      "id_prefix": "nightcap",
+      "path": "nightcap/arc.json"
+    }
+  ]
+}
