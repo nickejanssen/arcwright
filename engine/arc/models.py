@@ -51,6 +51,10 @@ class PacingConfig(BaseModel):
     stall_threshold: float = 0.25
     misdirection_threshold: float = 0.80
     premium_threshold: float = 0.85
+    # Whether a pacing-injected misdirection creates a mandatory obligation
+    # that gates the arc's reveal-readiness condition (spec 0065). Arc-
+    # configurable per AW-271; defaults to non-blocking.
+    misdirection_obligation_mandatory: bool = False
     w_time: float
     w_action: float
     w_suspicion: float
@@ -202,6 +206,25 @@ class AuthorialIntent(BaseModel):
         return None
 
 
+class ObligationConfig(BaseModel):
+    """Authored narrative obligation registered at session start.
+
+    Spec 0065 / ADR-0012. Obligations are durable session state tracked by
+    deterministic engine paths only; AI output never creates or resolves
+    one. ``resolve_on_beat_entry`` is the deterministic resolution trigger:
+    the obligation resolves when the session enters that beat. When None,
+    the obligation resolves only through an explicit engine call and is
+    otherwise expired at session end.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    obligation_key: str
+    description: str
+    mandatory: bool = False
+    resolve_on_beat_entry: Optional[str] = None
+
+
 class ArcDefinition(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -231,6 +254,7 @@ class ArcDefinition(BaseModel):
     revelation_step_range: List[int] = Field(default_factory=list)
     tone_config: Dict[str, Any] = Field(default_factory=dict)
     authorial_intent: Optional[AuthorialIntent] = None
+    obligations: List[ObligationConfig] = Field(default_factory=list)
 
     @model_validator(mode="before")
     @classmethod
@@ -285,6 +309,32 @@ class ArcDefinition(BaseModel):
         if unknown:
             msg = (
                 "authorial_intent.emotional_targets reference unknown beat ids: "
+                f"{', '.join(unknown)}"
+            )
+            raise ValueError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def validate_obligations(self) -> "ArcDefinition":
+        if not self.obligations:
+            return self
+        keys = [obligation.obligation_key for obligation in self.obligations]
+        duplicates = sorted({key for key in keys if keys.count(key) > 1})
+        if duplicates:
+            msg = f"obligations contain duplicate keys: {', '.join(duplicates)}"
+            raise ValueError(msg)
+        beat_ids = {beat.beat_id for beat in self.beats}
+        unknown = sorted(
+            {
+                obligation.resolve_on_beat_entry
+                for obligation in self.obligations
+                if obligation.resolve_on_beat_entry is not None
+                and obligation.resolve_on_beat_entry not in beat_ids
+            }
+        )
+        if unknown:
+            msg = (
+                "obligations reference unknown resolve_on_beat_entry beat ids: "
                 f"{', '.join(unknown)}"
             )
             raise ValueError(msg)
