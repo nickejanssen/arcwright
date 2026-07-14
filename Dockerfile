@@ -30,5 +30,6 @@ RUN python -m pip install --upgrade pip \
 COPY api/ /app/api/
 COPY engine/ /app/engine/
 COPY config/ /app/config/
+COPY nightcap/ /app/nightcap/
 
 CMD ["sh", "-c", "uvicorn api.main:app --host 0.0.0.0 --port ${PORT:-8080}"]

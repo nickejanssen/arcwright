@@ -21,10 +21,6 @@ declare global {
     get(id: DurableObjectId): T;
   }
 
-  class DurableObject {
-    constructor(state: DurableObjectState, env: unknown);
-  }
-
   interface ExecutionContext {
     waitUntil(promise: Promise<unknown>): void;
   }
