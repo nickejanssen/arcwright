@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import os
 import time
 from dataclasses import dataclass
 from decimal import Decimal
@@ -16,6 +17,26 @@ ROUTING_TABLE_PATH = (
     Path(__file__).resolve().parents[2] / "config" / "routing_table.json"
 )
 _ROUTING_TABLE: Dict[str, Dict[str, str]] = json.loads(ROUTING_TABLE_PATH.read_text())
+
+# Deploy infrastructure binds LLM credentials under provider-neutral names
+# (PRIMARY_LLM_API_KEY, SECONDARY_LLM_API_KEY) so no workflow or Secret Manager
+# config outside this file has to name a provider. This is the one place,
+# per AGENTS.md's provider-agnostic routing rule, allowed to translate those
+# into the env vars each provider's SDK expects.
+_PROVIDER_CREDENTIAL_ENV_MAP: Dict[str, str] = {
+    "PRIMARY_LLM_API_KEY": "ANTHROPIC_API_KEY",
+    "SECONDARY_LLM_API_KEY": "GROQ_API_KEY",
+}
+
+
+def hydrate_provider_credentials(env: Optional[Dict[str, str]] = None) -> None:
+    target = os.environ if env is None else env
+    for slot_var, provider_var in _PROVIDER_CREDENTIAL_ENV_MAP.items():
+        if not target.get(provider_var) and target.get(slot_var):
+            target[provider_var] = target[slot_var]
+
+
+hydrate_provider_credentials()
 
 # MVP cost rates — update only when provider pricing changes.
 # All values are USD per token. Model keys must exactly match routing_table.json.

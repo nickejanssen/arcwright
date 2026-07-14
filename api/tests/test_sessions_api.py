@@ -28,9 +28,11 @@ from starlette.testclient import TestClient
 
 from api.auth import (
     ApiCaller,
+    FirebaseAccount,
     JwtClaims,
     require_api_key,
     require_api_key_or_host_jwt,
+    require_firebase_account,
     require_host_jwt,
 )
 from api.main import app
@@ -87,6 +89,9 @@ def client(
         app.dependency_overrides[require_api_key_or_host_jwt] = lambda: ApiCaller(
             api_key="test-key"
         )
+        app.dependency_overrides[require_firebase_account] = lambda: FirebaseAccount(
+            uid="firebase-host-default", email="host@example.com"
+        )
         app.dependency_overrides[get_async_session] = _override_db
         with TestClient(app) as c:
             yield c
@@ -113,6 +118,117 @@ class TestCreateSession:
     def test_missing_arc_id_returns_422(self, client: TestClient) -> None:
         resp = client.post("/v1/sessions", json={})
         assert resp.status_code == 422
+
+
+class TestCreateHostSession:
+    """POST /v1/sessions/host — Firebase-account-authenticated host path."""
+
+    def test_returns_201_with_required_fields(self, client: TestClient) -> None:
+        resp = client.post("/v1/sessions/host", json={"arc_id": "nightcap-v1"})
+
+        assert resp.status_code == 201, resp.text
+        body = resp.json()
+        assert "session_id" in body
+        assert "host_token" in body
+        assert "host_join_token" in body
+        assert "join_url" in body
+
+    def test_missing_authorization_header_returns_401(self, client: TestClient) -> None:
+        del app.dependency_overrides[require_firebase_account]
+        try:
+            resp = client.post("/v1/sessions/host", json={"arc_id": "nightcap-v1"})
+            assert resp.status_code == 401
+        finally:
+            app.dependency_overrides[require_firebase_account] = lambda: (
+                FirebaseAccount(uid="firebase-host-default", email="host@example.com")
+            )
+
+    def test_reuses_stable_account_across_sessions(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        """Two sessions created by the same Firebase uid share one host_account_id."""
+        app.dependency_overrides[require_firebase_account] = lambda: FirebaseAccount(
+            uid="firebase-host-stable", email="host@example.com"
+        )
+
+        first = client.post("/v1/sessions/host", json={"arc_id": "nightcap-v1"})
+        second = client.post("/v1/sessions/host", json={"arc_id": "nightcap-v1"})
+        assert first.status_code == 201, first.text
+        assert second.status_code == 201, second.text
+
+        async def _load_host_account_ids() -> tuple[UUID, UUID]:
+            async with db_factory() as db:
+                first_orm = await db.get(OrmSession, UUID(first.json()["session_id"]))
+                second_orm = await db.get(OrmSession, UUID(second.json()["session_id"]))
+                assert first_orm is not None
+                assert second_orm is not None
+                return first_orm.host_account_id, second_orm.host_account_id
+
+        import asyncio
+
+        first_account_id, second_account_id = (
+            asyncio.get_event_loop().run_until_complete(_load_host_account_ids())
+        )
+        assert first_account_id == second_account_id
+
+    def test_distinct_firebase_uids_get_distinct_accounts(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        app.dependency_overrides[require_firebase_account] = lambda: FirebaseAccount(
+            uid="firebase-host-a", email="a@example.com"
+        )
+        first = client.post("/v1/sessions/host", json={"arc_id": "nightcap-v1"})
+        assert first.status_code == 201, first.text
+
+        app.dependency_overrides[require_firebase_account] = lambda: FirebaseAccount(
+            uid="firebase-host-b", email="b@example.com"
+        )
+        second = client.post("/v1/sessions/host", json={"arc_id": "nightcap-v1"})
+        assert second.status_code == 201, second.text
+
+        async def _load_host_account_ids() -> tuple[UUID, UUID]:
+            async with db_factory() as db:
+                first_orm = await db.get(OrmSession, UUID(first.json()["session_id"]))
+                second_orm = await db.get(OrmSession, UUID(second.json()["session_id"]))
+                assert first_orm is not None
+                assert second_orm is not None
+                return first_orm.host_account_id, second_orm.host_account_id
+
+        import asyncio
+
+        first_account_id, second_account_id = (
+            asyncio.get_event_loop().run_until_complete(_load_host_account_ids())
+        )
+        assert first_account_id != second_account_id
+
+    def test_host_token_session_claim_mismatch_is_rejected(
+        self, client: TestClient
+    ) -> None:
+        """The session-scoped host_token from /sessions/host still enforces
+        session matching — a token minted for session A cannot control
+        session B, exactly like the developer-API-key-created path."""
+        created = client.post("/v1/sessions/host", json={"arc_id": "nightcap-v1"})
+        assert created.status_code == 201, created.text
+        own_session_id = UUID(created.json()["session_id"])
+
+        other_session_id = uuid4()
+        app.dependency_overrides[require_host_jwt] = lambda: JwtClaims(
+            uid="firebase-host-default",
+            session_id=own_session_id,
+            player_id=uuid4(),
+            role="host",
+        )
+        try:
+            resp = client.post(f"/v1/sessions/{other_session_id}/start")
+            assert resp.status_code == 403
+        finally:
+            app.dependency_overrides[require_host_jwt] = lambda: JwtClaims(
+                uid="host-uid", session_id=None, player_id=uuid4(), role="host"
+            )
 
 
 class TestGetSession:
@@ -511,7 +627,22 @@ class TestAddPlayer:
 
 
 class TestJoinSession:
-    def test_valid_token_returns_player_token(self, client: TestClient) -> None:
+    """Both GET (documented contract, docs/architecture/09-developer-api.md
+    §9.2) and POST (what nightcap-web's Worker actually sends) must work —
+    the endpoint is an idempotent lookup either way."""
+
+    def test_valid_token_returns_player_token_via_post(
+        self, client: TestClient
+    ) -> None:
+        session_id = _create_session(client)
+        add = client.post(f"/v1/sessions/{session_id}/players")
+        join_token = add.json()["join_token"]
+        resp = client.post(f"/v1/sessions/{session_id}/join?token={join_token}")
+
+        assert resp.status_code == 200
+        assert "player_token" in resp.json()
+
+    def test_valid_token_returns_player_token_via_get(self, client: TestClient) -> None:
         session_id = _create_session(client)
         add = client.post(f"/v1/sessions/{session_id}/players")
         join_token = add.json()["join_token"]
@@ -520,7 +651,12 @@ class TestJoinSession:
         assert resp.status_code == 200
         assert "player_token" in resp.json()
 
-    def test_invalid_token_returns_403(self, client: TestClient) -> None:
+    def test_invalid_token_returns_403_via_post(self, client: TestClient) -> None:
+        session_id = _create_session(client)
+        resp = client.post(f"/v1/sessions/{session_id}/join?token=not-a-real-token")
+        assert resp.status_code == 403
+
+    def test_invalid_token_returns_403_via_get(self, client: TestClient) -> None:
         session_id = _create_session(client)
         resp = client.get(f"/v1/sessions/{session_id}/join?token=not-a-real-token")
         assert resp.status_code == 403

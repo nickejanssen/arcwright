@@ -1,3 +1,5 @@
+import { DurableObject } from "cloudflare:workers";
+
 export interface RoomMember {
   client_id: string;
   participant_id: string;

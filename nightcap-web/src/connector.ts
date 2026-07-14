@@ -86,7 +86,11 @@ export class NightcapConnector {
   constructor(options: NightcapConnectorOptions) {
     this.baseUrl = options.baseUrl.replace(/\/$/, "");
     this.apiKey = options.apiKey;
-    this.fetchImpl = options.fetchImpl ?? fetch;
+    // Cloudflare Workers' native fetch is a branded function that throws
+    // "Illegal invocation" when called as `this.fetchImpl(...)` (wrong
+    // receiver) rather than `fetch(...)` (global receiver). Binding to
+    // globalThis preserves the correct receiver through the method call.
+    this.fetchImpl = options.fetchImpl ?? fetch.bind(globalThis);
   }
 
   async createSession(
@@ -97,6 +101,20 @@ export class NightcapConnector {
       headers: this.apiHeaders(true),
       body: JSON.stringify(body),
     });
+  }
+
+  async createHostSessionAuthenticated(
+    body: CreateSessionRequest,
+    hostIdToken: string,
+  ): Promise<CreateSessionResponse> {
+    return this.authorizedJsonRequest<CreateSessionResponse>(
+      "/v1/sessions/host",
+      hostIdToken,
+      {
+        method: "POST",
+        body: JSON.stringify(body),
+      },
+    );
   }
 
   async getSession(sessionId: string): Promise<SessionStateResponse> {

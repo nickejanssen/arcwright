@@ -233,3 +233,17 @@ test("host page renders the editable seed questions", () => {
     assert.ok(html.includes(prompt.label));
   }
 });
+
+test("host page persists and restores the exchanged host token across reload", () => {
+  const html = renderHostPage("session-123");
+
+  // Persisted on successful exchange, keyed to the session id + expiry —
+  // not just an in-memory variable that a reload throws away.
+  assert.match(html, /persistHostToken\(/);
+  assert.match(html, /sessionStorage\.setItem\(hostTokenStorageKey/);
+  // Restored inside onAuthStateChanged once Firebase confirms the signed-in
+  // user, scoped to the session id already present in the URL/input.
+  assert.match(html, /readPersistedHostToken\(existingSessionId\)/);
+  // Cleared on sign-out so a stale token can't outlive the account session.
+  assert.match(html, /clearPersistedHostToken\(\)/);
+});
