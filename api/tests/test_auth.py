@@ -164,7 +164,9 @@ class TestEnsureFirebaseApp:
     checks only require both settings to be explicitly configured, not
     that either equals one hardcoded value."""
 
-    def test_raises_when_project_id_unset(self, monkeypatch) -> None:
+    def test_raises_when_project_id_unset(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         monkeypatch.delenv("FIREBASE_PROJECT_ID", raising=False)
         monkeypatch.setenv(
             "FIREBASE_TOKEN_SIGNING_SERVICE_ACCOUNT",
@@ -174,7 +176,9 @@ class TestEnsureFirebaseApp:
             with pytest.raises(FirebaseMisconfiguredError):
                 _ensure_firebase_app()
 
-    def test_raises_when_signing_service_account_unset(self, monkeypatch) -> None:
+    def test_raises_when_signing_service_account_unset(
+        self, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         monkeypatch.setenv("FIREBASE_PROJECT_ID", "any-configured-project")
         monkeypatch.delenv("FIREBASE_TOKEN_SIGNING_SERVICE_ACCOUNT", raising=False)
         with patch("firebase_admin._apps", []):
@@ -182,7 +186,7 @@ class TestEnsureFirebaseApp:
                 _ensure_firebase_app()
 
     def test_accepts_the_deployments_own_configured_project_id(
-        self, monkeypatch
+        self, monkeypatch: pytest.MonkeyPatch
     ) -> None:
         monkeypatch.setenv("FIREBASE_PROJECT_ID", "arcwright-prod")
         monkeypatch.setenv(
