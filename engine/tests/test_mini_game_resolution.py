@@ -135,7 +135,6 @@ async def test_authored_mode_resolves_without_generation(
             loaded_game=loaded,
             quality_tier="standard",
             content_rails=_nightcap_content_rails(),
-            nightcap_mode=True,
         )
 
     mock_generate.assert_not_called()
@@ -179,13 +178,11 @@ async def test_generative_mode_uses_engine_generation_wrapper(
             content_rails=_nightcap_content_rails(),
             adaptation_context={"surface": "phone"},
             session_context={"beat_id": "dig"},
-            nightcap_mode=True,
         )
 
     kwargs = mock_generate.await_args.kwargs
     assert kwargs["task_type"] == "narrative_generation"
     assert kwargs["quality_tier"] == "standard"
-    assert kwargs["nightcap_mode"] is True
     assert snapshot.snapshot_schema_version == "1.0"
     assert snapshot.source_content_mode is ContentMode.generative
     assert snapshot.resolved_content == generated_payload["content"]
@@ -224,7 +221,6 @@ async def test_hybrid_mode_fills_placeholders_without_overwriting_authored_conte
             loaded_game=loaded,
             quality_tier="standard",
             content_rails=_nightcap_content_rails(),
-            nightcap_mode=True,
         )
 
     assert snapshot.snapshot_schema_version == "1.0"
@@ -267,7 +263,6 @@ async def test_hybrid_mode_rejects_generated_overwrite_of_authored_field(
                 loaded_game=loaded,
                 quality_tier="standard",
                 content_rails=_nightcap_content_rails(),
-                nightcap_mode=True,
             )
 
 
@@ -292,7 +287,6 @@ async def test_invalid_generated_payload_is_rejected(
                 loaded_game=loaded,
                 quality_tier="standard",
                 content_rails=_nightcap_content_rails(),
-                nightcap_mode=True,
             )
 
 
@@ -325,7 +319,6 @@ async def test_safety_block_prevents_snapshot_resolution(
                 loaded_game=loaded,
                 quality_tier="standard",
                 content_rails=_nightcap_content_rails(),
-                nightcap_mode=True,
             )
 
 
@@ -356,7 +349,6 @@ async def test_resolved_snapshot_output_is_rechecked_for_l1_hard_stops(
                 loaded_game=loaded,
                 quality_tier="standard",
                 content_rails=_nightcap_content_rails(),
-                nightcap_mode=True,
             )
 
 

@@ -91,6 +91,14 @@ class ContentRailsConfig(BaseModel):
     prohibited_categories: List[str] = Field(default_factory=list)
     thematic_warnings: List[str] = Field(default_factory=list)
     age_floor: int = 18
+    extra_prohibitions: List[str] = Field(default_factory=list)
+    """Arc-authored plain-language sentences appended to the L3 policy block.
+
+    Lets an arc tighten its content rules beyond the category list without
+    engine code changes. Arc config can only add prohibitions; the platform
+    minimum policy and the L1/L2 layers are engine-owned and cannot be
+    relaxed from here.
+    """
 
 
 class KnowledgeRuleSet(BaseModel):

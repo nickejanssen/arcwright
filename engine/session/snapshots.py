@@ -39,7 +39,7 @@ def capture_chart_config(chart: "GeneratedArcStateChart") -> dict[str, Any]:
     values per python-statemachine, §5.2) and the chart's ``session_context``
     dict. ``beat_id`` is the single-active beat when present — it is the
     primary key the resume path consults when the chart configuration set
-    has exactly one entry (the common Nightcap shape).
+    has exactly one entry (the common linear-arc shape).
     """
     configuration_values = sorted(chart.configuration_values)
     beat_id = configuration_values[0] if len(configuration_values) == 1 else None

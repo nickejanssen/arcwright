@@ -86,7 +86,6 @@ async def generate(
     tension_score: float | None = None,
     safety_policy_context: dict[str, Any] | str | None = None,
     content_rails: "ContentRailsConfig | None" = None,
-    nightcap_mode: bool = False,
 ) -> RouteResult:
     """Route a generation call, enforce all safety layers, and log it.
 
@@ -125,9 +124,6 @@ async def generate(
             policy block.  When None, the platform minimum policy (mirroring
             the four L1 hard-stop categories) is injected as a backstop so
             L3 always runs.
-        nightcap_mode: When True, uses the Nightcap-specific L3 policy builder
-            which adds murder-mystery-specific prohibitions on top of the
-            arc-level rails.  Defaults to False.
 
     Returns:
         A RouteResult.  If L1 fires, returns the L1 neutral bridge sentinel.
@@ -205,7 +201,6 @@ async def generate(
         messages = inject_l3_policy_block(
             messages,
             content_rails,
-            nightcap_mode=nightcap_mode,
         )
 
     result = await route_generation(task_type, quality_tier, messages, temperature)

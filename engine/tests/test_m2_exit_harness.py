@@ -411,7 +411,6 @@ async def test_safety_pipeline_runs_l1_then_l2_before_main_routing(
                 {"role": "system", "content": "You are a careful witness."},
                 {"role": "user", "content": "What did you see in the library?"},
             ],
-            nightcap_mode=True,
         )
 
     assert order == [

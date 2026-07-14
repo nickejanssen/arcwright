@@ -24,7 +24,6 @@ from engine.safety.l3 import (
     NEUTRAL_L3_BRIDGE,
     build_l3_blocked_route_result,
     build_l3_policy_block,
-    build_nightcap_l3_policy_block,
     inject_l3_policy_block,
 )
 
@@ -44,7 +43,6 @@ __all__ = [
     "build_l2_classification_payload",
     "build_l3_blocked_route_result",
     "build_l3_policy_block",
-    "build_nightcap_l3_policy_block",
     "build_safety_hard_stop_payload",
     "evaluate_l1_hard_stops",
     "extract_message_text",

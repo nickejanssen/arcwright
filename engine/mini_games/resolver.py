@@ -73,7 +73,6 @@ async def resolve_mini_game_package_snapshot(
     adaptation_context: Mapping[str, Any] | None = None,
     session_context: Mapping[str, Any] | None = None,
     safety_policy_context: dict[str, Any] | str | None = None,
-    nightcap_mode: bool = False,
     temperature: float = 0.3,
 ) -> ResolvedMiniGameSnapshot:
     loaded_game = load_mini_game_package(package_path)
@@ -86,7 +85,6 @@ async def resolve_mini_game_package_snapshot(
         adaptation_context=adaptation_context,
         session_context=session_context,
         safety_policy_context=safety_policy_context,
-        nightcap_mode=nightcap_mode,
         temperature=temperature,
     )
 
@@ -101,7 +99,6 @@ async def resolve_loaded_mini_game_snapshot(
     adaptation_context: Mapping[str, Any] | None = None,
     session_context: Mapping[str, Any] | None = None,
     safety_policy_context: dict[str, Any] | str | None = None,
-    nightcap_mode: bool = False,
     temperature: float = 0.3,
 ) -> ResolvedMiniGameSnapshot:
     definition = loaded_game.definition
@@ -121,7 +118,6 @@ async def resolve_loaded_mini_game_snapshot(
             adaptation_context=adaptation_context,
             session_context=session_context,
             safety_policy_context=safety_policy_context,
-            nightcap_mode=nightcap_mode,
             temperature=temperature,
         )
         presentation = _json_object(generated_payload.presentation)
@@ -167,7 +163,6 @@ async def _resolve_generated_payload(
     adaptation_context: Mapping[str, Any] | None,
     session_context: Mapping[str, Any] | None,
     safety_policy_context: dict[str, Any] | str | None,
-    nightcap_mode: bool,
     temperature: float,
 ) -> _GeneratedMiniGamePayload:
     messages = build_mini_game_resolution_messages(
@@ -189,7 +184,6 @@ async def _resolve_generated_payload(
             safety_policy_context,
         ),
         content_rails=content_rails,
-        nightcap_mode=nightcap_mode,
     )
     if result.model_used in {
         L1_HARD_STOP_SENTINEL,
