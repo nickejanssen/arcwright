@@ -253,3 +253,63 @@ class TestNarratorBridgeGeneration:
         messages_text = str(kwargs["messages"])
         assert "murder mystery" not in messages_text.lower()
         assert "nightcap" not in messages_text.lower()
+
+    async def test_arc_id_injects_registered_arc_content_rails(
+        self, db: AsyncSession
+    ) -> None:
+        """With arc_id supplied, the arc's authored L3 rails reach the prompt.
+
+        The registered arc's content_rails (including extra_prohibitions)
+        must appear in the main generation call, not just the platform
+        minimum block.
+        """
+        session_id = uuid4()
+        await _make_session_row(db, session_id)
+        snapshot = _make_snapshot(session_id)
+
+        with patch(
+            "engine.routing.router.litellm.acompletion",
+            new_callable=AsyncMock,
+        ) as mock_completion:
+            mock_completion.side_effect = [
+                _l2_allowed_response(),
+                _litellm_response("The investigation resumes."),
+            ]
+            await generate_narrator_bridge(
+                db, session_id, snapshot, "standard", arc_id="nightcap-v1"
+            )
+
+        assert mock_completion.call_count == 2
+        _, kwargs = mock_completion.call_args_list[1]
+        messages_text = str(kwargs["messages"])
+        # A prohibited category from nightcap/arc.json content_rails.
+        assert "graphic_violence" in messages_text
+        # An extra_prohibitions sentence from nightcap/arc.json.
+        assert "sexual content" in messages_text.lower()
+
+    async def test_unregistered_arc_id_falls_back_to_platform_minimum(
+        self, db: AsyncSession
+    ) -> None:
+        """An unknown arc_id must not break the bridge; the platform-minimum
+        L3 policy is injected instead."""
+        session_id = uuid4()
+        await _make_session_row(db, session_id)
+        snapshot = _make_snapshot(session_id)
+
+        with patch(
+            "engine.routing.router.litellm.acompletion",
+            new_callable=AsyncMock,
+        ) as mock_completion:
+            mock_completion.side_effect = [
+                _l2_allowed_response(),
+                _litellm_response("The evening continues."),
+            ]
+            event = await generate_narrator_bridge(
+                db, session_id, snapshot, "standard", arc_id="some-unregistered-game"
+            )
+
+        assert event.event_type == "narrator_bridge"
+        _, kwargs = mock_completion.call_args_list[1]
+        messages_text = str(kwargs["messages"])
+        # Platform minimum policy block is present as the backstop.
+        assert "CONTENT POLICY" in messages_text

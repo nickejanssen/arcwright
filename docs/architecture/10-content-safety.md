@@ -61,7 +61,9 @@ Note: Groq output rate for GPT-OSS-Safeguard 20B is pending verification (open q
 
 A policy block is injected into the system prompt of every main LLM call, after the character identity and knowledge state blocks. The policy block states in plain language what the model must not produce, calibrated to the arc's `content_rails` configuration. This is the backstop that handles edge cases L2 did not catch: ambiguous content that is technically within policy but contextually inappropriate for the arc.
 
-The L3 policy block for Nightcap includes: no graphic depiction of the murder itself, no sexual content between characters, no real-world harmful information delivered in-character, no content that directly accuses a real person.
+The policy block has two arc-sourced parts: plain-language lines derived from `content_rails.prohibited_categories`, and the arc's `content_rails.extra_prohibitions` sentences appended verbatim. Experience-specific policy text always lives in the arc definition, never in engine code, so the engine stays game-agnostic. When a generation call supplies no content rails, the engine injects a platform-minimum block mirroring the four L1 hard-stop categories so L3 always runs.
+
+The L3 policy block for Nightcap (authored in `nightcap/arc.json` under `content_rails.extra_prohibitions`) includes: no graphic depiction of the murder itself, no sexual content between characters, no real-world harmful information delivered in-character, no content that directly accuses a real person.
 
 L3 is the cheapest layer to customize and the most arc-specific. Developers configure it through `content_rails` in their arc definition.
 

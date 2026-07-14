@@ -186,7 +186,7 @@ async def resume_session(
     except SessionStateError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
     bridge_event = await generate_narrator_bridge(
-        db, session_id, snapshot, session.quality_tier.value
+        db, session_id, snapshot, session.quality_tier.value, arc_id=session.arc_id
     )
     bus, _registry = _get_or_create_session_state(session_id)
     await bus.publish(bridge_event)
