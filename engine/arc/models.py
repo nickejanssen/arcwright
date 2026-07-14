@@ -173,6 +173,35 @@ class BeatDefinition(BaseModel):
         return self
 
 
+class EmotionalTarget(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
+    beat_id: str
+    target_tension: float = Field(ge=0.0, le=1.0)
+    note: Optional[str] = None
+
+
+class AuthorialIntent(BaseModel):
+    """Structured soft authorial logic: theme, tone, and target tension curve.
+
+    Spec 0064 / ADR-0012. This is an authoring input the engine executes
+    against — generation context and telemetry comparison only. It never
+    drives or overrides deterministic state transitions.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    theme: str
+    tone: str
+    emotional_targets: List[EmotionalTarget] = Field(default_factory=list)
+
+    def target_tension_for(self, beat_id: str) -> Optional[float]:
+        for target in self.emotional_targets:
+            if target.beat_id == beat_id:
+                return target.target_tension
+        return None
+
+
 class ArcDefinition(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -201,6 +230,7 @@ class ArcDefinition(BaseModel):
     session_duration_range: List[int] = Field(default_factory=list)
     revelation_step_range: List[int] = Field(default_factory=list)
     tone_config: Dict[str, Any] = Field(default_factory=dict)
+    authorial_intent: Optional[AuthorialIntent] = None
 
     @model_validator(mode="before")
     @classmethod
@@ -237,6 +267,26 @@ class ArcDefinition(BaseModel):
     def validate_authored_characters(self) -> "ArcDefinition":
         if self.character_mode == CharacterMode.authored and not self.characters:
             msg = "authored character mode requires at least one character"
+            raise ValueError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def validate_authorial_intent_targets(self) -> "ArcDefinition":
+        if self.authorial_intent is None:
+            return self
+        beat_ids = {beat.beat_id for beat in self.beats}
+        unknown = sorted(
+            {
+                target.beat_id
+                for target in self.authorial_intent.emotional_targets
+                if target.beat_id not in beat_ids
+            }
+        )
+        if unknown:
+            msg = (
+                "authorial_intent.emotional_targets reference unknown beat ids: "
+                f"{', '.join(unknown)}"
+            )
             raise ValueError(msg)
         return self
 

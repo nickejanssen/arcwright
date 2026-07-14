@@ -349,6 +349,15 @@ class SessionService:
             )
         transition()
 
+        # Beat exit: summarize realized-versus-intended tension for the beat
+        # being left, when the arc author declared a target for it (spec 0064).
+        await self._record_intent_fidelity_on_beat_exit(
+            db,
+            session_id,
+            arc_definition=arc_definition,
+            exited_beat_id=current_beat_id,
+        )
+
         orm.current_beat_id = next_beat_id
         await self.record_beat_transition(
             db,
@@ -516,6 +525,41 @@ class SessionService:
             raise SessionNotFoundError(session_id)
         return orm
 
+    async def _record_intent_fidelity_on_beat_exit(
+        self,
+        db: AsyncSession,
+        session_id: UUID,
+        *,
+        arc_definition: ArcDefinition,
+        exited_beat_id: str,
+    ) -> None:
+        intent = arc_definition.authorial_intent
+        if intent is None:
+            return
+        target_score = intent.target_tension_for(exited_beat_id)
+        if target_score is None:
+            return
+        from engine.telemetry.pacing import record_intent_fidelity_summary
+
+        result = await db.execute(
+            select(Event).where(
+                Event.session_id == session_id,
+                Event.event_type == "tension_update",
+            )
+        )
+        scores = [
+            row.payload["score"]
+            for row in result.scalars()
+            if row.payload.get("beat_id") == exited_beat_id
+        ]
+        await record_intent_fidelity_summary(
+            db,
+            session_id,
+            beat_id=exited_beat_id,
+            target_score=target_score,
+            scores=scores,
+        )
+
     async def _ensure_account_row(self, db: AsyncSession, account_id: UUID) -> None:
         existing = await db.get(Account, account_id)
         if existing is not None:
@@ -554,8 +598,15 @@ class SessionService:
             record_tension_update,
         )
 
+        target_score = (
+            arc_definition.authorial_intent.target_tension_for(beat_id)
+            if arc_definition.authorial_intent is not None
+            else None
+        )
         score = compute_dramatic_tension_score(snapshot, arc_definition.pacing_config)
-        await record_tension_update(db, session_id, score=score, beat_id=beat_id)
+        await record_tension_update(
+            db, session_id, score=score, beat_id=beat_id, target_score=target_score
+        )
 
         interventions = evaluate_pacing_interventions(
             snapshot,

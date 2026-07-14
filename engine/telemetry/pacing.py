@@ -19,10 +19,46 @@ PLAYER_FACING_INTERVENTIONS = frozenset(
 )
 
 
-def build_tension_update_payload(*, score: float, beat_id: str) -> dict[str, Any]:
-    return {
+def build_tension_update_payload(
+    *,
+    score: float,
+    beat_id: str,
+    target_score: float | None = None,
+) -> dict[str, Any]:
+    payload: dict[str, Any] = {
         "score": score,
         "beat_id": beat_id,
+    }
+    if target_score is not None:
+        # Authored target from the arc's authorial_intent block (spec 0064).
+        # Only present for beats with a declared emotional target.
+        payload["target_score"] = target_score
+    return payload
+
+
+def build_intent_fidelity_summary_payload(
+    *,
+    beat_id: str,
+    target_score: float,
+    scores: list[float],
+) -> dict[str, Any]:
+    """Summarize realized-versus-intended tension for one completed beat.
+
+    Emitted at beat exit only for beats with a declared emotional target
+    (spec 0064). ``scores`` are the tension_update scores recorded while the
+    beat was active.
+    """
+    if scores:
+        mean_score = sum(scores) / len(scores)
+        mean_abs_deviation = sum(abs(s - target_score) for s in scores) / len(scores)
+    else:
+        mean_score = None
+        mean_abs_deviation = None
+    return {
+        "beat_id": beat_id,
+        "target_score": target_score,
+        "mean_score": mean_score,
+        "mean_abs_deviation": mean_abs_deviation,
     }
 
 
@@ -61,12 +97,35 @@ async def record_tension_update(
     *,
     score: float,
     beat_id: str,
+    target_score: float | None = None,
 ) -> None:
     db.add(
         Event(
             session_id=session_id,
             event_type="tension_update",
-            payload=build_tension_update_payload(score=score, beat_id=beat_id),
+            payload=build_tension_update_payload(
+                score=score, beat_id=beat_id, target_score=target_score
+            ),
+        )
+    )
+    await db.flush()
+
+
+async def record_intent_fidelity_summary(
+    db: AsyncSession,
+    session_id: UUID,
+    *,
+    beat_id: str,
+    target_score: float,
+    scores: list[float],
+) -> None:
+    db.add(
+        Event(
+            session_id=session_id,
+            event_type="intent_fidelity_summary",
+            payload=build_intent_fidelity_summary_payload(
+                beat_id=beat_id, target_score=target_score, scores=scores
+            ),
         )
     )
     await db.flush()
