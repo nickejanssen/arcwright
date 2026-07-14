@@ -60,7 +60,6 @@ async def generate_character_dialogue(
     tension_score: float | None = None,
     safety_policy_context: dict[str, Any] | str | None = None,
     content_rails: "ContentRailsConfig | None" = None,
-    nightcap_mode: bool = False,
     social_pressure: float | None = None,
 ) -> CharacterDialogueEvent:
     """Generate one dialogue response after assembling knowledge constraints."""
@@ -87,7 +86,6 @@ async def generate_character_dialogue(
         tension_score=tension_score,
         safety_policy_context=safety_policy_context,
         content_rails=content_rails,
-        nightcap_mode=nightcap_mode,
     )
 
     if _is_safety_blocked_result(result.model_used):

@@ -14,11 +14,10 @@ here is how to steer away from them politely."
 The rules come from the game designer's arc definition (the `content_rails`
 field), not from hardcoded platform defaults. This means a third-party
 developer building a different game can set their own L3 rules without
-needing to change Arcwright's core engine code.
-
-For the Nightcap murder mystery, the L3 rules are derived directly from the
-arc's `content_rails` configuration, so tests can prove the policy is
-sourced from the arc, not baked into the platform.
+needing to change Arcwright's core engine code. Experience-specific
+prohibition sentences live in the arc's `content_rails.extra_prohibitions`
+list, so the engine stays game-agnostic while every game keeps full control
+of its own policy text.
 
 L3 is the cheapest and most customisable safety layer. It sits after the
 deterministic L1 hard stops and the AI-based L2 classification, and it is
@@ -54,34 +53,6 @@ a generation log tells operators that the content was blocked by the in-prompt
 policy layer, not by the classifier (L2) or a hard stop (L1).
 """
 
-# ---------------------------------------------------------------------------
-# Nightcap-specific policy block
-# ---------------------------------------------------------------------------
-
-# These are the L3 rules that apply specifically to the Nightcap murder
-# mystery arc.  They are expressed as plain English sentences because the
-# prompt is read by a language model, not parsed by code.
-#
-# The sentences are kept deliberately simple so that a non-technical game
-# designer reading the injected prompt can understand what they say.
-
-_NIGHTCAP_EXTRA_PROHIBITIONS = (
-    # Nightcap is a social deduction game. The murder is a plot device, not
-    # a spectacle.  Describing it in graphic detail would shift the tone from
-    # cosy mystery to disturbing content.
-    "Do not graphically depict the murder itself or describe violence in explicit physical detail.",
-    # Player characters are fictional.  Introducing sexual content between
-    # them is out of scope for the game experience.
-    "Do not include sexual content between any characters.",
-    # The game frame must stay fiction.  Breaking it to give real harmful
-    # information (e.g. "as a character, here is how to really poison someone")
-    # is prohibited even if the player phrases the request in-character.
-    "Do not provide real-world harmful information while speaking in character.",
-    # Nightcap character names and story elements must not be used to target
-    # or mock real living people.
-    "Do not produce content that directly accuses or targets a real, named person.",
-)
-
 # Platform minimum policy: the four unconditional L1 hard-stop categories
 # expressed as plain-language instructions for the main language model.
 # These are injected when no arc-specific content_rails are provided, so
@@ -96,69 +67,33 @@ _PLATFORM_MINIMUM_PROHIBITIONS = (
 )
 
 
-def build_nightcap_l3_policy_block(content_rails: "ContentRailsConfig") -> str:
-    """Build the Nightcap-specific L3 policy block from arc content rails.
+def build_l3_policy_block(content_rails: "ContentRailsConfig") -> str:
+    """Build the L3 policy block from arc content rails.
 
-    This function exists so that tests can prove the policy text is derived
-    from the arc's `content_rails` configuration rather than being hardcoded
-    inside the engine.
-
-    How it works:
-        1. Start with any categories the game designer has marked as
-           prohibited in the arc definition.
-        2. Add the Nightcap-specific extra prohibitions defined above.
-        3. Wrap the combined list in a clear, model-readable block header.
+    Converts the arc designer's prohibited category list into plain-English
+    instructions, then appends the arc's `extra_prohibitions` sentences
+    verbatim.  Everything in the block is sourced from the arc definition,
+    so any game — first-party or third-party — controls its own policy text
+    without engine changes.
 
     Args:
         content_rails: The `ContentRailsConfig` object from the arc definition.
-            The `prohibited_categories` list on this object drives step 1.
 
     Returns:
         A plain-language policy block string ready for injection into a
-        system prompt, or as an additional message before generation.
+        system prompt, or "" when the rails define no prohibitions at all.
     """
-    # Step 1: collect arc-level prohibited categories as human-readable lines.
-    # The game designer configures these in the arc JSON under content_rails.
     arc_prohibitions = [
         f"Do not produce content in the category: {category}."
         for category in content_rails.prohibited_categories
     ]
-
-    # Step 2: add the Nightcap-specific sentences defined at module level.
-    all_prohibitions = arc_prohibitions + list(_NIGHTCAP_EXTRA_PROHIBITIONS)
-
+    all_prohibitions = arc_prohibitions + list(content_rails.extra_prohibitions)
     return _format_policy_block(all_prohibitions)
-
-
-def build_l3_policy_block(content_rails: "ContentRailsConfig") -> str:
-    """Build a generic L3 policy block from arc content rails.
-
-    This is the general-purpose version that any arc can use.  It converts
-    the arc designer's prohibited category list into plain-English instructions
-    the AI model will follow during generation.
-
-    For arcs that need additional platform-specific sentences (like Nightcap),
-    callers should use `build_nightcap_l3_policy_block` or a similar
-    arc-specific builder that wraps this function.
-
-    Args:
-        content_rails: The `ContentRailsConfig` object from the arc definition.
-
-    Returns:
-        A plain-language policy block string.
-    """
-    arc_prohibitions = [
-        f"Do not produce content in the category: {category}."
-        for category in content_rails.prohibited_categories
-    ]
-    return _format_policy_block(arc_prohibitions)
 
 
 def inject_l3_policy_block(
     messages: list[dict[str, Any]],
     content_rails: "ContentRailsConfig | None",
-    *,
-    nightcap_mode: bool = False,
 ) -> list[dict[str, Any]]:
     """Return a new messages list with the L3 policy block inserted.
 
@@ -182,9 +117,6 @@ def inject_l3_policy_block(
         content_rails: The arc's content rails configuration, or None when
             no arc has been wired up yet.  When None, the platform minimum
             policy is used so L3 always runs.
-        nightcap_mode: When True, uses the Nightcap-specific policy builder
-            which adds extra Nightcap-appropriate prohibitions on top of the
-            arc-level rails.  Defaults to False so other arcs are unaffected.
 
     Returns:
         A new messages list.  The original list is never mutated.
@@ -195,10 +127,7 @@ def inject_l3_policy_block(
         policy_text = _format_policy_block(list(_PLATFORM_MINIMUM_PROHIBITIONS))
         return _inject_policy_into_messages(messages, policy_text)
 
-    if nightcap_mode:
-        policy_text = build_nightcap_l3_policy_block(content_rails)
-    else:
-        policy_text = build_l3_policy_block(content_rails)
+    policy_text = build_l3_policy_block(content_rails)
 
     if not policy_text.strip():
         # No prohibitions at all, so there is nothing to inject.

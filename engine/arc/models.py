@@ -91,6 +91,11 @@ class ContentRailsConfig(BaseModel):
     prohibited_categories: List[str] = Field(default_factory=list)
     thematic_warnings: List[str] = Field(default_factory=list)
     age_floor: int = 18
+    # Arc-authored plain-language prohibition sentences appended verbatim to
+    # the L3 policy block after the prohibited-category lines. This is how a
+    # game supplies experience-specific safety rules without game-specific
+    # code in the engine.
+    extra_prohibitions: List[str] = Field(default_factory=list)
 
 
 class KnowledgeRuleSet(BaseModel):
