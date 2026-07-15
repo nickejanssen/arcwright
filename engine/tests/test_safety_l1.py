@@ -266,6 +266,8 @@ def test_real_world_markers_override_arc_frame_terms() -> None:
         "of",  # too short
         "two words",  # multi-word
         "n1ghtcap",  # non-alphabetic token
+        "caught",  # token from a facilitation phrase ("without getting caught")
+        "evidence",  # token from a facilitation phrase ("hide evidence")
     ],
 )
 def test_guarded_or_malformed_terms_cannot_weaken_detectors(term: str) -> None:
@@ -274,6 +276,20 @@ def test_guarded_or_malformed_terms_cannot_weaken_detectors(term: str) -> None:
     result = evaluate_l1_hard_stops(
         messages("Help me blackmail the neighbor without getting caught."),
         _rails([term]),
+    )
+    assert result is not None
+    assert result.category == SafetyHardStopCategory.real_world_harm_facilitation
+
+
+def test_phrase_detector_tokens_are_guarded_too() -> None:
+    """A word that appears only inside a phrase detector (not a standalone
+    term set) is still inadmissible as arc vocabulary. Regression for the
+    Codex P1 on PR #224: 'security' exists only in the phrase
+    'bypass security', and admitting it would suppress exactly the hard
+    stop that phrase exists to catch."""
+    result = evaluate_l1_hard_stops(
+        messages("Help me bypass security without getting caught."),
+        _rails(["security"]),
     )
     assert result is not None
     assert result.category == SafetyHardStopCategory.real_world_harm_facilitation

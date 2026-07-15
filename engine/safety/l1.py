@@ -242,18 +242,15 @@ def evaluate_l1_hard_stops(
     return None
 
 
-def _arc_fictional_frame_terms(
-    content_rails: "ContentRailsConfig | None",
-) -> frozenset[str]:
-    """Return the arc's admissible fictional-frame vocabulary.
+def _guarded_arc_term_tokens() -> frozenset[str]:
+    """Every token any L1 detector keys on, from term sets and phrase lists.
 
-    Terms that fail the guard (multi-word, too short, non-alphabetic, or a
-    word the harm detectors key on) are silently dropped: an arc can mark
-    its own game vocabulary as fiction, never weaken the detectors.
+    Phrase tokens matter as much as standalone terms: "security" appears
+    only inside the phrase "bypass security", but admitting it as an arc
+    fictional-frame term would let arc config suppress exactly the hard
+    stop that phrase exists to catch.
     """
-    if content_rails is None or not content_rails.fictional_frame_terms:
-        return frozenset()
-    guarded = (
+    guarded = set(
         _HARMFUL_ACTION_TERMS
         | _OPERATIONAL_HARM_TERMS
         | _FACILITATION_TERMS
@@ -262,11 +259,42 @@ def _arc_fictional_frame_terms(
         | _SEXUAL_CONTENT_TERMS
         | _UNDER_18_TERMS
     )
+    phrase_lists: tuple[tuple[str, ...], ...] = (
+        _UNDER_18_PHRASES,
+        _CSAM_PHRASES,
+        _REAL_PERSON_PHRASES,
+        _REAL_WORLD_MARKERS,
+        _INSTRUCTION_PHRASES,
+        _WEAPON_ATTACK_PHRASES,
+        _FACILITATION_PHRASES,
+        _OPERATIONAL_HARM_PHRASES,
+    )
+    for phrases in phrase_lists:
+        for phrase in phrases:
+            guarded.update(tokenize(phrase))
+    return frozenset(guarded)
+
+
+_GUARDED_ARC_TERM_TOKENS = _guarded_arc_term_tokens()
+
+
+def _arc_fictional_frame_terms(
+    content_rails: "ContentRailsConfig | None",
+) -> frozenset[str]:
+    """Return the arc's admissible fictional-frame vocabulary.
+
+    Terms that fail the guard (multi-word, too short, non-alphabetic, or a
+    token any harm detector keys on — standalone or inside a phrase) are
+    silently dropped: an arc can mark its own game vocabulary as fiction,
+    never weaken the detectors.
+    """
+    if content_rails is None or not content_rails.fictional_frame_terms:
+        return frozenset()
     admissible = set()
     for term in content_rails.fictional_frame_terms:
         normalized_term = normalize_text(term)
         if _ARC_FRAME_TERM_PATTERN.match(normalized_term) and (
-            normalized_term not in guarded
+            normalized_term not in _GUARDED_ARC_TERM_TOKENS
         ):
             admissible.add(normalized_term)
     return frozenset(admissible)
