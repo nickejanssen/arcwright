@@ -214,6 +214,7 @@ class CharacterService:
                 current_beat_id=session.current_beat_id,
                 content_rails=arc_definition.content_rails,
                 authorial_intent=arc_definition.authorial_intent,
+                tone_config=arc_definition.tone_config,
             )
         except KnowledgeConstraintViolation:
             return []
