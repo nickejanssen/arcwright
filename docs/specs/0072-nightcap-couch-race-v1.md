@@ -10,7 +10,7 @@
 
 - Related ADRs: `docs/decisions/0013-nightcap-couch-race-v1-launch-target.md` (charter), `docs/decisions/0010-nightcap-gameplay-pivots-post-playtest.md` (origin), ADR-0003 (web runtime), ADR-0009 (mini-game boundary)
 - Architecture sections: `docs/architecture/03-arc-execution.md`, `04-knowledge-graph.md`, `07-character-behavior.md`, `08-event-system.md`
-- Related specs: 0071 (live-loop AI character dialogue — direct dependency), 0066 (continuity evals), 0069 (visual design system), 0068 (quality bar)
+- Related specs: 0071 `docs/specs/0071-live-loop-ai-character-dialogue.md` (live-loop AI character dialogue — direct dependency for AW-283; introduced by PR #225, not yet on main at time of writing — merge PR #225 before starting AW-283), 0066 (continuity evals), 0069 (visual design system), 0068 (quality bar)
 - PRD sections: `docs/prd/03-scope.md` (amended MVP definition)
 - Story bible: `docs/story-bibles/nightcap-couch-race.md` (canonical experience definition)
 - Design record: `docs/superpowers/specs/2026-07-15-nightcap-couch-race-design.md`

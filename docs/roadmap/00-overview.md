@@ -51,7 +51,7 @@ Risk accepted: production engineering begins before the personalization layer ha
 | M3 | Events, API, persistence, telemetry | #6 events, #8 API + auth, #9 persistence, #10 telemetry, #11 full harness | Full session runs through API; events routed by target audience with no leakage; interrupt/resume restores to nearest beat; 5 telemetry signals logging; batch harness runs 10 headless sessions |
 | M4 | Nightcap experience layer | none (experience layer, PRD-required) | Real humans play end-to-end on real devices; join under 30s; private info never on shared display |
 | M5 | Hardening + proof prerequisites | none (PRD MVP done-criteria) | Adversarial safety playtest complete and blocking issues resolved; per-session gross margin known at each supported human player count; Daily Case second arc schema designed with post-M6 executable follow-through queued; live knowledge graph inspection surface live; the continuity and coherence eval suite (AW-272) runs against a synthetic session batch and reports knowledge-leak rate and contradiction count |
-| M6 | First qualifying sessions | none (the actual H1 proof) | 5+ completed sessions with outside groups; replay enthusiasm; personalization perception in 2+; run at 4-6 players |
+| M6 | First qualifying sessions | none (the actual H1 proof) | 5+ completed sessions with outside groups; replay enthusiasm; personalization perception in 2+; sessions run across the supported 2-8 player range (floor of two per ADR-0013) |
 
 ## Sequencing Note
 
