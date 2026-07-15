@@ -99,6 +99,15 @@ class ContentRailsConfig(BaseModel):
     minimum policy and the L1/L2 layers are engine-owned and cannot be
     relaxed from here.
     """
+    fictional_frame_terms: List[str] = Field(default_factory=list)
+    """Game vocabulary L1 may treat as fictional-frame markers (issue #219).
+
+    Lets an arc register its own title and world words (e.g. a game name)
+    so in-fiction player input is not mistaken for real-world harm
+    facilitation. L1 admits only guarded single alphabetic tokens and never
+    words its harm detectors key on, so this cannot weaken the detectors —
+    see engine/safety/l1.py.
+    """
 
 
 class KnowledgeRuleSet(BaseModel):

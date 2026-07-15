@@ -135,7 +135,7 @@ async def generate(
     # If any hard stop fires, we log a safety_hard_stop event and return a
     # neutral bridge.  No model is ever called when L1 fires.
     # -----------------------------------------------------------------------
-    hard_stop = evaluate_l1_hard_stops(messages)
+    hard_stop = evaluate_l1_hard_stops(messages, content_rails)
     if hard_stop is not None:
         event = Event(
             session_id=session_id,
