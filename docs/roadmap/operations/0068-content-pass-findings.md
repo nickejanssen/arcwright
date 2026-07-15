@@ -1,8 +1,9 @@
 # Content Pass Findings — 0068 §3 Standards vs. Current Generation Pipelines
 
-> Current version: v1.0
+> Current version: v1.1
 > Last updated: 2026-07-14
-> Status: Findings recorded; proposed actions await founder approval (prompt
+> Status: Findings recorded; F2–F4 CONFIRMED by synthetic execution (see
+> Verification Run below); proposed actions await founder approval (prompt
 > changes are a Hard Rules item)
 > Canonical path: docs/roadmap/operations/0068-content-pass-findings.md
 > Reviewed against: docs/specs/0068-game-experience-quality-bar.md §1–§4
@@ -70,18 +71,46 @@ via mini-games, but no clue-content prompt assembly was found. §3.2
 yet.
 *Proposed action:* same verification path as F2/F3 at the dry run.
 
-## Recommended sequence
+## Verification Run (2026-07-14) — F2–F4 CONFIRMED
 
-1. Run the synthetic dry run (`make rehearsal` + AW-255 loop) and capture
-   what text actually renders at: session start (identity), beat turns
-   (narrator), clue release. This turns F2–F4 from "not found" into
-   verified facts in one session. No approval needed.
+A full seeded session was driven through the AW-255 REST-backed loop
+(4 players, all eight beats, clean completion). Result: **24 events, all
+structural** — `beat_transition` ×7, `tension_update`, `pacing_intervention`
+(+outcome), `intent_fidelity_summary` ×8, `session_completed`.
+`content_text` was empty on every event. No narrator dialogue, no identity
+content, no clue content, no victim designation text, no killer revelation
+text, no reveal sequence text exists in the canonical session loop. (The
+batch harness patches `litellm.acompletion` to *raise on any call* and the
+session still completes — the loop is narrative-free by construction.)
+
+Caveats: mini-games carry authored content packages (Crime Scene Smash,
+Evidence Locker, TMST) and were not exercised in this run; the
+knowledge-constrained dialogue pipeline (AW-212) exists but only fires for
+AI-controlled characters, which v1 sessions (4+ humans) may never trigger
+outside player-drop takeover.
+
+**Implication for Rehearsal 1:** as of today, real players would experience
+beat labels, mini-games, and accusation mechanics with no story text at
+all. The narrative content layer — the entire subject of 0068 §2–§4 — is
+unbuilt in the live path, not merely unpolished.
+
+## Recommended sequence (updated post-verification)
+
+1. **Founder decision: scope the narrative content pipeline into M5 before
+   Rehearsal 1.** Minimum viable narrative for a first rehearsal, in
+   priority order: (a) narrator beat-transition lines (the `seq-beat-turn`
+   text — narrator generation task wired to `behavior_triggers`); (b)
+   killer revelation private text (0068 §4 bar); (c) character identity
+   delivery at session start (§3.1); (d) clue release text at mini-game
+   completion (§3.2). Each becomes a numbered task (next free AW numbers).
+   This is a roadmap change and needs the normal approval record.
 2. Founder approves the F1 `[VOICE]` block change (Hard Rules: prompt
-   change). Implement with unit tests asserting the block renders from arc
-   config and sits in the stable prompt region.
-3. Scope any confirmed F2–F4 gaps as numbered M5 tasks (next free AW
-   numbers; no reuse) before Rehearsal 1 if narrator beat lines are absent,
-   otherwise before Rehearsal 2.
+   change) so the pipeline in (1) speaks in the Nightcap voice from its
+   first line. Implement with unit tests asserting the block renders from
+   arc config and sits in the stable prompt region.
+3. Re-run the event-dump verification after (1) lands; the acceptance check
+   is narrative `content_text` present at beat turns, revelation, identity
+   delivery, and clue release in the same synthetic loop.
 
 ## Non-actions
 
