@@ -145,9 +145,11 @@
         "M5-B",
         "M5-C",
         "M5-D",
+        "M5-E",
         "M5-F",
         "M5-G",
-        "M5-H"
+        "M5-H",
+        "M5-I"
       ],
       "github": {
         "milestone_number": 5,
@@ -624,6 +626,25 @@
       "github": {
         "issue_number": 201,
         "url": "https://github.com/nickejanssen/arcwright/issues/201"
+      }
+    },
+    {
+      "id": "M5-I",
+      "milestone": "M5",
+      "title": "Nightcap Couch Race Arc And Interrogation Layer",
+      "status": "planned",
+      "path": "docs/roadmap/epics/M5-I-nightcap-couch-race-arc-and-interrogation.md",
+      "tasks": [
+        "AW-281",
+        "AW-282",
+        "AW-283",
+        "AW-284",
+        "AW-285",
+        "AW-286"
+      ],
+      "github": {
+        "issue_number": 234,
+        "url": "https://github.com/nickejanssen/arcwright/issues/234"
       }
     }
   ],
@@ -1963,6 +1984,118 @@
         "url": "https://github.com/nickejanssen/arcwright/issues/220"
       },
       "epic_id": "M5-C"
+    },
+    {
+      "id": "AW-281",
+      "title": "Couch Race Arc Definition And Case Generation",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "L",
+      "depends_on": [
+        "AW-203",
+        "AW-204",
+        "AW-205",
+        "AW-253"
+      ],
+      "path": "docs/roadmap/tasks/AW-281-couch-race-arc-definition-and-case-generation.md",
+      "github": {
+        "issue_number": 235,
+        "url": "https://github.com/nickejanssen/arcwright/issues/235"
+      },
+      "epic_id": "M5-I"
+    },
+    {
+      "id": "AW-282",
+      "title": "Interrogation Round Loop And Question Intents",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "M",
+      "depends_on": [
+        "AW-281",
+        "AW-215",
+        "AW-216"
+      ],
+      "path": "docs/roadmap/tasks/AW-282-interrogation-round-loop-and-question-intents.md",
+      "github": {
+        "issue_number": 236,
+        "url": "https://github.com/nickejanssen/arcwright/issues/236"
+      },
+      "epic_id": "M5-I"
+    },
+    {
+      "id": "AW-283",
+      "title": "Suspect Answer Generation And Contradiction Detection",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "L",
+      "depends_on": [
+        "AW-281",
+        "AW-282",
+        "AW-212",
+        "AW-272"
+      ],
+      "path": "docs/roadmap/tasks/AW-283-suspect-answer-generation-and-contradiction-detection.md",
+      "github": {
+        "issue_number": 237,
+        "url": "https://github.com/nickejanssen/arcwright/issues/237"
+      },
+      "epic_id": "M5-I"
+    },
+    {
+      "id": "AW-284",
+      "title": "Race Scoring And Accusation State",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "M",
+      "depends_on": [
+        "AW-281",
+        "AW-283"
+      ],
+      "path": "docs/roadmap/tasks/AW-284-race-scoring-and-accusation-state.md",
+      "github": {
+        "issue_number": 238,
+        "url": "https://github.com/nickejanssen/arcwright/issues/238"
+      },
+      "epic_id": "M5-I"
+    },
+    {
+      "id": "AW-285",
+      "title": "Couch Race TV And Phone Rendering",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "L",
+      "depends_on": [
+        "AW-282",
+        "AW-283",
+        "AW-284",
+        "AW-253"
+      ],
+      "path": "docs/roadmap/tasks/AW-285-couch-race-tv-and-phone-rendering.md",
+      "github": {
+        "issue_number": 239,
+        "url": "https://github.com/nickejanssen/arcwright/issues/239"
+      },
+      "epic_id": "M5-I"
+    },
+    {
+      "id": "AW-286",
+      "title": "Couch Race Rehearsal Slice And Rehearsal 1 Retarget",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "M",
+      "depends_on": [
+        "AW-281",
+        "AW-282",
+        "AW-283",
+        "AW-284",
+        "AW-285"
+      ],
+      "path": "docs/roadmap/tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md",
+      "github": {
+        "issue_number": 240,
+        "url": "https://github.com/nickejanssen/arcwright/issues/240"
+      },
+      "epic_id": "M5-I"
     }
   ],
   "superseded_sources": [

@@ -1,9 +1,11 @@
-# Nightcap Murder Mystery Story Bible
+# Nightcap Murder Mystery Story Bible (Imposter Variant)
 
-> Current version: v1.1
-> Last updated: 2026-06-13
-> Status: Current
+> Current version: v1.2
+> Last updated: 2026-07-15
+> Status: Current — approved future variant, not the v1 launch target
 > Canonical path: docs/story-bibles/nightcap-murder-mystery.md
+
+**Repositioning note (2026-07-15):** Per ADR-0013 and D-071, the Nightcap v1 launch target is now the Couch Race experience defined in `docs/story-bibles/nightcap-couch-race.md` (all players are investigators racing to solve a murder committed by an AI suspect). The killer-among-players experience described in this bible is renamed the **Imposter Variant** and remains approved future scope on the same platform infrastructure — setting architecture, narrator, clue formats, mini-games, and web experience layer are shared. Sections 2 (setting), 5 (narrator), 7 (clue architecture), 10 (world rules), and 11 (content territory) are inherited by the Couch Race bible by reference. Sequencing for this variant is a post-proof roadmap decision.
 
 **Status:** Current v1.1 with Chat 9 schema, enterprise adaptation notes, and approved Nightcap Continuity v1.1 fast-follow scope applied | **Date:** 2026-06-13 | **Chat:** Chat 7 + Chat 9 integration + product review
 
