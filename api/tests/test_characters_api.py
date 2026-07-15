@@ -385,3 +385,121 @@ class TestLiveProgression:
             "tension_update": 1,
             "pacing_intervention": 1,
         }
+
+
+class TestAddAiCharacter:
+    def test_host_seats_ai_character_without_player_count_change(
+        self,
+        host_session: tuple[UUID, UUID, UUID, UUID],
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        session_id, *_ = host_session
+        for c in _client_for_role("host", session_id, uuid4(), db_factory):
+            resp = c.post(
+                f"/v1/sessions/{session_id}/characters/ai",
+                json={"behavior_profile": {"goals": ["Mislead gently"]}},
+            )
+        assert resp.status_code == 201
+        body = resp.json()
+        assert body["is_ai_controlled"] is True
+
+        async def _player_count() -> int:
+            async with db_factory() as db:
+                row = await db.get(OrmSession, session_id)
+                assert row is not None
+                return row.player_count
+
+        import asyncio
+
+        assert asyncio.get_event_loop().run_until_complete(_player_count()) == 2
+
+    def test_unknown_session_returns_404(
+        self,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        unknown = uuid4()
+        for c in _client_for_role("host", unknown, uuid4(), db_factory):
+            resp = c.post(
+                f"/v1/sessions/{unknown}/characters/ai",
+                json={},
+            )
+        assert resp.status_code == 404
+
+
+class TestDialogueInputPublishesAiResponse:
+    def test_dialogue_input_publishes_generated_response_on_the_bus(
+        self,
+        host_session: tuple[UUID, UUID, UUID, UUID],
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        from unittest.mock import AsyncMock, MagicMock
+
+        from engine.characters.dialogue import CharacterDialogueEvent
+        from engine.events.models import EventCategory
+
+        session_id, player_a, char_a, _ = host_session
+        ai_event = CharacterDialogueEvent(
+            event_id=uuid4(),
+            session_id=session_id,
+            actor_character_id=uuid4(),
+            event_type="dialogue",
+            target_audience="all",
+            target_player_id=None,
+            content="The parlor, as I said.",
+            payload={},
+        )
+        bus = MagicMock()
+        bus.publish = AsyncMock()
+
+        with (
+            patch.object(
+                type(_character_service_ref()),
+                "generate_ai_responses",
+                new_callable=AsyncMock,
+                return_value=[ai_event],
+            ) as mock_generate,
+            patch(
+                "api.routers.characters._get_or_create_session_state",
+                return_value=(bus, MagicMock()),
+            ),
+        ):
+            for c in _client_for_role("player", session_id, player_a, db_factory):
+                resp = c.post(
+                    f"/v1/sessions/{session_id}/characters/{char_a}/input",
+                    json={"kind": "dialogue", "content": "Where were you?"},
+                )
+
+        assert resp.status_code == 201
+        mock_generate.assert_awaited_once()
+        bus.publish.assert_awaited_once()
+        published = bus.publish.await_args.args[0]
+        assert published.category is EventCategory.character_dialogue
+        assert published.payload["text"] == "The parlor, as I said."
+
+    def test_action_input_triggers_no_ai_response(
+        self,
+        host_session: tuple[UUID, UUID, UUID, UUID],
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        from unittest.mock import AsyncMock
+
+        session_id, player_a, char_a, _ = host_session
+        with patch.object(
+            type(_character_service_ref()),
+            "generate_ai_responses",
+            new_callable=AsyncMock,
+        ) as mock_generate:
+            for c in _client_for_role("player", session_id, player_a, db_factory):
+                resp = c.post(
+                    f"/v1/sessions/{session_id}/characters/{char_a}/input",
+                    json={"kind": "action", "content": "Inspect the bar cart."},
+                )
+
+        assert resp.status_code == 201
+        mock_generate.assert_not_awaited()
+
+
+def _character_service_ref():
+    from engine.characters.service import _character_service
+
+    return _character_service

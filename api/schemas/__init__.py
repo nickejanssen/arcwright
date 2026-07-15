@@ -88,6 +88,16 @@ class PlayerInputResponse(BaseModel):
     submitted_at: datetime
 
 
+class AddAiCharacterRequest(BaseModel):
+    behavior_profile: Optional[dict[str, Any]] = None
+
+
+class AddAiCharacterResponse(BaseModel):
+    participant_id: UUID
+    character_id: UUID
+    is_ai_controlled: bool
+
+
 class KnowledgeAssertRequest(BaseModel):
     character_id: UUID
     fact_type: str = Field(min_length=1, max_length=64)

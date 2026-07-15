@@ -9,21 +9,26 @@ restarts. Player-submitted ``action`` / ``dialogue`` inputs are still
 held in-memory — that surface has no AC2 resume requirement and a
 dedicated events-table representation is the AW-222 telemetry scope.
 
-LLM dispatch is intentionally out of scope here — this layer captures
-the authored, deterministic side of the unified character model.
-Generation is called separately by the arc execution layer.
+This layer captures the authored, deterministic side of the unified
+character model first. Since spec 0071 (D-072) it also owns the live-loop
+AI response dispatch: after an input is recorded and arc state has
+advanced deterministically, ``generate_ai_responses`` composes at most one
+AI character reply from the resolved state.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Literal
+from typing import TYPE_CHECKING, Literal
 from uuid import UUID, uuid4
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from engine.session.service import SessionService, _session_service
+
+if TYPE_CHECKING:
+    from engine.characters.dialogue import CharacterDialogueEvent
 
 
 class CharacterNotFoundError(Exception):
@@ -148,6 +153,71 @@ class CharacterService:
     def get_inputs(self, session_id: UUID) -> list[PlayerInputRecord]:
         """Return every submitted input for ``session_id`` in arrival order."""
         return list(self._inputs.get(session_id, []))
+
+    async def generate_ai_responses(
+        self,
+        db: AsyncSession,
+        session_id: UUID,
+        *,
+        speaking_character_id: UUID,
+        content: str,
+    ) -> list["CharacterDialogueEvent"]:
+        """Generate at most one AI character response to a dialogue input.
+
+        Live-loop wiring per spec 0071 (D-072). Deterministic-first: the
+        caller has already recorded the input and advanced arc state; this
+        composes from resolved state only. Returns [] with zero generation
+        calls when the session is not active, the arc is unregistered, or
+        no AI-controlled participant other than the speaker exists.
+
+        A KnowledgeConstraintViolation stays engine-internal: the guard did
+        its job and no event is returned. Safety-blocked generations return
+        the existing neutral-bridge event so the experience is preserved.
+        """
+        from engine.arc.registry import load_arc_definition
+        from engine.characters.dialogue import (
+            KnowledgeConstraintViolation,
+            generate_character_dialogue,
+        )
+        from engine.characters.initiative import select_initiative_target
+        from engine.session.models import SessionStatus
+
+        session = await self.sessions.get_session(db, session_id)
+        if session is None or session.status is not SessionStatus.active:
+            return []
+        arc_definition = load_arc_definition(session.arc_id)
+        if arc_definition is None:
+            return []
+
+        participants = await self.sessions.list_participants(db, session_id)
+        ai_character_ids = [
+            p.character_id
+            for p in participants
+            if p.is_ai_controlled and p.character_id != speaking_character_id
+        ]
+        responder_id = select_initiative_target(
+            initiating_character_id=speaking_character_id,
+            eligible_target_ids=ai_character_ids,
+            beat_character_emphasis=None,
+            relationships=[],
+        )
+        if responder_id is None:
+            return []
+
+        try:
+            event = await generate_character_dialogue(
+                db,
+                session_id=session_id,
+                character_id=responder_id,
+                player_input=content,
+                quality_tier=session.quality_tier.value,
+                current_beat_id=session.current_beat_id,
+                content_rails=arc_definition.content_rails,
+                authorial_intent=arc_definition.authorial_intent,
+            )
+        except KnowledgeConstraintViolation:
+            return []
+        return [event]
 
 
 _character_service = CharacterService(sessions=_session_service)

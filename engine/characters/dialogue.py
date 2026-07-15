@@ -27,6 +27,7 @@ from engine.safety import (
 
 if TYPE_CHECKING:
     from engine.arc.models import AuthorialIntent, ContentRailsConfig
+    from engine.events.models import ContentEvent
 
 
 @dataclass(frozen=True)
@@ -43,6 +44,45 @@ class CharacterDialogueEvent:
 
 class KnowledgeConstraintViolation(ValueError):
     """Raised when generated dialogue contains a fact the character does not know."""
+
+
+def to_content_event(event: CharacterDialogueEvent) -> "ContentEvent":
+    """Convert a dialogue result into a bus-publishable ContentEvent.
+
+    Used by the live loop (spec 0071) to deliver AI character responses on
+    the session event stream. Blocked results ("dialogue_blocked") convert
+    the same way: their content is the neutral bridge text, so players see
+    a smooth redirect rather than a gap.
+    """
+    from datetime import datetime, timezone
+
+    from engine.events.models import (
+        AudienceTarget,
+        ContentEvent,
+        EventCategory,
+    )
+
+    target_audience = AudienceTarget(event.target_audience)
+    return ContentEvent(
+        event_id=event.event_id,
+        session_id=event.session_id,
+        timestamp=datetime.now(tz=timezone.utc),
+        category=EventCategory.character_dialogue,
+        event_type=event.event_type,
+        actor_id=event.actor_character_id,
+        target_audience=target_audience,
+        target_player_id=(
+            event.target_player_id
+            if target_audience is AudienceTarget.specific_player
+            else None
+        ),
+        payload={
+            "text": event.content,
+            "character_id": (
+                str(event.actor_character_id) if event.actor_character_id else None
+            ),
+        },
+    )
 
 
 async def generate_character_dialogue(
