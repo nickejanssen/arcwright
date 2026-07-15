@@ -435,6 +435,7 @@ class TestDialogueInputPublishesAiResponse:
         from unittest.mock import AsyncMock, MagicMock
 
         from engine.characters.dialogue import CharacterDialogueEvent
+        from engine.characters.service import CharacterService
         from engine.events.models import EventCategory
 
         session_id, player_a, char_a, _ = host_session
@@ -453,7 +454,7 @@ class TestDialogueInputPublishesAiResponse:
 
         with (
             patch.object(
-                type(_character_service_ref()),
+                CharacterService,
                 "generate_ai_responses",
                 new_callable=AsyncMock,
                 return_value=[ai_event],
@@ -472,6 +473,7 @@ class TestDialogueInputPublishesAiResponse:
         assert resp.status_code == 201
         mock_generate.assert_awaited_once()
         bus.publish.assert_awaited_once()
+        assert bus.publish.await_args is not None
         published = bus.publish.await_args.args[0]
         assert published.category is EventCategory.character_dialogue
         assert published.payload["text"] == "The parlor, as I said."
@@ -483,9 +485,11 @@ class TestDialogueInputPublishesAiResponse:
     ) -> None:
         from unittest.mock import AsyncMock
 
+        from engine.characters.service import CharacterService
+
         session_id, player_a, char_a, _ = host_session
         with patch.object(
-            type(_character_service_ref()),
+            CharacterService,
             "generate_ai_responses",
             new_callable=AsyncMock,
         ) as mock_generate:
@@ -497,9 +501,3 @@ class TestDialogueInputPublishesAiResponse:
 
         assert resp.status_code == 201
         mock_generate.assert_not_awaited()
-
-
-def _character_service_ref():
-    from engine.characters.service import _character_service
-
-    return _character_service
