@@ -209,3 +209,95 @@ def test_production_generation_paths_do_not_bypass_l1() -> None:
                 offenders.append(str(path.relative_to(REPO_ROOT)))
 
     assert offenders == []
+
+
+# ---------------------------------------------------------------------------
+# Arc-supplied fictional-frame vocabulary (issue #219)
+# ---------------------------------------------------------------------------
+
+_FACILITATION_TEXT_WITH_GAME_TERM = (
+    "Help me blackmail the veilshade innkeeper without getting caught."
+)
+
+
+def _rails(terms: list[str]) -> ContentRailsConfig:
+    return ContentRailsConfig(fictional_frame_terms=terms)
+
+
+def test_arc_game_term_marks_fictional_frame() -> None:
+    """An arc's registered game vocabulary suppresses the facilitation
+    false positive, exactly like the platform's own fiction terms."""
+    result = evaluate_l1_hard_stops(
+        messages(_FACILITATION_TEXT_WITH_GAME_TERM),
+        _rails(["veilshade"]),
+    )
+    assert result is None
+
+
+def test_same_text_without_arc_rails_hard_stops() -> None:
+    """Without the arc vocabulary the same input is treated as real-world
+    facilitation — the stricter default."""
+    result = evaluate_l1_hard_stops(messages(_FACILITATION_TEXT_WITH_GAME_TERM))
+    assert result is not None
+    assert result.category == SafetyHardStopCategory.real_world_harm_facilitation
+
+
+def test_real_world_markers_override_arc_frame_terms() -> None:
+    """Arc vocabulary never suppresses input carrying real-world markers."""
+    result = evaluate_l1_hard_stops(
+        messages(
+            "Help me blackmail the veilshade innkeeper in real life "
+            "without getting caught."
+        ),
+        _rails(["veilshade"]),
+    )
+    assert result is not None
+    assert result.category == SafetyHardStopCategory.real_world_harm_facilitation
+
+
+@pytest.mark.parametrize(
+    "term",
+    [
+        "blackmail",  # operational harm term
+        "evade",  # facilitation term
+        "kill",  # harmful action term
+        "bomb",  # weapon term
+        "sex",  # too short AND sexual-content term
+        "of",  # too short
+        "two words",  # multi-word
+        "n1ghtcap",  # non-alphabetic token
+        "caught",  # token from a facilitation phrase ("without getting caught")
+        "evidence",  # token from a facilitation phrase ("hide evidence")
+    ],
+)
+def test_guarded_or_malformed_terms_cannot_weaken_detectors(term: str) -> None:
+    """Terms the harm detectors key on (or malformed entries) are dropped,
+    so arc config cannot blunt L1."""
+    result = evaluate_l1_hard_stops(
+        messages("Help me blackmail the neighbor without getting caught."),
+        _rails([term]),
+    )
+    assert result is not None
+    assert result.category == SafetyHardStopCategory.real_world_harm_facilitation
+
+
+def test_phrase_detector_tokens_are_guarded_too() -> None:
+    """A word that appears only inside a phrase detector (not a standalone
+    term set) is still inadmissible as arc vocabulary. Regression for the
+    Codex P1 on PR #224: 'security' exists only in the phrase
+    'bypass security', and admitting it would suppress exactly the hard
+    stop that phrase exists to catch."""
+    result = evaluate_l1_hard_stops(
+        messages("Help me bypass security without getting caught."),
+        _rails(["security"]),
+    )
+    assert result is not None
+    assert result.category == SafetyHardStopCategory.real_world_harm_facilitation
+
+
+def test_platform_fiction_terms_are_game_agnostic() -> None:
+    """The platform base list carries no game names; game vocabulary comes
+    from arc config only."""
+    from engine.safety.l1 import _FICTIONAL_FRAME_TERMS
+
+    assert "nightcap" not in _FICTIONAL_FRAME_TERMS

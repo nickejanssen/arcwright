@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any
 from pydantic import BaseModel, ConfigDict
 
 if TYPE_CHECKING:
+    from engine.arc.models import ContentRailsConfig
     from engine.routing.router import RouteResult
 
 NEUTRAL_L1_BRIDGE = "The narrator redirects the moment back to the story."
@@ -151,7 +152,6 @@ _FICTIONAL_FRAME_TERMS = frozenset(
         "character",
         "villain",
         "suspect",
-        "nightcap",
         "arc",
         "scene",
     }
@@ -161,6 +161,13 @@ _FICTIONAL_FRAME_PHRASES = (
     "in story",
     "murder mystery",
 )
+
+# Arc-supplied fictional-frame vocabulary (content_rails.fictional_frame_terms)
+# can only be single alphabetic tokens of four or more characters, and never
+# a word the harm detectors key on. This keeps the arc's ability limited to
+# marking its own game vocabulary as fiction; it cannot blunt the detectors
+# themselves. Safety stays engine-enforced per AGENTS.md.
+_ARC_FRAME_TERM_PATTERN = re.compile(r"^[a-z]{4,}$")
 
 _NAME_SHAPED_PHRASE = re.compile(r"\b[A-Z][a-z]+ [A-Z][a-z]+\b")
 _LOWERCASE_NAMED_PERSON_PHRASE = re.compile(r"\bnamed\s+[a-z][a-z]+ [a-z][a-z]+\b")
@@ -216,6 +223,7 @@ def _extract_text_block(value: Any) -> list[str]:
 
 def evaluate_l1_hard_stops(
     messages: list[dict[str, Any]],
+    content_rails: "ContentRailsConfig | None" = None,
 ) -> SafetyHardStopResult | None:
     raw_text = extract_message_text(messages)
     normalized = normalize_text(raw_text)
@@ -227,9 +235,69 @@ def evaluate_l1_hard_stops(
         return _result(SafetyHardStopCategory.real_person_harm_targeting)
     if _matches_real_world_violence_instructions(normalized, tokens):
         return _result(SafetyHardStopCategory.real_world_violence_instructions)
-    if _matches_real_world_harm_facilitation(normalized, tokens):
+    if _matches_real_world_harm_facilitation(
+        normalized, tokens, arc_frame_terms=_arc_fictional_frame_terms(content_rails)
+    ):
         return _result(SafetyHardStopCategory.real_world_harm_facilitation)
     return None
+
+
+def _guarded_arc_term_tokens() -> frozenset[str]:
+    """Every token any L1 detector keys on, from term sets and phrase lists.
+
+    Phrase tokens matter as much as standalone terms: "security" appears
+    only inside the phrase "bypass security", but admitting it as an arc
+    fictional-frame term would let arc config suppress exactly the hard
+    stop that phrase exists to catch.
+    """
+    guarded = set(
+        _HARMFUL_ACTION_TERMS
+        | _OPERATIONAL_HARM_TERMS
+        | _FACILITATION_TERMS
+        | _INSTRUCTION_TERMS
+        | _WEAPON_ATTACK_TERMS
+        | _SEXUAL_CONTENT_TERMS
+        | _UNDER_18_TERMS
+    )
+    phrase_lists: tuple[tuple[str, ...], ...] = (
+        _UNDER_18_PHRASES,
+        _CSAM_PHRASES,
+        _REAL_PERSON_PHRASES,
+        _REAL_WORLD_MARKERS,
+        _INSTRUCTION_PHRASES,
+        _WEAPON_ATTACK_PHRASES,
+        _FACILITATION_PHRASES,
+        _OPERATIONAL_HARM_PHRASES,
+    )
+    for phrases in phrase_lists:
+        for phrase in phrases:
+            guarded.update(tokenize(phrase))
+    return frozenset(guarded)
+
+
+_GUARDED_ARC_TERM_TOKENS = _guarded_arc_term_tokens()
+
+
+def _arc_fictional_frame_terms(
+    content_rails: "ContentRailsConfig | None",
+) -> frozenset[str]:
+    """Return the arc's admissible fictional-frame vocabulary.
+
+    Terms that fail the guard (multi-word, too short, non-alphabetic, or a
+    token any harm detector keys on — standalone or inside a phrase) are
+    silently dropped: an arc can mark its own game vocabulary as fiction,
+    never weaken the detectors.
+    """
+    if content_rails is None or not content_rails.fictional_frame_terms:
+        return frozenset()
+    admissible = set()
+    for term in content_rails.fictional_frame_terms:
+        normalized_term = normalize_text(term)
+        if _ARC_FRAME_TERM_PATTERN.match(normalized_term) and (
+            normalized_term not in _GUARDED_ARC_TERM_TOKENS
+        ):
+            admissible.add(normalized_term)
+    return frozenset(admissible)
 
 
 def build_safety_hard_stop_payload(result: SafetyHardStopResult) -> dict[str, Any]:
@@ -319,6 +387,8 @@ def _matches_real_world_violence_instructions(
 def _matches_real_world_harm_facilitation(
     normalized: str,
     tokens: list[str],
+    *,
+    arc_frame_terms: frozenset[str] = frozenset(),
 ) -> bool:
     facilitation_indexes = _indicator_indexes(
         tokens,
@@ -336,7 +406,7 @@ def _matches_real_world_harm_facilitation(
         return True
     fictional_indexes = _indicator_indexes(
         tokens,
-        terms=_FICTIONAL_FRAME_TERMS,
+        terms=_FICTIONAL_FRAME_TERMS | arc_frame_terms,
         phrases=_FICTIONAL_FRAME_PHRASES,
     )
     return not _indexes_near(harm_indexes, fictional_indexes)

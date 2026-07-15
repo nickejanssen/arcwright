@@ -374,6 +374,9 @@
       "dark_motives"
     ],
     "age_floor": 18,
+    "fictional_frame_terms": [
+      "nightcap"
+    ],
     "extra_prohibitions": [
       "Do not graphically depict the murder itself or describe violence in explicit physical detail.",
       "Do not include sexual content between any characters.",

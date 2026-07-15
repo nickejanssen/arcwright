@@ -378,9 +378,9 @@ async def test_safety_pipeline_runs_l1_then_l2_before_main_routing(
     real_l1 = safety_l1.evaluate_l1_hard_stops
     real_l2_messages = safety_l2.build_l2_classification_messages
 
-    def spy_l1(messages):  # type: ignore[no-untyped-def]
+    def spy_l1(messages, content_rails=None):  # type: ignore[no-untyped-def]
         order.append("l1")
-        return real_l1(messages)
+        return real_l1(messages, content_rails)
 
     def spy_l2_messages(messages, safety_policy_context=None):  # type: ignore[no-untyped-def]
         order.append("l2_messages")
