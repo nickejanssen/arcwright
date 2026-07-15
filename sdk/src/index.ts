@@ -193,11 +193,14 @@ export class ArcwrightClient {
         headers: { Authorization: `Bearer ${this._playerToken}` },
       });
     } catch {
-      return;
+      // Network failure before the stream even opened counts as an
+      // unexpected end exactly like a mid-stream drop: retry once rather
+      // than leaving the player's screen silently frozen.
+      return this._reconnectOnce(callback, isReconnect);
     }
 
     if (!res.ok || !res.body) {
-      return;
+      return this._reconnectOnce(callback, isReconnect);
     }
 
     this._reader = res.body.getReader();
@@ -232,7 +235,16 @@ export class ArcwrightClient {
       this._reader = null;
     }
 
-    // Single reconnect attempt on unexpected stream end.
+    return this._reconnectOnce(callback, isReconnect);
+  }
+
+  /** Single reconnect attempt on unexpected stream end, whether that end
+   * came from a fetch failure, a non-OK response, or the stream closing
+   * mid-session. */
+  private async _reconnectOnce(
+    callback: (event: TypedContentEvent) => void,
+    isReconnect: boolean,
+  ): Promise<void> {
     if (this._connected && !isReconnect) {
       await this._streamEvents(callback, true);
     }
