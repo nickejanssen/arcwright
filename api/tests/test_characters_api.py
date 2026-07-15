@@ -501,3 +501,30 @@ class TestDialogueInputPublishesAiResponse:
 
         assert resp.status_code == 201
         mock_generate.assert_not_awaited()
+
+    def test_ai_failure_does_not_fail_the_player_input(
+        self,
+        host_session: tuple[UUID, UUID, UUID, UUID],
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        """AI publication is best-effort: a provider/routing failure must
+        never turn a valid dialogue submission into a 500."""
+        from unittest.mock import AsyncMock
+
+        from engine.characters.service import CharacterService
+
+        session_id, player_a, char_a, _ = host_session
+        with patch.object(
+            CharacterService,
+            "generate_ai_responses",
+            new_callable=AsyncMock,
+            side_effect=RuntimeError("provider unavailable"),
+        ) as mock_generate:
+            for c in _client_for_role("player", session_id, player_a, db_factory):
+                resp = c.post(
+                    f"/v1/sessions/{session_id}/characters/{char_a}/input",
+                    json={"kind": "dialogue", "content": "Where were you?"},
+                )
+
+        assert resp.status_code == 201
+        mock_generate.assert_awaited_once()

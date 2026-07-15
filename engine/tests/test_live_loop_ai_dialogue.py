@@ -159,6 +159,32 @@ class TestAddAiCharacter:
         with pytest.raises(SessionStateError):
             await sessions.add_ai_character(db, row.session_id)
 
+    @pytest.mark.asyncio
+    async def test_ai_seats_respect_session_capacity(self, db: AsyncSession) -> None:
+        """AI seats count toward the seat envelope even though they do not
+        increment player_count (spec 0071 capacity requirement)."""
+        from engine.session.service import SessionCapacityError
+
+        sessions = SessionService()
+        row = await _make_session_row(db)
+        await sessions.add_ai_character(db, row.session_id, max_seats=2)
+        await sessions.add_ai_character(db, row.session_id, max_seats=2)
+
+        with pytest.raises(SessionCapacityError):
+            await sessions.add_ai_character(db, row.session_id, max_seats=2)
+
+    @pytest.mark.asyncio
+    async def test_human_seats_count_toward_ai_capacity(self, db: AsyncSession) -> None:
+        sessions = SessionService()
+        row = await _make_session_row(db)
+        await _seat_character(db, row.session_id, is_ai_controlled=False)
+        await _seat_character(db, row.session_id, is_ai_controlled=False)
+
+        from engine.session.service import SessionCapacityError
+
+        with pytest.raises(SessionCapacityError):
+            await sessions.add_ai_character(db, row.session_id, max_seats=2)
+
 
 # ---------------------------------------------------------------------------
 # Live-loop response generation

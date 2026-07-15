@@ -13,6 +13,7 @@ Endpoint summary (base path /v1/sessions/{session_id}/characters):
 
 from __future__ import annotations
 
+import logging
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
@@ -43,6 +44,8 @@ from engine.session.service import (
 )
 
 router = APIRouter(prefix="/sessions", tags=["characters"])
+
+logger = logging.getLogger(__name__)
 
 _PLAYER_INPUT_ROLE = "player"
 
@@ -153,16 +156,25 @@ async def submit_character_input(
         # Live-loop AI response (spec 0071): at most one AI character reply,
         # generated engine-side after the deterministic advance, delivered
         # on the session event stream like every other content event.
-        responses = await _character_service.generate_ai_responses(
-            db,
-            session_id,
-            speaking_character_id=character_id,
-            content=record.content,
-        )
-        if responses:
-            bus, _registry = _get_or_create_session_state(session_id)
-            for response in responses:
-                await bus.publish(to_content_event(response))
+        # Best-effort: a routing/provider failure must never fail the
+        # player's valid input or roll back the deterministic advance.
+        try:
+            responses = await _character_service.generate_ai_responses(
+                db,
+                session_id,
+                speaking_character_id=character_id,
+                content=record.content,
+            )
+            if responses:
+                bus, _registry = _get_or_create_session_state(session_id)
+                for response in responses:
+                    await bus.publish(to_content_event(response))
+        except Exception:
+            logger.exception(
+                "AI response generation failed for session %s; "
+                "player input was accepted and recorded",
+                session_id,
+            )
     return PlayerInputResponse(
         input_id=record.input_id,
         session_id=record.session_id,
