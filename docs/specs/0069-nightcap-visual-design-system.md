@@ -1,8 +1,9 @@
 # 0069 — Nightcap Visual Design System (UI, Animation, Aesthetic)
 
-> Current version: v1.0
-> Last updated: 2026-07-13
-> Status: Approved (founder, 2026-07-13)
+> Current version: v1.1
+> Last updated: 2026-07-14
+> Status: Approved (founder, 2026-07-13); v1.1 adds §10 state-of-the-art
+> alignment audit and AW-275 follow-up references after Stage A merged (PR #212)
 > Author: Design session 2026-07-12
 > Canonical path: docs/specs/0069-nightcap-visual-design-system.md
 
@@ -303,6 +304,58 @@ already land, B scopes down.
 - Re-run the AW-230 real-device privacy matrix after Stage A (restyle must
   not weaken the private-vs-public visual distinction — it must strengthen
   it via the `--private` framing).
+
+## 10. State-of-the-Art Alignment (audited 2026-07-14, post-Stage-A)
+
+Where this system stands against current design-system best practice, so
+"modern" is a checked list, not a vibe. Reviewed after Stage A merged.
+
+**Adopted and shipped (Stage A):**
+
+- **Two-layer semantic token architecture** (structural base + semantic
+  roles + swappable skins) — the pattern behind Material 3, Radix, and
+  USWDS. Components bind to roles, never to values.
+- **Runtime CSS custom properties + `color-mix()`** for derived tints — no
+  preprocessor, no build step, themable at a single injection point.
+- **Fluid typography** via `clamp()` with per-surface scales and hard
+  minimums (TV 28px / phone 17px floors).
+- **`prefers-reduced-motion`** honored globally; motion tokens centralize
+  every duration/easing.
+- **Self-hosted OFL fonts only**; zero CDN/runtime third-party requests.
+- **≥44px touch targets** in the mini-game kit.
+
+**Adopted, queued (tracked work):**
+
+- **`:focus-visible` + WCAG 2.2 Focus Appearance** — visible glow-token
+  focus rings on all interactive elements. Gap found in this audit;
+  queued as AW-275 (issue #223) alongside the mini-game stage
+  semantic-token fix.
+- **OKLCH color definitions for theme skins (Stage C):** author skin
+  palettes in OKLCH so lightness (and therefore contrast) stays
+  perceptually consistent across skins; sRGB fallbacks unnecessary at
+  2026 browser baseline. Midnight's current hex values are the reference;
+  new skins author in OKLCH from the start.
+- **View Transitions API for the five `seq-*` sequences (Stage B):** use it
+  as progressive enhancement for stage choreography; element-level
+  keyframe fallback where unsupported. Decide per-sequence during Stage B.
+- **`prefers-contrast: more` variant (Stage B):** strengthen hairlines and
+  status borders under high-contrast preference; cheap media query.
+
+**Deliberately not adopted (with reasons):**
+
+- **CSS frameworks / component libraries** (Tailwind, shadcn, etc.): the
+  runtime is a zero-dependency Worker serving string templates; a
+  framework adds build surface without payoff at this component count.
+  Revisit only if the surface count grows past what hand-rolled CSS
+  sustains.
+- **W3C DTCG token JSON as source of truth:** correct the moment a second
+  surface (dashboard, native SDK sample) consumes the same tokens; until
+  then it is indirection. The `design/` module boundary makes the future
+  extraction mechanical.
+- **Container queries:** current layouts don't need them; adopt
+  per-component when one does.
+- **`light-dark()` / theme toggling:** the stage is always dark by design
+  (§1); a light mode would be a different product decision, not a CSS one.
 
 ## Acceptance Criteria
 
