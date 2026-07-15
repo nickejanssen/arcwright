@@ -46,7 +46,9 @@ which is exactly the layer that owns that decision.
 ## Out of Scope
 
 - Engine/schema/API changes; any new `presentation_hints` fields.
-- Audio (post-M6 candidate per 0068 §6).
+- Audio *asset production* (stinger set per 0068 §6 and D-070 — directional
+  scope; this spec's `seq-*` sequences must leave named slots where stingers
+  land: sequence steps accept an optional audio cue ID from day one).
 - Dashboard (`dashboard/`) and SDK styling — developer surfaces keep the
   utilitarian look for now.
 - Illustration/asset production pipeline details (per-theme asset briefs are

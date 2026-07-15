@@ -235,10 +235,13 @@ Principles, so M5-G execution has a target instead of taste-by-committee:
 - **The reveal is the visual centerpiece:** B8 gets the largest share of
   presentation polish in any craft pass, then B2, then B6. Priority order is
   binding when time is short.
-- **Audio (post-M6 candidate, not committed):** a five-stinger set (arrival,
-  body, accusation, wrong-accusation, truth) is the highest-value minimal
-  audio investment if/when audio enters scope. Logged here so M6 evidence
-  can confirm or kill it. `[NOT APPROVED SCOPE]`
+- **Audio (directional scope per D-070):** the story experience is
+  animation + audio + text, never text-only. The five-stinger set (arrival,
+  body, accusation, wrong-accusation, truth) is the minimal audio
+  investment; narrative content events must carry presentation hints
+  (`voice_hint`, `animation_hint`, `lighting_hint`, `pause_before_ms`) from
+  their first implementation so surfaces can stage sound and motion.
+  Execution timing follows D-066 polish tiers (M5-G/M6 window).
 
 ## 7. Fun Instrumentation
 
