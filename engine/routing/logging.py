@@ -86,6 +86,7 @@ async def generate(
     tension_score: float | None = None,
     safety_policy_context: dict[str, Any] | str | None = None,
     content_rails: "ContentRailsConfig | None" = None,
+    arc_id: str | None = None,
 ) -> RouteResult:
     """Route a generation call, enforce all safety layers, and log it.
 
@@ -124,12 +125,29 @@ async def generate(
             policy block.  When None, the platform minimum policy (mirroring
             the four L1 hard-stop categories) is injected as a backstop so
             L3 always runs.
+        arc_id: Optional arc id used to resolve `content_rails` through the
+            arc registry when the caller did not already pre-resolve them.
+            Ignored when `content_rails` is not None (explicit rails always
+            win). This is a fallback chokepoint, not a requirement: callers
+            that already need the full `ArcDefinition` for other reasons
+            (e.g. `authorial_intent`) should keep resolving and passing
+            `content_rails` directly. Its purpose is to make it hard for a
+            *new* call site to forget arc rails and silently fall back to
+            the platform minimum, the gap PR #216 closed for the narrator
+            bridge one call site at a time.
 
     Returns:
         A RouteResult.  If L1 fires, returns the L1 neutral bridge sentinel.
         If L2 blocks, returns the L2 neutral bridge sentinel.  Otherwise,
         returns the main generation result.
     """
+    if content_rails is None and arc_id is not None:
+        from engine.arc.registry import load_arc_definition
+
+        arc_definition = load_arc_definition(arc_id)
+        if arc_definition is not None:
+            content_rails = arc_definition.content_rails
+
     # -----------------------------------------------------------------------
     # L1: Hard stops are deterministic checks with no model call or latency.
     # If any hard stop fires, we log a safety_hard_stop event and return a
