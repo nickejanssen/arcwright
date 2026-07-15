@@ -1,6 +1,6 @@
 # Status
 
-**Proposed**
+**Accepted** — executed via ADR-0013 (July 15, 2026). The founder pulled both pivots forward, combined, as the Nightcap v1 launch target before Rehearsal 1. See `docs/decisions/0013-nightcap-couch-race-v1-launch-target.md` and D-071.
 
 ---
 

@@ -4,7 +4,8 @@ This directory contains canonical game and experience story bibles.
 
 ## Current Bibles
 
-- [Nightcap murder mystery](nightcap-murder-mystery.md)
+- [Nightcap Couch Race](nightcap-couch-race.md) — Nightcap v1 launch target (ADR-0013)
+- [Nightcap murder mystery (Imposter Variant)](nightcap-murder-mystery.md) — approved future variant
 - [Monster RPG](monster-rpg.md)
 - [Daily Case](daily-case.md)
 

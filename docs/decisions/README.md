@@ -46,6 +46,7 @@ When proposing changes:
 - `0010-nightcap-gameplay-pivots-post-playtest.md` - post-playtest gameplay pivots for Nightcap
 - `0011-single-cloudrun-service-at-mvp.md` - AW-269 defers arcwright-worker from initial cloud deploy automation until the inter-service communication mechanism is resolved
 - `0012-authorial-intent-obligations-continuity-evals.md` - adopts authorial intent block, narrative obligations model with reveal-readiness signal, and continuity evals from the dissertation-draft comparison; defers post-generation continuity classifier and host rollback to open questions
+- `0013-nightcap-couch-race-v1-launch-target.md` - Couch Race (competitive-investigator couch game, AI-suspect killer) becomes the Nightcap v1 launch target; killer-among-players becomes the Imposter Variant; interrogation becomes shared platform capability
 
 ## Current Decision Categories
 

@@ -24,6 +24,15 @@ Source-of-truth rule: tasks reference Architecture and PRD sections rather than 
 
 Decomposition policy: Milestone 1 is complete. AW-201 decomposes Milestones 2 through 6 into epics and agent-sized task specs so the path to first qualifying Nightcap playtests is executable. M4 implementation tasks are anchored to the AW-202 Nightcap web experience runtime decision before runtime-specific work begins.
 
+## Couch Race Retarget (July 15, 2026)
+
+Per ADR-0013 and D-071, the Nightcap v1 launch experience is Couch Race (`docs/story-bibles/nightcap-couch-race.md`): all players are investigators racing to solve a murder committed by an AI suspect, 2–8 players, 20–40 minutes, six-beat arc. Consequences for this roadmap:
+
+- Rehearsal 1 retargets to a Couch Race thin slice (AW-286). Historical milestone gates that already closed against the eight-beat arc (M2, M3) are unaffected.
+- Epic [M5-I: Nightcap Couch Race Arc And Interrogation Layer](./epics/M5-I-nightcap-couch-race-arc-and-interrogation.md) carries the new work (AW-281 through AW-286).
+- D-069 narrative tasks (AW-276–AW-280) carry over, aligned to the six-beat arc.
+- The M6 exit gate is unchanged in spirit; qualifying sessions run Couch Race, and the four-player minimum in session composition drops to two per the amended PRD scope.
+
 ## M0 Gate Override
 
 PRD v1.3 Section 9 defined a Wizard-of-Oz manual validation phase before significant production code. That gate has been explicitly overridden by the founder.
