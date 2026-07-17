@@ -933,3 +933,263 @@ async def test_npc_npc_exchange_no_pressure_block_when_speaker_below_threshold(
     assert len(captured_messages) == 1
     system_prompt = captured_messages[0][0]["content"]
     assert "[SOCIAL PRESSURE]" not in system_prompt
+
+
+# ---------------------------------------------------------------------------
+# Voice block (AW-276/D-069): tone_config flows through live initiative paths
+# ---------------------------------------------------------------------------
+
+
+async def test_build_npc_npc_messages_includes_voice_block_when_tone_config_present(
+    session: AsyncSession,
+) -> None:
+    fixture = await _make_npc_pair_fixture(session)
+    butler = fixture["butler"]
+    housekeeper = fixture["housekeeper"]
+
+    butler_context = await build_character_generation_context(
+        session,
+        session_id=fixture["session"].session_id,
+        character_id=butler.character_id,
+    )
+    housekeeper_context = await build_character_generation_context(
+        session,
+        session_id=fixture["session"].session_id,
+        character_id=housekeeper.character_id,
+    )
+
+    messages = build_npc_npc_messages(
+        speaker_context=butler_context,
+        partner_context=housekeeper_context,
+        current_beat_id="the_dig",
+        scene_goal="Question the housekeeper about the pantry.",
+        prior_turns=[],
+        tone_config={
+            "voice_directive": "Wit-first ensemble mystery.",
+            "scenario_defaults": {"wit_density": 0.75},
+        },
+    )
+
+    system_prompt = messages[0]["content"]
+    assert "[VOICE]" in system_prompt
+    assert "Wit-first ensemble mystery." in system_prompt
+    # Stable region: voice sits before knowledge blocks.
+    assert system_prompt.index("[VOICE]") < system_prompt.index(
+        "[INITIATING CHARACTER KNOWN KNOWLEDGE]"
+    )
+
+
+async def test_npc_npc_exchange_includes_voice_block_when_tone_config_present(
+    session: AsyncSession,
+) -> None:
+    """tone_config flows through generate_npc_npc_exchange into the prompt."""
+    session_row = await _make_session_row(session)
+
+    speaker = Character(
+        character_id=uuid4(),
+        behavior_profile={
+            "personality": {"traits": ["evasive"], "communication_style": "terse"},
+            "goals": ["Protect the secret"],
+            "secrets": [],
+            "tells": [],
+        },
+    )
+    partner = Character(
+        character_id=uuid4(),
+        behavior_profile={
+            "personality": {"traits": ["confident"], "communication_style": "direct"},
+            "goals": ["Find the truth"],
+            "secrets": [],
+            "tells": [],
+        },
+    )
+    session.add(speaker)
+    session.add(partner)
+    await session.flush()
+
+    await _make_participant(
+        session,
+        session_id=session_row.session_id,
+        character_id=speaker.character_id,
+    )
+    await _make_participant(
+        session,
+        session_id=session_row.session_id,
+        character_id=partner.character_id,
+    )
+
+    captured_messages: list[list[dict]] = []
+
+    async def _capture(*args, **kwargs):
+        captured_messages.append(kwargs.get("messages", []))
+        return _route_result("I was in the library all evening.")
+
+    tone_config = {
+        "voice_directive": "Wit-first ensemble mystery.",
+        "scenario_defaults": {"wit_density": 0.75},
+    }
+
+    with patch("engine.characters.initiative.generate", side_effect=_capture):
+        await generate_npc_npc_exchange(
+            session,
+            session_id=session_row.session_id,
+            initiating_character_id=speaker.character_id,
+            target_character_id=partner.character_id,
+            quality_tier="standard",
+            max_turns=1,
+            tone_config=tone_config,
+        )
+
+    assert len(captured_messages) == 1
+    system_prompt = captured_messages[0][0]["content"]
+    assert "[VOICE]" in system_prompt
+    assert "Wit-first ensemble mystery." in system_prompt
+
+
+async def test_schedule_initiative_tasks_threads_tone_config_into_player_group_dialogue(
+    session: AsyncSession,
+) -> None:
+    """tone_config passed to schedule_initiative_tasks reaches the live
+    generation prompt via _run_initiative_action -> generate_character_dialogue
+    for the direct/player_group speech path (sibling of the NPC-NPC dispatch
+    test above; PR #231 review flagged this path as unverified wiring)."""
+    session_row = await _make_session_row(session)
+
+    speaker = Character(
+        character_id=uuid4(),
+        behavior_profile={
+            "personality": {"traits": ["confident"], "communication_style": "direct"},
+            "goals": ["Address the group"],
+            "secrets": [],
+            "tells": [],
+        },
+    )
+    session.add(speaker)
+    await session.flush()
+
+    await _make_participant(
+        session,
+        session_id=session_row.session_id,
+        character_id=speaker.character_id,
+    )
+
+    captured_messages: list[list[dict]] = []
+
+    async def _capture(*args, **kwargs):
+        captured_messages.append(kwargs.get("messages", []))
+        return _route_result("Let me address everyone directly.")
+
+    tone_config = {
+        "voice_directive": "Wit-first ensemble mystery.",
+        "scenario_defaults": {"wit_density": 0.75},
+    }
+
+    @asynccontextmanager
+    async def session_factory():
+        yield session
+
+    actions = [
+        ScheduledInitiativeAction(
+            initiating_character_id=speaker.character_id,
+            target_character_id=None,
+            target_type="player_group",
+            initiative_score=0.7,
+        )
+    ]
+
+    with patch("engine.characters.dialogue.generate", side_effect=_capture):
+        tasks = schedule_initiative_tasks(
+            session_factory,
+            actions,
+            session_id=session_row.session_id,
+            quality_tier="standard",
+            tone_config=tone_config,
+        )
+        await asyncio.gather(*tasks)
+
+    assert len(captured_messages) == 1
+    system_prompt = captured_messages[0][0]["content"]
+    assert "[VOICE]" in system_prompt
+    assert "Wit-first ensemble mystery." in system_prompt
+
+
+async def test_schedule_initiative_tasks_threads_tone_config_into_npc_exchange(
+    session: AsyncSession,
+) -> None:
+    """tone_config passed to schedule_initiative_tasks reaches the live
+    generation prompt via _run_initiative_action -> generate_npc_npc_exchange
+    (Codex review on PR #231: tone_config must reach live callers, not just
+    direct/manual invocations of generate_character_dialogue)."""
+    session_row = await _make_session_row(session)
+
+    speaker = Character(
+        character_id=uuid4(),
+        behavior_profile={
+            "personality": {"traits": ["evasive"], "communication_style": "terse"},
+            "goals": ["Protect the secret"],
+            "secrets": [],
+            "tells": [],
+        },
+    )
+    partner = Character(
+        character_id=uuid4(),
+        behavior_profile={
+            "personality": {"traits": ["confident"], "communication_style": "direct"},
+            "goals": ["Find the truth"],
+            "secrets": [],
+            "tells": [],
+        },
+    )
+    session.add(speaker)
+    session.add(partner)
+    await session.flush()
+
+    await _make_participant(
+        session,
+        session_id=session_row.session_id,
+        character_id=speaker.character_id,
+    )
+    await _make_participant(
+        session,
+        session_id=session_row.session_id,
+        character_id=partner.character_id,
+    )
+
+    captured_messages: list[list[dict]] = []
+
+    async def _capture(*args, **kwargs):
+        captured_messages.append(kwargs.get("messages", []))
+        return _route_result("I was in the library all evening.")
+
+    tone_config = {
+        "voice_directive": "Wit-first ensemble mystery.",
+        "scenario_defaults": {"wit_density": 0.75},
+    }
+
+    @asynccontextmanager
+    async def session_factory():
+        yield session
+
+    actions = [
+        ScheduledInitiativeAction(
+            initiating_character_id=speaker.character_id,
+            target_character_id=partner.character_id,
+            target_type="npc",
+            initiative_score=0.7,
+        )
+    ]
+
+    with patch("engine.characters.initiative.generate", side_effect=_capture):
+        tasks = schedule_initiative_tasks(
+            session_factory,
+            actions,
+            session_id=session_row.session_id,
+            quality_tier="standard",
+            tone_config=tone_config,
+        )
+        await asyncio.gather(*tasks)
+
+    assert len(captured_messages) == 1
+    system_prompt = captured_messages[0][0]["content"]
+    assert "[VOICE]" in system_prompt
+    assert "Wit-first ensemble mystery." in system_prompt

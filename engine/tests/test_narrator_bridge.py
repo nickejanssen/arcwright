@@ -287,6 +287,35 @@ class TestNarratorBridgeGeneration:
         # An extra_prohibitions sentence from nightcap/arc.json.
         assert "sexual content" in messages_text.lower()
 
+    async def test_arc_id_injects_voice_block(self, db: AsyncSession) -> None:
+        """With arc_id supplied, the arc's [VOICE] block reaches the system
+        prompt (AW-276, finding F1)."""
+        session_id = uuid4()
+        await _make_session_row(db, session_id)
+        snapshot = _make_snapshot(session_id)
+
+        with patch(
+            "engine.routing.router.litellm.acompletion",
+            new_callable=AsyncMock,
+        ) as mock_completion:
+            mock_completion.side_effect = [
+                _l2_allowed_response(),
+                _litellm_response("The investigation resumes."),
+            ]
+            await generate_narrator_bridge(
+                db, session_id, snapshot, "standard", arc_id="nightcap-v1"
+            )
+
+        _, kwargs = mock_completion.call_args_list[1]
+        system_content = str(kwargs["messages"][0]["content"])
+        assert "[VOICE]" in system_content
+        # The voice directive from nightcap/arc.json tone_config.
+        assert "Wit-first ensemble mystery." in system_content
+        # Stable region: voice precedes the narrator task instruction.
+        assert system_content.index("[VOICE]") < system_content.index(
+            "You are the narrator"
+        )
+
     async def test_unregistered_arc_id_falls_back_to_platform_minimum(
         self, db: AsyncSession
     ) -> None:

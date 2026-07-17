@@ -102,6 +102,7 @@ async def generate_character_dialogue(
     content_rails: "ContentRailsConfig | None" = None,
     social_pressure: float | None = None,
     authorial_intent: "AuthorialIntent | None" = None,
+    tone_config: dict[str, Any] | None = None,
 ) -> CharacterDialogueEvent:
     """Generate one dialogue response after assembling knowledge constraints."""
     context = await build_character_generation_context(
@@ -116,6 +117,7 @@ async def generate_character_dialogue(
         scene_goal=scene_goal,
         social_pressure=social_pressure,
         authorial_intent=authorial_intent,
+        tone_config=tone_config,
     )
 
     result = await generate(
@@ -204,11 +206,17 @@ def build_dialogue_messages(
     scene_goal: str | None = None,
     social_pressure: float | None = None,
     authorial_intent: "AuthorialIntent | None" = None,
+    tone_config: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     """Build prompt messages with explicit known and not-known blocks."""
     blocks = [
         _format_identity_block(context),
     ]
+    voice_block = format_voice_block(tone_config) if tone_config else None
+    if voice_block is not None:
+        # Arc-stable voice contract (D-069/AW-276). Lives in the cacheable
+        # stable region alongside identity and authorial intent.
+        blocks.append(voice_block)
     if authorial_intent is not None:
         # Arc-stable authoring context. Placed in the stable region of the
         # system prompt so it lives inside the cacheable context layer
@@ -288,6 +296,31 @@ def _safety_layer_from_sentinel(model_used: str) -> str:
     if model_used == L3_BLOCK_SENTINEL:
         return "L3"
     return "unknown"
+
+
+def format_voice_block(tone_config: dict[str, Any] | None) -> str | None:
+    """Render the arc's voice directive and tone parameters as a prompt block.
+
+    The block is static for the lifetime of an arc definition, so it belongs
+    in the cacheable stable region of any player-facing generation prompt.
+    Returns None when the arc declares no usable voice content, so callers
+    can omit the block entirely.
+    """
+    if not tone_config:
+        return None
+    lines = ["[VOICE]"]
+    directive = tone_config.get("voice_directive")
+    if isinstance(directive, str) and directive.strip():
+        lines.append(f"voice directive: {directive.strip()}")
+    defaults = tone_config.get("scenario_defaults")
+    if isinstance(defaults, dict) and defaults:
+        lines.append("tone parameters (0.0-1.0):")
+        for key in sorted(defaults):
+            lines.append(f"- {key}: {defaults[key]}")
+    if len(lines) == 1:
+        return None
+    lines.append("[END VOICE]")
+    return "\n".join(lines)
 
 
 def _format_authorial_intent_block(intent: "AuthorialIntent") -> str:

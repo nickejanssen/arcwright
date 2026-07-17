@@ -27,6 +27,7 @@ from engine.characters.dialogue import (
     _is_safety_blocked_result,
     _safety_layer_from_sentinel,
     find_unknown_fact_leak,
+    format_voice_block,
     generate_character_dialogue,
 )
 from engine.db.orm import Event
@@ -229,8 +230,10 @@ def build_npc_npc_messages(
     scene_goal: str | None,
     prior_turns: list[NpcNpcExchangeTurn],
     speaker_social_pressure: float | None = None,
+    tone_config: dict[str, Any] | None = None,
 ) -> list[dict[str, Any]]:
     """Assemble the combined two-character system prompt for one NPC-NPC turn."""
+    voice_block = format_voice_block(tone_config) if tone_config else None
     speaker_identity = (
         _format_identity_block(speaker_context)
         .replace(
@@ -294,14 +297,20 @@ def build_npc_npc_messages(
     )
     scene_block = _format_scene_block(current_beat_id, scene_goal)
 
-    blocks = [
-        speaker_identity,
-        speaker_known,
-        speaker_unknown,
-        partner_identity,
-        partner_known,
-        relationship_block,
-    ]
+    blocks = [speaker_identity]
+    if voice_block is not None:
+        # Arc-stable voice contract (D-069/AW-276), same stable-region
+        # placement as build_dialogue_messages.
+        blocks.append(voice_block)
+    blocks.extend(
+        (
+            speaker_known,
+            speaker_unknown,
+            partner_identity,
+            partner_known,
+            relationship_block,
+        )
+    )
     if (
         speaker_social_pressure is not None
         and speaker_social_pressure
@@ -357,6 +366,7 @@ async def generate_npc_npc_exchange(
     safety_policy_context: dict[str, Any] | str | None = None,
     content_rails: "ContentRailsConfig | None" = None,
     social_pressure_by_character: dict[UUID, float] | None = None,
+    tone_config: dict[str, Any] | None = None,
 ) -> NpcNpcExchangeEvent:
     """Generate an NPC-to-NPC exchange of one or more alternating turns.
 
@@ -401,6 +411,7 @@ async def generate_npc_npc_exchange(
             scene_goal=scene_goal,
             prior_turns=turns,
             speaker_social_pressure=speaker_pressure,
+            tone_config=tone_config,
         )
 
         result = await generate(
@@ -507,6 +518,7 @@ def schedule_initiative_tasks(
     safety_policy_context: dict[str, Any] | str | None = None,
     content_rails: "ContentRailsConfig | None" = None,
     social_pressure_by_character: dict[UUID, float] | None = None,
+    tone_config: dict[str, Any] | None = None,
 ) -> list[asyncio.Task[NpcNpcExchangeEvent | CharacterDialogueEvent]]:
     """Dispatch each action as its own asyncio task. Returns immediately.
 
@@ -528,6 +540,7 @@ def schedule_initiative_tasks(
             safety_policy_context=safety_policy_context,
             content_rails=content_rails,
             social_pressure_by_character=social_pressure_by_character,
+            tone_config=tone_config,
         )
         tasks.append(asyncio.create_task(coro))
     return tasks
@@ -546,6 +559,7 @@ async def _run_initiative_action(
     safety_policy_context: dict[str, Any] | str | None,
     content_rails: "ContentRailsConfig | None",
     social_pressure_by_character: dict[UUID, float] | None = None,
+    tone_config: dict[str, Any] | None = None,
 ) -> NpcNpcExchangeEvent | CharacterDialogueEvent:
     async with session_factory() as db_session:
         if action.target_type == "npc" and action.target_character_id is not None:
@@ -562,6 +576,7 @@ async def _run_initiative_action(
                 safety_policy_context=safety_policy_context,
                 content_rails=content_rails,
                 social_pressure_by_character=social_pressure_by_character,
+                tone_config=tone_config,
             )
             await db_session.commit()
             return exchange
@@ -588,6 +603,7 @@ async def _run_initiative_action(
             safety_policy_context=safety_policy_context,
             content_rails=content_rails,
             social_pressure=character_pressure,
+            tone_config=tone_config,
         )
         await db_session.commit()
         return dialogue

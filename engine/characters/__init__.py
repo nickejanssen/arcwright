@@ -12,6 +12,7 @@ from engine.characters.dialogue import (
     KnowledgeConstraintViolation,
     build_dialogue_messages,
     find_unknown_fact_leak,
+    format_voice_block,
     generate_character_dialogue,
 )
 from engine.characters.initiative import (
@@ -58,6 +59,7 @@ __all__ = [
     "compute_social_pressure",
     "effective_initiative_threshold",
     "find_unknown_fact_leak",
+    "format_voice_block",
     "generate_character_dialogue",
     "generate_npc_npc_exchange",
     "modulate_threshold_for_pressure",

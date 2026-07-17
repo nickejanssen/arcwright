@@ -59,6 +59,18 @@ async def generate_narrator_bridge(
     if snapshot is None:
         return _make_event(session_id, _AUTHORED_FALLBACK_TEXT)
 
+    voice_block = None
+    if arc_id is not None:
+        from engine.arc.registry import load_arc_definition
+        from engine.characters.dialogue import format_voice_block
+
+        arc_definition = load_arc_definition(arc_id)
+        if arc_definition is not None:
+            # content_rails is resolved internally by generate() from arc_id
+            # (the PR #232 chokepoint); tone_config has no such chokepoint
+            # yet, so it is still read from the arc definition here.
+            voice_block = format_voice_block(arc_definition.tone_config)
+
     session_context = (snapshot.statemachine_config or {}).get("session_context", {})
     transition_history = snapshot.transition_history or []
 
@@ -66,7 +78,8 @@ async def generate_narrator_bridge(
         {
             "role": "system",
             "content": (
-                "You are the narrator of a live interactive experience. "
+                (f"{voice_block}\n\n" if voice_block else "")
+                + "You are the narrator of a live interactive experience. "
                 "Write a 2-3 sentence recap that re-grounds players in the "
                 "story after a brief pause. Speak directly to the players. "
                 "Do not mention the interruption.\n\n"
