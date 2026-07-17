@@ -1,11 +1,11 @@
-# Moodboard — Big Top 1899
+# Moodboard  -  Big Top 1899
 
 > Wrapper: **High Society** · Mood: **Macabre-carnival, ornate, off-kilter**
 > Story-bible instances: turn-of-the-century circus / traveling show,
 > vaudeville dressing room, magician's private table, freakshow gala.
 > Launch skin: none in launch window.
 > Parent brief: `docs/design/nightcap-art-direction.md`.
-> Status: Draft — no image assets attached (per AW-267 scope: direction only).
+> Status: Candidate research for founder interview, not approved direction.
 
 ## 1. The Pitch
 
@@ -13,7 +13,7 @@ The show is over. The lights on the marquee are still on. Somebody was
 found in the wardrobe wagon. Everyone here has a stage name and a
 better reason not to have used it tonight. Big Top 1899 is what
 Nightcap looks like when it wants to be *Nightmare Alley* by way of
-*The Prestige* — ornate, half-lit, funny in a stage-magician way,
+*The Prestige*  -  ornate, half-lit, funny in a stage-magician way,
 dangerous in a hey-*where's-the-strongman* way. The couch loves this
 one because the cast reads *big*: knife-thrower, escape artist,
 ringmaster, fortune-teller, contortionist. Everyone in the room is
@@ -23,23 +23,23 @@ already a *character*.
 
 Steal the specific thing.
 
-- ***Nightmare Alley* (2021)** — steal the *carnival-into-noir*
+- ***Nightmare Alley* (2021)**  -  steal the *carnival-into-noir*
   palette: gaslamps, wet ground, damp velvet, cheap gold.
-- ***The Prestige* (2006)** — steal the *stagecraft-as-menace*: a
+- ***The Prestige* (2006)**  -  steal the *stagecraft-as-menace*: a
   reveal that is itself a magic trick.
-- ***Water for Elephants* (2011)** — steal the *circus-troupe
+- ***Water for Elephants* (2011)**  -  steal the *circus-troupe
   domesticity*: this is a family that lives together.
-- ***American Horror Story: Freak Show* (2014)** — steal the *ornate
+- ***American Horror Story: Freak Show* (2014)**  -  steal the *ornate
   costuming discipline*, minus the exploitation register. Nightcap
-  world rules apply (story-bible §11) — the cast has agency and
+  world rules apply (story-bible §11)  -  the cast has agency and
   dignity; the *setting* is dark, not the treatment of the people.
-- ***Carnivàle* (2003–2005)** — steal the *dust-and-lantern* interior
+- ***Carnivàle* (2003–2005)**  -  steal the *dust-and-lantern* interior
   of a traveling show at night.
-- ***The Greatest Showman* (2017)** *(aesthetic only)* — steal the
+- ***The Greatest Showman* (2017)** *(aesthetic only)*  -  steal the
   *ringmaster silhouette* against a lit ring.
-- ***Something Wicked This Way Comes* (1983)** — steal the *unease of
+- ***Something Wicked This Way Comes* (1983)**  -  steal the *unease of
   a caravan* at the edge of town.
-- ***Moulin Rouge!* (2001)** — steal the *ornate ensemble* staging;
+- ***Moulin Rouge!* (2001)**  -  steal the *ornate ensemble* staging;
   how a room this loud can go silent on cue.
 
 ## 3. The Look
@@ -47,7 +47,7 @@ Steal the specific thing.
 - **Center stage:** the inside of a big top after hours, a wardrobe
   wagon, a magician's table, the ring under a spotlight. Rope shadow,
   sawdust, gilt.
-- **Cast rail:** portrait chips as *playbills* — name in vaudeville
+- **Cast rail:** portrait chips as *playbills*  -  name in vaudeville
   poster caps, a stage title beneath ("The Whispering Blade," "Madame
   Corvax"), a laurel or ornament framing.
 - **Phones:** cards are playbills, palm-reading cards, ticket stubs.
@@ -70,7 +70,7 @@ a time.
 
 ## 5. Typography
 
-- **Display face.** A slab or vaudeville-poster register — reference:
+- **Display face.** A slab or vaudeville-poster register  -  reference:
   *Rozha One* or an OFL slab with weight; may combine with a
   letterpressed small-caps treatment for beat titles ("THE GRILL")
   handled as an image-treatment style, not a second face.
@@ -92,25 +92,25 @@ a time.
 
 ## 7. Motion Character
 
-- **Stagecraft.** Elements *reveal* — a curtain lift, a spotlight
+- **Stagecraft.** Elements *reveal*  -  a curtain lift, a spotlight
   landing, a card turned over. Beat-turns feel like a spotlight
   finding the next act.
-- **`seq-body`** is a sudden blackout. Not a fade — a hard cut to
+- **`seq-body`** is a sudden blackout. Not a fade  -  a hard cut to
   black, the silence beat held longer than feels comfortable, then a
   single line, then resume with the marquee glowing back on.
 - **The bulb ambient**: whisper-line glow pulses at long, slow period,
   like a marquee bulb about to flicker. Reduced motion holds it steady.
 
-## 8. The Host — Vesper as the Ringmaster
+## 8. The Host  -  Vesper as the Ringmaster
 
 **See** [`the-host.md`](../the-host.md) for Vesper's bible. This is
-Vesper's *most Ringmaster* register — the beat where the Jackman /
+Vesper's *most Ringmaster* register  -  the beat where the Jackman /
 Caine end of her voice recipe is loudest.
 
 - **Vesper's role tonight.** The Ringmaster. The show is over. She has
   chosen to stay in character. Vaudeville projection when the beat
   calls for it; ghost-quiet when it doesn't.
-- **Register.** Elevated, theatrical, *performing* — but never the
+- **Register.** Elevated, theatrical, *performing*  -  but never the
   joke. The shift here is the biggest gap in the whole system:
   Vesper can go from *booming applause line* to *dead quiet* inside a
   single breath, and the beat lands harder for it.
@@ -118,28 +118,28 @@ Caine end of her voice recipe is loudest.
   a small stage title below the name ("The Whispering Blade,"
   "Madame Corvax").
 - **Sample lines.**
-  - *(Opening — full Ringmaster.)* "Ladies! Gentlemen! Persons of every
+  - *(Opening  -  full Ringmaster.)* "Ladies! Gentlemen! Persons of every
     other persuasion the century has yet to name! Welcome, one and
-    all — to the last show tonight. And this time, tonight, we mean
+    all  -  to the last show tonight. And this time, tonight, we mean
     it *last*."
-  - *(Beat turn, B2 — the drop.)* "The show has ended. The evening,
+  - *(Beat turn, B2  -  the drop.)* "The show has ended. The evening,
     apparently, has not. Marcus is in the wardrobe wagon. Marcus is
     not, tonight, going home."
-  - *(Interrogation stinger — theatrical.)* "The Whispering Blade
+  - *(Interrogation stinger  -  theatrical.)* "The Whispering Blade
     would like the couch to know he was on stage at nine. The couch
     is invited to doubt him. The audience always is. That is why we
     sell tickets."
   - *(The Wink.)* "You are watching from a room I have never seen. I
     have chosen to imagine it packed. Please, applaud when you feel
     moved. I will hear it. I always do."
-  - *(Reveal — the whole range.)* "The trick, it turns out, was
-    that there was no trick. Ladies and gentlemen — *she just walked
-    in.* — Applause, if you would. Softly. For Marcus."
+  - *(Reveal  -  the whole range.)* "The trick, it turns out, was
+    that there was no trick. Ladies and gentlemen  -  *she just walked
+    in.*  -  Applause, if you would. Softly. For Marcus."
 
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)
 
 Marquee bulbs come up slowly. The cast rail illuminates one by one as
-the ringmaster names each act — a curtain lifting on each playbill
+the ringmaster names each act  -  a curtain lifting on each playbill
 card. When the killer's card is named, the marquee bulbs behind
 change hue to `--accuse`; the ring goes silent; the last line lands
 in slab caps at full weight against the wet-sawdust base. A single
