@@ -1,8 +1,8 @@
 # Nightcap Art Direction Brief
 
-> Current version: v0.1
-> Last updated: 2026-07-16
-> Status: Approved (founder, 2026-07-16); recorded as D-073 in `docs/product/decisions-log.csv`
+> Current version: v0.2
+> Last updated: 2026-07-17
+> Status: Approved (founder, 2026-07-16; v0.2 expansion 2026-07-17); recorded as D-073 in `docs/product/decisions-log.csv`
 > Canonical path: docs/design/nightcap-art-direction.md
 > Task: AW-267 (#184)
 
@@ -37,69 +37,128 @@ in per-theme asset production.
 
 ## 1. Visual Identity
 
-**One sentence.** Nightcap looks like a glamorous social gathering after the
-lights come up on a body — theatrical, warmly lit, wryly composed, and
-never confused with a scoreboard.
+**One sentence.** Nightcap should look like the murder mystery movie you
+wanted to be inside — a room that has *just* gone wrong, staged with the
+composition of prestige TV, dressed with the specificity of a production
+designer, lit with the confidence of a show that knows its own genre.
 
-Three governing ideas, in order of enforcement priority:
+Four governing ideas, in order of enforcement priority:
 
-1. **The room is the stage.** The TV is a *stage*, not a HUD. The phone is a
-   *private dossier*, not a controller. This split is a felt property before
-   it is a technical one: at every moment, a stranger walking into the
-   living room should be able to tell — without hearing a word — which
+1. **Cinema first.** Every session is a short film your friends are inside.
+   The reference altitude is *Glass Onion*, *Knives Out*, *The Menu*,
+   *Death on the Nile*, *Succession*, *Severance*, *Blade Runner 2049*,
+   *Crimson Peak* — shows and films where you can freeze any frame and it
+   holds together. Nightcap must survive the same test. A stranger walking
+   past the TV should stop because the *frame* is interesting, before they
+   understand a word of the plot.
+2. **The room is the stage.** The TV is a *stage*, not a HUD. The phone is
+   a *private dossier*, not a controller. This split is a felt property
+   before it is a technical one: at every moment, a stranger walking into
+   the living room should be able to tell — without hearing a word — which
    surface is speaking to whom.
-2. **Dark stage, warm light.** The base is near-black so that themed light
+3. **Dark stage, warm light.** The base is near-black so that themed light
    (candlelight, ultraviolet, chrome) reads as *light*, so late-evening
    living-room TVs never flood the room, and so the narrator's voice can
    glow. Backgrounds recede. Words and moments carry the polish.
-3. **Motion is meaning.** Animation happens when *the story* moves — beat
+4. **Motion is meaning.** Animation happens when *the story* moves — beat
    turns, revelations, accusations, suspect cracks. Chrome never dances.
    The motion budget is scarce so that the budgeted moments land. Reduced
    motion collapses movement but preserves the *pauses* — the drama survives
    even when the movement goes.
 
+**Appeal test.** Every wrapper and every moodboard must pass an
+obvious-appeal check: someone flipping past this session on a stranger's
+TV should *want* to sit down. If the mood does not have a hook a stranger
+would recognize inside two seconds — a room, a light, a face, a texture
+they know from something they've watched — the moodboard is not done.
+
 **What Nightcap is not.**
 
 - Not a game show. No point-total shouting, no lit-up buzzer aesthetic.
 - Not a puzzle app. No dense chrome, no persistent progress rails.
-- Not horror. Tension is investigative and social, never psychological
-  distress directed at the player.
+- Not horror-as-distress. Suspense and mood are welcome — including
+  spooky, gothic, and unsettled registers — but the tension is
+  investigative and social, never psychological distress directed at the
+  player.
 - Not neutral SaaS. The current sky-blue dashboard palette is retired from
   player-facing surfaces.
 
 ## 2. Diegetic Wrapper System
 
-Story bible §2 lists ~14 era + occasion instances Nightcap can generate a
-session inside. Producing a distinct art skin per instance is not
-affordable. AW-268 groups instances into **three diegetic wrappers** —
-thematic families that share aesthetic DNA — and one skin per wrapper
-scales cleanly to every instance inside it.
+Story bible §2 lists a wide range of era + occasion instances Nightcap
+can generate a session inside. Producing a distinct art skin per instance
+is not affordable. AW-268 groups instances into **three diegetic
+wrappers** — thematic families that share aesthetic DNA. Inside each
+wrapper, this brief ships **multiple moodboards** so that "a High
+Society session" isn't a single look: 1928 Prohibition-deco, Victorian
+gothic, Riviera 1962, and turn-of-the-century circus are all High
+Society, and none should feel like the same night.
 
-| Wrapper | What it covers | Launch skin (0069) | Enterprise fit |
+### 2.1 The three wrappers
+
+| Wrapper | Spine | Launch skin (0069) | Range covered by the moodboards below |
 | --- | --- | --- | --- |
-| **High Society** | Period-realistic gatherings of wealth (1920s Prohibition, 1950s Hollywood, Gilded Age, Victorian manor, contemporary estate). Old-money textures, candlelit interiors, ornament as social vocabulary. | **Séance 1928** (deco parlor) | Board dinners, awards nights |
-| **Corporate** | Modern professional gatherings (tech billionaire dinner, startup launch, corporate retreat, influencer/reality-TV set). Glossy, engineered, professionally curated warmth. | *(No launch-window skin; brief-only for AW-268 to activate when the enterprise wedge lights up per D-046.)* | Team-building, corporate mysteries |
-| **Sci-Fi** | Speculative or future gatherings (orbital gala, colony summit, sim-world reunion). Cool light on dark ground; the future as *atmosphere*, not gadget. | **Orbital Gala 2087** (chrome + UV) | Product launches with a hook |
+| **High Society** | Period-realistic gatherings of wealth and social standing. Old-money textures. Ornament as vocabulary. | **Séance 1928** | Deco/prohibition, Victorian gothic, mid-century Riviera glam, turn-of-the-century circus. |
+| **Corporate** | Contemporary status gatherings — professional, celebrity-adjacent, or nostalgic-tech. Engineered warmth over polished neutral. | *(No launch-window skin; direction-only until AW-268 activates it, per D-046.)* | Contemporary billionaire estate, uncanny corporate boardroom, reality-TV / influencer retreat, late-90s / early-2000s startup launch. |
+| **Sci-Fi** | Speculative or future gatherings. Cool light on dark ground. The future as *atmosphere*, not gadget. | **Orbital Gala 2087** | Chrome-and-UV space opulence, neon-noir cyberpunk, off-world colony frontier, upload/simulation gathering. |
 
-**Rules for wrappers.**
+### 2.2 The moodboard index
 
-- A wrapper is a *skin*, not a redesign. It swaps semantic-token values
-  (0069 §2), the display typeface (0069 §3), the card-framing texture, and
-  the narrator persona register — nothing else. If a wrapper needs a layout
-  change, that is a defect in the base identity, not the wrapper.
-- Every wrapper must satisfy the accessibility contract in §5 unchanged;
-  neither `--accuse` nor `--ok` may be color-only, no text below the surface
-  minimums, focus-visible states required.
-- Every wrapper must sustain a coherent narrator voice register (§4.4).
-  If a wrapper cannot support a Nightcap-voiced narrator, it is not a valid
+Twelve moodboards, four per wrapper. Each covers a distinct *mood* within
+its wrapper — moody, spooky, glossy, goofy, tense, nostalgic — so that
+AW-268 can select or produce a skin whose reference set matches the case
+the engine is about to run. Skin PRs may adopt one moodboard whole, or
+blend two adjacent moodboards inside the same wrapper (never across
+wrappers).
+
+**High Society**
+
+- [Séance 1928](moodboards/seance-1928.md) — deco + prohibition, moody-glamorous. *(Launch skin.)*
+- [Manor Gothic](moodboards/manor-gothic.md) — Victorian and Edwardian, spooky-elegant.
+- [Riviera 1962](moodboards/riviera-1962.md) — mid-century, sunlit-glossy.
+- [Big Top 1899](moodboards/big-top-1899.md) — turn-of-the-century circus, macabre-carnival.
+
+**Corporate**
+
+- [The Estate](moodboards/the-estate.md) — contemporary billionaire, glossy-menacing.
+- [Boardroom Severance](moodboards/boardroom-severance.md) — modern corporate, uncanny-minimal.
+- [Influencer Retreat](moodboards/influencer-retreat.md) — reality-TV retreat, goofy-shiny.
+- [Y2K Launch](moodboards/y2k-launch.md) — late-90s / early-2000s startup, nostalgic-neon.
+
+**Sci-Fi**
+
+- [Orbital Gala 2087](moodboards/orbital-gala-2087.md) — space-station opulence, chrome + UV. *(Launch skin.)*
+- [Neon Noir](moodboards/neon-noir.md) — cyberpunk city, moody-crime.
+- [Colony Post](moodboards/colony-post.md) — off-world frontier, tense-technical.
+- [Sim Reunion](moodboards/sim-reunion.md) — upload / simulation, absurd-melancholic.
+
+### 2.3 Rules for wrappers and moodboards
+
+- **A wrapper is a *skin*, not a redesign.** It swaps semantic-token
+  values (0069 §2), the display typeface (0069 §3), the card-framing
+  texture, and the narrator persona register — nothing else. If a wrapper
+  needs a layout change, that is a defect in the base identity, not the
   wrapper.
-- Instances inside a wrapper vary by content (era, occasion, cast), not by
-  system.
+- **Every moodboard must satisfy the accessibility contract in §5
+  unchanged.** Neither `--accuse` nor `--ok` may be color-only. No text
+  below the surface minimums. Focus-visible states required.
+- **Every moodboard must sustain a coherent Nightcap-voiced narrator
+  (§4.4).** Different persona registers per moodboard are the point;
+  breaking the Nightcap voice for the sake of a wrapper is not.
+- **Moodboards do not add gameplay, mechanics, or scope.** They only
+  change how the same six-beat arc *looks and sounds*.
+- **Wild-card instances** (Wild West saloon, music-festival backstage,
+  bachelorette weekend from story bible §2) are not covered by the
+  launch set of moodboards. They are legitimate future additions to
+  either an existing wrapper or a fourth wrapper; not launch scope.
 
-The three moodboards in `docs/design/moodboards/` define each wrapper's
-reference set, palette anchors, material vocabulary, and narrator voice
-notes in enough detail that an asset producer can build against them
-without a second briefing.
+Each moodboard in `docs/design/moodboards/` reads like a short producer's
+pitch: a 30-second read-aloud pitch, a reference set that makes the look
+obvious, palette anchors, material vocabulary, motion character, a
+narrator voice sample, a description of the reveal moment for that
+board, failure modes, and AW-268 handoff slots. AW-268 should be able to
+brief a designer or an image model from any single moodboard without a
+second conversation.
 
 ## 3. Motion Principles
 
@@ -280,9 +339,9 @@ AW-268 must ship each wrapper as a **skin PR** that passes the 0069 §7 and
 1. This document exists at `docs/design/nightcap-art-direction.md` and
    covers visual identity, per-wrapper theme aesthetic, motion,
    typography, color, and narrator visual presence.
-2. Text-based moodboards exist for each of the three wrappers at
-   `docs/design/moodboards/{high-society,corporate,sci-fi}.md` and are
-   sufficient for AW-268 to shop against without a second briefing.
+2. Twelve text-based moodboards exist in `docs/design/moodboards/`
+   (four per wrapper — see §2.2 for the index) and each is sufficient
+   for AW-268 to shop against without a second briefing.
 3. The brief does not couple visual tokens to any single mini-game.
 4. Founder sign-off is recorded in `docs/product/decisions-log.csv` as
    D-073.
@@ -299,5 +358,14 @@ AW-268 must ship each wrapper as a **skin PR** that passes the 0069 §7 and
 
 ## 12. Change Log
 
+- **2026-07-17** — v0.2 (AW-267, PR #243 review). Founder feedback:
+  moodboards need range, cinema, and obvious appeal. Added **Cinema
+  first** governing principle (§1) and the appeal-test bar. Replaced the
+  three wrapper-level moodboards with **twelve mood-specific moodboards**
+  (four per wrapper, indexed in §2.2). Each new moodboard is written as a
+  producer's pitch with named TV/film references, palette anchors,
+  material vocabulary, narrator voice samples, and a per-moodboard
+  description of the reveal moment.
 - **2026-07-16** — v0.1 authored (AW-267). First draft covering all
-  required sections; three moodboards written; D-073 staged.
+  required sections; three wrapper-level moodboards written; D-073
+  recorded in decisions-log.csv.
