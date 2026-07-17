@@ -457,6 +457,49 @@ class SessionService:
         await db.flush()
         return _orm_participant_to_pydantic(participant), join_token
 
+    async def add_ai_character(
+        self,
+        db: AsyncSession,
+        session_id: UUID,
+        *,
+        behavior_profile: dict[str, Any] | None = None,
+        max_seats: int = 10,
+    ) -> SessionParticipant:
+        """Seat an AI-controlled character into the session (spec 0071).
+
+        AI seats do not increment ``player_count`` — that metric tracks
+        supported human players (M5-B) — and need no join flow, so no
+        join token is returned. Capacity is enforced over all non-host
+        seats (human and AI combined), so AI seats cannot exceed the
+        session's supported seat and cost envelope.
+        """
+        orm = await self._require_session(db, session_id)
+        if orm.status in (
+            SessionStatus.completed.value,
+            SessionStatus.abandoned.value,
+        ):
+            raise SessionStateError(
+                f"Cannot add AI character to session in status {orm.status!r}"
+            )
+        participants = await self.list_participants(db, session_id)
+        occupied_seats = sum(1 for p in participants if p.surface_type != "host")
+        if occupied_seats >= max_seats:
+            raise SessionCapacityError(f"Session is at capacity ({max_seats} seats)")
+        character = Character(behavior_profile=behavior_profile or {})
+        db.add(character)
+        await db.flush()
+        participant = OrmParticipant(
+            participant_id=uuid4(),
+            session_id=session_id,
+            character_id=character.character_id,
+            join_token=secrets.token_urlsafe(32),
+            surface_type="ai",
+            is_ai_controlled=True,
+        )
+        db.add(participant)
+        await db.flush()
+        return _orm_participant_to_pydantic(participant)
+
     async def list_participants(
         self, db: AsyncSession, session_id: UUID
     ) -> list[SessionParticipant]:
