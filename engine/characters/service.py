@@ -174,12 +174,16 @@ class CharacterService:
         its job and no event is returned. Safety-blocked generations return
         the existing neutral-bridge event so the experience is preserved.
         """
+        from sqlalchemy import select
+
         from engine.arc.registry import load_arc_definition
+        from engine.characters.context import RelationshipDispositionContext
         from engine.characters.dialogue import (
             KnowledgeConstraintViolation,
             generate_character_dialogue,
         )
         from engine.characters.initiative import select_initiative_target
+        from engine.db.orm import RelationshipState
         from engine.session.models import SessionStatus
 
         session = await self.sessions.get_session(db, session_id)
@@ -195,11 +199,28 @@ class CharacterService:
             for p in participants
             if p.is_ai_controlled and p.character_id != speaking_character_id
         ]
+        relationships_result = await db.execute(
+            select(RelationshipState)
+            .where(
+                RelationshipState.session_id == session_id,
+                RelationshipState.source_char_id == speaking_character_id,
+            )
+            .order_by(RelationshipState.target_char_id)
+        )
+        relationships = [
+            RelationshipDispositionContext(
+                target_character_id=relationship.target_char_id,
+                trust=relationship.trust_level,
+                history=relationship.history_tag,
+                current_affect=relationship.current_affect,
+            )
+            for relationship in relationships_result.scalars().all()
+        ]
         responder_id = select_initiative_target(
             initiating_character_id=speaking_character_id,
             eligible_target_ids=ai_character_ids,
             beat_character_emphasis=None,
-            relationships=[],
+            relationships=relationships,
         )
         if responder_id is None:
             return []

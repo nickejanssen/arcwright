@@ -38,6 +38,7 @@ from engine.characters.service import (
 )
 from engine.db import get_async_session
 from engine.session.service import (
+    SessionCapacityError,
     SessionNotFoundError,
     SessionStateError,
     _session_service,
@@ -205,7 +206,7 @@ async def add_ai_character(
         )
     except SessionNotFoundError:
         raise HTTPException(status_code=404, detail="Session not found")
-    except SessionStateError as exc:
+    except (SessionStateError, SessionCapacityError) as exc:
         raise HTTPException(status_code=409, detail=str(exc))
     return AddAiCharacterResponse(
         participant_id=participant.participant_id,

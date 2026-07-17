@@ -425,6 +425,35 @@ class TestAddAiCharacter:
             )
         assert resp.status_code == 404
 
+    def test_returns_409_when_session_at_capacity(
+        self,
+        host_session: tuple[UUID, UUID, UUID, UUID],
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        """SessionCapacityError must surface as 409, matching the sibling
+        add_player route, not an unhandled 500 (review feedback)."""
+        session_id, *_ = host_session
+
+        async def _fill_remaining_seats() -> None:
+            # host_session already seats 2 human players (default max is
+            # 10 combined seats); seat 8 more AI characters to reach capacity.
+            svc = SessionService()
+            async with db_factory() as db:
+                for _ in range(8):
+                    await svc.add_ai_character(db, session_id)
+                await db.commit()
+
+        import asyncio
+
+        asyncio.get_event_loop().run_until_complete(_fill_remaining_seats())
+
+        for c in _client_for_role("host", session_id, uuid4(), db_factory):
+            resp = c.post(
+                f"/v1/sessions/{session_id}/characters/ai",
+                json={},
+            )
+        assert resp.status_code == 409
+
 
 class TestDialogueInputPublishesAiResponse:
     def test_dialogue_input_publishes_generated_response_on_the_bus(

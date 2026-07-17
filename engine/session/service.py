@@ -428,6 +428,10 @@ class SessionService:
         max_players: int = 10,
         surface_type: str = "player",
     ) -> tuple[SessionParticipant, str]:
+        """Seat a human player. Shares one seat envelope with
+        add_ai_character: capacity is checked against all non-host
+        participants (human and AI combined), so AI seats reduce the
+        number of humans who can still join."""
         orm = await self._require_session(db, session_id)
         if orm.status in (
             SessionStatus.completed.value,
@@ -436,7 +440,9 @@ class SessionService:
             raise SessionStateError(
                 f"Cannot add player to session in status {orm.status!r}"
             )
-        if orm.player_count >= max_players:
+        participants = await self.list_participants(db, session_id)
+        occupied_seats = sum(1 for p in participants if p.surface_type != "host")
+        if occupied_seats >= max_players:
             raise SessionCapacityError(
                 f"Session is at capacity ({max_players} players)"
             )

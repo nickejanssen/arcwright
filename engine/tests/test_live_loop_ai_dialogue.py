@@ -23,7 +23,7 @@ from sqlalchemy.ext.asyncio import (
 
 from engine.characters.dialogue import to_content_event
 from engine.characters.service import CharacterService
-from engine.db.orm import Base, Character, SessionParticipant
+from engine.db.orm import Base, Character, RelationshipState, SessionParticipant
 from engine.db.orm import Session as OrmSession
 from engine.db.testing import patch_metadata_for_sqlite
 from engine.events.models import AudienceTarget, EventCategory
@@ -185,6 +185,21 @@ class TestAddAiCharacter:
         with pytest.raises(SessionCapacityError):
             await sessions.add_ai_character(db, row.session_id, max_seats=2)
 
+    @pytest.mark.asyncio
+    async def test_ai_seats_count_toward_human_capacity(self, db: AsyncSession) -> None:
+        """The seat envelope is shared in both directions: seating AI
+        characters up to capacity must also block a human from joining,
+        not just the reverse (test_human_seats_count_toward_ai_capacity)."""
+        from engine.session.service import SessionCapacityError
+
+        sessions = SessionService()
+        row = await _make_session_row(db)
+        await sessions.add_ai_character(db, row.session_id, max_seats=2)
+        await sessions.add_ai_character(db, row.session_id, max_seats=2)
+
+        with pytest.raises(SessionCapacityError):
+            await sessions.add_player(db, row.session_id, max_players=2)
+
 
 # ---------------------------------------------------------------------------
 # Live-loop response generation
@@ -225,6 +240,56 @@ class TestGenerateAiResponses:
         prompt_text = str(kwargs["messages"])
         assert "CONTENT POLICY" in prompt_text
         assert "graphic_violence" in prompt_text
+
+    @pytest.mark.asyncio
+    async def test_selects_responder_by_relationship_strength_not_uuid_order(
+        self, svc: CharacterService, db: AsyncSession
+    ) -> None:
+        """With 2+ AI characters seated, responder selection must use the
+        speaker's real relationship dispositions, not silently degrade to
+        an empty relationship list (which ties every candidate and always
+        picks the lexicographically smallest character UUID regardless of
+        content). A strong relationship to one AI character must win over
+        an AI character with no relationship on record, independent of
+        which one happens to have the smaller UUID."""
+        row = await _make_session_row(db)
+        speaker = await _seat_character(db, row.session_id, is_ai_controlled=False)
+        ai_no_relationship = await _seat_character(
+            db, row.session_id, is_ai_controlled=True
+        )
+        ai_strong_relationship = await _seat_character(
+            db, row.session_id, is_ai_controlled=True
+        )
+        db.add(
+            RelationshipState(
+                session_id=row.session_id,
+                source_char_id=speaker.character_id,
+                target_char_id=ai_strong_relationship.character_id,
+                trust_level=0.95,
+                history_tag="confided in",
+                current_affect="warm",
+            )
+        )
+        await db.flush()
+
+        with patch(
+            "engine.routing.router.litellm.acompletion",
+            new_callable=AsyncMock,
+        ) as mock_completion:
+            mock_completion.side_effect = [
+                _l2_allowed(),
+                _litellm_response("I trust you enough to say this."),
+            ]
+            events = await svc.generate_ai_responses(
+                db,
+                row.session_id,
+                speaking_character_id=speaker.character_id,
+                content="Who do you trust here?",
+            )
+
+        assert len(events) == 1
+        assert events[0].actor_character_id == ai_strong_relationship.character_id
+        assert events[0].actor_character_id != ai_no_relationship.character_id
 
     @pytest.mark.asyncio
     async def test_no_ai_participants_makes_no_generation_calls(
