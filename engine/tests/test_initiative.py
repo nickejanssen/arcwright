@@ -1046,6 +1046,73 @@ async def test_npc_npc_exchange_includes_voice_block_when_tone_config_present(
     assert "Wit-first ensemble mystery." in system_prompt
 
 
+async def test_schedule_initiative_tasks_threads_tone_config_into_player_group_dialogue(
+    session: AsyncSession,
+) -> None:
+    """tone_config passed to schedule_initiative_tasks reaches the live
+    generation prompt via _run_initiative_action -> generate_character_dialogue
+    for the direct/player_group speech path (sibling of the NPC-NPC dispatch
+    test above; PR #231 review flagged this path as unverified wiring)."""
+    session_row = await _make_session_row(session)
+
+    speaker = Character(
+        character_id=uuid4(),
+        behavior_profile={
+            "personality": {"traits": ["confident"], "communication_style": "direct"},
+            "goals": ["Address the group"],
+            "secrets": [],
+            "tells": [],
+        },
+    )
+    session.add(speaker)
+    await session.flush()
+
+    await _make_participant(
+        session,
+        session_id=session_row.session_id,
+        character_id=speaker.character_id,
+    )
+
+    captured_messages: list[list[dict]] = []
+
+    async def _capture(*args, **kwargs):
+        captured_messages.append(kwargs.get("messages", []))
+        return _route_result("Let me address everyone directly.")
+
+    tone_config = {
+        "voice_directive": "Wit-first ensemble mystery.",
+        "scenario_defaults": {"wit_density": 0.75},
+    }
+
+    @asynccontextmanager
+    async def session_factory():
+        yield session
+
+    actions = [
+        ScheduledInitiativeAction(
+            initiating_character_id=speaker.character_id,
+            target_character_id=None,
+            target_type="player_group",
+            initiative_score=0.7,
+        )
+    ]
+
+    with patch("engine.characters.dialogue.generate", side_effect=_capture):
+        tasks = schedule_initiative_tasks(
+            session_factory,
+            actions,
+            session_id=session_row.session_id,
+            quality_tier="standard",
+            tone_config=tone_config,
+        )
+        await asyncio.gather(*tasks)
+
+    assert len(captured_messages) == 1
+    system_prompt = captured_messages[0][0]["content"]
+    assert "[VOICE]" in system_prompt
+    assert "Wit-first ensemble mystery." in system_prompt
+
+
 async def test_schedule_initiative_tasks_threads_tone_config_into_npc_exchange(
     session: AsyncSession,
 ) -> None:
