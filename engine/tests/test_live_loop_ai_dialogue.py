@@ -225,6 +225,9 @@ class TestGenerateAiResponses:
         prompt_text = str(kwargs["messages"])
         assert "CONTENT POLICY" in prompt_text
         assert "graphic_violence" in prompt_text
+        # The arc's voice directive (AW-276) reached the live-loop prompt.
+        assert "[VOICE]" in prompt_text
+        assert "wit-first ensemble mystery" in prompt_text.lower()
 
     @pytest.mark.asyncio
     async def test_no_ai_participants_makes_no_generation_calls(
