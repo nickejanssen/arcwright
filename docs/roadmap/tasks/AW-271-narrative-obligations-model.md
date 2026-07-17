@@ -47,6 +47,25 @@ coherence quality signal across sessions and a Tier 2 training input.
 - Telemetry: `obligation_created` and `obligation_resolved` events per
   `docs/architecture/11-telemetry.md` Section 11.8.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+**Why independent:** Decision 0012 and
+`docs/specs/0065-aw-271-narrative-obligations-model.md` constrain obligation
+semantics, deterministic ownership, and reveal-readiness behavior.
+
+**Required flow:** After normal plan approval, implement the approved model,
+explain state transitions and review evidence clearly, and verify the acceptance
+criteria without adding narrative policy.
+
+**Reclassification gate:** Stop and switch to Creative collaboration or
+Decision interview before changing authored narrative rules, obligation
+semantics, privacy behavior, schema, or implementation sequence.
+
+**Evidence:** Preserve plan approval, canonical-source references, deterministic
+tests, review evidence, dates, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] Migration applies cleanly to empty and populated schemas.

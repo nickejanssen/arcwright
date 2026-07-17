@@ -24,6 +24,25 @@ This task strengthens Arcwright's core platform claim: the engine can run more t
 
 Implement the minimal real product defined by the AW-235 Daily Case schema after M6 proof. Likely files affected depend on the selected schema and runtime surface.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+**Why independent:** D-056, AW-235,
+`docs/specs/0031-aw-245-second-arc-minimal-executable-product.md`, and the
+post-M6 sequence constrain this implementation once its prerequisites are met.
+
+**Required flow:** After normal plan approval and prerequisite proof, implement
+the approved minimum product, explain how it demonstrates platform reuse, and
+verify each documented boundary.
+
+**Reclassification gate:** Stop and switch to Creative collaboration or
+Decision interview before inventing new Daily Case direction, adding schema,
+API, privacy, or telemetry scope, or changing the post-M6 sequence.
+
+**Evidence:** Preserve plan approval, prerequisite evidence, spec references,
+platform-reuse verification, test results, dates, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] Implementation starts only after AW-244 records the H1 proof analysis and next-step decision.

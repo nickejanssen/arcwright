@@ -26,6 +26,25 @@ Build read-only live knowledge graph inspection. Likely files affected: dashboar
 
 This is the only Visual Storyworld inspection surface required for the M5 exit gate. Read-only arc structure, live event stream, and character state inspection may ship as logs or defer until after proof.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+**Why independent:** `docs/prd/03-scope.md`, Architecture 04, dashboard privacy
+rules, and the current acceptance criteria constrain this read-only inspection
+surface.
+
+**Required flow:** After normal plan approval, implement the constrained
+diagnostic surface, explain what it exposes and how to inspect it, and verify
+privacy behavior.
+
+**Reclassification gate:** Stop and switch to Creative collaboration or
+Decision interview before choosing a new visual direction, exposing additional
+private state, adding editing capability, or expanding beyond the M5 exit gate.
+
+**Evidence:** Preserve plan approval, privacy checks, representative inspection
+evidence, test results, dates, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] Read-only live knowledge graph inspection surface exists.

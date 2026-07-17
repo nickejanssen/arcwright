@@ -26,6 +26,24 @@ Build live event stream inspection. Likely files affected: dashboard, api, engin
 
 This task is no longer an M5 exit-gate blocker. For M5, event stream inspection may be satisfied by logs or deferred until after proof to protect the solo-founder critical path.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+**Why independent:** Architecture 08, the deferred post-proof status, AW-236,
+and the privacy acceptance criteria constrain this optional event view.
+
+**Required flow:** After normal plan approval, implement only the documented
+inspection fields, explain how to review the stream, and verify audience and
+private-payload filtering.
+
+**Reclassification gate:** Stop and switch to Creative collaboration or
+Decision interview before choosing a new visual direction, exposing additional
+payload data, changing roadmap priority, or expanding the diagnostic scope.
+
+**Evidence:** Preserve plan approval, privacy checks, representative event-view
+evidence, test results, dates, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] Live event stream inspection surface exists.

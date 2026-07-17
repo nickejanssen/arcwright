@@ -24,6 +24,25 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 Design Daily Case as the canonical second arc: a solo, asynchronous, sub-10-minute daily interrogation experience with one AI suspect, week-long memory, contradiction accumulation, and final accusation. Likely files affected: docs/specs, docs/story-bibles, docs/roadmap/tasks.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+**Why independent:** `docs/specs/0039-aw-235-daily-case-second-arc-schema-design.md`,
+the Daily Case story bible, and Architecture 14 constrain the design and the
+post-M6 boundary.
+
+**Required flow:** After normal plan approval, implement the documented schema
+design, explain validation gaps and deliverables clearly, and verify against the
+canonical constraints.
+
+**Reclassification gate:** Stop and switch to Creative collaboration or
+Decision interview before inventing new story direction, expanding product
+scope, changing the post-M6 sequence, or selecting a new schema policy.
+
+**Evidence:** Preserve plan approval, canonical-source references, validation
+results, identified gaps, dates, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] A canonical Daily Case design exists as a story bible and implementation spec.

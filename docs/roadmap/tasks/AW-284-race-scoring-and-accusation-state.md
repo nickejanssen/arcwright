@@ -28,6 +28,29 @@ The scoreboard and superlatives are the replay hook ("run it back") that M6 meas
 - Countdown-expiry transition to The Truth with case-wins outcome.
 - Superlative computation at session end (Best Interrogator, Lie Detector, Most Confidently Wrong) from telemetry already captured.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Creative collaboration.
+
+**Founder input:** Desired competitive feel, risk tolerance, pacing, penalty and
+reward expectations, representative endgames, and success definition.
+
+**Required phases:** Begin with focused discovery before locking tuning. Confirm
+a short scoring brief, then present representative scoring scenarios, endgame
+walkthroughs, and tuning tables before implementing final values. Explain every
+table and scenario in plain language, including how to review it, the assumptions
+being tested, and which cells or outcomes need founder attention. Offer bounded
+options and a recommendation, then ask one interactive question at a time.
+
+**Gates:** Pause for explicit direction after discovery, scenario review, tuning
+table review, and the implemented thin slice. Research and reversible
+preparation may continue while the founder is unavailable, but no tuning choice
+or full implementation may proceed.
+
+**Evidence:** Preserve discovery answers, scenarios and review instructions,
+options, recommendation, founder feedback, approved tuning table, explicit
+checkpoint approvals, dates, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] All win/end paths reachable in harness: first-correct then table lock-in; countdown expiry; all-players-locked-early.
