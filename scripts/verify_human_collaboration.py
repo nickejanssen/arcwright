@@ -34,7 +34,151 @@ GLOBAL_REQUIREMENTS = {
     "docs/agents/USAGE.md": ("interactive", "numbered-choice fallback"),
 }
 
-RETROFIT_REQUIREMENTS: dict[str, tuple[str, ...]] = {}
+RETROFIT_REQUIREMENTS: dict[str, tuple[str, ...]] = {
+    "docs/roadmap/operations/human-collaboration-open-work.md": (
+        "| Issue | Task | Canonical path | Profiles | Founder input | Next gate |",
+        "Missing stable task record",
+    ),
+    "docs/roadmap/tasks/AW-232-adversarial-safety-playtest-protocol.md": (
+        "**Interaction profile:** Facilitated live operation.",
+    ),
+    "docs/roadmap/tasks/AW-233-safety-findings-remediation.md": (
+        "**Interaction profile:** Independent execution.",
+    ),
+    "docs/roadmap/tasks/AW-234-gross-margin-by-player-count.md": (
+        "**Interaction profile:** Decision interview.",
+    ),
+    "docs/roadmap/tasks/AW-235-second-arc-schema-design.md": (
+        "**Interaction profile:** Independent execution.",
+    ),
+    "docs/roadmap/tasks/AW-236-live-knowledge-graph-inspection.md": (
+        "**Interaction profile:** Independent execution.",
+    ),
+    "docs/roadmap/tasks/AW-237-read-only-arc-structure-inspection.md": (
+        "**Interaction profile:** Independent execution.",
+    ),
+    "docs/roadmap/tasks/AW-238-live-event-stream-inspection.md": (
+        "**Interaction profile:** Independent execution.",
+    ),
+    "docs/roadmap/tasks/AW-239-character-state-inspection.md": (
+        "**Interaction profile:** Independent execution.",
+    ),
+    "docs/roadmap/tasks/AW-240-closed-playtest-operations-runbook.md": (
+        "**Interaction profile:** Decision interview.",
+    ),
+    "docs/roadmap/tasks/AW-241-qualifying-session-instrumentation-checklist.md": (
+        "**Interaction profile:** Decision interview.",
+    ),
+    "docs/roadmap/tasks/AW-242-founder-run-final-rehearsal.md": (
+        "**Interaction profile:** Facilitated live operation.",
+    ),
+    "docs/roadmap/tasks/AW-243-five-outside-qualifying-sessions.md": (
+        "**Interaction profile:** Facilitated live operation.",
+    ),
+    "docs/roadmap/tasks/AW-244-h1-proof-analysis-and-next-step-decision.md": (
+        "**Interaction profile:** Decision interview.",
+    ),
+    "docs/roadmap/tasks/AW-245-second-arc-minimal-executable-product.md": (
+        "**Interaction profile:** Independent execution.",
+    ),
+    "docs/roadmap/tasks/AW-266-rehearsal-2-tmst-real-human-session.md": (
+        "**Interaction profile:** Facilitated live operation.",
+    ),
+    "docs/roadmap/tasks/AW-267-nightcap-art-direction-brief.md": (
+        "**Interaction profile:** Creative collaboration.",
+    ),
+    "docs/roadmap/tasks/AW-268-nightcap-asset-pipeline-and-motion-system.md": (
+        "**Interaction profiles:** Creative collaboration plus Decision interview.",
+    ),
+    "docs/roadmap/tasks/AW-269-nightcap-cloud-deploy.md": (
+        "**Interaction profile:** Decision interview.",
+    ),
+    "docs/roadmap/tasks/AW-270-authorial-intent-block-and-fidelity-telemetry.md": (
+        "**Interaction profile:** Independent execution.",
+    ),
+    "docs/roadmap/tasks/AW-271-narrative-obligations-model.md": (
+        "**Interaction profile:** Independent execution.",
+    ),
+    "docs/roadmap/tasks/AW-272-continuity-coherence-eval-suite.md": (
+        "**Interaction profile:** Independent execution.",
+    ),
+    "docs/roadmap/tasks/AW-273-rehearsal-1-execution.md": (
+        "**Interaction profile:** Facilitated live operation.",
+    ),
+    "docs/roadmap/tasks/AW-274-platform-agnostic-role-outcome-vocabulary.md": (
+        "**Interaction profile:** Decision interview.",
+    ),
+    "docs/roadmap/tasks/AW-275-design-system-follow-ups.md": (
+        "**Interaction profile:** Independent execution.",
+    ),
+    "docs/roadmap/tasks/AW-276-arc-voice-block-injection.md": (
+        "**Interaction profile:** Independent execution.",
+    ),
+    "docs/roadmap/tasks/AW-277-couch-race-narrator-transition-lines.md": (
+        "**Interaction profile:** Creative collaboration.",
+    ),
+    "docs/roadmap/tasks/AW-278-couch-race-truth-sequence-and-reveal-accounting.md": (
+        "**Interaction profile:** Creative collaboration.",
+    ),
+    "docs/roadmap/tasks/AW-279-detective-identity-and-opening-briefing.md": (
+        "**Interaction profile:** Creative collaboration.",
+    ),
+    "docs/roadmap/tasks/AW-280-couch-race-clue-release-content.md": (
+        "**Interaction profile:** Creative collaboration.",
+    ),
+    "docs/roadmap/tasks/AW-281-couch-race-arc-definition-and-case-generation.md": (
+        "**Interaction profile:** Creative collaboration.",
+    ),
+    "docs/roadmap/tasks/AW-282-interrogation-round-loop-and-question-intents.md": (
+        "**Interaction profile:** Creative collaboration.",
+    ),
+    "docs/roadmap/tasks/AW-283-suspect-answer-generation-and-contradiction-detection.md": (
+        "**Interaction profile:** Creative collaboration.",
+    ),
+    "docs/roadmap/tasks/AW-284-race-scoring-and-accusation-state.md": (
+        "**Interaction profile:** Creative collaboration.",
+    ),
+    "docs/roadmap/tasks/AW-285-couch-race-tv-and-phone-rendering.md": (
+        "**Interaction profile:** Creative collaboration.",
+    ),
+    "docs/roadmap/tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md": (
+        "**Interaction profile:** Facilitated live operation.",
+    ),
+    "docs/specs/0031-aw-245-second-arc-minimal-executable-product.md": (
+        "# Human Collaboration Contract",
+    ),
+    "docs/specs/0039-aw-235-daily-case-second-arc-schema-design.md": (
+        "# Human Collaboration Contract",
+    ),
+    "docs/specs/0064-aw-270-authorial-intent-block.md": (
+        "# Human Collaboration Contract",
+    ),
+    "docs/specs/0065-aw-271-narrative-obligations-model.md": (
+        "# Human Collaboration Contract",
+    ),
+    "docs/specs/0066-aw-272-continuity-coherence-evals.md": (
+        "# Human Collaboration Contract",
+    ),
+    "docs/specs/0067-development-survey-and-path-to-first-playtest.md": (
+        "# Human Collaboration Contract",
+    ),
+    "docs/specs/0068-game-experience-quality-bar.md": (
+        "# Human Collaboration Contract",
+    ),
+    "docs/specs/0069-nightcap-visual-design-system.md": (
+        "# Human Collaboration Contract",
+    ),
+    "docs/specs/0070-aw-274-platform-agnostic-role-outcome-vocabulary.md": (
+        "# Human Collaboration Contract",
+    ),
+    "docs/specs/0072-nightcap-couch-race-v1.md": ("# Human Collaboration Contract",),
+    "docs/specs/0073-aw-276-arc-voice-directive-injection.md": (
+        "# Human Collaboration Contract",
+    ),
+    "docs/specs/0073-m5-canonical-reconciliation.md": (
+        "# Human Collaboration Contract",
+    ),
+}
 
 
 def read(path: str) -> str:
