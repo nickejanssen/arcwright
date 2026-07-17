@@ -2,7 +2,7 @@
 
 > Current version: v0.1
 > Last updated: 2026-07-16
-> Status: Draft — pending founder sign-off (D-073 staged in decisions-log.csv)
+> Status: Approved (founder, 2026-07-16); recorded as D-073 in `docs/product/decisions-log.csv`
 > Canonical path: docs/design/nightcap-art-direction.md
 > Task: AW-267 (#184)
 
@@ -110,11 +110,11 @@ intent behind those tokens.
   `seq-join`, `seq-beat-turn`, `seq-body`, `seq-spotlight`, `seq-truth` are
   the only places dramatic time is spent. Chrome (buttons, forms, list
   entries, tokens ticking down) never uses dramatic time.
-- **The cold open (`seq-body` / suspect stage) and The Truth (`seq-truth`)
-  are the polish showcases.** Per D-070 and ADR-0013 §6, treat these like
-  the product's trailer: build them like the moment someone lifts a phone
-  to film, not like the tech demo. If time is short, cut animation
-  *elsewhere* to protect these two.
+- **The cold open (`seq-body`) and The Truth (`seq-truth`) are the polish
+  showcases, with the suspect stage (`seq-spotlight`) close behind.** Per
+  D-070 and ADR-0013 §6, treat these like the product's trailer: build
+  them like the moment someone lifts a phone to film, not like the tech
+  demo. If time is short, cut animation *elsewhere* to protect them.
 - **Motion directs attention.** A revealed clue enters where the eye needs
   to look. A cracking suspect's chip elevates *toward* the accuser's cast
   position. Motion that only decorates is cut.
@@ -219,6 +219,11 @@ characterization tool. Direction:
    were lies.** These are inviolable across every wrapper.
 
 ## 7. Priority Order When Time Is Short
+
+Beat labels here reflect the six-beat Couch Race arc per D-071 (the v1
+launch target). Spec 0069 §5 uses the eight-beat Imposter Variant labels
+for the same `seq-*` sequences; the sequences are the same, only the
+beat numbers differ.
 
 Per 0068 §6 and reaffirmed by D-070 / ADR-0013 §6, if a rehearsal or
 milestone forces a choice between polish targets, execute in this order.
