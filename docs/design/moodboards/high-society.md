@@ -73,8 +73,9 @@ through a window, silver on a decanter) is a highlight, never a base.
 
 - **Settle, don't snap.** Everything arrives *placed* — a note laid on a
   table, a chip set on a card. Even the beat-turn dim is unhurried.
-- **The exception is B2 (`seq-body`).** Death is sudden here as it is in
-  every wrapper: stage snaps darker, silence beat, single line, resume.
+- **The exception is `seq-body` (Beat 1 in Couch Race — the cold-open
+  death, per D-071 arc).** Death is sudden here as it is in every
+  wrapper: stage snaps darker, silence beat, single line, resume.
 - **The reveal (`seq-truth`) is candlelit lantern-slide.** Names and
   clues cross-fade like slides in a magic-lantern show. This is the
   wrapper's signature motion moment.

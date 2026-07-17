@@ -284,9 +284,8 @@ AW-268 must ship each wrapper as a **skin PR** that passes the 0069 §7 and
    `docs/design/moodboards/{high-society,corporate,sci-fi}.md` and are
    sufficient for AW-268 to shop against without a second briefing.
 3. The brief does not couple visual tokens to any single mini-game.
-4. Founder sign-off is recorded in `docs/product/decisions-log.csv` (see
-   D-073). Sign-off is founder action; the PR stages the entry and the
-   founder confirms or edits before merge.
+4. Founder sign-off is recorded in `docs/product/decisions-log.csv` as
+   D-073.
 
 ## 11. Open Questions (Deferred)
 

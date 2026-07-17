@@ -81,8 +81,9 @@ base.
 - **Drift and settle.** Elements arrive from off-stage on a low-friction
   motion — the suggestion of zero-g or a smooth robotic mount. Never
   bouncy. Never keyframed cute.
-- **The exception is B2 (`seq-body`).** Death still snaps. Even in the
-  future, sudden is sudden.
+- **The exception is `seq-body` (Beat 1 in Couch Race — the cold-open
+  death, per D-071 arc).** Death still snaps. Even in the future, sudden
+  is sudden.
 - **The reveal (`seq-truth`) is data-forensics.** Timeline reconstructs
   in a linear pass; a suspect's chip re-labels from *witness* to
   *responsible* on a hard cut. Killer chip flips to `--accuse` with a
