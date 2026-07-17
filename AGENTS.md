@@ -151,6 +151,32 @@ alembic revision --autogenerate -m "description"  # Create migration
 3. **Write tests as part of changes**, not after. Tests must validate acceptance criteria from the spec.
 4. **Run all checks locally** before claiming done: tests pass, types check, linting passes.
 
+## Human Collaboration Contract
+
+Before planning or implementation, classify the task using
+`docs/conventions/human-collaboration.md`: independent execution, decision
+interview, creative collaboration, facilitated live operation, or a
+combination.
+
+- A task is not independent when completion depends on founder taste, intent,
+  private knowledge, risk tolerance, external action, or observed feedback.
+- For non-independent work, ask one focused question at a time. Prefer
+  interactive multiple-choice controls with a recommendation and free-form
+  input. Use a clearly explained numbered-choice fallback only when the client
+  cannot render controls.
+- Explain every artifact, why it matters, what is fixed or open, how to review
+  it, what needs attention, and what follows approval.
+- Use low-cost intermediate artifacts before full UI, art, narrative,
+  gameplay, or tuning implementation.
+- Rehearsals and playtests pause at preparation, preflight, walkthrough,
+  live-session, debrief, and remediation gates.
+- Plan approval, direction approval, artifact approval, phase go-ahead, final
+  sign-off, and durable decision recording are separate approvals.
+- Never infer founder approval from silence, PR creation, review activity, or
+  prior general approval.
+- If founder input is unavailable, continue reversible research only, then
+  stop before making a choice or starting dependent implementation.
+
 ## Hard Rules (Requires Explicit Approval)
 
 - **Cross-module changes**: changes affecting multiple engine/ submodules need design review.
