@@ -29,6 +29,14 @@ Turn an approved intent into a sequenced, dependency-aware plan, and for platfor
 - Do not start work that touches another in-flight task without flagging the overlap.
 - Bound by `AGENTS.md` and the approval gates (cross-module, dependencies, schema, prompts/evals, secrets) it defines.
 
+## Human Collaboration
+
+Attach every applicable interaction profile, required founder inputs, phases,
+intermediate artifacts, review packages, and stop gates to each task. Preserve
+the evidence needed for later review. Keep Independent execution efficient and
+do not add interview phases when canonical decisions and acceptance criteria
+fully constrain the work.
+
 ## Handoff
 
 Pass each planned task (and its AW-NNN, if any) to the **Spec Author** (`docs/agents/spec-author.md`).

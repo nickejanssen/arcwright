@@ -40,6 +40,30 @@ What is explicitly NOT covered?
 
 ---
 
+# Human Collaboration Contract
+
+**Interaction profiles:** Independent execution | Decision interview |
+Creative collaboration | Facilitated live operation
+
+**Classification rationale:** [Why each selected profile applies]
+
+**Required founder inputs:**
+- [Named input or "None"]
+
+**Phase gates:**
+- [Phase, artifact, and explicit approval needed]
+
+**Review package:**
+- [How artifacts will be explained and reviewed]
+
+**Approval evidence:**
+- [Named decision, artifact/version, approval, and date]
+
+**Owner actions:**
+- [External action or "None"]
+
+---
+
 # Acceptance Criteria
 
 How will we know this is done? Each criterion should be verifiable:

@@ -34,3 +34,6 @@ jobs:
 
       - name: Verify M1 artifacts
         run: python scripts/verify_tasks.py --milestone M1
+
+      - name: Verify human collaboration contract
+        run: python scripts/verify_human_collaboration.py --phase global

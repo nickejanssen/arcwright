@@ -30,6 +30,21 @@ The intent and approval gate is a shared decision by three roles before any plan
 2. **Business Steward** decides whether it is worth pursuing commercially (market, revenue, pricing, go-to-market, business risk). Output: a business go or no-go with constraints.
 3. **System Architect** decides the technical approach and owns the design decision and any ADR. Output: an approved approach with design constraints. The SME informs this decision; the Architect makes it.
 
+### Collaboration Intake
+
+Before Planner handoff, Product, Business, and Architecture identify whether
+the work needs founder input under
+`docs/conventions/human-collaboration.md`. Product identifies product and
+creative choices, Business identifies commercial and risk choices, and
+Architecture identifies genuine technical trade-offs. Their handoff names the
+interaction profiles, required founder inputs, and any locked decisions.
+
+Planner carries the profiles, phases, intermediate artifacts, and stop gates
+into every task. Spec Author makes them testable. Implementer facilitates the
+required interviews and checkpoints. Reviewer blocks missing evidence or
+skipped gates. Scribe records only explicit approvals tied to a named decision,
+artifact, version, or phase.
+
 Once the gate aligns on a go:
 
 4. **Planner** turns the approved intent into a sequenced plan and, when the work is platform-build, one or more roadmap tasks with stable AW-NNN IDs and dependencies. Output: a plan and task definitions.

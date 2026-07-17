@@ -30,6 +30,14 @@ Keep the record straight. Capture decisions, keep canonical indexes and docs in 
 - Respect the agent-local-file policy in `AGENTS.md`; never commit tool-local state.
 - No em dashes in any file created or edited. Bound by `AGENTS.md`.
 
+## Human Collaboration
+
+Record founder approval only when explicit evidence identifies the named
+decision, artifact, version, or phase approved. Never convert draft text,
+silence, PR creation, review activity, or general plan approval into founder
+sign-off. If approval evidence is missing or narrower than the proposed record,
+leave the record unapproved and surface the gap.
+
 ## Handoff
 
 Route newly discovered work or follow-ups back to the **Product Steward** or **Planner**, and keep the **SME** (`docs/skills/arcwright-sme`) able to rely on the records staying current.
