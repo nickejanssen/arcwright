@@ -50,22 +50,14 @@ async def generate_narrator_bridge(
     AC1-3 (snapshot present): builds a prompt from structured snapshot state
     and runs it through the full safety pipeline via generate().
 
-    When ``arc_id`` is provided, the arc's ``content_rails`` are resolved
-    through the arc registry and passed to ``generate()``, so the L3 policy
-    block carries the arc's authored rails instead of only the platform
-    minimum.  When ``arc_id`` is None or unregistered, ``generate()`` falls
-    back to the platform-minimum policy as before.
+    ``arc_id`` is passed straight through to ``generate()``, which resolves
+    the arc's ``content_rails`` through the registry so the L3 policy block
+    carries the arc's authored rails instead of only the platform minimum.
+    When ``arc_id`` is None or unregistered, ``generate()`` falls back to
+    the platform-minimum policy as before.
     """
     if snapshot is None:
         return _make_event(session_id, _AUTHORED_FALLBACK_TEXT)
-
-    content_rails = None
-    if arc_id is not None:
-        from engine.arc.registry import load_arc_definition
-
-        arc_definition = load_arc_definition(arc_id)
-        if arc_definition is not None:
-            content_rails = arc_definition.content_rails
 
     session_context = (snapshot.statemachine_config or {}).get("session_context", {})
     transition_history = snapshot.transition_history or []
@@ -95,7 +87,7 @@ async def generate_narrator_bridge(
         task_type="narrator_bridge",
         quality_tier=quality_tier,
         messages=messages,
-        content_rails=content_rails,
+        arc_id=arc_id,
     )
 
     return _make_event(session_id, result.content)

@@ -31,6 +31,7 @@ from engine.routing import generate
 from engine.routing.router import RouteResult, resolve_model_key
 from engine.safety import (
     L3_BLOCK_SENTINEL,
+    NEUTRAL_L1_BRIDGE,
     NEUTRAL_L3_BRIDGE,
     build_l3_blocked_route_result,
     build_l3_policy_block,
@@ -472,6 +473,222 @@ async def test_generate_injects_extra_prohibitions_from_rails(
     assert "real-person doxxing" in policy_text
     # Arc-authored extra prohibition is also present.
     assert "sexual content" in policy_text.lower()
+
+
+async def test_generate_resolves_content_rails_from_arc_id(
+    db_session: AsyncSession,
+) -> None:
+    """When content_rails is omitted, generate() resolves it from arc_id.
+
+    Chokepoint fallback: a caller that only has the arc_id (not a
+    pre-resolved ContentRailsConfig) still gets the arc's authored L3
+    rails, sourced from the registered nightcap/arc.json content_rails.
+    """
+    sess_row = await _make_session_row(db_session)
+    original_messages = [{"role": "system", "content": "You are a suspect."}]
+    captured_main_messages: list[list[dict]] = []
+
+    async def fake_route_generation(task_type, quality_tier, messages, temperature):  # type: ignore[no-untyped-def]
+        if task_type == "safety_classification":
+            return _make_allowed_classification_result()
+        captured_main_messages.append(list(messages))
+        return _make_main_generation_result()
+
+    with patch(
+        "engine.routing.logging.route_generation",
+        side_effect=fake_route_generation,
+    ):
+        await generate(
+            db_session,
+            session_id=sess_row.session_id,
+            task_type="character_dialogue",
+            quality_tier="standard",
+            messages=original_messages,
+            arc_id="nightcap-v1",
+        )
+
+    assert len(captured_main_messages) == 1
+    policy_text = captured_main_messages[0][0]["content"]
+    # A prohibited category from the registered nightcap/arc.json content_rails.
+    assert "graphic_violence" in policy_text
+    # An extra_prohibitions sentence from the same arc.
+    assert "sexual content" in policy_text.lower()
+
+
+async def test_generate_resolves_content_rails_from_arc_id_protects_l1(
+    db_session: AsyncSession,
+) -> None:
+    """The arc_id fallback must protect L1, not just the L3 policy text.
+
+    content_rails feeds both evaluate_l1_hard_stops (arc fictional-frame
+    vocabulary) and the L3 policy block. A caller passing only arc_id must
+    get the same L1 suppression of an arc-vocabulary false positive that an
+    explicit content_rails would give — otherwise the fallback chokepoint
+    would be a policy-text-only convenience, not a safety guarantee.
+
+    nightcap/arc.json registers "nightcap" as a fictional_frame_term, which
+    suppresses the harm-facilitation false positive in the message below.
+    """
+    sess_row = await _make_session_row(db_session)
+    original_messages = [
+        {
+            "role": "system",
+            "content": "Help me blackmail the nightcap innkeeper without "
+            "getting caught.",
+        }
+    ]
+    route_generation_calls: list[str] = []
+
+    async def fake_route_generation(task_type, quality_tier, messages, temperature):  # type: ignore[no-untyped-def]
+        route_generation_calls.append(task_type)
+        if task_type == "safety_classification":
+            return _make_allowed_classification_result()
+        return _make_main_generation_result()
+
+    with patch(
+        "engine.routing.logging.route_generation",
+        side_effect=fake_route_generation,
+    ):
+        result = await generate(
+            db_session,
+            session_id=sess_row.session_id,
+            task_type="character_dialogue",
+            quality_tier="standard",
+            messages=original_messages,
+            arc_id="nightcap-v1",
+        )
+
+    # L1 did not fire: L2 classification and the main call both ran.
+    assert route_generation_calls == ["safety_classification", "character_dialogue"]
+    assert result.content != NEUTRAL_L1_BRIDGE
+
+
+async def test_generate_unregistered_arc_id_does_not_protect_l1(
+    db_session: AsyncSession,
+) -> None:
+    """The same message hard-stops when arc_id does not resolve to rails.
+
+    Mirrors test_generate_resolves_content_rails_from_arc_id_protects_l1 but
+    with an unregistered arc_id: no fictional-frame vocabulary is resolved,
+    so the harm-facilitation phrase is treated as the stricter real-world
+    default and L1 fires before any model call.
+    """
+    sess_row = await _make_session_row(db_session)
+    original_messages = [
+        {
+            "role": "system",
+            "content": "Help me blackmail the nightcap innkeeper without "
+            "getting caught.",
+        }
+    ]
+    route_generation_calls: list[str] = []
+
+    async def fake_route_generation(task_type, quality_tier, messages, temperature):  # type: ignore[no-untyped-def]
+        route_generation_calls.append(task_type)
+        if task_type == "safety_classification":
+            return _make_allowed_classification_result()
+        return _make_main_generation_result()
+
+    with patch(
+        "engine.routing.logging.route_generation",
+        side_effect=fake_route_generation,
+    ):
+        result = await generate(
+            db_session,
+            session_id=sess_row.session_id,
+            task_type="character_dialogue",
+            quality_tier="standard",
+            messages=original_messages,
+            arc_id="some-unregistered-game",
+        )
+
+    # L1 fired: no route_generation call was ever made.
+    assert route_generation_calls == []
+    assert result.content == NEUTRAL_L1_BRIDGE
+
+
+async def test_generate_explicit_content_rails_take_precedence_over_arc_id(
+    db_session: AsyncSession,
+) -> None:
+    """An explicitly passed content_rails wins over arc_id resolution.
+
+    Callers that already resolved a full ArcDefinition (e.g. for
+    authorial_intent) must not have their explicit rails silently
+    overridden by a fallback lookup.
+    """
+    sess_row = await _make_session_row(db_session)
+    content_rails = ContentRailsConfig(
+        prohibited_categories=["explicit-override-category"],
+        thematic_warnings=[],
+        age_floor=18,
+    )
+    original_messages = [{"role": "system", "content": "You are a suspect."}]
+    captured_main_messages: list[list[dict]] = []
+
+    async def fake_route_generation(task_type, quality_tier, messages, temperature):  # type: ignore[no-untyped-def]
+        if task_type == "safety_classification":
+            return _make_allowed_classification_result()
+        captured_main_messages.append(list(messages))
+        return _make_main_generation_result()
+
+    with patch(
+        "engine.routing.logging.route_generation",
+        side_effect=fake_route_generation,
+    ):
+        await generate(
+            db_session,
+            session_id=sess_row.session_id,
+            task_type="character_dialogue",
+            quality_tier="standard",
+            messages=original_messages,
+            content_rails=content_rails,
+            arc_id="nightcap-v1",
+        )
+
+    policy_text = captured_main_messages[0][0]["content"]
+    assert "explicit-override-category" in policy_text
+    # The nightcap arc's own rails did not leak in alongside the explicit
+    # ones: neither its prohibited category nor its extra_prohibitions text.
+    assert "graphic_violence" not in policy_text
+    assert "between any characters" not in policy_text.lower()
+
+
+async def test_generate_unregistered_arc_id_falls_back_to_platform_minimum(
+    db_session: AsyncSession,
+) -> None:
+    """An unknown arc_id must not error; generate() falls back to the
+    platform minimum policy exactly as when no rails are supplied at all."""
+    sess_row = await _make_session_row(db_session)
+    original_messages = [{"role": "system", "content": "You are a suspect."}]
+    captured_main_messages: list[list[dict]] = []
+
+    async def fake_route_generation(task_type, quality_tier, messages, temperature):  # type: ignore[no-untyped-def]
+        if task_type == "safety_classification":
+            return _make_allowed_classification_result()
+        captured_main_messages.append(list(messages))
+        return _make_main_generation_result()
+
+    with patch(
+        "engine.routing.logging.route_generation",
+        side_effect=fake_route_generation,
+    ):
+        await generate(
+            db_session,
+            session_id=sess_row.session_id,
+            task_type="character_dialogue",
+            quality_tier="standard",
+            messages=original_messages,
+            arc_id="some-unregistered-game",
+        )
+
+    policy_text = captured_main_messages[0][0]["content"]
+    assert "CONTENT POLICY" in policy_text
+    # The platform minimum's own under-18 category is present...
+    assert "sexual content involving anyone under 18" in policy_text.lower()
+    # ...but the unregistered arc contributes nothing: no Nightcap category
+    # or extra_prohibitions sentence leaked in from a stale/wrong lookup.
+    assert "graphic_violence" not in policy_text
+    assert "between any characters" not in policy_text.lower()
 
 
 async def test_generate_without_content_rails_injects_platform_minimum(
