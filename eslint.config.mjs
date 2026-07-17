@@ -18,7 +18,11 @@ export default tseslint.config(
     },
   },
   {
-    files: ["**/scripts/**/*.{js,mjs,cjs}", "**/*.config.{js,mjs,cjs}"],
+    files: [
+      "**/scripts/**/*.{js,mjs,cjs}",
+      "**/*.config.{js,mjs,cjs}",
+      "**/tests/**/*.{js,mjs,cjs}",
+    ],
     languageOptions: {
       globals: {
         console: "readonly",
@@ -32,6 +36,9 @@ export default tseslint.config(
         clearTimeout: "readonly",
         setInterval: "readonly",
         clearInterval: "readonly",
+        TextEncoder: "readonly",
+        TextDecoder: "readonly",
+        fetch: "readonly",
       },
     },
   },
