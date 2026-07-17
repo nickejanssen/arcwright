@@ -1,4 +1,4 @@
-# Moodboard — Boardroom Severance
+# Moodboard  -  Boardroom Severance
 
 > Wrapper: **Corporate** · Mood: **Uncanny, minimal, quietly wrong**
 > Story-bible instances: corporate off-site, C-suite retreat, board
@@ -6,14 +6,14 @@
 > a rented executive suite.
 > Launch skin: none in launch window.
 > Parent brief: `docs/design/nightcap-art-direction.md`.
-> Status: Draft — no image assets attached (per AW-267 scope: direction only).
+> Status: Candidate research for founder interview, not approved direction.
 
 ## 1. The Pitch
 
 The fluorescent light hums. Every surface has been chosen by a
 consultant. Everyone has a lanyard and a slightly forced smile. The
 projector was left on. Boardroom Severance is what Nightcap looks like
-when it wants to be *Severance* by way of *Industry* — coldly beautiful,
+when it wants to be *Severance* by way of *Industry*  -  coldly beautiful,
 extremely uncanny, and *funny* in the exact register of someone
 laughing too hard at their boss's joke. This board reads as *serious
 prestige*: think of it as Nightcap's dry-comedy option, the one you
@@ -23,21 +23,21 @@ put on when your friends are tired of things being *warm*.
 
 Steal the specific thing.
 
-- ***Severance* (2022–)** — steal the *uncanny minimalism*: the hallway,
+- ***Severance* (2022–)**  -  steal the *uncanny minimalism*: the hallway,
   the office plant, the exact green of Lumon carpet against beige. The
   serif waybar font.
-- ***Industry* (2020–)** — steal the *late-night trading floor* glow;
+- ***Industry* (2020–)**  -  steal the *late-night trading floor* glow;
   faces underlit by monitors.
-- ***American Psycho* (2000, office scenes)** — steal the *executive
+- ***American Psycho* (2000, office scenes)**  -  steal the *executive
   set-piece*: identical suits, identical desks, one thing wrong.
-- ***The Apartment* (1960)** — steal the *rows-of-desks* geometry.
-- ***Michael Clayton* (2007)** — steal the *corporate blue-hour*
+- ***The Apartment* (1960)**  -  steal the *rows-of-desks* geometry.
+- ***Michael Clayton* (2007)**  -  steal the *corporate blue-hour*
   interior light; conference rooms at 3am.
-- ***Suits* (2011–2019)** — steal the *boardroom set* discipline as a
+- ***Suits* (2011–2019)**  -  steal the *boardroom set* discipline as a
   reference for card layout.
-- ***The Assistant* (2019)** — steal the *quiet-office menace*: nothing
+- ***The Assistant* (2019)**  -  steal the *quiet-office menace*: nothing
   loud is happening; something bad is happening.
-- ***Playtime* (Tati, 1967)** — steal the *deep-focus office comedy*:
+- ***Playtime* (Tati, 1967)**  -  steal the *deep-focus office comedy*:
   every extra is doing something specific.
 
 ## 3. The Look
@@ -101,10 +101,10 @@ which reads *institutional*, not warm.
 - **Ambient is a fluorescent hum**: whisper-line has a nearly-imperceptible
   shimmer at very short period. Reduced motion holds it perfectly still.
 
-## 8. The Host — Vesper as the Chief of Staff
+## 8. The Host  -  Vesper as the Chief of Staff
 
 **See** [`the-host.md`](../the-host.md) for Vesper's bible. This is
-Vesper *reduced* — her most contained register. Because the baseline
+Vesper *reduced*  -  her most contained register. Because the baseline
 is so flat, every shift lands like a crack in a glass.
 
 - **Vesper's role tonight.** The Chief of Staff. Or HR. Speaks like
@@ -115,26 +115,26 @@ is so flat, every shift lands like a crack in a glass.
 - **Cast-rail silhouette shape.** Security badge with a lanyard
   hairline, tiny title beneath the name.
 - **Sample lines.**
-  - *(Opening — flat, professional.)* "Welcome, everyone, to Q4
+  - *(Opening  -  flat, professional.)* "Welcome, everyone, to Q4
     close. The catering is here. The agenda is here. Marcus is
     somewhere on the fifth floor. Let us begin."
-  - *(Beat turn, B2 — the shift, whisper-quiet.)* "Marcus has not
+  - *(Beat turn, B2  -  the shift, whisper-quiet.)* "Marcus has not
     returned from the fifth-floor kitchen. We are treating this as a
-    scheduling matter. — For now."
-  - *(Interrogation stinger — procedural, cutting.)* "The couch would
+    scheduling matter.  -  For now."
+  - *(Interrogation stinger  -  procedural, cutting.)* "The couch would
     remind Ms. Kent that this conversation is not, strictly speaking,
     off the record. Nothing here is. That is HR's position."
   - *(The Wink.)* "The couch is reminded that participation in this
     session is voluntary and appreciated. Refreshments are your
     responsibility."
   - *(Reveal.)* "It was on the shared drive the whole time. It has
-    always been on the shared drive. — Marcus, in fairness, had
+    always been on the shared drive.  -  Marcus, in fairness, had
     warned us."
 
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)
 
 The fluorescent goes down to one panel. The cast rail portraits step
-forward one at a time — narrator names what each *almost* caught,
+forward one at a time  -  narrator names what each *almost* caught,
 ending on a corporate detail (the sent-at timestamp, the printer
 history, the calendar hold nobody remembers making). The killer's
 badge lifts to center; a red exit-sign glow (`--accuse`) fills the
@@ -160,7 +160,7 @@ industrial-carpet black. The overhead light cuts. Cut to superlatives.
 - [ ] Card framing SVGs authored (badge, CONFIDENTIAL memo, agenda).
 - [ ] Background texture (copier grain / fluorescent reflection) SVG or CSS.
 - [ ] Fluorescent-hum ambient rule authored (period, amplitude,
-      reduced-motion override — must default to *off* for accessibility).
+      reduced-motion override  -  must default to *off* for accessibility).
 - [ ] Narrator voice fragments authored per 0068 §3.3.
 - [ ] Contrast table per parent brief §5.
 - [ ] Reduced-motion parity screenshots per `seq-*`.

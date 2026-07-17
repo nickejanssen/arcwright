@@ -1,4 +1,4 @@
-# Moodboard — Riviera 1962
+# Moodboard  -  Riviera 1962
 
 > Wrapper: **High Society** · Mood: **Sunlit, glossy, dangerous under the tan**
 > Story-bible instances: 1950s Hollywood cocktail party, 1960s Riviera
@@ -6,39 +6,39 @@
 > after-party.
 > Launch skin: none in launch window.
 > Parent brief: `docs/design/nightcap-art-direction.md`.
-> Status: Draft — no image assets attached (per AW-267 scope: direction only).
+> Status: Candidate research for founder interview, not approved direction.
 
 ## 1. The Pitch
 
 The sun goes down over the harbor. Somebody's on their fourth
 Negroni. Everyone here is *photographed for a living*, or married to
 someone who is. Riviera 1962 is what Nightcap looks like when it wants
-to be *The Talented Mr. Ripley* by way of *Mad Men* — expensive,
+to be *The Talented Mr. Ripley* by way of *Mad Men*  -  expensive,
 laughing, and about to turn ugly the moment the ice runs out. The
 couch feels *glamorous*. The couch also feels *outside*, which for a
-Nightcap session is the trick — this one plays in daylight and still
+Nightcap session is the trick  -  this one plays in daylight and still
 lands the reveal.
 
 ## 2. Reference Set
 
 Steal the specific thing.
 
-- ***The Talented Mr. Ripley* (1999)** — steal the *sunlight on
+- ***The Talented Mr. Ripley* (1999)**  -  steal the *sunlight on
   Italian tile*: the exact yellow of a terrace at 6pm; how a linen
   jacket carries a scene.
-- ***Death on the Nile* (2022)** — steal the *saturated Deco-into-
+- ***Death on the Nile* (2022)**  -  steal the *saturated Deco-into-
   moderne palette* against water and cream.
-- ***Mad Men* (2007–2015)** — steal the *drink in the frame*: how a
+- ***Mad Men* (2007–2015)**  -  steal the *drink in the frame*: how a
   glass in every hand tells a scene.
-- ***Bond, Sean Connery era* (1962–1967)** — steal the *cool wardrobe
+- ***Bond, Sean Connery era* (1962–1967)**  -  steal the *cool wardrobe
   as menace*: nobody looks nervous, everyone is dangerous.
-- ***Call Me by Your Name* (2017)** — steal the *golden hour discipline*
+- ***Call Me by Your Name* (2017)**  -  steal the *golden hour discipline*
   and the confidence to hold on faces.
-- ***A Bigger Splash* (2015)** — steal the *pool-side ensemble under
+- ***A Bigger Splash* (2015)**  -  steal the *pool-side ensemble under
   low sun*: bathing suits, secrets, tempers.
-- ***Ferrari* (2023, the terrace scenes)** — steal the *European
+- ***Ferrari* (2023, the terrace scenes)**  -  steal the *European
   hospitality set-piece* look.
-- ***The White Lotus* season 2 (2022)** — steal the *modern-Mediterranean*
+- ***The White Lotus* season 2 (2022)**  -  steal the *modern-Mediterranean*
   glamour with an edge; the villa as a character.
 
 ## 3. The Look
@@ -46,7 +46,7 @@ Steal the specific thing.
 - **Center stage:** a sun-drenched terrace, an art-directed cocktail
   bar, a yacht deck at dusk. Sky in the frame. Water off-frame,
   reflecting up.
-- **Cast rail:** portrait chips in mid-century-magazine style — a
+- **Cast rail:** portrait chips in mid-century-magazine style  -  a
   photo-half-tone dot pattern on cream stock, name letterspaced in
   editorial serif.
 - **Phones:** cards are magazine spreads or postcard stock. Private
@@ -64,7 +64,7 @@ Steal the specific thing.
 
 Warmth cue: **warm-source, low sun**. This is the only wrapper in the
 launch set where daylight is a source. Even so, the base stage stays
-near-black — the frame is what a *golden-hour photograph* looks like
+near-black  -  the frame is what a *golden-hour photograph* looks like
 matted on black card.
 
 ## 5. Typography
@@ -91,34 +91,34 @@ matted on black card.
 
 ## 7. Motion Character
 
-- **Slow, warm, confident.** Elements arrive like a page turn — a hand
+- **Slow, warm, confident.** Elements arrive like a page turn  -  a hand
   lifting a magazine, not an app rendering. Beat-turn dim is generous.
 - **The exception is `seq-body`.** Death cuts the light instantly: the
   sun *sets* in half a second, the stage snaps to the near-black base,
   a single line, then resume.
-- **A cicada or ice-in-glass hint** lives in the whisper line — a
+- **A cicada or ice-in-glass hint** lives in the whisper line  -  a
   single-frame shimmer at long period. Reduced motion drops it.
 
-## 8. The Host — Vesper as the Magazine Correspondent
+## 8. The Host  -  Vesper as the Magazine Correspondent
 
 **See** [`the-host.md`](../the-host.md) for Vesper's bible.
 
 - **Vesper's role tonight.** The correspondent from a very expensive
   magazine. Not American, not quite anything. Has been to this hotel
   before. Names the drink, the tan, the tan line.
-- **Register.** Confident, mid-Atlantic, luxurious, dry — the *most
+- **Register.** Confident, mid-Atlantic, luxurious, dry  -  the *most
   visibly enjoying herself* Vesper gets outside Big Top and Sim Reunion.
 - **Cast-rail silhouette shape.** Magazine half-tone rectangle, soft-
   cornered, cream stock.
 - **Sample lines.**
-  - *(Opening — jubilant.)* "The Delacourts have brought the yacht
+  - *(Opening  -  jubilant.)* "The Delacourts have brought the yacht
     around. The Ashfords have brought the champagne. The Contessa has
     brought her third husband. Everyone, in short, has brought
-    someone. — Almost everyone."
-  - *(Beat turn, B2 — the shift.)* "The bar closes at nine. Nobody
+    someone.  -  Almost everyone."
+  - *(Beat turn, B2  -  the shift.)* "The bar closes at nine. Nobody
     at this bar respects nine. And tonight, of course, there is a
     reason."
-  - *(Interrogation stinger — delighted.)* "Mr. Delacourt would like
+  - *(Interrogation stinger  -  delighted.)* "Mr. Delacourt would like
     to remind us all that he was on the tennis court at nine. The
     tennis court is *radiant*. The tennis court is also, unfortunately,
     disagreeing."
@@ -130,7 +130,7 @@ matted on black card.
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)
 
 Sun-gold rims the frame at low altitude. One by one, cast portraits
-slide into center on cream cards, held at magazine-spread scale — the
+slide into center on cream cards, held at magazine-spread scale  -  the
 narrator names what each *almost* caught, ending on a specific
 detail (the lipstick, the tan line, the drink they didn't finish).
 The killer's card enters last, its half-tone re-tinting to
@@ -160,5 +160,5 @@ Cut to superlatives.
       override).
 - [ ] Narrator voice fragments authored per 0068 §3.3.
 - [ ] Contrast table per parent brief §5 (extra care because glow is
-      warm on cream — verify 7:1 narrator on stage).
+      warm on cream  -  verify 7:1 narrator on stage).
 - [ ] Reduced-motion parity screenshots per `seq-*`.

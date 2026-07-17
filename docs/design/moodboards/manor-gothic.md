@@ -1,4 +1,4 @@
-# Moodboard — Manor Gothic
+# Moodboard  -  Manor Gothic
 
 > Wrapper: **High Society** · Mood: **Spooky, elegant, unsettled**
 > Story-bible instances: Victorian manor dinner, Edwardian country
@@ -6,14 +6,14 @@
 > Launch skin: none in launch window (Séance 1928 is High Society's
 > launch instance).
 > Parent brief: `docs/design/nightcap-art-direction.md`.
-> Status: Draft — no image assets attached (per AW-267 scope: direction only).
+> Status: Candidate research for founder interview, not approved direction.
 
 ## 1. The Pitch
 
 The house is older than everyone in it. The wallpaper knows what
 happened. Rain on the windows. Wet stone. A cousin nobody invited.
 Manor Gothic is what Nightcap looks like when it wants to be *Crimson
-Peak* by way of *Wednesday* — moody, funny in a dry way, unsettled but
+Peak* by way of *Wednesday*  -  moody, funny in a dry way, unsettled but
 never cruel. The couch loves this one because it feels like *Clue* the
 movie: the storm, the manor, the ensemble, the reveal in the study.
 
@@ -21,26 +21,26 @@ movie: the storm, the manor, the ensemble, the reveal in the study.
 
 Steal the specific thing.
 
-- ***Crimson Peak* (2015)** — steal the *architecture as character*:
+- ***Crimson Peak* (2015)**  -  steal the *architecture as character*:
   ceilings that read as complicit, a house that breathes.
-- ***Wednesday* (2022–)** — steal the *dry-comic gothic*: the ability to
+- ***Wednesday* (2022–)**  -  steal the *dry-comic gothic*: the ability to
   land a joke in a room this dark; the confident silhouette.
-- ***The Haunting of Bly Manor* (2020)** — steal the *ensemble grief*:
+- ***The Haunting of Bly Manor* (2020)**  -  steal the *ensemble grief*:
   a group of people orbiting a room they should have left.
-- ***Rebecca* (2020 and 1940)** — steal the *scale*: staircases,
+- ***Rebecca* (2020 and 1940)**  -  steal the *scale*: staircases,
   windows, the way distance in a hall reads as social distance.
-- ***Gosford Park* (2001)** — steal the *class geometry*: upstairs vs.
+- ***Gosford Park* (2001)**  -  steal the *class geometry*: upstairs vs.
   downstairs staged inside the same shot.
-- ***Clue* (1985)** — steal the *ensemble-in-a-manor comedy*: the
+- ***Clue* (1985)**  -  steal the *ensemble-in-a-manor comedy*: the
   reveal-in-the-library shot; the door montage; the pace.
-- ***Only Murders in the Building* (2021–)** — steal the *modern-warm
+- ***Only Murders in the Building* (2021–)**  -  steal the *modern-warm
   gothic*: how a dark palette can still feel *cozy*.
-- ***The Fall of the House of Usher* (2023, Netflix)** — steal the
+- ***The Fall of the House of Usher* (2023, Netflix)**  -  steal the
   *staged theatricality of the reveal*; how mood carries the plot.
 
 ## 3. The Look
 
-- **Center stage:** a manor interior — the study, the great hall, the
+- **Center stage:** a manor interior  -  the study, the great hall, the
   landing, the conservatory. Tall windows with weather in them. Deep
   shadow at the edges of the frame.
 - **Cast rail:** black-oval silhouettes with a gilt hairline, or a small
@@ -65,7 +65,7 @@ the outside pressing in.
 
 ## 5. Typography
 
-- **Display face.** A high-contrast serif with weight — an OFL cut of a
+- **Display face.** A high-contrast serif with weight  -  an OFL cut of a
   Bodoni or Didone-adjacent register. Reference: *Playfair Display*
   (OFL). Verify legibility at 28px TV floor.
 - **UI face.** Inter (constant).
@@ -88,16 +88,16 @@ the outside pressing in.
 
 ## 7. Motion Character
 
-- **Draw the curtain.** Beat-turns feel like a heavy velvet dropping —
+- **Draw the curtain.** Beat-turns feel like a heavy velvet dropping  -
   slow dim, held silence, resume. Elements enter *sliding* rather than
   landing.
-- **`seq-body` is a sudden opening of a door** — the stage snaps darker,
+- **`seq-body` is a sudden opening of a door**  -  the stage snaps darker,
   the rain seems to get louder for the silence beat, then a single line.
 - **A distant chime marks accusations.** Ambient hairline on the cast
   rail pulses once, quietly, on `seq-spotlight` open. Reduced motion
   drops the pulse and holds the frame.
 
-## 8. The Host — Vesper as the House's Housekeeper
+## 8. The Host  -  Vesper as the House's Housekeeper
 
 **See** [`the-host.md`](../the-host.md) for Vesper's bible. This board
 names her role in this wrapper.
@@ -106,15 +106,15 @@ names her role in this wrapper.
   than anyone can remember. Not spooky. *Certain*. She has already
   worked out who did it and is choosing when to say so.
 - **Register.** Cool, precise, unshockable, faintly amused at the
-  guests' disbelief. Vesper's most contained voice — the shift lands
+  guests' disbelief. Vesper's most contained voice  -  the shift lands
   harder against this baseline.
 - **Cast-rail silhouette shape.** Daguerreotype portrait in a gilt
   hairline oval on black.
 - **Sample lines.**
-  - *(Opening — jubilant, quiet.)* "The house is in good spirits
-    tonight. The east wing is warm — someone remembered to lay a
+  - *(Opening  -  jubilant, quiet.)* "The house is in good spirits
+    tonight. The east wing is warm  -  someone remembered to lay a
     fire. Someone else, I am afraid, has remembered too much."
-  - *(Beat turn, B2 — grave.)* "The east wing has always been cold.
+  - *(Beat turn, B2  -  grave.)* "The east wing has always been cold.
     This is not, tonight, the reason."
   - *(Interrogation stinger.)* "Mrs. Halloway would like the record
     to show she has never been in the study. The record is uncertain.
@@ -122,7 +122,7 @@ names her role in this wrapper.
   - *(The Wink.)* "You are watching this from a room I cannot see. I
     have decided to imagine it as warm and well-lit. Do continue."
   - *(Reveal.)* "The house has known since the portrait was hung. It
-    has been patient about telling us. — He was in the library. Of
+    has been patient about telling us.  -  He was in the library. Of
     course he was."
 
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)

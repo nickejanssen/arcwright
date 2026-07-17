@@ -1,4 +1,4 @@
-# Moodboard — Neon Noir
+# Moodboard  -  Neon Noir
 
 > Wrapper: **Sci-Fi** · Mood: **Cyberpunk, rain-lit, moody-crime**
 > Story-bible instances: cyberpunk-nightclub after-hours, private-room
@@ -6,14 +6,14 @@
 > suite, hacker-collective loft.
 > Launch skin: none in launch window.
 > Parent brief: `docs/design/nightcap-art-direction.md`.
-> Status: Draft — no image assets attached (per AW-267 scope: direction only).
+> Status: Candidate research for founder interview, not approved direction.
 
 ## 1. The Pitch
 
 It's raining. It's always raining. Someone at this table has been
 paying off someone in this city for a long time and now they can't
 find the person they've been paying. Neon Noir is what Nightcap looks
-like when it wants to be *Blade Runner* by way of *Cyberpunk 2077* —
+like when it wants to be *Blade Runner* by way of *Cyberpunk 2077*  -
 wet neon, translucent umbrellas, one warm light source in a cold
 frame, and a private booth where the deal is going wrong. The couch
 loves this one because it looks *dangerous*: it reads *crime film*
@@ -24,21 +24,21 @@ it.
 
 Steal the specific thing.
 
-- ***Blade Runner* (1982)** — steal the *rain-neon* palette: the exact
+- ***Blade Runner* (1982)**  -  steal the *rain-neon* palette: the exact
   reds and cyans of a wet street; the way umbrellas glow.
-- ***Blade Runner 2049* (2017)** — steal the *warm pocket in a cold
+- ***Blade Runner 2049* (2017)**  -  steal the *warm pocket in a cold
   frame*: one Vegas amber against Wallace-cool blue.
-- ***Ghost in the Shell* (1995 anime + 2017)** — steal the *silhouette
+- ***Ghost in the Shell* (1995 anime + 2017)**  -  steal the *silhouette
   discipline*: a face in a booth, half-lit, decisive.
-- ***Altered Carbon* (2018–2020)** — steal the *executive-suite noir*:
+- ***Altered Carbon* (2018–2020)**  -  steal the *executive-suite noir*:
   penthouse over a bad city.
-- ***Cyberpunk: Edgerunners* (2022)** — steal the *tonal balance*: it
+- ***Cyberpunk: Edgerunners* (2022)**  -  steal the *tonal balance*: it
   can be flashy and *emotional*; that's what pulls the couch in.
-- ***John Wick* (2014–)** — steal the *hotel-as-neutral-ground*
+- ***John Wick* (2014–)**  -  steal the *hotel-as-neutral-ground*
   aesthetic; the Continental staging.
-- ***Only God Forgives* (2013) / *Drive* (2011)** — steal the
+- ***Only God Forgives* (2013) / *Drive* (2011)**  -  steal the
   *magenta-and-brake-light* neon; the composure inside a threat.
-- ***Cowboy Bebop* (1998) — jazz-noir bar scenes** — steal the *booth-
+- ***Cowboy Bebop* (1998)  -  jazz-noir bar scenes**  -  steal the *booth-
   interrogation* framing.
 
 ## 3. The Look
@@ -47,7 +47,7 @@ Steal the specific thing.
   market table, a corporate-arcology suite. Neon signage as the light.
   One warm interior light (a paper lantern, a cigarette, a lamp on a
   desk).
-- **Cast rail:** portrait chips as *ID scans* — cyan-outlined hex or
+- **Cast rail:** portrait chips as *ID scans*  -  cyan-outlined hex or
   soft-rounded rectangle, name in a technical grotesk.
 - **Phones:** cards are hotel-key cards, encrypted comms, private
   message threads. Private cards have a wet-neon reflection edge.
@@ -65,7 +65,7 @@ Steal the specific thing.
 
 Warmth cue: **cool-flood, warm pocket**. The frame is *cool overall*;
 one small warm source pulls the eye. This is the wrapper's signature
-frame discipline — *never* two warm lights on stage at once.
+frame discipline  -  *never* two warm lights on stage at once.
 
 ## 5. Typography
 
@@ -99,10 +99,10 @@ frame discipline — *never* two warm lights on stage at once.
 - **`seq-body`** is the neon buzzing off. The cyan floods out; a
   single warm pixel remains for the silence beat; single line lands;
   resume as the neon comes back on.
-- **Ambient is falling rain** at the whisper line — very short period,
+- **Ambient is falling rain** at the whisper line  -  very short period,
   low amplitude. Reduced motion holds the frame steady.
 
-## 8. The Host — Vesper as the Hotel Concierge
+## 8. The Host  -  Vesper as the Hotel Concierge
 
 **See** [`the-host.md`](../the-host.md) for Vesper's bible.
 
@@ -110,30 +110,30 @@ frame discipline — *never* two warm lights on stage at once.
   Or the fixer who's been paid to watch. Calm, laconic, faintly
   amused, decisive.
 - **Register.** Noir-adjacent, precise, dry. Vesper's *John Wick
-  Continental* voice — she runs a very specific establishment for a
+  Continental* voice  -  she runs a very specific establishment for a
   very specific clientele and she is, in fact, quite fond of them.
 - **Cast-rail silhouette shape.** Cyan-outlined ID scan rectangle;
   sensor-lock reticle appears on the suspect being interrogated.
 - **Sample lines.**
-  - *(Opening — laconic warmth.)* "Rain again. The Continental is at
+  - *(Opening  -  laconic warmth.)* "Rain again. The Continental is at
     capacity. The Delacourts are in the penthouse. Kent is at the
-    noodle bar. Marcus is at the roof — where, in fairness, Marcus
+    noodle bar. Marcus is at the roof  -  where, in fairness, Marcus
     always is. Continuing."
   - *(Beat turn, B2.)* "The rain hasn't stopped. Marcus has. This is
     the kind of night where those two things are almost always
     related."
   - *(Interrogation stinger.)* "Kent says she was at the noodle bar
-    at nine. The noodle bar has never heard of her. — Which, to be
+    at nine. The noodle bar has never heard of her.  -  Which, to be
     fair, is exactly what the noodle bar would say."
-  - *(The Wink.)* "You, in the room I cannot see — the rain is coming
+  - *(The Wink.)* "You, in the room I cannot see  -  the rain is coming
     down here whether you notice or not. I appreciate the audience."
   - *(Reveal.)* "It was in the hotel-key ledger. It was in the ledger
-    the entire evening. — Marcus's key. Of course it was."
+    the entire evening.  -  Marcus's key. Of course it was."
 
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)
 
 The cyan floods out slowly. One warm lantern remains on stage. Cast
-ID scans slide up one at a time — narrator names what each *almost*
+ID scans slide up one at a time  -  narrator names what each *almost*
 caught, ending on a noir-detail (the key-card swipe, the payment
 timestamp, the wet umbrella left in the wrong room). The killer's
 ID scan lifts to center; the cyan outline snaps to `--accuse` on the
