@@ -99,20 +99,33 @@ matted on black card.
 - **A cicada or ice-in-glass hint** lives in the whisper line — a
   single-frame shimmer at long period. Reduced motion drops it.
 
-## 8. The Narrator
+## 8. The Host — Vesper as the Magazine Correspondent
 
-- **Persona.** The correspondent from a very expensive magazine. Not
-  American, not quite anything. Has been to this hotel before. Names
-  the drink, the tan, the tan line.
-- **Register.** Confident, mid-Atlantic, dry, deeply amused by the
-  wealth around them.
+**See** [`the-host.md`](../the-host.md) for Vesper's bible.
+
+- **Vesper's role tonight.** The correspondent from a very expensive
+  magazine. Not American, not quite anything. Has been to this hotel
+  before. Names the drink, the tan, the tan line.
+- **Register.** Confident, mid-Atlantic, luxurious, dry — the *most
+  visibly enjoying herself* Vesper gets outside Big Top and Sim Reunion.
+- **Cast-rail silhouette shape.** Magazine half-tone rectangle, soft-
+  cornered, cream stock.
 - **Sample lines.**
-  - *(Beat turn, B2.)* "The bar closes at nine. Nobody at this bar
-    respects nine. Something, of course, has happened."
-  - *(Interrogation stinger.)* "Mr. Delacourt would like to remind us
-    all that he was on the tennis court. The tennis court disagrees."
+  - *(Opening — jubilant.)* "The Delacourts have brought the yacht
+    around. The Ashfords have brought the champagne. The Contessa has
+    brought her third husband. Everyone, in short, has brought
+    someone. — Almost everyone."
+  - *(Beat turn, B2 — the shift.)* "The bar closes at nine. Nobody
+    at this bar respects nine. And tonight, of course, there is a
+    reason."
+  - *(Interrogation stinger — delighted.)* "Mr. Delacourt would like
+    to remind us all that he was on the tennis court at nine. The
+    tennis court is *radiant*. The tennis court is also, unfortunately,
+    disagreeing."
+  - *(The Wink.)* "You, on the couch. Yes, you. I know you are pretending
+    not to have a favourite suspect. I am not fooled. Nor is Mr. Delacourt."
   - *(Reveal.)* "It was in the water. It was in the water the whole
-    time. So was the answer."
+    time. So, in fairness, was the answer."
 
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)
 

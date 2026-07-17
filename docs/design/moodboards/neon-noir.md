@@ -102,18 +102,33 @@ frame discipline — *never* two warm lights on stage at once.
 - **Ambient is falling rain** at the whisper line — very short period,
   low amplitude. Reduced motion holds the frame steady.
 
-## 8. The Narrator
+## 8. The Host — Vesper as the Hotel Concierge
 
-- **Persona.** The hotel concierge who has seen worse. Or the fixer
-  who's been paid to watch. Calm, laconic, faintly amused, decisive.
-- **Register.** Noir-adjacent, precise, dry.
+**See** [`the-host.md`](../the-host.md) for Vesper's bible.
+
+- **Vesper's role tonight.** The hotel concierge who has seen worse.
+  Or the fixer who's been paid to watch. Calm, laconic, faintly
+  amused, decisive.
+- **Register.** Noir-adjacent, precise, dry. Vesper's *John Wick
+  Continental* voice — she runs a very specific establishment for a
+  very specific clientele and she is, in fact, quite fond of them.
+- **Cast-rail silhouette shape.** Cyan-outlined ID scan rectangle;
+  sensor-lock reticle appears on the suspect being interrogated.
 - **Sample lines.**
+  - *(Opening — laconic warmth.)* "Rain again. The Continental is at
+    capacity. The Delacourts are in the penthouse. Kent is at the
+    noodle bar. Marcus is at the roof — where, in fairness, Marcus
+    always is. Continuing."
   - *(Beat turn, B2.)* "The rain hasn't stopped. Marcus has. This is
-    the kind of night where those two things are almost always related."
+    the kind of night where those two things are almost always
+    related."
   - *(Interrogation stinger.)* "Kent says she was at the noodle bar
-    at nine. The noodle bar has never heard of her."
+    at nine. The noodle bar has never heard of her. — Which, to be
+    fair, is exactly what the noodle bar would say."
+  - *(The Wink.)* "You, in the room I cannot see — the rain is coming
+    down here whether you notice or not. I appreciate the audience."
   - *(Reveal.)* "It was in the hotel-key ledger. It was in the ledger
-    the entire evening."
+    the entire evening. — Marcus's key. Of course it was."
 
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)
 

@@ -99,20 +99,33 @@ crew is trying to hold together.
 - **Ambient is a slow console phosphor** flicker at the whisper line —
   low amplitude, long period. Reduced motion holds it steady.
 
-## 8. The Narrator
+## 8. The Host — Vesper as the Station Chief
 
-- **Persona.** The station's Chief. Or the AI concierge that's *not*
-  the station AI — a warmer register. Speaks like someone who has
-  filed this kind of incident report before and is going to file it
-  again in the morning.
-- **Register.** Adult, precise, quietly resigned.
+**See** [`the-host.md`](../the-host.md) for Vesper's bible.
+
+- **Vesper's role tonight.** The station's Chief. Or the AI concierge
+  that's *not* the station AI — a warmer register. Speaks like
+  someone who has filed this kind of incident report before and is
+  going to file another one in the morning.
+- **Register.** Adult, precise, quietly resigned. The Jackman-Logan
+  end of Vesper's range against a lived-in room.
+- **Cast-rail silhouette shape.** Crew-manifest thumbnail with role
+  and tour-count microcopy beneath the name.
 - **Sample lines.**
-  - *(Beat turn, B2.)* "The mess-hall is quiet. Marcus is at his usual
-    seat. Marcus is, per the vitals monitor, not sleeping."
+  - *(Opening — warm, procedural.)* "Ship's evening. All crew off
+    shift. Kent is in hydroponics. Delacourt is on the observation
+    deck. Marcus, as ever, is at his own dinner table. Coffee is
+    still hot. Continuing."
+  - *(Beat turn, B2.)* "The mess-hall is quiet. Marcus is at his
+    usual seat. Marcus is, per the vitals monitor, not sleeping."
   - *(Interrogation stinger.)* "Kent's suit log shows she was in
-    hydroponics at nineteen-oh-five. Hydroponics disagrees."
+    hydroponics at nineteen-oh-five. Hydroponics disagrees. Only one
+    of them is required to be honest."
+  - *(The Wink.)* "You are on a couch, six weeks from any station I
+    can reach. I appreciate the company. Continue."
   - *(Reveal.)* "It was in the manifest. It was in the manifest the
-    moment we broke orbit."
+    moment we broke orbit. — Marcus signed off on the shipment
+    himself. He was proud of it."
 
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)
 

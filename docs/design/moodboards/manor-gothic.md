@@ -97,20 +97,33 @@ the outside pressing in.
   rail pulses once, quietly, on `seq-spotlight` open. Reduced motion
   drops the pulse and holds the frame.
 
-## 8. The Narrator
+## 8. The Host — Vesper as the House's Housekeeper
 
-- **Persona.** The housekeeper who has been here longer than anyone can
-  remember. Not spooky. *Certain*. Speaks like someone who has already
-  seen who did it and is choosing when to say so.
-- **Register.** Dry, precise, unshockable, slightly amused at the guests'
-  disbelief.
+**See** [`the-host.md`](../the-host.md) for Vesper's bible. This board
+names her role in this wrapper.
+
+- **Vesper's role tonight.** The housekeeper who has been here longer
+  than anyone can remember. Not spooky. *Certain*. She has already
+  worked out who did it and is choosing when to say so.
+- **Register.** Cool, precise, unshockable, faintly amused at the
+  guests' disbelief. Vesper's most contained voice — the shift lands
+  harder against this baseline.
+- **Cast-rail silhouette shape.** Daguerreotype portrait in a gilt
+  hairline oval on black.
 - **Sample lines.**
-  - *(Beat turn, B2.)* "The east wing has always been cold. This is not,
-    tonight, the reason."
-  - *(Interrogation stinger.)* "Mrs. Halloway would like the record to
-    show she has never been in the study. The record is uncertain."
-  - *(Reveal.)* "The house knew, of course. It has known since the
-    portrait was hung."
+  - *(Opening — jubilant, quiet.)* "The house is in good spirits
+    tonight. The east wing is warm — someone remembered to lay a
+    fire. Someone else, I am afraid, has remembered too much."
+  - *(Beat turn, B2 — grave.)* "The east wing has always been cold.
+    This is not, tonight, the reason."
+  - *(Interrogation stinger.)* "Mrs. Halloway would like the record
+    to show she has never been in the study. The record is uncertain.
+    The record is often uncertain about Mrs. Halloway."
+  - *(The Wink.)* "You are watching this from a room I cannot see. I
+    have decided to imagine it as warm and well-lit. Do continue."
+  - *(Reveal.)* "The house has known since the portrait was hung. It
+    has been patient about telling us. — He was in the library. Of
+    course he was."
 
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)
 

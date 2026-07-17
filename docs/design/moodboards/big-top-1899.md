@@ -101,19 +101,40 @@ a time.
 - **The bulb ambient**: whisper-line glow pulses at long, slow period,
   like a marquee bulb about to flicker. Reduced motion holds it steady.
 
-## 8. The Narrator
+## 8. The Host — Vesper as the Ringmaster
 
-- **Persona.** The ringmaster. Or the ringmaster's ghost. Confident,
-  vaudeville-cadenced, warm to the audience, ruthless to the room.
-- **Register.** Elevated, theatrical, *performing* — but never the joke.
+**See** [`the-host.md`](../the-host.md) for Vesper's bible. This is
+Vesper's *most Ringmaster* register — the beat where the Jackman /
+Caine end of her voice recipe is loudest.
+
+- **Vesper's role tonight.** The Ringmaster. The show is over. She has
+  chosen to stay in character. Vaudeville projection when the beat
+  calls for it; ghost-quiet when it doesn't.
+- **Register.** Elevated, theatrical, *performing* — but never the
+  joke. The shift here is the biggest gap in the whole system:
+  Vesper can go from *booming applause line* to *dead quiet* inside a
+  single breath, and the beat lands harder for it.
+- **Cast-rail silhouette shape.** Playbill oval with a laurel border,
+  a small stage title below the name ("The Whispering Blade,"
+  "Madame Corvax").
 - **Sample lines.**
-  - *(Beat turn, B2.)* "The show has ended, ladies and gentlemen. The
-    evening, apparently, has not."
-  - *(Interrogation stinger.)* "The Whispering Blade would like the
-    couch to know he was on stage at nine. The couch is invited to
-    doubt him."
-  - *(Reveal.)* "The trick, it turns out, was that there was no trick.
-    Ladies and gentlemen — she just walked in."
+  - *(Opening — full Ringmaster.)* "Ladies! Gentlemen! Persons of every
+    other persuasion the century has yet to name! Welcome, one and
+    all — to the last show tonight. And this time, tonight, we mean
+    it *last*."
+  - *(Beat turn, B2 — the drop.)* "The show has ended. The evening,
+    apparently, has not. Marcus is in the wardrobe wagon. Marcus is
+    not, tonight, going home."
+  - *(Interrogation stinger — theatrical.)* "The Whispering Blade
+    would like the couch to know he was on stage at nine. The couch
+    is invited to doubt him. The audience always is. That is why we
+    sell tickets."
+  - *(The Wink.)* "You are watching from a room I have never seen. I
+    have chosen to imagine it packed. Please, applaud when you feel
+    moved. I will hear it. I always do."
+  - *(Reveal — the whole range.)* "The trick, it turns out, was
+    that there was no trick. Ladies and gentlemen — *she just walked
+    in.* — Applause, if you would. Softly. For Marcus."
 
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)
 

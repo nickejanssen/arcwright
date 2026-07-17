@@ -101,19 +101,35 @@ which reads *institutional*, not warm.
 - **Ambient is a fluorescent hum**: whisper-line has a nearly-imperceptible
   shimmer at very short period. Reduced motion holds it perfectly still.
 
-## 8. The Narrator
+## 8. The Host — Vesper as the Chief of Staff
 
-- **Persona.** The Chief of Staff. Or HR. Speaks like someone who has
-  drafted memos about worse things. Not warm. Not cruel. *Efficient*.
+**See** [`the-host.md`](../the-host.md) for Vesper's bible. This is
+Vesper *reduced* — her most contained register. Because the baseline
+is so flat, every shift lands like a crack in a glass.
+
+- **Vesper's role tonight.** The Chief of Staff. Or HR. Speaks like
+  someone who has drafted memos about worse. Not warm. Not cruel.
+  *Efficient*. The Jackman-Logan end of her voice recipe.
 - **Register.** Dry, procedural, faintly resigned. Every sentence is
-  a talking point.
+  a talking point. Every third sentence isn't.
+- **Cast-rail silhouette shape.** Security badge with a lanyard
+  hairline, tiny title beneath the name.
 - **Sample lines.**
-  - *(Beat turn, B2.)* "Marcus has not returned from the fifth-floor
-    kitchen. We are treating this as a scheduling matter, for now."
-  - *(Interrogation stinger.)* "The couch reminds Ms. Kent that this
-    conversation is not, strictly speaking, off the record."
+  - *(Opening — flat, professional.)* "Welcome, everyone, to Q4
+    close. The catering is here. The agenda is here. Marcus is
+    somewhere on the fifth floor. Let us begin."
+  - *(Beat turn, B2 — the shift, whisper-quiet.)* "Marcus has not
+    returned from the fifth-floor kitchen. We are treating this as a
+    scheduling matter. — For now."
+  - *(Interrogation stinger — procedural, cutting.)* "The couch would
+    remind Ms. Kent that this conversation is not, strictly speaking,
+    off the record. Nothing here is. That is HR's position."
+  - *(The Wink.)* "The couch is reminded that participation in this
+    session is voluntary and appreciated. Refreshments are your
+    responsibility."
   - *(Reveal.)* "It was on the shared drive the whole time. It has
-    always been on the shared drive."
+    always been on the shared drive. — Marcus, in fairness, had
+    warned us."
 
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)
 

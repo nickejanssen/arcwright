@@ -100,21 +100,34 @@ near-black to keep contrast honest at TV distance.
 - **Ambient is a palm-shadow drift** across the whisper line — very
   slow parallax, low amplitude. Reduced motion holds it steady.
 
-## 8. The Narrator
+## 8. The Host — Vesper as the Producer
 
-- **Persona.** The producer of the show inside the show. Warm on
-  camera, sharp off camera. Names the brand, names the fee, names the
-  guest who wouldn't sign the release.
-- **Register.** Bright, editorial, faintly sardonic.
+**See** [`the-host.md`](../the-host.md) for Vesper's bible.
+
+- **Vesper's role tonight.** The producer of the show inside the show.
+  Warm on camera, sharp off. Names the brand, the fee, the guest who
+  wouldn't sign the release.
+- **Register.** Bright, editorial, faintly sardonic. Delighted by the
+  content, exhausted by the talent.
+- **Cast-rail silhouette shape.** Soft-cornered Polaroid with a small
+  brand-tag pin.
 - **Sample lines.**
-  - *(Beat turn, B2.)* "The five-part story-arc has stalled. That's
-    because Marcus is in the plunge pool, and Marcus is not, per
-    contract, permitted to be face-down."
+  - *(Opening — jubilant, on-camera bright.)* "The Delacourts have
+    arrived. The Ashfords have arrived. The Contessa has *arrived* —
+    twice, actually, we needed the second take for lighting. Marcus
+    is en route. And what a *wonderful* weekend we are all about to
+    have together."
+  - *(Beat turn, B2 — off-camera pivot.)* "The five-part story-arc has
+    stalled. That is because Marcus is in the plunge pool, and Marcus
+    is not, per contract, permitted to be face-down."
   - *(Interrogation stinger.)* "Ms. Kent would like the couch to
     understand that at nine she was doing yoga. There is not a mat in
-    the frame."
+    the frame. There is not a mat in *any* of the frames. Continue."
+  - *(The Wink.)* "You, on the couch, are also, technically, on brand.
+    Thank you for your engagement. Please share, subscribe, and
+    accuse."
   - *(Reveal.)* "It was in the wellness shot. It was always in the
-    wellness shot."
+    wellness shot. — Marcus's follower count, in fairness, is up."
 
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)
 

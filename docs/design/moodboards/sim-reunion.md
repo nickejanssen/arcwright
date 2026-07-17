@@ -104,21 +104,39 @@ pastel. Reads *daytime UI dream* against the dark stage frame.
 - **Ambient is a slow pastel gradient drift** across the center stage.
   Reduced motion holds it steady.
 
-## 8. The Narrator
+## 8. The Host — Vesper as the Customer-Experience Host
 
-- **Persona.** The sim's customer-experience host. Bright, cheerful,
-  slightly-off in its politeness. Says every awful thing with a
-  smile you can hear.
+**See** [`the-host.md`](../the-host.md) for Vesper's bible. This is
+Vesper at *maximum Caine* — her most unhinged register. The Amazing
+Digital Circus end of her voice recipe is loudest here, and the
+occasional grave shift *devastates* against this baseline.
+
+- **Vesper's role tonight.** The sim's customer-experience host.
+  Bright, cheerful, slightly-off in her politeness. Says every awful
+  thing with a smile you can hear.
 - **Register.** Sunny-product-marketing, faintly uncanny, absurd.
+- **Cast-rail silhouette shape.** Soft-cornered sim-avatar square
+  with a small "session-tier" microcopy under the name (Basic /
+  Premium / Legacy).
 - **Sample lines.**
-  - *(Beat turn, B2.)* "Wonderful news! Marcus has been logged out.
-    We are so sorry for the inconvenience. Our team is looking into
-    it. In the meantime — the punch is still available."
-  - *(Interrogation stinger.)* "Ms. Kent, our records indicate you
-    were at yoga at nine. Our records also indicate yoga did not
-    happen at nine. Isn't that fun?"
-  - *(Reveal.)* "It was in the terms of service. It has always been
-    in the terms of service. Section fourteen point two! So exciting."
+  - *(Opening — full cheer.)* "Welcome, welcome, welcome to the
+    reunion of the class of infinity! Everyone made it. Everyone is
+    *radiant*. Everyone is, technically, still on the free trial. We
+    are so glad you're here."
+  - *(Beat turn, B2 — cheerful *devastation*.)* "Wonderful news!
+    Marcus has been logged out. We are so sorry for the inconvenience.
+    Our team is looking into it. In the meantime — the punch is still
+    available."
+  - *(Interrogation stinger — delighted.)* "Ms. Kent, our records
+    indicate you were at yoga at nine. Our records also indicate yoga
+    did not happen at nine. Isn't that *fun*?"
+  - *(The Wink — full Caine.)* "You are on a couch! The couch has
+    been *detected*! The couch is *welcome*! Your terms of service
+    are, of course, also in effect. Please enjoy Nightcap."
+  - *(Reveal — cheerful, then quiet.)* "It was in the terms of
+    service. It has always been in the terms of service. Section
+    fourteen point two! So exciting. — Marcus, in fairness, did
+    click 'agree.'"
 
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)
 

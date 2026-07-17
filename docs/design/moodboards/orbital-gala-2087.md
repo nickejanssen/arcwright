@@ -98,19 +98,34 @@ emergency lamp) — a highlight, never a base.
 - **Ambient is a slow starfield parallax** at the whisper line — one
   star crosses per beat. Reduced motion holds the field still.
 
-## 8. The Narrator
+## 8. The Host — Vesper as the Ship's Log
 
-- **Persona.** The ship-log voice. The concierge AI. Calibrated,
-  precise, dry — the register of a captain logging events after the
-  fact. Not sinister; *unimpressed*.
-- **Register.** Clipped, professional, slightly-amused.
+**See** [`the-host.md`](../the-host.md) for Vesper's bible. This is
+Vesper's *coolest* register — the shift is small and precise.
+
+- **Vesper's role tonight.** The ship-log voice. The station's
+  hospitality concierge, or the AI that isn't the station AI.
+  Calibrated, precise, dry — the register of a captain logging
+  events after the fact. Not sinister; *unimpressed*.
+- **Register.** Clipped, professional, slightly-amused. Vesper
+  making formal ship's log entries because it amuses her to do so.
+- **Cast-rail silhouette shape.** Hex-badge with a cool UV rim.
 - **Sample lines.**
-  - *(Beat turn, B2.)* "The observation lounge has depressurized —
-    conversationally. Mr. Marcus is unresponsive. The station is not."
-  - *(Interrogation stinger.)* "Ms. Kent's log shows her in the
-    solarium at nine. The station's log does not."
-  - *(Reveal.)* "It was in the airlock cycle. It has been in the
-    airlock cycle since the shuttle docked."
+  - *(Opening — formal, warm underneath.)* "Vesper, log. Time,
+    twenty-oh-seven ship-standard. All guests aboard, all guests
+    accounted for, all guests in high spirits. Champagne is in
+    zero-g globes. Marcus is on his third. Recording."
+  - *(Beat turn, B2.)* "Vesper, log. The observation lounge has
+    depressurized — conversationally. Mr. Marcus is unresponsive.
+    The station is not."
+  - *(Interrogation stinger.)* "Ms. Kent's suit log shows her in the
+    solarium at nineteen-oh-five. The station's log does not. One of
+    them, statistically, is lying."
+  - *(The Wink.)* "Vesper, log. The couch is present. Recording.
+    Continuing."
+  - *(Reveal.)* "Vesper, log. It was in the airlock cycle. It has
+    been in the airlock cycle since the shuttle docked. — Marcus,
+    I am afraid, filed the request."
 
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)
 

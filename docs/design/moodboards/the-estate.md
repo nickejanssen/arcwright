@@ -95,20 +95,31 @@ near-black; the light source is a *rented lamp*, not a fireplace.
   slowly, along the cast rail hairlines — light traveling across glass.
   Reduced motion drops it.
 
-## 8. The Narrator
+## 8. The Host — Vesper as the House's Private Curator
 
-- **Persona.** The house's private curator, or the host's Chief of
-  Staff. Warm to the guests, ruthless about the room. Names the
-  vintage, the vineyard, the architect.
-- **Register.** Considered, adult, mildly amused.
+**See** [`the-host.md`](../the-host.md) for Vesper's bible.
+
+- **Vesper's role tonight.** The house's private curator, or the
+  host's Chief of Staff. Warm to the guests, ruthless about the room.
+  Names the vintage, the vineyard, the architect.
+- **Register.** Considered, adult, mildly amused, quietly ruthless.
+- **Cast-rail silhouette shape.** Press-kit square photograph on
+  matte black, name in editorial serif beneath.
 - **Sample lines.**
+  - *(Opening — jubilant, understated.)* "Everyone is here. The
+    Delacourts have brought the Bordeaux. The house has brought its
+    best china. Marcus, our host, has brought the artist he flew in
+    from Rome. It is going to be a *lovely* evening. Almost."
   - *(Beat turn, B2.)* "Dessert is delayed. Marcus is in the study.
     Marcus is not, technically, alive."
   - *(Interrogation stinger.)* "Ms. Kent would like the couch to know
-    that she was on the terrace at nine. Two other people were also
-    on the terrace at nine. They disagree."
+    she was on the terrace at nine. Two other people were also on the
+    terrace at nine. They disagree — politely, but firmly."
+  - *(The Wink.)* "The couch, tonight, has been provided with excellent
+    lighting and, I trust, an appropriate beverage. I do not judge.
+    Well. I judge a little. Please continue."
   - *(Reveal.)* "It was in the salt. It has always been in the salt.
-    The menu, of course, listed it."
+    The menu, in fairness, did list it. — Not in so many words."
 
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)
 

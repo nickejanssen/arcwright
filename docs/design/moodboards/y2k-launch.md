@@ -99,21 +99,33 @@ or a *screen*.
   pixel of light moving left to right, one frame per beat. Reduced
   motion holds it steady.
 
-## 8. The Narrator
+## 8. The Host — Vesper as the Launch MC
 
-- **Persona.** The MC of the launch party. Or the CFO who was warned.
-  Names the round, the valuation, the champagne budget.
-- **Register.** Bright, giddy, warm, faintly ominous — the
-  ballroom-toastmaster voice with a hairline crack.
+**See** [`the-host.md`](../the-host.md) for Vesper's bible.
+
+- **Vesper's role tonight.** The MC of the launch party. Or the CFO
+  who was warned. Names the round, the valuation, the champagne
+  budget.
+- **Register.** Bright, giddy, warm, ominous — the ballroom-toast-
+  master voice with a hairline crack in it. Vesper's most *this is
+  fine* register.
+- **Cast-rail silhouette shape.** Pixelated lanyard badge or AIM
+  screenname card — screennames as flavor beneath the character name.
 - **Sample lines.**
+  - *(Opening — full launch bright.)* "Ladies and gentlemen, we are
+    forty-five minutes from midnight, Series C is *closed*, and the
+    Y2K bug is somebody else's problem. Marcus is about to give the
+    toast. Welcome — to the future!"
   - *(Beat turn, B2.)* "The countdown is at eleven-fifty-eight. Marcus
-    was scheduled to give the toast. Marcus is now, unfortunately, part
-    of the story."
+    was scheduled to give the toast. Marcus is now, unfortunately,
+    part of the story."
   - *(Interrogation stinger.)* "Kent would like the couch to remember
-    that she was at the bar at nine. The bar has security footage. The
-    bar disagrees."
+    that she was at the bar at nine. The bar has security footage.
+    The bar disagrees. — Sincerely."
+  - *(The Wink.)* "You are watching from a couch. I want you to know
+    the couch is *fully vested*, and I am delighted for you."
   - *(Reveal.)* "It was in the term sheet. It was in the term sheet
-    from the beginning."
+    from the beginning. — Marcus signed it. Of course he did."
 
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)
 

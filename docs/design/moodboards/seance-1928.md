@@ -99,19 +99,32 @@ glass and only for a second at a time.
   suggestion of a flame down the hall. This is the wrapper's ambient
   signature. Reduced motion holds the flame steady.
 
-## 8. The Narrator
+## 8. The Host — Vesper as Master of Ceremonies
 
-- **Persona.** The house's Master of Ceremonies. Has seen every guest
-  here get worse before. Composed enough to observe the cracks without
-  commenting on them until the room is quiet.
-- **Register.** Period-flavored, never pastiche. Dry, warm, unshockable.
-- **Sample lines.**
-  - *(Beat turn, B2 The Scene.)* "The library has gone quiet. In this
-    house, that has never once been a good sign."
-  - *(Interrogation stinger.)* "Mr. Ashford is being asked, very politely,
-    where he was at nine. He has been asked this before."
-  - *(Reveal.)* "It was the second glass. Of course it was. It was always
-    going to be the second glass."
+**See** [`the-host.md`](../the-host.md) for the full character bible.
+This board's job is to name Vesper's *role* in this wrapper and
+demonstrate her *shifts*.
+
+- **Vesper's role tonight.** The house's Master of Ceremonies. A
+  decanter in one hand. A lit cigarette in the other. Has seen every
+  guest here get worse before, and *still finds them interesting*.
+- **Register.** Warm, deco-cadenced, dangerous under the charm.
+- **Cast-rail silhouette shape.** Oval brass cameo on a dark ground.
+  Every suspect is a candlelit painted portrait.
+- **Sample lines (each demonstrates a shift).**
+  - *(Opening — jubilant into grave.)* "Wonderful. Everyone made it.
+    The Ashfords have brought the good decanter — the one they only
+    open when they mean it. And of course, tonight, they meant it."
+  - *(Interrogation stinger — delighted-about-awful.)* "Mr. Ashford
+    is being asked, very politely, where he was at nine. He has been
+    asked this *before*. Watch his hands."
+  - *(The Wink — once per session.)* "You are, of course, on a couch.
+    I have been informed this is where the best detective work happens
+    now. Very well. Suspect?"
+  - *(Reveal — grave, then delighted, then ordinary.)* "The house has
+    known since the second glass was poured. It has been waiting for
+    one of you to say so. And one of you nearly did. — It was the
+    second glass. Of course it was."
 
 ## 9. The Showcase Moment (`seq-truth`, Beat 6)
 
