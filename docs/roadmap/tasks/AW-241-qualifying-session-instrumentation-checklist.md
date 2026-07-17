@@ -24,6 +24,26 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 Define the exact evidence checklist for qualifying sessions. Likely files affected: docs/roadmap/tasks, docs/playtest if created.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Decision interview.
+
+**Founder input:** Required evidence, acceptable observation burden,
+qualification rules, privacy constraints, and practical recording workflow.
+
+**Required flow:** Explain what each signal proves, how it is captured, what the
+founder must inspect, and what would block qualification. Prepare a
+walkthrough-ready checklist, present bounded alternatives for unresolved
+instrumentation choices, and ask one focused interactive choice question at a
+time.
+
+**Gate:** The checklist cannot be declared ready for qualifying sessions until
+the founder has walked through it and explicitly approved the evidence and
+observation workflow.
+
+**Evidence:** Preserve the checklist reviewed, alternatives, founder feedback,
+explicit approval, approval date, and remaining owner actions.
+
 ## Acceptance Criteria
 
 - [ ] Checklist maps completion, replay enthusiasm, personalization perception, telemetry, cost, and blockers to concrete evidence.

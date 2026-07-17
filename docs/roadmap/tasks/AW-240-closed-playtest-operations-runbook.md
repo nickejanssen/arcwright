@@ -24,6 +24,25 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 Create the operational runbook for qualifying playtests. Likely files affected: docs/roadmap/tasks, docs/playtest if created.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Decision interview.
+
+**Founder input:** Host workflow, recruitment constraints, consent language,
+observation practices, incident handling, and practical session logistics.
+
+**Required flow:** Research the governing requirements, explain each operator
+responsibility and risk in plain language, and prepare a walkthrough-ready draft.
+Present bounded alternatives where operational choices remain. Ask one focused
+interactive choice question at a time and revise the draft in checkpoints.
+
+**Gate:** The runbook cannot become operationally ready until the founder has
+walked through the draft and explicitly approved the host workflow, participant
+handling, and evidence process.
+
+**Evidence:** Preserve the draft reviewed, alternatives, founder feedback,
+explicit approval, approval date, and outstanding owner actions.
+
 ## Acceptance Criteria
 
 - [ ] Runbook defines outside-group eligibility, consent steps, setup, host script, observer notes, and failure handling.

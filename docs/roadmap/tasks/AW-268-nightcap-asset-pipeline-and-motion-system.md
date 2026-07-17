@@ -38,6 +38,34 @@ audiences.
 - Backfill polish into Crime Scene Smash, Evidence Locker, and Tell Me
   Something True.
 
+## Human Collaboration Contract
+
+**Interaction profiles:** Creative collaboration plus Decision interview.
+
+**Founder input:** Final AW-267 art-direction approval, representative asset and
+motion expectations, wrapper behavior, accessibility priorities, and the
+animation-runtime choice.
+
+**Creative flow:** Treat AW-267 as a hard prerequisite. Explain each proposed
+artifact, why it exists, how to review it, and what needs founder attention.
+Present low-cost representative assets, motion studies, and wrapper mockups in
+phases. Pause after each checkpoint for focused interactive feedback before
+expanding the system or producing final assets.
+
+**Runtime decision flow:** Research the constraints, explain cost, performance,
+accessibility, and maintenance trade-offs in plain language, and present two or
+three viable runtime options with a recommendation. Ask one focused interactive
+choice question at a time and confirm the selected option.
+
+**Gates:** No asset or motion production begins before explicit AW-267 final
+sign-off. No broad production follows a sample checkpoint without explicit
+direction. No runtime implementation begins until the founder explicitly
+approves the named option.
+
+**Evidence:** Preserve the approved AW-267 reference, artifacts shown, review
+instructions, founder feedback, runtime options and recommendation, explicit
+approvals, dates, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] Per-theme asset folder structure exists and is documented.
