@@ -19,7 +19,23 @@ Implement a single GitHub work item with a strict plan-before-code workflow and 
 - Treat product-scope additions as unapproved until durable evidence exists in canonical repo docs. Use `docs/product/decisions-log.csv` for product approval records, plus an ADR or approved spec when the decision affects roadmap sequencing, architecture, privacy, APIs, schemas, telemetry, or implementation behavior.
 - If the ticket is missing acceptance criteria or concrete done conditions, stop and ask for them before coding.
 
-### 2. Create a Safe Branch
+### 2. Classify Human Collaboration
+
+- Read `docs/conventions/human-collaboration.md` and declare every applicable
+  interaction profile with a short rationale.
+- If the task is not independent, list required founder inputs, the current
+  phase, the next gate, intermediate artifacts, and approval evidence needed.
+- Conduct required interviews one focused question at a time. Prefer
+  interactive multiple-choice controls with a recommendation and free-form
+  input. Use the numbered-choice fallback only when controls are unavailable.
+- Creative work begins with open-ended founder vision, followed by 2 to 3
+  advised directions and explained low-cost artifacts.
+- Facilitated live operations stop at every preparation, preflight,
+  walkthrough, live-session, debrief, and remediation gate.
+- If the founder is unavailable, continue reversible research only and stop
+  before choosing or implementing dependent work.
+
+### 3. Create a Safe Branch
 
 - Make branch creation the first state-changing git action for the task.
 - Prefer `task/AW-111-brief-description` when a stable task ID exists.
@@ -28,7 +44,7 @@ Implement a single GitHub work item with a strict plan-before-code workflow and 
 - If the user supplied an invalid branch name, show the sanitized branch name before using it.
 - Do not reuse a branch that already contains unrelated work.
 
-### 3. Inspect Repo State Before Editing
+### 4. Inspect Repo State Before Editing
 
 - Run a repo-state check such as `git status` before editing.
 - Read the repo's agent instruction file and workflow docs first, such as `AGENTS.md`, `CLAUDE.md`, `CONTRIBUTING.md`, `README.md`, or docs under `docs/`.
@@ -37,15 +53,17 @@ Implement a single GitHub work item with a strict plan-before-code workflow and 
 - Verify prerequisites from prior tasks are actually present in the codebase. If a required dependency, earlier task, migration, API, or helper is missing or incomplete, stop and report the exact prerequisite gap.
 - Do not clean up unrelated local changes. Call them out only if they affect the task.
 
-### 4. Produce a Plan and Wait for Approval
+### 5. Produce a Plan and Wait for Approval
 
 - After reading, send a short implementation plan before writing code.
 - Include ambiguities, missing decisions, conflicting instructions, or prerequisite gaps in the same message.
 - Quote the exact unclear ticket or spec text when asking for clarification.
-- Ask in one message, not a long back-and-forth.
+- For independent work, group related implementation ambiguities into one
+  concise clarification. For non-independent work, follow the one-focused-
+  question-at-a-time interview contract.
 - Do not write code until the user explicitly approves the plan.
 
-### 5. Implement Only the Approved Scope
+### 6. Implement Only the Approved Scope
 
 - Implement only what the ticket and approved plan require.
 - Do not add cleanup, refactors, dependencies, schema changes, or extra features unless the acceptance criteria require them or the user approves them.
@@ -55,7 +73,7 @@ Implement a single GitHub work item with a strict plan-before-code workflow and 
 - If repo policy marks a change type as approval-gated, stop and surface that gate before proceeding. Common gated categories include dependency changes, database schema changes, auth or secret handling, prompt or eval changes, and broad cross-module architecture changes.
 - If approved work adds product scope, add or update the durable decision evidence in `docs/product/`, `docs/decisions/`, or `docs/specs/` as part of the same change.
 
-### 6. Verify Like a Reviewer
+### 7. Verify Like a Reviewer
 
 - Run the smallest set of checks that proves the ticket, then add any repo-required lint, type, build, or test commands needed to claim completion.
 - Separate results into three categories:
@@ -65,7 +83,7 @@ Implement a single GitHub work item with a strict plan-before-code workflow and 
 - Confirm each acceptance criterion explicitly, one by one, with short evidence.
 - If the repo or ticket names a mandatory command, run it unless blocked by a missing dependency, missing credential, or environment limitation. If blocked, say so explicitly.
 
-### 7. Commit and PR Correctly
+### 8. Commit and PR Correctly
 
 - Use one branch per task.
 - Use a conventional commit subject on the first line.
@@ -75,21 +93,21 @@ Implement a single GitHub work item with a strict plan-before-code workflow and 
 - Use the issue title as the PR title when the ticket or repo workflow expects that. If the repo enforces a different title format and the ticket says "exact issue title," stop and surface the conflict.
 - In the PR description, list which acceptance criteria pass, what checks ran, and any remaining blockers or follow-up risk.
 
-### 8. Handle Review Follow-Up on the Same Ticket
+### 9. Handle Review Follow-Up on the Same Ticket
 
 - Read review comments carefully and distinguish actionable requests from preference-only commentary.
 - Fix actionable comments on the same branch unless the repo workflow says otherwise.
 - Resolve review conversations only after the code or explanation actually addresses them.
 - If a review request would expand scope beyond the original ticket, stop and ask whether to fold it into the current task or open a follow-up issue.
 
-### 9. Clean Up Only After Merge
+### 10. Clean Up Only After Merge
 
 - Do not do post-merge cleanup until merge is confirmed.
 - After merge, switch back to the default branch, pull the latest remote state, delete the local task branch, and run `git status`.
 - Report whether the working tree is clean and synced with the default branch.
 - If pre-existing files or ignored local state prevent a clean tree, report them explicitly and leave them alone.
 
-### 10. Close Tracker Items After Merge
+### 11. Close Tracker Items After Merge
 
 - After merge and local branch cleanup, identify the completed ticket, its parent epic, and its milestone from the GitHub issue, PR, and canonical roadmap index.
 - Close the completed task ticket unless it is already closed. Add a clear completion note before or during closure.
@@ -110,6 +128,11 @@ Implement a single GitHub work item with a strict plan-before-code workflow and 
 - Required checks blocked by missing dependencies, credentials, or environment access
 - Approval-gated work types that the repo or user has not approved
 - Unrelated local changes that make the task unsafe to continue without direction
+- A missing or unjustified interaction profile
+- A required founder interview that has not occurred
+- An artifact that lacks the explanation required for informed review
+- Approval inferred from silence, PR activity, or a broader approval
+- A live-operation phase without its explicit go or no-go
 
 ## Conflict Rules
 

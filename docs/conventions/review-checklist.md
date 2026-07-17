@@ -8,6 +8,11 @@ Spend more time here than feels comfortable. This is the most leveraged work in 
 - [ ] Are acceptance criteria testable and tested?
 - [ ] Does the change scope match the spec scope?
 - [ ] Do product-scope additions have durable approval evidence in `docs/product/decisions-log.csv` plus an ADR or approved spec when needed?
+- [ ] Is the task's collaboration profile declared and justified?
+- [ ] For non-independent work, are required interviews, explained artifacts,
+      phase approvals, and explicit sign-off evidence present?
+- [ ] Does every approval identify the exact decision, artifact, version, or
+      phase approved?
 
 ## While Reading the Diff
 
@@ -29,3 +34,6 @@ Spend more time here than feels comfortable. This is the most leveraged work in 
 - [ ] No review comments are unresolved.
 - [ ] An ADR was added if the architecture changed.
 - [ ] Docs were updated if user-visible behavior changed.
+- [ ] No decision record infers founder approval from silence, PR activity, or
+      a broader approval.
+- [ ] No live-operation phase advanced without its explicit go or no-go.

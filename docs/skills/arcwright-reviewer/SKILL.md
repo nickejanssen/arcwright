@@ -21,13 +21,26 @@ The canonical checklist this skill enforces lives at `docs/conventions/review-ch
 - Confirm the change scope matches the spec scope. Anything beyond the spec is scope creep until proven otherwise.
 - Confirm product-scope additions have durable approval evidence in `docs/product/decisions-log.csv` plus an ADR or approved spec when they affect roadmap sequencing, architecture, privacy, APIs, schemas, telemetry, or implementation behavior.
 
-### 2. Read Every Changed File
+### 2. Verify Human Collaboration Evidence
+
+- Confirm the task declares every applicable interaction profile.
+- For non-independent work, verify required founder inputs, phase gates,
+  explained artifacts, locked decisions, explicit approval evidence, and
+  outstanding owner actions.
+- Block when an interview or phase was skipped, a completed implementation
+  replaced an intermediate artifact, an artifact was not reviewable, approval
+  was inferred, a decision record overclaims approval, or a live operation
+  advanced without its go or no-go.
+- If a founder decision changed, verify dependent work and approvals were
+  reopened and updated.
+
+### 3. Read Every Changed File
 
 - Read every file in the diff, not just the highlights.
 - Build a mental model of what changed and why before judging any single line.
 - Do not rely on the PR description; verify it against the actual diff.
 
-### 3. Run the Checklist
+### 4. Run the Checklist
 
 Check each item and record evidence (file and line) for anything you flag:
 
@@ -42,25 +55,25 @@ Check each item and record evidence (file and line) for anything you flag:
 - LLM-dependent code: prompts kept under version control, eval cases updated when prompt, routing, or model behavior changed, and model selection justified and consistent with routing policy.
 - Engine constraint integrity: arc logic stays in Python, knowledge-state query precedes every AI generation call, safety stays enforced at the engine layer. Flag any change that erodes these.
 
-### 4. Confirm Each Acceptance Criterion
+### 5. Confirm Each Acceptance Criterion
 
 - Walk the acceptance criteria one by one.
 - For each, mark pass, fail, or blocked, with a one-line piece of evidence (a test name, a file and line, or a command result).
 - Do not accept "should work"; require evidence.
 
-### 5. Verify Checks Ran
+### 6. Verify Checks Ran
 
 - Confirm CI is green, or name exactly which checks did not run and why.
 - Separate failures introduced by the change from pre-existing failures (for example, the `make type` failure tracked in ADR 0002). Never let a pre-existing issue mask a new one, and never blame the change for a pre-existing one.
 
-### 6. Report the Verdict
+### 7. Report the Verdict
 
 - Give a single top-line verdict: approve, approve with non-blocking notes, or block.
 - List blocking findings first, each with file, line, and the rule it violates.
 - List non-blocking suggestions separately so they are not confused with blockers.
 - If you block, state the smallest change that would unblock.
 
-### 7. Before Merge (human gate)
+### 8. Before Merge (human gate)
 
 - No PR merges to main without human review of the full diff; automated checks pass first, then a human reviews.
 - Confirm no review comments are unresolved.
@@ -72,6 +85,11 @@ Check each item and record evidence (file and line) for anything you flag:
 - Acceptance criteria that are missing, untestable, or untested.
 - An approval-gated change (new dependency, schema or migration, prompt or eval, secrets or auth, broad cross-module change) with no evidence of approval.
 - A diff too large or entangled to review safely; ask for it to be split.
+- A missing or unjustified collaboration profile.
+- A required interview, explained artifact, phase approval, or final sign-off
+  without explicit evidence.
+- A decision record that infers or overstates founder approval.
+- A facilitated live operation that advanced without its explicit go or no-go.
 
 ## Conflict Rules
 
