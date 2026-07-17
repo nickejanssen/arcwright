@@ -1,0 +1,187 @@
+{
+  "arc_id": "nightcap-couch-race-v1",
+  "name": "Nightcap Couch Race",
+  "min_players": 2,
+  "max_players": 8,
+  "character_mode": "generated",
+  "aesthetic_config": {
+    "selection_model": {
+      "era": {"type": "host_select", "allow_random": true},
+      "occasion": {"type": "host_select", "allow_random": true}
+    },
+    "asset_generation": {
+      "background_art": "pre_produced_per_theme",
+      "narrator_dialogue": "authored_refrain_library_plus_generative_specifics"
+    }
+  },
+  "setting_constraint": "social_gathering",
+  "arc_structure": "story_circle",
+  "play_mode": "detective_race",
+  "narrator": {
+    "type": "host_persona",
+    "surface": "shared_display",
+    "persona_mode": "aesthetic_linked",
+    "behavior_triggers": [
+      "beat_transition",
+      "clue_release",
+      "tension_threshold",
+      "player_inaction"
+    ],
+    "omniscient": true,
+    "player_addressable": true
+  },
+  "quality_tier_default": "standard",
+  "characters": [],
+  "beats": [
+    {
+      "beat_id": "pour",
+      "beat_name": "The Pour",
+      "beat_type": "cold_open",
+      "story_circle_step": 1,
+      "structural_function": "establish_world_and_death",
+      "dramatic_purpose": "Establish the gathering; land the death as a staged audiovisual moment.",
+      "emotional_target": "curious_then_shocked",
+      "information_goal": "Players receive detective identities; Vesper introduces the cast; body drops in seq-body.",
+      "tension_target": 0.35,
+      "character_emphasis": ["host"],
+      "authored_content": {"opening_note": "Gathering assembles; Vesper welcomes the couch."},
+      "generative_triggers": ["case_resolution", "narrator_opening"],
+      "entry_conditions": [],
+      "exit_conditions": ["case_resolution_complete", "all_players_ready"],
+      "pacing_config": {"stall_threshold_seconds": 120},
+      "audience_targets": ["all"],
+      "mini_games": []
+    },
+    {
+      "beat_id": "scene",
+      "beat_name": "The Scene",
+      "beat_type": "investigation",
+      "story_circle_step": 2,
+      "structural_function": "establish_investigative_baseline",
+      "dramatic_purpose": "First evidence wave; competitive mini-game slot.",
+      "emotional_target": "focused",
+      "information_goal": "Group and private evidence delivered; investigative asymmetry established.",
+      "tension_target": 0.45,
+      "character_emphasis": ["cast"],
+      "authored_content": {},
+      "generative_triggers": ["clue_release"],
+      "entry_conditions": [],
+      "exit_conditions": ["evidence_wave_delivered"],
+      "pacing_config": {"stall_threshold_seconds": 180},
+      "audience_targets": ["all", "individual"],
+      "mini_games": []
+    },
+    {
+      "beat_id": "grill",
+      "beat_name": "The Grill",
+      "beat_type": "interrogation",
+      "story_circle_step": 3,
+      "structural_function": "core_loop_interrogation",
+      "dramatic_purpose": "Rounds of interrogation; contradictions surface as gameplay.",
+      "emotional_target": "engaged_pressured",
+      "information_goal": "Players spend intent tokens; suspect answers form claim ledger; contradictions can be flagged.",
+      "tension_target": 0.60,
+      "character_emphasis": ["cast"],
+      "authored_content": {},
+      "generative_triggers": ["character_dialogue"],
+      "entry_conditions": [],
+      "exit_conditions": ["interrogation_rounds_complete"],
+      "pacing_config": {"stall_threshold_seconds": 240},
+      "audience_targets": ["all", "individual"],
+      "mini_games": []
+    },
+    {
+      "beat_id": "twist",
+      "beat_name": "The Twist",
+      "beat_type": "recontextualization",
+      "story_circle_step": 4,
+      "structural_function": "recontextualization",
+      "dramatic_purpose": "Deterministic mid-case revelation; solo mini-game slot.",
+      "emotional_target": "reoriented",
+      "information_goal": "Twist reframes suspicion without changing whodunit; second evidence wave.",
+      "tension_target": 0.72,
+      "character_emphasis": ["host"],
+      "authored_content": {},
+      "generative_triggers": ["clue_release", "narrator_beat"],
+      "entry_conditions": [],
+      "exit_conditions": ["twist_delivered"],
+      "pacing_config": {"stall_threshold_seconds": 150},
+      "audience_targets": ["all", "individual"],
+      "mini_games": []
+    },
+    {
+      "beat_id": "last_call",
+      "beat_name": "Last Call",
+      "beat_type": "endgame",
+      "story_circle_step": 5,
+      "structural_function": "convergence_under_pressure",
+      "dramatic_purpose": "Visible countdown; scarce final questions; accusations lock in.",
+      "emotional_target": "urgent",
+      "information_goal": "Countdown running; accusation locks private; first-correct triggers table-wide Last Call.",
+      "tension_target": 0.88,
+      "character_emphasis": ["cast", "host"],
+      "authored_content": {},
+      "generative_triggers": ["character_dialogue", "narrator_beat"],
+      "entry_conditions": [],
+      "exit_conditions": ["accusations_locked_or_countdown_expired"],
+      "pacing_config": {"stall_threshold_seconds": 120},
+      "audience_targets": ["all", "individual"],
+      "mini_games": []
+    },
+    {
+      "beat_id": "truth",
+      "beat_name": "The Truth",
+      "beat_type": "revelation",
+      "story_circle_step": 6,
+      "structural_function": "revelation_and_scoring",
+      "dramatic_purpose": "Vesper reconstructs the case; scoreboard fires.",
+      "emotional_target": "resolved",
+      "information_goal": "Full reveal per authored reveal shape; scoreboard; replay prompt.",
+      "tension_target": 0.35,
+      "character_emphasis": ["host"],
+      "authored_content": {},
+      "generative_triggers": ["narrator_reveal", "scoring_summary"],
+      "entry_conditions": [],
+      "exit_conditions": [],
+      "pacing_config": {"stall_threshold_seconds": 240},
+      "audience_targets": ["all"],
+      "mini_games": []
+    }
+  ],
+  "beat_graph": {
+    "pour": ["scene"],
+    "scene": ["grill"],
+    "grill": ["twist"],
+    "twist": ["last_call"],
+    "last_call": ["truth"],
+    "truth": []
+  },
+  "generative_elements": {
+    "killer_assignment": false,
+    "character_generation": true,
+    "aesthetic_generation": true,
+    "clue_content": true,
+    "plot_twist": false,
+    "narrator_dialogue": false
+  },
+  "content_rails": {
+    "prohibited_categories": [],
+    "thematic_warnings": [],
+    "age_floor": 18,
+    "extra_prohibitions": []
+  },
+  "knowledge_rules": {
+    "killer_knows_they_did_it": false,
+    "narrator_omniscient": true,
+    "clues_private_until_shared": true
+  },
+  "pacing_config": {
+    "stall_threshold": 0.25,
+    "misdirection_threshold": 0.80,
+    "premium_threshold": 0.85,
+    "w_time": 0.30,
+    "w_action": 0.30,
+    "w_suspicion": 0.25,
+    "w_coverage": 0.15
+  }
+}
