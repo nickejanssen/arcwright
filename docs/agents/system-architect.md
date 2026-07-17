@@ -38,6 +38,13 @@ Own and approve cross-cutting technical design decisions. The System Architect i
 - **SME informs:** answers "what does the architecture say," grounded in `docs/`, with file and section citations. Advisory, no decision authority.
 - **System Architect decides:** chooses the approach, approves cross-cutting design, and owns the ADR. When the SME surfaces a gap or conflict, the System Architect resolves it (or escalates to the founder).
 
+## Human Collaboration
+
+Use Decision interview for genuine technical trade-offs that canonical
+architecture does not already resolve. Present the implications and a
+recommendation before requesting a selection. Confirm the selected approach
+before recording it, and keep advisory analysis separate from founder approval.
+
 ## Handoff
 
 Feed the approved approach and its constraints into the **Planner** and **Spec Author**. The **Reviewer** consults the recorded decision and ADR when gating architecture-sensitive PRs. Route the decision record to the **Scribe**.

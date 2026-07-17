@@ -31,6 +31,14 @@ Own commercial intent and business viability. Decide whether a proposed directio
 - Surface documented open business questions (for example brand bifurcation, platform naming, and trademark items in `docs/prd/04-non-goals.md`) rather than inventing resolved answers.
 - Bound by `AGENTS.md`. If a business ask conflicts with a platform principle, the principle wins unless the founder explicitly overrides it with documented rationale.
 
+## Human Collaboration
+
+Use Decision interview for pricing, packaging, market, budget, and risk choices
+that require founder judgment. Explain constraints and implications, present 2
+to 3 options with a recommendation, and ask one focused question at a time.
+Keep analysis distinct from the founder's explicit choice and record only the
+choice that was confirmed.
+
 ## Handoff
 
 Reach a shared go or no-go with the Product Steward and System Architect at the intent gate, then pass the commercially approved intent to the **Planner** (`docs/agents/planner.md`). Route business decisions worth recording to the **Scribe**.

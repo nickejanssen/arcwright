@@ -6,13 +6,22 @@
 
 **Claude Code:** Synchronous multi-file work requiring context reasoning and complex debugging. Use for: implementing specs, fixing bugs across modules, refactoring, writing tests. Suitable for tasks the human is actively supervising.
 
-**Codex (cloud):** Delegated async tasks with explicit specs and clear acceptance criteria. Use for: well-scoped features, batch operations, parallelizable work. No synchronous interaction expected; human reviews results asynchronously.
+**Codex (cloud):** Delegated async work with explicit specs and clear
+acceptance criteria. Use for independent execution and reversible research or
+preparation. If a task requires a decision interview, creative collaboration,
+facilitated live operation, or owner action, Codex must stop at the applicable
+phase gate and wait for founder input.
 
 ## Requirements
 
 **Spec-first:** Any task larger than a single function requires a spec in `/docs/specs/` before implementation. Specs must define acceptance criteria. Use the template.
 
 **Plan-then-code:** Agent writes a plan (as prose or structured outline), human approves it, then code is written. No implementation without approval.
+
+**Human collaboration classification:** Before planning or implementation,
+declare the interaction profile and follow
+`docs/conventions/human-collaboration.md`. Approval evidence must identify the
+named decision, artifact, version, or phase that was approved.
 
 **Tests with code:** Tests are written in the same commit/PR as the change, not in a follow-up. Tests must validate acceptance criteria from the spec. Focus areas: knowledge graph, arc transitions, safety, routing.
 
