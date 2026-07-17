@@ -24,6 +24,32 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 Run five or more qualifying Nightcap sessions with outside groups at 4 to 6 players. Likely files affected: GitHub issue comments, docs/playtest notes if created.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Facilitated live operation.
+
+**Founder input:** Recruitment and scheduling constraints, readiness for each
+session, live go or no-go decisions, observed results, and debrief feedback.
+
+**Required phases for each session:**
+
+1. Prepare participants, environment, and evidence collection.
+2. Run preflight checks and explain what the founder must inspect, record, and
+   treat as blocking.
+3. Conduct a guided walkthrough or smoke test and capture feedback.
+4. Pause for the founder's explicit go or no-go decision.
+5. Facilitate the live session with visible checkpoints and stop conditions.
+6. Debrief with focused interactive questions and summarize findings.
+7. Propose remediation options and obtain approval before the next session.
+
+**Gate:** Each qualifying session has its own explicit readiness approval. A
+prior approval does not authorize a later session, and failed blockers return
+the task to preparation.
+
+**Evidence:** Preserve per-session preflight output, walkthrough result, go or
+no-go, observations, debrief responses, remediation decision, dates, and owner
+actions.
+
 ## Acceptance Criteria
 
 - [ ] Five or more outside-group sessions are attempted and documented.

@@ -24,6 +24,26 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 Produce gross-margin readiness report for supported human player counts. Likely files affected: docs/roadmap/tasks, engine/telemetry or dashboard if implementation needed.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Decision interview.
+
+**Founder input:** Supported player counts, cost assumptions, pricing scenarios,
+and the margin lens that should drive the comparison.
+
+**Required flow:** Research the available evidence and explain the model,
+assumptions, uncertainty, and consequences in plain language. Present two or
+three viable assumption sets with a recommendation. Ask one focused interactive
+choice question at a time, confirm the selected assumptions, and record only the
+approved scope.
+
+**Gate:** Calculation and recommendation work stops before selecting assumptions
+until the founder explicitly approves the named player-count, pricing, and cost
+model.
+
+**Evidence:** Preserve the options presented, recommendation, explicit approval,
+approval date, and any founder-owned follow-up actions.
+
 ## Acceptance Criteria
 
 - [ ] Cost report covers the v1 four-human-player floor and larger supported human player counts used in rehearsal.

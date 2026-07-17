@@ -12,6 +12,31 @@ gate ("real humans playing end-to-end on real devices") has not actually been
 passed. This task owns the actual execution using the one-command rehearsal
 stack (`make rehearsal`) and the quickstart runbook.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Facilitated live operation.
+
+**Founder input:** Environment readiness, guided walkthrough feedback, live go
+or no-go, host and player observations, and the Rehearsal 1 debrief.
+
+**Required phases:**
+
+1. Prepare the environment and show the evidence collected.
+2. Run preflight checks and explain what the founder must inspect, record, and
+   treat as blocking.
+3. Conduct a guided walkthrough or smoke test and capture feedback.
+4. Pause for the founder's explicit go or no-go decision.
+5. Facilitate Rehearsal 1 with visible checkpoints and stop conditions.
+6. Debrief with focused interactive questions and summarize findings.
+7. Propose remediation options and obtain approval before another live run.
+
+**Gate:** Rehearsal 1 does not begin until the founder explicitly approves
+readiness. Any failed blocking check returns the task to preparation.
+
+**Evidence:** Preserve preflight output, walkthrough feedback, go or no-go,
+session observations, debrief responses, remediation decision, dates, and owner
+actions.
+
 ## Definition of Done
 
 - Founder solo smoke test completed (founder plus two phone browser tabs).

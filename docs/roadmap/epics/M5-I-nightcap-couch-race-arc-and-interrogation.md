@@ -32,6 +32,18 @@ The technical scope is limited to the tasks listed below and the architecture re
 - [AW-285: Couch Race TV And Phone Rendering](../tasks/AW-285-couch-race-tv-and-phone-rendering.md)
 - [AW-286: Couch Race Rehearsal Slice And Rehearsal 1 Retarget](../tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md)
 
+## Supporting Rehearsal 1 Dependencies
+
+AW-281 through AW-286 remain this epic's child tasks. The following D-069
+narrative tasks are supporting dependencies retargeted to the six-beat Couch
+Race experience by AW-286:
+
+- [AW-276: Arc Voice Block Injection](../tasks/AW-276-arc-voice-block-injection.md)
+- [AW-277: Couch Race Narrator Transition Lines](../tasks/AW-277-couch-race-narrator-transition-lines.md)
+- [AW-278: Couch Race Truth Sequence And Reveal Accounting](../tasks/AW-278-couch-race-truth-sequence-and-reveal-accounting.md)
+- [AW-279: Detective Identity And Opening Briefing](../tasks/AW-279-detective-identity-and-opening-briefing.md)
+- [AW-280: Couch Race Clue Release Content](../tasks/AW-280-couch-race-clue-release-content.md)
+
 ## Acceptance Criteria
 
 - All child tasks satisfy their acceptance criteria.
@@ -48,7 +60,7 @@ The technical scope is limited to the tasks listed below and the architecture re
 ## Dependencies
 
 - ADR-0013 / D-071 (this epic's charter)
-- PR #225 lineage: live-loop AI character dialogue (spec 0071) — direct dependency for suspect answers
+- PR #225 lineage: live-loop AI character dialogue (spec 0071), a direct dependency for suspect answers
 - D-069 narrative tasks AW-276–AW-280, aligned to the six-beat arc
 - Mini-game packages from D-062/D-064 (Crime Scene Smash, Evidence Locker) slot in unchanged
 

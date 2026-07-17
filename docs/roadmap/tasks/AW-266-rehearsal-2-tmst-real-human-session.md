@@ -40,6 +40,32 @@ delivered a working flow before any M6 qualifying session reuses it.
 - Triage every blocker into a new GitHub issue with milestone assignment
   (M5 hardening, M5-G polish, M6 ops, or wontfix) before AW-266 closes.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Facilitated live operation.
+
+**Founder input:** TMST readiness, walkthrough feedback, real-human play
+observations, live go or no-go, and the debrief assessment.
+
+**Required phases:**
+
+1. Prepare the environment and show the evidence collected.
+2. Run preflight checks and explain what the founder must inspect, record, and
+   treat as blocking.
+3. Conduct a guided walkthrough or smoke test and capture feedback.
+4. Pause for the founder's explicit go or no-go decision.
+5. Facilitate the real-human session with visible checkpoints and stop
+   conditions.
+6. Debrief with focused interactive questions and summarize findings.
+7. Propose remediation options and obtain approval before another live run.
+
+**Gate:** Rehearsal 2 does not begin until the founder explicitly approves
+readiness. Any failed blocking check returns the task to preparation.
+
+**Evidence:** Preserve preflight output, walkthrough feedback, go or no-go,
+session observations, debrief responses, remediation decision, dates, and owner
+actions.
+
 ## Acceptance Criteria
 
 - [ ] TMST package lifecycle is `active`.

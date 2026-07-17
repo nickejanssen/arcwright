@@ -53,6 +53,18 @@ Defines the optional `authorial_intent` ArcDefinition block and the intent fidel
 
 ---
 
+# Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+This spec and Decision 0012 fully constrain intent semantics, telemetry, and
+authority boundaries. After normal plan approval, the agent may execute and
+must explain the resulting contract, signals, and review evidence clearly.
+
+Stop and reclassify to Decision interview before changing the intent model,
+telemetry meaning, privacy posture, schema, or implementation sequence. Record
+plan approval, tests, telemetry evidence, dates, and owner actions.
+
 # Acceptance Criteria
 
 - [ ] ArcDefinition schema accepts and validates the optional `authorial_intent` block per the contract above.

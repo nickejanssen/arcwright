@@ -24,6 +24,24 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 Analyze qualifying session evidence and record the H1 decision. Likely files affected: docs/decisions if needed, docs/roadmap, playtest report docs.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Decision interview.
+
+**Founder input:** Interpretation of the H1 evidence, the acceptable confidence
+threshold, and the product or research next step.
+
+**Required flow:** Summarize the evidence, gaps, and practical consequences in
+plain language. Present two or three defensible next-step options with a
+recommendation. Ask one focused interactive choice question at a time, confirm
+the interpretation and selected option, and record only the approved decision.
+
+**Gate:** No roadmap, scope, or product-direction consequence may be treated as
+approved until the founder explicitly selects and confirms the named next step.
+
+**Evidence:** Preserve the evidence summary, options, recommendation, explicit
+approval, approval date, and resulting owner actions.
+
 ## Acceptance Criteria
 
 - [ ] Report states whether the qualitative replay enthusiasm gate passed.

@@ -26,6 +26,33 @@ Protects the founder's validation loop: several complete cases per rehearsal eve
 - Map AW-276–AW-280 narrative content targets onto the six beats (voice blocks, narrator beat lines, cold-open sequence, clue release, reveal accounting); record the mapping in each task's issue.
 - Execute the founder rehearsal (2–5 players, local tunnel), capture blocker log, run the event-dump verification showing narrative content_text at cold open, interrogation answers, twist, and reveal.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Facilitated live operation.
+
+**Founder input:** Couch Race slice readiness, walkthrough feedback, retargeted
+Rehearsal 1 go or no-go, observed experience, and the debrief assessment.
+
+**Required phases:**
+
+1. Prepare the slice and environment and show the evidence collected.
+2. Run preflight checks and explain what the founder must inspect, record, and
+   treat as blocking.
+3. Conduct a guided walkthrough or smoke test and capture feedback.
+4. Pause for the founder's explicit go or no-go decision.
+5. Facilitate the retargeted live rehearsal with visible checkpoints and stop
+   conditions.
+6. Debrief with focused interactive questions and summarize findings.
+7. Propose remediation options and obtain approval before another live run.
+
+**Gate:** The retargeted rehearsal does not begin until the founder explicitly
+approves slice and environment readiness. Any failed blocking check returns the
+task to preparation.
+
+**Evidence:** Preserve preflight output, walkthrough feedback, go or no-go,
+session observations, debrief responses, remediation decision, dates, and owner
+actions.
+
 ## Acceptance Criteria
 
 - [ ] Rehearsal operations docs updated and internally consistent with the Couch Race bible.

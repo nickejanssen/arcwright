@@ -54,6 +54,19 @@ Lifecycle: only deterministic engine paths mutate obligation state (arc-authored
 
 ---
 
+# Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+This spec and Decision 0012 fully constrain obligation semantics, deterministic
+ownership, and reveal-readiness behavior. After normal plan approval, the agent
+may execute and must explain state transitions and review evidence clearly.
+
+Stop and reclassify to Creative collaboration or Decision interview before
+changing authored narrative rules, obligation semantics, privacy behavior,
+schema, or implementation sequence. Record plan approval, deterministic tests,
+dates, and owner actions.
+
 # Acceptance Criteria
 
 - [ ] Migration applies cleanly to empty and populated schemas.

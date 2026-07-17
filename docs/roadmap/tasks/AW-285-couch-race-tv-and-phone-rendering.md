@@ -6,7 +6,7 @@
 
 ## Plain-English Summary
 
-Render Couch Race in the Nightcap web experience: TV shared display (cold open staging, suspect stage with answers, evidence waves, countdown, scoreboard/reveal moments) and phone surfaces (detective identity, private evidence, question-intent selection, contradiction flagging, accusation lock-in) — consuming engine ContentEvents with presentation hints per D-070.
+Render Couch Race in the Nightcap web experience: TV shared display (cold open staging, suspect stage with answers, evidence waves, countdown, scoreboard/reveal moments) and phone surfaces (detective identity, private evidence, question-intent selection, contradiction flagging, accusation lock-in), consuming engine ContentEvents with presentation hints per D-070.
 
 ## Why This Matters
 
@@ -18,7 +18,7 @@ Join in under 30 seconds, play from the couch, never see another player's privat
 
 ## Business Value
 
-Tier 1 polish bar (D-066): correct, legible, snappy — the rehearsal surface.
+Tier 1 polish bar (D-066): correct, legible, and snappy for the rehearsal surface.
 
 ## Technical Scope
 
@@ -26,6 +26,31 @@ Tier 1 polish bar (D-066): correct, legible, snappy — the rehearsal surface.
 - Phone views: identity card, private evidence list, intent menu with token counter, tell notifications, contradiction flag flow, accusation submission with lockout state.
 - Event subscription and input submission through the existing SDK; no arc logic in TypeScript.
 - Privacy: private events (tells, private evidence, accusations) never render on the shared display (M4-D matrix extended with the new event types).
+
+## Human Collaboration Contract
+
+**Interaction profile:** Creative collaboration.
+
+**Founder input:** Surface priorities, visual hierarchy, interaction
+expectations, TV-versus-phone responsibilities, representative moments,
+accessibility needs, and success definition.
+
+**Required phases:** Begin with focused discovery before choosing layouts.
+Confirm a short surface brief, then present low-cost wireframes, state maps, and
+clickable or representative prototypes before full rendering. For every
+artifact, explain what it represents, which assumptions it tests, how to review
+it, and exactly what needs founder attention. Offer bounded options and a
+recommendation when a choice remains, then ask one interactive question at a
+time.
+
+**Gates:** Pause for explicit direction after discovery, wireframes, prototype
+flows, and the implemented thin slice. Research and reversible preparation may
+continue while the founder is unavailable, but no subjective UI choice or full
+implementation may proceed.
+
+**Evidence:** Preserve discovery answers, wireframes and prototypes with review
+instructions, options, recommendation, founder feedback, explicit checkpoint
+approvals, dates, and owner actions.
 
 ## Acceptance Criteria
 

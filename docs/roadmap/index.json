@@ -560,6 +560,7 @@
       "status": "planned",
       "path": "docs/roadmap/epics/M5-G-nightcap-visual-identity-and-polish.md",
       "tasks": [
+        "AW-275",
         "AW-267",
         "AW-268"
       ],
@@ -1984,6 +1985,106 @@
         "url": "https://github.com/nickejanssen/arcwright/issues/220"
       },
       "epic_id": "M5-C"
+    },
+    {
+      "id": "AW-275",
+      "title": "Design System Follow-Ups: Semantic Tokens And Focus Visible",
+      "milestone": "M5",
+      "epic": "M5-G",
+      "size": "S",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-275-design-system-follow-ups.md",
+      "github": {
+        "issue_number": 223,
+        "url": "https://github.com/nickejanssen/arcwright/issues/223"
+      },
+      "epic_id": "M5-G"
+    },
+    {
+      "id": "AW-276",
+      "title": "Arc Voice Block Injection",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "M",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-276-arc-voice-block-injection.md",
+      "github": {
+        "issue_number": 226,
+        "url": "https://github.com/nickejanssen/arcwright/issues/226"
+      },
+      "epic_id": "M5-I"
+    },
+    {
+      "id": "AW-277",
+      "title": "Couch Race Narrator Transition Lines",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "M",
+      "depends_on": [
+        "AW-276",
+        "AW-281"
+      ],
+      "path": "docs/roadmap/tasks/AW-277-couch-race-narrator-transition-lines.md",
+      "github": {
+        "issue_number": 227,
+        "url": "https://github.com/nickejanssen/arcwright/issues/227"
+      },
+      "epic_id": "M5-I"
+    },
+    {
+      "id": "AW-278",
+      "title": "Couch Race Truth Sequence And Reveal Accounting",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "M",
+      "depends_on": [
+        "AW-276",
+        "AW-281",
+        "AW-283",
+        "AW-284"
+      ],
+      "path": "docs/roadmap/tasks/AW-278-couch-race-truth-sequence-and-reveal-accounting.md",
+      "github": {
+        "issue_number": 228,
+        "url": "https://github.com/nickejanssen/arcwright/issues/228"
+      },
+      "epic_id": "M5-I"
+    },
+    {
+      "id": "AW-279",
+      "title": "Detective Identity And Opening Briefing",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "M",
+      "depends_on": [
+        "AW-276",
+        "AW-281"
+      ],
+      "path": "docs/roadmap/tasks/AW-279-detective-identity-and-opening-briefing.md",
+      "github": {
+        "issue_number": 229,
+        "url": "https://github.com/nickejanssen/arcwright/issues/229"
+      },
+      "epic_id": "M5-I"
+    },
+    {
+      "id": "AW-280",
+      "title": "Couch Race Clue Release Content",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "M",
+      "depends_on": [
+        "AW-251",
+        "AW-276",
+        "AW-281",
+        "AW-282"
+      ],
+      "path": "docs/roadmap/tasks/AW-280-couch-race-clue-release-content.md",
+      "github": {
+        "issue_number": 230,
+        "url": "https://github.com/nickejanssen/arcwright/issues/230"
+      },
+      "epic_id": "M5-I"
     },
     {
       "id": "AW-281",

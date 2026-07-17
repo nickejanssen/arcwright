@@ -24,6 +24,31 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 Run the final non-qualifying rehearsal before outside groups. Likely files affected: GitHub issue comments, docs/playtest notes if created.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Facilitated live operation.
+
+**Founder input:** Rehearsal readiness, walkthrough feedback, live go or no-go,
+host experience, and the final debrief.
+
+**Required phases:**
+
+1. Prepare the environment and show the evidence collected.
+2. Run preflight checks and explain what the founder must inspect, record, and
+   treat as blocking.
+3. Conduct a guided walkthrough or smoke test and capture feedback.
+4. Pause for the founder's explicit go or no-go decision.
+5. Facilitate the live rehearsal with visible checkpoints and stop conditions.
+6. Debrief with focused interactive questions and summarize findings.
+7. Propose remediation options and obtain approval before another live run.
+
+**Gate:** The final rehearsal does not begin until the founder explicitly
+approves readiness. Any failed blocking check returns the task to preparation.
+
+**Evidence:** Preserve preflight output, walkthrough feedback, go or no-go,
+session observations, debrief responses, remediation decision, dates, and owner
+actions.
+
 ## Acceptance Criteria
 
 - [ ] Final rehearsal completes or records blockers with owner and severity.

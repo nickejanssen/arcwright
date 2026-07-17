@@ -47,6 +47,25 @@ session-data moat described in `docs/architecture/11-telemetry.md`.
 - Existing arcs without the block remain valid; no behavior change when the
   block is absent.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+**Why independent:** Decision 0012 and
+`docs/specs/0064-aw-270-authorial-intent-block.md` constrain the intent block,
+telemetry semantics, authority boundary, and verification requirements.
+
+**Required flow:** After normal plan approval, implement the approved contract,
+explain the telemetry and authority behavior clearly, and verify the acceptance
+criteria without widening the signal set.
+
+**Reclassification gate:** Stop and switch to Decision interview before changing
+the intent model, telemetry meaning, privacy posture, schema, or implementation
+sequence.
+
+**Evidence:** Preserve plan approval, canonical-source references, tests,
+telemetry verification, dates, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] ArcDefinition schema accepts and validates the optional

@@ -158,6 +158,20 @@ is satisfied without the required test or rehearsal evidence.
 
 ---
 
+# Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+The canonical authority model in this spec fully constrains mechanical tracker
+reconciliation after normal plan approval. The agent must explain every mapping,
+conflict, and verification result clearly.
+
+Tracker synchronization must never invent approval, infer founder intent, or
+promote issue, PR, branch, or draft language into canonical scope. Stop and
+switch to Decision interview when canonical sources conflict or a mapping would
+require a product, sequencing, privacy, schema, or status choice. Record plan
+approval, source paths, conflict resolution evidence, dates, and owner actions.
+
 # Acceptance Criteria
 
 - [ ] Every active M5 roadmap task and implementation issue is represented in

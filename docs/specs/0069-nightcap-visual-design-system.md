@@ -1,4 +1,4 @@
-# 0069 — Nightcap Visual Design System (UI, Animation, Aesthetic)
+# 0069: Nightcap Visual Design System (UI, Animation, Aesthetic)
 
 > Current version: v1.1
 > Last updated: 2026-07-14
@@ -9,14 +9,14 @@
 
 ## References
 
-- `docs/specs/0068-game-experience-quality-bar.md` §6 (aesthetic charter —
+- `docs/specs/0068-game-experience-quality-bar.md` §6 (aesthetic charter:
   this spec is its execution-level detail)
 - `docs/story-bibles/nightcap-murder-mystery.md` §2 (era + occasion define
   the aesthetic; assets pre-produced per theme for first production run)
 - `nightcap-web/src/ui.ts` (current styling: inline CSS custom properties)
 - `nightcap-web/src/mini-game-kit/` (countdown, host-status-card, dom helpers)
-- Spec 0060 / AW-230 (real-device privacy matrix — re-verify after restyle)
-- Roadmap M5-G (visual identity — this spec is M5-G's definition of done)
+- Spec 0060 / AW-230 (real-device privacy matrix: re-verify after restyle)
+- Roadmap M5-G (visual identity: this spec is M5-G's definition of done)
 
 ## Overview
 
@@ -30,7 +30,7 @@ and a component inventory mapped to the existing code.
 
 Everything here lives in `nightcap-web` (game layer). No engine changes; the
 engine's `presentation_hints` on content events remain the only contract.
-Surface agnosticism is untouched — this is Nightcap deciding how to render,
+Surface agnosticism is untouched: this is Nightcap deciding how to render,
 which is exactly the layer that owns that decision.
 
 ## In Scope
@@ -46,10 +46,10 @@ which is exactly the layer that owns that decision.
 ## Out of Scope
 
 - Engine/schema/API changes; any new `presentation_hints` fields.
-- Audio *asset production* (stinger set per 0068 §6 and D-070 — directional
+- Audio *asset production* (stinger set per 0068 §6 and D-070: directional
   scope; this spec's `seq-*` sequences must leave named slots where stingers
   land: sequence steps accept an optional audio cue ID from day one).
-- Dashboard (`dashboard/`) and SDK styling — developer surfaces keep the
+- Dashboard (`dashboard/`) and SDK styling: developer surfaces keep the
   utilitarian look for now.
 - Illustration/asset production pipeline details (per-theme asset briefs are
   produced when a theme is built; this spec defines the slots they fill).
@@ -59,8 +59,8 @@ which is exactly the layer that owns that decision.
 
 ## 1. Design Language: "The Velvet Stage"
 
-**One sentence:** every surface is a theater — the shared display is the
-stage, each phone is a private dossier passed to you in the dark — and the
+**One sentence:** every surface is a theater: the shared display is the
+stage, each phone is a private dossier passed to you in the dark: and the
 theme (era + occasion) is the production design that dresses the same stage.
 
 Three laws derived from it:
@@ -76,7 +76,7 @@ Three laws derived from it:
    game legible across sessions.
 3. **Motion is meaning.** Animation happens when the *story* moves (beat
    turns, revelations, accusations). Chrome never dances. If everything
-   moves, nothing matters — the motion budget in 0068 §6 is enforced here
+   moves, nothing matters: the motion budget in 0068 §6 is enforced here
    with named, tokenized sequences.
 
 ## 2. Token Architecture
@@ -85,12 +85,12 @@ Extract all styling from `ui.ts` inline CSS into a token layer:
 
 ```
 nightcap-web/src/design/
-  tokens.base.css      — structure: spacing, radius, type scale, motion, z, elevation
-  tokens.semantic.css  — roles: --surface-*, --ink-*, --narrator, --private, --accuse, --ok
+  tokens.base.css     : structure: spacing, radius, type scale, motion, z, elevation
+  tokens.semantic.css : roles: --surface-*, --ink-*, --narrator, --private, --accuse, --ok
   themes/
-    midnight.css       — default/fallback skin (refined version of today's navy)
-    seance-1928.css    — launch theme skin A
-    orbital-2087.css   — launch theme skin B
+    midnight.css      : default/fallback skin (refined version of today's navy)
+    seance-1928.css   : launch theme skin A
+    orbital-2087.css  : launch theme skin B
 ```
 
 Rules:
@@ -98,23 +98,23 @@ Rules:
 - Components reference **semantic tokens only** (`var(--ink-primary)`, never
   `#eef2ff`, never a base token directly). Enforced by review; a simple grep
   check (`#[0-9a-f]{3,8}` outside `design/`) keeps it honest.
-- Theme skins may override semantic tokens and the two display typefaces —
+- Theme skins may override semantic tokens and the two display typefaces:
   nothing else. A skin that needs a layout change is a defect in the base.
 - Surfaces are modes, not apps: `body.surface-display` and
   `body.surface-phone` switch the type scale and spacing density; both load
   the same theme skin.
-- Fonts are self-hosted woff2, open-licensed (OFL). No CDN fetches — a
+- Fonts are self-hosted woff2, open-licensed (OFL). No CDN fetches: a
   living-room session must not depend on a font CDN. Two families per theme
   maximum: one display face (theme voice), one text/UI face (constant).
 
 ## 3. Typography
 
 **Constant UI/text face:** keep Inter (already shipped) for chrome, forms,
-and dense phone text. It disappears politely — that is its job.
+and dense phone text. It disappears politely: that is its job.
 
 **Display face (theme voice):** used for the narrator, beat titles, case
 name, and the reveal. Default skin: **Fraunces** (OFL; warm, slightly
-theatrical serif, variable weight/optical size — one file, many voices).
+theatrical serif, variable weight/optical size: one file, many voices).
 Theme skins may substitute (e.g., a deco face for 1928, a grotesk for 2087).
 
 **Shared display scale** (1080p at ~3m viewing distance; use `clamp()` with
@@ -129,7 +129,7 @@ viewport units, minimums in px):
 | Cast rail names | 28px | |
 
 Exactly three hierarchy levels visible at any moment (0068 §6). If a screen
-needs four, the screen is overloaded — split it in time, not in space.
+needs four, the screen is overloaded: split it in time, not in space.
 
 **Phone scale:** body 17px minimum, identity-card name 28px, section labels
 13px caps. Line length ≤ 34em. The dossier is read at arm's length in a dim
@@ -137,7 +137,7 @@ room; err large.
 
 **Voice rules:** the narrator never speaks in the UI font; the UI never
 speaks in the narrator's font. This single rule makes the narrator feel like
-a character rather than a system message — it is the cheapest
+a character rather than a system message: it is the cheapest
 characterization tool in the entire design system.
 
 ## 4. Color System
@@ -149,7 +149,7 @@ characterization tool in the entire design system.
 | `--stage-0` | `#0A0A0F` | Display background (near-black, blue-warm neutral) |
 | `--stage-1` | `#14141D` | Panels/cards on display |
 | `--stage-2` | `#1D1D29` | Raised elements, phone cards |
-| `--ink-primary` | `#F2EEE3` | Primary text — warm off-white (candlelit paper, not #fff) |
+| `--ink-primary` | `#F2EEE3` | Primary text: warm off-white (candlelit paper, not #fff) |
 | `--ink-muted` | `#9A94A6` | Secondary text |
 | `--line` | `rgba(242,238,227,0.14)` | Hairlines |
 
@@ -158,7 +158,7 @@ characterization tool in the entire design system.
 | Token | Default (midnight) | Role |
 | --- | --- | --- |
 | `--theme-glow` | `#D4A853` (brass) | The theme's "light": accents, focus, active states |
-| `--narrator` | `#C9B98F` | Narrator text tint — always distinct from player/system text |
+| `--narrator` | `#C9B98F` | Narrator text tint: always distinct from player/system text |
 | `--private` | `#8FB4C9` | "For your eyes only" framing on phones |
 | `--accuse` | `#B33A4A` (oxblood) | Accusation, danger, the killer's color at reveal |
 | `--ok` | `#5FA97F` | Success, correct, safe |
@@ -167,7 +167,7 @@ Requirements:
 
 - Contrast: all text ≥ WCAG AA against its surface; narrator lines on the
   display target 7:1 (they are the product).
-- `--accuse` vs `--ok` must remain distinguishable under deuteranopia —
+- `--accuse` vs `--ok` must remain distinguishable under deuteranopia:
   never encode accusation outcomes by hue alone (pair with iconography:
   the token symbol, a check/cross, motion direction).
 - The current sky-blue `#7dd3fc` accent is retired from player surfaces; it
@@ -175,11 +175,11 @@ Requirements:
 
 ## 5. Layout Systems
 
-### 5.1 Shared display — "the stage"
+### 5.1 Shared display: "the stage"
 
 A fixed three-zone stage, all beats, all themes:
 
-- **Center stage (≈70% height):** one thing at a time — the narrator line,
+- **Center stage (≈70% height):** one thing at a time: the narrator line,
   the beat title, the mini-game spectacle, the accusation spotlight, the
   reveal. Never two competing focal points.
 - **Cast rail (bottom):** every character as a name chip (portrait slot when
@@ -189,16 +189,16 @@ A fixed three-zone stage, all beats, all themes:
   2:00", join code during lobby). Small, muted, never animated.
 
 The lobby is the stage's overture: case name large, QR + join code center,
-cast rail filling in as players join — joining *is* the show starting.
+cast rail filling in as players join: joining *is* the show starting.
 
-### 5.2 Phone — "the dossier"
+### 5.2 Phone: "the dossier"
 
 A single-column card stack, newest on top, three card types with fixed
 anatomy:
 
 - **Identity card** (the §3.1/0068 five-part format): theme-framed (letter,
   telegram, badge), display face for the name, the secret visually set
-  apart (e.g., redacted-bar treatment revealed on tap — a private moment
+  apart (e.g., redacted-bar treatment revealed on tap: a private moment
   with a tiny thrill).
 - **Private event card:** always carries the `--private` framing edge + "only
   you can see this" microcopy. Private must *look* different from public at
@@ -218,7 +218,7 @@ anatomy:
 | `--t-scene` | 420ms, cubic-bezier(0.2, 0, 0.1, 1) | Panel/scene changes |
 | `--t-dramatic` | 900ms, cubic-bezier(0.6, 0, 0.2, 1) | Story moments only |
 
-**The five named sequences** (the only places `--t-dramatic` may appear —
+**The five named sequences** (the only places `--t-dramatic` may appear:
 this *is* the motion budget from 0068 §6, made enforceable):
 
 1. **`seq-join`** (lobby): new player's name materializes on the cast rail
@@ -227,12 +227,12 @@ this *is* the motion budget from 0068 §6, made enforceable):
    display face fades/settles center 900ms → holds 1.5s → content enters.
    The night's drumbeat; identical rhythm every time, themed dressing.
 3. **`seq-body`** (B2): the hard tonal turn. Stage snaps darker (fast, not a
-   slow fade — death is sudden), 2s silence beat with a single line, then
+   slow fade: death is sudden), 2s silence beat with a single line, then
    the narrator resumes. The one place where *stopping* motion is the effect.
 4. **`seq-spotlight`** (B6 accusations): stage dims, accused's cast-rail
    chip elevates to center stage, accusation text lands beside it,
    resolution plays before the stage relights. Target 8–12s of screen
-   time — long enough to film, short enough to not stall the table.
+   time: long enough to film, short enough to not stall the table.
 5. **`seq-truth`** (B8): a multi-step choreography (the 90–150s story
    sequence from 0068 §2): night reconstruction lines → per-player
    "what you almost caught" beats stepping along the cast rail → killer's
@@ -242,7 +242,7 @@ this *is* the motion budget from 0068 §6, made enforceable):
 
 **Rules:** chrome (buttons, forms, lists) uses `--t-instant`/`--t-quick`
 only. `prefers-reduced-motion` collapses every sequence to crossfades with
-the same *timing structure* (the pauses still happen — the drama survives,
+the same *timing structure* (the pauses still happen: the drama survives,
 the movement goes). Mini-game kit components (`countdown.ts`) adopt the
 tokens; the final-5-seconds countdown dramatization (0068 §5) uses
 `--t-quick` pulses, not dramatic time.
@@ -254,12 +254,12 @@ spans the era space; each needs only: 5 semantic color overrides, 1 display
 face, 1 background texture, card framing, and a narrator persona styling
 note.
 
-**A. Séance 1928** — candlelit deco parlor. Glow `#D4A853` brass; accuse
+**A. Séance 1928**: candlelit deco parlor. Glow `#D4A853` brass; accuse
 oxblood `#7A2230`; ink on aged-paper cards; deco-flavored display face
 (e.g., OFL deco serif or Fraunces high-contrast cut); texture: faint smoke
 gradient; identity cards as folded place-cards.
 
-**B. Orbital Gala 2087** — chrome and ultraviolet. Glow `#9D7BFF`; accuse
+**B. Orbital Gala 2087**: chrome and ultraviolet. Glow `#9D7BFF`; accuse
 `#FF4D6D`; ink cool-white `#EAF0FF`; display face: a wide grotesk (e.g.,
 Space Grotesk); texture: faint starfield/glass reflection; identity cards
 as security badges.
@@ -273,15 +273,15 @@ Current: ~1,400 lines in `ui.ts` with inline styles; mini-game kit has its
 own DOM helpers. Refactor path (no behavior changes, existing 98 tests must
 stay green):
 
-1. **Stage A — tokens + base restyle:** extract `design/` token files;
+1. **Stage A: tokens + base restyle:** extract `design/` token files;
    restyle existing screens against semantic tokens; retire raw hex from
    components; apply type scales per surface mode. Deliverable: the same
    app, dressed for the theater in `midnight`.
-2. **Stage B — the five sequences:** implement `seq-*` as reusable
+2. **Stage B: the five sequences:** implement `seq-*` as reusable
    choreography utilities (data-driven step lists, honoring
    reduced-motion); wire B2/B6/B8 staged moments per 0068 §2 bars.
-3. **Stage C — theme skins:** ship `seance-1928` and `orbital-2087`;
-   host theme selection already exists product-side (story bible §2 —
+3. **Stage C: theme skins:** ship `seance-1928` and `orbital-2087`;
+   host theme selection already exists product-side (story bible §2:
    era/occasion selection); skins bind to it in the web layer.
 
 Component list (post-refactor): StageFrame, CastRail, WhisperLine,
@@ -291,7 +291,7 @@ HostStatusCard (kit), JoinLobby.
 
 **Sequencing vs. proof:** Stage A can precede Rehearsal 2 (cheap, high
 first-impression value for strangers). Stages B and C are M5-G/M6-window
-work, sized by Rehearsal 1 evidence per 0068's risk note — if instant cards
+work, sized by Rehearsal 1 evidence per 0068's risk note: if instant cards
 already land, B scopes down.
 
 ## 9. Accessibility & Device Floor
@@ -304,7 +304,7 @@ already land, B scopes down.
   actions; no hover-dependent affordances (phones don't hover).
 - `prefers-reduced-motion` honored by every sequence (§6).
 - Re-run the AW-230 real-device privacy matrix after Stage A (restyle must
-  not weaken the private-vs-public visual distinction — it must strengthen
+  not weaken the private-vs-public visual distinction: it must strengthen
   it via the `--private` framing).
 
 ## 10. State-of-the-Art Alignment (audited 2026-07-14, post-Stage-A)
@@ -315,9 +315,9 @@ Where this system stands against current design-system best practice, so
 **Adopted and shipped (Stage A):**
 
 - **Two-layer semantic token architecture** (structural base + semantic
-  roles + swappable skins) — the pattern behind Material 3, Radix, and
+  roles + swappable skins): the pattern behind Material 3, Radix, and
   USWDS. Components bind to roles, never to values.
-- **Runtime CSS custom properties + `color-mix()`** for derived tints — no
+- **Runtime CSS custom properties + `color-mix()`** for derived tints: no
   preprocessor, no build step, themable at a single injection point.
 - **Fluid typography** via `clamp()` with per-surface scales and hard
   minimums (TV 28px / phone 17px floors).
@@ -328,7 +328,7 @@ Where this system stands against current design-system best practice, so
 
 **Adopted, queued (tracked work):**
 
-- **`:focus-visible` + WCAG 2.2 Focus Appearance** — visible glow-token
+- **`:focus-visible` + WCAG 2.2 Focus Appearance**: visible glow-token
   focus rings on all interactive elements. Gap found in this audit;
   queued as AW-275 (issue #223) alongside the mini-game stage
   semantic-token fix.
@@ -359,6 +359,29 @@ Where this system stands against current design-system best practice, so
 - **`light-dark()` / theme toggling:** the stage is always dark by design
   (§1); a light mode would be a different product decision, not a CSS one.
 
+# Human Collaboration Contract
+
+**Interaction profile:** Creative collaboration.
+
+AW-267 discovery and final sign-off are hard prerequisites for treating this
+spec as approved visual direction. Interview the founder about visual goals,
+references, tastes and dislikes, wrapper expectations, accessibility, and the
+success definition. Confirm a short brief, then present two or three comparative
+moodboard directions with a recommendation, followed by low-cost token,
+typography, layout, motion, and wrapper mockups.
+
+For every artifact, explain what it represents, which assumptions it tests, how
+to review it, and exactly what needs founder attention. Ask one focused
+interactive question at a time and pause after discovery, moodboards, system
+samples, wrapper studies, and the assembled specification. PR #243 content and
+D-073 remain candidate research until those checkpoints produce fresh explicit
+approval. Research may continue while the founder is unavailable, but no visual
+choice or production implementation may proceed.
+
+Preserve discovery answers, alternatives, recommendation, artifacts and review
+instructions, feedback, explicit checkpoint and final approvals, dates, and
+owner actions.
+
 ## Acceptance Criteria
 
 1. All styling flows from `design/` tokens; no raw color/font/duration
@@ -374,7 +397,7 @@ Where this system stands against current design-system best practice, so
 6. 98/98 existing nightcap-web tests remain green; typecheck clean.
 7. AW-230 privacy matrix re-verified post-restyle.
 8. Rehearsal/M6 observers can answer "did eyes go up at the right moments?"
-   (0068 P5) — logged in the fun-observation rubric.
+   (0068 P5): logged in the fun-observation rubric.
 
 ## Test Plan
 
@@ -397,12 +420,12 @@ Where this system stands against current design-system best practice, so
   framing. Portrait art and per-theme illustration are *slots*, filled only
   when the pre-produced asset pipeline (story bible §2) produces them.
 - Solo-founder bandwidth: Stage A is days, not weeks; if it threatens the
-  Rehearsal 1 date, Rehearsal 1 wins — the current UI is rehearsal-adequate.
+  Rehearsal 1 date, Rehearsal 1 wins: the current UI is rehearsal-adequate.
 
 ## Open Questions
 
 - Portrait/avatar treatment for the cast rail at launch: initials chip vs.
-  themed silhouette set (cheap, pre-produced) — decide with the first skin PR.
+  themed silhouette set (cheap, pre-produced): decide with the first skin PR.
 - Does the host need a distinct "director view" style pass, or does the
   display surface style cover host controls at MVP? (Current host controls
   are minimal; revisit after Rehearsal 1 blocker log.)
