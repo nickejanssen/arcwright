@@ -134,7 +134,13 @@ async def generate(
             `content_rails` directly. Its purpose is to make it hard for a
             *new* call site to forget arc rails and silently fall back to
             the platform minimum, the gap PR #216 closed for the narrator
-            bridge one call site at a time.
+            bridge one call site at a time. An *unregistered* arc_id falls
+            back to the platform minimum exactly like a missing
+            content_rails does. A *corrupted or unreadable* registry
+            (e.g. malformed `config/arcs.json`) is a different failure
+            mode: `load_arc_definition` raises `ArcRegistryError`, which
+            propagates out of this function uncaught rather than falling
+            back silently.
 
     Returns:
         A RouteResult.  If L1 fires, returns the L1 neutral bridge sentinel.

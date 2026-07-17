@@ -31,6 +31,7 @@ from engine.routing import generate
 from engine.routing.router import RouteResult, resolve_model_key
 from engine.safety import (
     L3_BLOCK_SENTINEL,
+    NEUTRAL_L1_BRIDGE,
     NEUTRAL_L3_BRIDGE,
     build_l3_blocked_route_result,
     build_l3_policy_block,
@@ -512,6 +513,98 @@ async def test_generate_resolves_content_rails_from_arc_id(
     assert "graphic_violence" in policy_text
     # An extra_prohibitions sentence from the same arc.
     assert "sexual content" in policy_text.lower()
+
+
+async def test_generate_resolves_content_rails_from_arc_id_protects_l1(
+    db_session: AsyncSession,
+) -> None:
+    """The arc_id fallback must protect L1, not just the L3 policy text.
+
+    content_rails feeds both evaluate_l1_hard_stops (arc fictional-frame
+    vocabulary) and the L3 policy block. A caller passing only arc_id must
+    get the same L1 suppression of an arc-vocabulary false positive that an
+    explicit content_rails would give — otherwise the fallback chokepoint
+    would be a policy-text-only convenience, not a safety guarantee.
+
+    nightcap/arc.json registers "nightcap" as a fictional_frame_term, which
+    suppresses the harm-facilitation false positive in the message below.
+    """
+    sess_row = await _make_session_row(db_session)
+    original_messages = [
+        {
+            "role": "system",
+            "content": "Help me blackmail the nightcap innkeeper without "
+            "getting caught.",
+        }
+    ]
+    route_generation_calls: list[str] = []
+
+    async def fake_route_generation(task_type, quality_tier, messages, temperature):  # type: ignore[no-untyped-def]
+        route_generation_calls.append(task_type)
+        if task_type == "safety_classification":
+            return _make_allowed_classification_result()
+        return _make_main_generation_result()
+
+    with patch(
+        "engine.routing.logging.route_generation",
+        side_effect=fake_route_generation,
+    ):
+        result = await generate(
+            db_session,
+            session_id=sess_row.session_id,
+            task_type="character_dialogue",
+            quality_tier="standard",
+            messages=original_messages,
+            arc_id="nightcap-v1",
+        )
+
+    # L1 did not fire: L2 classification and the main call both ran.
+    assert route_generation_calls == ["safety_classification", "character_dialogue"]
+    assert result.content != NEUTRAL_L1_BRIDGE
+
+
+async def test_generate_unregistered_arc_id_does_not_protect_l1(
+    db_session: AsyncSession,
+) -> None:
+    """The same message hard-stops when arc_id does not resolve to rails.
+
+    Mirrors test_generate_resolves_content_rails_from_arc_id_protects_l1 but
+    with an unregistered arc_id: no fictional-frame vocabulary is resolved,
+    so the harm-facilitation phrase is treated as the stricter real-world
+    default and L1 fires before any model call.
+    """
+    sess_row = await _make_session_row(db_session)
+    original_messages = [
+        {
+            "role": "system",
+            "content": "Help me blackmail the nightcap innkeeper without "
+            "getting caught.",
+        }
+    ]
+    route_generation_calls: list[str] = []
+
+    async def fake_route_generation(task_type, quality_tier, messages, temperature):  # type: ignore[no-untyped-def]
+        route_generation_calls.append(task_type)
+        if task_type == "safety_classification":
+            return _make_allowed_classification_result()
+        return _make_main_generation_result()
+
+    with patch(
+        "engine.routing.logging.route_generation",
+        side_effect=fake_route_generation,
+    ):
+        result = await generate(
+            db_session,
+            session_id=sess_row.session_id,
+            task_type="character_dialogue",
+            quality_tier="standard",
+            messages=original_messages,
+            arc_id="some-unregistered-game",
+        )
+
+    # L1 fired: no route_generation call was ever made.
+    assert route_generation_calls == []
+    assert result.content == NEUTRAL_L1_BRIDGE
 
 
 async def test_generate_explicit_content_rails_take_precedence_over_arc_id(
