@@ -31,6 +31,7 @@ The technical scope is limited to the tasks listed below.
 
 ## Tasks
 
+- [AW-275: Design System Follow-Ups: Semantic Tokens And Focus Visible](../tasks/AW-275-design-system-follow-ups.md)
 - [AW-267: Nightcap Art Direction Brief](../tasks/AW-267-nightcap-art-direction-brief.md)
 - [AW-268: Nightcap Asset Pipeline and Motion System](../tasks/AW-268-nightcap-asset-pipeline-and-motion-system.md)
 
