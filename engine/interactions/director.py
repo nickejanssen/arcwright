@@ -13,6 +13,7 @@ from engine.interactions.errors import (
 from engine.interactions.menu import build_option_menu
 from engine.interactions.models import (
     InteractionDefinition,
+    InteractionOption,
     InteractionResolution,
     InteractionSelection,
     InteractionTarget,
@@ -97,7 +98,7 @@ class InteractionDirector:
         self._windows[window_id] = window
         return window
 
-    def menu_for(self, window_id: str, participant_id: UUID):
+    def menu_for(self, window_id: str, participant_id: UUID) -> list[InteractionOption]:
         window = self._get_window(window_id)
         try:
             option_ids = window.menus_by_participant[participant_id]

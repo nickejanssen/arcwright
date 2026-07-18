@@ -4,10 +4,10 @@ from engine.arc.models import (
     ArcDefinition,
     BeatDefinition,
     CharacterMode,
-    InteractionDefinition,
     NarratorConfig,
     PlayMode,
 )
+from engine.interactions.models import InteractionDefinition
 
 __all__ = [
     "AestheticMode",
