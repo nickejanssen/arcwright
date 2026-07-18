@@ -1,4 +1,4 @@
-# 0068 — Game Experience Quality Bar
+# 0068: Game Experience Quality Bar
 
 > Current version: v1.0
 > Last updated: 2026-07-13
@@ -9,13 +9,13 @@
 ## References
 
 - `docs/story-bibles/nightcap-murder-mystery.md` (Sections 1–4; the story
-  bible owns *what* Nightcap is — this spec owns *how good it must feel*)
+  bible owns *what* Nightcap is: this spec owns *how good it must feel*)
 - `docs/superpowers/specs/2026-07-12-arcwright-strategic-blueprint-design.md` §3
 - `docs/prd/02-requirements.md` (success criteria: qualitative gate and
   personalization perception gate)
 - `docs/roadmap/operations/fun-observation-rubric.md` (companion instrument)
 - `docs/conventions/mini-game-authoring.md`
-- ADR-0012 (authorial intent and per-beat emotional targets — the future
+- ADR-0012 (authorial intent and per-beat emotional targets: the future
   engine home for several targets defined here)
 
 ## Overview
@@ -31,7 +31,7 @@ spec becomes a platform capability.
 
 Two constraints frame everything:
 
-1. **Prompt and content-generation changes are a Hard Rule item** — where a
+1. **Prompt and content-generation changes are a Hard Rule item**: where a
    standard below implies changing generation prompts, the standard is
    binding once this spec is Approved, and the implementation goes through
    normal review.
@@ -72,7 +72,7 @@ needs a reason.
 | P2 | **Being someone** | Players speak in first person as their character without being told to |
 | P3 | **The gasp** | At least one audible group reaction per session to a revelation |
 | P4 | **Nobody left out** | Every player gets ≥1 private moment that only they could act on |
-| P5 | **The room is the stage** | Eyes go up to the shared display at dramatic moments, down to phones for secrets — never confusion about where to look |
+| P5 | **The room is the stage** | Eyes go up to the shared display at dramatic moments, down to phones for secrets: never confusion about where to look |
 
 ## 2. Moment Map: Per-Beat Quality Bar
 
@@ -80,50 +80,50 @@ The eight beats are fixed (story bible §4). For each: design intent, the
 quality bar, and failure smells observable in rehearsals. The rubric doc
 turns these into a tally sheet.
 
-**B1 — The Arrival.** *Intent: put players inside someone else's skin fast.*
+**B1: The Arrival.** *Intent: put players inside someone else's skin fast.*
 Bar: every player has read their identity card and can answer "who are you
 and what do you want tonight?" within 3 minutes of joining; at least one
 laugh or "ohhh no" during card reading. Failure smells: players read cards
 silently and set phones down; players ask "wait, who am I?"; host explains
 rules for more than 60 seconds.
 
-**B2 — The Body.** *Intent: tonal turn — the party is now a crime scene, and
+**B2: The Body.** *Intent: tonal turn: the party is now a crime scene, and
 it's delightful.* Bar: the death lands as a staged shared-display moment
 (full-screen, paced text, not a chat line); the room goes quiet, then erupts.
 Failure smells: the murder announcement scrolls by; players miss it; nobody
 looks up.
 
-**B3 — The Opening Move.** *Intent: teach the verbs by doing, not by rules
+**B3: The Opening Move.** *Intent: teach the verbs by doing, not by rules
 text.* Bar: within this beat every player has done one investigative action
-and knows the accusation-token rule (one token, whole night — the game's
+and knows the accusation-token rule (one token, whole night: the game's
 core tension). Failure smells: any player still asking "what do I do?";
 tokens explained but not felt.
 
-**B4 — The Dig.** *Intent: the engine's personalization becomes visible —
+**B4: The Dig.** *Intent: the engine's personalization becomes visible:
 clues start pointing at people in this room.* Bar: at least two clues
 provoke table talk directed at a specific player; mini-game #1 lands here as
 competition, not homework. Failure smells: clues read like generic flavor
 text; players discuss the *game* instead of the *suspects*.
 
-**B5 — The Thread.** *Intent: theories form; the killer starts sweating.*
+**B5: The Thread.** *Intent: theories form; the killer starts sweating.*
 Bar: at least one player states a theory aloud connecting ≥2 clues; the
 killer has received ≥1 prompted action opportunity and taken it. Failure
 smells: clue pile-up with no synthesis; killer passive because misdirection
 costs more than it pays.
 
-**B6 — The Reckoning.** *Intent: peak social pressure — this is the beat
+**B6: The Reckoning.** *Intent: peak social pressure: this is the beat
 people film.* Bar: accusations happen in a staged spotlight (named,
 dramatic, on the shared display), never as a menu-click that resolves in
 silence. Every accusation resolution changes the room's information state
 visibly. Failure smells: accusation resolves in under 5 seconds of screen
 time; a wrong accusation feels like a wasted turn instead of a story event.
 
-**B7 — The Close.** *Intent: the last chance — make hesitation expensive and
+**B7: The Close.** *Intent: the last chance: make hesitation expensive and
 courage rewarded.* Bar: remaining-token scarcity is visible to all; the beat
 has a countdown quality. Failure smells: the session drifts here; players
 don't realize the endgame has begun.
 
-**B8 — The Truth.** *Intent: a reveal worth earning — narrative, personal,
+**B8: The Truth.** *Intent: a reveal worth earning: narrative, personal,
 filmed.* Bar: the reveal is a **story sequence, not a scoreboard**: the
 narrator reconstructs the night, names what each player almost caught,
 celebrates the killer's best deception, then lands the truth. Every player
@@ -132,7 +132,7 @@ of staged shared-display time. Failure smells: instant "The killer was X"
 card; players checking phones during their own finale.
 
 **Tempo rule (all beats):** no player-facing dead air longer than ~20
-seconds — some surface (shared display or phone) should always be giving
+seconds: some surface (shared display or phone) should always be giving
 somebody something to read, do, or suspect. Rehearsal observers time the
 three longest gaps.
 
@@ -140,12 +140,12 @@ three longest gaps.
 
 ### 3.1 Character identity cards (the first personalization proof)
 
-Format bar — every generated identity card contains, in this order:
-1. Name + evocative role tag ("Vivienne Ashford — the widow who arrived early").
+Format bar: every generated identity card contains, in this order:
+1. Name + evocative role tag ("Vivienne Ashford: the widow who arrived early").
 2. Relationship to the victim in one sentence.
 3. **One secret** ("You owe the victim money. Nobody here knows.").
 4. **One want** for tonight (playable at the table, not backstory).
-5. **One instruction** — a concrete verb the player can perform in the next
+5. **One instruction**: a concrete verb the player can perform in the next
    ten minutes ("Find out why Marcus left the terrace at nine.").
 
 Quality tests (all three must pass for every role slot in every theme):
@@ -158,13 +158,13 @@ Quality tests (all three must pass for every role slot in every theme):
 
 ### 3.2 Clues
 
-Every clue must do all three: (a) **point** — implicate or exonerate a
-specific character; (b) **be sayable** — phrased so a player can read it
-aloud and start an argument; (c) **carry the world** — one concrete sensory
+Every clue must do all three: (a) **point**: implicate or exonerate a
+specific character; (b) **be sayable**: phrased so a player can read it
+aloud and start an argument; (c) **carry the world**: one concrete sensory
 or period detail from the session's theme. No filler clues: if a clue exists
 only to occupy a slot, cut the slot. False clues must be *fair*: after the
 reveal, a player should be able to see why it was false ("the lipstick was
-the wrong shade" — checkable in retrospect), never arbitrary.
+the wrong shade": checkable in retrospect), never arbitrary.
 
 ### 3.3 Narrator voice
 
@@ -173,7 +173,7 @@ last. Rules: addresses players only by character name; short lines on the
 shared display (target ≤ 2 sentences per screen, legible from across a
 room); dry wit allowed, mockery of players never; makes ≥2 callbacks per
 session to intake-seed details (the cheapest personalization-perception
-wins available). The narrator is the product's voice — treat narrator lines
+wins available). The narrator is the product's voice: treat narrator lines
 with the same review severity as UI copy.
 
 ## 4. The Killer Experience Standard
@@ -182,14 +182,14 @@ Being the killer must be the *best* seat in the house, because "next time I
 want to be the killer" is the replay engine.
 
 - **The revelation moment** is staged like a gift: full-phone-screen private
-  sequence — "It was you." — followed immediately by *what you know* (how,
+  sequence: "It was you.", followed immediately by *what you know* (how,
   why) and *what to do next* (first misdirection suggestion). Never a plain
   status change.
 - **Prompted actions are missions, not chores:** each has a stated payoff
-  ("steer suspicion toward the Colonel — his alibi has a hole you know
+  ("steer suspicion toward the Colonel: his alibi has a hole you know
   about") and a visible consequence when executed.
 - **Losing is still winning:** The Truth beat must celebrate the killer's
-  best move by name ("...and no one ever asked about the second glass —
+  best move by name ("...and no one ever asked about the second glass:
   Vivienne made sure of that"). A caught killer should feel like the star of
   the story, not the loser of a quiz.
 
@@ -199,8 +199,8 @@ Within the existing runtime (no new games), every mini-game moment meets:
 
 1. **Instant response:** local input feedback under ~100ms (visual press
    states, optimistic UI) even when resolution is server-side.
-2. **Legible stakes before play:** one line — what winning earns (clue
-   access, standing) — shown before the timer starts.
+2. **Legible stakes before play:** one line: what winning earns (clue
+   access, standing): shown before the timer starts.
 3. **Countdown tension:** timers visible and dramatized in the final 5
    seconds on both surfaces.
 4. **Spectacle resolution:** results land on the *shared display* as a
@@ -226,10 +226,10 @@ Principles, so M5-G execution has a target instead of taste-by-committee:
   no paragraph walls on the TV, ever.
 - **Motion budget:** one dramatic staged transition per beat (the beat-turn
   is the drumbeat of the night); everything else restrained. Motion signals
-  "something story-level happened" — spending it on button hovers deflates
+  "something story-level happened": spending it on button hovers deflates
   the reveals.
-- **Phone surface is intimate:** private events styled as *yours* —
-  letter/dossier/telegram framing per theme — visually distinct from public
+- **Phone surface is intimate:** private events styled as *yours*:
+  letter/dossier/telegram framing per theme: visually distinct from public
   info so the privacy model is felt, not explained (supports P5 and the
   privacy-by-design requirement).
 - **The reveal is the visual centerpiece:** B8 gets the largest share of
@@ -262,14 +262,14 @@ reviewed together after each session.
 
 ## 8. Sister-Game Quality Principles (design-phase inputs)
 
-**Daily Case:** the fun atom is the *caught contradiction* — the player,
+**Daily Case:** the fun atom is the *caught contradiction*: the player,
 not the game, notices the suspect's story changed. Bar: every daily session
 ends on a hook (small reveal or tension raise); contradiction payoffs are
 player-earned (the ledger surfaces what the player flagged, it does not
 auto-solve); the suspect has one voice, held for seven days. Five minutes
-means five minutes — a session that runs long is a defect, not a bonus.
+means five minutes: a session that runs long is a defect, not a bonus.
 
-**Monster RPG:** the fun atom is *being witnessed* — companions visibly
+**Monster RPG:** the fun atom is *being witnessed*: companions visibly
 shaped by what the player chose. Bar (for the Chat 8+ design phase): every
 chapter ends at a narrative-meaningful close with a forward thread; at least
 one companion reaction per chapter must reference a specific past player
@@ -278,21 +278,44 @@ day one (blueprint §3.4).
 
 ---
 
+# Human Collaboration Contract
+
+**Interaction profiles:** Creative collaboration plus Facilitated live
+operation.
+
+Interview the founder about experience goals, tone, examples, pacing, fairness,
+and the success definition before treating subjective quality criteria as
+locked. Confirm a short brief, then present low-cost representative lines,
+moments, scoring or pacing scenarios, and other samples before producing a full
+content or tuning set. Explain what every artifact represents, which assumptions
+it tests, how to review it, and what needs founder attention. Pause for focused
+interactive feedback at each checkpoint.
+
+Live quality validation follows preparation, preflight, walkthrough, explicit go
+or no-go, guided rehearsal, debrief, and remediation-approval phases. Explain
+the observation rubric and blocking conditions before the run. Research and
+reversible preparation may continue while the founder is unavailable, but no
+subjective choice, full production, or live run may proceed without its named
+approval.
+
+Preserve discovery answers, artifacts and review instructions, checkpoint
+approvals, run evidence, debrief feedback, dates, and owner actions.
+
 ## Acceptance Criteria
 
 This spec is satisfied for Nightcap v1 when:
 
 1. All role slots in every shipped theme pass the three identity-card tests
-   (§3.1) — verified by content review checklist.
+   (§3.1): verified by content review checklist.
 2. Clue generation output passes the point/sayable/world checks (§3.2) on a
-   sampled basis per theme — verified in content review + rehearsal
+   sampled basis per theme: verified in content review + rehearsal
    observation.
 3. B2, B6, and B8 are staged sequences on the shared display (not instant
-   cards), with B8 meeting the story-sequence bar (§2) — verified by
+   cards), with B8 meeting the story-sequence bar (§2): verified by
    founder walkthrough.
-4. The killer revelation and ≥1 prompted action meet §4 — verified by
+4. The killer revelation and ≥1 prompted action meet §4: verified by
    walkthrough + killer-player debrief question in the rubric.
-5. Mini-game moments meet all five feel rules (§5) — verified on real
+5. Mini-game moments meet all five feel rules (§5): verified on real
    devices during rehearsal.
 6. The fun-observation rubric is completed for Rehearsal 1, Rehearsal 2, and
    all M6 qualifying sessions, and its findings are triaged with the blocker
@@ -324,4 +347,4 @@ This spec is satisfied for Nightcap v1 when:
 - Q: Should per-beat emotional targets from this spec's moment map become
   the authored-intent metadata when ADR-0012 (M5-H) is implemented? (Natural
   fit; decide at M5-H planning.)
-- Q: Audio stinger set — post-M6 evidence decision (§6).
+- Q: Audio stinger set: post-M6 evidence decision (§6).

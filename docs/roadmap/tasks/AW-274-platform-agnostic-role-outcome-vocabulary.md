@@ -7,8 +7,8 @@
 ## Plain-English Summary
 
 Remove murder-mystery (Nightcap) vocabulary that is hardcoded into shared
-platform code — the arc schema, the session-end API, the `session_completed`
-telemetry payload, and the harness — and replace it with generic,
+platform code, the arc schema, the session-end API, the `session_completed`
+telemetry payload, and the harness, and replace it with generic,
 arc-configurable mechanisms. Nightcap keeps identical behavior by supplying
 the concrete values in `nightcap/arc.json`.
 
@@ -47,6 +47,25 @@ tech debt that would otherwise compound with every new arc.
 - Supply concrete Nightcap values in `nightcap/arc.json` for behavior parity.
 - Author the ADR the spec requires (schema + API + telemetry decision).
 
+## Human Collaboration Contract
+
+**Interaction profile:** Decision interview.
+
+**Founder input:** Preferred platform-agnostic vocabulary, compatibility policy
+for schemas, APIs, and telemetry, and rollout sequencing.
+
+**Required flow:** Map the current terms and compatibility constraints, then
+explain the consumer impact and migration consequences in plain language.
+Present two or three viable vocabulary and compatibility approaches with a
+recommendation. Ask one focused interactive choice question at a time, confirm
+the selected approach and sequence, and record only the approved decision.
+
+**Gate:** Schema, API, telemetry, and migration changes stop until the founder
+explicitly approves the named vocabulary, compatibility behavior, and sequence.
+
+**Evidence:** Preserve the mappings, options, recommendation, explicit approval,
+approval date, compatibility commitments, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] `git grep -iE "killer|murder" -- engine/ api/` returns nothing outside
@@ -80,11 +99,11 @@ tech debt that would otherwise compound with every new arc.
 ## Must Not Do
 
 - Do not touch the safety-layer term lists (`engine/safety/l1.py`, `l2.py`,
-  `l3.py`) — that is issue #219's scope; changing safety heuristics here is a
+  `l3.py`), that is issue #219's scope; changing safety heuristics here is a
   hard-rule violation.
 - Do not add new gameplay capability; this refactor must be behavior-preserving
   for Nightcap.
-- Do not change the live session-end contract without a back-compat path — the
+- Do not change the live session-end contract without a back-compat path, the
   web SDK sends `killer_identified` today, right before Rehearsal 1 (AW-273).
 - Do not implement before the spec's ADR is approved.
 

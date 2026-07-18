@@ -37,6 +37,27 @@ Unblocks Rehearsal 2 and all M6 qualifying-session work.
 - Document the deploy runbook at
   `docs/roadmap/operations/cloud-deploy-runbook.md`.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Decision interview.
+
+**Founder input:** Deployment targets, acceptable cost and operational risk,
+credential ownership, billing controls, and required console actions.
+
+**Required flow:** Research the current deployment constraints and explain each
+choice, risk, cost implication, and founder action in plain language. Present
+two or three viable deployment approaches with a recommendation. Ask one
+focused interactive choice question at a time, confirm each decision, and guide
+the founder through owner-only actions without requesting secrets in chat.
+
+**Gate:** Deployment stops before any choice, credential-dependent action,
+billing change, or external mutation until the founder explicitly approves the
+named choice and completes the required owner action.
+
+**Evidence:** Preserve the options, recommendation, explicit approvals, dates,
+redacted completion evidence, and outstanding owner actions. Never record
+credentials or secret values.
+
 ## Acceptance Criteria
 
 - [ ] Engine reachable at a stable Cloud Run URL.

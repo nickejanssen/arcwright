@@ -37,6 +37,36 @@ qualifying sessions. Prevents per-asset, per-wrapper visual drift.
   moodboards stored or linked alongside.
 - Founder sign-off recorded in `docs/product/decisions-log.csv`.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Creative collaboration.
+
+**Founder input:** Visual goals, references, tastes and dislikes, wrapper-level
+expectations, constraints, desired player feeling, and the definition of a
+successful Nightcap identity.
+
+**Required phases:**
+
+1. Interview the founder before proposing direction. Use focused interactive
+   questions, one decision at a time, and offer informed examples and advice.
+2. Synthesize the answers into a short creative brief and obtain confirmation.
+3. Present two or three comparative, low-cost moodboard directions with a
+   recommendation before drafting the full art-direction document.
+4. For every artifact, explain what it represents, which assumptions it tests,
+   how to review it, and exactly what needs founder attention.
+5. Pause for explicit direction after the brief, moodboards, wrapper studies,
+   and final assembled brief. Revise only the approved direction.
+
+**Gates:** Research and reversible preparation may continue while the founder is
+unavailable, but no creative choice may be made. No full brief or production
+direction proceeds without the preceding explicit approval. PR #243 content and
+D-073 are candidate research only until this fresh interview process produces
+explicit approval; they are not founder direction or sign-off evidence.
+
+**Evidence:** Preserve discovery answers, alternatives, recommendation,
+artifacts and review instructions, founder feedback, explicit checkpoint and
+final approvals, dates, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] `docs/design/nightcap-art-direction.md` exists and covers every

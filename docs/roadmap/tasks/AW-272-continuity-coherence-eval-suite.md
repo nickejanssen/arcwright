@@ -42,6 +42,25 @@ Tier 2 transition needs.
 - Configurable pass thresholds; suite is runnable locally and in CI batch
   mode.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+**Why independent:** Decision 0012 and
+`docs/specs/0066-aw-272-continuity-coherence-evals.md` constrain the eval cases,
+grading rules, thresholds, and reporting contract.
+
+**Required flow:** After normal plan approval, implement the documented suite,
+explain each signal and how to review it, and verify the acceptance criteria
+without redefining quality policy.
+
+**Reclassification gate:** Stop and switch to Creative collaboration or
+Decision interview before changing narrative quality criteria, thresholds,
+telemetry meaning, privacy behavior, or eval scope.
+
+**Evidence:** Preserve plan approval, canonical-source references, eval results,
+threshold evidence, dates, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] `pytest evals/runners/test_continuity_evals.py -q` runs against a

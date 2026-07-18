@@ -1,4 +1,4 @@
-# Nightcap Couch Race v1 — Parent Spec
+# Nightcap Couch Race v1: Parent Spec
 
 **Status**: Approved
 
@@ -10,7 +10,7 @@
 
 - Related ADRs: `docs/decisions/0013-nightcap-couch-race-v1-launch-target.md` (charter), `docs/decisions/0010-nightcap-gameplay-pivots-post-playtest.md` (origin), ADR-0003 (web runtime), ADR-0009 (mini-game boundary)
 - Architecture sections: `docs/architecture/03-arc-execution.md`, `04-knowledge-graph.md`, `07-character-behavior.md`, `08-event-system.md`
-- Related specs: 0071 `docs/specs/0071-live-loop-ai-character-dialogue.md` (live-loop AI character dialogue — direct dependency for AW-283; introduced by PR #225, not yet on main at time of writing — merge PR #225 before starting AW-283), 0066 (continuity evals), 0069 (visual design system), 0068 (quality bar)
+- Related specs: 0071 `docs/specs/0071-live-loop-ai-character-dialogue.md` (live-loop AI character dialogue: direct dependency for AW-283; introduced by PR #225, not yet on main at time of writing: merge PR #225 before starting AW-283), 0066 (continuity evals), 0069 (visual design system), 0068 (quality bar)
 - PRD sections: `docs/prd/03-scope.md` (amended MVP definition)
 - Story bible: `docs/story-bibles/nightcap-couch-race.md` (canonical experience definition)
 - Design record: `docs/superpowers/specs/2026-07-15-nightcap-couch-race-design.md`
@@ -37,12 +37,35 @@ Defines the v1 Couch Race experience: a 2–8 player, 20–40 minute, six-beat c
 - Free-text or voice question input (open question)
 - Teams and co-op competition-dial positions (configurable structure only; implementations deferred)
 - Imposter Variant (killer-among-players) work of any kind
-- Victim interrogation (séance mechanic — open question)
+- Victim interrogation (séance mechanic: open question)
 - Tier 2 art/animation/sound beyond spec 0069 sequences (M5-G)
 - Continuity/recap features (Nightcap Continuity stays v1.1 per D-051)
 - Pricing implementation beyond existing per-session cost tracking
 
 ---
+
+# Human Collaboration Contract
+
+**Interaction profiles:** Creative collaboration plus Facilitated live
+operation.
+
+For AW-277 through AW-285 and all other subjective content, gameplay, tuning,
+and surface choices, begin with founder discovery and confirm a short brief.
+Present low-cost representative lines, authored cases, round and answer
+scenarios, fairness cases, tuning tables, wireframes, or prototypes before full
+production. Explain what every artifact represents, which assumptions it tests,
+how to review it, and what needs founder attention. Offer bounded options with a
+recommendation and ask one focused interactive question at a time. Pause at each
+named checkpoint for explicit direction.
+
+AW-286 rehearsal work follows preparation, preflight, walkthrough, explicit go
+or no-go, guided live run, debrief, and remediation-approval phases. Research
+and reversible preparation may continue while the founder is unavailable, but
+no subjective choice, full implementation, or live run proceeds without its
+named approval.
+
+Preserve discovery answers, artifacts and review instructions, checkpoint
+approvals, rehearsal evidence, debrief feedback, dates, and owner actions.
 
 # Acceptance Criteria
 

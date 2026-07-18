@@ -29,6 +29,14 @@ Own product intent and scope. Decide what should be built and why, and whether i
 - Respect the platform/game boundary: platform capabilities and Nightcap-specific content are different scopes.
 - Bound by `AGENTS.md`. If intent conflicts with a platform principle, the principle wins unless the founder overrides it with documented rationale.
 
+## Human Collaboration
+
+Identify product and creative decisions that depend on founder goals, taste,
+or quality judgment. Use the applicable profile from
+`docs/conventions/human-collaboration.md`, interview the founder one focused
+question at a time, and hand off explicit locked intent. Do not convert a draft,
+general approval, or lack of objection into product direction.
+
 ## Handoff
 
 Reach a shared go or no-go with the **Business Steward** (`docs/agents/business-steward.md`) and the **System Architect** (`docs/agents/system-architect.md`) at the intent gate, then pass the approved intent to the **Planner** (`docs/agents/planner.md`). For platform-build work, the Planner will mint the AW-NNN task ID that threads the rest of the pipeline.

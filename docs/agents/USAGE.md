@@ -28,6 +28,29 @@ Intent gate: Product Steward + Business Steward + System Architect agree on a go
 Scribe records decisions and outcomes the whole way.
 ```
 
+### How collaboration changes a task
+
+Independent tasks use the normal plan, approval, implementation, and review
+flow. Decision, creative, and live-operation tasks pause whenever the next step
+depends on your input.
+
+The agent asks one focused question at a time. It prefers interactive
+multiple-choice controls that mark the recommended option and allow free-form
+input. If the client cannot render controls, it uses a clearly explained
+numbered-choice fallback.
+
+Before asking you to review an artifact, the agent explains what it is, why it
+matters, what is fixed or open, what to inspect, how to review it, known
+limitations, its recommendation, the exact decision needed, and what follows
+approval. UI, art, narrative, gameplay, and tuning work use low-cost
+intermediate artifacts before full implementation. Rehearsals and playtests
+pause at each preparation, preflight, walkthrough, live-session, debrief, and
+remediation gate.
+
+Approving a plan does not approve a creative direction, artifact, live phase,
+implementation, final sign-off, or durable decision record. Each approval must
+name the decision, artifact, version, or phase it covers.
+
 ---
 
 ## Part 2: One-time setup (do this in each app, once)

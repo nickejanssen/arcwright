@@ -26,6 +26,23 @@ Build read-only arc structure inspection. Likely files affected: dashboard, api,
 
 This task is no longer an M5 exit-gate blocker. For M5, arc structure inspection may be satisfied by logs or deferred until after proof to protect the solo-founder critical path.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+**Why independent:** `docs/prd/03-scope.md`, the deferred post-proof status,
+AW-236, and the read-only acceptance criteria constrain this optional surface.
+
+**Required flow:** After normal plan approval, implement only the documented
+read-only view, explain how to inspect it, and verify that editing is impossible.
+
+**Reclassification gate:** Stop and switch to Creative collaboration or
+Decision interview before choosing a new visual direction, adding editing,
+changing roadmap priority, or expanding the diagnostic scope.
+
+**Evidence:** Preserve plan approval, read-only verification, representative
+inspection evidence, test results, dates, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] Read-only arc structure view exists.

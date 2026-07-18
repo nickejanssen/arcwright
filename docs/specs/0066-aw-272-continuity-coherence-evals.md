@@ -59,6 +59,19 @@ Defines the continuity and coherence eval suite for AW-272.
 
 ---
 
+# Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+This spec and Decision 0012 fully constrain eval cases, grading, thresholds,
+and reporting. After normal plan approval, the agent may execute and must
+explain what each signal means, how to review it, and what requires attention.
+
+Stop and reclassify to Creative collaboration or Decision interview before
+changing narrative quality criteria, thresholds, telemetry meaning, privacy
+behavior, or eval scope. Record plan approval, eval results, threshold evidence,
+dates, and owner actions.
+
 # Acceptance Criteria
 
 - [ ] `pytest evals/runners/test_continuity_evals.py -q` runs against a recorded or freshly generated synthetic session batch and produces the JSON report.

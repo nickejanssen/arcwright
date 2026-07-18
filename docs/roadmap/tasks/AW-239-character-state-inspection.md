@@ -26,6 +26,25 @@ Build read-only character state inspection. Likely files affected: dashboard, ap
 
 This task is no longer an M5 exit-gate blocker. For M5, character state inspection may be satisfied by logs or deferred until after proof to protect the solo-founder critical path.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+**Why independent:** Architecture 07, the deferred post-proof status, and the
+existing privacy and read-only acceptance criteria constrain this optional
+character-state view.
+
+**Required flow:** After normal plan approval, implement only the allowed state
+view, explain what is visible and how to inspect it, and verify private knowledge
+is not exposed.
+
+**Reclassification gate:** Stop and switch to Creative collaboration or
+Decision interview before choosing a new visual direction, exposing additional
+character or player state, changing roadmap priority, or adding editing.
+
+**Evidence:** Preserve plan approval, privacy checks, representative inspection
+evidence, test results, dates, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] Read-only character state inspection surface exists.

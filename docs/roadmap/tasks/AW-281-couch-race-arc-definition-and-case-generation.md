@@ -27,6 +27,30 @@ Structural replayability is the product's differentiation; it lives in this gene
 - Clue web resolution reusing existing clue delivery types and puzzle gating; mini-game slots at Beat 2 (competitive) and Beat 4 (solo) using existing packages.
 - All generative composition (names, dialogue color, case flavor) happens from resolved structured state; AI never chooses case truth.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Creative collaboration.
+
+**Founder input:** Case fantasy, authored beat goals, variability boundaries,
+fairness expectations, representative situations, and success definition.
+
+**Required phases:** Begin with focused discovery before authoring. Confirm a
+short design brief, then present a small authored arc outline and deterministic
+case examples before producing the complete ArcDefinition and generation set.
+For each artifact, explain what it represents, the assumptions it tests, how to
+review it, and what needs founder attention. Offer bounded options and a
+recommendation when a choice remains, then ask one interactive question at a
+time.
+
+**Gates:** Pause for explicit direction after discovery, the arc outline, the
+deterministic case examples, and the full authored content set. Research and
+reversible preparation may continue while the founder is unavailable, but no
+creative choice or full production may proceed.
+
+**Evidence:** Preserve discovery answers, artifacts and review instructions,
+options, recommendation, founder feedback, explicit checkpoint approvals,
+dates, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] A headless harness run completes all six beats with synthetic players at counts 2 and 8.

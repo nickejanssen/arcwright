@@ -46,6 +46,19 @@ This spec defines Card 2, Daily Case, as the concrete second-arc target for AW-2
 
 ---
 
+# Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+This spec, the Daily Case story bible, and Architecture 14 fully constrain the
+schema-design task. After normal plan approval, the agent may execute and must
+explain the deliverables, validation gaps, and review evidence clearly.
+
+Stop and reclassify to Creative collaboration or Decision interview before
+inventing story direction, expanding product scope, selecting a new schema
+policy, or changing the post-M6 boundary. Record plan approval, validation
+evidence, dates, and owner actions.
+
 # Acceptance Criteria
 
 - [ ] `docs/story-bibles/daily-case.md` exists as the canonical experience brief for the second arc

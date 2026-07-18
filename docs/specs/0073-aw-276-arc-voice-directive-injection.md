@@ -12,7 +12,7 @@
   the prompt work; this spec is the implementation contract D-069 refers
   to and does not replace)
 - Design source: `docs/roadmap/operations/0068-content-pass-findings.md`,
-  finding F1 — `tone_config.voice_directive` was parsed and validated but
+  finding F1: `tone_config.voice_directive` was parsed and validated but
   consumed by zero generation call sites
 - Quality bar: `docs/specs/0068-game-experience-quality-bar.md` §3.3
   (narrator voice)
@@ -33,7 +33,7 @@ The arc's declared voice (`tone_config.voice_directive` and
 narrator-bridge generation prompt, in the cacheable stable region, the same
 way `authorial_intent` already does. This spec is the durable record of
 that contract: which call sites are in scope, where the block sits in the
-prompt, and how "reaches every live call site" is verified — not just
+prompt, and how "reaches every live call site" is verified: not just
 asserted.
 
 ---
@@ -45,7 +45,7 @@ asserted.
   returns `None` when the arc declares no usable voice content.
 - Injection into `build_dialogue_messages` / `generate_character_dialogue`
   (direct dialogue), `build_npc_npc_messages` / `generate_npc_npc_exchange`
-  (NPC-NPC exchange), and `generate_narrator_bridge` (resume flow) —
+  (NPC-NPC exchange), and `generate_narrator_bridge` (resume flow):
   stable region, after identity, before knowledge/authorial-intent blocks.
 - Threading `tone_config` through every live dispatch path that reaches
   those functions:
@@ -65,13 +65,26 @@ asserted.
   established for `content_rails` via `arc_id`). Each caller currently
   passes `tone_config` explicitly, mirroring how `authorial_intent` is
   passed today. Centralizing both is a candidate follow-up once a third
-  arc-derived block needs the same treatment — not required for this spec.
+  arc-derived block needs the same treatment: not required for this spec.
 - Any change to `authorial_intent` threading or the L1/L2/L3 safety
   pipeline.
 - Voice content for clue generation or identity-card generation (AW-279,
-  AW-280 — those tasks consume this block once their own pipelines exist).
+  AW-280: those tasks consume this block once their own pipelines exist).
 
 ---
+
+# Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+This spec, D-069, and the existing arc-authority boundary fully constrain voice
+directive injection. After normal plan approval, the agent may execute and must
+explain the directive path, precedence, and verification evidence clearly.
+
+Stop and reclassify to Creative collaboration or Decision interview before
+authoring new voice direction, changing prompt precedence, widening schema or
+telemetry scope, or altering authority boundaries. Record plan approval, tests,
+dates, and owner actions.
 
 # Acceptance Criteria
 
@@ -86,7 +99,7 @@ asserted.
   passed, in the stable region before knowledge blocks
   (`engine/tests/test_initiative.py`).
 - [x] `schedule_initiative_tasks` threads `tone_config` to both dispatch
-  branches — NPC-NPC and direct/player-group — proven at the scheduler
+  branches: NPC-NPC and direct/player-group: proven at the scheduler
   entry point, not just at the leaf function
   (`test_schedule_initiative_tasks_threads_tone_config_into_npc_exchange`,
   `test_schedule_initiative_tasks_threads_tone_config_into_player_group_dialogue`).
@@ -100,7 +113,7 @@ asserted.
 
 # Test Plan
 
-Every acceptance criterion above is a named, passing test — not review by
+Every acceptance criterion above is a named, passing test: not review by
 inspection. The verification standard for "reaches a live call site" is:
 patch at the `litellm.acompletion` or `engine.characters.*.generate`
 boundary, capture the actual `messages` payload sent, and assert `[VOICE]`
@@ -130,4 +143,4 @@ unverified, which founder review (PR #231) and Codex review both caught.
 
 - Should `tone_config` gain a `generate()`-level chokepoint like
   `content_rails` (PR #232) to make this class of gap structurally
-  impossible rather than convention-enforced? Deferred — see Out of Scope.
+  impossible rather than convention-enforced? Deferred: see Out of Scope.

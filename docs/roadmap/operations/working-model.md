@@ -10,6 +10,12 @@ Use GitHub Projects plus GitHub Issues.
 
 The task spec body in the roadmap should be copied into the issue body.
 
+Every task record and synchronized issue mirror must declare a collaboration profile.
+For non-independent work, it must also carry required founder inputs,
+the current phase and next gate, intermediate artifacts and review instructions,
+explicit approval evidence, and outstanding owner actions. Canonical roadmap
+records are updated before their GitHub issue mirrors.
+
 ## Per Work Session
 
 1. Identify the current milestone and epic.

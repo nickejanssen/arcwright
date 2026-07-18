@@ -43,6 +43,19 @@ This spec records the post-M6 commitment to build Daily Case, the second arc def
 
 ---
 
+# Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+This spec, D-056, AW-235, and the post-M6 prerequisite fully constrain the
+implementation. After normal plan approval, the agent may execute and must
+explain how the result proves platform reuse and how to review the evidence.
+
+Stop and reclassify to Creative collaboration or Decision interview before
+inventing Daily Case direction, adding schema, API, privacy, or telemetry scope,
+or changing sequence. Record plan approval, prerequisite proof, tests, dates,
+and owner actions.
+
 # Acceptance Criteria
 
 - [ ] AW-244 is complete before implementation begins

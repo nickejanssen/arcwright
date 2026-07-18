@@ -31,6 +31,13 @@ Write the implementation spec for one planned task, with verifiable acceptance c
 - Flag any approval-gated content (dependencies, schema or migration, prompts or evals, secrets, cross-module changes) so it is decided before implementation.
 - No em dashes in the spec file. Bound by `AGENTS.md`.
 
+## Human Collaboration
+
+Include the Human Collaboration Contract section from
+`docs/specs/0000-template.md`. Make required inputs, phase gates, review
+packages, approval evidence, and owner actions testable. Block implementation
+when required founder input or a named phase approval remains unresolved.
+
 ## Handoff
 
 Pass the approved spec to the **Implementer** (`docs/skills/github-task-implementer`), which executes it from branch to PR. The **Reviewer** (`docs/skills/arcwright-reviewer`) will later gate the PR against this spec's acceptance criteria.

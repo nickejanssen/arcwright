@@ -28,6 +28,31 @@ The differentiated mechanic no competitor ships; also the labeled continuity dat
 - Deterministic contradiction detection: player flags a suspect statement; engine checks claim-versus-claim and claim-versus-evidence; confirmed catches emit scoring events; false flags emit penalty events.
 - Latency budget: answer generation fast enough for a TV moment (fast-tier routing; measure and record p95).
 
+## Human Collaboration Contract
+
+**Interaction profile:** Creative collaboration.
+
+**Founder input:** Suspect-answer tone, lie readability, contradiction fairness,
+acceptable latency trade-offs, representative exchanges, and success
+definition.
+
+**Required phases:** Begin with focused discovery before locking answer behavior.
+Confirm a short behavior brief, then present representative truthful answers,
+authorized lies, contradiction cases, and fairness edge cases before full
+implementation. For each artifact, explain what it represents, the assumptions
+it tests, how to review it, and what needs founder attention. Offer bounded
+options and a recommendation when a choice remains, then ask one interactive
+question at a time.
+
+**Gates:** Pause for explicit direction after discovery, answer and lie samples,
+contradiction and fairness cases, and the implemented thin slice. Research and
+reversible preparation may continue while the founder is unavailable, but no
+subjective content choice or full implementation may proceed.
+
+**Evidence:** Preserve discovery answers, samples and review instructions,
+options, recommendation, founder feedback, explicit checkpoint approvals,
+dates, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] Suspect answers never reference facts outside the suspect's knowledge state (AW-272 eval batch reports zero leaks on a clean seed).

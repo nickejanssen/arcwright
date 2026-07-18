@@ -27,6 +27,29 @@ Bounded question tokens bound per-session generation cost (M5 gross-margin gate)
 - Question-token accounting per player per beat, arc-configurable.
 - Platform-clean naming: schemas describe structure (inquiry rounds, question intents, claim events), not Nightcap semantics (D-038/D-039).
 
+## Human Collaboration Contract
+
+**Interaction profile:** Creative collaboration.
+
+**Founder input:** Desired interrogation feel, choice pressure, question-token
+scarcity, representative player decisions, and success definition.
+
+**Required phases:** Begin with focused discovery before finalizing interaction
+behavior. Confirm a short experience brief, then present low-cost round-flow and
+intent-menu scenarios before implementing the complete loop. For each artifact,
+explain what it represents, the assumptions it tests, how to review it, and what
+needs founder attention. Offer bounded options and a recommendation when a
+choice remains, then ask one interactive question at a time.
+
+**Gates:** Pause for explicit direction after discovery, representative round
+scenarios, intent-menu scenarios, and the implemented thin slice. Research and
+reversible preparation may continue while the founder is unavailable, but no
+subjective interaction choice or full implementation may proceed.
+
+**Evidence:** Preserve discovery answers, scenarios and review instructions,
+options, recommendation, founder feedback, explicit checkpoint approvals,
+dates, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] A synthetic session runs interrogation rounds with intents resolving deterministically from evidence state.

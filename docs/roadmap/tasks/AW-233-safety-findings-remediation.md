@@ -24,6 +24,24 @@ This task supports the H1 strategy described in `docs/prd/01-overview.md`: prove
 
 Resolve or explicitly defer adversarial safety findings. Likely files affected: GitHub issues, docs/roadmap, engine/safety if fixes are created in later tasks.
 
+## Human Collaboration Contract
+
+**Interaction profile:** Independent execution.
+
+**Why independent:** AW-232 findings, the engine-layer safety rules in
+`AGENTS.md`, and the existing acceptance criteria constrain remediation. No new
+founder taste or product decision is required for a linked fix.
+
+**Required flow:** After normal plan approval, execute the approved remediation,
+explain the result and evidence clearly, and preserve linked retest evidence.
+
+**Reclassification gate:** Stop and switch to Decision interview before
+deferring a blocking finding, changing safety policy, or making any new
+subjective, strategic, privacy, or live-validation choice.
+
+**Evidence:** Preserve plan approval, finding-to-fix links, test results, any
+explicitly approved deferral, dates, and owner actions.
+
 ## Acceptance Criteria
 
 - [ ] Every blocking adversarial finding has a linked fix or explicit human-approved deferral.
