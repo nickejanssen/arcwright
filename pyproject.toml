@@ -21,6 +21,9 @@ dev = [
 addopts = "-ra"
 testpaths = ["tests", "engine/tests", "api/tests"]
 asyncio_mode = "auto"
+markers = [
+    "slow: marks tests that take longer than a few seconds",
+]
 
 [tool.ruff]
 target-version = "py311"
