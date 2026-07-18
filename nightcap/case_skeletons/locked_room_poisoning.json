@@ -1,0 +1,42 @@
+{
+  "skeleton_id": "locked_room_poisoning",
+  "archetype": "locked_room_poisoning",
+  "method_family_id": "poison",
+  "clue_chain_pattern": {
+    "description": "Physical trace on a vessel → placement discrepancy identifying who could have touched it → motive callback tying culprit to the specific vessel.",
+    "stages": [
+      {
+        "stage_id": "trace_on_vessel",
+        "kind": "trace",
+        "prompt": "A physical trace of the substance appears on a specific vessel (glass, decanter, teacup).",
+        "narrows": "victim_ingested_from_this_vessel"
+      },
+      {
+        "stage_id": "placement_discrepancy",
+        "kind": "testimony",
+        "prompt": "A witness describes seeing the vessel handled at a time or place that contradicts one suspect's stated location.",
+        "narrows": "one_suspect_had_access"
+      },
+      {
+        "stage_id": "motive_callback",
+        "kind": "document",
+        "prompt": "A written record (letter, ledger, receipt) ties the access-holding suspect to a specific motive against the victim.",
+        "narrows": "culprit_uniquely_identified"
+      }
+    ]
+  },
+  "lie_shapes_by_role": {
+    "intimate": ["relationship", "possession"],
+    "deflector": ["location", "observation"],
+    "observer": ["observation", "relationship"],
+    "obvious_suspect": ["location", "possession"]
+  },
+  "reveal_shape": {
+    "steps": [
+      {"kind": "opening", "beat": "grave", "prompt": "Vesper names the room and the vessel."},
+      {"kind": "near_miss_per_player", "beat": "grave_then_wry", "prompt": "For each player, name the clue they almost caught."},
+      {"kind": "culprit_best_move", "beat": "delighted_about_awful", "prompt": "Vesper credits the culprit's best deception move."},
+      {"kind": "the_ordinary_last_line", "beat": "ordinary", "prompt": "One small line naming the vessel and the culprit."}
+    ]
+  }
+}

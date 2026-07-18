@@ -1,0 +1,42 @@
+{
+  "skeleton_id": "pre_conspiracy_fall",
+  "archetype": "pre_conspiracy_fall",
+  "method_family_id": "fall",
+  "clue_chain_pattern": {
+    "description": "The fall itself → prior arrangement (letter, meeting, deal) between culprit and victim → conflict escalation at the gathering identifies culprit.",
+    "stages": [
+      {
+        "stage_id": "fall_physics",
+        "kind": "trace",
+        "prompt": "Physical arrangement of the fall (angle, height, ledge state) shows the fall was not accidental.",
+        "narrows": "act_was_deliberate"
+      },
+      {
+        "stage_id": "prior_arrangement",
+        "kind": "document",
+        "prompt": "A prior letter, message, or deal-record between culprit and victim reveals a specific ongoing conflict.",
+        "narrows": "one_suspect_had_pre-crime_motive"
+      },
+      {
+        "stage_id": "gathering_escalation",
+        "kind": "testimony",
+        "prompt": "A witness recalls a specific exchange during the gathering that escalated the conflict.",
+        "narrows": "culprit_uniquely_identified"
+      }
+    ]
+  },
+  "lie_shapes_by_role": {
+    "intimate": ["relationship", "observation"],
+    "deflector": ["location", "possession"],
+    "observer": ["observation", "location"],
+    "obvious_suspect": ["relationship", "location"]
+  },
+  "reveal_shape": {
+    "steps": [
+      {"kind": "opening", "beat": "grave", "prompt": "Vesper names the ledge and the fall."},
+      {"kind": "near_miss_per_player", "beat": "grave_then_wry", "prompt": "For each player, name the clue they almost caught."},
+      {"kind": "culprit_best_move", "beat": "delighted_about_awful", "prompt": "Vesper credits the culprit's best deception move."},
+      {"kind": "the_ordinary_last_line", "beat": "ordinary", "prompt": "One small line naming the document and the culprit."}
+    ]
+  }
+}

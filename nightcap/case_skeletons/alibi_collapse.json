@@ -1,0 +1,42 @@
+{
+  "skeleton_id": "alibi_collapse",
+  "archetype": "alibi_collapse_strangulation",
+  "method_family_id": "suffocation",
+  "clue_chain_pattern": {
+    "description": "Physical evidence of the act → suspect alibi that seemed solid → third-party observation collapses the alibi.",
+    "stages": [
+      {
+        "stage_id": "act_evidence",
+        "kind": "trace",
+        "prompt": "Physical evidence of the act on the victim (fibre, mark, imprint) narrows the timing window.",
+        "narrows": "act_occurred_between_x_and_y"
+      },
+      {
+        "stage_id": "shared_alibi",
+        "kind": "testimony",
+        "prompt": "A suspect gives a public alibi covering the timing window that appears to have witnesses.",
+        "narrows": "suspect_appears_to_be_elsewhere"
+      },
+      {
+        "stage_id": "alibi_collapse",
+        "kind": "object",
+        "prompt": "A found object (ticket stub, receipt, phone log, key card) places the suspect back in the room within the window.",
+        "narrows": "culprit_uniquely_identified"
+      }
+    ]
+  },
+  "lie_shapes_by_role": {
+    "intimate": ["observation", "possession"],
+    "deflector": ["location", "relationship"],
+    "observer": ["observation", "location"],
+    "obvious_suspect": ["location", "observation"]
+  },
+  "reveal_shape": {
+    "steps": [
+      {"kind": "opening", "beat": "grave", "prompt": "Vesper names the timing window and the act."},
+      {"kind": "near_miss_per_player", "beat": "grave_then_wry", "prompt": "For each player, name the clue they almost caught."},
+      {"kind": "culprit_best_move", "beat": "delighted_about_awful", "prompt": "Vesper credits the culprit's best deception move."},
+      {"kind": "the_ordinary_last_line", "beat": "ordinary", "prompt": "One small line naming the object that broke the alibi."}
+    ]
+  }
+}

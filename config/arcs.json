@@ -1,6 +1,10 @@
 {
   "arcs": [
     {
+      "id_prefix": "nightcap-couch-race",
+      "path": "nightcap/couch-race.arc.json"
+    },
+    {
       "id_prefix": "nightcap",
       "path": "nightcap/arc.json"
     }
