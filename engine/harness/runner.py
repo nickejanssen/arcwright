@@ -196,7 +196,7 @@ class HarnessRunner:
         case = resolve_case(
             self._arc_definition,
             seed=self._seed,
-            participant_count=len(run.participants),
+            participant_ids=list(run.participants),
         )
         victim_members = case.members_by_role("victim")
         if not victim_members:

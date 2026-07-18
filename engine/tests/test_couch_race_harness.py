@@ -1,4 +1,4 @@
-"""AW-281 — full 6-beat headless harness run over the Couch Race arc."""
+"""AW-281 - full 6-beat headless harness run over the Couch Race arc."""
 
 from __future__ import annotations
 
