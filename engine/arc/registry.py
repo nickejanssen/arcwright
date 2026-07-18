@@ -2,7 +2,7 @@
 
 Maps arc ids to arc definition files. The engine itself has no knowledge of
 any specific game: which arcs exist, and where their definition JSON lives,
-is deployment configuration in ``config/arcs.json`` — the same pattern as
+is deployment configuration in ``config/arcs.json``, the same pattern as
 ``config/routing_table.json`` for model routing. Adding a new game is a
 config change, never an engine code change.
 
@@ -103,7 +103,7 @@ def default_arc_path() -> Path:
 
     Used as the default arc for tooling (e.g. the headless harness) when no
     arc is specified explicitly. Resolves the Imposter Variant arc
-    (``nightcap``) explicitly rather than depending on registry order —
+    (``nightcap``) explicitly rather than depending on registry order,
     the AW-281 Couch Race arc registration prepends a ``nightcap-couch-race``
     prefix entry, and the default should remain the Imposter Variant until
     an explicit founder decision retargets the harness default (see D-071

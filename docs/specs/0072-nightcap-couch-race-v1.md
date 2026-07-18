@@ -88,8 +88,8 @@ pre-conspiracy fall) and `nightcap/case_taxonomy/` (motive / method /
 evidence / lie-topic / cast-pool tables). The resolver asserts two
 invariants at case-close:
 
-- **Solvability** — genuine clue chain uniquely identifies the culprit.
-- **Lie falsifiability** — every authorized falsehood is contradicted
+- **Solvability**, genuine clue chain uniquely identifies the culprit.
+- **Lie falsifiability**, every authorized falsehood is contradicted
   by at least one clue in the resolved distribution.
 
 Proof stack (Level 3, per the design memo):

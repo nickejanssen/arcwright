@@ -1,4 +1,4 @@
-# AW-281 — Case Resolution Design (Founder Round)
+# AW-281, Case Resolution Design (Founder Round)
 
 **Status:** Approved direction (founder, 2026-07-17)
 **Author:** Claude (brainstorming session with founder, AW-281 kickoff)
@@ -25,23 +25,23 @@ Four multiple-choice rounds resolved the architecture:
 
 **Author axes 1-4; generate axes 5-6.**
 
-- **Axis 1 — Case archetype** (authored): the *shape* of the crime
+- **Axis 1, Case archetype** (authored): the *shape* of the crime
   (locked-room poisoning, alibi-collapse strangulation, pre-conspiracy
   fall). 3 archetypes for v1.
-- **Axis 2 — Clue-chain pattern** (authored): the *sequence of
+- **Axis 2, Clue-chain pattern** (authored): the *sequence of
   deductions* a solver must perform. Each archetype names its own.
-- **Axis 3 — Lie shape per suspect role** (authored): what each
+- **Axis 3, Lie shape per suspect role** (authored): what each
   non-culprit *type* of suspect lies about (location-at-time,
   relationship-to-victim, what-they-saw).
-- **Axis 4 — Reveal shape** (authored): the rhythm of the Truth beat's
-  narrative — which reveal-tropes fire in which order.
-- **Axis 5 — Specific evidence text** (generated): the actual words on
+- **Axis 4, Reveal shape** (authored): the rhythm of the Truth beat's
+  narrative, which reveal-tropes fire in which order.
+- **Axis 5, Specific evidence text** (generated): the actual words on
   the clue card, from taxonomy tables + per-wrapper voice library.
-- **Axis 6 — Character names + motive connective tissue** (generated):
+- **Axis 6, Character names + motive connective tissue** (generated):
   per-suspect names, per-victim identity, motive text, relationship
   graph specifics.
 
-Rationale: this is the anti-slop model applied to case content —
+Rationale: this is the anti-slop model applied to case content  - 
 authored where signature matters (structure and reveal), generated where
 variety scales (specifics and voice). Every generated case rests on an
 authored skeleton.
@@ -56,7 +56,7 @@ def resolve(arc_definition, seed, participant_count) -> ResolvedCase
 
 - The engine's case module carries no murder-mystery vocabulary. Types
   are `ResolvedCase`, `CastMember`, `EvidenceEntry`,
-  `AuthorizedFalsehood` — role and truth values are string fields
+  `AuthorizedFalsehood`, role and truth values are string fields
   populated by arc-specific content, not schema.
 - Arc-specific content (skeletons, taxonomies, per-wrapper voice slots)
   lives entirely in `nightcap/case_skeletons/` and
@@ -80,7 +80,7 @@ A case skeleton may override with an explicit `cast_size` field if the
 archetype requires it (e.g., a Big Top skeleton might carry 6 suspects
 regardless of player count).
 
-### 4. Fairness proof stack — Level 3
+### 4. Fairness proof stack, Level 3
 
 Three-layer proof, additive:
 
@@ -118,7 +118,7 @@ sessions.
 
 Suspects are unified-model AI characters at runtime (per architecture
 principle 4). At resolve time they are `CastMember`s with role slots
-(`role: "suspect" | "victim"`) — the mapping to full character records
+(`role: "suspect" | "victim"`), the mapping to full character records
 is done by the character-behavior pipeline (existing AW-211/212), not
 the case resolver.
 
@@ -129,13 +129,13 @@ the case resolver.
 Explicitly out of scope for AW-281:
 
 - **Interrogation round mechanics** (question intent menus, tokens,
-  round order) — belongs to AW-282.
-- **Suspect answer generation and contradiction detection** — belongs
+  round order), belongs to AW-282.
+- **Suspect answer generation and contradiction detection**, belongs
   to AW-283 (depends on spec 0071 live-loop dialogue).
-- **Race scoring and accusation state** — belongs to AW-284.
-- **TV/phone rendering** — belongs to AW-285.
-- **Rehearsal execution** — belongs to AW-286.
-- **Live-session (REST) integration** of the resolver — this task
+- **Race scoring and accusation state**, belongs to AW-284.
+- **TV/phone rendering**, belongs to AW-285.
+- **Rehearsal execution**, belongs to AW-286.
+- **Live-session (REST) integration** of the resolver, this task
   wires the *harness* runner only; the live path picks up the same
   resolver at the AW-282 wiring.
 - **New engine dependencies.** The property tests use plain seeded
@@ -144,7 +144,7 @@ Explicitly out of scope for AW-281:
 - **Free-text interrogation input.** Menu-driven only in v1
   (bible §6, spec 0072).
 - **Teams / co-op competition dial** implementations
-  (bible §9 — configurable structure only).
+  (bible §9, configurable structure only).
 
 ---
 

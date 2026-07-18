@@ -1,10 +1,10 @@
-# AW-281 — Couch Race Arc + Case Generation Implementation Plan
+# AW-281, Couch Race Arc + Case Generation Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:subagent-driven-development (recommended) or superpowers-extended-cc:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Ship the six-beat Couch Race ArcDefinition JSON and a deterministic, provably-fair case-resolution pipeline that produces unique, solvable murder cases from a seed — with runtime invariants, 1000+ seed property tests, and a synthetic-detective solver in CI.
+**Goal:** Ship the six-beat Couch Race ArcDefinition JSON and a deterministic, provably-fair case-resolution pipeline that produces unique, solvable murder cases from a seed, with runtime invariants, 1000+ seed property tests, and a synthetic-detective solver in CI.
 
-**Architecture:** New `engine/case/` module carries an arc-agnostic resolver (`resolve(arc_definition, seed, participant_count) -> ResolvedCase`) with generic domain models (`ResolvedCase`, `CastMember`, `EvidenceEntry`, `AuthorizedFalsehood`). Nightcap-specific case content — 3 authored skeletons (locked-room poisoning, alibi-collapse strangulation, pre-conspiracy fall), taxonomy tables (motive families, method families, evidence types, lie topics), per-wrapper voice slots — lives entirely under `nightcap/case_skeletons/` and `nightcap/case_taxonomy/`. The harness runner branches on `play_mode == "detective_race"` to call the resolver instead of the existing participant-killer assignment.
+**Architecture:** New `engine/case/` module carries an arc-agnostic resolver (`resolve(arc_definition, seed, participant_count) -> ResolvedCase`) with generic domain models (`ResolvedCase`, `CastMember`, `EvidenceEntry`, `AuthorizedFalsehood`). Nightcap-specific case content, 3 authored skeletons (locked-room poisoning, alibi-collapse strangulation, pre-conspiracy fall), taxonomy tables (motive families, method families, evidence types, lie topics), per-wrapper voice slots, lives entirely under `nightcap/case_skeletons/` and `nightcap/case_taxonomy/`. The harness runner branches on `play_mode == "detective_race"` to call the resolver instead of the existing participant-killer assignment.
 
 **Tech Stack:** Python 3.11+, Pydantic (existing), `random.Random` (seeded, no new deps), pytest, ruff.
 
@@ -27,59 +27,59 @@
 
 ```
 engine/case/
-  __init__.py                     — public exports
-  models.py                       — ResolvedCase, CastMember, EvidenceEntry, AuthorizedFalsehood, CaseSkeleton
-  errors.py                       — CaseInvariantError, CaseResolutionError
-  loader.py                       — load_skeletons / load_taxonomy from arc-defined paths
-  resolver.py                     — resolve(arc_definition, seed, participant_count) -> ResolvedCase
-  invariants.py                   — solvability_check, lie_falsifiability_check
-  solver.py                       — synthetic_detective(resolved_case) -> SolverVerdict
-  README.md                       — module boundary + arc-agnostic vocabulary policy
+  __init__.py                    , public exports
+  models.py                      , ResolvedCase, CastMember, EvidenceEntry, AuthorizedFalsehood, CaseSkeleton
+  errors.py                      , CaseInvariantError, CaseResolutionError
+  loader.py                      , load_skeletons / load_taxonomy from arc-defined paths
+  resolver.py                    , resolve(arc_definition, seed, participant_count) -> ResolvedCase
+  invariants.py                  , solvability_check, lie_falsifiability_check
+  solver.py                      , synthetic_detective(resolved_case) -> SolverVerdict
+  README.md                      , module boundary + arc-agnostic vocabulary policy
 
 engine/tests/
-  test_case_models.py             — Pydantic validation
-  test_case_loader.py             — skeleton + taxonomy loading
-  test_case_resolver.py           — deterministic replay, cast-size formula
-  test_case_invariants.py         — invariant-check unit tests
-  test_case_solver.py             — synthetic detective on 100 seeds × 3 skeletons
-  test_case_property_sweep.py     — 1000+ seed sweep per skeleton
-  test_couch_race_harness.py      — full 6-beat run at counts 2 and 8
+  test_case_models.py            , Pydantic validation
+  test_case_loader.py            , skeleton + taxonomy loading
+  test_case_resolver.py          , deterministic replay, cast-size formula
+  test_case_invariants.py        , invariant-check unit tests
+  test_case_solver.py            , synthetic detective on 100 seeds × 3 skeletons
+  test_case_property_sweep.py    , 1000+ seed sweep per skeleton
+  test_couch_race_harness.py     , full 6-beat run at counts 2 and 8
 
 nightcap/
-  couch-race.arc.json             — new Couch Race ArcDefinition
+  couch-race.arc.json            , new Couch Race ArcDefinition
   case_skeletons/
-    locked_room_poisoning.json    — skeleton 1
-    alibi_collapse.json           — skeleton 2
-    pre_conspiracy_fall.json      — skeleton 3
+    locked_room_poisoning.json   , skeleton 1
+    alibi_collapse.json          , skeleton 2
+    pre_conspiracy_fall.json     , skeleton 3
   case_taxonomy/
-    motive_families.json          — greed / love / self-protection / betrayal / ambition
-    method_families.json          — poison / suffocation / fall / trauma
-    evidence_types.json           — trace / testimony / document / object
-    lie_topics.json               — location / relationship / observation / possession
-    voice_library.README.md       — per-wrapper voice slots (populated later by AW-268)
+    motive_families.json         , greed / love / self-protection / betrayal / ambition
+    method_families.json         , poison / suffocation / fall / trauma
+    evidence_types.json          , trace / testimony / document / object
+    lie_topics.json              , location / relationship / observation / possession
+    voice_library.README.md      , per-wrapper voice slots (populated later by AW-268)
 
 docs/superpowers/specs/
-  2026-07-17-aw-281-case-resolution-design.md   — already created
+  2026-07-17-aw-281-case-resolution-design.md  , already created
 ```
 
 **Files modified:**
 
 ```
-config/arcs.json                                — register the new couch-race arc
-engine/harness/runner.py                        — branch on play_mode for case resolution
-engine/arc/__init__.py                          — re-export PlayMode.detective_race if missing (it isn't; just verify)
-docs/decisions/README.md                        — optional index update if we log an ADR (see Task 9)
-docs/specs/0072-nightcap-couch-race-v1.md       — reference the resolver architecture
+config/arcs.json                               , register the new couch-race arc
+engine/harness/runner.py                       , branch on play_mode for case resolution
+engine/arc/__init__.py                         , re-export PlayMode.detective_race if missing (it isn't; just verify)
+docs/decisions/README.md                       , optional index update if we log an ADR (see Task 9)
+docs/specs/0072-nightcap-couch-race-v1.md      , reference the resolver architecture
 ```
 
 **Files NOT modified (out of scope):**
 
 ```
-engine/arc/models.py                            — no new schema fields (D-053: beat count is arc-level)
-engine/session/service.py                       — live-session wiring is AW-282
-engine/knowledge/*                              — knowledge-graph state population is AW-283
-config/routing_table.json                       — no new routing entries; case resolution is deterministic
-requirements.txt                                — no new dependencies (Hard Rule)
+engine/arc/models.py                           , no new schema fields (D-053: beat count is arc-level)
+engine/session/service.py                      , live-session wiring is AW-282
+engine/knowledge/*                             , knowledge-graph state population is AW-283
+config/routing_table.json                      , no new routing entries; case resolution is deterministic
+requirements.txt                               , no new dependencies (Hard Rule)
 ```
 
 ---
@@ -100,7 +100,7 @@ requirements.txt                                — no new dependencies (Hard Ru
 
 **Steps:**
 
-- [ ] **Step 1: Verify memo exists** — file was written by the plan author. Read to confirm the four decisions are captured.
+- [ ] **Step 1: Verify memo exists**, file was written by the plan author. Read to confirm the four decisions are captured.
 - [ ] **Step 2: Commit if not already committed.**
 
 ```bash
@@ -112,7 +112,7 @@ git commit -m "docs(design): AW-281 case-resolution design memo"
 
 ## Task 1: Couch Race arc JSON + registry
 
-**Goal:** Ship `nightcap/couch-race.arc.json` — the 6-beat ArcDefinition — and register it in `config/arcs.json` so the loader can resolve `arc_id="nightcap-couch-race"`.
+**Goal:** Ship `nightcap/couch-race.arc.json`, the 6-beat ArcDefinition, and register it in `config/arcs.json` so the loader can resolve `arc_id="nightcap-couch-race"`.
 
 **Files:**
 - Create: `nightcap/couch-race.arc.json`
@@ -333,14 +333,14 @@ Full content, six beats, per bible §4 pacing targets and existing arc.json sche
 ```
 
 Notes on the JSON:
-- `killer_assignment: false` — the participant-killer flag from Imposter Variant is off. Case-culprit is a CastMember, not a player.
-- New top-level `case_resolution` block carries directory paths + cast-size table. This is arc-content data (not an engine schema addition — see Task 2).
-- `plot_twist: false` and `narrator_dialogue: false` on `generative_elements` — twists are authored per skeleton (axis 4) and Vesper is authored-refrain-plus-generated-specifics per D-073 / AW-267.
+- `killer_assignment: false`, the participant-killer flag from Imposter Variant is off. Case-culprit is a CastMember, not a player.
+- New top-level `case_resolution` block carries directory paths + cast-size table. This is arc-content data (not an engine schema addition, see Task 2).
+- `plot_twist: false` and `narrator_dialogue: false` on `generative_elements`, twists are authored per skeleton (axis 4) and Vesper is authored-refrain-plus-generated-specifics per D-073 / AW-267.
 - Beat IDs deliberately do NOT reuse `arrival`, `body`, `truth` from Imposter Variant, except `truth` (which is universal-enough and matches the harness runner's terminal-beat convention).
 
 - [ ] **Step 2: Register in `config/arcs.json`.**
 
-Modify existing file — append the new arc entry BEFORE the existing `nightcap` prefix (order matters; first match wins):
+Modify existing file, append the new arc entry BEFORE the existing `nightcap` prefix (order matters; first match wins):
 
 ```json
 {
@@ -356,7 +356,7 @@ Modify existing file — append the new arc entry BEFORE the existing `nightcap`
 Create `engine/tests/test_couch_race_arc_json.py`:
 
 ```python
-"""AW-281 — validate the Couch Race arc JSON loads and shapes correctly."""
+"""AW-281, validate the Couch Race arc JSON loads and shapes correctly."""
 
 from __future__ import annotations
 
@@ -429,11 +429,11 @@ pytest engine/tests/test_couch_race_arc_json.py -v
 
 Expected: 8 tests pass.
 
-If a field is missing or a validator rejects the JSON, fix the arc JSON and re-run. Do NOT modify `engine/arc/models.py` — the whole point is zero schema change (D-053).
+If a field is missing or a validator rejects the JSON, fix the arc JSON and re-run. Do NOT modify `engine/arc/models.py`, the whole point is zero schema change (D-053).
 
 - [ ] **Step 5: Note on `case_resolution` block.**
 
-`ArcDefinition` uses `ConfigDict(extra=...)`. Check whether `extra="allow"` or `extra="forbid"` is set — if forbid, the `case_resolution` block will fail validation. In that case, extract the block *out* of arc JSON and store it in `nightcap/case_resolution_config.json` instead, loaded by the case module's loader (Task 4). Verify this in Step 4.
+`ArcDefinition` uses `ConfigDict(extra=...)`. Check whether `extra="allow"` or `extra="forbid"` is set, if forbid, the `case_resolution` block will fail validation. In that case, extract the block *out* of arc JSON and store it in `nightcap/case_resolution_config.json` instead, loaded by the case module's loader (Task 4). Verify this in Step 4.
 
 - [ ] **Step 6: Commit.**
 
@@ -458,7 +458,7 @@ git commit -m "feat(nightcap): couch-race arc JSON with 6 beats and registry ent
 **Acceptance Criteria:**
 - [ ] `from engine.case import ResolvedCase, CastMember, EvidenceEntry, AuthorizedFalsehood, CaseSkeleton, CaseInvariantError, CaseResolutionError` succeeds.
 - [ ] All models are Pydantic `BaseModel` with `ConfigDict(extra="forbid")`.
-- [ ] No murder-mystery vocabulary in type or field names (see README). `role`, `truth_value`, `topic`, `contradiction_targets` are the only labels — arc content puts strings like "killer" / "victim" / "poison" *into* the string fields.
+- [ ] No murder-mystery vocabulary in type or field names (see README). `role`, `truth_value`, `topic`, `contradiction_targets` are the only labels, arc content puts strings like "killer" / "victim" / "poison" *into* the string fields.
 - [ ] All models are hashable / round-trippable via `model_dump()` / `model_validate()`.
 
 **Verify:** `pytest engine/tests/test_case_models.py -v && python -c "from engine.case import ResolvedCase; print('OK')"`
@@ -470,7 +470,7 @@ git commit -m "feat(nightcap): couch-race arc JSON with 6 beats and registry ent
 `engine/tests/test_case_models.py`:
 
 ```python
-"""AW-281 — Pydantic validation for engine/case/ domain models."""
+"""AW-281, Pydantic validation for engine/case/ domain models."""
 
 from __future__ import annotations
 
@@ -730,13 +730,13 @@ class EvidenceEntry(BaseModel):
     """CastMember member_ids this clue points AWAY FROM."""
 
     delivery: str
-    """``group``, ``private``, ``split``, ``targeted`` — reused from clue architecture."""
+    """``group``, ``private``, ``split``, ``targeted``, reused from clue architecture."""
 
     delivery_target: Optional[str] = None
     """Participant id for private/targeted; None for group."""
 
     truth_value: str = "genuine"
-    """``genuine`` or ``false_signal`` — every false signal must be falsifiable."""
+    """``genuine`` or ``false_signal``, every false signal must be falsifiable."""
 
 
 class AuthorizedFalsehood(BaseModel):
@@ -763,16 +763,16 @@ class CaseSkeleton(BaseModel):
 
     skeleton_id: str
     archetype: str
-    """Axis 1 — the shape of the crime."""
+    """Axis 1, the shape of the crime."""
 
     clue_chain_pattern: dict[str, Any]
-    """Axis 2 — the deduction sequence a solver must perform."""
+    """Axis 2, the deduction sequence a solver must perform."""
 
     lie_shapes_by_role: dict[str, list[str]]
-    """Axis 3 — which lie topics each suspect archetype role can carry."""
+    """Axis 3, which lie topics each suspect archetype role can carry."""
 
     reveal_shape: dict[str, Any]
-    """Axis 4 — the rhythm of the Truth beat."""
+    """Axis 4, the rhythm of the Truth beat."""
 
     cast_size_override: Optional[int] = None
     """If set, force this skeleton to use a specific cast size regardless of player count."""
@@ -796,7 +796,7 @@ class ResolvedCase(BaseModel):
 `engine/case/README.md`:
 
 ```markdown
-# engine/case/ — Arc-Agnostic Case Resolution
+# engine/case/, Arc-Agnostic Case Resolution
 
 ## Purpose
 
@@ -860,10 +860,10 @@ Violations raise `CaseInvariantError`.
 
 ## Fairness proof stack (AW-281)
 
-- Level 1 — Runtime invariant assertions (this module).
-- Level 2 — Property-based tests over 1000+ seeds
+- Level 1, Runtime invariant assertions (this module).
+- Level 2, Property-based tests over 1000+ seeds
   (`engine/tests/test_case_property_sweep.py`).
-- Level 3 — Synthetic detective solver
+- Level 3, Synthetic detective solver
   (`engine/case/solver.py`, tested in
   `engine/tests/test_case_solver.py`).
 ```
@@ -894,7 +894,7 @@ git commit -m "feat(case): arc-agnostic domain models for case resolution (AW-28
 
 ## Task 3: Case skeletons + JSON schema (nightcap/case_skeletons/)
 
-**Goal:** Ship the three v1 authored case skeletons — locked-room poisoning, alibi-collapse strangulation, pre-conspiracy fall — as JSON files. Each skeleton carries axes 1-4 authored content: archetype, clue-chain pattern, lie-shapes-by-role, reveal shape.
+**Goal:** Ship the three v1 authored case skeletons, locked-room poisoning, alibi-collapse strangulation, pre-conspiracy fall, as JSON files. Each skeleton carries axes 1-4 authored content: archetype, clue-chain pattern, lie-shapes-by-role, reveal shape.
 
 **Files:**
 - Create: `nightcap/case_skeletons/locked_room_poisoning.json`
@@ -1061,10 +1061,10 @@ git commit -m "feat(case): arc-agnostic domain models for case resolution (AW-28
 
 Authored axes 1–4 case content for the Couch Race arc (AW-281 / spec 0072).
 
-- **Axis 1 — archetype** (`archetype`)
-- **Axis 2 — clue-chain pattern** (`clue_chain_pattern`)
-- **Axis 3 — lie shapes per suspect role** (`lie_shapes_by_role`)
-- **Axis 4 — reveal shape** (`reveal_shape`)
+- **Axis 1, archetype** (`archetype`)
+- **Axis 2, clue-chain pattern** (`clue_chain_pattern`)
+- **Axis 3, lie shapes per suspect role** (`lie_shapes_by_role`)
+- **Axis 4, reveal shape** (`reveal_shape`)
 
 Axes 5 (evidence text) and 6 (character names / motives) are GENERATED
 from `nightcap/case_taxonomy/` (see that folder's README).
@@ -1082,10 +1082,10 @@ resolver picks it up automatically.
 ## Suspect archetype-roles (used by `lie_shapes_by_role`)
 
 Inherited from the Imposter Variant bible §3:
-- `intimate` — closest to victim
-- `deflector` — hiding something unrelated
-- `observer` — social edges, sees what others miss
-- `obvious_suspect` — surface-level motive everyone recognizes
+- `intimate`, closest to victim
+- `deflector`, hiding something unrelated
+- `observer`, social edges, sees what others miss
+- `obvious_suspect`, surface-level motive everyone recognizes
 ```
 
 - [ ] **Step 5: Write the skeleton-content test.**
@@ -1093,7 +1093,7 @@ Inherited from the Imposter Variant bible §3:
 `engine/tests/test_case_skeleton_content.py`:
 
 ```python
-"""AW-281 — Validate all shipped case skeletons against the CaseSkeleton schema."""
+"""AW-281, Validate all shipped case skeletons against the CaseSkeleton schema."""
 
 from __future__ import annotations
 
@@ -1297,10 +1297,10 @@ skeletons in `nightcap/case_skeletons/` are the authored *shape*;
 this folder is the generative *specifics* the resolver draws from.
 
 Tables:
-- `motive_families.json` — motive family + narrative variants
-- `method_families.json` — method family + vessels/objects/locations + traces
-- `evidence_types.json` — evidence type registry
-- `lie_topics.json` — lie topic registry
+- `motive_families.json`, motive family + narrative variants
+- `method_families.json`, method family + vessels/objects/locations + traces
+- `evidence_types.json`, evidence type registry
+- `lie_topics.json`, lie topic registry
 
 Adding to a taxonomy: append entries, run
 `pytest engine/tests/test_case_loader.py -v`, and the resolver picks
@@ -1432,7 +1432,7 @@ And extend `__all__` accordingly.
 `engine/tests/test_case_loader.py`:
 
 ```python
-"""AW-281 — Loader for skeletons, taxonomies, and case-resolution config."""
+"""AW-281, Loader for skeletons, taxonomies, and case-resolution config."""
 
 from __future__ import annotations
 
@@ -1543,10 +1543,10 @@ git commit -m "feat(case): taxonomy tables + skeleton/taxonomy/config loader (AW
 Two invariants are asserted before a ResolvedCase is returned from the
 resolver:
 
-1. Solvability — the intersection of clue-implication sets (over the
+1. Solvability, the intersection of clue-implication sets (over the
    genuine clue chain, applied by a rational-actor solver) uniquely
    identifies one CastMember, and that member matches ``culprit_id``.
-2. Lie falsifiability — every AuthorizedFalsehood's ``contradicted_by``
+2. Lie falsifiability, every AuthorizedFalsehood's ``contradicted_by``
    list is non-empty AND every referenced evidence_id exists in the
    case's evidence list.
 """
@@ -1811,7 +1811,7 @@ def _fabricate_evidence_text(
     stage: dict[str, Any],
     taxonomy: Taxonomy,
 ) -> str:
-    # Placeholder generative text — will be replaced by the wrapper voice
+    # Placeholder generative text, will be replaced by the wrapper voice
     # library integration in AW-268. For now, use the stage prompt +
     # a small taxonomic flourish so unit tests can distinguish seeds.
     prompt = stage.get("prompt", "evidence detail")
@@ -1839,7 +1839,7 @@ def _resolve_lies(
         topics = skeleton.lie_shapes_by_role.get(role_tag, ["location"])
         topic = rng.choice(topics)
         # Every lie is contradicted by the first genuine evidence entry
-        # for now — the invariant only requires non-empty contradicted_by
+        # for now, the invariant only requires non-empty contradicted_by
         # and the solver (Task 7) will apply per-topic reasoning.
         contradicted_by = [evidence[0].evidence_id] if evidence else []
         lies.append(
@@ -1851,7 +1851,7 @@ def _resolve_lies(
                 contradicted_by=contradicted_by,
             )
         )
-    # The culprit also lies — about location, contradicted by the last stage clue.
+    # The culprit also lies, about location, contradicted by the last stage clue.
     culprit_lie = AuthorizedFalsehood(
         falsehood_id=f"l{len(non_culprit_suspects) + 1}",
         speaker_id=culprit.member_id,
@@ -1895,7 +1895,7 @@ And add to `__all__`.
 `engine/tests/test_case_resolver.py`:
 
 ```python
-"""AW-281 — case resolver: determinism, cast-size formula, invariants."""
+"""AW-281, case resolver: determinism, cast-size formula, invariants."""
 
 from __future__ import annotations
 
@@ -1965,7 +1965,7 @@ def test_case_id_contains_arc_and_seed(arc: ArcDefinition) -> None:
 `engine/tests/test_case_invariants.py`:
 
 ```python
-"""AW-281 — solvability + lie-falsifiability invariant checks."""
+"""AW-281, solvability + lie-falsifiability invariant checks."""
 
 from __future__ import annotations
 
@@ -2079,7 +2079,7 @@ git commit -m "feat(case): deterministic resolver + runtime fairness invariants 
 
 ## Task 6: Property tests over 1000+ seeds
 
-**Goal:** Ship the property-test sweep — 1000 seeds per skeleton (3000 total) asserting both invariants hold and no seed produces a degenerate case.
+**Goal:** Ship the property-test sweep, 1000 seeds per skeleton (3000 total) asserting both invariants hold and no seed produces a degenerate case.
 
 **Files:**
 - Create: `engine/tests/test_case_property_sweep.py`
@@ -2100,7 +2100,7 @@ git commit -m "feat(case): deterministic resolver + runtime fairness invariants 
 `engine/tests/test_case_property_sweep.py`:
 
 ```python
-"""AW-281 — 1000-seed property sweep per skeleton.
+"""AW-281, 1000-seed property sweep per skeleton.
 
 Asserts that no seed produces a case that violates a fairness invariant
 or a resolver-shape invariant (cast size, unique culprit, non-empty
@@ -2188,7 +2188,7 @@ pytest engine/tests/test_case_property_sweep.py -v
 
 Expected: 1 test passes, in under 30s.
 
-If any seed fails a fairness invariant, the failures list will name the seed and the invariant. Fix `resolver.py` (typically by tightening `_resolve_evidence` narrowing rules or `_resolve_lies` contradiction targeting) and re-run. The property sweep is the *proof* — no case skeleton or resolver change ships until this passes cleanly.
+If any seed fails a fairness invariant, the failures list will name the seed and the invariant. Fix `resolver.py` (typically by tightening `_resolve_evidence` narrowing rules or `_resolve_lies` contradiction targeting) and re-run. The property sweep is the *proof*, no case skeleton or resolver change ships until this passes cleanly.
 
 - [ ] **Step 4: Commit.**
 
@@ -2201,7 +2201,7 @@ git commit -m "test(case): 1000-seed × 3-skeleton property sweep (AW-281)"
 
 ## Task 7: Synthetic detective solver
 
-**Goal:** Ship `engine/case/solver.py` — a bounded rational-actor solver that plays a resolved case and reports whether a smart human could win. Test that it wins over 100 seeds per skeleton.
+**Goal:** Ship `engine/case/solver.py`, a bounded rational-actor solver that plays a resolved case and reports whether a smart human could win. Test that it wins over 100 seeds per skeleton.
 
 **Files:**
 - Create: `engine/case/solver.py`
@@ -2212,7 +2212,7 @@ git commit -m "test(case): 1000-seed × 3-skeleton property sweep (AW-281)"
 - [ ] `synthetic_detective(case)` returns a `SolverVerdict` with `culprit_id`, `confidence: float`, `won: bool`.
 - [ ] For every resolved case shipped in Task 5, the detective's `culprit_id` matches `case.culprit_id`.
 - [ ] Solver wins on 100 seeds × 3 skeletons = 300 cases with 100% win rate.
-- [ ] Solver does NOT depend on knowledge outside the resolved-case object (it takes ResolvedCase in, produces a verdict — no side channels).
+- [ ] Solver does NOT depend on knowledge outside the resolved-case object (it takes ResolvedCase in, produces a verdict, no side channels).
 
 **Verify:** `pytest engine/tests/test_case_solver.py -v`
 
@@ -2223,7 +2223,7 @@ git commit -m "test(case): 1000-seed × 3-skeleton property sweep (AW-281)"
 `engine/case/solver.py`:
 
 ```python
-"""Synthetic detective — bounded rational-actor solver for resolved cases.
+"""Synthetic detective, bounded rational-actor solver for resolved cases.
 
 The solver reads a ``ResolvedCase`` and reports whether a rational-actor
 player, given the intended clue distribution and interrogation intents,
@@ -2243,7 +2243,7 @@ Algorithm
 
 The solver is deliberately dumb: it only uses information contained in
 the resolved case object. Any case that a smart human could solve, the
-solver should also solve — and if the solver can't, the case is
+solver should also solve, and if the solver can't, the case is
 degenerate.
 """
 
@@ -2274,7 +2274,7 @@ def synthetic_detective(case: ResolvedCase) -> SolverVerdict:
         for member_id in e.points_away_from:
             scores[member_id] -= 1
 
-    # Contradiction detection — if the solver has the contradicting
+    # Contradiction detection, if the solver has the contradicting
     # evidence in hand, add a suspicion penalty on the lying speaker.
     evidence_ids = {e.evidence_id for e in case.evidence}
     for lie in case.falsehoods:
@@ -2319,7 +2319,7 @@ And add to `__all__`.
 `engine/tests/test_case_solver.py`:
 
 ```python
-"""AW-281 — synthetic detective across 100 seeds × 3 skeletons."""
+"""AW-281, synthetic detective across 100 seeds × 3 skeletons."""
 
 from __future__ import annotations
 
@@ -2372,7 +2372,7 @@ def test_detective_matches_culprit_on_single_seed(arc: ArcDefinition) -> None:
 pytest engine/tests/test_case_solver.py -v
 ```
 
-Expected: 2 tests pass. If the solver loses on any seed, the resolver's evidence distribution is not tight enough — tighten `_resolve_evidence` in `resolver.py` and re-run both this test and the property sweep from Task 6.
+Expected: 2 tests pass. If the solver loses on any seed, the resolver's evidence distribution is not tight enough, tighten `_resolve_evidence` in `resolver.py` and re-run both this test and the property sweep from Task 6.
 
 - [ ] **Step 5: Commit.**
 
@@ -2474,7 +2474,7 @@ from engine.arc.models import ArcDefinition, PlayMode
 `engine/tests/test_couch_race_harness.py`:
 
 ```python
-"""AW-281 — full 6-beat headless harness run over the Couch Race arc."""
+"""AW-281, full 6-beat headless harness run over the Couch Race arc."""
 
 from __future__ import annotations
 
@@ -2549,7 +2549,7 @@ def test_cast_size_scales_at_the_harness_level() -> None:
 pytest engine/tests/test_couch_race_harness.py -v
 ```
 
-If a transition name is wrong (`transition_name_for` produces a slug like `pour_to_scene` — verify by reading `engine/arc/arc_state.py`), or an exit condition is misnamed vs. the arc JSON, fix the arc JSON's `exit_conditions` list or the test's `_context_for_transition` map so both agree.
+If a transition name is wrong (`transition_name_for` produces a slug like `pour_to_scene`, verify by reading `engine/arc/arc_state.py`), or an exit condition is misnamed vs. the arc JSON, fix the arc JSON's `exit_conditions` list or the test's `_context_for_transition` map so both agree.
 
 - [ ] **Step 4: Confirm the existing harness is not regressed.**
 
@@ -2616,8 +2616,8 @@ specific case content in `nightcap/case_skeletons/` (3 authored
 skeletons) and `nightcap/case_taxonomy/` (motive / method / evidence /
 lie-topic tables). The resolver asserts two invariants at case-close:
 
-- **Solvability** — genuine clue chain uniquely identifies the culprit.
-- **Lie falsifiability** — every authorized falsehood is contradicted
+- **Solvability**, genuine clue chain uniquely identifies the culprit.
+- **Lie falsifiability**, every authorized falsehood is contradicted
   by at least one clue in the resolved distribution.
 
 Proof stack (Level 3):
@@ -2660,10 +2660,10 @@ gh pr create --title "feat(nightcap): AW-281 Couch Race arc + deterministic case
 ## Summary
 
 - Ships the six-beat Couch Race ArcDefinition (`nightcap/couch-race.arc.json`).
-- New `engine/case/` module — arc-agnostic resolver, `ResolvedCase` domain, loader, invariants, synthetic-detective solver.
+- New `engine/case/` module, arc-agnostic resolver, `ResolvedCase` domain, loader, invariants, synthetic-detective solver.
 - Three authored case skeletons (locked-room poisoning, alibi-collapse, pre-conspiracy fall) + taxonomy tables for motive / method / evidence / lie topics.
 - Runtime invariants + 1000-seed property sweep + 300-case synthetic-detective proof in CI.
-- Harness runner branches on `play_mode` — Couch Race resolves a case at the introduction beat; Imposter Variant path untouched.
+- Harness runner branches on `play_mode`, Couch Race resolves a case at the introduction beat; Imposter Variant path untouched.
 
 ## Test plan
 
