@@ -55,6 +55,49 @@ Defines the v1 Couch Race experience: a 2–8 player, 20–40 minute, six-beat c
 
 ---
 
+# Case Resolution Architecture
+
+Deterministic case resolution ships in `engine/case/` (arc-agnostic
+resolver interface, `ResolvedCase` domain models) with Nightcap-
+specific case content in `nightcap/case_skeletons/` (3 authored
+skeletons: locked-room poisoning, alibi-collapse strangulation,
+pre-conspiracy fall) and `nightcap/case_taxonomy/` (motive / method /
+evidence / lie-topic / cast-pool tables). The resolver asserts two
+invariants at case-close:
+
+- **Solvability** — genuine clue chain uniquely identifies the culprit.
+- **Lie falsifiability** — every authorized falsehood is contradicted
+  by at least one clue in the resolved distribution.
+
+Proof stack (Level 3, per the design memo):
+
+- Runtime invariant assertions in the resolver
+  (`engine/case/invariants.py`).
+- 1000-seed property sweep per skeleton (3000 cases total),
+  including explicit skeleton-coverage assertions
+  (`engine/tests/test_case_property_sweep.py`).
+- Synthetic-detective solver (`engine/case/solver.py`), verified to
+  win over 300 seeds in CI (`engine/tests/test_case_solver.py`).
+
+The resolver is wired into the headless harness at the introduction
+beat (`engine/harness/runner.py`), branching on
+`ArcDefinition.play_mode == PlayMode.detective_race`. The existing
+Imposter-Variant participant-killer assignment path is unchanged for
+`play_mode == PlayMode.imposter` arcs.
+
+Cast size scales with player count (`nightcap/case_resolution_config.json`):
+2-4 players → 4 suspects, 5-6 → 5 suspects, 7-8 → 6 suspects. A
+skeleton may override via `cast_size_override`.
+
+See:
+- Design memo: `docs/superpowers/specs/2026-07-17-aw-281-case-resolution-design.md`
+- Implementation plan: `docs/superpowers/plans/2026-07-17-aw-281-couch-race-arc-and-case-generation.md`
+- Module README: `engine/case/README.md`
+- Skeleton content: `nightcap/case_skeletons/README.md`
+- Taxonomy content: `nightcap/case_taxonomy/README.md`
+
+---
+
 # Test Plan
 
 - Unit: arc transitions, case-resolution invariants (lie falsifiability, clue-chain sufficiency), token accounting, scoring paths, contradiction determinism.
