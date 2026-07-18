@@ -188,7 +188,7 @@ Promote the approved design into canonical docs/specs/0074-aw282-structured-inte
 
 Run:
 ~~~
-..\\..\\.aw102-venv\\Scripts\\python.exe -m pytest engine/tests/test_interactions_*.py engine/tests/test_arc_models.py engine/tests/test_couch_race_arc_json.py engine/tests/test_events.py -q
+..\\..\\.aw102-venv\\Scripts\\python.exe -m pytest engine/tests -q --basetemp .pytest-tmp-aw282
 ~~~
 
 ### 7. Verify, review, and open the AW-282 PR
@@ -196,7 +196,7 @@ Run:
 Run the focused suite, then repository checks:
 
 ~~~
-..\\..\\.aw102-venv\\Scripts\\python.exe -m pytest engine/tests/test_interactions_*.py engine/tests/test_arc_models.py engine/tests/test_couch_race_arc_json.py engine/tests/test_events.py -q
+..\\..\\.aw102-venv\\Scripts\\python.exe -m pytest engine/tests -q --basetemp .pytest-tmp-aw282
 ..\\..\\.aw102-venv\\Scripts\\python.exe -m ruff check engine api
 ..\\..\\.aw102-venv\\Scripts\\python.exe -m ruff format --check engine api
 git diff --check
@@ -206,7 +206,7 @@ Review the diff against AW-282 issue #236, the approved spec, the architecture c
 
 Commit with:
 ~~~
-git add engine/interactions engine/tests/test_interactions_*.py engine/arc/models.py engine/arc/__init__.py engine/tests/test_arc_models.py engine/tests/test_couch_race_arc_json.py nightcap/couch-race.arc.json docs/superpowers/plans/2026-07-18-aw282-structured-interaction-implementation.md
+git add engine/interactions engine/tests engine/arc/models.py engine/arc/__init__.py nightcap/couch-race.arc.json docs/superpowers/plans/2026-07-18-aw282-structured-interaction-implementation.md
 git commit -m "feat(interactions): implement structured interaction loop"
 ~~~
 
