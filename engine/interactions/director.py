@@ -72,6 +72,7 @@ class InteractionDirector:
                 for option in build_option_menu(
                     self.definition,
                     held_evidence_by_participant.get(participant_id, set()),
+                    evidence_start_index=round_index * 2,
                 )
             ]
             for participant_id in participant_ids

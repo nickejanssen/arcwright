@@ -85,3 +85,13 @@ def test_menu_caps_visible_evidence_options_without_rejecting_the_catalog() -> N
         "clue_read",
         "clue_pressure",
     ]
+
+    later_menu = build_option_menu(
+        catalog,
+        {"clue.ink", "clue.watch", "clue.extra"},
+        evidence_start_index=2,
+    )
+    assert [option.option_id for option in later_menu][-2:] == [
+        "clue_extra",
+        "clue_read",
+    ]

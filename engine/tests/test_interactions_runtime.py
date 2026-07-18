@@ -44,6 +44,11 @@ def test_arc_backed_runtime_resolves_and_routes_public_and_private_events() -> N
         option_id="read_reaction",
     )
 
+    resolution = runtime.lock_window(window_id=window.window_id)
+    assert resolution.authorized_knowledge_context_ref == "knowledge:runtime"
+    assert resolution.claim_reference_ids == ("claim:1",)
+    assert resolution.evidence_reference_ids == ("evidence:1",)
+
     events = runtime.resolve_window(
         window_id=window.window_id,
         timestamp=datetime(2026, 7, 18, tzinfo=timezone.utc),

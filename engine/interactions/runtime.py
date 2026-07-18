@@ -17,6 +17,7 @@ from engine.interactions.events import (
     build_public_answer_event,
 )
 from engine.interactions.models import (
+    InteractionResolution,
     InteractionSelection,
     InteractionTarget,
     InteractionWindow,
@@ -118,10 +119,7 @@ class InteractionRuntime:
         actor_id: UUID | None = None,
         allow_missing: bool = False,
     ) -> list[ContentEvent]:
-        director = self._director_for_window(window_id)
-        resolution = director.lock_window(
-            window_id=window_id, allow_missing=allow_missing
-        )
+        resolution = self.lock_window(window_id=window_id, allow_missing=allow_missing)
         answers = answer_payload_by_group or {}
         feedback = feedback_payload_by_selection or {}
         events = [
@@ -144,6 +142,17 @@ class InteractionRuntime:
             for selection in resolution.ordered_selections
         )
         return events
+
+    def lock_window(
+        self,
+        *,
+        window_id: str,
+        allow_missing: bool = False,
+    ) -> InteractionResolution:
+        """Expose the immutable AW-283 handoff before answer generation."""
+
+        director = self._director_for_window(window_id)
+        return director.lock_window(window_id=window_id, allow_missing=allow_missing)
 
     def _director_for_window(self, window_id: str) -> InteractionDirector:
         try:
