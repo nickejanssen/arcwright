@@ -142,10 +142,10 @@ def test_lock_rotates_seating_order_and_groups_public_options() -> None:
         selection.participant_id for selection in resolution.ordered_selections
     ] == [P2, P3, P1]
     assert len(resolution.public_groups) == 1
-    assert resolution.public_groups[0].selection_ids == [
+    assert resolution.public_groups[0].selection_ids == tuple(
         selection.selection_id for selection in resolution.ordered_selections
-    ]
-    assert resolution.private_selections == []
+    )
+    assert resolution.private_selections == ()
 
 
 def test_allowance_exhaustion_and_closed_window_are_rejected() -> None:
@@ -185,3 +185,66 @@ def test_allowance_exhaustion_and_closed_window_are_rejected() -> None:
             target_id="host",
             option_id="timeline",
         )
+
+
+def test_allowance_is_shared_across_rounds_in_the_same_beat() -> None:
+    director, window_id = open_director()
+    director.submit_selection(
+        window_id=window_id,
+        participant_id=P1,
+        target_id="host",
+        option_id="observe",
+    )
+    director.submit_selection(
+        window_id=window_id,
+        participant_id=P1,
+        target_id="guest",
+        option_id="timeline",
+    )
+    director.lock_window(window_id=window_id, allow_missing=True)
+
+    next_window = director.open_window(
+        window_id="window-2",
+        beat_id="investigation",
+        round_index=2,
+        participant_ids=[P1, P2, P3],
+        eligible_targets=[InteractionTarget(target_id="host")],
+        held_evidence_by_participant={},
+    )
+
+    assert next_window.remaining_selections[P1] == 0
+    with pytest.raises(InteractionLimitError):
+        director.submit_selection(
+            window_id=next_window.window_id,
+            participant_id=P1,
+            target_id="host",
+            option_id="observe",
+        )
+
+
+def test_single_player_single_target_configuration_is_supported() -> None:
+    single_definition = definition().model_copy(deep=True)
+    single_definition.limit = InteractionLimit(
+        min_players=1,
+        max_players=1,
+        default_selections_per_player=1,
+    )
+    director = InteractionDirector(single_definition, seed=3)
+    window = director.open_window(
+        window_id="daily-case",
+        beat_id="daily-case",
+        round_index=0,
+        participant_ids=[P1],
+        eligible_targets=[InteractionTarget(target_id="suspect")],
+        held_evidence_by_participant={},
+    )
+
+    director.submit_selection(
+        window_id=window.window_id,
+        participant_id=P1,
+        target_id="suspect",
+        option_id="observe",
+    )
+    resolution = director.lock_window(window_id=window.window_id)
+
+    assert len(resolution.ordered_selections) == 1

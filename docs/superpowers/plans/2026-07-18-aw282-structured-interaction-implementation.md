@@ -38,12 +38,14 @@ Create:
 - engine/interactions/menu.py
 - engine/interactions/director.py
 - engine/interactions/events.py
+- engine/interactions/runtime.py
 - engine/interactions/README.md
 - engine/tests/test_interactions_models.py
 - engine/tests/test_interactions_menu.py
 - engine/tests/test_interactions_director.py
 - engine/tests/test_interactions_events.py
 - engine/tests/test_interactions_integration.py
+- engine/tests/test_interactions_runtime.py
 
 Modify:
 - engine/arc/models.py
@@ -51,6 +53,8 @@ Modify:
 - engine/tests/test_arc_models.py
 - engine/tests/test_couch_race_arc_json.py
 - nightcap/couch-race.arc.json
+- docs/specs/0074-aw282-structured-interaction-loop.md
+- docs/decisions/0014-structured-interaction-resolution.md
 
 Do not modify:
 - engine/events/models.py
@@ -176,7 +180,11 @@ Run the arc model and Nightcap arc tests.
 
 Write engine/interactions/README.md covering the platform-neutral vocabulary, lifecycle, allowance semantics, visibility, deterministic ordering, and AW-283 handoff.
 
-Add engine/tests/test_interactions_integration.py that creates a synthetic multi-player session, opens a window, verifies baseline and evidence menus, submits selections, locks the window, verifies rotated order and public/private grouping, and verifies allowance exhaustion.
+Add engine/tests/test_interactions_integration.py that creates a synthetic multi-player session, opens a window, verifies baseline and evidence menus, submits selections, locks the window, verifies rotated order and public/private grouping, preserves AW-283 context references, and verifies allowance exhaustion.
+
+Add engine/interactions/runtime.py and engine/tests/test_interactions_runtime.py. The runtime binds an ArcDefinition beat to an InteractionDirector, resolves public answer and private feedback events, and verifies existing SessionConnectionRegistry privacy routing. Include one-player, one-target coverage for the Daily Case configuration.
+
+Promote the approved design into canonical docs/specs/0074-aw282-structured-interaction-loop.md and record the resolution boundary in docs/decisions/0014-structured-interaction-resolution.md.
 
 Run:
 ~~~

@@ -61,3 +61,27 @@ def test_menu_is_deterministic_and_does_not_share_definition_objects() -> None:
         option.option_id for option in second
     ]
     assert first[0] is not second[0]
+
+
+def test_menu_caps_visible_evidence_options_without_rejecting_the_catalog() -> None:
+    catalog = definition().model_copy(deep=True)
+    catalog.options.append(
+        InteractionOption(
+            option_id="clue_extra",
+            prompt_key="clue_extra",
+            required_evidence_ids=["clue.extra"],
+        )
+    )
+
+    menu = build_option_menu(
+        catalog,
+        {"clue.ink", "clue.watch", "clue.extra"},
+    )
+
+    assert [option.option_id for option in menu] == [
+        "observe",
+        "timeline",
+        "relationship",
+        "clue_read",
+        "clue_pressure",
+    ]

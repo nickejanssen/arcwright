@@ -3,6 +3,7 @@ from __future__ import annotations
 from uuid import UUID
 
 import pytest
+from pydantic import ValidationError
 
 from engine.interactions.director import InteractionDirector
 from engine.interactions.errors import InteractionLimitError
@@ -54,6 +55,9 @@ def test_synthetic_interaction_session_resolves_public_and_private_questions() -
             PLAYERS[1]: {"clue.ink"},
             PLAYERS[2]: set(),
         },
+        authorized_knowledge_context_ref="knowledge:window-1",
+        claim_reference_ids=["claim:prior-1"],
+        evidence_reference_ids=["evidence:ink-1"],
     )
 
     assert [
@@ -87,15 +91,21 @@ def test_synthetic_interaction_session_resolves_public_and_private_questions() -
     resolution = director.lock_window(window_id=window.window_id)
 
     assert len(resolution.ordered_selections) == 4
-    assert len(resolution.public_groups) == 1
-    assert resolution.public_groups[0].selection_ids == [
+    assert len(resolution.public_groups) == 2
+    assert resolution.public_groups[0].selection_ids == (
         f"{window.window_id}:{PLAYERS[2]}:3",
         first.selection_id,
         f"{window.window_id}:{PLAYERS[0]}:1",
-    ]
+    )
+    assert resolution.public_groups[1].option_id == "tell"
     assert [
         selection.participant_id for selection in resolution.private_selections
     ] == [PLAYERS[1]]
+    assert resolution.authorized_knowledge_context_ref == "knowledge:window-1"
+    assert resolution.claim_reference_ids == ("claim:prior-1",)
+    assert resolution.evidence_reference_ids == ("evidence:ink-1",)
+    with pytest.raises(ValidationError):
+        resolution.public_groups += (resolution.public_groups[0],)
 
 
 def test_synthetic_session_rejects_a_third_selection_after_two_allowances() -> None:

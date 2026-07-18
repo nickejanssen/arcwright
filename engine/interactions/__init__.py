@@ -17,6 +17,7 @@ from engine.interactions.models import (
     ResolutionVisibility,
     WindowStatus,
 )
+from engine.interactions.runtime import InteractionRuntime
 
 __all__ = [
     "InteractionDefinition",
@@ -27,6 +28,7 @@ __all__ = [
     "InteractionResolution",
     "InteractionSelection",
     "InteractionTarget",
+    "InteractionRuntime",
     "InteractionWindow",
     "InteractionLimit",
     "PublicInteractionGroup",

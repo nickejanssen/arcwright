@@ -78,6 +78,9 @@ class InteractionDefinition(BaseModel):
         option_ids = [option.option_id for option in self.options]
         if len(option_ids) != len(set(option_ids)):
             raise ValueError("option IDs must be unique")
+        prompt_keys = [option.prompt_key for option in self.options]
+        if len(prompt_keys) != len(set(prompt_keys)):
+            raise ValueError("prompt keys must be unique")
         if len(self.baseline_option_ids) != len(set(self.baseline_option_ids)):
             raise ValueError("baseline option IDs must be unique")
         if len(self.baseline_option_ids) != 3:
@@ -90,13 +93,6 @@ class InteractionDefinition(BaseModel):
             for option_id in self.baseline_option_ids
         ):
             raise ValueError("baseline options cannot require evidence")
-        evidence_options = [
-            option for option in self.options if option.required_evidence_ids
-        ]
-        if len(evidence_options) > 2:
-            raise ValueError("at most two evidence options are allowed")
-        if len(self.options) > 5:
-            raise ValueError("interaction options cannot exceed five")
         return self
 
 
@@ -120,6 +116,7 @@ class InteractionWindow(BaseModel):
 
     window_id: str = Field(min_length=1)
     interaction_id: str = Field(min_length=1)
+    beat_id: str = Field(min_length=1)
     round_index: int = Field(ge=0)
     participant_ids: list[UUID] = Field(min_length=1)
     eligible_targets: list[InteractionTarget] = Field(min_length=1)
@@ -128,6 +125,9 @@ class InteractionWindow(BaseModel):
     selections: dict[str, InteractionSelection] = Field(default_factory=dict)
     status: WindowStatus = WindowStatus.selecting
     staged_target_id: str | None = None
+    authorized_knowledge_context_ref: str | None = None
+    claim_reference_ids: tuple[str, ...] = ()
+    evidence_reference_ids: tuple[str, ...] = ()
 
     @model_validator(mode="after")
     def validate_window_membership(self) -> "InteractionWindow":
@@ -159,7 +159,7 @@ class PublicInteractionGroup(BaseModel):
     group_id: str = Field(min_length=1)
     target_id: str = Field(min_length=1)
     option_id: str = Field(min_length=1)
-    selection_ids: list[str] = Field(min_length=1)
+    selection_ids: tuple[str, ...] = Field(min_length=1)
 
 
 class InteractionResolution(BaseModel):
@@ -167,6 +167,10 @@ class InteractionResolution(BaseModel):
 
     window_id: str = Field(min_length=1)
     round_index: int = Field(ge=0)
-    ordered_selections: list[InteractionSelection] = Field(default_factory=list)
-    public_groups: list[PublicInteractionGroup] = Field(default_factory=list)
-    private_selections: list[InteractionSelection] = Field(default_factory=list)
+    beat_id: str = Field(min_length=1)
+    ordered_selections: tuple[InteractionSelection, ...] = ()
+    public_groups: tuple[PublicInteractionGroup, ...] = ()
+    private_selections: tuple[InteractionSelection, ...] = ()
+    authorized_knowledge_context_ref: str | None = None
+    claim_reference_ids: tuple[str, ...] = ()
+    evidence_reference_ids: tuple[str, ...] = ()

@@ -36,7 +36,7 @@ def test_interaction_definition_requires_three_baseline_options() -> None:
         )
 
 
-def test_interaction_definition_allows_at_most_two_evidence_options() -> None:
+def test_interaction_definition_allows_more_than_two_evidence_options() -> None:
     options = [
         option("a"),
         option("b"),
@@ -45,10 +45,25 @@ def test_interaction_definition_allows_at_most_two_evidence_options() -> None:
         option("e", evidence=["clue.e"]),
         option("f", evidence=["clue.f"]),
     ]
-    with pytest.raises(ValidationError, match="at most two evidence"):
+    definition = InteractionDefinition(
+        interaction_id="investigation",
+        options=options,
+        baseline_option_ids=["a", "b", "c"],
+        limit=InteractionLimit(),
+    )
+
+    assert len(definition.options) == 6
+
+
+def test_interaction_definition_rejects_duplicate_prompt_keys() -> None:
+    with pytest.raises(ValidationError, match="prompt keys must be unique"):
         InteractionDefinition(
             interaction_id="investigation",
-            options=options,
+            options=[
+                option("a"),
+                option("b"),
+                InteractionOption(option_id="c", prompt_key="prompt.a"),
+            ],
             baseline_option_ids=["a", "b", "c"],
             limit=InteractionLimit(),
         )
@@ -71,6 +86,7 @@ def test_window_rejects_duplicate_participants_and_target_ids() -> None:
         InteractionWindow(
             window_id="window-1",
             interaction_id="investigation",
+            beat_id="grill",
             round_index=0,
             participant_ids=[participant, participant],
             eligible_targets=[InteractionTarget(target_id="host")],

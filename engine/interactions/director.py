@@ -31,15 +31,20 @@ class InteractionDirector:
         self.seed = seed
         self._windows: dict[str, InteractionWindow] = {}
         self._resolutions: dict[str, InteractionResolution] = {}
+        self._spent_by_beat: dict[str, dict[UUID, int]] = {}
 
     def open_window(
         self,
         *,
         window_id: str,
+        beat_id: str | None = None,
         round_index: int,
         participant_ids: Sequence[UUID],
         eligible_targets: Sequence[InteractionTarget],
         held_evidence_by_participant: Mapping[UUID, Collection[str]],
+        authorized_knowledge_context_ref: str | None = None,
+        claim_reference_ids: Sequence[str] = (),
+        evidence_reference_ids: Sequence[str] = (),
     ) -> InteractionWindow:
         if window_id in self._windows:
             raise InteractionLifecycleError(f"window already exists: {window_id}")
@@ -59,6 +64,8 @@ class InteractionDirector:
         staged_target_id = random.Random(self.seed + round_index).choice(
             sorted(target_ids)
         )
+        effective_beat_id = beat_id or self.definition.interaction_id
+        spent = self._spent_by_beat.setdefault(effective_beat_id, {})
         menus = {
             participant_id: [
                 option.option_id
@@ -72,14 +79,19 @@ class InteractionDirector:
         window = InteractionWindow(
             window_id=window_id,
             interaction_id=self.definition.interaction_id,
+            beat_id=effective_beat_id,
             round_index=round_index,
             participant_ids=list(participant_ids),
             eligible_targets=list(eligible_targets),
             menus_by_participant=menus,
             remaining_selections={
-                participant_id: allowance for participant_id in participant_ids
+                participant_id: max(allowance - spent.get(participant_id, 0), 0)
+                for participant_id in participant_ids
             },
             staged_target_id=staged_target_id,
+            authorized_knowledge_context_ref=authorized_knowledge_context_ref,
+            claim_reference_ids=tuple(claim_reference_ids),
+            evidence_reference_ids=tuple(evidence_reference_ids),
         )
         self._windows[window_id] = window
         return window
@@ -121,6 +133,8 @@ class InteractionDirector:
             if window.remaining_selections[participant_id] <= 0:
                 raise InteractionLimitError("participant has no selections remaining")
             window.remaining_selections[participant_id] -= 1
+            spent = self._spent_by_beat.setdefault(window.beat_id, {})
+            spent[participant_id] = spent.get(participant_id, 0) + 1
             selection_id = (
                 f"{window.window_id}:{participant_id}:{len(window.selections)}"
             )
@@ -167,30 +181,33 @@ class InteractionDirector:
         grouped: dict[tuple[str, str], list[str]] = {}
         private: list[InteractionSelection] = []
         for selection in ordered:
+            grouped.setdefault((selection.target_id, selection.option_id), []).append(
+                selection.selection_id
+            )
             if (
                 options[selection.option_id].resolution_visibility
                 is ResolutionVisibility.private
             ):
                 private.append(selection)
-            else:
-                grouped.setdefault(
-                    (selection.target_id, selection.option_id), []
-                ).append(selection.selection_id)
         public_groups = [
             PublicInteractionGroup(
                 group_id=f"{window.window_id}:{target_id}:{option_id}",
                 target_id=target_id,
                 option_id=option_id,
-                selection_ids=selection_ids,
+                selection_ids=tuple(selection_ids),
             )
             for (target_id, option_id), selection_ids in grouped.items()
         ]
         resolution = InteractionResolution(
             window_id=window.window_id,
             round_index=window.round_index,
-            ordered_selections=ordered,
-            public_groups=public_groups,
-            private_selections=private,
+            beat_id=window.beat_id,
+            ordered_selections=tuple(ordered),
+            public_groups=tuple(public_groups),
+            private_selections=tuple(private),
+            authorized_knowledge_context_ref=window.authorized_knowledge_context_ref,
+            claim_reference_ids=window.claim_reference_ids,
+            evidence_reference_ids=window.evidence_reference_ids,
         )
         window.status = WindowStatus.resolved
         self._resolutions[window_id] = resolution

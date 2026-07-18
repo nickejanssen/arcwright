@@ -17,9 +17,13 @@ def build_option_menu(
         for option_id in definition.baseline_option_ids
     ]
     held = set(held_evidence_ids)
+    unlocked_evidence_count = 0
     for option in definition.options:
         if not option.required_evidence_ids:
             continue
         if set(option.required_evidence_ids).issubset(held):
             menu.append(option.model_copy(deep=True))
+            unlocked_evidence_count += 1
+            if unlocked_evidence_count == 2:
+                break
     return menu
