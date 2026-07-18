@@ -69,7 +69,13 @@
       "exit_conditions": ["evidence_wave_delivered"],
       "pacing_config": {"stall_threshold_seconds": 180},
       "audience_targets": ["all", "individual"],
-      "mini_games": []
+      "mini_games": [
+        {
+          "binding_id": "scene-crime-scene-smash",
+          "game_id": "crime-scene-smash",
+          "version": "0.1.0"
+        }
+      ]
     },
     {
       "beat_id": "grill",
@@ -107,7 +113,13 @@
       "exit_conditions": ["twist_delivered"],
       "pacing_config": {"stall_threshold_seconds": 150},
       "audience_targets": ["all", "individual"],
-      "mini_games": []
+      "mini_games": [
+        {
+          "binding_id": "twist-evidence-locker",
+          "game_id": "evidence-locker-402",
+          "version": "0.1.0"
+        }
+      ]
     },
     {
       "beat_id": "last_call",
@@ -165,13 +177,29 @@
     "narrator_dialogue": false
   },
   "content_rails": {
-    "prohibited_categories": [],
-    "thematic_warnings": [],
+    "prohibited_categories": [
+      "csam",
+      "graphic_violence",
+      "real_person_targeting"
+    ],
+    "thematic_warnings": [
+      "murder_mystery",
+      "deception",
+      "dark_motives"
+    ],
     "age_floor": 18,
-    "extra_prohibitions": []
+    "fictional_frame_terms": [
+      "nightcap"
+    ],
+    "extra_prohibitions": [
+      "Do not graphically depict the murder itself or describe violence in explicit physical detail.",
+      "Do not include sexual content between any characters.",
+      "Do not provide real-world harmful information while speaking in character.",
+      "Do not produce content that directly accuses or targets a real, named person."
+    ]
   },
   "knowledge_rules": {
-    "killer_knows_they_did_it": false,
+    "killer_knows_they_did_it": true,
     "narrator_omniscient": true,
     "clues_private_until_shared": true
   },
