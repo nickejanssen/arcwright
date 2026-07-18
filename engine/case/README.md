@@ -3,7 +3,7 @@
 ## Purpose
 
 Deterministic case resolution for arcs where case content (culprit,
-victim, cast, evidence, authorized falsehoods, reveal shape) must be
+cast, evidence, authorized falsehoods, reveal shape) must be
 resolved at session start from a seed.
 
 Introduced by AW-281 for the Couch Race arc (Nightcap v1). Reusable by
@@ -29,6 +29,12 @@ Known engine-level exceptions predating this module:
   `killer_knows_they_did_it`, `murder_timing_range` are legacy
   Imposter-Variant terms tracked as violations in issue #220 / spec
   0070. This module does not add new ones.
+
+Note: a `victim_id` field was intentionally dropped from `ResolvedCase`
+under this policy. Arcs that need a victim populate a `CastMember` with
+`role="victim"` and look it up via `ResolvedCase.members_by_role("victim")`.
+Likewise, `EvidenceEntry` uses `points_toward` / `points_away_from`
+rather than `implicates` / `exonerates`.
 
 ## Public API
 

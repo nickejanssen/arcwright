@@ -38,11 +38,11 @@ class EvidenceEntry(BaseModel):
     text: str
     """Generated axis-5 clue text. Placeholder until later tasks."""
 
-    implicates: list[str]
-    """CastMember member_ids this clue points TOWARD."""
+    points_toward: list[str]
+    """CastMember member_ids this clue points toward."""
 
-    exonerates: list[str]
-    """CastMember member_ids this clue points AWAY FROM."""
+    points_away_from: list[str]
+    """CastMember member_ids this clue points away from."""
 
     delivery: str
     """``group``, ``private``, ``split``, ``targeted`` — reused from clue architecture."""
@@ -102,7 +102,14 @@ class ResolvedCase(BaseModel):
     skeleton_id: str
     cast: list[CastMember]
     culprit_id: str
-    victim_id: str
     evidence: list[EvidenceEntry]
     falsehoods: list[AuthorizedFalsehood]
     reveal_shape: dict[str, Any]
+
+    def members_by_role(self, role: str) -> list[CastMember]:
+        """Return all cast members whose ``role`` string equals ``role``.
+
+        Lets client code look up arc-defined role slots (e.g. ``"suspect"``,
+        ``"victim"``, ``"witness"``) without the schema having to name them.
+        """
+        return [m for m in self.cast if m.role == role]

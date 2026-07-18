@@ -1567,7 +1567,7 @@ def solvability_check(case: ResolvedCase) -> tuple[bool, str]:
     if not genuine:
         return False, "no genuine evidence"
 
-    implicate_sets = [set(e.implicates) for e in genuine if e.implicates]
+    implicate_sets = [set(e.points_toward) for e in genuine if e.points_toward]
     if not implicate_sets:
         return False, "no genuine evidence implicates any cast member"
 
@@ -1575,7 +1575,7 @@ def solvability_check(case: ResolvedCase) -> tuple[bool, str]:
 
     exonerated: set[str] = set()
     for e in genuine:
-        exonerated.update(e.exonerates)
+        exonerated.update(e.points_away_from)
     narrowed -= exonerated
 
     if narrowed == {case.culprit_id}:
@@ -1698,7 +1698,6 @@ def resolve(
         skeleton_id=skeleton.skeleton_id,
         cast=[*cast, victim],
         culprit_id=culprit.member_id,
-        victim_id=victim.member_id,
         evidence=evidence,
         falsehoods=lies,
         reveal_shape=skeleton.reveal_shape,
@@ -1786,19 +1785,19 @@ def _resolve_evidence(
     for i, stage in enumerate(stages):
         # Every stage-derived clue implicates the culprit; the last stage
         # narrows to the culprit exclusively (see solvability_check).
-        implicates = [culprit.member_id]
-        exonerates: list[str] = []
+        points_toward = [culprit.member_id]
+        points_away_from: list[str] = []
         if i == 0 and len(other_suspects) >= 1:
             # First-stage: broad; some other suspects also implicated (uncertainty).
-            implicates = [culprit.member_id, *rng.sample(other_suspects, min(2, len(other_suspects)))]
+            points_toward = [culprit.member_id, *rng.sample(other_suspects, min(2, len(other_suspects)))]
         text = _fabricate_evidence_text(rng, stage, taxonomy)
         evidence.append(
             EvidenceEntry(
                 evidence_id=f"e{i + 1}",
                 evidence_type=stage.get("kind", "trace"),
                 text=text,
-                implicates=implicates,
-                exonerates=exonerates,
+                points_toward=points_toward,
+                points_away_from=points_away_from,
                 delivery="group" if i % 2 == 0 else "private",
                 delivery_target=None,
                 truth_value="genuine",
@@ -1986,12 +1985,12 @@ def _base_case(**overrides) -> ResolvedCase:
     evidence = [
         EvidenceEntry(
             evidence_id="e1", evidence_type="trace", text="clue1",
-            implicates=["s1", "s2"], exonerates=[],
+            points_toward=["s1", "s2"], points_away_from=[],
             delivery="group", delivery_target=None,
         ),
         EvidenceEntry(
             evidence_id="e2", evidence_type="document", text="clue2",
-            implicates=["s1"], exonerates=[],
+            points_toward=["s1"], points_away_from=[],
             delivery="private", delivery_target="p1",
         ),
     ]
@@ -2005,7 +2004,7 @@ def _base_case(**overrides) -> ResolvedCase:
         "case_id": "c1", "arc_id": "nightcap-couch-race-v1", "seed": 1,
         "skeleton_id": "locked_room_poisoning",
         "cast": [culprit, other, victim],
-        "culprit_id": "s1", "victim_id": "v1",
+        "culprit_id": "s1",
         "evidence": evidence, "falsehoods": lies,
         "reveal_shape": {"steps": []},
     }
@@ -2024,7 +2023,7 @@ def test_solvability_fails_when_chain_does_not_narrow_to_culprit() -> None:
         evidence=[
             EvidenceEntry(
                 evidence_id="e1", evidence_type="trace", text="x",
-                implicates=["s1", "s2"], exonerates=[],
+                points_toward=["s1", "s2"], points_away_from=[],
                 delivery="group", delivery_target=None,
             )
         ]
@@ -2270,9 +2269,9 @@ def synthetic_detective(case: ResolvedCase) -> SolverVerdict:
     for e in case.evidence:
         if e.truth_value != "genuine":
             continue
-        for member_id in e.implicates:
+        for member_id in e.points_toward:
             scores[member_id] += 1
-        for member_id in e.exonerates:
+        for member_id in e.points_away_from:
             scores[member_id] -= 1
 
     # Contradiction detection — if the solver has the contradicting
@@ -2449,13 +2448,15 @@ Edit `engine/harness/runner.py`. Replace the current `_resolve_introduction_setu
             seed=self._seed,
             participant_count=len(run.participants),
         )
+        victim_members = case.members_by_role("victim")
         run.runtime_state.resolved_generative_elements["case_resolution"] = {
             "case_id": case.case_id,
             "arc_id": case.arc_id,
             "seed": case.seed,
             "skeleton_id": case.skeleton_id,
             "culprit_id": case.culprit_id,
-            "victim_id": case.victim_id,
+            # Nightcap arc-content record; not part of engine/case schema.
+            "victim_id": victim_members[0].member_id if victim_members else None,
             "cast_size": len([m for m in case.cast if m.role == "suspect"]),
             "evidence_count": len(case.evidence),
             "falsehood_count": len(case.falsehoods),

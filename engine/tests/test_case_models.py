@@ -41,12 +41,12 @@ def test_evidence_entry_minimal() -> None:
         evidence_id="e1",
         evidence_type="trace",
         text="A faint bruise on the left hand.",
-        implicates=["s3"],
-        exonerates=[],
+        points_toward=["s3"],
+        points_away_from=[],
         delivery="private",
         delivery_target="p1",
     )
-    assert e.implicates == ["s3"]
+    assert e.points_toward == ["s3"]
 
 
 def test_authorized_falsehood_minimal() -> None:
@@ -69,8 +69,8 @@ def test_resolved_case_minimal() -> None:
         evidence_id="e1",
         evidence_type="trace",
         text="a torn playbill",
-        implicates=["s1"],
-        exonerates=[],
+        points_toward=["s1"],
+        points_away_from=[],
         delivery="group",
         delivery_target=None,
     )
@@ -81,13 +81,11 @@ def test_resolved_case_minimal() -> None:
         skeleton_id="locked_room_poisoning",
         cast=[culprit, victim],
         culprit_id="s1",
-        victim_id="v1",
         evidence=[ev],
         falsehoods=[],
         reveal_shape={"steps": []},
     )
     assert case.culprit_id == "s1"
-    assert case.victim_id == "v1"
 
 
 def test_case_skeleton_forbids_extra() -> None:
@@ -111,7 +109,6 @@ def test_resolved_case_forbids_extra() -> None:
             skeleton_id="s",
             cast=[],
             culprit_id="",
-            victim_id="",
             evidence=[],
             falsehoods=[],
             reveal_shape={"steps": []},
@@ -136,7 +133,6 @@ def test_round_trip_json() -> None:
         skeleton_id="locked_room_poisoning",
         cast=[culprit, victim],
         culprit_id="s1",
-        victim_id="v1",
         evidence=[],
         falsehoods=[],
         reveal_shape={"steps": []},
@@ -144,3 +140,29 @@ def test_round_trip_json() -> None:
     payload = case.model_dump()
     restored = ResolvedCase.model_validate(payload)
     assert restored == case
+
+
+def test_members_by_role() -> None:
+    culprit = CastMember(
+        member_id="s1", display_name="A", role="suspect", is_culprit=True
+    )
+    other_suspect = CastMember(member_id="s2", display_name="B", role="suspect")
+    victim = CastMember(member_id="v1", display_name="V", role="victim")
+    case = ResolvedCase(
+        case_id="c1",
+        arc_id="nightcap-couch-race-v1",
+        seed=42,
+        skeleton_id="locked_room_poisoning",
+        cast=[culprit, other_suspect, victim],
+        culprit_id="s1",
+        evidence=[],
+        falsehoods=[],
+        reveal_shape={"steps": []},
+    )
+    suspects = case.members_by_role("suspect")
+    assert len(suspects) == 2
+    assert {m.member_id for m in suspects} == {"s1", "s2"}
+    victims = case.members_by_role("victim")
+    assert len(victims) == 1
+    assert victims[0].member_id == "v1"
+    assert case.members_by_role("witness") == []
