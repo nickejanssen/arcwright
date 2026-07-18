@@ -117,8 +117,8 @@ def resolve_case_resolution_config_path(arc_id: str, registry_path: Path) -> Pat
             raise CaseResolutionError(
                 f"registry entry needs 'arc_id_prefix' and 'config_path': {entry!r}"
             )
-        if arc_id.startswith(prefix):
-            return registry_path.parent.parent / config_rel_path
+        if arc_id.startswith(str(prefix)):
+            return registry_path.parent.parent / str(config_rel_path)
     raise CaseResolutionError(
         f"no case-resolution registration found for arc_id={arc_id!r} "
         f"in {registry_path}"
