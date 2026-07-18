@@ -9,6 +9,7 @@ from uuid import UUID
 
 from engine.arc.arc_state import ArcStateChart, transition_name_for
 from engine.arc.models import ArcDefinition, PlayMode
+from engine.case import resolve as resolve_case
 from engine.harness.models import (
     HarnessAction,
     HarnessRun,
@@ -192,16 +193,19 @@ class HarnessRunner:
             return
         if not run.participants:
             return
-        # engine/case is a sibling module; import lazily to avoid a cycle
-        # when engine.harness is imported at engine.arc load time.
-        from engine.case import resolve as resolve_case
-
         case = resolve_case(
             self._arc_definition,
             seed=self._seed,
             participant_count=len(run.participants),
         )
         victim_members = case.members_by_role("victim")
+        if not victim_members:
+            msg = (
+                f"resolved case {case.case_id!r} has no victim member; "
+                "this indicates a resolver invariant break, not a "
+                "recoverable runtime condition."
+            )
+            raise RuntimeError(msg)
         run.runtime_state.resolved_generative_elements["case_resolution"] = {
             "case_id": case.case_id,
             "arc_id": case.arc_id,
@@ -209,7 +213,7 @@ class HarnessRunner:
             "skeleton_id": case.skeleton_id,
             "culprit_id": case.culprit_id,
             # Nightcap arc-content record; not part of engine/case schema.
-            "victim_id": victim_members[0].member_id if victim_members else None,
+            "victim_id": victim_members[0].member_id,
             "cast_size": len([m for m in case.cast if m.role == "suspect"]),
             "evidence_count": len(case.evidence),
             "falsehood_count": len(case.falsehoods),
