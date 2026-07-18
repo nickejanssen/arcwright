@@ -151,3 +151,24 @@ def test_bound_mini_game_packages_exist_on_disk() -> None:
                 f"of {binding.game_id!r} but no definition file exists at "
                 f"{definition_path}"
             )
+
+
+def test_interrogation_beats_use_the_authored_investigation_interaction() -> None:
+    arc = ArcDefinition.model_validate_json(COUCH_RACE_PATH.read_text("utf-8"))
+    interaction = next(
+        item for item in arc.interactions if item.interaction_id == "investigation"
+    )
+
+    assert interaction.baseline_option_ids == [
+        "observe_behavior",
+        "check_timeline",
+        "ask_relationship",
+    ]
+    assert interaction.limit.selections_for(2) == 3
+    assert interaction.limit.selections_for(8) == 1
+    assert next(
+        beat for beat in arc.beats if beat.beat_id == "grill"
+    ).interaction_ids == ["investigation"]
+    assert next(
+        beat for beat in arc.beats if beat.beat_id == "last_call"
+    ).interaction_ids == ["investigation"]

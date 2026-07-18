@@ -4,6 +4,7 @@ from engine.arc.models import (
     ArcDefinition,
     BeatDefinition,
     CharacterMode,
+    InteractionDefinition,
     NarratorConfig,
     PlayMode,
 )
@@ -14,6 +15,7 @@ __all__ = [
     "ArcStateChart",
     "BeatDefinition",
     "CharacterMode",
+    "InteractionDefinition",
     "NarratorConfig",
     "PlayMode",
     "transition_name_for",
