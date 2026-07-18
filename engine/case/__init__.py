@@ -29,6 +29,7 @@ from engine.case.models import (
     EvidenceEntry,
     ResolvedCase,
 )
+from engine.case.resolver import resolve
 
 __all__ = [
     "AuthorizedFalsehood",
@@ -43,4 +44,5 @@ __all__ = [
     "load_case_resolution_config",
     "load_skeletons",
     "load_taxonomy",
+    "resolve",
 ]
