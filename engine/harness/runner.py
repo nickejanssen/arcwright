@@ -8,7 +8,7 @@ from typing import Any, Callable, Literal, cast
 from uuid import UUID
 
 from engine.arc.arc_state import ArcStateChart, transition_name_for
-from engine.arc.models import ArcDefinition
+from engine.arc.models import ArcDefinition, PlayMode
 from engine.harness.models import (
     HarnessAction,
     HarnessRun,
@@ -163,13 +163,17 @@ class HarnessRunner:
 
     def _resolve_introduction_setup(self) -> None:
         run = self._require_run()
-        if not self._arc_definition.generative_elements.killer_assignment:
+        arc = self._arc_definition
+        if arc.play_mode == PlayMode.detective_race:
+            self._resolve_case_for_detective_race(run)
+            return
+        if not arc.generative_elements.killer_assignment:
             return
         if _KILLER_ROLE in run.runtime_state.role_assignments:
             return
         if not run.participants:
             return
-        initial_beat_id = self._arc_definition.beats[0].beat_id
+        initial_beat_id = arc.beats[0].beat_id
         if sorted(self._chart.configuration_values) != [initial_beat_id]:
             msg = f"killer assignment must resolve during the initial beat ({initial_beat_id!r})."
             raise RuntimeError(msg)
@@ -181,6 +185,34 @@ class HarnessRunner:
             "participant_id": assigned_participant,
             "seed": self._seed,
             "candidate_participants": list(run.participants),
+        }
+
+    def _resolve_case_for_detective_race(self, run: HarnessRun) -> None:
+        if "case_resolution" in run.runtime_state.resolved_generative_elements:
+            return
+        if not run.participants:
+            return
+        # engine/case is a sibling module; import lazily to avoid a cycle
+        # when engine.harness is imported at engine.arc load time.
+        from engine.case import resolve as resolve_case
+
+        case = resolve_case(
+            self._arc_definition,
+            seed=self._seed,
+            participant_count=len(run.participants),
+        )
+        victim_members = case.members_by_role("victim")
+        run.runtime_state.resolved_generative_elements["case_resolution"] = {
+            "case_id": case.case_id,
+            "arc_id": case.arc_id,
+            "seed": case.seed,
+            "skeleton_id": case.skeleton_id,
+            "culprit_id": case.culprit_id,
+            # Nightcap arc-content record; not part of engine/case schema.
+            "victim_id": victim_members[0].member_id if victim_members else None,
+            "cast_size": len([m for m in case.cast if m.role == "suspect"]),
+            "evidence_count": len(case.evidence),
+            "falsehood_count": len(case.falsehoods),
         }
 
     def _apply_context_payload(self, payload: dict[str, Any]) -> None:
