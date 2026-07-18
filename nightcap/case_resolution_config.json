@@ -1,0 +1,10 @@
+{
+  "arc_id_prefix": "nightcap-couch-race",
+  "skeleton_directory": "nightcap/case_skeletons",
+  "taxonomy_directory": "nightcap/case_taxonomy",
+  "cast_size_by_player_count": {
+    "2": 4, "3": 4, "4": 4,
+    "5": 5, "6": 5,
+    "7": 6, "8": 6
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "topics": [
+    {"topic_id": "location", "description": "Where the suspect was at a specific time."},
+    {"topic_id": "relationship", "description": "The nature of the suspect's relationship to the victim or another suspect."},
+    {"topic_id": "observation", "description": "What the suspect saw, heard, or noticed."},
+    {"topic_id": "possession", "description": "Whether the suspect had, held, or owned a particular thing."}
+  ]
+}

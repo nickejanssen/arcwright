@@ -1,0 +1,24 @@
+{
+  "families": [
+    {
+      "family_id": "poison",
+      "vessels": ["decanter", "champagne flute", "teacup", "coffee cup", "wine glass"],
+      "traces": ["a bitter residue", "a faint discoloration", "an unusual sediment"]
+    },
+    {
+      "family_id": "suffocation",
+      "objects": ["silk scarf", "pillow", "curtain sash", "belt", "cord"],
+      "traces": ["fibre marks", "a bruised throat", "a broken clasp"]
+    },
+    {
+      "family_id": "fall",
+      "locations": ["upper landing", "balcony", "cliff-edge terrace", "observation deck", "spiral staircase"],
+      "traces": ["a scuffed heel print", "a torn cuff", "a broken railing"]
+    },
+    {
+      "family_id": "blunt_trauma",
+      "objects": ["fireplace poker", "brass candlestick", "cane", "bookend", "trophy"],
+      "traces": ["a small tear in the scalp", "a splinter of gilt", "a chip of enamel"]
+    }
+  ]
+}

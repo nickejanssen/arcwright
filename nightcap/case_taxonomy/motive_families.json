@@ -1,0 +1,44 @@
+{
+  "families": [
+    {
+      "family_id": "greed",
+      "narratives": [
+        "financial exposure that the victim's next action would have made public",
+        "an inheritance clause the victim was about to change",
+        "a debt the victim was collecting on"
+      ]
+    },
+    {
+      "family_id": "love",
+      "narratives": [
+        "a relationship the victim was going to name in public",
+        "a former partner the victim had refused to give up on",
+        "a jealousy that had waited too long to act"
+      ]
+    },
+    {
+      "family_id": "self_protection",
+      "narratives": [
+        "a secret the victim had discovered and was about to disclose",
+        "a legal exposure the victim was going to trigger",
+        "a professional ruin the victim had authored in draft"
+      ]
+    },
+    {
+      "family_id": "betrayal",
+      "narratives": [
+        "a pact the victim had broken the week before",
+        "an alliance the victim had switched",
+        "a promise the victim was refusing to honour"
+      ]
+    },
+    {
+      "family_id": "ambition",
+      "narratives": [
+        "a promotion the victim was blocking",
+        "a role the victim was going to claim",
+        "an audition the victim had rigged"
+      ]
+    }
+  ]
+}

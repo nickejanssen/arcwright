@@ -15,6 +15,13 @@ Public API::
 from __future__ import annotations
 
 from engine.case.errors import CaseInvariantError, CaseResolutionError
+from engine.case.loader import (
+    CaseResolutionConfig,
+    Taxonomy,
+    load_case_resolution_config,
+    load_skeletons,
+    load_taxonomy,
+)
 from engine.case.models import (
     AuthorizedFalsehood,
     CaseSkeleton,
@@ -26,9 +33,14 @@ from engine.case.models import (
 __all__ = [
     "AuthorizedFalsehood",
     "CaseInvariantError",
+    "CaseResolutionConfig",
     "CaseResolutionError",
     "CaseSkeleton",
     "CastMember",
     "EvidenceEntry",
     "ResolvedCase",
+    "Taxonomy",
+    "load_case_resolution_config",
+    "load_skeletons",
+    "load_taxonomy",
 ]

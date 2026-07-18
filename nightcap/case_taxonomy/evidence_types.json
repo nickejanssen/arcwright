@@ -1,0 +1,8 @@
+{
+  "types": [
+    {"type_id": "trace", "description": "Physical trace left by the act (residue, mark, imprint)."},
+    {"type_id": "testimony", "description": "Something a suspect or bystander reports having seen or heard."},
+    {"type_id": "document", "description": "A written record: letter, ledger, message, contract, receipt."},
+    {"type_id": "object", "description": "A found item that ties a suspect to a place or time (key, stub, badge)."}
+  ]
+}
