@@ -83,12 +83,12 @@
     {
       "id": 17,
       "subject": "AW-281 Task 9: Documentation + spec cross-references + PR prep",
-      "status": "in_progress",
+      "status": "completed",
       "blockedBy": [
         16
       ],
       "description": "**Goal:** Amend spec 0072 with Case Resolution Architecture section; dispatch reviewer agent; open PR.\n\n**Verify:** `grep -n 'engine/case' docs/specs/0072-nightcap-couch-race-v1.md`\n\n```json:metadata\n{\"files\": [\"docs/specs/0072-nightcap-couch-race-v1.md\"], \"verifyCommand\": \"grep -n 'engine/case' docs/specs/0072-nightcap-couch-race-v1.md\", \"acceptanceCriteria\": [\"spec 0072 references engine/case module\", \"spec 0072 references this plan + design memo\", \"all module READMEs present\", \"reviewer agent PASS\", \"PR opened\"], \"modelTier\": \"standard\"}\n```"
     }
   ],
-  "lastUpdated": "2026-07-18T11:44:49.793349+00:00"
+  "lastUpdated": "2026-07-18T11:57:38.645995+00:00"
 }
