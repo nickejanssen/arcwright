@@ -1,29 +1,43 @@
-"""Synthetic detective — bounded rational-actor solver for resolved cases.
+"""Synthetic detective, a bounded rational-actor solver for resolved cases.
 
-The solver reads a ``ResolvedCase`` and reports whether a rational-actor
-player, given the intended clue distribution and interrogation intents,
-can uniquely identify the culprit. This is the Level-3 leg of AW-281's
-fairness proof stack.
+The solver reads a ``ResolvedCase`` from a single player's point of view
+and reports whether that player, given only the evidence text actually
+delivered to them, can uniquely identify the culprit. This is the
+Level-3 leg of AW-281's fairness proof stack.
 
-Algorithm
----------
-1. Assemble a suspect-implication score for each cast member from all
-   genuine evidence: each ``points_toward`` entry adds 1, each
-   ``points_away_from`` entry subtracts 1.
-2. For each authorized falsehood, if the solver has the contradicting
-   evidence in hand, it detects the contradiction and adds a penalty
-   to the speaker's suspicion score.
-3. The suspect with the highest score is the solver's guess. If two
-   are tied, the solver reports low confidence and no win.
+Non-circularity
+----------------
+The solver never reads ``EvidenceEntry.points_toward`` or
+``points_away_from``. Those fields are the resolver's own bookkeeping,
+written by the same code that already knows who the culprit is, and
+are consumed only by ``engine/case/invariants.py``'s
+``solvability_check`` (a different, internal-consistency check). If the
+solver read those fields too, it would just be checking the resolver's
+labels against themselves, proving nothing about whether a human could
+actually deduce the culprit from the clue text on the cards.
 
-The solver is deliberately dumb: it only uses information contained in
-the resolved case object. Any case that a smart human could solve, the
-solver should also solve — and if the solver can't, the case is
-degenerate.
+Instead the solver derives suspicion purely from evidence TEXT: it
+scans each piece of evidence visible to the given participant for a
+suspect's display name, and counts a hit as one point of suspicion
+against that suspect. A case where the evidence text is meaningless,
+blank, or never names anyone gives the solver nothing to work with and
+it correctly reports no win, this is exactly the negative case a
+fairness proof must be able to fail.
+
+Visibility
+----------
+``ResolvedCase.visible_evidence_for(participant_id)`` returns only the
+evidence a specific participant would actually see: group-delivered
+evidence plus their own private evidence. Interrogation answers are
+modeled as group-delivered (the suspect answers aloud, per the story
+bible), so a full round of table interrogation is folded into every
+viewpoint automatically without this module needing to simulate
+interrogation rounds itself, that mechanic belongs to AW-282.
 """
 
 from __future__ import annotations
 
+import re
 from collections import Counter
 
 from pydantic import BaseModel, ConfigDict
@@ -39,43 +53,41 @@ class SolverVerdict(BaseModel):
     won: bool
 
 
-def synthetic_detective(case: ResolvedCase) -> SolverVerdict:
-    scores: Counter[str] = Counter()
-    for e in case.evidence:
-        if e.truth_value != "genuine":
-            continue
-        for member_id in e.points_toward:
-            scores[member_id] += 1
-        for member_id in e.points_away_from:
-            scores[member_id] -= 1
+def synthetic_detective(
+    case: ResolvedCase, viewpoint_participant_id: str
+) -> SolverVerdict:
+    """Solve ``case`` from one participant's actually-delivered evidence.
 
-    # Contradiction detection — if the solver has the contradicting
-    # evidence in hand, add a suspicion penalty on the lying speaker.
-    evidence_ids = {e.evidence_id for e in case.evidence}
-    for lie in case.falsehoods:
-        if any(eid in evidence_ids for eid in lie.contradicted_by):
-            scores[lie.speaker_id] += 1
+    Args:
+        case: The resolved case to evaluate.
+        viewpoint_participant_id: The participant whose visible evidence
+            set the solver is restricted to. Required, there is no
+            omniscient mode, an omniscient solver proves a different
+            and weaker claim than "a player can solve this."
+    """
+    visible = case.visible_evidence_for(viewpoint_participant_id)
+    suspects = case.members_by_role("suspect")
+    scores: Counter[str] = Counter()
+
+    for entry in visible:
+        if entry.truth_value != "genuine":
+            continue
+        for suspect in suspects:
+            pattern = r"\b" + re.escape(suspect.display_name) + r"\b"
+            if re.search(pattern, entry.text):
+                scores[suspect.member_id] += 1
 
     if not scores:
         return SolverVerdict(culprit_id="", confidence=0.0, won=False)
 
     ranked = scores.most_common()
     top_score = ranked[0][1]
-    top_ids = [mid for mid, s in ranked if s == top_score]
+    top_ids = [member_id for member_id, s in ranked if s == top_score]
 
     if len(top_ids) != 1:
-        return SolverVerdict(
-            culprit_id=top_ids[0],
-            confidence=0.0,
-            won=False,
-        )
+        return SolverVerdict(culprit_id=top_ids[0], confidence=0.0, won=False)
 
-    confidence = top_score / (
-        top_score + (ranked[1][1] if len(ranked) > 1 else 0) + 1e-9
-    )
+    runner_up_score = ranked[1][1] if len(ranked) > 1 else 0
+    confidence = top_score / (top_score + runner_up_score + 1e-9)
     won = top_ids[0] == case.culprit_id
-    return SolverVerdict(
-        culprit_id=top_ids[0],
-        confidence=confidence,
-        won=won,
-    )
+    return SolverVerdict(culprit_id=top_ids[0], confidence=confidence, won=won)

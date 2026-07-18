@@ -1,8 +1,72 @@
 {
   "topics": [
-    {"topic_id": "location", "description": "Where the suspect was at a specific time."},
-    {"topic_id": "relationship", "description": "The nature of the suspect's relationship to the victim or another suspect."},
-    {"topic_id": "observation", "description": "What the suspect saw, heard, or noticed."},
-    {"topic_id": "possession", "description": "Whether the suspect had, held, or owned a particular thing."}
+    {
+      "topic_id": "location",
+      "description": "Where the suspect was at a specific time.",
+      "evidence_type": "testimony",
+      "claim_templates": [
+        "I was on the terrace the whole time, nowhere near the study.",
+        "I never left the drawing room before the toast.",
+        "I was upstairs, alone, from nine until the commotion started.",
+        "I was in the garden getting air; ask anyone."
+      ],
+      "contradiction_templates": [
+        "A guest recalls seeing {speaker} near the study at nine, not on the terrace as claimed.",
+        "The drawing room's other occupants never saw {speaker} enter before the toast.",
+        "Staff confirm {speaker} was downstairs, not upstairs, during the window in question.",
+        "Nobody in the garden remembers {speaker} being there at all."
+      ]
+    },
+    {
+      "topic_id": "relationship",
+      "description": "The nature of the suspect's relationship to the victim or another suspect.",
+      "evidence_type": "document",
+      "claim_templates": [
+        "I barely knew them, honestly.",
+        "We were friendly, nothing more.",
+        "I had no real business with them.",
+        "We had not spoken in years."
+      ],
+      "contradiction_templates": [
+        "A letter in {speaker}'s hand shows a far closer and more strained tie to the victim than admitted.",
+        "A ledger entry ties {speaker} to the victim's affairs well beyond mere friendliness.",
+        "Correspondence found on the premises shows {speaker} and the victim in regular, pointed contact.",
+        "A signed record proves {speaker} and the victim spoke as recently as last week."
+      ]
+    },
+    {
+      "topic_id": "observation",
+      "description": "What the suspect saw, heard, or noticed.",
+      "evidence_type": "testimony",
+      "claim_templates": [
+        "I didn't see anything unusual all evening.",
+        "I noticed nothing out of place near the study.",
+        "I heard nothing before the commotion.",
+        "Nothing seemed wrong to me at the time."
+      ],
+      "contradiction_templates": [
+        "Another guest recalls {speaker} reacting sharply to something near the study, well before the alarm was raised.",
+        "A member of staff remembers {speaker} remarking on the broken latch hours before anyone else noticed it.",
+        "{speaker} was overheard describing a sound from the study that {speaker} now denies having heard.",
+        "A second witness places {speaker} close enough to have seen exactly what {speaker} claims not to have seen."
+      ]
+    },
+    {
+      "topic_id": "possession",
+      "description": "Whether the suspect had, held, or owned a particular thing.",
+      "evidence_type": "object",
+      "claim_templates": [
+        "I had nothing to do with that item.",
+        "That was never in my possession.",
+        "I never touched it, not once.",
+        "It was not mine to begin with."
+      ],
+      "contradiction_templates": [
+        "A found receipt ties the item directly to {speaker}, contradicting the denial.",
+        "A staff member recalls handing the item to {speaker} personally earlier that evening.",
+        "{speaker}'s initials are engraved on the very item {speaker} claims never to have touched.",
+        "The item was recovered from a room only {speaker} had access to that night."
+      ]
+    }
   ]
 }

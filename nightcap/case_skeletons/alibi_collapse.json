@@ -1,6 +1,7 @@
 {
   "skeleton_id": "alibi_collapse",
   "archetype": "alibi_collapse_strangulation",
+  "method_family_id": "suffocation",
   "clue_chain_pattern": {
     "description": "Physical evidence of the act → suspect alibi that seemed solid → third-party observation collapses the alibi.",
     "stages": [

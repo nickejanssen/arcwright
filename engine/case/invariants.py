@@ -3,10 +3,10 @@
 Two invariants are asserted before a ResolvedCase is returned from the
 resolver:
 
-1. Solvability — the intersection of clue-implication sets (over the
+1. Solvability: the intersection of clue-implication sets (over the
    genuine clue chain, applied by a rational-actor solver) uniquely
    identifies one CastMember, and that member matches ``culprit_id``.
-2. Lie falsifiability — every AuthorizedFalsehood's ``contradicted_by``
+2. Lie falsifiability: every AuthorizedFalsehood's ``contradicted_by``
    list is non-empty AND every referenced evidence_id exists in the
    case's evidence list.
 """

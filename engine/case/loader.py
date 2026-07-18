@@ -27,6 +27,8 @@ class Taxonomy(BaseModel):
     suspect_roles: list[str] = Field(default_factory=list)
     suspect_names: list[str] = Field(default_factory=list)
     victim_names: list[str] = Field(default_factory=list)
+    secrets: list[str] = Field(default_factory=list)
+    relationships: list[str] = Field(default_factory=list)
 
 
 class CaseResolutionConfig(BaseModel):
@@ -77,6 +79,8 @@ def load_taxonomy(directory: Path) -> Taxonomy:
         suspect_roles=_load("cast_pool.json", "suspect_roles"),
         suspect_names=_load("cast_pool.json", "suspect_names"),
         victim_names=_load("cast_pool.json", "victim_names"),
+        secrets=_load("character_facts.json", "secrets"),
+        relationships=_load("character_facts.json", "relationships"),
     )
 
 
@@ -86,3 +90,36 @@ def load_case_resolution_config(
     if not config_path.exists():
         raise CaseResolutionError(f"case-resolution config missing: {config_path}")
     return CaseResolutionConfig.model_validate_json(config_path.read_text("utf-8"))
+
+
+def resolve_case_resolution_config_path(arc_id: str, registry_path: Path) -> Path:
+    """Resolve which case-resolution config an arc_id should load.
+
+    Mirrors ``engine/arc/registry.py``'s arc-registry pattern: a
+    generic, arc-agnostic prefix match against a registry file, never
+    a hardcoded path. This is how the resolver stays independent of
+    any single arc's content, another ``detective_race`` arc gets its
+    own registration and its own config, never Nightcap's by default.
+    """
+    if not registry_path.exists():
+        raise CaseResolutionError(f"case-resolution registry missing: {registry_path}")
+    data = json.loads(registry_path.read_text("utf-8"))
+    registrations = data.get("registrations")
+    if not isinstance(registrations, list) or not registrations:
+        raise CaseResolutionError(
+            "case-resolution registry must contain a non-empty "
+            f"'registrations' list: {registry_path}"
+        )
+    for entry in registrations:
+        prefix = entry.get("arc_id_prefix")
+        config_rel_path = entry.get("config_path")
+        if not prefix or not config_rel_path:
+            raise CaseResolutionError(
+                f"registry entry needs 'arc_id_prefix' and 'config_path': {entry!r}"
+            )
+        if arc_id.startswith(prefix):
+            return registry_path.parent.parent / config_rel_path
+    raise CaseResolutionError(
+        f"no case-resolution registration found for arc_id={arc_id!r} "
+        f"in {registry_path}"
+    )

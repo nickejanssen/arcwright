@@ -1,6 +1,7 @@
 {
   "skeleton_id": "locked_room_poisoning",
   "archetype": "locked_room_poisoning",
+  "method_family_id": "poison",
   "clue_chain_pattern": {
     "description": "Physical trace on a vessel → placement discrepancy identifying who could have touched it → motive callback tying culprit to the specific vessel.",
     "stages": [

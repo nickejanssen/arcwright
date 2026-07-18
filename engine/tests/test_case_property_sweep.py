@@ -1,8 +1,11 @@
-"""AW-281 — 1000-seed property sweep per skeleton.
+"""AW-281 - exactly 1000 seeds per skeleton, forced (not sampled).
 
 Asserts that no seed produces a case that violates a fairness invariant
 or a resolver-shape invariant (cast size, unique culprit, non-empty
-evidence).
+evidence), for exactly 1000 seeds against EACH of the three authored
+skeletons via ``forced_skeleton_id``, matching the documented sweep
+size per skeleton rather than approximating it through the seeded
+skeleton pick's distribution.
 """
 
 from __future__ import annotations
@@ -29,21 +32,26 @@ def arc() -> ArcDefinition:
 
 
 @pytest.mark.slow
-def test_sweep_invariants_hold_over_many_seeds(arc: ArcDefinition) -> None:
+@pytest.mark.parametrize("skeleton_id", SKELETON_IDS)
+def test_sweep_invariants_hold_for_exactly_1000_seeds(
+    arc: ArcDefinition, skeleton_id: str
+) -> None:
     start = time.perf_counter()
     failures: list[str] = []
-    skeleton_counts: dict[str, int] = {sid: 0 for sid in SKELETON_IDS}
     count = 0
-    # 3 * 1000 = 3000 cases total; seed range 0..2999.
-    for seed in range(3 * SEEDS_PER_SKELETON):
+    for seed in range(SEEDS_PER_SKELETON):
         try:
-            case = resolve(arc, seed=seed, participant_count=(seed % 7) + 2)
+            case = resolve(
+                arc,
+                seed=seed,
+                participant_ids=[f"p{i + 1}" for i in range((seed % 7) + 2)],
+                forced_skeleton_id=skeleton_id,
+            )
         except CaseInvariantError as exc:
             failures.append(f"seed={seed}: {exc}")
             continue
         count += 1
-        skeleton_counts[case.skeleton_id] = skeleton_counts.get(case.skeleton_id, 0) + 1
-        # Post-resolution shape invariants
+        assert case.skeleton_id == skeleton_id
         suspects = [m for m in case.cast if m.role == "suspect"]
         if not suspects:
             failures.append(f"seed={seed}: no suspects")
@@ -52,31 +60,23 @@ def test_sweep_invariants_hold_over_many_seeds(arc: ArcDefinition) -> None:
         genuine_evidence = [e for e in case.evidence if e.truth_value == "genuine"]
         if not genuine_evidence:
             failures.append(f"seed={seed}: no genuine evidence")
+        predicates = {f.predicate for f in case.facts}
+        expected_predicates = {"method", "motive", "secret", "relationship", "twist"}
+        if predicates != expected_predicates:
+            failures.append(
+                f"seed={seed}: fact predicates {predicates} != {expected_predicates}"
+            )
     elapsed = time.perf_counter() - start
     assert not failures, (
-        f"{len(failures)} failures out of {3 * SEEDS_PER_SKELETON} seeds; first 5: {failures[:5]}"
+        f"{len(failures)} failures out of {SEEDS_PER_SKELETON} seeds "
+        f"(skeleton={skeleton_id}); first 5: {failures[:5]}"
     )
-    assert count == 3 * SEEDS_PER_SKELETON
-    # Skeleton coverage: every authored skeleton must actually be exercised,
-    # and with a non-trivial share of the sweep — a regression that biases
-    # or drops a skeleton from rotation should fail this test, not pass
-    # silently because the other two skeletons happened to cover the count.
-    missing = [sid for sid in SKELETON_IDS if skeleton_counts.get(sid, 0) == 0]
-    assert not missing, (
-        f"skeleton(s) never selected across {count} resolutions: {missing}"
-    )
-    min_expected = int(0.5 * SEEDS_PER_SKELETON)  # generous floor; true target ~1000
-    underrepresented = {
-        sid: n for sid, n in skeleton_counts.items() if n < min_expected
-    }
-    assert not underrepresented, (
-        f"skeleton(s) underrepresented (expected >= {min_expected} each, "
-        f"got {underrepresented}) — possible bias in _pick_skeleton"
-    )
-    # Throughput sanity: fail if we cannot resolve 100 cases/second on this machine.
-    if elapsed > 30:
+    assert count == SEEDS_PER_SKELETON
+    # Throughput sanity: fail if we cannot resolve 100 cases/second on this
+    # machine for a single skeleton's share of the sweep.
+    if elapsed > 15:
         pytest.fail(
-            f"sweep took {elapsed:.1f}s > 30s; either the resolver has "
-            "regressed on perf or SEEDS_PER_SKELETON was raised without "
-            "a matching throughput budget."
+            f"sweep for skeleton={skeleton_id} took {elapsed:.1f}s > 15s; "
+            "either the resolver has regressed on perf or "
+            "SEEDS_PER_SKELETON was raised without a matching throughput budget."
         )

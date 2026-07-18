@@ -1,0 +1,8 @@
+{
+  "registrations": [
+    {
+      "arc_id_prefix": "nightcap-couch-race",
+      "config_path": "nightcap/case_resolution_config.json"
+    }
+  ]
+}

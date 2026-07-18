@@ -1,6 +1,7 @@
 {
   "skeleton_id": "pre_conspiracy_fall",
   "archetype": "pre_conspiracy_fall",
+  "method_family_id": "fall",
   "clue_chain_pattern": {
     "description": "The fall itself → prior arrangement (letter, meeting, deal) between culprit and victim → conflict escalation at the gathering identifies culprit.",
     "stages": [

@@ -21,9 +21,11 @@ from engine.case.loader import (
     load_case_resolution_config,
     load_skeletons,
     load_taxonomy,
+    resolve_case_resolution_config_path,
 )
 from engine.case.models import (
     AuthorizedFalsehood,
+    CaseFact,
     CaseSkeleton,
     CastMember,
     EvidenceEntry,
@@ -34,6 +36,7 @@ from engine.case.solver import SolverVerdict, synthetic_detective
 
 __all__ = [
     "AuthorizedFalsehood",
+    "CaseFact",
     "CaseInvariantError",
     "CaseResolutionConfig",
     "CaseResolutionError",
@@ -47,5 +50,6 @@ __all__ = [
     "load_skeletons",
     "load_taxonomy",
     "resolve",
+    "resolve_case_resolution_config_path",
     "synthetic_detective",
 ]

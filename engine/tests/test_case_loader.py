@@ -1,4 +1,4 @@
-"""AW-281 — Loader for skeletons, taxonomies, and case-resolution config."""
+"""AW-281 - Loader for skeletons, taxonomies, and case-resolution config."""
 
 from __future__ import annotations
 
@@ -13,12 +13,14 @@ from engine.case.loader import (
     load_case_resolution_config,
     load_skeletons,
     load_taxonomy,
+    resolve_case_resolution_config_path,
 )
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SKELETON_DIR = REPO_ROOT / "nightcap" / "case_skeletons"
 TAXONOMY_DIR = REPO_ROOT / "nightcap" / "case_taxonomy"
 CONFIG_PATH = REPO_ROOT / "nightcap" / "case_resolution_config.json"
+CASE_RESOLUTION_REGISTRY_PATH = REPO_ROOT / "config" / "case_resolution_registry.json"
 
 
 def test_load_skeletons_returns_three() -> None:
@@ -52,6 +54,22 @@ def test_load_taxonomy_populates_cast_pool() -> None:
     assert len(tax.victim_names) >= 1
 
 
+def test_load_taxonomy_populates_character_facts() -> None:
+    tax = load_taxonomy(TAXONOMY_DIR)
+    assert len(tax.secrets) >= 6
+    assert len(tax.relationships) >= 6
+
+
+def test_load_taxonomy_lie_topics_carry_templates() -> None:
+    tax = load_taxonomy(TAXONOMY_DIR)
+    by_id = {entry["topic_id"]: entry for entry in tax.lie_topics}
+    for topic_id in ("location", "relationship", "observation", "possession"):
+        assert topic_id in by_id
+        assert len(by_id[topic_id]["claim_templates"]) >= 2
+        assert len(by_id[topic_id]["contradiction_templates"]) >= 2
+        assert "{speaker}" in by_id[topic_id]["contradiction_templates"][0]
+
+
 def test_load_taxonomy_missing_directory() -> None:
     with pytest.raises(CaseResolutionError):
         load_taxonomy(Path("/definitely/does/not/exist/nc"))
@@ -69,6 +87,7 @@ def test_load_skeletons_raises_on_duplicate_skeleton_id(tmp_path: Path) -> None:
     skeleton_payload = {
         "skeleton_id": "dup",
         "archetype": "poisoning",
+        "method_family_id": "poison",
         "clue_chain_pattern": {"stages": []},
         "lie_shapes_by_role": {},
         "reveal_shape": {"steps": []},
@@ -120,3 +139,44 @@ def test_load_case_resolution_config_missing_path(tmp_path: Path) -> None:
     missing = tmp_path / "does_not_exist.json"
     with pytest.raises(CaseResolutionError, match="case-resolution config missing"):
         load_case_resolution_config(missing)
+
+
+def test_resolve_case_resolution_config_path_matches_couch_race() -> None:
+    path = resolve_case_resolution_config_path(
+        "nightcap-couch-race-v1", CASE_RESOLUTION_REGISTRY_PATH
+    )
+    assert path.resolve() == CONFIG_PATH.resolve()
+
+
+def test_resolve_case_resolution_config_path_no_match_raises() -> None:
+    with pytest.raises(CaseResolutionError, match="no case-resolution registration"):
+        resolve_case_resolution_config_path(
+            "some-other-arc-v1", CASE_RESOLUTION_REGISTRY_PATH
+        )
+
+
+def test_resolve_case_resolution_config_path_missing_registry(tmp_path: Path) -> None:
+    missing = tmp_path / "does_not_exist.json"
+    with pytest.raises(CaseResolutionError, match="case-resolution registry missing"):
+        resolve_case_resolution_config_path("nightcap-couch-race-v1", missing)
+
+
+def test_resolve_case_resolution_config_path_empty_registry_raises(
+    tmp_path: Path,
+) -> None:
+    registry = tmp_path / "registry.json"
+    registry.write_text(json.dumps({"registrations": []}), encoding="utf-8")
+    with pytest.raises(CaseResolutionError, match="non-empty"):
+        resolve_case_resolution_config_path("nightcap-couch-race-v1", registry)
+
+
+def test_resolve_case_resolution_config_path_malformed_entry_raises(
+    tmp_path: Path,
+) -> None:
+    registry = tmp_path / "registry.json"
+    registry.write_text(
+        json.dumps({"registrations": [{"arc_id_prefix": "nightcap-couch-race"}]}),
+        encoding="utf-8",
+    )
+    with pytest.raises(CaseResolutionError, match="needs 'arc_id_prefix'"):
+        resolve_case_resolution_config_path("nightcap-couch-race-v1", registry)

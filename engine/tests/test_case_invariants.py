@@ -1,4 +1,4 @@
-"""AW-281 — solvability + lie-falsifiability invariant checks."""
+"""AW-281 - solvability and lie-falsifiability invariant checks."""
 
 from __future__ import annotations
 
@@ -55,6 +55,7 @@ def _base_case(**overrides) -> ResolvedCase:
         "culprit_id": "s1",
         "evidence": evidence,
         "falsehoods": lies,
+        "facts": [],
         "reveal_shape": {"steps": []},
     }
     payload.update(overrides)
