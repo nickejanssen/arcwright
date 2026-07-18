@@ -4,72 +4,91 @@
     {
       "id": 8,
       "subject": "AW-281 Task 0: Design memo capture",
-      "status": "pending",
+      "status": "completed",
       "description": "**Goal:** Ensure founder-decision design memo is committed before implementation begins.\n\n**Files:**\n- Verify: docs/superpowers/specs/2026-07-17-aw-281-case-resolution-design.md\n- Verify: docs/superpowers/specs/2026-07-15-nightcap-couch-race-design.md\n\n**Verify:** `test -f docs/superpowers/specs/2026-07-17-aw-281-case-resolution-design.md`\n\n```json:metadata\n{\"files\": [\"docs/superpowers/specs/2026-07-17-aw-281-case-resolution-design.md\"], \"verifyCommand\": \"test -f docs/superpowers/specs/2026-07-17-aw-281-case-resolution-design.md && echo OK\", \"acceptanceCriteria\": [\"design memo file present\", \"captures all four founder decisions\"], \"modelTier\": \"mechanical\"}\n```"
     },
     {
       "id": 9,
       "subject": "AW-281 Task 1: Couch Race arc JSON + registry",
-      "status": "pending",
-      "blockedBy": [8],
+      "status": "completed",
+      "blockedBy": [
+        8
+      ],
       "description": "**Goal:** Ship nightcap/couch-race.arc.json (6 beats) and register in config/arcs.json.\n\n**Verify:** `pytest engine/tests/test_couch_race_arc_json.py -v`\n\n```json:metadata\n{\"files\": [\"nightcap/couch-race.arc.json\", \"config/arcs.json\", \"engine/tests/test_couch_race_arc_json.py\"], \"verifyCommand\": \"pytest engine/tests/test_couch_race_arc_json.py -v\", \"acceptanceCriteria\": [\"arc validates as ArcDefinition\", \"six beats in order\", \"linear beat graph\", \"pacing weights sum to 1.0\", \"killer_assignment=false\", \"registry resolves the arc\", \"existing nightcap arc still resolves\"], \"modelTier\": \"standard\"}\n```"
     },
     {
       "id": 10,
       "subject": "AW-281 Task 2: engine/case/ module + arc-agnostic domain models",
-      "status": "pending",
-      "blockedBy": [9],
+      "status": "completed",
+      "blockedBy": [
+        9
+      ],
       "description": "**Goal:** Create engine/case/ scaffold with ResolvedCase, CastMember, EvidenceEntry, AuthorizedFalsehood, CaseSkeleton, errors, README.\n\n**Verify:** `pytest engine/tests/test_case_models.py -v`\n\n```json:metadata\n{\"files\": [\"engine/case/__init__.py\", \"engine/case/models.py\", \"engine/case/errors.py\", \"engine/case/README.md\", \"engine/tests/test_case_models.py\"], \"verifyCommand\": \"pytest engine/tests/test_case_models.py -v\", \"acceptanceCriteria\": [\"public exports available\", \"extra='forbid' on every model\", \"no game-specific vocabulary in schema\", \"models round-trip via model_dump\"], \"modelTier\": \"standard\"}\n```"
     },
     {
       "id": 11,
       "subject": "AW-281 Task 3: Case skeletons + JSON schema",
-      "status": "pending",
-      "blockedBy": [10],
+      "status": "completed",
+      "blockedBy": [
+        10
+      ],
       "description": "**Goal:** Three v1 authored case skeletons under nightcap/case_skeletons/.\n\n**Verify:** `pytest engine/tests/test_case_skeleton_content.py -v`\n\n```json:metadata\n{\"files\": [\"nightcap/case_skeletons/locked_room_poisoning.json\", \"nightcap/case_skeletons/alibi_collapse.json\", \"nightcap/case_skeletons/pre_conspiracy_fall.json\", \"nightcap/case_skeletons/README.md\", \"engine/tests/test_case_skeleton_content.py\"], \"verifyCommand\": \"pytest engine/tests/test_case_skeleton_content.py -v\", \"acceptanceCriteria\": [\"three skeleton files present\", \"each validates against CaseSkeleton\", \"each has >=3 clue stages\", \"each covers >=3 suspect archetype-roles\", \"each reveal has >=4 steps\"], \"modelTier\": \"standard\"}\n```"
     },
     {
       "id": 12,
       "subject": "AW-281 Task 4: Taxonomy tables + loader",
-      "status": "pending",
-      "blockedBy": [11],
+      "status": "completed",
+      "blockedBy": [
+        11
+      ],
       "description": "**Goal:** Axes 5-6 generative content library + engine/case/loader.py.\n\n**Verify:** `pytest engine/tests/test_case_loader.py -v`\n\n```json:metadata\n{\"files\": [\"nightcap/case_taxonomy/motive_families.json\", \"nightcap/case_taxonomy/method_families.json\", \"nightcap/case_taxonomy/evidence_types.json\", \"nightcap/case_taxonomy/lie_topics.json\", \"nightcap/case_taxonomy/README.md\", \"nightcap/case_resolution_config.json\", \"engine/case/loader.py\", \"engine/case/__init__.py\", \"engine/tests/test_case_loader.py\"], \"verifyCommand\": \"pytest engine/tests/test_case_loader.py -v\", \"acceptanceCriteria\": [\"taxonomy JSONs load\", \"load_skeletons returns dict of CaseSkeleton\", \"load_taxonomy populates 4 family lists\", \"config loader reads cast-size table\", \"missing paths raise CaseResolutionError\"], \"modelTier\": \"standard\"}\n```"
     },
     {
       "id": 13,
       "subject": "AW-281 Task 5: Case resolver + runtime invariant assertions",
-      "status": "pending",
-      "blockedBy": [12],
+      "status": "completed",
+      "blockedBy": [
+        12
+      ],
       "description": "**Goal:** engine/case/resolver.py deterministic, engine/case/invariants.py pure functions.\n\n**Verify:** `pytest engine/tests/test_case_resolver.py engine/tests/test_case_invariants.py -v`\n\n```json:metadata\n{\"files\": [\"engine/case/invariants.py\", \"engine/case/resolver.py\", \"engine/case/__init__.py\", \"engine/tests/test_case_resolver.py\", \"engine/tests/test_case_invariants.py\"], \"verifyCommand\": \"pytest engine/tests/test_case_resolver.py engine/tests/test_case_invariants.py -v\", \"acceptanceCriteria\": [\"resolve() returns ResolvedCase\", \"deterministic replay\", \"cast size scales with player count\", \"invariants raise CaseInvariantError on failure\", \"invariant checks are pure functions\"], \"modelTier\": \"high\"}\n```"
     },
     {
       "id": 14,
       "subject": "AW-281 Task 6: Property tests over 1000+ seeds",
-      "status": "pending",
-      "blockedBy": [13],
+      "status": "completed",
+      "blockedBy": [
+        13
+      ],
       "description": "**Goal:** 1000-seed sweep per skeleton in engine/tests/test_case_property_sweep.py.\n\n**Verify:** `pytest engine/tests/test_case_property_sweep.py -v`\n\n```json:metadata\n{\"files\": [\"engine/tests/test_case_property_sweep.py\", \"pyproject.toml\"], \"verifyCommand\": \"pytest engine/tests/test_case_property_sweep.py -v\", \"acceptanceCriteria\": [\"3000 cases resolved without CaseInvariantError\", \"every case has genuine evidence\", \"exactly one culprit per case\", \"sweep completes <30s\"], \"modelTier\": \"standard\"}\n```"
     },
     {
       "id": 15,
       "subject": "AW-281 Task 7: Synthetic detective solver",
-      "status": "pending",
-      "blockedBy": [13],
-      "description": "**Goal:** engine/case/solver.py bounded rational-actor solver, wins 300 seeds in CI.\n\n**Verify:** `pytest engine/tests/test_case_solver.py -v`\n\n```json:metadata\n{\"files\": [\"engine/case/solver.py\", \"engine/case/__init__.py\", \"engine/tests/test_case_solver.py\"], \"verifyCommand\": \"pytest engine/tests/test_case_solver.py -v\", \"acceptanceCriteria\": [\"synthetic_detective returns SolverVerdict\", \"solver wins on 300 seeds × 3 skeletons\", \"solver uses only ResolvedCase input\", \"solver's culprit_id matches case's culprit_id\"], \"modelTier\": \"high\"}\n```"
+      "status": "completed",
+      "blockedBy": [
+        13
+      ],
+      "description": "**Goal:** engine/case/solver.py bounded rational-actor solver, wins 300 seeds in CI.\n\n**Verify:** `pytest engine/tests/test_case_solver.py -v`\n\n```json:metadata\n{\"files\": [\"engine/case/solver.py\", \"engine/case/__init__.py\", \"engine/tests/test_case_solver.py\"], \"verifyCommand\": \"pytest engine/tests/test_case_solver.py -v\", \"acceptanceCriteria\": [\"synthetic_detective returns SolverVerdict\", \"solver wins on 300 seeds \u00c3\u2014 3 skeletons\", \"solver uses only ResolvedCase input\", \"solver's culprit_id matches case's culprit_id\"], \"modelTier\": \"high\"}\n```"
     },
     {
       "id": 16,
       "subject": "AW-281 Task 8: Harness runner integration",
-      "status": "pending",
-      "blockedBy": [14, 15],
+      "status": "completed",
+      "blockedBy": [
+        14,
+        15
+      ],
       "description": "**Goal:** Extend engine/harness/runner.py to branch on play_mode; harness completes 6-beat run at counts 2 and 8.\n\n**Verify:** `pytest engine/tests/test_couch_race_harness.py engine/tests/test_harness_runner.py engine/tests/test_aw256_beat_hardcode.py -v`\n\n```json:metadata\n{\"files\": [\"engine/harness/runner.py\", \"engine/tests/test_couch_race_harness.py\"], \"verifyCommand\": \"pytest engine/tests/test_couch_race_harness.py engine/tests/test_harness_runner.py engine/tests/test_aw256_beat_hardcode.py -v\", \"acceptanceCriteria\": [\"6-beat run completes at counts 2 and 8\", \"resolved_generative_elements carries case summary\", \"deterministic replay across runners\", \"Imposter Variant harness still green\", \"AW-256 hardcoded-beat test still green\"], \"modelTier\": \"high\"}\n```"
     },
     {
       "id": 17,
       "subject": "AW-281 Task 9: Documentation + spec cross-references + PR prep",
-      "status": "pending",
-      "blockedBy": [16],
+      "status": "in_progress",
+      "blockedBy": [
+        16
+      ],
       "description": "**Goal:** Amend spec 0072 with Case Resolution Architecture section; dispatch reviewer agent; open PR.\n\n**Verify:** `grep -n 'engine/case' docs/specs/0072-nightcap-couch-race-v1.md`\n\n```json:metadata\n{\"files\": [\"docs/specs/0072-nightcap-couch-race-v1.md\"], \"verifyCommand\": \"grep -n 'engine/case' docs/specs/0072-nightcap-couch-race-v1.md\", \"acceptanceCriteria\": [\"spec 0072 references engine/case module\", \"spec 0072 references this plan + design memo\", \"all module READMEs present\", \"reviewer agent PASS\", \"PR opened\"], \"modelTier\": \"standard\"}\n```"
     }
   ],
-  "lastUpdated": "2026-07-17T00:00:00Z"
+  "lastUpdated": "2026-07-18T11:44:49.793349+00:00"
 }
