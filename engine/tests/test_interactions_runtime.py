@@ -48,6 +48,7 @@ def test_arc_backed_runtime_resolves_and_routes_public_and_private_events() -> N
     assert resolution.authorized_knowledge_context_ref == "knowledge:runtime"
     assert resolution.claim_reference_ids == ("claim:1",)
     assert resolution.evidence_reference_ids == ("evidence:1",)
+    assert resolution.staged_target_id == "suspect"
 
     events = runtime.resolve_window(
         window_id=window.window_id,
@@ -67,7 +68,7 @@ def test_arc_backed_runtime_resolves_and_routes_public_and_private_events() -> N
         if event.target_audience is AudienceTarget.specific_player
     ]
     assert len(public_events) == 2
-    assert len(private_events) == 2
+    assert len(private_events) == 1
 
     registry = SessionConnectionRegistry()
     p1_connection = registry.register_player(P1)
@@ -79,8 +80,36 @@ def test_arc_backed_runtime_resolves_and_routes_public_and_private_events() -> N
         display_connection,
     }
     assert registry.route(
-        next(event for event in private_events if event.target_player_id == P1)
-    ) == [p1_connection]
-    assert registry.route(
         next(event for event in private_events if event.target_player_id == P2)
     ) == [p2_connection]
+
+
+def test_public_only_questions_do_not_emit_private_feedback() -> None:
+    arc = ArcDefinition.model_validate_json(ARC_PATH.read_text("utf-8"))
+    runtime = InteractionRuntime(arc_definition=arc, session_id=SESSION_ID, seed=8)
+    window = runtime.open_window(
+        beat_id="grill",
+        window_id="public-only-window",
+        round_index=0,
+        participant_ids=[P1, P2],
+        eligible_targets=[InteractionTarget(target_id="suspect")],
+        held_evidence_by_participant={},
+    )
+    for participant_id in (P1, P2):
+        runtime.submit_selection(
+            window_id=window.window_id,
+            participant_id=participant_id,
+            target_id="suspect",
+            option_id="observe_behavior",
+        )
+
+    events = runtime.resolve_window(
+        window_id=window.window_id,
+        timestamp=datetime(2026, 7, 18, tzinfo=timezone.utc),
+    )
+
+    assert [
+        event
+        for event in events
+        if event.target_audience is AudienceTarget.specific_player
+    ] == []

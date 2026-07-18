@@ -203,6 +203,7 @@ class InteractionDirector:
             window_id=window.window_id,
             round_index=window.round_index,
             beat_id=window.beat_id,
+            staged_target_id=window.staged_target_id,
             ordered_selections=tuple(ordered),
             public_groups=tuple(public_groups),
             private_selections=tuple(private),

@@ -13,6 +13,7 @@
 - Related specs: `docs/specs/0072-nightcap-couch-race-v1.md`
 - Product and story context: `docs/roadmap/tasks/AW-282-interrogation-round-loop-and-question-intents.md`, `docs/story-bibles/nightcap-couch-race.md`
 - Design record: `docs/superpowers/specs/2026-07-18-aw282-structured-interaction-design.md`
+- Discovery and approvals: `docs/product/aw282-discovery-and-checkpoints.md`
 
 ---
 
@@ -49,11 +50,11 @@ The player-facing language is Questions and Ask. The engine does not accept free
 
 # Human Collaboration Contract
 
-**Interaction profiles**: Independent execution with founder approval gate
+**Interaction profiles**: Creative collaboration
 
-**Classification rationale**: The founder selected the platform-neutral vocabulary and approved the structured interaction design before implementation.
+**Classification rationale**: AW-282 required discovery of interrogation feel, choice pressure, token scarcity, and player-led target selection before implementation.
 
-**Required founder inputs**: None remaining for AW-282.
+**Required founder inputs**: Discovery answers, scenario review, and checkpoint approval, recorded in `docs/product/aw282-discovery-and-checkpoints.md`.
 
 **Phase gates**:
 - Design artifact review and approval before implementation.
@@ -61,7 +62,7 @@ The player-facing language is Questions and Ask. The engine does not accept free
 
 **Review package**: Design record, implementation plan, tests, and PR acceptance evidence.
 
-**Approval evidence**: Founder approval in the 2026-07-18 session for the written AW-282 design and implementation plan.
+**Approval evidence**: Discovery and scenario record at `docs/product/aw282-discovery-and-checkpoints.md`; founder approved the written AW-282 design and implementation plan in the 2026-07-18 session.
 
 **Owner actions**: Claude Code owns AW-283 follow-on implementation.
 
@@ -77,6 +78,7 @@ The player-facing language is Questions and Ask. The engine does not accept free
 - [x] Every selected question creates a public answer request; authored private options also create private feedback for the asker.
 - [x] Public events route to all authorized players and displays. Private feedback routes only to the selecting player.
 - [x] Resolution records preserve authorized knowledge context, claim references, and evidence references and are immutable after lock.
+- [x] Resolution records preserve the deterministic staged target for downstream runtime consumers.
 - [x] A one-player, one-target configuration is supported for Daily Case.
 - [x] No free text, model-generated menus, provider names, UI logic, or Leverage runtime behavior are added.
 

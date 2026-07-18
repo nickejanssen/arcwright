@@ -139,7 +139,7 @@ class InteractionRuntime:
                 feedback_payload=feedback.get(selection.selection_id, {}),
                 timestamp=timestamp,
             )
-            for selection in resolution.ordered_selections
+            for selection in resolution.private_selections
         )
         return events
 

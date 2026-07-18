@@ -168,6 +168,7 @@ class InteractionResolution(BaseModel):
     window_id: str = Field(min_length=1)
     round_index: int = Field(ge=0)
     beat_id: str = Field(min_length=1)
+    staged_target_id: str | None = None
     ordered_selections: tuple[InteractionSelection, ...] = ()
     public_groups: tuple[PublicInteractionGroup, ...] = ()
     private_selections: tuple[InteractionSelection, ...] = ()

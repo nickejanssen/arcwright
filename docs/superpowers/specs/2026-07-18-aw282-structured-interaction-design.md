@@ -2,7 +2,7 @@
 
 > Current version: v0.1
 > Last updated: 2026-07-18
-> Status: Proposed design direction
+> Status: Approved design
 > Canonical path: docs/superpowers/specs/2026-07-18-aw282-structured-interaction-design.md
 
 **Author**: Codex, founder-directed design session
@@ -17,6 +17,7 @@
 - [Architecture: Event System](../../architecture/08-event-system.md)
 - [Architecture: Knowledge Graph](../../architecture/04-knowledge-graph.md)
 - [Leverage advantages and sabotages design](2026-07-18-nightcap-leverage-advantages-sabotages-design.md)
+- [Discovery and checkpoint record](../../product/aw282-discovery-and-checkpoints.md)
 
 ## Overview
 
@@ -33,7 +34,7 @@ The engine owns deterministic state, option eligibility, resource accounting, se
 - V1 does not accept unrestricted free-text or voice questions.
 - Players choose who to interview and what to ask after the opening character is staged. The engine may stage an opening character, but never chooses a player target or question for them.
 - Players lock choices privately. Resolution follows table order, with the first participant rotating each round.
-- Identical public questions in the same round combine into one public answer. Each player still spends one selection and receives their own private feedback.
+- Identical public questions in the same round combine into one public answer. Each player still spends one selection. Authored private options additionally produce private feedback for the selecting player.
 - Identical private responses resolve separately.
 - The budget counts selections, not unique public answers.
 - Target budget guidance is six to eight total selections per interrogation beat where player count permits: three each for two players, two each for three to four players, and one each for five to eight players. Every player receives at least one selection.
@@ -115,7 +116,7 @@ The resolution plan is immutable after creation. AW-283 consumes the unique publ
 
 ### Emit outcomes
 
-For every public group, emit one public outcome to all authorized session participants. For every original selection, emit one private `PrivateFeedback` outcome only to the selecting participant.
+For every public group, emit one public outcome to all authorized session participants. For every selection whose authored option has private visibility, emit one private `PrivateFeedback` outcome only to the selecting participant.
 
 The public outcome contains no private evidence or player-specific feedback. The private outcome contains the source interaction identifier, the player-specific observation, and any authored follow-up eligibility identifiers.
 
@@ -159,8 +160,7 @@ Example for two players:
 - Alex has three selections.
 - Sam has three selections.
 - If both select the same public question, the room hears one answer, but six selections are still spent in total.
-- Alex receives one private feedback outcome.
-- Sam receives a separate private feedback outcome.
+- If either player selects an authored private option, that player receives a private feedback outcome.
 
 Example for five players:
 
@@ -259,7 +259,7 @@ The future modifier must be able to target a legal interaction and resolve deter
 - [ ] Public answers reach all authorized session participants.
 - [ ] Private feedback reaches only the selecting participant.
 - [ ] Token exhaustion blocks further questions and is arc configurable.
-- [ ] Duplicate public selections generate one public request and separate private outcomes.
+- [ ] Duplicate public selections generate one public request. Authored private selections generate separate private outcomes.
 - [ ] Daily Case can configure one participant and one target using the same capability.
 - [ ] No unrestricted free-text input is accepted in v1.
 - [ ] Menus and resolution plans require no model calls.
