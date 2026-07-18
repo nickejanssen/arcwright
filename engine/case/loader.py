@@ -60,7 +60,11 @@ def load_taxonomy(directory: Path) -> Taxonomy:
         if not path.exists():
             raise CaseResolutionError(f"taxonomy file missing: {path}")
         data = json.loads(path.read_text("utf-8"))
-        return list(data.get(key, []))
+        if key not in data:
+            raise CaseResolutionError(
+                f"taxonomy file {path} missing expected top-level key {key!r}"
+            )
+        return list(data[key])
 
     return Taxonomy(
         motive_families=_load("motive_families.json", "families"),

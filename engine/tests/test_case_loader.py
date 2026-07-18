@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 from pathlib import Path
 
 import pytest
@@ -55,3 +56,60 @@ def test_load_case_resolution_config() -> None:
     assert cfg.cast_size_by_player_count["2"] == 4
     assert cfg.cast_size_by_player_count["5"] == 5
     assert cfg.cast_size_by_player_count["8"] == 6
+
+
+def test_load_skeletons_raises_on_duplicate_skeleton_id(tmp_path: Path) -> None:
+    skeleton_payload = {
+        "skeleton_id": "dup",
+        "archetype": "poisoning",
+        "clue_chain_pattern": {"stages": []},
+        "lie_shapes_by_role": {},
+        "reveal_shape": {"steps": []},
+    }
+    (tmp_path / "a.json").write_text(json.dumps(skeleton_payload), encoding="utf-8")
+    (tmp_path / "b.json").write_text(json.dumps(skeleton_payload), encoding="utf-8")
+    with pytest.raises(CaseResolutionError, match="duplicate skeleton_id"):
+        load_skeletons(tmp_path)
+
+
+def test_load_skeletons_raises_on_empty_directory(tmp_path: Path) -> None:
+    with pytest.raises(CaseResolutionError, match="no skeletons found"):
+        load_skeletons(tmp_path)
+
+
+def test_load_taxonomy_raises_on_missing_individual_subfile(tmp_path: Path) -> None:
+    (tmp_path / "motive_families.json").write_text(
+        json.dumps({"families": []}), encoding="utf-8"
+    )
+    (tmp_path / "method_families.json").write_text(
+        json.dumps({"families": []}), encoding="utf-8"
+    )
+    (tmp_path / "lie_topics.json").write_text(
+        json.dumps({"topics": []}), encoding="utf-8"
+    )
+    # evidence_types.json intentionally missing.
+    with pytest.raises(CaseResolutionError, match="taxonomy file missing"):
+        load_taxonomy(tmp_path)
+
+
+def test_load_taxonomy_raises_on_missing_top_level_key(tmp_path: Path) -> None:
+    (tmp_path / "motive_families.json").write_text(
+        json.dumps({"wrong_key": []}), encoding="utf-8"
+    )
+    (tmp_path / "method_families.json").write_text(
+        json.dumps({"families": []}), encoding="utf-8"
+    )
+    (tmp_path / "evidence_types.json").write_text(
+        json.dumps({"types": []}), encoding="utf-8"
+    )
+    (tmp_path / "lie_topics.json").write_text(
+        json.dumps({"topics": []}), encoding="utf-8"
+    )
+    with pytest.raises(CaseResolutionError, match="missing expected top-level key"):
+        load_taxonomy(tmp_path)
+
+
+def test_load_case_resolution_config_missing_path(tmp_path: Path) -> None:
+    missing = tmp_path / "does_not_exist.json"
+    with pytest.raises(CaseResolutionError, match="case-resolution config missing"):
+        load_case_resolution_config(missing)
