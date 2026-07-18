@@ -48,22 +48,6 @@ from engine.case.models import (
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-_SUSPECT_ROLES = ("intimate", "deflector", "observer", "obvious_suspect")
-_SUSPECT_NAME_POOL = (
-    "Ashford",
-    "Bellamy",
-    "Corvax",
-    "Delacourt",
-    "Estève",
-    "Fairholme",
-    "Grantham",
-    "Halloway",
-    "Ito",
-    "Jansen",
-    "Kent",
-    "Lorimer",
-)
-
 
 def resolve(
     arc_definition: ArcDefinition,
@@ -87,9 +71,9 @@ def resolve(
 
     skeleton = _pick_skeleton(rng, skeletons)
     cast_size = _resolve_cast_size(cfg, skeleton, participant_count)
-    cast = _resolve_cast(rng, cast_size)
+    cast = _resolve_cast(rng, cast_size, taxonomy)
     culprit = cast[0]
-    victim = _resolve_victim(rng)
+    victim = _resolve_victim(rng, taxonomy)
 
     evidence = _resolve_evidence(rng, skeleton, cast, taxonomy, culprit)
     lies = _resolve_lies(rng, skeleton, cast, culprit, evidence, taxonomy)
@@ -120,6 +104,9 @@ def resolve(
 
 
 def _default_config_path(arc: ArcDefinition) -> Path:
+    # `arc` is currently unused — single-arc MVP. Once multiple arcs
+    # share this resolver (Daily Case, Imposter Variant), this will
+    # route by arc_id/arc_id_prefix instead of a hardcoded path.
     return REPO_ROOT / "nightcap" / "case_resolution_config.json"
 
 
@@ -144,14 +131,21 @@ def _resolve_cast_size(
     return cfg.cast_size_by_player_count[key]
 
 
-def _resolve_cast(rng: random.Random, cast_size: int) -> list[CastMember]:
-    names = list(_SUSPECT_NAME_POOL)
+def _resolve_cast(
+    rng: random.Random, cast_size: int, taxonomy: Taxonomy
+) -> list[CastMember]:
+    if cast_size > len(taxonomy.suspect_names):
+        raise CaseResolutionError(
+            f"cast_size={cast_size} exceeds suspect name pool size "
+            f"({len(taxonomy.suspect_names)})"
+        )
+    names = list(taxonomy.suspect_names)
     rng.shuffle(names)
     picked = names[:cast_size]
     culprit_index = rng.randrange(cast_size)
     cast: list[CastMember] = []
     for i, name in enumerate(picked):
-        role_tag = _SUSPECT_ROLES[i % len(_SUSPECT_ROLES)]
+        role_tag = taxonomy.suspect_roles[i % len(taxonomy.suspect_roles)]
         cast.append(
             CastMember(
                 member_id=f"s{i + 1}",
@@ -167,10 +161,10 @@ def _resolve_cast(rng: random.Random, cast_size: int) -> list[CastMember]:
     return cast
 
 
-def _resolve_victim(rng: random.Random) -> CastMember:
+def _resolve_victim(rng: random.Random, taxonomy: Taxonomy) -> CastMember:
     return CastMember(
         member_id="v1",
-        display_name=rng.choice(("Marcus", "Vivien", "Alexei", "Iris", "Rosalind")),
+        display_name=rng.choice(taxonomy.victim_names),
         role="victim",
     )
 

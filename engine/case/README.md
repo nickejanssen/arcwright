@@ -36,6 +36,13 @@ under this policy. Arcs that need a victim populate a `CastMember` with
 Likewise, `EvidenceEntry` uses `points_toward` / `points_away_from`
 rather than `implicates` / `exonerates`.
 
+This applies to data pools too, not just field names: character
+names, role-archetype tags, and other creative content must load
+from the arc's own taxonomy directory (e.g. `nightcap/case_taxonomy/`)
+via `load_taxonomy()`, never live as hardcoded constants in this
+module. (Fixed in AW-281 after `_SUSPECT_NAME_POOL` was briefly
+hardcoded in `resolver.py` — see git history.)
+
 ## Public API
 
 ```python

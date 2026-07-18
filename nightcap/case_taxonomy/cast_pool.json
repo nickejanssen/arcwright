@@ -1,0 +1,9 @@
+{
+  "suspect_roles": ["intimate", "deflector", "observer", "obvious_suspect"],
+  "suspect_names": [
+    "Ashford", "Bellamy", "Corvax", "Delacourt", "Estève",
+    "Fairholme", "Grantham", "Halloway", "Ito", "Jansen",
+    "Kent", "Lorimer"
+  ],
+  "victim_names": ["Marcus", "Vivien", "Alexei", "Iris", "Rosalind"]
+}

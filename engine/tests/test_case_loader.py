@@ -45,6 +45,13 @@ def test_load_taxonomy_populates_all_lists() -> None:
     assert len(tax.lie_topics) >= 3
 
 
+def test_load_taxonomy_populates_cast_pool() -> None:
+    tax = load_taxonomy(TAXONOMY_DIR)
+    assert len(tax.suspect_roles) >= 3
+    assert len(tax.suspect_names) >= 4
+    assert len(tax.victim_names) >= 1
+
+
 def test_load_taxonomy_missing_directory() -> None:
     with pytest.raises(CaseResolutionError):
         load_taxonomy(Path("/definitely/does/not/exist/nc"))

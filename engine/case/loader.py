@@ -24,6 +24,9 @@ class Taxonomy(BaseModel):
     method_families: list[dict[str, Any]] = Field(default_factory=list)
     evidence_types: list[dict[str, Any]] = Field(default_factory=list)
     lie_topics: list[dict[str, Any]] = Field(default_factory=list)
+    suspect_roles: list[str] = Field(default_factory=list)
+    suspect_names: list[str] = Field(default_factory=list)
+    victim_names: list[str] = Field(default_factory=list)
 
 
 class CaseResolutionConfig(BaseModel):
@@ -55,7 +58,7 @@ def load_taxonomy(directory: Path) -> Taxonomy:
     if not directory.exists():
         raise CaseResolutionError(f"taxonomy directory missing: {directory}")
 
-    def _load(name: str, key: str) -> list[dict[str, Any]]:
+    def _load(name: str, key: str) -> list[Any]:
         path = directory / name
         if not path.exists():
             raise CaseResolutionError(f"taxonomy file missing: {path}")
@@ -71,6 +74,9 @@ def load_taxonomy(directory: Path) -> Taxonomy:
         method_families=_load("method_families.json", "families"),
         evidence_types=_load("evidence_types.json", "types"),
         lie_topics=_load("lie_topics.json", "topics"),
+        suspect_roles=_load("cast_pool.json", "suspect_roles"),
+        suspect_names=_load("cast_pool.json", "suspect_names"),
+        victim_names=_load("cast_pool.json", "victim_names"),
     )
 
 
