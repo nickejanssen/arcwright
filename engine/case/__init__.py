@@ -30,6 +30,7 @@ from engine.case.models import (
     ResolvedCase,
 )
 from engine.case.resolver import resolve
+from engine.case.solver import SolverVerdict, synthetic_detective
 
 __all__ = [
     "AuthorizedFalsehood",
@@ -40,9 +41,11 @@ __all__ = [
     "CastMember",
     "EvidenceEntry",
     "ResolvedCase",
+    "SolverVerdict",
     "Taxonomy",
     "load_case_resolution_config",
     "load_skeletons",
     "load_taxonomy",
     "resolve",
+    "synthetic_detective",
 ]
