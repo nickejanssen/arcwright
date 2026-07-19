@@ -3,7 +3,7 @@
 > Current version: v0.1
 > Last updated: 2026-07-18
 > Status: Proposed design direction
-> Canonical path: docs/superpowers/specs/2026-07-18-nightcap-leverage-advantages-sabotages-design.md
+> Canonical path: docs/product/nightcap-leverage-advantages-sabotages.md
 
 **Author**: Codex, founder-directed design session
 
