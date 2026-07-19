@@ -10,6 +10,7 @@ from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from engine.case.models import AuthorizedFalsehood
 from engine.characters.context import (
     CharacterGenerationContext,
     KnownFactContext,
@@ -17,6 +18,7 @@ from engine.characters.context import (
     UnknownFactContext,
     build_character_generation_context,
 )
+from engine.claims.matcher import match_answer_content
 from engine.db.orm import Event
 from engine.routing import generate
 from engine.safety import (
@@ -103,13 +105,35 @@ async def generate_character_dialogue(
     social_pressure: float | None = None,
     authorial_intent: "AuthorialIntent | None" = None,
     tone_config: dict[str, Any] | None = None,
+    authorized_falsehoods: list[AuthorizedFalsehood] | None = None,
+    question_topic: str | None = None,
 ) -> CharacterDialogueEvent:
     """Generate one dialogue response after assembling knowledge constraints."""
     context = await build_character_generation_context(
         db_session,
         session_id=session_id,
         character_id=character_id,
+        authorized_falsehoods=authorized_falsehoods,
     )
+    matched_answer: AuthorizedFalsehood | None = None
+    if question_topic is not None:
+        falsehood_models = [
+            AuthorizedFalsehood(
+                falsehood_id=falsehood.falsehood_id,
+                speaker_id=str(character_id),
+                topic=falsehood.topic,
+                claim_text=falsehood.claim_text,
+                contradicted_by=list(falsehood.contradicted_by),
+            )
+            for falsehood in context.authorized_falsehoods
+        ]
+        match = match_answer_content(
+            topic=question_topic,
+            falsehoods=falsehood_models,
+            known_facts=context.known_facts,
+        )
+        if isinstance(match, AuthorizedFalsehood):
+            matched_answer = match
     messages = build_dialogue_messages(
         context,
         player_input=player_input,
@@ -118,6 +142,7 @@ async def generate_character_dialogue(
         social_pressure=social_pressure,
         authorial_intent=authorial_intent,
         tone_config=tone_config,
+        matched_answer=matched_answer,
     )
 
     result = await generate(
@@ -207,6 +232,7 @@ def build_dialogue_messages(
     social_pressure: float | None = None,
     authorial_intent: "AuthorialIntent | None" = None,
     tone_config: dict[str, Any] | None = None,
+    matched_answer: AuthorizedFalsehood | None = None,
 ) -> list[dict[str, Any]]:
     """Build prompt messages with explicit known and not-known blocks."""
     blocks = [
@@ -229,6 +255,8 @@ def build_dialogue_messages(
             _format_relationship_block(context.relationship_dispositions),
         )
     )
+    if matched_answer is not None:
+        blocks.append(_format_lie_block(matched_answer))
     if (
         social_pressure is not None
         and social_pressure >= context.behavior_profile.crumble_threshold
@@ -428,6 +456,19 @@ def _format_pressure_block(social_pressure: float, crumble_threshold: float) -> 
             "Express this through over-precise answers, more aggressive deflection, and small errors consistent with your tells.",
             "Do not confess. Become more yourself under stress.",
             "[END SOCIAL PRESSURE]",
+        )
+    )
+
+
+def _format_lie_block(falsehood: AuthorizedFalsehood) -> str:
+    return "\n".join(
+        (
+            "[AUTHORIZED FALSEHOOD]",
+            f"topic: {falsehood.topic}",
+            f"claim_text (render verbatim): {falsehood.claim_text}",
+            "Use a subtle delivery tell: be slightly less specific, slightly too smooth, or add a small hedge.",
+            "The tell is flavor only and is never a substitute for deterministic contradiction detection.",
+            "[END AUTHORIZED FALSEHOOD]",
         )
     )
 

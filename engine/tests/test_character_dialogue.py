@@ -13,11 +13,16 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.sql.schema import ColumnDefault, DefaultClause
 
+from engine.case.models import AuthorizedFalsehood
 from engine.characters import (
     KnowledgeConstraintViolation,
     build_character_generation_context,
     build_dialogue_messages,
     generate_character_dialogue,
+)
+from engine.characters.context import (
+    BehaviorProfileContext,
+    CharacterGenerationContext,
 )
 from engine.db.orm import Base, Character, Event, Fact, Session, SessionParticipant
 from engine.knowledge import assert_knowledge, get_character_knowledge
@@ -237,6 +242,55 @@ async def test_dialogue_messages_include_known_and_not_known_blocks(
     }
 
 
+def test_dialogue_messages_render_authorized_falsehood_verbatim_without_evidence() -> (
+    None
+):
+    context = _dialogue_context_for_lie()
+    falsehood = AuthorizedFalsehood(
+        falsehood_id="lie-1",
+        speaker_id=str(context.character_id),
+        topic="location",
+        claim_text="I was in the garden.",
+        contradicted_by=["evidence-secret"],
+    )
+
+    first = build_dialogue_messages(
+        context,
+        player_input="Where were you?",
+        matched_answer=falsehood,
+    )[0]["content"]
+    second = build_dialogue_messages(
+        context,
+        player_input="Where were you again?",
+        matched_answer=falsehood,
+    )[0]["content"]
+
+    assert "I was in the garden." in first
+    assert "I was in the garden." in second
+    assert "evidence-secret" not in first
+    assert "slightly less specific" in first
+    assert (
+        first.split("[AUTHORIZED FALSEHOOD]")[1].split("[END AUTHORIZED FALSEHOOD]")[0]
+        == second.split("[AUTHORIZED FALSEHOOD]")[1].split(
+            "[END AUTHORIZED FALSEHOOD]"
+        )[0]
+    )
+
+
+def _dialogue_context_for_lie() -> CharacterGenerationContext:
+    return CharacterGenerationContext(
+        session_id=uuid4(),
+        character_id=uuid4(),
+        behavior_profile=BehaviorProfileContext(
+            personality={}, goals=(), secrets=(), tells=()
+        ),
+        relationship_dispositions=(),
+        is_ai_controlled=True,
+        known_facts=(),
+        unknown_facts=(),
+    )
+
+
 async def test_generate_character_dialogue_routes_through_safe_generation_entrypoint(
     session: AsyncSession,
 ) -> None:
@@ -296,6 +350,38 @@ async def test_generate_character_dialogue_routes_through_safe_generation_entryp
     assert event.payload["knowledge_constraint"]["unknown_fact_ids"] == [
         str(unknown_fact.fact_id)
     ]
+
+
+async def test_generate_character_dialogue_matches_falsehood_for_question_topic(
+    session: AsyncSession,
+) -> None:
+    session_row, character, _, _ = await _make_dialogue_fixture(session)
+    falsehood = AuthorizedFalsehood(
+        falsehood_id="lie-1",
+        speaker_id=str(character.character_id),
+        topic="location",
+        claim_text="I was in the garden.",
+        contradicted_by=["evidence-secret"],
+    )
+
+    with patch(
+        "engine.characters.dialogue.generate",
+        new_callable=AsyncMock,
+        return_value=_route_result("I was in the garden."),
+    ) as mock_generate:
+        await generate_character_dialogue(
+            session,
+            session_id=session_row.session_id,
+            character_id=character.character_id,
+            player_input="Where were you?",
+            quality_tier="standard",
+            authorized_falsehoods=[falsehood],
+            question_topic="location",
+        )
+
+    prompt = mock_generate.await_args.kwargs["messages"][0]["content"]
+    assert "I was in the garden." in prompt
+    assert "evidence-secret" not in prompt
 
 
 async def test_generate_character_dialogue_persists_allowed_dialogue_event(
