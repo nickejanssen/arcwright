@@ -227,7 +227,7 @@ async def test_build_character_generation_context_carries_authorized_falsehoods(
     character_id = uuid4()
     falsehood = AuthorizedFalsehood(
         falsehood_id="lie-1",
-        speaker_id=str(character_id),
+        speaker_id="s1",
         topic="location",
         claim_text="I was in the garden.",
         contradicted_by=["evidence-1"],

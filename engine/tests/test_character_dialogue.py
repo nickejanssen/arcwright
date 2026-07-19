@@ -358,7 +358,7 @@ async def test_generate_character_dialogue_matches_falsehood_for_question_topic(
     session_row, character, _, _ = await _make_dialogue_fixture(session)
     falsehood = AuthorizedFalsehood(
         falsehood_id="lie-1",
-        speaker_id=str(character.character_id),
+        speaker_id="s1",
         topic="location",
         claim_text="I was in the garden.",
         contradicted_by=["evidence-secret"],

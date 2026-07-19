@@ -502,6 +502,8 @@ git commit -m "feat(characters): render authorized lies verbatim in the dialogue
 
 **Goal:** Implement `ClaimResolver`: record a claim (DB-backed), and resolve a flag against it (possession-gated, deterministic, first-received-wins tie-break).
 
+**Grounding resolution:** The claim ledger stores the authorized-lie marker and falsehood ID, while the current session schema does not persist the resolved case's `contradicted_by` catalog. `ClaimResolver` therefore receives the caller-owned, speaker-scoped `AuthorizedFalsehood` sequence explicitly and combines it with the D-079 knowledge-graph possession query; it must not invent a case lookup, assume cast member IDs are character UUIDs, or duplicate evidence state. The resolver locks the claim row before checking confirmed flags so concurrent flags serialize first-received-wins.
+
 **Files:**
 - Create: `engine/claims/resolver.py`
 - Test: `engine/tests/test_claims_resolver.py`
@@ -518,7 +520,7 @@ git commit -m "feat(characters): render authorized lies verbatim in the dialogue
 
 **Steps:**
 
-- [ ] **Step 1:** Read Task 1's grounding note (from your own task history or the plan's Task 1 report) for the exact evidence-possession query. If Task 1 found AW-280 isn't implemented yet, STOP and report BLOCKED here rather than inventing a possession check against nonexistent state — this is a real dependency gap, not something to route around.
+- [ ] **Step 1:** Read Task 1's grounding note (from your own task history or the plan's Task 1 report) for the exact evidence-possession query. The D-079 `engine/claims/evidence.py` primitives are the sanctioned possession check; AW-280 owns release timing and audience decisions, not this delivery-tracking primitive, so do not add a second state path or wait for an AW-280 call site.
 - [ ] **Step 2:** Write failing tests using an in-memory or test-DB-backed fixture (check `engine/tests/test_obligations.py` or `engine/tests/test_telemetry_resources.py` for this codebase's established async-DB test fixture pattern — reuse it, don't invent a new one).
 - [ ] **Step 3:** Implement `ClaimResolver` with `async def record_claim(self, db_session: AsyncSession, *, claim: ClaimRecord) -> ClaimRecord` and `async def resolve_flag(self, db_session: AsyncSession, *, claim_id: str, flagging_participant_id: str) -> FlagResult`.
 - [ ] **Step 4:** Run tests, iterate until PASS.

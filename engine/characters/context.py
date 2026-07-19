@@ -201,7 +201,6 @@ async def build_character_generation_context(
             contradicted_by=tuple(falsehood.contradicted_by),
         )
         for falsehood in (authorized_falsehoods or ())
-        if falsehood.speaker_id == str(character_id)
     )
 
     return CharacterGenerationContext(
