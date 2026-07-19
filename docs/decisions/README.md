@@ -49,6 +49,7 @@ When proposing changes:
 - `0013-nightcap-couch-race-v1-launch-target.md` - Couch Race (competitive-investigator couch game, AI-suspect killer) becomes the Nightcap v1 launch target; killer-among-players becomes the Imposter Variant; interrogation becomes shared platform capability
 - `0014-structured-interaction-resolution.md` - AW-282 authored interaction resolution and public/private event boundary
 - `0015-nightcap-leverage-advantages-sabotages.md` - AW-287 generic resource/effect engine capability for Nightcap Leverage advantages and sabotages; Call Their Bluff replaced by Make Them Wait in the v1 launch set
+- `0016-aw283-claim-ledger-schema.md` - AW-283 claim ledger gets dedicated claims/contradiction_flags tables instead of the generic events table, since claims are the platform's headline mechanic and a hot-path gameplay query, not incidental telemetry
 
 ## Current Decision Categories
 

@@ -22,11 +22,13 @@ The differentiated mechanic no competitor ships; also the labeled continuity dat
 
 ## Technical Scope
 
-- Answer generation path: mandatory pre-generation knowledge query, behavior profile assembly (AW-211), routing per task type and quality tier, prompt caching of case context.
-- Lie execution: authorized lies render in dialogue while ground truth stays intact in the knowledge graph; lie claims are marked internally, never exposed to players before the reveal.
-- Claim ledger: every answer stored with speaker, asker, round, beat, and referenced facts.
-- Deterministic contradiction detection: player flags a suspect statement; engine checks claim-versus-claim and claim-versus-evidence; confirmed catches emit scoring events; false flags emit penalty events.
-- Latency budget: answer generation fast enough for a TV moment (fast-tier routing; measure and record p95).
+- Answer generation path: mandatory pre-generation knowledge query, behavior profile assembly (AW-211), routing per task type and quality tier (reuses the existing `mark_stable_context_cacheable` prompt-caching mechanism in `engine/routing/router.py` — no new caching layer), fast-tier routing by default (cost policy).
+- Question-to-content mapping: deterministic match of the asked `InteractionOption` (AW-282) against the speaker's `KnownFactContext`/`UnknownFactContext` and `AuthorizedFalsehood.topic` (AW-281, `engine/case/models.py`), falling back to a generic in-character non-answer when nothing matches. No AI judgment call decides which fact/lie to draw on.
+- Lie execution: authorized lies (`AuthorizedFalsehood.claim_text`) render in dialogue with a subtle, flavor-only delivery tell layered on top of — never a substitute for — the deterministic evidence check; ground truth stays intact in the knowledge graph. On a repeat ask of the same lie topic, `claim_text` renders **verbatim** every time (only surrounding delivery language may vary), so no paraphrase drift can leak extra specificity or read as a self-contradiction. Lie claims are marked internally, never exposed to players before the reveal.
+- Claim ledger: every answer stored with speaker, asker, round, beat, and referenced facts. A delivered claim can populate a `testimony`-type `EvidenceEntry`, so claim-versus-claim contradiction (a suspect's own answer, or another suspect's testimony, contradicting a lie) is a case of the existing claim-versus-evidence mechanism, not a second system.
+- Deterministic contradiction detection: player flags a suspect statement; engine checks whether the claim matches an `AuthorizedFalsehood` **and** the flagging player has already been delivered at least one of its `contradicted_by` evidence entries (possession-gated — implements "catching a lie is a provenance query," per spec 0072). A flag on a real lie whose evidence hasn't been delivered yet rejects the same deterministic way a false flag does (internal-only distinction, never exposed pre-reveal). AW-283 emits an outcome-only `contradiction_confirmed`/`contradiction_rejected` event with no score value attached — AW-284 owns turning that into points.
+- Simultaneous-flag tie-break: deterministic first-received-flag-wins. A second flag on an already-confirmed claim rejects the same way a false flag does (distinguishable in telemetry, not in player-facing feel). A tie-break minigame is the founder's preferred long-term resolution but is explicitly deferred — tracked in issue #254, not built as part of this task (D-077).
+- Latency budget: answer generation fast enough for a TV moment (fast-tier routing; measure and record p95; ~3s p95 is the design target per the confirmed behavior brief, not yet a proven number).
 
 ## Human Collaboration Contract
 
@@ -88,6 +90,8 @@ dates, and owner actions.
 
 - `docs/architecture/04-knowledge-graph.md`, `docs/architecture/07-character-behavior.md`
 - `docs/story-bibles/daily-case.md` (shared contradiction-ledger design spine)
+- `docs/superpowers/plans/2026-07-19-aw283-suspect-answer-generation.md` (implementation plan)
+- `docs/decisions/0016-aw283-claim-ledger-schema.md` (ADR — claim ledger gets a dedicated DB schema, D-078)
 
 ## Playtest Relevance
 
