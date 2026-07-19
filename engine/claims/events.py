@@ -48,7 +48,7 @@ def build_contradiction_outcome_event(
         session_id=session_id,
         timestamp=timestamp,
         category=EventCategory.state_transition,
-        event_type="contradiction_outcome",
+        event_type=f"contradiction_{outcome}",
         target_audience=AudienceTarget.all,
         payload={
             "claim_id": claim_id,

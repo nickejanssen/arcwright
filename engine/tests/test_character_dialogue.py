@@ -610,4 +610,8 @@ async def test_generate_character_dialogue_does_not_emit_out_of_scope_events(
     ).all()
     event_types = {event.event_type for event in events}
 
-    assert event_types == {"dialogue", "knowledge_constraint_activated"}
+    assert event_types == {
+        "answer_generation_latency",
+        "dialogue",
+        "knowledge_constraint_activated",
+    }

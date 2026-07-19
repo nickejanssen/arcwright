@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
+from time import perf_counter
 from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
@@ -28,6 +29,7 @@ from engine.safety import (
     L2_BLOCK_SENTINEL,
     L3_BLOCK_SENTINEL,
 )
+from engine.telemetry.claims import record_answer_latency
 
 if TYPE_CHECKING:
     from engine.arc.models import AuthorialIntent, ContentRailsConfig
@@ -160,6 +162,7 @@ async def generate_character_dialogue(
         matched_answer=matched_answer,
     )
 
+    generation_started = perf_counter()
     result = await generate(
         db_session,
         session_id=session_id,
@@ -170,6 +173,12 @@ async def generate_character_dialogue(
         tension_score=tension_score,
         safety_policy_context=safety_policy_context,
         content_rails=content_rails,
+    )
+    await record_answer_latency(
+        db_session,
+        session_id,
+        latency_ms=(perf_counter() - generation_started) * 1000.0,
+        quality_tier=quality_tier,
     )
 
     if _is_safety_blocked_result(result.model_used):

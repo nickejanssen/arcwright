@@ -42,7 +42,7 @@ def test_contradiction_event_is_public_and_has_no_score() -> None:
 
     assert event.target_audience is AudienceTarget.all
     assert event.category is EventCategory.state_transition
-    assert event.event_type == "contradiction_outcome"
+    assert event.event_type == "contradiction_confirmed"
     assert event.payload == {
         "claim_id": "claim-1",
         "outcome": "confirmed",
