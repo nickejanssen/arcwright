@@ -1,0 +1,25 @@
+{
+  "planPath": "docs/superpowers/plans/2026-07-18-aw267-aw283-completion-roadmap.md",
+  "tasks": [
+    {"id": 1, "subject": "Task 1: AW-267 founder discovery interview", "status": "completed"},
+    {"id": 2, "subject": "Task 2: AW-267 synthesize and confirm creative brief", "status": "completed", "blockedBy": [1]},
+    {"id": 3, "subject": "Task 3: AW-267 present comparative moodboard directions", "status": "completed", "blockedBy": [2]},
+    {"id": 4, "subject": "Task 4: AW-267 draft final art-direction document", "status": "completed", "blockedBy": [3]},
+    {"id": 5, "subject": "Task 5: AW-267 record sign-off and open PR", "status": "completed", "blockedBy": [4], "userGate": true},
+    {"id": 14, "subject": "Task 14: AW-287 present representative-interaction walkthrough", "status": "completed", "blockedBy": [5]},
+    {"id": 15, "subject": "Task 15: Write AW-287 implementation plan", "status": "pending", "blockedBy": [14]},
+    {"id": 16, "subject": "Task 16: Execute AW-287 implementation plan", "status": "pending", "blockedBy": [15]},
+    {"id": 17, "subject": "Task 17: AW-287 code review", "status": "pending", "blockedBy": [16]},
+    {"id": 18, "subject": "Task 18: AW-287 present thin slice and open PR", "status": "pending", "blockedBy": [17], "userGate": true},
+    {"id": 6, "subject": "Task 6: AW-283 ground implementation in existing architecture", "status": "completed", "blockedBy": [5]},
+    {"id": 7, "subject": "Task 7: AW-283 founder discovery interview", "status": "completed", "blockedBy": [6]},
+    {"id": 8, "subject": "Task 8: AW-283 synthesize and confirm behavior brief", "status": "pending", "blockedBy": [7]},
+    {"id": 9, "subject": "Task 9: AW-283 present answer/lie/contradiction samples", "status": "pending", "blockedBy": [8]},
+    {"id": 10, "subject": "Task 10: Write AW-283 implementation plan", "status": "pending", "blockedBy": [9, 18]},
+    {"id": 11, "subject": "Task 11: Execute AW-283 implementation plan", "status": "pending", "blockedBy": [10]},
+    {"id": 12, "subject": "Task 12: AW-283 code review", "status": "pending", "blockedBy": [11]},
+    {"id": 125, "subject": "Task 12.5: AW-283 present thin slice for explicit founder approval", "status": "pending", "blockedBy": [12], "userGate": true},
+    {"id": 13, "subject": "Task 13: AW-283 record sign-off and open PR", "status": "pending", "blockedBy": [125], "userGate": true}
+  ],
+  "lastUpdated": "2026-07-19"
+}

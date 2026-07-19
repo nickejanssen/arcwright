@@ -48,6 +48,7 @@ When proposing changes:
 - `0012-authorial-intent-obligations-continuity-evals.md` - adopts authorial intent block, narrative obligations model with reveal-readiness signal, and continuity evals from the dissertation-draft comparison; defers post-generation continuity classifier and host rollback to open questions
 - `0013-nightcap-couch-race-v1-launch-target.md` - Couch Race (competitive-investigator couch game, AI-suspect killer) becomes the Nightcap v1 launch target; killer-among-players becomes the Imposter Variant; interrogation becomes shared platform capability
 - `0014-structured-interaction-resolution.md` - AW-282 authored interaction resolution and public/private event boundary
+- `0015-nightcap-leverage-advantages-sabotages.md` - AW-287 generic resource/effect engine capability for Nightcap Leverage advantages and sabotages; Call Their Bluff replaced by Make Them Wait in the v1 launch set
 
 ## Current Decision Categories
 

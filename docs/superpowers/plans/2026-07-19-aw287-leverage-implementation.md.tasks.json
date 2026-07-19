@@ -1,0 +1,16 @@
+{
+  "planPath": "docs/superpowers/plans/2026-07-19-aw287-leverage-implementation.md",
+  "tasks": [
+    {"id": 20, "subject": "AW-287 Impl Task 1: Locate Couch Race arc config assembly point", "status": "pending"},
+    {"id": 21, "subject": "AW-287 Impl Task 2: Resource and effect schemas", "status": "pending", "blockedBy": [20]},
+    {"id": 22, "subject": "AW-287 Impl Task 3: Targeting eligibility and danger-combination guardrails", "status": "pending", "blockedBy": [21]},
+    {"id": 23, "subject": "AW-287 Impl Task 4: Per-question reveal timing and Sting Operation exception", "status": "pending", "blockedBy": [22]},
+    {"id": 24, "subject": "AW-287 Impl Task 5: ContentEvent emission for balances and effect outcomes", "status": "pending", "blockedBy": [23]},
+    {"id": 25, "subject": "AW-287 Impl Task 6: ResourceRuntime orchestration and privacy-matrix integration tests", "status": "pending", "blockedBy": [24]},
+    {"id": 26, "subject": "AW-287 Impl Task 7: Determinism and generic-naming enforcement tests", "status": "pending", "blockedBy": [25]},
+    {"id": 27, "subject": "AW-287 Impl Task 8: Nightcap configuration — six launch-set EffectDefinitions", "status": "pending", "blockedBy": [26]},
+    {"id": 28, "subject": "AW-287 Impl Task 9: Protected-earn-path guardrail test and telemetry", "status": "pending", "blockedBy": [27]},
+    {"id": 29, "subject": "AW-287 Impl Task 10: Full suite, lint, and thin-slice demo script", "status": "pending", "blockedBy": [28], "userGate": true}
+  ],
+  "lastUpdated": "2026-07-19"
+}
