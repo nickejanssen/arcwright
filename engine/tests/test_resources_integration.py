@@ -17,7 +17,12 @@ from uuid import UUID
 import pytest
 
 from engine.events.models import AudienceTarget
-from engine.resources.models import EffectDefinition, EffectFamily, ResourceBalance
+from engine.resources.models import (
+    EffectActivation,
+    EffectDefinition,
+    EffectFamily,
+    ResourceBalance,
+)
 from engine.resources.resolver import ResourceResolver
 from engine.resources.runtime import ResourceRuntime
 
@@ -156,8 +161,8 @@ def test_sting_operation_counter_reveal_is_never_public() -> None:
         session_id=SESSION_ID,
     )
 
-    countered, reveal_event = runtime.counter_with_sting_operation(
-        sting_activator_id=TARGET,
+    countered, reveal_event = runtime.counter_and_reveal_source(
+        countering_activator_id=TARGET,
         countered_window_id="w1",
         now=NOW,
         session_id=SESSION_ID,
@@ -168,3 +173,86 @@ def test_sting_operation_counter_reveal_is_never_public() -> None:
     assert reveal_event.target_player_id == UUID(TARGET)
     assert reveal_event.payload == {"revealed_source_id": SABOTEUR_ONE}
     assert countered.source_reveal_at == NOW
+
+
+ADVANTAGE = EffectDefinition(
+    effect_key="advantage.deep_read",
+    family=EffectFamily.insight,
+    cost=1,
+    requires_target=False,
+)
+
+
+def _run_seeded_sequence(resolver: ResourceResolver) -> list[EffectActivation]:
+    """Fixed sequence of activate/resolve_activation calls, identical ids/amounts/
+    timestamps every time it's run, exercised against whichever resolver is passed
+    in. Returns every EffectActivation record the sequence produces, in call order,
+    so the caller can compare full activation state between independent runs
+    without reaching into resolver-private state.
+    """
+    resolver.set_balance(_balance(SABOTEUR_ONE))
+    resolver.set_balance(_balance(SABOTEUR_TWO))
+    resolver.set_balance(_balance(TARGET))
+
+    records: list[EffectActivation] = []
+
+    records.append(
+        resolver.activate(
+            effect=ADVANTAGE,
+            activator_id=SABOTEUR_ONE,
+            target_id=None,
+            window_id="round1-question1",
+            beat_id="b1",
+            now=NOW,
+        )
+    )
+    records.append(
+        resolver.activate(
+            effect=RATTLE,
+            activator_id=SABOTEUR_TWO,
+            target_id=TARGET,
+            window_id="round1-question2",
+            beat_id="b1",
+            now=NOW,
+        )
+    )
+    records.append(resolver.resolve_activation(window_id="round1-question2", now=NOW))
+
+    resolver.open_new_window()
+    records.append(
+        resolver.activate(
+            effect=ADVANTAGE,
+            activator_id=TARGET,
+            target_id=None,
+            window_id="round1-question3",
+            beat_id="b1",
+            now=NOW,
+        )
+    )
+
+    return records
+
+
+def test_seeded_replay_is_deterministic() -> None:
+    """Two independent ResourceResolver instances fed the identical sequence of
+    activate/resolve_activation calls, with identical ids, amounts, and timestamps,
+    must end up with equal ResourceBalance state for every player and equal
+    EffectActivation records. Compared via model_dump() equality, not identity,
+    since the two runs produce distinct object instances.
+    """
+    resolver_a = ResourceResolver()
+    resolver_b = ResourceResolver()
+
+    activations_a = _run_seeded_sequence(resolver_a)
+    activations_b = _run_seeded_sequence(resolver_b)
+
+    for player_id in (SABOTEUR_ONE, SABOTEUR_TWO, TARGET):
+        assert (
+            resolver_a.get_balance(player_id).model_dump()
+            == resolver_b.get_balance(player_id).model_dump()
+        )
+
+    assert len(activations_a) == len(activations_b)
+    assert [activation.model_dump() for activation in activations_a] == [
+        activation.model_dump() for activation in activations_b
+    ]

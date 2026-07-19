@@ -148,7 +148,7 @@ def test_resolve_window_without_target_produces_no_reveal_event() -> None:
     assert events[0].event_type == "resource_effect_outcome"
 
 
-def test_counter_with_sting_operation_returns_reveal_private_to_sting_user() -> None:
+def test_counter_and_reveal_source_returns_reveal_private_to_countering_user() -> None:
     runtime = make_runtime()
     runtime.activate_effect(
         effect=RATTLE,
@@ -160,8 +160,8 @@ def test_counter_with_sting_operation_returns_reveal_private_to_sting_user() -> 
         session_id=SESSION_ID,
     )
 
-    countered, reveal_event = runtime.counter_with_sting_operation(
-        sting_activator_id=TARGET,
+    countered, reveal_event = runtime.counter_and_reveal_source(
+        countering_activator_id=TARGET,
         countered_window_id="w1",
         now=NOW,
         session_id=SESSION_ID,

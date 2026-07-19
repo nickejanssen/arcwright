@@ -94,25 +94,25 @@ class ResourceRuntime:
 
         return activation, events
 
-    def counter_with_sting_operation(
+    def counter_and_reveal_source(
         self,
         *,
-        sting_activator_id: str,
+        countering_activator_id: str,
         countered_window_id: str,
         now: datetime,
         session_id: UUID,
     ) -> tuple[EffectActivation, ContentEvent]:
-        activation = self._resolver.counter_with_sting_operation(
-            sting_activator_id=sting_activator_id,
+        activation = self._resolver.counter_and_reveal_source(
+            countering_activator_id=countering_activator_id,
             countered_window_id=countered_window_id,
             now=now,
         )
-        # Reveal goes to the Sting Operation user, not to whoever the countered
+        # Reveal goes to the countering player, not to whoever the countered
         # sabotage originally targeted.
         reveal_event = build_source_reveal_event(
             session_id=session_id,
             revealed_source_id=UUID(activation.activator_id),
-            recipient_id=UUID(sting_activator_id),
+            recipient_id=UUID(countering_activator_id),
             timestamp=now,
         )
         return activation, reveal_event

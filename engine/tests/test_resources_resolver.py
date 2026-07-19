@@ -288,7 +288,7 @@ def test_sting_operation_counter_reveals_immediately_independent_of_resolution()
     )
     assert activation.source_reveal_at is None
     # Sting Operation counters it — reveal fires immediately, before w1 has been resolved via resolve_activation
-    countered = resolver.counter_with_sting_operation(
-        sting_activator_id="p2", countered_window_id="w1", now=NOW
+    countered = resolver.counter_and_reveal_source(
+        countering_activator_id="p2", countered_window_id="w1", now=NOW
     )
     assert countered.source_reveal_at == NOW

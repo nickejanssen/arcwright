@@ -99,10 +99,10 @@ class ResourceResolver:
                 return resolved
         raise ValueError(f"no unresolved activation for window {window_id}")
 
-    def counter_with_sting_operation(
-        self, *, sting_activator_id: str, countered_window_id: str, now: datetime
+    def counter_and_reveal_source(
+        self, *, countering_activator_id: str, countered_window_id: str, now: datetime
     ) -> EffectActivation:
-        """Sting Operation's exception: reveal the countered sabotage's source immediately, private to the Sting Operation user."""
+        """Counter-effect exception: reveal the countered sabotage's source immediately, private to the countering player, bypassing normal per-question reveal timing."""
         for i, activation in enumerate(self._activations):
             if activation.interaction_window_id == countered_window_id:
                 revealed = activation.model_copy(update={"source_reveal_at": now})
