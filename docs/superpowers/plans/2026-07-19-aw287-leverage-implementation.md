@@ -728,7 +728,7 @@ git commit -m "feat(resources): telemetry emission and protected-earn-path guard
 **Goal:** Run the complete verification suite and produce a runnable thin-slice script matching the approved walkthrough scenario, for the founder-approval gate.
 
 **Files:**
-- Create: `engine/scripts/leverage_thin_slice_demo.py` (or equivalent existing scripts location — check `engine/` for a `scripts/` convention first) — a runnable script replaying the walkthrough's six steps and printing each `ContentEvent`'s audience and payload.
+- Create: `nightcap/scripts/leverage_thin_slice_demo.py` — a runnable script replaying the walkthrough's six steps and printing each `ContentEvent`'s audience and payload. It lives under `nightcap/`, not `engine/`, because it hardcodes Nightcap-specific character names and arc file paths — those are not permitted as engine/ identifiers (see engine/tests/test_resources_naming_contract.py).
 
 **Acceptance Criteria:**
 - [ ] `pytest engine/tests/ -v` fully green.
@@ -739,13 +739,13 @@ git commit -m "feat(resources): telemetry emission and protected-earn-path guard
 
 **Steps:**
 
-- [ ] **Step 1:** Check for an existing `engine/scripts/` or similar demo-script convention; follow it if present, otherwise place the script at `engine/resources/demo.py` with a `if __name__ == "__main__":` guard.
+- [ ] **Step 1:** Place the script at `nightcap/scripts/leverage_thin_slice_demo.py` with a `if __name__ == "__main__":` guard (not under `engine/` — it hardcodes Nightcap-specific character names and arc paths).
 - [ ] **Step 2:** Run the full verification command above.
 - [ ] **Step 3:** Fix any failures found; do not proceed to the founder-approval gate with red tests.
 - [ ] **Step 4: Commit**
 
 ```bash
-git add engine/resources/demo.py  # or engine/scripts/leverage_thin_slice_demo.py
+git add nightcap/scripts/leverage_thin_slice_demo.py
 git commit -m "feat(resources): thin-slice demo script for AW-287 founder review"
 ```
 

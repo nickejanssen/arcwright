@@ -85,6 +85,56 @@
       }
     }
   ],
+  "resource_effects": [
+    {
+      "effect_key": "advantage.deep_read",
+      "family": "insight",
+      "cost": 2,
+      "requires_target": false,
+      "is_offensive": false,
+      "is_information_control": false
+    },
+    {
+      "effect_key": "advantage.follow_the_thread",
+      "family": "access",
+      "cost": 2,
+      "requires_target": false,
+      "is_offensive": false,
+      "is_information_control": false
+    },
+    {
+      "effect_key": "advantage.sting_operation",
+      "family": "counterplay",
+      "cost": 3,
+      "requires_target": false,
+      "is_offensive": false,
+      "is_information_control": false
+    },
+    {
+      "effect_key": "sabotage.rattle_the_witness",
+      "family": "witness_pressure",
+      "cost": 2,
+      "requires_target": true,
+      "is_offensive": true,
+      "is_information_control": false
+    },
+    {
+      "effect_key": "sabotage.listen_in",
+      "family": "information_control",
+      "cost": 2,
+      "requires_target": true,
+      "is_offensive": true,
+      "is_information_control": true
+    },
+    {
+      "effect_key": "sabotage.make_them_wait",
+      "family": "tempo",
+      "cost": 2,
+      "requires_target": true,
+      "is_offensive": true,
+      "is_information_control": false
+    }
+  ],
   "beats": [
     {
       "beat_id": "pour",

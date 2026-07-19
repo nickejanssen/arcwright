@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from engine.interactions.models import InteractionDefinition
 from engine.mini_games.models import MiniGameBinding
+from engine.resources.models import EffectDefinition
 from engine.session.models import QualityTier
 
 
@@ -254,6 +255,7 @@ class ArcDefinition(BaseModel):
     characters: List[Dict[str, Any]] = Field(default_factory=list)
     beats: List[BeatDefinition] = Field(min_length=1)
     interactions: List[InteractionDefinition] = Field(default_factory=list)
+    resource_effects: List[EffectDefinition] = Field(default_factory=list)
     beat_graph: Dict[str, List[str]]
     generative_elements: GenerativeConfig
     content_rails: ContentRailsConfig
