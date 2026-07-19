@@ -2,7 +2,7 @@
 
 **Date**: 2026-07-18
 
-**Status**: Approved for implementation — design doc, ADR, and implementation spec all in place; thin-slice founder approval still pending
+**Status**: Complete — thin slice implemented, code-reviewed, and founder-approved. D-076 records final sign-off.
 
 **Interaction profile**: Creative collaboration
 
@@ -92,7 +92,7 @@ replaces it: a tempo effect needing no new state. Full reasoning:
 | Move to implementation scope | AW-287 task file, GitHub issue #250 | Founder explicitly chose "lock remaining unknowns now, build alongside/before AW-283" | Approved |
 | Representative-interaction walkthrough | Walkthrough artifact | Founder resolved both flagged judgment calls, 2026-07-18 | Approved |
 | Architecture decision and implementation spec | ADR-0015, spec 0075 | Authored per AGENTS.md's ADR requirement and the design doc's own implementation-spec requirement | Complete |
-| Thin slice | *(pending)* | Not yet implemented | Pending — pause for explicit founder direction before this is treated as done |
+| Thin slice | `engine/resources/` (694+ tests), `nightcap/scripts/leverage_thin_slice_demo.py`, code review with all findings fixed | Founder approved the implemented thin slice and its demo replay, 2026-07-19 session; D-076 | Approved |
 
 ## Scope owner actions
 
