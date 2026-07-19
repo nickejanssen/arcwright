@@ -15,3 +15,13 @@ class TargetIneligibleError(ResourceError):
 
 class UnknownEffectError(ResourceError):
     """Raised when an effect_key has no registered EffectDefinition."""
+
+
+class ActivationNotFoundError(ResourceError):
+    """Raised when no unresolved EffectActivation matches the requested window.
+
+    Distinct from UnknownEffectError: this is a lookup failure against
+    already-recorded activations (e.g. resolving or countering a window that
+    was never activated, or was already resolved), not a missing
+    EffectDefinition registration.
+    """

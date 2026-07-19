@@ -20,6 +20,7 @@ import pytest
 
 from engine.arc.models import ArcDefinition
 from engine.events.models import AudienceTarget, EventCategory
+from engine.resources.errors import ActivationNotFoundError
 from engine.resources.models import (
     EffectActivation,
     EffectDefinition,
@@ -145,7 +146,7 @@ def test_reveal_scope_is_per_question_not_per_round() -> None:
     # Each window resolves exactly once; re-resolving the first window now fails,
     # proving question 1's activation was never re-touched by question 2's call
     # (and vice versa) — resolution and reveal are strictly per-window.
-    with pytest.raises(ValueError):
+    with pytest.raises(ActivationNotFoundError):
         runtime.resolve_window(
             window_id="round1-question1",
             now=NOW,

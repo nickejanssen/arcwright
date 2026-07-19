@@ -6,6 +6,7 @@ from uuid import UUID
 import pytest
 
 from engine.events.models import AudienceTarget, EventCategory
+from engine.resources.errors import ActivationNotFoundError
 from engine.resources.models import EffectDefinition, EffectFamily, ResourceBalance
 from engine.resources.resolver import ResourceResolver
 from engine.resources.runtime import ResourceRuntime
@@ -181,7 +182,7 @@ def test_counter_and_reveal_source_returns_reveal_private_to_countering_user() -
 
 def test_resolve_window_raises_for_unknown_window() -> None:
     runtime = make_runtime()
-    with pytest.raises(ValueError):
+    with pytest.raises(ActivationNotFoundError):
         runtime.resolve_window(
             window_id="missing",
             now=NOW,

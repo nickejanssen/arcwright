@@ -2,7 +2,11 @@ from __future__ import annotations
 
 from datetime import datetime
 
-from engine.resources.errors import InsufficientBalanceError, TargetIneligibleError
+from engine.resources.errors import (
+    ActivationNotFoundError,
+    InsufficientBalanceError,
+    TargetIneligibleError,
+)
 from engine.resources.models import EffectActivation, EffectDefinition, ResourceBalance
 
 
@@ -122,7 +126,9 @@ class ResourceResolver:
                 )
                 self._activations[i] = resolved
                 return resolved
-        raise ValueError(f"no unresolved activation for window {window_id}")
+        raise ActivationNotFoundError(
+            f"no unresolved activation for window {window_id}"
+        )
 
     def counter_and_reveal_source(
         self, *, countering_activator_id: str, countered_window_id: str, now: datetime
@@ -133,4 +139,6 @@ class ResourceResolver:
                 revealed = activation.model_copy(update={"source_reveal_at": now})
                 self._activations[i] = revealed
                 return revealed
-        raise ValueError(f"no activation to counter for window {countered_window_id}")
+        raise ActivationNotFoundError(
+            f"no activation to counter for window {countered_window_id}"
+        )

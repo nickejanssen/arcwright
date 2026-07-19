@@ -2,7 +2,11 @@ from datetime import datetime, timezone
 
 import pytest
 
-from engine.resources.errors import InsufficientBalanceError, TargetIneligibleError
+from engine.resources.errors import (
+    ActivationNotFoundError,
+    InsufficientBalanceError,
+    TargetIneligibleError,
+)
 from engine.resources.models import EffectDefinition, EffectFamily, ResourceBalance
 from engine.resources.resolver import ResourceResolver
 
@@ -304,6 +308,22 @@ def test_grant_rejects_non_positive_amount():
     with pytest.raises(ValueError):
         resolver.grant(
             player_id="p1", amount=0, source="protected_earn", beat_id="b1", now=NOW
+        )
+
+
+def test_resolve_activation_raises_activation_not_found_for_unknown_window():
+    resolver = make_resolver()
+    with pytest.raises(ActivationNotFoundError):
+        resolver.resolve_activation(window_id="no-such-window", now=NOW)
+
+
+def test_counter_and_reveal_source_raises_activation_not_found_for_unknown_window():
+    resolver = make_resolver()
+    with pytest.raises(ActivationNotFoundError):
+        resolver.counter_and_reveal_source(
+            countering_activator_id="p2",
+            countered_window_id="no-such-window",
+            now=NOW,
         )
 
 
