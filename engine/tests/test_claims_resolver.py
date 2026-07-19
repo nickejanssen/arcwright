@@ -9,7 +9,7 @@ from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
 from engine.case.models import AuthorizedFalsehood, EvidenceEntry
-from engine.claims.errors import AlreadyResolvedError, ClaimNotFoundError
+from engine.claims.errors import ClaimNotFoundError
 from engine.claims.models import ClaimRecord, ContradictionOutcome
 from engine.claims.resolver import ClaimResolver
 from engine.db.orm import (
@@ -17,6 +17,7 @@ from engine.db.orm import (
     Character,
     Claim,
     ContradictionFlag,
+    Event,
     Session,
     SessionParticipant,
 )
@@ -210,9 +211,16 @@ async def test_resolve_flag_confirms_lie_with_delivered_evidence(
 
     assert result.outcome is ContradictionOutcome.confirmed
     assert result.evidence_id_used == "evidence-2"
+    knowledge_events = await db_session.scalars(
+        select(Event).where(
+            Event.session_id == session_id,
+            Event.event_type == "knowledge_constraint_activated",
+        )
+    )
+    assert len(knowledge_events.all()) == 1
 
 
-async def test_second_confirmed_flag_raises_and_does_not_replace_first(
+async def test_second_confirmed_flag_is_rejected_and_audited(
     db_session: AsyncSession,
 ) -> None:
     session_id, speaker_id, _, flagger_id = await _make_fixture(db_session)
@@ -242,15 +250,16 @@ async def test_second_confirmed_flag_raises_and_does_not_replace_first(
         claim_id=claim.claim_id or "",
         flagging_participant_id=str(flagger_id),
     )
-    with pytest.raises(AlreadyResolvedError):
-        await resolver.resolve_flag(
-            db_session,
-            claim_id=claim.claim_id or "",
-            flagging_participant_id=str(flagger_id),
-        )
+    second = await resolver.resolve_flag(
+        db_session,
+        claim_id=claim.claim_id or "",
+        flagging_participant_id=str(flagger_id),
+    )
 
     count = await db_session.scalar(select(func.count()).select_from(ContradictionFlag))
-    assert count == 1
+    assert second.outcome is ContradictionOutcome.rejected
+    assert second.evidence_id_used is None
+    assert count == 2
 
 
 async def test_resolve_flag_raises_for_missing_claim(db_session: AsyncSession) -> None:

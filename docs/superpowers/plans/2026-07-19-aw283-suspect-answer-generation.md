@@ -26,7 +26,7 @@
 
 ## File Structure
 
-- `migrations/versions/0006_add_claims_and_contradiction_flags.py` — new tables.
+- `migrations/versions/0006_claims_contradiction_flags.py` — new tables.
 - `engine/db/orm.py` — add `Claim`, `ContradictionFlag` classes (append, do not restructure existing classes).
 - `engine/claims/__init__.py` — empty.
 - `engine/claims/models.py` — Pydantic DTOs: `ClaimRecord`, `ContradictionOutcome`, `FlagResult`.
@@ -92,7 +92,7 @@ explicit seam for the eventual release path to record each delivery.
 **Goal:** Add the two new tables per D-078's explicit approval.
 
 **Files:**
-- Create: `migrations/versions/0006_add_claims_and_contradiction_flags.py`
+- Create: `migrations/versions/0006_claims_contradiction_flags.py`
 - Modify: `engine/db/orm.py`
 
 **Acceptance Criteria:**
@@ -109,10 +109,10 @@ explicit seam for the eventual release path to record each delivery.
 - [ ] **Step 2: Write the migration**
 
 ```python
-# migrations/versions/0006_add_claims_and_contradiction_flags.py
+# migrations/versions/0006_claims_contradiction_flags.py
 """add_claims_and_contradiction_flags
 
-Revision ID: 0006_add_claims_and_contradiction_flags
+Revision ID: 0006_claims_contradiction_flags
 Revises: 0005_add_obligations_table
 Create Date: 2026-07-19
 
@@ -127,7 +127,7 @@ from alembic import op
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 
-revision = "0006_add_claims_and_contradiction_flags"
+revision = "0006_claims_contradiction_flags"
 down_revision = "0005_add_obligations_table"
 branch_labels = None
 depends_on = None
@@ -258,7 +258,7 @@ def downgrade() -> None:
 - [ ] **Step 5: Commit**
 
 ```bash
-git add migrations/versions/0006_add_claims_and_contradiction_flags.py engine/db/orm.py
+git add migrations/versions/0006_claims_contradiction_flags.py engine/db/orm.py
 git commit -m "feat(claims): add claims and contradiction_flags tables (D-078)"
 ```
 
@@ -468,6 +468,8 @@ git commit -m "feat(claims): outcome-only ContentEvent factories, no score value
 
 **Grounding resolution:** The current `Session` ORM has no persisted `ResolvedCase` attachment; case resolution is held by its owning runtime (for example, the harness). Task 6 therefore adds an explicit optional authorized-falsehood input to context/dialogue assembly rather than inventing a new schema or hidden lookup. The caller that owns a resolved case supplies the sequence, and the default remains empty for existing callers.
 
+**Review resolution:** The explicit input now also requires an opaque caller-owned `authorized_falsehood_speaker_id` and rejects mixed-speaker sequences. The original cast/member ID is preserved in context; it is never overwritten with a character UUID.
+
 **Files:**
 - Modify: `engine/characters/context.py` — extend `CharacterGenerationContext` with an `authorized_falsehoods: tuple[AuthorizedFalsehoodContext, ...]` field (new small dataclass mirroring `KnownFactContext`'s shape: `falsehood_id`, `topic`, `claim_text`, `contradicted_by` — do NOT expose `contradicted_by` to the prompt itself, only to the internal claim-recording step; keep prompt-visible and detection-only data separated at the type level if that's cleaner, your call, but the boundary must exist).
 - Modify: `engine/characters/dialogue.py` — extend `build_dialogue_messages` to render a lie block when `matcher.match_answer_content` (Task 4) resolves to an `AuthorizedFalsehood` for this question; extend `generate_character_dialogue`'s caller contract so `social_pressure` can be boosted by an active Rattle the Witness effect (the boost computation lives in the caller, per Task 8 — this task only needs to confirm the existing `social_pressure: float | None` parameter is sufficient, or extend it if not).
@@ -504,6 +506,8 @@ git commit -m "feat(characters): render authorized lies verbatim in the dialogue
 
 **Grounding resolution:** The claim ledger stores the authorized-lie marker and falsehood ID, while the current session schema does not persist the resolved case's `contradicted_by` catalog. `ClaimResolver` therefore receives the caller-owned, speaker-scoped `AuthorizedFalsehood` sequence explicitly and combines it with the D-079 knowledge-graph possession query; it must not invent a case lookup, assume cast member IDs are character UUIDs, or duplicate evidence state. The resolver locks the claim row before checking confirmed flags so concurrent flags serialize first-received-wins.
 
+**Review resolution:** A second flag on a confirmed claim is now persisted as a deterministic rejected `ContradictionFlag` and contradiction telemetry event, preserving the full audit trail while retaining first-received confirmation. Evidence matching reads the knowledge graph once per flag and selects the first delivered contradiction evidence in authored order.
+
 **Files:**
 - Create: `engine/claims/resolver.py`
 - Test: `engine/tests/test_claims_resolver.py`
@@ -539,6 +543,8 @@ git commit -m "feat(claims): possession-gated contradiction detection with first
 **Goal:** Wire an active Rattle the Witness effect (`engine/resources/`, AW-287) into a `social_pressure` boost for the one question it targets.
 
 **Grounding resolution:** The existing resource runtime resolves activations but has no live dialogue caller. Task 8 therefore exposes an explicit `EffectActivation` input on `generate_character_dialogue`; the owning interaction/session orchestrator can pass the resolved activation, while the helper applies no boost and does not mutate baseline pressure when no matching activation is supplied.
+
+**Review resolution:** The live `CharacterService.generate_ai_responses` and initiative scheduler paths now accept and forward the caller-owned activation plus effect key into `generate_character_dialogue`. Resource activation timing and audience decisions remain owned by the resource/session orchestrator; this task only consumes the resolved activation at the generation boundary.
 
 **Files:**
 - Create or modify: a thin orchestration point that, given a resolved `EffectActivation` with `effect_key == "sabotage.rattle_the_witness"` targeting the current question's speaker, computes a boosted `social_pressure` value to pass into `generate_character_dialogue` (Task 6). Exact file location depends on Task 1/6 findings about where session-level answer generation is actually orchestrated today (likely `engine/session/service.py` or a new thin `engine/claims/` orchestration function — ground this against the real call site before deciding, do not invent a new top-level module for a few lines of glue code).

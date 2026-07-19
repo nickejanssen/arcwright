@@ -25,7 +25,15 @@ from engine.characters.context import (
     BehaviorProfileContext,
     CharacterGenerationContext,
 )
-from engine.db.orm import Base, Character, Event, Fact, Session, SessionParticipant
+from engine.db.orm import (
+    Base,
+    Character,
+    Claim,
+    Event,
+    Fact,
+    Session,
+    SessionParticipant,
+)
 from engine.knowledge import assert_knowledge, get_character_knowledge
 from engine.resources.models import EffectDefinition, EffectFamily, ResourceBalance
 from engine.resources.resolver import ResourceResolver
@@ -379,12 +387,57 @@ async def test_generate_character_dialogue_matches_falsehood_for_question_topic(
             player_input="Where were you?",
             quality_tier="standard",
             authorized_falsehoods=[falsehood],
+            authorized_falsehood_speaker_id="s1",
             question_topic="location",
         )
 
     prompt = mock_generate.await_args.kwargs["messages"][0]["content"]
     assert "I was in the garden." in prompt
     assert "evidence-secret" not in prompt
+
+
+async def test_generate_character_dialogue_records_claim_and_delivers_verbatim_lie(
+    session: AsyncSession,
+) -> None:
+    session_row, character, _, _ = await _make_dialogue_fixture(session)
+    falsehood = AuthorizedFalsehood(
+        falsehood_id="lie-1",
+        speaker_id="s1",
+        topic="location",
+        claim_text="I was in the garden.",
+        contradicted_by=["evidence-secret"],
+    )
+
+    with patch(
+        "engine.characters.dialogue.generate",
+        new_callable=AsyncMock,
+        return_value=_route_result("The question is mistaken."),
+    ):
+        event = await generate_character_dialogue(
+            session,
+            session_id=session_row.session_id,
+            character_id=character.character_id,
+            player_input="Where were you?",
+            quality_tier="standard",
+            authorized_falsehoods=[falsehood],
+            authorized_falsehood_speaker_id="s1",
+            question_topic="location",
+        )
+
+    assert event.content.endswith("I was in the garden.")
+    claim = await session.scalar(select(Claim))
+    assert claim is not None
+    assert claim.claim_text == event.content
+    assert claim.is_authorized_lie is True
+    assert claim.falsehood_id == "lie-1"
+    recorded = await session.scalar(
+        select(Event).where(
+            Event.session_id == session_row.session_id,
+            Event.event_type == "claim_recorded",
+        )
+    )
+    assert recorded is not None
+    assert recorded.payload["claim_id"] == str(claim.claim_id)
 
 
 async def test_generate_character_dialogue_applies_targeted_resource_pressure(
@@ -612,6 +665,7 @@ async def test_generate_character_dialogue_does_not_emit_out_of_scope_events(
 
     assert event_types == {
         "answer_generation_latency",
+        "claim_recorded",
         "dialogue",
         "knowledge_constraint_activated",
     }

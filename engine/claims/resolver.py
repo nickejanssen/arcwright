@@ -9,10 +9,11 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from engine.case.models import AuthorizedFalsehood
-from engine.claims.errors import AlreadyResolvedError, ClaimNotFoundError
-from engine.claims.evidence import participant_has_evidence
+from engine.claims.errors import ClaimNotFoundError
+from engine.claims.evidence import participant_matching_evidence
 from engine.claims.models import ClaimRecord, ContradictionOutcome, FlagResult
 from engine.db.orm import Claim, ContradictionFlag
+from engine.telemetry.claims import record_contradiction_outcome
 
 
 class ClaimResolver:
@@ -86,31 +87,31 @@ class ClaimResolver:
                 ContradictionFlag.outcome == ContradictionOutcome.confirmed.value,
             )
         )
-        if confirmed is not None:
-            raise AlreadyResolvedError(f"claim {claim_id!r} is already resolved")
+        already_resolved = confirmed is not None
 
         evidence_id_used: str | None = None
         falsehood = (
             self._falsehoods.get(claim.falsehood_id)
-            if claim.is_authorized_lie and claim.falsehood_id is not None
+            if not already_resolved
+            and claim.is_authorized_lie
+            and claim.falsehood_id is not None
             else None
         )
         if falsehood is not None:
-            for evidence_id in falsehood.contradicted_by:
-                if await participant_has_evidence(
-                    db_session,
-                    session_id=claim.session_id,
-                    participant_id=participant_uuid,
-                    evidence_ids=[evidence_id],
-                ):
-                    evidence_id_used = evidence_id
-                    break
+            evidence_id_used = await participant_matching_evidence(
+                db_session,
+                session_id=claim.session_id,
+                participant_id=participant_uuid,
+                evidence_ids=list(falsehood.contradicted_by),
+            )
 
         outcome = (
             ContradictionOutcome.confirmed
             if evidence_id_used is not None
             else ContradictionOutcome.rejected
         )
+        if already_resolved:
+            outcome = ContradictionOutcome.rejected
         db_session.add(
             ContradictionFlag(
                 claim_id=claim_uuid,
@@ -121,8 +122,10 @@ class ClaimResolver:
             )
         )
         await db_session.flush()
-        return FlagResult(
+        result = FlagResult(
             claim_id=claim_id,
             outcome=outcome,
             evidence_id_used=evidence_id_used,
         )
+        await record_contradiction_outcome(db_session, claim.session_id, result)
+        return result

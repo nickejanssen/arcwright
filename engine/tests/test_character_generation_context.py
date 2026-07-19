@@ -238,12 +238,35 @@ async def test_build_character_generation_context_carries_authorized_falsehoods(
         session_id=session_id,
         character_id=character_id,
         authorized_falsehoods=[falsehood],
+        authorized_falsehood_speaker_id="s1",
     )
 
     assert context.authorized_falsehoods[0].falsehood_id == "lie-1"
+    assert context.authorized_falsehoods[0].speaker_id == "s1"
     assert context.authorized_falsehoods[0].topic == "location"
     assert context.authorized_falsehoods[0].claim_text == "I was in the garden."
     assert context.authorized_falsehoods[0].contradicted_by == ("evidence-1",)
+
+
+async def test_build_character_generation_context_rejects_mixed_falsehood_speakers(
+    session: AsyncSession,
+) -> None:
+    falsehood = AuthorizedFalsehood(
+        falsehood_id="lie-1",
+        speaker_id="s2",
+        topic="location",
+        claim_text="I was in the garden.",
+        contradicted_by=["evidence-1"],
+    )
+
+    with pytest.raises(ValueError, match="scoped to the supplied speaker_id"):
+        await build_character_generation_context(
+            session,
+            session_id=uuid4(),
+            character_id=uuid4(),
+            authorized_falsehoods=[falsehood],
+            authorized_falsehood_speaker_id="s1",
+        )
 
 
 async def test_build_character_generation_context_includes_killer_behavior_profile(

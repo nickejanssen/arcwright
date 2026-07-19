@@ -24,6 +24,12 @@ FORBIDDEN_TERMS = [
     "jordan",
     "zoe",
     "nightcap",
+    "suspect",
+    "murder",
+    "victim",
+    "culprit",
+    "detective",
+    "crime",
 ]
 
 
