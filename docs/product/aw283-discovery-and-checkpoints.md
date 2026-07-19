@@ -9,8 +9,13 @@
 ## Discovery decisions
 
 1. **Suspect-answer tone**: naturalistic, character-specific dialogue —
-   matches the already-approved "cinema first" reference altitude (Knives
-   Out, Succession, Severance) from the AW-267 art-direction brief. Truths
+   matches the "cinema first" reference altitude (Knives Out, Succession,
+   Severance) directed in the AW-267 art-direction brief. This citation
+   tracks AW-267's own approval status as recorded in
+   `docs/product/aw267-discovery-and-checkpoints.md` (as of this record's
+   date, v0.3 as a whole is founder-approved, with §8.5 launch-surface
+   direction excluded — the "cinema first" principle is in §1, not §8.5, so
+   it is in the approved scope). Truths
    and lies share the same register; only content differs. Tone is further
    parameterized by the individual suspect's generated identity/personality
    and by the session's active wrapper/era aesthetic (a High Society suspect

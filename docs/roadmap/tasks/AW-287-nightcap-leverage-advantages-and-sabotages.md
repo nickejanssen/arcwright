@@ -6,7 +6,7 @@
 
 ## Plain-English Summary
 
-Implement Leverage: an earned resource, separate from question allowances, that players spend on authored advantages (Deep Read, Follow the Thread, Sting Operation) or sabotages (Call Their Bluff, Rattle the Witness, Listen In) against rivals. Built as a platform-neutral interaction-modifier capability that Nightcap configures, per the design catalog in `docs/superpowers/specs/2026-07-18-nightcap-leverage-advantages-sabotages-design.md`.
+Implement Leverage: an earned resource, separate from question allowances, that players spend on authored advantages (Deep Read, Follow the Thread, Sting Operation) or sabotages (Rattle the Witness, Listen In, Make Them Wait) against rivals. Built as a platform-neutral interaction-modifier capability that Nightcap configures, per the design catalog in `docs/product/nightcap-leverage-advantages-sabotages.md` and the approved implementation spec at `docs/specs/0075-aw287-nightcap-leverage-advantages-sabotages.md`.
 
 ## Why This Matters
 
@@ -22,8 +22,8 @@ Differentiates the race from a static Q&A loop; the economy is a second lever (a
 
 ## Technical Scope
 
-- `LeverageBalance` state per player: earned/spent/current amount, bank cap, protected floor. Balances are **public** (visible to all players, per founder decision).
-- Deterministic effect resolution for the six launch-set effects (three advantages: Deep Read, Follow the Thread, Sting Operation; three sabotages: Call Their Bluff, Rattle the Witness, Listen In), each configured from the family definitions in the design doc's "Final top five advantages/sabotages" section.
+- Generic engine state model `ResourceBalance` (platform-neutral name; Nightcap configures its display name as "Leverage") per player: earned/spent/current amount, bank cap, protected floor. Balances are **public** (visible to all players, per founder decision). See the naming contract note below and spec 0075 for the full engine-vs-configuration split.
+- Deterministic effect resolution for the six launch-set effects (three advantages: Deep Read, Follow the Thread, Sting Operation; three sabotages: Rattle the Witness, Listen In, Make Them Wait), each configured from the family definitions in the design doc's "Final top five advantages/sabotages" section. **Call Their Bluff is replaced by Make Them Wait** (also one of the design doc's Final top five sabotages) for the v1 launch set: Call Their Bluff requires challenging a "public theory" a player has advanced, but no public-theory state, event, or input exists anywhere in the platform (AW-282's interaction runtime only supports authored target/question selections, no free text), so it has no deterministic input contract today. Make Them Wait needs no new state — it reorders an already-queued interaction.
 - Targeting eligibility and per-interaction modifier limits: no player receives more than one offensive modifier on a single interaction; at most one information-control sabotage (e.g. Listen In) may land on a given player per beat; a player who was just sabotaged receives a temporary protection window until another player is targeted or the next interaction window opens.
 - Saboteur identity: revealed to the target **after the sabotaged interaction resolves**, not instantly — except Sting Operation, whose payoff is exposing its source as soon as it counters a sabotage (that immediate exposure is the effect's defining behavior, not a general rule).
 - Leverage **carries between beats** for the whole session (does not expire at beat transitions), bounded by the bank cap guardrail.
@@ -87,13 +87,15 @@ checkpoint approvals, dates, and owner actions.
 
 - Do not let a Leverage effect change canonical case truth, delete evidence, or create an unfalsifiable clue.
 - Do not let an AI model choose targets, decide whether a sabotage succeeded, or infer session state.
-- Do not implement effects outside the six launch-set effects (Deep Read, Follow the Thread, Sting Operation, Call Their Bluff, Rattle the Witness, Listen In) without a separate approval — the other four families are catalog reference only for v1.
+- Do not implement effects outside the six launch-set effects (Deep Read, Follow the Thread, Sting Operation, Rattle the Witness, Listen In, Make Them Wait) without a separate approval — the other four families, and Call Their Bluff specifically, are catalog reference only for v1.
 - Do not build team/co-op sabotage toggles — v1 has no team/co-op configuration.
-- Do not put Nightcap-specific effect names in engine schemas or module names; the engine exposes generic concepts (resource balance, resource spend, interaction modifier, targeting eligibility, deterministic effect resolution, public/private outcome audience, counterplay window) per the design doc's "Future implementation shape" section.
+- Do not put Nightcap-specific effect or resource names (Leverage, Deep Read, Sting Operation, etc.) in engine schemas, class names, or module names. The engine exposes only generic concepts — `ResourceBalance`, resource spend, interaction modifier, targeting eligibility, deterministic effect resolution, public/private outcome audience, counterplay window — per the design doc's "Future implementation shape" section and spec 0075. Nightcap-specific names live only in Nightcap's arc/effect configuration, never in `engine/` class or field names.
 
 ## Architecture References
 
-- `docs/superpowers/specs/2026-07-18-nightcap-leverage-advantages-sabotages-design.md` (full catalog, filtering rationale, guardrails, and swap review)
+- `docs/product/nightcap-leverage-advantages-sabotages.md` (full catalog, filtering rationale, guardrails, and swap review)
+- `docs/specs/0075-aw287-nightcap-leverage-advantages-sabotages.md` (approved implementation spec — runtime contract, generic/Nightcap naming split, test plan)
+- `docs/decisions/0015-nightcap-leverage-advantages-sabotages.md` (ADR — architecture boundary and consequences)
 - `docs/specs/0074-aw282-structured-interaction-loop.md` and `docs/decisions/0014-structured-interaction-resolution.md` (the interaction-modifier seam this plugs into)
 - `docs/architecture/03-arc-execution.md`, `docs/architecture/08-event-system.md`, `docs/architecture/11-telemetry.md`
 

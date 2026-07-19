@@ -76,7 +76,7 @@ dates, and owner actions.
 
 ## Related design context
 
-- [Nightcap Leverage advantages and sabotages design](../../product/nightcap-leverage-advantages-sabotages.md) is a proposed, design-only catalog. It is visible here for context but is not an AW-283 implementation dependency or authorization.
+- [Nightcap Leverage advantages and sabotages design](../../product/nightcap-leverage-advantages-sabotages.md) is the source catalog for AW-287. As of D-075 (2026-07-18), Leverage is an approved-for-implementation AW-283 dependency, not context-only: AW-283's contradiction-catch and answer-generation behavior varies by active Leverage effect, per the founder's explicit direction recorded in `docs/product/aw283-discovery-and-checkpoints.md`. This supersedes an earlier framing (PR #252) that described Leverage as context-only for AW-283; that framing predated D-075.
 
 ## Must Not Do
 
