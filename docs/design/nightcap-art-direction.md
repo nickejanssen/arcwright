@@ -1,14 +1,14 @@
 # Nightcap Art Direction Brief
 
-> Current version: v0.3
-> Last updated: 2026-07-17
-> Status: Candidate research, founder direction not yet selected
+> Current version: v1.0
+> Last updated: 2026-07-18
+> Status: Approved — founder sign-off recorded in docs/product/aw267-discovery-and-checkpoints.md
 > Canonical path: docs/design/nightcap-art-direction.md
 > Task: AW-267 (#184)
 
-> This document is reversible research for the founder discovery interview. It
-> cannot guide AW-268 or establish a final visual direction until the required
-> collaboration phases produce explicit approval.
+> This document is the approved visual direction for Nightcap. AW-268 and all
+> future theme-skin, asset-production, or rendering work should treat it as the
+> single source of truth without re-litigating direction.
 
 ## Purpose
 
@@ -506,8 +506,8 @@ Design implications for AW-268 and downstream:
    cast-rail silhouette shape, its "Vesper as [role]" register, and
    sample Vesper lines demonstrating the three shifts (§6.5).
 4. The brief does not couple visual tokens to any single mini-game.
-5. The prior D-073 approval claim is superseded by the collaboration reset;
-   final founder sign-off remains pending.
+5. Founder sign-off is recorded in `docs/product/aw267-discovery-and-checkpoints.md`
+   and D-073 in `docs/product/decisions-log.csv`.
 
 ## 11. Open Questions (Deferred)
 
@@ -532,6 +532,13 @@ Design implications for AW-268 and downstream:
 
 ## 12. Change Log
 
+- **2026-07-18**  -  v1.0 (AW-267 founder sign-off). Founder confirmed the
+  v0.3 document as-is is the approved direction for AW-268. No content
+  changed from v0.3; status and acceptance-criteria language updated to
+  reflect approval. See `docs/product/aw267-discovery-and-checkpoints.md`
+  for the full discovery-and-checkpoint record, including the retroactive
+  accounting of the founder feedback that shaped v0.2 and v0.3 across PR
+  #243's three review rounds.
 - **2026-07-17**  -  v0.3 (AW-267, PR #243 founder review round 3).
   Named the Host: **Vesper**, with reference triad Caine (Amazing
   Digital Circus) + Tennant's Doctor + Jackman's ringmaster-into-
