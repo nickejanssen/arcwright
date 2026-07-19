@@ -3,6 +3,9 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from uuid import UUID
+
+from engine.resources.models import EffectActivation
 
 _W_ACCUSATION: float = 0.5
 _W_DIRECTED_QUESTIONS: float = 0.3
@@ -42,3 +45,21 @@ def compute_social_pressure(
         + signals.gaze_signal * w.gaze_signal
     )
     return min(max(raw, 0.0), 1.0)
+
+
+def apply_per_question_pressure_boost(
+    baseline: float | None,
+    *,
+    activation: EffectActivation | None,
+    target_id: UUID,
+    pressure_effect_key: str,
+    boost: float,
+) -> float | None:
+    """Apply one resolved effect's pressure boost to its targeted question only."""
+    if (
+        activation is None
+        or activation.effect_key != pressure_effect_key
+        or activation.target_id != str(target_id)
+    ):
+        return baseline
+    return min(max((baseline or 0.0) + boost, 0.0), 1.0)

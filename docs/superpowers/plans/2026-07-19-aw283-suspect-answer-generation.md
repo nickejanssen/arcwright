@@ -538,6 +538,8 @@ git commit -m "feat(claims): possession-gated contradiction detection with first
 
 **Goal:** Wire an active Rattle the Witness effect (`engine/resources/`, AW-287) into a `social_pressure` boost for the one question it targets.
 
+**Grounding resolution:** The existing resource runtime resolves activations but has no live dialogue caller. Task 8 therefore exposes an explicit `EffectActivation` input on `generate_character_dialogue`; the owning interaction/session orchestrator can pass the resolved activation, while the helper applies no boost and does not mutate baseline pressure when no matching activation is supplied.
+
 **Files:**
 - Create or modify: a thin orchestration point that, given a resolved `EffectActivation` with `effect_key == "sabotage.rattle_the_witness"` targeting the current question's speaker, computes a boosted `social_pressure` value to pass into `generate_character_dialogue` (Task 6). Exact file location depends on Task 1/6 findings about where session-level answer generation is actually orchestrated today (likely `engine/session/service.py` or a new thin `engine/claims/` orchestration function — ground this against the real call site before deciding, do not invent a new top-level module for a few lines of glue code).
 - Test: append to `engine/tests/test_claims_integration.py` (new file, since this is the first genuinely end-to-end test spanning `engine/resources/` + `engine/claims/` + `engine/characters/`).

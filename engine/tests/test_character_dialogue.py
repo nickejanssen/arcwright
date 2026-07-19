@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import uuid
+from datetime import UTC, datetime
 from unittest.mock import AsyncMock, patch
 from uuid import UUID, uuid4
 
@@ -26,6 +27,8 @@ from engine.characters.context import (
 )
 from engine.db.orm import Base, Character, Event, Fact, Session, SessionParticipant
 from engine.knowledge import assert_knowledge, get_character_knowledge
+from engine.resources.models import EffectDefinition, EffectFamily, ResourceBalance
+from engine.resources.resolver import ResourceResolver
 from engine.routing.router import RouteResult, resolve_model_key
 from engine.safety import L2_BLOCK_SENTINEL, NEUTRAL_L2_BRIDGE
 
@@ -382,6 +385,56 @@ async def test_generate_character_dialogue_matches_falsehood_for_question_topic(
     prompt = mock_generate.await_args.kwargs["messages"][0]["content"]
     assert "I was in the garden." in prompt
     assert "evidence-secret" not in prompt
+
+
+async def test_generate_character_dialogue_applies_targeted_resource_pressure(
+    session: AsyncSession,
+) -> None:
+    session_row, character, _, _ = await _make_dialogue_fixture(session)
+    activator_id = str(uuid4())
+    resolver = ResourceResolver()
+    resolver.set_balance(
+        ResourceBalance(
+            player_id=activator_id,
+            session_id=str(session_row.session_id),
+            current_amount=5,
+            bank_cap=20,
+            protected_floor=0,
+        )
+    )
+    activation = resolver.activate(
+        effect=EffectDefinition(
+            effect_key="sabotage.rattle_the_witness",
+            family=EffectFamily.witness_pressure,
+            cost=2,
+            requires_target=True,
+            is_offensive=True,
+        ),
+        activator_id=activator_id,
+        target_id=str(character.character_id),
+        window_id="question-1",
+        beat_id="beat-1",
+        now=datetime.now(UTC),
+    )
+
+    with patch(
+        "engine.characters.dialogue.generate",
+        new_callable=AsyncMock,
+        return_value=_route_result("I noticed the ledger in the study."),
+    ) as mock_generate:
+        await generate_character_dialogue(
+            session,
+            session_id=session_row.session_id,
+            character_id=character.character_id,
+            player_input="What did you notice?",
+            quality_tier="standard",
+            social_pressure=0.8,
+            pressure_activation=activation,
+            pressure_effect_key="sabotage.rattle_the_witness",
+        )
+
+    prompt = mock_generate.await_args.kwargs["messages"][0]["content"]
+    assert "social_pressure: 1.00" in prompt
 
 
 async def test_generate_character_dialogue_persists_allowed_dialogue_event(

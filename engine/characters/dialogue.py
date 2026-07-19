@@ -18,8 +18,10 @@ from engine.characters.context import (
     UnknownFactContext,
     build_character_generation_context,
 )
+from engine.characters.pressure import apply_per_question_pressure_boost
 from engine.claims.matcher import match_answer_content
 from engine.db.orm import Event
+from engine.resources.models import EffectActivation
 from engine.routing import generate
 from engine.safety import (
     L1_HARD_STOP_SENTINEL,
@@ -107,6 +109,10 @@ async def generate_character_dialogue(
     tone_config: dict[str, Any] | None = None,
     authorized_falsehoods: list[AuthorizedFalsehood] | None = None,
     question_topic: str | None = None,
+    pressure_activation: EffectActivation | None = None,
+    pressure_effect_key: str | None = None,
+    # Starting tuning value; Rehearsal 1 telemetry should retune it.
+    pressure_boost: float = 0.25,
 ) -> CharacterDialogueEvent:
     """Generate one dialogue response after assembling knowledge constraints."""
     context = await build_character_generation_context(
@@ -134,12 +140,21 @@ async def generate_character_dialogue(
         )
         if isinstance(match, AuthorizedFalsehood):
             matched_answer = match
+    effective_social_pressure = social_pressure
+    if pressure_activation is not None and pressure_effect_key is not None:
+        effective_social_pressure = apply_per_question_pressure_boost(
+            social_pressure,
+            activation=pressure_activation,
+            target_id=character_id,
+            pressure_effect_key=pressure_effect_key,
+            boost=pressure_boost,
+        )
     messages = build_dialogue_messages(
         context,
         player_input=player_input,
         current_beat_id=current_beat_id,
         scene_goal=scene_goal,
-        social_pressure=social_pressure,
+        social_pressure=effective_social_pressure,
         authorial_intent=authorial_intent,
         tone_config=tone_config,
         matched_answer=matched_answer,
