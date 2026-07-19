@@ -757,3 +757,88 @@ class Obligation(Base):
     resolved_at: Mapped[Optional[datetime]] = mapped_column(
         DateTime(timezone=True), nullable=True
     )
+
+
+class Claim(Base):
+    __tablename__ = "claims"
+    __table_args__ = (
+        Index("ix_claims_session_id_speaker", "session_id", "speaker_character_id"),
+        Index("ix_claims_session_id_beat", "session_id", "beat_id"),
+    )
+
+    claim_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        primary_key=True,
+        server_default=text("gen_random_uuid()"),
+    )
+    session_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("sessions.session_id"),
+        nullable=False,
+    )
+    speaker_character_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("characters.character_id"),
+        nullable=False,
+    )
+    asker_participant_id: Mapped[Optional[UUID]] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("session_participants.participant_id"),
+        nullable=True,
+    )
+    round_index: Mapped[int] = mapped_column(Integer, nullable=False)
+    beat_id: Mapped[str] = mapped_column(Text, nullable=False)
+    interaction_window_id: Mapped[str] = mapped_column(Text, nullable=False)
+    claim_text: Mapped[str] = mapped_column(Text, nullable=False)
+    referenced_fact_ids: Mapped[list[str]] = mapped_column(
+        JSONB,
+        nullable=False,
+        server_default=text("'[]'::jsonb"),
+    )
+    is_authorized_lie: Mapped[bool] = mapped_column(
+        Boolean,
+        nullable=False,
+        server_default=text("false"),
+    )
+    falsehood_id: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=text("now()"),
+    )
+
+
+class ContradictionFlag(Base):
+    __tablename__ = "contradiction_flags"
+    __table_args__ = (
+        Index("ix_contradiction_flags_claim_id", "claim_id"),
+        Index("ix_contradiction_flags_session_id", "session_id"),
+    )
+
+    flag_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        primary_key=True,
+        server_default=text("gen_random_uuid()"),
+    )
+    claim_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("claims.claim_id"),
+        nullable=False,
+    )
+    session_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("sessions.session_id"),
+        nullable=False,
+    )
+    flagged_by_participant_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("session_participants.participant_id"),
+        nullable=False,
+    )
+    outcome: Mapped[str] = mapped_column(Text, nullable=False)
+    evidence_id_used: Mapped[Optional[str]] = mapped_column(Text, nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=text("now()"),
+    )
