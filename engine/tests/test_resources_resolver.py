@@ -343,3 +343,19 @@ def test_sting_operation_counter_reveals_immediately_independent_of_resolution()
         countering_activator_id="p2", countered_window_id="w1", now=NOW
     )
     assert countered.source_reveal_at == NOW
+
+
+def test_activate_rejects_missing_target_when_effect_requires_one():
+    resolver = make_resolver()
+    balance_before = resolver.get_balance("p1").current_amount
+    with pytest.raises(TargetIneligibleError):
+        resolver.activate(
+            effect=RATTLE,
+            activator_id="p1",
+            target_id=None,
+            window_id="w1",
+            beat_id="b1",
+            now=NOW,
+        )
+    # Cost must never be deducted for a rejected activation.
+    assert resolver.get_balance("p1").current_amount == balance_before

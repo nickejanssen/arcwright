@@ -61,6 +61,9 @@ class ResourceResolver:
         beat_id: str,
         now: datetime,
     ) -> EffectActivation:
+        if effect.requires_target and target_id is None:
+            raise TargetIneligibleError(f"{effect.effect_key} requires a target")
+
         balance = self._balances[activator_id]
         if balance.current_amount - effect.cost < 0:
             raise InsufficientBalanceError(
