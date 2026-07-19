@@ -47,6 +47,7 @@ When proposing changes:
 - `0011-single-cloudrun-service-at-mvp.md` - AW-269 defers arcwright-worker from initial cloud deploy automation until the inter-service communication mechanism is resolved
 - `0012-authorial-intent-obligations-continuity-evals.md` - adopts authorial intent block, narrative obligations model with reveal-readiness signal, and continuity evals from the dissertation-draft comparison; defers post-generation continuity classifier and host rollback to open questions
 - `0013-nightcap-couch-race-v1-launch-target.md` - Couch Race (competitive-investigator couch game, AI-suspect killer) becomes the Nightcap v1 launch target; killer-among-players becomes the Imposter Variant; interrogation becomes shared platform capability
+- `0014-structured-interaction-resolution.md` - AW-282 authored interaction resolution and public/private event boundary
 
 ## Current Decision Categories
 

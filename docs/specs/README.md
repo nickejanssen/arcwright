@@ -47,3 +47,4 @@ This directory contains detailed specs for implementing features and systems. Ea
 - **Arc Voice Directive**: `[VOICE]` block injection contract across all live generation call sites (0073)
 - **Visual Design System**: Nightcap UI, animation, tokens, theme skins (0069)
 - **Platform Agnosticism**: Generic role assignment, knowledge seeding, and session-outcome vocabulary (0070)
+- **Structured Interaction Loop**: AW-282 authored questioning, deterministic resolution, and public/private event boundary (0074)

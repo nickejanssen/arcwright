@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from engine.interactions.models import InteractionDefinition
 from engine.mini_games.models import MiniGameBinding
 from engine.session.models import QualityTier
 
@@ -174,6 +175,7 @@ class BeatDefinition(BaseModel):
     pacing_config: BeatPacingConfig = Field(default_factory=BeatPacingConfig)
     audience_targets: List[str] = Field(default_factory=list)
     mini_games: Optional[List[MiniGameBinding]] = None
+    interaction_ids: List[str] = Field(default_factory=list)
 
     @model_validator(mode="after")
     def validate_mini_game_binding_ids(self) -> "BeatDefinition":
@@ -251,6 +253,7 @@ class ArcDefinition(BaseModel):
     quality_tier_default: QualityTier
     characters: List[Dict[str, Any]] = Field(default_factory=list)
     beats: List[BeatDefinition] = Field(min_length=1)
+    interactions: List[InteractionDefinition] = Field(default_factory=list)
     beat_graph: Dict[str, List[str]]
     generative_elements: GenerativeConfig
     content_rails: ContentRailsConfig
@@ -371,5 +374,27 @@ class ArcDefinition(BaseModel):
                 "beat_graph references undefined beat ids: "
                 f"{', '.join(unknown_targets)}"
             )
+            raise ValueError(msg)
+        return self
+
+    @model_validator(mode="after")
+    def validate_interactions(self) -> "ArcDefinition":
+        interaction_ids = [
+            interaction.interaction_id for interaction in self.interactions
+        ]
+        if len(interaction_ids) != len(set(interaction_ids)):
+            msg = "duplicate interaction ids are not allowed"
+            raise ValueError(msg)
+        known_ids = set(interaction_ids)
+        unknown = sorted(
+            {
+                interaction_id
+                for beat in self.beats
+                for interaction_id in beat.interaction_ids
+                if interaction_id not in known_ids
+            }
+        )
+        if unknown:
+            msg = f"beats reference unknown interaction ids: {', '.join(unknown)}"
             raise ValueError(msg)
         return self

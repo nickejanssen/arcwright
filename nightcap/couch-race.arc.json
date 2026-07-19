@@ -32,6 +32,59 @@
   },
   "quality_tier_default": "standard",
   "characters": [],
+  "interactions": [
+    {
+      "interaction_id": "investigation",
+      "options": [
+        {
+          "option_id": "observe_behavior",
+          "prompt_key": "interaction.observe_behavior",
+          "resolution_visibility": "public"
+        },
+        {
+          "option_id": "check_timeline",
+          "prompt_key": "interaction.check_timeline",
+          "resolution_visibility": "public"
+        },
+        {
+          "option_id": "ask_relationship",
+          "prompt_key": "interaction.ask_relationship",
+          "resolution_visibility": "public"
+        },
+        {
+          "option_id": "read_reaction",
+          "prompt_key": "interaction.read_reaction",
+          "required_evidence_ids": ["evidence.behavioral_baseline"],
+          "resolution_visibility": "private"
+        },
+        {
+          "option_id": "press_detail",
+          "prompt_key": "interaction.press_detail",
+          "required_evidence_ids": ["evidence.timeline_gap"],
+          "resolution_visibility": "private"
+        }
+      ],
+      "baseline_option_ids": [
+        "observe_behavior",
+        "check_timeline",
+        "ask_relationship"
+      ],
+      "limit": {
+        "min_players": 2,
+        "max_players": 8,
+        "default_selections_per_player": 1,
+        "selections_per_player_by_count": {
+          "2": 3,
+          "3": 2,
+          "4": 2,
+          "5": 1,
+          "6": 1,
+          "7": 1,
+          "8": 1
+        }
+      }
+    }
+  ],
   "beats": [
     {
       "beat_id": "pour",
@@ -85,7 +138,7 @@
       "structural_function": "core_loop_interrogation",
       "dramatic_purpose": "Rounds of interrogation; contradictions surface as gameplay.",
       "emotional_target": "engaged_pressured",
-      "information_goal": "Players spend intent tokens; suspect answers form claim ledger; contradictions can be flagged.",
+      "information_goal": "Players spend question tokens; suspect answers form claim ledger; contradictions can be flagged.",
       "tension_target": 0.60,
       "character_emphasis": ["cast"],
       "authored_content": {},
@@ -94,7 +147,8 @@
       "exit_conditions": ["interrogation_rounds_complete"],
       "pacing_config": {"stall_threshold_seconds": 240},
       "audience_targets": ["all", "individual"],
-      "mini_games": []
+      "mini_games": [],
+      "interaction_ids": ["investigation"]
     },
     {
       "beat_id": "twist",
@@ -138,7 +192,8 @@
       "exit_conditions": ["accusations_locked_or_countdown_expired"],
       "pacing_config": {"stall_threshold_seconds": 120},
       "audience_targets": ["all", "individual"],
-      "mini_games": []
+      "mini_games": [],
+      "interaction_ids": ["investigation"]
     },
     {
       "beat_id": "truth",

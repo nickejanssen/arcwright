@@ -7,6 +7,7 @@ from engine.arc.models import (
     NarratorConfig,
     PlayMode,
 )
+from engine.interactions.models import InteractionDefinition
 
 __all__ = [
     "AestheticMode",
@@ -14,6 +15,7 @@ __all__ = [
     "ArcStateChart",
     "BeatDefinition",
     "CharacterMode",
+    "InteractionDefinition",
     "NarratorConfig",
     "PlayMode",
     "transition_name_for",

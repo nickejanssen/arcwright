@@ -158,6 +158,44 @@ def assert_invalid(payload: dict, message: str) -> None:
     assert message in str(exc_info.value)
 
 
+def interaction_payload() -> dict:
+    return {
+        "interaction_id": "investigation",
+        "options": [
+            {"option_id": "observe", "prompt_key": "observe"},
+            {"option_id": "timeline", "prompt_key": "timeline"},
+            {"option_id": "relationship", "prompt_key": "relationship"},
+        ],
+        "baseline_option_ids": ["observe", "timeline", "relationship"],
+        "limit": {"min_players": 2, "max_players": 8},
+    }
+
+
+def test_arc_accepts_generic_interactions_and_beat_references() -> None:
+    payload = valid_arc_payload()
+    payload["interactions"] = [interaction_payload()]
+    payload["beats"][1]["interaction_ids"] = ["investigation"]
+
+    arc = ArcDefinition.model_validate(payload)
+
+    assert arc.interactions[0].interaction_id == "investigation"
+    assert arc.beats[1].interaction_ids == ["investigation"]
+
+
+def test_arc_rejects_unknown_beat_interaction_reference() -> None:
+    payload = valid_arc_payload()
+    payload["beats"][1]["interaction_ids"] = ["missing"]
+
+    assert_invalid(payload, "unknown interaction ids")
+
+
+def test_arc_rejects_duplicate_interaction_ids() -> None:
+    payload = valid_arc_payload()
+    payload["interactions"] = [interaction_payload(), interaction_payload()]
+
+    assert_invalid(payload, "duplicate interaction ids")
+
+
 def test_valid_arc_payload_validates() -> None:
     arc = ArcDefinition.model_validate(valid_arc_payload())
 
