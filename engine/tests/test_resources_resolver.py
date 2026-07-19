@@ -1,0 +1,261 @@
+from datetime import datetime, timezone
+
+import pytest
+
+from engine.resources.errors import InsufficientBalanceError, TargetIneligibleError
+from engine.resources.models import EffectDefinition, EffectFamily, ResourceBalance
+from engine.resources.resolver import ResourceResolver
+
+NOW = datetime(2026, 7, 19, tzinfo=timezone.utc)
+
+
+def make_resolver():
+    resolver = ResourceResolver()
+    resolver.set_balance(
+        ResourceBalance(
+            player_id="p1",
+            session_id="s1",
+            current_amount=5,
+            bank_cap=20,
+            protected_floor=0,
+        )
+    )
+    resolver.set_balance(
+        ResourceBalance(
+            player_id="p2",
+            session_id="s1",
+            current_amount=5,
+            bank_cap=20,
+            protected_floor=0,
+        )
+    )
+    return resolver
+
+
+RATTLE = EffectDefinition(
+    effect_key="sabotage.rattle_the_witness",
+    family=EffectFamily.witness_pressure,
+    cost=2,
+    requires_target=True,
+    is_offensive=True,
+)
+LISTEN_IN = EffectDefinition(
+    effect_key="sabotage.listen_in",
+    family=EffectFamily.information_control,
+    cost=2,
+    requires_target=True,
+    is_offensive=True,
+    is_information_control=True,
+)
+
+
+def test_rejects_insufficient_balance():
+    resolver = make_resolver()
+    expensive = EffectDefinition(
+        effect_key="advantage.sting_operation",
+        family=EffectFamily.counterplay,
+        cost=99,
+        requires_target=False,
+    )
+    with pytest.raises(InsufficientBalanceError):
+        resolver.activate(
+            effect=expensive,
+            activator_id="p1",
+            target_id=None,
+            window_id="w1",
+            beat_id="b1",
+            now=NOW,
+        )
+
+
+def test_rejects_second_offensive_modifier_same_window():
+    resolver = make_resolver()
+    resolver.activate(
+        effect=RATTLE,
+        activator_id="p1",
+        target_id="p2",
+        window_id="w1",
+        beat_id="b1",
+        now=NOW,
+    )
+    resolver.set_balance(
+        ResourceBalance(
+            player_id="p1",
+            session_id="s1",
+            current_amount=5,
+            bank_cap=20,
+            protected_floor=0,
+        )
+    )
+    with pytest.raises(TargetIneligibleError):
+        resolver.activate(
+            effect=LISTEN_IN,
+            activator_id="p1",
+            target_id="p2",
+            window_id="w1",
+            beat_id="b1",
+            now=NOW,
+        )
+
+
+def test_rejects_second_info_control_sabotage_same_beat():
+    resolver = make_resolver()
+    resolver.activate(
+        effect=LISTEN_IN,
+        activator_id="p1",
+        target_id="p2",
+        window_id="w1",
+        beat_id="b1",
+        now=NOW,
+    )
+    resolver.set_balance(
+        ResourceBalance(
+            player_id="p1",
+            session_id="s1",
+            current_amount=5,
+            bank_cap=20,
+            protected_floor=0,
+        )
+    )
+    with pytest.raises(TargetIneligibleError):
+        resolver.activate(
+            effect=LISTEN_IN,
+            activator_id="p1",
+            target_id="p2",
+            window_id="w2",
+            beat_id="b1",
+            now=NOW,
+        )
+
+
+def test_post_target_protection_clears_on_new_target():
+    resolver = make_resolver()
+    resolver.activate(
+        effect=RATTLE,
+        activator_id="p1",
+        target_id="p2",
+        window_id="w1",
+        beat_id="b1",
+        now=NOW,
+    )
+    resolver.set_balance(
+        ResourceBalance(
+            player_id="p1",
+            session_id="s1",
+            current_amount=5,
+            bank_cap=20,
+            protected_floor=0,
+        )
+    )
+    with pytest.raises(TargetIneligibleError):
+        resolver.activate(
+            effect=RATTLE,
+            activator_id="p1",
+            target_id="p2",
+            window_id="w2",
+            beat_id="b1",
+            now=NOW,
+        )
+    resolver.set_balance(
+        ResourceBalance(
+            player_id="p3",
+            session_id="s1",
+            current_amount=5,
+            bank_cap=20,
+            protected_floor=0,
+        )
+    )
+    resolver.activate(
+        effect=RATTLE,
+        activator_id="p1",
+        target_id="p3",
+        window_id="w3",
+        beat_id="b1",
+        now=NOW,
+    )
+
+
+def test_protection_lifts_when_a_new_target_is_sabotaged():
+    resolver = make_resolver()
+    resolver.activate(
+        effect=RATTLE,
+        activator_id="p1",
+        target_id="p2",
+        window_id="w1",
+        beat_id="b1",
+        now=NOW,
+    )
+    resolver.set_balance(
+        ResourceBalance(
+            player_id="p1",
+            session_id="s1",
+            current_amount=5,
+            bank_cap=20,
+            protected_floor=0,
+        )
+    )
+    resolver.set_balance(
+        ResourceBalance(
+            player_id="p3",
+            session_id="s1",
+            current_amount=5,
+            bank_cap=20,
+            protected_floor=0,
+        )
+    )
+    resolver.activate(
+        effect=RATTLE,
+        activator_id="p1",
+        target_id="p3",
+        window_id="w2",
+        beat_id="b1",
+        now=NOW,
+    )  # p3 now protected, p2's protection lifts
+    resolver.set_balance(
+        ResourceBalance(
+            player_id="p1",
+            session_id="s1",
+            current_amount=5,
+            bank_cap=20,
+            protected_floor=0,
+        )
+    )
+    # p2 should be targetable again now that p3 is the protected player
+    resolver.activate(
+        effect=RATTLE,
+        activator_id="p1",
+        target_id="p2",
+        window_id="w3",
+        beat_id="b1",
+        now=NOW,
+    )
+
+
+def test_open_new_window_clears_protection():
+    resolver = make_resolver()
+    resolver.activate(
+        effect=RATTLE,
+        activator_id="p1",
+        target_id="p2",
+        window_id="w1",
+        beat_id="b1",
+        now=NOW,
+    )
+    resolver.open_new_window()
+    resolver.set_balance(
+        ResourceBalance(
+            player_id="p1",
+            session_id="s1",
+            current_amount=5,
+            bank_cap=20,
+            protected_floor=0,
+        )
+    )
+    resolver.activate(
+        effect=RATTLE,
+        activator_id="p1",
+        target_id="p2",
+        window_id="w2",
+        beat_id="b1",
+        now=NOW,
+    )
