@@ -113,6 +113,7 @@ six further design forks the discovery record hadn't pinned down:
 | Discovery | This record | Founder answers captured across the 2026-07-18 session (tone, lie readability, catch mechanic/visibility, latency, success definition) | Approved |
 | Behavior brief | This record, "Behavior brief" section | Founder confirmed as-is, 2026-07-19 | Approved |
 | Answer/lie/contradiction samples | Sample review doc, seven resolved forks above | Founder answered all seven via `AskUserQuestion`, 2026-07-19 | Approved |
+| Implementation plan | [docs/superpowers/plans/2026-07-19-aw283-suspect-answer-generation.md](../superpowers/plans/2026-07-19-aw283-suspect-answer-generation.md), ADR-0016, D-078 | Written by this session for handoff to a separate execution session | Complete |
 | Thin slice | *(pending)* | Not yet implemented | Pending |
 
 ## Scope owner actions

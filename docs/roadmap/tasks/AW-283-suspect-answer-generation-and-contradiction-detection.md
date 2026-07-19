@@ -90,6 +90,8 @@ dates, and owner actions.
 
 - `docs/architecture/04-knowledge-graph.md`, `docs/architecture/07-character-behavior.md`
 - `docs/story-bibles/daily-case.md` (shared contradiction-ledger design spine)
+- `docs/superpowers/plans/2026-07-19-aw283-suspect-answer-generation.md` (implementation plan)
+- `docs/decisions/0016-aw283-claim-ledger-schema.md` (ADR — claim ledger gets a dedicated DB schema, D-078)
 
 ## Playtest Relevance
 
