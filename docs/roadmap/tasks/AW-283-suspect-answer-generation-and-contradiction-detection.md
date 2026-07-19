@@ -72,6 +72,10 @@ dates, and owner actions.
 - Spec 0071 / PR #225 live-loop AI character dialogue
 - AW-212 knowledge-constrained dialogue pipeline; AW-272 eval suite
 
+## Related design context
+
+- [Nightcap Leverage advantages and sabotages design](../../product/nightcap-leverage-advantages-sabotages.md) is a proposed, design-only catalog. It is visible here for context but is not an AW-283 implementation dependency or authorization.
+
 ## Must Not Do
 
 - Do not use a model call to judge whether a contradiction is real (deterministic only; the post-generation classifier is a logged open question).

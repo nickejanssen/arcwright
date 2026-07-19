@@ -16,7 +16,7 @@
 - [Architecture: Arc Execution](../../architecture/03-arc-execution.md)
 - [Architecture: Event System](../../architecture/08-event-system.md)
 - [Architecture: Knowledge Graph](../../architecture/04-knowledge-graph.md)
-- [Leverage advantages and sabotages design](2026-07-18-nightcap-leverage-advantages-sabotages-design.md)
+- [Leverage advantages and sabotages design](../../product/nightcap-leverage-advantages-sabotages.md)
 - [Discovery and checkpoint record](../../product/aw282-discovery-and-checkpoints.md)
 
 ## Overview

@@ -7,6 +7,7 @@ This directory holds product-level records that do not belong to architecture AD
 - Decisions log exports from the product workspace
 - Open-questions log exports from the product workspace
 - Product-log additions that are not architecture ADRs
+- [Nightcap Leverage advantages and sabotages design](nightcap-leverage-advantages-sabotages.md): proposed design-only catalog and playtest recommendation
 
 ## Rules
 

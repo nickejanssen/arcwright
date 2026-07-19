@@ -16,7 +16,7 @@ The founder-directed session established the following product and platform deci
 4. Question allowances vary by player count and are shared across rounds within a beat. The approved guidance is three selections each for two players, two each for three or four players, and one each for five through eight players.
 5. Selected questions receive public answer requests. Authored private options can additionally produce private feedback for the selecting player.
 6. Free-text and voice questions are deferred from v1. The possibility of an AI-answered written question remains a future design question, not an AW-282 implementation requirement.
-7. Leverage advantages and sabotages are documented as a separate design artifact and remain outside AW-282 runtime scope.
+7. [Leverage advantages and sabotages](nightcap-leverage-advantages-sabotages.md) are documented as a separate design artifact and remain outside AW-282 runtime scope.
 
 ## Reviewed scenarios
 
