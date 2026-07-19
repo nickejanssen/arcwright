@@ -341,3 +341,104 @@ def test_imposter_arc_has_no_resource_effects_configured() -> None:
     """
     arc = ArcDefinition.model_validate_json(IMPOSTER_ARC_PATH.read_text("utf-8"))
     assert arc.resource_effects == []
+
+
+# ---------------------------------------------------------------------------
+# AW-287 Task 9 - protected-earn-path guardrail (spec 0075).
+#
+# Proves, over a seeded multi-beat session driven directly through
+# ResourceResolver, that:
+#   1. mini-game rewards cannot create an unrecoverable lead — a player who
+#      wins every mini-game grant across the whole session is still bounded
+#      by bank_cap, so the gap to any other player is capped at
+#      (bank_cap - protected_floor) no matter how many more mini-games they
+#      win; and
+#   2. every player has a protected earn path — a non-mini-game grant
+#      source (e.g. a per-beat participation stipend) that on its own is
+#      enough to bring every player who never won a mini-game up to
+#      protected_floor by session end.
+# ---------------------------------------------------------------------------
+
+WINNER = "00000000-0000-0000-0000-000000000301"
+NON_WINNERS = (
+    "00000000-0000-0000-0000-000000000302",
+    "00000000-0000-0000-0000-000000000303",
+    "00000000-0000-0000-0000-000000000304",
+)
+ALL_PLAYERS = (WINNER, *NON_WINNERS)
+
+PROTECTED_FLOOR = 6
+BANK_CAP = 20
+STIPEND_PER_BEAT = 2  # protected-earn path: paid to every player, every beat
+MINI_GAME_REWARD_PER_BEAT = 10  # paid only to the winner
+BEATS = ("beat_1", "beat_2", "beat_3")
+
+
+def test_protected_earn_path_and_bounded_lead_hold_over_seeded_session() -> None:
+    resolver = ResourceResolver()
+    for player_id in ALL_PLAYERS:
+        resolver.set_balance(
+            ResourceBalance(
+                player_id=player_id,
+                session_id=str(SESSION_ID),
+                current_amount=0,
+                bank_cap=BANK_CAP,
+                protected_floor=PROTECTED_FLOOR,
+            )
+        )
+
+    for beat_id in BEATS:
+        # Protected earn path: every player, including the winner, receives
+        # the flat per-beat stipend regardless of mini-game outcomes.
+        for player_id in ALL_PLAYERS:
+            resolver.grant(
+                player_id=player_id,
+                amount=STIPEND_PER_BEAT,
+                source="protected_earn_stipend",
+                beat_id=beat_id,
+                now=NOW,
+            )
+        # Mini-game reward: only the winner ever receives this grant, every
+        # beat, for the entire session. The three non-winners receive zero
+        # mini-game grants across all three beats.
+        resolver.grant(
+            player_id=WINNER,
+            amount=MINI_GAME_REWARD_PER_BEAT,
+            source="mini_game_reward",
+            beat_id=beat_id,
+            now=NOW,
+        )
+
+    # AC: every player who never won a mini-game still reached
+    # protected_floor by session end, purely via the protected-earn path.
+    for player_id in NON_WINNERS:
+        balance = resolver.get_balance(player_id)
+        assert balance.current_amount >= balance.protected_floor
+        # Reached it via the stipend alone: three beats at STIPEND_PER_BEAT.
+        assert balance.current_amount == 3 * STIPEND_PER_BEAT
+
+    # AC: mini-game rewards cannot create an unrecoverable lead. The winner's
+    # balance is bounded by bank_cap even though every mini-game grant across
+    # every beat went to them, and the raw (uncapped) total they'd otherwise
+    # have accumulated (3 * (10 + 2) = 36) would have far exceeded it.
+    winner_balance = resolver.get_balance(WINNER)
+    assert winner_balance.current_amount == BANK_CAP
+
+    for player_id in NON_WINNERS:
+        gap = (
+            winner_balance.current_amount
+            - resolver.get_balance(player_id).current_amount
+        )
+        assert gap <= BANK_CAP - PROTECTED_FLOOR
+
+    # One more mini-game win for the winner, after the seeded session's three
+    # beats, does not widen the lead any further — the cap already holds it,
+    # proving the lead stays bounded no matter how many more times they win.
+    resolver.grant(
+        player_id=WINNER,
+        amount=MINI_GAME_REWARD_PER_BEAT,
+        source="mini_game_reward",
+        beat_id="beat_4",
+        now=NOW,
+    )
+    assert resolver.get_balance(WINNER).current_amount == BANK_CAP

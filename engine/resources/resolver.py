@@ -22,6 +22,31 @@ class ResourceResolver:
     def get_balance(self, player_id: str) -> ResourceBalance:
         return self._balances[player_id]
 
+    def grant(
+        self,
+        *,
+        player_id: str,
+        amount: int,
+        source: str | None,
+        beat_id: str,
+        now: datetime,
+    ) -> ResourceBalance:
+        """Credit a player's balance (mini-game reward or protected earn path).
+
+        Bounded above by ``bank_cap`` so no earn path — mini-game win streak or
+        otherwise — can grow a balance without limit. ``source`` and ``beat_id``
+        are accepted for parity with ``ResourceGrant`` (and future telemetry
+        callers) but do not affect the bounded-credit computation itself.
+        """
+        del source, beat_id, now
+        if amount <= 0:
+            raise ValueError("grant amount must be positive")
+        balance = self._balances[player_id]
+        new_amount = min(balance.current_amount + amount, balance.bank_cap)
+        updated = balance.model_copy(update={"current_amount": new_amount})
+        self._balances[player_id] = updated
+        return updated
+
     def activate(
         self,
         *,

@@ -276,6 +276,37 @@ def test_reveal_fires_on_resolve_not_on_activation():
     assert resolved.source_reveal_at == NOW
 
 
+def test_grant_increases_balance_bounded_by_bank_cap():
+    resolver = make_resolver()
+
+    updated = resolver.grant(
+        player_id="p1", amount=3, source="protected_earn", beat_id="b1", now=NOW
+    )
+    assert updated.current_amount == 8
+    assert resolver.get_balance("p1").current_amount == 8
+
+    # A grant that would push past bank_cap saturates at bank_cap rather than
+    # overflowing it — no earn path can create an unbounded balance.
+    saturated = resolver.grant(
+        player_id="p1", amount=50, source="mini_game_reward", beat_id="b2", now=NOW
+    )
+    assert saturated.current_amount == 20
+
+    # Already at bank_cap: a further grant is a no-op, not an error.
+    unchanged = resolver.grant(
+        player_id="p1", amount=1, source="mini_game_reward", beat_id="b3", now=NOW
+    )
+    assert unchanged.current_amount == 20
+
+
+def test_grant_rejects_non_positive_amount():
+    resolver = make_resolver()
+    with pytest.raises(ValueError):
+        resolver.grant(
+            player_id="p1", amount=0, source="protected_earn", beat_id="b1", now=NOW
+        )
+
+
 def test_sting_operation_counter_reveals_immediately_independent_of_resolution():
     resolver = make_resolver()
     activation = resolver.activate(
