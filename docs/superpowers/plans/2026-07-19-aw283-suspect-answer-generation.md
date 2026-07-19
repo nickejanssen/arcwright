@@ -4,7 +4,7 @@
 
 **Goal:** Generate suspect answers through the existing knowledge-constrained dialogue pipeline (spec 0071), rendering authorized lies deterministically alongside true answers; record every answer as a claim with real DB provenance; detect contradictions deterministically (possession-gated: a flag confirms only if the claim is an authorized lie AND the flagging player already holds contradicting evidence); and wire Rattle the Witness (AW-287) into the existing `social_pressure` mechanism.
 
-**Architecture:** New module `engine/claims/` (models, matcher, resolver, events — mirrors `engine/resources/`'s file shape) plus `engine/telemetry/claims.py` (mirrors `engine/telemetry/obligations.py`/`resources.py`). Unlike AW-282/287, this task needs real DB persistence (`Claim`, `ContradictionFlag` ORM tables) because claim provenance must survive to feed the end-of-session reveal — this was an explicit founder decision (D-078, see `docs/product/decisions-log.csv`) made because claims are this platform's headline differentiated mechanic and future consumer (AW-272 evals, Daily Case), not incidental telemetry, so they get their own indexed, queryable schema rather than being folded into the generic `events` table. The dialogue generation itself extends the existing `engine/characters/dialogue.py` pipeline (spec 0071) — it does not replace it. `AuthorizedFalsehood` (`engine/case/models.py`, already shipped by AW-281) is the source of truth for lie content; this task's job is wiring it into generation and detection, not inventing new lie content.
+**Architecture:** New module `engine/claims/` (evidence, models, matcher, resolver, events — mirrors `engine/resources/`'s file shape) plus `engine/telemetry/claims.py` (mirrors `engine/telemetry/obligations.py`/`resources.py`). Unlike AW-282/287, this task needs real DB persistence (`Claim`, `ContradictionFlag` ORM tables) because claim provenance must survive to feed the end-of-session reveal — this was an explicit founder decision (D-078, see `docs/product/decisions-log.csv`) made because claims are this platform's headline differentiated mechanic and future consumer (AW-272 evals, Daily Case), not incidental telemetry, so they get their own indexed, queryable schema rather than being folded into the generic `events` table. Evidence possession uses the existing generic knowledge graph via the D-079 primitives in `engine/claims/evidence.py`; AW-280 remains responsible for release timing and audience decisions. The dialogue generation itself extends the existing `engine/characters/dialogue.py` pipeline (spec 0071) — it does not replace it. `AuthorizedFalsehood` (`engine/case/models.py`, already shipped by AW-281) is the source of truth for lie content; this task's job is wiring it into generation and detection, not inventing new lie content.
 
 **Tech Stack:** Python 3.11+, Pydantic v2, SQLAlchemy 2.0 async ORM, Alembic migrations, pytest, pytest-asyncio.
 
@@ -41,26 +41,49 @@
 
 ---
 
-## Task 1: Ground the evidence-delivery / knowledge-state integration
+## Task 1: Evidence-delivery / knowledge-state integration (resolved)
 
-**Goal:** Answer the one integration question this plan could not fully resolve without live grounding access: how does a piece of `EvidenceEntry` (Pydantic, `engine/case/models.py`, `evidence_id: str`) become "delivered to a specific player" in live session state, and what's the exact query to check whether participant X currently holds evidence Y?
+**Goal:** Bridge a case `EvidenceEntry` to the existing knowledge graph so
+possession-gated contradiction checks can ask whether a participant currently
+holds a delivered evidence entry.
 
-**Files:** Read-only.
+**Files:**
+- Create: `engine/claims/evidence.py`
+- Create: `engine/claims/__init__.py`
+- Test: `engine/tests/test_claims_evidence.py`
+
+**Resolution:** Evidence delivery uses the existing generic knowledge APIs. The
+new `record_evidence_delivery` primitive resolves `SessionParticipant` by both
+`session_id` and `participant_id`, obtains its `character_id`, and calls
+`assert_knowledge` with `fact_type="evidence_delivered"` and
+`fact_content={"evidence_id": evidence.evidence_id, "evidence_type": evidence.evidence_type}`.
+There is no separate evidence-to-fact lookup table: the evidence ID remains in
+the fact content, while the generic `Fact.fact_id` identifies the stored fact.
+The `participant_has_evidence` primitive resolves the same participant, calls
+`get_character_knowledge`, and checks active `evidence_delivered` fact content
+for any requested evidence ID.
+
+AW-280 remains planned and owns clue-release composition and timing. This
+integration does not invent a release scheduler; its delivery primitive is the
+explicit seam for the eventual release path to record each delivery.
 
 **Acceptance Criteria:**
-- [ ] Exact mechanism identified: does evidence delivery create a `KnowledgeState` row (`engine/db/orm.py`) keyed by `fact_id`? If so, what bridges `EvidenceEntry.evidence_id` (case-resolution ID space) to `Fact.fact_id` (knowledge-graph ID space) — a 1:1 ID convention, a lookup table, or a separate mechanism entirely?
-- [ ] Exact existing query pattern for "what does character/participant X currently know" identified (grep `KnowledgeState` usage in `engine/knowledge/graph.py` and callers).
-- [ ] Confirm whether AW-280 (clue release content, `docs/roadmap/tasks/AW-280-couch-race-clue-release-content.md`) owns the evidence-release-timing mechanism this task depends on, and whether it's implemented yet — if AW-280 isn't implemented, this task's possession-gate check has no delivery-timing signal to query and that's a blocking dependency to report, not something to route around by assuming evidence is always available.
+- [x] Evidence delivery resolves participant to character and creates a
+  `KnowledgeState` through `assert_knowledge`.
+- [x] Evidence possession queries use `get_character_knowledge` and active fact
+  content, with no duplicate knowledge API.
+- [x] The implementation is covered by focused async SQLite tests for recording,
+  positive and negative possession checks, and empty requested IDs.
 
-**Verify:** N/A (grounding task).
+**Verify:** `pytest engine/tests/test_claims_evidence.py -q`
 
 **Steps:**
 
-- [ ] **Step 1:** Read `engine/knowledge/graph.py` in full.
-- [ ] **Step 2:** `grep -rn "KnowledgeState" engine/ --include=*.py | grep -v test` to find every construction/query site.
-- [ ] **Step 3:** Read `docs/roadmap/tasks/AW-280-couch-race-clue-release-content.md` and check `docs/roadmap/index.json` for AW-280's status (planned vs. shipped — check for a merged PR referencing it).
-- [ ] **Step 4:** Read `docs/architecture/04-knowledge-graph.md` for the documented (not just implemented) contract.
-- [ ] **Step 5:** No commit — grounding only. Write your findings as a short note in your task report; Task 6 depends on this note directly.
+- [x] Read `engine/knowledge/graph.py`, `engine/db/orm.py`, and the knowledge
+  graph architecture contract.
+- [x] Add failing tests for the two evidence primitives.
+- [x] Implement the minimal `engine/claims/evidence.py` bridge.
+- [x] Run the focused tests and confirm they pass.
 
 ---
 
