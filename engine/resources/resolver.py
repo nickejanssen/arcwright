@@ -7,7 +7,12 @@ from engine.resources.errors import (
     InsufficientBalanceError,
     TargetIneligibleError,
 )
-from engine.resources.models import EffectActivation, EffectDefinition, ResourceBalance
+from engine.resources.models import (
+    EffectActivation,
+    EffectDefinition,
+    EffectFamily,
+    ResourceBalance,
+)
 
 
 class ResourceResolver:
@@ -19,6 +24,9 @@ class ResourceResolver:
         self._currently_protected_target: str | None = None
         self._offensive_modifiers_by_window: dict[str, int] = {}
         self._info_control_targets_this_beat: dict[tuple[str, str], int] = {}
+        # Keyed by the activator's player id — the player who armed the
+        # counterplay effect. One-time-use: consumed by counter_and_reveal_source.
+        self._armed_counterplay: dict[str, EffectActivation] = {}
 
     def set_balance(self, balance: ResourceBalance) -> None:
         self._balances[balance.player_id] = balance
@@ -112,6 +120,10 @@ class ResourceResolver:
             interaction_window_id=window_id,
         )
         self._activations.append(activation)
+
+        if effect.family == EffectFamily.counterplay:
+            self._armed_counterplay[activator_id] = activation
+
         return activation
 
     def open_new_window(self) -> None:
@@ -136,9 +148,27 @@ class ResourceResolver:
     def counter_and_reveal_source(
         self, *, countering_activator_id: str, countered_window_id: str, now: datetime
     ) -> EffectActivation:
-        """Counter-effect exception: reveal the countered sabotage's source immediately, private to the countering player, bypassing normal per-question reveal timing."""
+        """Counter-effect exception: reveal the countered sabotage's source immediately, private to the countering player, bypassing normal per-question reveal timing.
+
+        Requires that ``countering_activator_id`` has an armed (unused)
+        counterplay-family activation, and that the countered sabotage
+        actually targeted that player — otherwise any player could deanonymize
+        any saboteur without having activated a counterplay effect themselves.
+        Consumes the armed counterplay on success (one-time-use).
+        """
+        if countering_activator_id not in self._armed_counterplay:
+            raise TargetIneligibleError(
+                f"{countering_activator_id} has no armed counterplay effect"
+            )
+
         for i, activation in enumerate(self._activations):
             if activation.interaction_window_id == countered_window_id:
+                if activation.target_id != countering_activator_id:
+                    raise TargetIneligibleError(
+                        f"window {countered_window_id} was not targeted at "
+                        f"{countering_activator_id}"
+                    )
+                del self._armed_counterplay[countering_activator_id]
                 revealed = activation.model_copy(update={"source_reveal_at": now})
                 self._activations[i] = revealed
                 return revealed

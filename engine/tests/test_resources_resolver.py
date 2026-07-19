@@ -51,6 +51,23 @@ LISTEN_IN = EffectDefinition(
     is_offensive=True,
     is_information_control=True,
 )
+STING_OPERATION = EffectDefinition(
+    effect_key="advantage.sting_operation",
+    family=EffectFamily.counterplay,
+    cost=1,
+    requires_target=False,
+)
+
+
+def _arm_counterplay(resolver, *, activator_id: str, window_id: str = "w0"):
+    return resolver.activate(
+        effect=STING_OPERATION,
+        activator_id=activator_id,
+        target_id=None,
+        window_id=window_id,
+        beat_id="b1",
+        now=NOW,
+    )
 
 
 def test_rejects_insufficient_balance():
@@ -319,6 +336,7 @@ def test_resolve_activation_raises_activation_not_found_for_unknown_window():
 
 def test_counter_and_reveal_source_raises_activation_not_found_for_unknown_window():
     resolver = make_resolver()
+    _arm_counterplay(resolver, activator_id="p2")
     with pytest.raises(ActivationNotFoundError):
         resolver.counter_and_reveal_source(
             countering_activator_id="p2",
@@ -329,6 +347,7 @@ def test_counter_and_reveal_source_raises_activation_not_found_for_unknown_windo
 
 def test_sting_operation_counter_reveals_immediately_independent_of_resolution():
     resolver = make_resolver()
+    _arm_counterplay(resolver, activator_id="p2")
     activation = resolver.activate(
         effect=RATTLE,
         activator_id="p1",
@@ -359,3 +378,91 @@ def test_activate_rejects_missing_target_when_effect_requires_one():
         )
     # Cost must never be deducted for a rejected activation.
     assert resolver.get_balance("p1").current_amount == balance_before
+
+
+def test_counter_and_reveal_source_rejects_countering_player_with_no_armed_counterplay():
+    resolver = make_resolver()
+    resolver.activate(
+        effect=RATTLE,
+        activator_id="p1",
+        target_id="p2",
+        window_id="w1",
+        beat_id="b1",
+        now=NOW,
+    )
+    with pytest.raises(TargetIneligibleError):
+        resolver.counter_and_reveal_source(
+            countering_activator_id="p2", countered_window_id="w1", now=NOW
+        )
+
+
+def test_counter_and_reveal_source_rejects_when_countered_sabotage_targeted_someone_else():
+    resolver = make_resolver()
+    resolver.set_balance(
+        ResourceBalance(
+            player_id="p3",
+            session_id="s1",
+            current_amount=5,
+            bank_cap=20,
+            protected_floor=0,
+        )
+    )
+    # p3 arms a counterplay effect, but the sabotage below targets p2, not p3.
+    _arm_counterplay(resolver, activator_id="p3")
+    resolver.activate(
+        effect=RATTLE,
+        activator_id="p1",
+        target_id="p2",
+        window_id="w1",
+        beat_id="b1",
+        now=NOW,
+    )
+    with pytest.raises(TargetIneligibleError):
+        resolver.counter_and_reveal_source(
+            countering_activator_id="p3", countered_window_id="w1", now=NOW
+        )
+
+
+def test_counter_and_reveal_source_is_one_time_use():
+    resolver = make_resolver()
+    resolver.set_balance(
+        ResourceBalance(
+            player_id="p3",
+            session_id="s1",
+            current_amount=5,
+            bank_cap=20,
+            protected_floor=0,
+        )
+    )
+    _arm_counterplay(resolver, activator_id="p2")
+    resolver.activate(
+        effect=RATTLE,
+        activator_id="p1",
+        target_id="p2",
+        window_id="w1",
+        beat_id="b1",
+        now=NOW,
+    )
+    # A fresh window/beat is required before a second offensive sabotage can
+    # target p2 again — post-target protection and the per-beat
+    # information-control guardrail are orthogonal to the counterplay fix
+    # under test here.
+    resolver.open_new_window()
+    resolver.activate(
+        effect=RATTLE,
+        activator_id="p3",
+        target_id="p2",
+        window_id="w2",
+        beat_id="b2",
+        now=NOW,
+    )
+
+    resolver.counter_and_reveal_source(
+        countering_activator_id="p2", countered_window_id="w1", now=NOW
+    )
+    # The armed counterplay was consumed by the first counter; a second sabotage
+    # against the same player cannot be countered again without re-arming.
+    with pytest.raises(TargetIneligibleError):
+        resolver.counter_and_reveal_source(
+            countering_activator_id="p2", countered_window_id="w2", now=NOW
+        )

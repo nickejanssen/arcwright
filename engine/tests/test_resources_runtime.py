@@ -30,6 +30,12 @@ UNTARGETED_ADVANTAGE = EffectDefinition(
     cost=1,
     requires_target=False,
 )
+STING_OPERATION = EffectDefinition(
+    effect_key="advantage.sting_operation",
+    family=EffectFamily.counterplay,
+    cost=1,
+    requires_target=False,
+)
 
 
 def make_runtime() -> ResourceRuntime:
@@ -154,6 +160,17 @@ def test_resolve_window_without_target_produces_no_reveal_event() -> None:
 
 def test_counter_and_reveal_source_returns_reveal_private_to_countering_user() -> None:
     runtime = make_runtime()
+    # TARGET must have an armed counterplay effect before it can counter and
+    # unmask a sabotage aimed at it.
+    runtime.activate_effect(
+        effect=STING_OPERATION,
+        activator_id=TARGET,
+        target_id=None,
+        window_id="w0",
+        beat_id="b1",
+        now=NOW,
+        session_id=SESSION_ID,
+    )
     runtime.activate_effect(
         effect=RATTLE,
         activator_id=ACTIVATOR,

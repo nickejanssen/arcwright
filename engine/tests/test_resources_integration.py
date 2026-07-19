@@ -48,6 +48,12 @@ RATTLE = EffectDefinition(
     requires_target=True,
     is_offensive=True,
 )
+STING_OPERATION = EffectDefinition(
+    effect_key="advantage.sting_operation",
+    family=EffectFamily.counterplay,
+    cost=1,
+    requires_target=False,
+)
 
 
 def _balance(player_id: str) -> ResourceBalance:
@@ -162,6 +168,17 @@ def test_sting_operation_counter_reveal_is_never_public() -> None:
     it must never be broadcast with target_audience == AudienceTarget.all.
     """
     _, runtime = make_resolver_and_runtime()
+    # TARGET must have an armed counterplay effect before it can counter and
+    # unmask a sabotage aimed at it.
+    runtime.activate_effect(
+        effect=STING_OPERATION,
+        activator_id=TARGET,
+        target_id=None,
+        window_id="w0",
+        beat_id="b1",
+        now=NOW,
+        session_id=SESSION_ID,
+    )
     runtime.activate_effect(
         effect=RATTLE,
         activator_id=SABOTEUR_ONE,
