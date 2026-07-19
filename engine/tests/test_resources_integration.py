@@ -11,6 +11,7 @@ in engine/tests/test_interactions_integration.py.
 
 from __future__ import annotations
 
+import ast
 from datetime import datetime, timezone
 from pathlib import Path
 from uuid import UUID
@@ -445,3 +446,144 @@ def test_protected_earn_path_and_bounded_lead_hold_over_seeded_session() -> None
         now=NOW,
     )
     assert resolver.get_balance(WINNER).current_amount == BANK_CAP
+
+
+# ---------------------------------------------------------------------------
+# Spec 0075 acceptance criterion: "No effect can change canonical case truth,
+# delete evidence, or create an unfalsifiable clue" (property/invariance test
+# across all six configured effects).
+#
+# ResourceResolver has zero coupling to case-truth state by construction: the
+# whole engine/resources/ module tree never imports engine.case (the module
+# that owns canonical case-truth state), and ResourceResolver's public
+# interface exposes no method or attribute referencing "truth", "killer", or
+# "evidence" as a mutation target. These tests make that invariant explicit
+# and checkable, rather than leaving it implicit in the module boundary.
+# ---------------------------------------------------------------------------
+
+CASE_TRUTH_TERMS = ("truth", "killer", "evidence")
+RESOURCES_MODULE_DIR = REPO_ROOT / "engine" / "resources"
+
+
+def _resolver_public_interface_names() -> list[str]:
+    return [name for name in dir(ResourceResolver) if not name.startswith("_")]
+
+
+def test_resource_resolver_public_interface_has_no_case_truth_surface() -> None:
+    """ResourceResolver exposes no method or attribute referencing case-truth
+    concepts - the invariant that makes "no effect can change canonical case
+    truth" true by construction, not by convention.
+    """
+    violations = [
+        name
+        for name in _resolver_public_interface_names()
+        for term in CASE_TRUTH_TERMS
+        if term in name.lower()
+    ]
+    assert not violations, (
+        f"ResourceResolver's public interface references case-truth concepts: "
+        f"{violations}"
+    )
+
+
+def test_resources_module_tree_never_imports_case_module() -> None:
+    """engine/resources/ has zero import coupling to engine.case, reinforcing
+    that the invariant above isn't just an accident of today's method names -
+    there is no import path through which a resource effect could reach
+    canonical case-truth state.
+    """
+    violations: list[str] = []
+    for path in sorted(RESOURCES_MODULE_DIR.glob("*.py")):
+        tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and (node.module or "").startswith(
+                "engine.case"
+            ):
+                violations.append(f"{path.name} imports {node.module}")
+            elif isinstance(node, ast.Import):
+                for alias in node.names:
+                    if alias.name.startswith("engine.case"):
+                        violations.append(f"{path.name} imports {alias.name}")
+
+    assert not violations, (
+        f"engine/resources/ has an import dependency on engine.case: {violations}"
+    )
+
+
+def test_activating_every_couch_race_launch_effect_touches_no_case_truth_state() -> (
+    None
+):
+    """Activates each of the six real launch-set effects - loaded from the
+    actual arc JSON, not hand-authored duplicates - against a fresh resolver,
+    and asserts the resulting EffectActivation carries no case-truth-shaped
+    field name or value. The concrete, per-effect instance of the invariance
+    property above.
+    """
+    arc = ArcDefinition.model_validate_json(COUCH_RACE_PATH.read_text("utf-8"))
+    assert len(arc.resource_effects) == 6
+
+    for index, effect in enumerate(arc.resource_effects):
+        resolver = ResourceResolver()
+        activator_id = f"invariance-activator-{index}"
+        target_id = f"invariance-target-{index}"
+        resolver.set_balance(_balance(activator_id))
+        resolver.set_balance(_balance(target_id))
+
+        activation = resolver.activate(
+            effect=effect,
+            activator_id=activator_id,
+            target_id=target_id if effect.requires_target else None,
+            window_id=f"invariance-check-{index}",
+            beat_id="b1",
+            now=NOW,
+        )
+
+        activation_dump = activation.model_dump()
+        for key, value in activation_dump.items():
+            for term in CASE_TRUTH_TERMS:
+                assert term not in key.lower(), (
+                    f"{effect.effect_key}: activation field {key!r} references "
+                    f"case-truth concept {term!r}"
+                )
+                assert term not in str(value).lower(), (
+                    f"{effect.effect_key}: activation field {key!r} value "
+                    f"references case-truth concept {term!r}"
+                )
+
+
+# ---------------------------------------------------------------------------
+# Spec 0075 acceptance criterion: "ResourceBalance.current_amount persists
+# unchanged across a beat-transition test" - as an automated pytest, not just
+# narratively demonstrated in nightcap/scripts/leverage_thin_slice_demo.py.
+# ---------------------------------------------------------------------------
+
+
+def test_resource_balance_persists_unchanged_across_beat_transition() -> None:
+    """resolver.open_new_window() is what InteractionDirector calls at a beat
+    boundary (clearing post-target protection for the next question/beat). No
+    grant/spend/reset call happens here - the beat boundary itself must not
+    touch balance state for anyone, activator or otherwise.
+    """
+    resolver, runtime = make_resolver_and_runtime()
+
+    runtime.activate_effect(
+        effect=RATTLE,
+        activator_id=SABOTEUR_ONE,
+        target_id=TARGET,
+        window_id="beat-transition-window",
+        beat_id="b1",
+        now=NOW,
+        session_id=SESSION_ID,
+    )
+
+    balances_before = {
+        player_id: resolver.get_balance(player_id).current_amount
+        for player_id in (SABOTEUR_ONE, SABOTEUR_TWO, TARGET)
+    }
+
+    resolver.open_new_window()
+
+    for player_id in (SABOTEUR_ONE, SABOTEUR_TWO, TARGET):
+        assert (
+            resolver.get_balance(player_id).current_amount == balances_before[player_id]
+        )
