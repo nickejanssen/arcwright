@@ -7,9 +7,13 @@ scenario (Beat 3, "The Dig") against the actual ResourceResolver
 nightcap/couch-race.arc.json (loaded via ArcDefinition.model_validate_json — no
 hand-authored duplicate EffectDefinition literals).
 
+This script is Nightcap-specific (named characters, a specific arc file) and lives
+alongside nightcap/couch-race.arc.json rather than inside the game-agnostic
+engine/ tree.
+
 Run directly:
 
-    python engine/resources/demo.py
+    python nightcap/scripts/leverage_thin_slice_demo.py
 
 Every step prints: the player and effect involved, the balance before/after, and
 (for steps that produce a ContentEvent) that event's target_audience and payload,
@@ -26,9 +30,10 @@ from uuid import UUID
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-# Allow `python engine/resources/demo.py` to run directly (repo root is not
-# installed as a package). Only needed when executed as a standalone script;
-# a no-op when imported normally (e.g. `python -m engine.resources.demo`).
+# Allow `python nightcap/scripts/leverage_thin_slice_demo.py` to run directly (repo
+# root is not installed as a package). Only needed when executed as a standalone
+# script; a no-op when imported normally
+# (e.g. `python -m nightcap.scripts.leverage_thin_slice_demo`).
 if __package__ in (None, ""):
     sys.path.insert(0, str(REPO_ROOT))
 

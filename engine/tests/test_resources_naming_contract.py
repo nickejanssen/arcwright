@@ -1,17 +1,27 @@
-"""Repo-wide static check: no Nightcap-specific effect/resource name may leak into
-an engine/resources/ (or engine/telemetry/resources.py) Python identifier.
+"""Repo-wide static check: no Nightcap-specific effect/resource name, character
+name, or the game name itself may leak into an engine/resources/ (or
+engine/telemetry/resources.py) Python identifier.
 
 engine/ is game-agnostic platform code (see AGENTS.md, "Architecture Principles" /
 "Configurable composition"). Nightcap's specific advantage/sabotage names (Leverage,
 Deep Read, Follow the Thread, Sting Operation, Rattle the Witness, Listen In, Make
-Them Wait) are arc-configuration data, not engine vocabulary. They may appear as
-*string values* inside engine/resources/ or engine/telemetry/resources.py (e.g. an
-effect_key literal used in a docstring example or test fixture elsewhere), but must
-never appear inside an actual Python identifier (function/class/variable/attribute/
-argument name) in either module. This test parses every engine/resources/*.py file
-plus engine/telemetry/resources.py with `ast` and fails on any identifier that
-contains a forbidden term, so it stays broken until the leak is fixed even if
-someone quietly reintroduces the term later.
+Them Wait), its cast's character names (Priya, Marcus, Jordan, Zoe), and the literal
+game name "nightcap" are all arc-configuration/content data, not engine vocabulary.
+They may appear as *string values* inside engine/resources/ or
+engine/telemetry/resources.py (e.g. an effect_key literal used in a docstring
+example or test fixture elsewhere), but must never appear inside an actual Python
+identifier (function/class/variable/attribute/argument name) in either module. This
+test parses every engine/resources/*.py file plus engine/telemetry/resources.py
+with `ast` and fails on any identifier that contains a forbidden term, so it stays
+broken until the leak is fixed even if someone quietly reintroduces the term later.
+
+Scope is deliberately limited to engine/resources/ and engine/telemetry/resources.py
+(not the whole engine/ tree): other engine/tests/*.py files legitimately reference
+"nightcap" and its cast's names as string fixture data (and, in a few pre-existing,
+unrelated test names, as identifiers — e.g. test_nightcap_arc_json_validates) when
+exercising the canonical Nightcap arc as a generic test fixture. That is a separate,
+pre-existing pattern outside AW-287's scope, not the class of leak this test guards
+against.
 """
 
 from __future__ import annotations
@@ -33,6 +43,11 @@ FORBIDDEN_TERMS = [
     "rattle_the_witness",
     "listen_in",
     "make_them_wait",
+    "priya",
+    "marcus",
+    "jordan",
+    "zoe",
+    "nightcap",
 ]
 
 
