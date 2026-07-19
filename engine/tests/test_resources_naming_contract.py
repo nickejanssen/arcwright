@@ -1,16 +1,17 @@
 """Repo-wide static check: no Nightcap-specific effect/resource name may leak into
-an engine/resources/ Python identifier.
+an engine/resources/ (or engine/telemetry/resources.py) Python identifier.
 
 engine/ is game-agnostic platform code (see AGENTS.md, "Architecture Principles" /
 "Configurable composition"). Nightcap's specific advantage/sabotage names (Leverage,
 Deep Read, Follow the Thread, Sting Operation, Rattle the Witness, Listen In, Make
 Them Wait) are arc-configuration data, not engine vocabulary. They may appear as
-*string values* inside engine/resources/ (e.g. an effect_key literal used in a
-docstring example or test fixture elsewhere), but must never appear inside an actual
-Python identifier (function/class/variable/attribute/argument name) in
-engine/resources/ itself. This test parses every engine/resources/*.py file with
-`ast` and fails on any identifier that contains a forbidden term, so it stays broken
-until the leak is fixed even if someone quietly reintroduces the term later.
+*string values* inside engine/resources/ or engine/telemetry/resources.py (e.g. an
+effect_key literal used in a docstring example or test fixture elsewhere), but must
+never appear inside an actual Python identifier (function/class/variable/attribute/
+argument name) in either module. This test parses every engine/resources/*.py file
+plus engine/telemetry/resources.py with `ast` and fails on any identifier that
+contains a forbidden term, so it stays broken until the leak is fixed even if
+someone quietly reintroduces the term later.
 """
 
 from __future__ import annotations
@@ -20,7 +21,9 @@ from pathlib import Path
 
 import pytest
 
-RESOURCES_DIR = Path(__file__).resolve().parent.parent / "resources"
+ENGINE_DIR = Path(__file__).resolve().parent.parent
+RESOURCES_DIR = ENGINE_DIR / "resources"
+TELEMETRY_RESOURCES_FILE = ENGINE_DIR / "telemetry" / "resources.py"
 
 FORBIDDEN_TERMS = [
     "leverage",
@@ -43,6 +46,10 @@ NORMALIZED_FORBIDDEN_TERMS = [_normalize(term) for term in FORBIDDEN_TERMS]
 def _resource_files() -> list[Path]:
     files = sorted(RESOURCES_DIR.glob("*.py"))
     assert files, f"expected to find .py files under {RESOURCES_DIR}"
+    assert TELEMETRY_RESOURCES_FILE.exists(), (
+        f"expected to find {TELEMETRY_RESOURCES_FILE}"
+    )
+    files.append(TELEMETRY_RESOURCES_FILE)
     return files
 
 
