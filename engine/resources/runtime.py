@@ -12,7 +12,7 @@ from datetime import datetime
 from typing import Any
 from uuid import UUID
 
-from engine.events.models import AudienceTarget, ContentEvent
+from engine.events.models import AudienceTarget, ContentEvent, EventCategory
 from engine.resources.events import (
     build_balance_changed_event,
     build_effect_outcome_event,
@@ -64,6 +64,7 @@ class ResourceRuntime:
         session_id: UUID,
         outcome_payload: dict[str, Any],
         outcome_audience: AudienceTarget,
+        outcome_category: EventCategory,
         outcome_recipient_id: UUID | None = None,
     ) -> tuple[EffectActivation, list[ContentEvent]]:
         activation = self._resolver.resolve_activation(window_id=window_id, now=now)
@@ -75,6 +76,7 @@ class ResourceRuntime:
                 outcome_payload=outcome_payload,
                 audience=outcome_audience,
                 recipient_id=outcome_recipient_id,
+                category=outcome_category,
                 timestamp=now,
             )
         ]

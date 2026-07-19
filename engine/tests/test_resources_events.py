@@ -45,6 +45,7 @@ def test_listen_in_effect_outcome_is_private_to_the_saboteur() -> None:
         outcome_payload={"copied_content": "The note reads: meet at midnight."},
         audience=AudienceTarget.specific_player,
         recipient_id=SABOTEUR_ID,
+        category=EventCategory.private_delivery,
         timestamp=TIMESTAMP,
     )
 
@@ -66,6 +67,7 @@ def test_effect_outcome_requires_recipient_for_specific_player_audience() -> Non
             outcome_payload={"copied_content": "..."},
             audience=AudienceTarget.specific_player,
             recipient_id=None,
+            category=EventCategory.private_delivery,
             timestamp=TIMESTAMP,
         )
 
@@ -77,9 +79,11 @@ def test_public_effect_outcome_event_targets_all() -> None:
         outcome_payload={"witness_state": "shaken"},
         audience=AudienceTarget.all,
         recipient_id=None,
+        category=EventCategory.character_dialogue,
         timestamp=TIMESTAMP,
     )
 
+    assert event.category is EventCategory.character_dialogue
     assert event.event_type == "resource_effect_outcome"
     assert event.target_audience is AudienceTarget.all
     assert event.target_player_id is None
@@ -96,11 +100,33 @@ def test_make_them_wait_effect_outcome_event_targets_all() -> None:
         outcome_payload={"queue_state": "delayed"},
         audience=AudienceTarget.all,
         recipient_id=None,
+        category=EventCategory.state_transition,
         timestamp=TIMESTAMP,
     )
 
     assert event.target_audience is AudienceTarget.all
     assert event.target_player_id is None
+
+
+def test_make_them_wait_effect_outcome_category_is_state_transition_not_dialogue() -> (
+    None
+):
+    """Make Them Wait is a public state change (an interaction reorder), not a
+    character's answer — its outcome event must be state_transition, not
+    character_dialogue, even though both share target_audience == all.
+    """
+    event = build_effect_outcome_event(
+        session_id=SESSION_ID,
+        effect_key="sabotage.make_them_wait",
+        outcome_payload={"queue_state": "delayed"},
+        audience=AudienceTarget.all,
+        recipient_id=None,
+        category=EventCategory.state_transition,
+        timestamp=TIMESTAMP,
+    )
+
+    assert event.category is EventCategory.state_transition
+    assert event.category is not EventCategory.character_dialogue
 
 
 def test_sting_operation_source_reveal_targets_only_the_sting_user() -> None:

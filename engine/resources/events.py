@@ -42,17 +42,24 @@ def build_effect_outcome_event(
     outcome_payload: dict[str, Any],
     audience: AudienceTarget,
     recipient_id: UUID | None,
+    category: EventCategory,
     timestamp: datetime,
 ) -> ContentEvent:
+    """Build the ContentEvent for an effect's outcome.
+
+    ``category`` is the caller's call, not inferred from ``audience``: a
+    specific_player outcome is always private_delivery, but a table-wide
+    (``all``) outcome may be character_dialogue (a character's answer, e.g.
+    Rattle the Witness/Follow the Thread) or state_transition (a public state
+    change with no dialogue, e.g. Make Them Wait) depending on the effect.
+    """
     if audience is AudienceTarget.specific_player:
         if recipient_id is None:
             raise ValueError(
                 "recipient_id is required when audience is specific_player"
             )
-        category = EventCategory.private_delivery
         target_player_id = recipient_id
     else:
-        category = EventCategory.character_dialogue
         target_player_id = None
 
     return ContentEvent(

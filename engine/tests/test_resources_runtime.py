@@ -5,7 +5,7 @@ from uuid import UUID
 
 import pytest
 
-from engine.events.models import AudienceTarget
+from engine.events.models import AudienceTarget, EventCategory
 from engine.resources.models import EffectDefinition, EffectFamily, ResourceBalance
 from engine.resources.resolver import ResourceResolver
 from engine.resources.runtime import ResourceRuntime
@@ -102,6 +102,7 @@ def test_resolve_window_returns_resolved_activation_outcome_and_reveal_events() 
         session_id=SESSION_ID,
         outcome_payload={"witness_state": "shaken"},
         outcome_audience=AudienceTarget.all,
+        outcome_category=EventCategory.character_dialogue,
     )
 
     assert resolved.resolved_at == NOW
@@ -111,6 +112,7 @@ def test_resolve_window_returns_resolved_activation_outcome_and_reveal_events() 
     outcome_event, reveal_event = events
     assert outcome_event.event_type == "resource_effect_outcome"
     assert outcome_event.target_audience is AudienceTarget.all
+    assert outcome_event.category is EventCategory.character_dialogue
     assert outcome_event.payload == {
         "effect_key": "sabotage.rattle_the_witness",
         "outcome": {"witness_state": "shaken"},
@@ -140,6 +142,7 @@ def test_resolve_window_without_target_produces_no_reveal_event() -> None:
         session_id=SESSION_ID,
         outcome_payload={"extra_cards": 1},
         outcome_audience=AudienceTarget.specific_player,
+        outcome_category=EventCategory.private_delivery,
         outcome_recipient_id=UUID(ACTIVATOR),
     )
 
@@ -185,4 +188,5 @@ def test_resolve_window_raises_for_unknown_window() -> None:
             session_id=SESSION_ID,
             outcome_payload={},
             outcome_audience=AudienceTarget.all,
+            outcome_category=EventCategory.state_transition,
         )

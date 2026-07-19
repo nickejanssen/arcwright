@@ -38,7 +38,11 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(REPO_ROOT))
 
 from engine.arc.models import ArcDefinition  # noqa: E402
-from engine.events.models import AudienceTarget, ContentEvent  # noqa: E402
+from engine.events.models import (  # noqa: E402
+    AudienceTarget,
+    ContentEvent,
+    EventCategory,
+)
 from engine.resources.errors import TargetIneligibleError  # noqa: E402
 from engine.resources.events import (  # noqa: E402
     build_balance_changed_event,
@@ -167,6 +171,7 @@ def main() -> None:
         outcome_payload={"detail": "sharpened private observation"},
         audience=AudienceTarget.specific_player,
         recipient_id=PRIYA_ID,
+        category=EventCategory.private_delivery,
         timestamp=_tick(11),
     )
     _print_event("effect-outcome (private to Priya)", step1_outcome_event)
@@ -220,6 +225,7 @@ def main() -> None:
         },
         audience=AudienceTarget.all,
         recipient_id=None,
+        category=EventCategory.character_dialogue,
         timestamp=_tick(21),
     )
     _print_event(

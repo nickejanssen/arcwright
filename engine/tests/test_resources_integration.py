@@ -18,7 +18,7 @@ from uuid import UUID
 import pytest
 
 from engine.arc.models import ArcDefinition
-from engine.events.models import AudienceTarget
+from engine.events.models import AudienceTarget, EventCategory
 from engine.resources.models import (
     EffectActivation,
     EffectDefinition,
@@ -104,6 +104,7 @@ def test_reveal_scope_is_per_question_not_per_round() -> None:
         session_id=SESSION_ID,
         outcome_payload={"witness_state": "shaken"},
         outcome_audience=AudienceTarget.all,
+        outcome_category=EventCategory.character_dialogue,
     )
 
     reveal_events_one = [
@@ -127,6 +128,7 @@ def test_reveal_scope_is_per_question_not_per_round() -> None:
         session_id=SESSION_ID,
         outcome_payload={"witness_state": "shaken"},
         outcome_audience=AudienceTarget.all,
+        outcome_category=EventCategory.character_dialogue,
     )
 
     reveal_events_two = [
@@ -149,6 +151,7 @@ def test_reveal_scope_is_per_question_not_per_round() -> None:
             session_id=SESSION_ID,
             outcome_payload={"witness_state": "shaken"},
             outcome_audience=AudienceTarget.all,
+            outcome_category=EventCategory.character_dialogue,
         )
 
 
