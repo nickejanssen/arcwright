@@ -85,3 +85,27 @@ class ResourceResolver:
     def open_new_window(self) -> None:
         """Call when a new interaction window opens — clears any standing post-target protection."""
         self._currently_protected_target = None
+
+    def resolve_activation(self, *, window_id: str, now: datetime) -> EffectActivation:
+        for i, activation in enumerate(self._activations):
+            if (
+                activation.interaction_window_id == window_id
+                and activation.resolved_at is None
+            ):
+                resolved = activation.model_copy(
+                    update={"resolved_at": now, "source_reveal_at": now}
+                )
+                self._activations[i] = resolved
+                return resolved
+        raise ValueError(f"no unresolved activation for window {window_id}")
+
+    def counter_with_sting_operation(
+        self, *, sting_activator_id: str, countered_window_id: str, now: datetime
+    ) -> EffectActivation:
+        """Sting Operation's exception: reveal the countered sabotage's source immediately, private to the Sting Operation user."""
+        for i, activation in enumerate(self._activations):
+            if activation.interaction_window_id == countered_window_id:
+                revealed = activation.model_copy(update={"source_reveal_at": now})
+                self._activations[i] = revealed
+                return revealed
+        raise ValueError(f"no activation to counter for window {countered_window_id}")

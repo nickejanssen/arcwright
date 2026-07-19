@@ -259,3 +259,36 @@ def test_open_new_window_clears_protection():
         beat_id="b1",
         now=NOW,
     )
+
+
+def test_reveal_fires_on_resolve_not_on_activation():
+    resolver = make_resolver()
+    activation = resolver.activate(
+        effect=RATTLE,
+        activator_id="p1",
+        target_id="p2",
+        window_id="w1",
+        beat_id="b1",
+        now=NOW,
+    )
+    assert activation.source_reveal_at is None
+    resolved = resolver.resolve_activation(window_id="w1", now=NOW)
+    assert resolved.source_reveal_at == NOW
+
+
+def test_sting_operation_counter_reveals_immediately_independent_of_resolution():
+    resolver = make_resolver()
+    activation = resolver.activate(
+        effect=RATTLE,
+        activator_id="p1",
+        target_id="p2",
+        window_id="w1",
+        beat_id="b1",
+        now=NOW,
+    )
+    assert activation.source_reveal_at is None
+    # Sting Operation counters it — reveal fires immediately, before w1 has been resolved via resolve_activation
+    countered = resolver.counter_with_sting_operation(
+        sting_activator_id="p2", countered_window_id="w1", now=NOW
+    )
+    assert countered.source_reveal_at == NOW
