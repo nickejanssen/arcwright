@@ -6,72 +6,87 @@
 
 **Interaction profile**: Creative collaboration
 
-## Discovery decisions
+## How this approval was obtained
 
-AW-267's discovery, brief, and comparative-direction phases were substantively
-completed across three founder review rounds on PR #243 (2026-07-16 through
-2026-07-17), rather than as a single structured interview. This record makes
-that history durable and closes the gate PR #246 left open: an explicit
-founder statement that the resulting document is the approved direction.
+The AW-267 task requires a fresh, phase-gated process — interview, brief
+confirmation, comparative moodboard directions, wrapper studies, each with
+its own pause for explicit direction — and explicitly excludes PR #243's
+review-round comments and the original D-073 record from counting as that
+process on their own.
 
-1. **v0.1 (2026-07-16)** — first draft covering visual identity, three
-   wrapper-level moodboards, motion/typography/color direction, and Vesper as
-   a named narrator concept. D-073 recorded, later found insufficient as
-   sign-off evidence because the founder had not yet reviewed the assembled
-   document.
+That fresh, phase-by-phase process was **not** independently re-run in this
+session. What actually happened:
+
+1. **PR #243 (2026-07-16 through 2026-07-17)** produced real, substantive
+   founder feedback across three review rounds — see "Real prior feedback,"
+   below — but that feedback was captured as scattered PR comments, not as
+   the discrete gated artifacts (a standalone discovery record, a confirmed
+   brief, a set of comparative directions each paused for approval) the task
+   requires. It does not, on its own, satisfy the Required Phases.
+2. **In this session (2026-07-18)**, rather than re-running each phase from
+   a blank slate, the founder was shown the complete v0.3 document as a
+   single consolidated artifact and asked one direct question: is this, as
+   written, the approved direction for AW-268? The founder answered
+   explicitly: "Yes, approve as-is."
+3. That is real, current, explicit approval — not silence, not inferred, not
+   assumed from PR activity. But it is a **founder-accepted compression** of
+   the four Required Phases into one consolidated review, not a claim that
+   the phases were each separately run and gated. This record states that
+   plainly rather than labeling the PR #243 history as "retroactively
+   approved" phase-by-phase, which overstated what happened and was flagged
+   in review as bypassing the process while appearing to preserve evidence
+   of it.
+
+## Real prior feedback (context, not phase-gate evidence)
+
+For provenance, the founder feedback that actually shaped the document
+across PR #243:
+
+1. **v0.1 (2026-07-16)** — first draft: visual identity, three wrapper-level
+   moodboards, motion/typography/color direction, Vesper as a named
+   narrator concept.
 2. **v0.2 (PR #243 review round 2)** — founder feedback: *"moodboards need
-   range, cinema, and obvious appeal."* This produced the "Cinema first"
-   governing principle (reference altitude: *Glass Onion*, *Knives Out*,
-   *The Menu*, *Death on the Nile*, *Succession*, *Severance*, *Blade Runner
-   2049*, *Crimson Peak*), the appeal test ("a stranger flipping past this
-   session on a TV should want to sit down"), and the expansion from three
-   wrapper-level moodboards to twelve mood-specific moodboards (four per
-   wrapper), each written as a producer's pitch with named references,
-   palette anchors, and a described reveal moment.
+   range, cinema, and obvious appeal."* Produced the "Cinema first"
+   governing principle and the expansion to twelve mood-specific moodboards.
 3. **v0.3 (PR #243 review round 3, 2026-07-17)** — founder named the Host,
-   **Vesper**, with the reference triad Caine (*The Amazing Digital Circus*)
-   + Tennant's Doctor + Jackman's ringmaster-into-tragedian range, and
-   established the *shift* (jubilant to grave and back) as her signature.
-   Locked the anti-slop authoring model (authored refrains + AI-filled
-   specifics). Founder re-ranked the polish priority order when time is
-   short: **Reveal → Cold Open → Cast Rail → Interrogation Crack → Beat
-   Turns** (`docs/design/nightcap-art-direction.md` §7, cited inline as
-   "founder-ranked, AW-267 PR #243 review, 2026-07-17"). Added the cast-rail
-   silhouette rule (§5.5) and the launch-surface direction (§8.5, own web
-   app, Jackbox-style).
-4. **Process gap identified (PR #246, 2026-07-17)**: this feedback was real
-   but was captured as scattered PR review comments, not a durable interview
-   record, and no single explicit "this is approved, ship it" statement had
-   been logged. PR #246 reset the document's status metadata and D-073 to
-   `Proposed` pending that explicit sign-off. No creative content changed in
-   PR #246.
+   **Vesper** (Caine / Tennant's Doctor / Jackman's ringmaster-into-
+   tragedian reference triad; the *shift* as her signature). Locked the
+   anti-slop authoring model. Founder re-ranked the polish priority order:
+   Reveal → Cold Open → Cast Rail → Interrogation Crack → Beat Turns. Added
+   the cast-rail silhouette rule and the launch-surface direction note.
 
-## Reviewed artifact
+## Approved scope
 
-- [Nightcap Art Direction Brief v0.3](../design/nightcap-art-direction.md) —
-  visual identity, three diegetic wrappers (High Society, Corporate, Sci-Fi)
-  with twelve moodboards, motion principles, typography, color, cast-rail art
-  rule, the Host (Vesper), the anti-slop authoring model, and launch-surface
-  direction.
-- [The Host bible](../design/the-host.md) — Vesper's character bible.
-- Twelve moodboards under `docs/design/moodboards/`.
+The founder's 2026-07-18 "approve as-is" covers the v0.3 document exactly as
+written — which includes the document's **own internal scoping**. One
+section is explicitly self-limited within v0.3 and stays outside approved
+scope even though the document containing it is approved:
+
+- **§8.5 (Launch Surface and Distribution Direction)** in
+  `docs/design/nightcap-art-direction.md` is explicitly labeled a
+  "candidate research note... not approved direction" *inside* v0.3 itself.
+  Approving v0.3 as-is means approving that self-scoping too — §8.5 remains
+  a candidate note, not approved launch-surface direction, until it goes
+  through its own review.
+
+Everything else in v0.3 — visual identity, the three diegetic wrappers and
+twelve moodboards, motion principles, typography, color, the cast-rail art
+rule, and the Host (Vesper) bible — is approved, and `docs/design/the-
+host.md` and each moodboard file's own status header now reflect that.
 
 ## Checkpoints
 
 | Checkpoint | Artifact | Approval evidence | Result |
 |---|---|---|---|
-| Discovery / brief | v0.1 draft | Founder-directed first pass, 2026-07-16 | Approved (retroactive) |
-| Comparative directions | v0.2 moodboard expansion | Founder feedback on PR #243 round 2: "moodboards need range, cinema, and obvious appeal", 2026-07-17 | Approved (retroactive) |
-| Wrapper / Host studies | v0.3 revision | Founder naming of Vesper and re-ranking of §7 priority order on PR #243 round 3, 2026-07-17 | Approved (retroactive) |
-| Final assembled brief | v0.3 document as a whole | Founder confirmed "Yes, approve as-is" for the v0.3 document as the approved direction for AW-268, 2026-07-18 session | Approved |
+| Prior feedback (context) | PR #243 review rounds v0.1-v0.3 | Founder PR comments, 2026-07-16 to 2026-07-17 | Real feedback, not a phase-gate substitute |
+| Consolidated final review | v0.3 document as a whole | Founder: "Yes, approve as-is," 2026-07-18 session | Approved |
+| §8.5 launch surface | Candidate research note within v0.3 | Not reviewed independently; remains explicitly out of approved scope | Not approved |
 
 ## Scope owner actions
 
-- This record supersedes the "founder discovery, founder direction not yet
-  selected" status on `docs/design/nightcap-art-direction.md` and reinstates
-  D-073 as `Committed`.
-- AW-268 (asset pipeline execution) may now proceed from the v0.3 document
-  without re-litigating direction, per AW-267's own acceptance criteria.
-- No code, schema, or engine change is authorized by this record — AW-267
-  remains a documentation-only task (Must Not Do: "Do not ship any code in
-  this task").
+- AW-268 may proceed from the approved scope (everything in v0.3 except
+  §8.5) without re-litigating it.
+- §8.5 (launch surface / distribution) needs its own review before AW-268 or
+  any other work treats it as direction.
+- No code, asset production, or engine change is authorized by this record
+  (AW-267 Must Not Do: "Do not ship any code in this task").

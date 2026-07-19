@@ -5,7 +5,7 @@
 > vaudeville dressing room, magician's private table, freakshow gala.
 > Launch skin: none in launch window.
 > Parent brief: `docs/design/nightcap-art-direction.md`.
-> Status: Candidate research for founder interview, not approved direction.
+> Status: Approved (AW-267 v1.0, see docs/product/aw267-discovery-and-checkpoints.md).
 
 ## 1. The Pitch
 

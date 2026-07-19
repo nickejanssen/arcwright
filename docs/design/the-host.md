@@ -1,15 +1,13 @@
 # Vesper  -  The Host of Nightcap
 
-> Current version: v0.1
-> Last updated: 2026-07-17
-> Status: Candidate research for founder interview, not approved direction.
-> Author: Design session 2026-07-17 (AW-267 PR #243 review)
+> Current version: v1.0
+> Last updated: 2026-07-18
+> Status: Approved (AW-267 v1.0, see docs/product/aw267-discovery-and-checkpoints.md).
+> Author: Design session 2026-07-17 (AW-267 PR #243 review); approved 2026-07-18
 > Canonical path: docs/design/the-host.md
 > Companion to: `docs/design/nightcap-art-direction.md` §6
 
-> This is reversible character-direction research. It cannot serve as an
-> AW-268 production authority until AW-267 discovery, artifact review, and
-> explicit final sign-off are complete.
+> This document is approved AW-268 production authority.
 
 ## What This Document Is
 
