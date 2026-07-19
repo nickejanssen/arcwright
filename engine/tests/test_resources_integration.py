@@ -12,10 +12,12 @@ in engine/tests/test_interactions_integration.py.
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from pathlib import Path
 from uuid import UUID
 
 import pytest
 
+from engine.arc.models import ArcDefinition
 from engine.events.models import AudienceTarget
 from engine.resources.models import (
     EffectActivation,
@@ -25,6 +27,10 @@ from engine.resources.models import (
 )
 from engine.resources.resolver import ResourceResolver
 from engine.resources.runtime import ResourceRuntime
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+COUCH_RACE_PATH = REPO_ROOT / "nightcap" / "couch-race.arc.json"
+IMPOSTER_ARC_PATH = REPO_ROOT / "nightcap" / "arc.json"
 
 NOW = datetime(2026, 7, 19, tzinfo=timezone.utc)
 SESSION_ID = UUID("00000000-0000-0000-0000-000000000040")
@@ -256,3 +262,82 @@ def test_seeded_replay_is_deterministic() -> None:
     assert [activation.model_dump() for activation in activations_a] == [
         activation.model_dump() for activation in activations_b
     ]
+
+
+# AW-287 Task 8 - the six launch-set Leverage effects configured on the real
+# Couch Race arc JSON. Costs below are tuning placeholders per spec 0075's
+# "Risks and Unknowns" section and are expected to be retuned after
+# rehearsal telemetry.
+COUCH_RACE_LAUNCH_EFFECT_KEYS = {
+    "advantage.deep_read",
+    "advantage.follow_the_thread",
+    "advantage.sting_operation",
+    "sabotage.rattle_the_witness",
+    "sabotage.listen_in",
+    "sabotage.make_them_wait",
+}
+
+
+def test_couch_race_arc_configures_six_launch_set_effects() -> None:
+    arc = ArcDefinition.model_validate_json(COUCH_RACE_PATH.read_text("utf-8"))
+
+    assert len(arc.resource_effects) == 6
+    effect_keys = {effect.effect_key for effect in arc.resource_effects}
+    assert effect_keys == COUCH_RACE_LAUNCH_EFFECT_KEYS
+
+
+def test_couch_race_launch_effects_match_spec_table() -> None:
+    arc = ArcDefinition.model_validate_json(COUCH_RACE_PATH.read_text("utf-8"))
+    by_key = {effect.effect_key: effect for effect in arc.resource_effects}
+
+    deep_read = by_key["advantage.deep_read"]
+    assert deep_read.family is EffectFamily.insight
+    assert deep_read.cost == 2
+    assert deep_read.requires_target is False
+    assert deep_read.is_offensive is False
+    assert deep_read.is_information_control is False
+
+    follow_the_thread = by_key["advantage.follow_the_thread"]
+    assert follow_the_thread.family is EffectFamily.access
+    assert follow_the_thread.cost == 2
+    assert follow_the_thread.requires_target is False
+    assert follow_the_thread.is_offensive is False
+    assert follow_the_thread.is_information_control is False
+
+    sting_operation = by_key["advantage.sting_operation"]
+    assert sting_operation.family is EffectFamily.counterplay
+    assert sting_operation.cost == 3
+    assert sting_operation.requires_target is False
+    assert sting_operation.is_offensive is False
+    assert sting_operation.is_information_control is False
+
+    rattle_the_witness = by_key["sabotage.rattle_the_witness"]
+    assert rattle_the_witness.family is EffectFamily.witness_pressure
+    assert rattle_the_witness.cost == 2
+    assert rattle_the_witness.requires_target is True
+    assert rattle_the_witness.is_offensive is True
+    assert rattle_the_witness.is_information_control is False
+
+    listen_in = by_key["sabotage.listen_in"]
+    assert listen_in.family is EffectFamily.information_control
+    assert listen_in.cost == 2
+    assert listen_in.requires_target is True
+    assert listen_in.is_offensive is True
+    assert listen_in.is_information_control is True
+
+    make_them_wait = by_key["sabotage.make_them_wait"]
+    assert make_them_wait.family is EffectFamily.tempo
+    assert make_them_wait.cost == 2
+    assert make_them_wait.requires_target is True
+    assert make_them_wait.is_offensive is True
+    assert make_them_wait.is_information_control is False
+
+
+def test_imposter_arc_has_no_resource_effects_configured() -> None:
+    """AW-287 acceptance criterion: games without Leverage configuration
+    remain unaffected. The Imposter Variant arc does not author
+    resource_effects, and the new field must default to an empty tuple/list
+    rather than requiring every existing arc file to be touched.
+    """
+    arc = ArcDefinition.model_validate_json(IMPOSTER_ARC_PATH.read_text("utf-8"))
+    assert arc.resource_effects == []
