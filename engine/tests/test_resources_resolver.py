@@ -57,6 +57,12 @@ STING_OPERATION = EffectDefinition(
     cost=1,
     requires_target=False,
 )
+DEEP_READ = EffectDefinition(
+    effect_key="advantage.deep_read",
+    family=EffectFamily.insight,
+    cost=1,
+    requires_target=False,
+)
 
 
 def _arm_counterplay(resolver, *, activator_id: str, window_id: str = "w0"):
@@ -294,7 +300,8 @@ def test_reveal_fires_on_resolve_not_on_activation():
     )
     assert activation.source_reveal_at is None
     resolved = resolver.resolve_activation(window_id="w1", now=NOW)
-    assert resolved.source_reveal_at == NOW
+    assert len(resolved) == 1
+    assert resolved[0].source_reveal_at == NOW
 
 
 def test_grant_increases_balance_bounded_by_bank_cap():
@@ -466,3 +473,30 @@ def test_counter_and_reveal_source_is_one_time_use():
         resolver.counter_and_reveal_source(
             countering_activator_id="p2", countered_window_id="w2", now=NOW
         )
+
+
+def test_resolve_activation_resolves_all_activations_sharing_a_window():
+    resolver = make_resolver()
+    resolver.activate(
+        effect=DEEP_READ,
+        activator_id="p2",
+        target_id=None,
+        window_id="w1",
+        beat_id="b1",
+        now=NOW,
+    )
+    resolver.activate(
+        effect=RATTLE,
+        activator_id="p1",
+        target_id="p2",
+        window_id="w1",
+        beat_id="b1",
+        now=NOW,
+    )
+
+    resolved = resolver.resolve_activation(window_id="w1", now=NOW)
+
+    assert len(resolved) == 2
+    resolved_keys = {activation.effect_key for activation in resolved}
+    assert resolved_keys == {DEEP_READ.effect_key, RATTLE.effect_key}
+    assert all(activation.resolved_at == NOW for activation in resolved)

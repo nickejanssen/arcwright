@@ -130,20 +130,32 @@ class ResourceResolver:
         """Call when a new interaction window opens — clears any standing post-target protection."""
         self._currently_protected_target = None
 
-    def resolve_activation(self, *, window_id: str, now: datetime) -> EffectActivation:
+    def resolve_activation(
+        self, *, window_id: str, now: datetime
+    ) -> list[EffectActivation]:
+        """Resolve every unresolved activation attached to ``window_id``.
+
+        A window may legitimately carry more than one activation — the
+        offensive-modifier guardrail only limits offensive sabotage to one per
+        window, so a self-directed advantage can share a window with an
+        offensive sabotage. All such activations resolve together.
+        """
+        resolved: list[EffectActivation] = []
         for i, activation in enumerate(self._activations):
             if (
                 activation.interaction_window_id == window_id
                 and activation.resolved_at is None
             ):
-                resolved = activation.model_copy(
+                updated = activation.model_copy(
                     update={"resolved_at": now, "source_reveal_at": now}
                 )
-                self._activations[i] = resolved
-                return resolved
-        raise ActivationNotFoundError(
-            f"no unresolved activation for window {window_id}"
-        )
+                self._activations[i] = updated
+                resolved.append(updated)
+        if not resolved:
+            raise ActivationNotFoundError(
+                f"no unresolved activation for window {window_id}"
+            )
+        return resolved
 
     def counter_and_reveal_source(
         self, *, countering_activator_id: str, countered_window_id: str, now: datetime

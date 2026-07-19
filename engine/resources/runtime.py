@@ -9,7 +9,7 @@ events each call implies, per the effect's documented visibility.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Mapping, NamedTuple
 from uuid import UUID
 
 from engine.events.models import AudienceTarget, ContentEvent, EventCategory
@@ -20,6 +20,24 @@ from engine.resources.events import (
 )
 from engine.resources.models import EffectActivation, EffectDefinition
 from engine.resources.resolver import ResourceResolver
+
+
+class ActivationOutcome(NamedTuple):
+    """Per-effect outcome content for one activation resolved by ``resolve_window``.
+
+    A window may carry more than one activation (e.g. a self-directed
+    advantage sharing a window with an offensive sabotage), and each one's
+    outcome content is a distinct authoring/caller decision — a guarded
+    answer read aloud to the table is not the same shape as a private
+    insight delivered to one player. Keyed by ``effect_key`` in
+    ``ResourceRuntime.resolve_window``'s ``outcomes`` mapping so each
+    resolved activation gets the outcome content it actually implies.
+    """
+
+    payload: dict[str, Any]
+    audience: AudienceTarget
+    category: EventCategory
+    recipient_id: UUID | None = None
 
 
 class ResourceRuntime:
@@ -62,39 +80,56 @@ class ResourceRuntime:
         window_id: str,
         now: datetime,
         session_id: UUID,
-        outcome_payload: dict[str, Any],
-        outcome_audience: AudienceTarget,
-        outcome_category: EventCategory,
-        outcome_recipient_id: UUID | None = None,
-    ) -> tuple[EffectActivation, list[ContentEvent]]:
-        activation = self._resolver.resolve_activation(window_id=window_id, now=now)
+        outcomes: Mapping[str, ActivationOutcome],
+    ) -> tuple[list[EffectActivation], list[ContentEvent]]:
+        """Resolve every activation attached to ``window_id`` and build each one's events.
 
-        events: list[ContentEvent] = [
-            build_effect_outcome_event(
-                session_id=session_id,
-                effect_key=activation.effect_key,
-                outcome_payload=outcome_payload,
-                audience=outcome_audience,
-                recipient_id=outcome_recipient_id,
-                category=outcome_category,
-                timestamp=now,
-            )
-        ]
+        ``outcomes`` supplies the caller-decided outcome content (payload,
+        audience, category, recipient) per resolved activation, keyed by
+        ``effect_key`` — the resolver only resolves and reveals; it has no
+        opinion on what an effect's outcome narrates. A window with a single
+        activation (the common case) needs a single-entry mapping.
+        """
+        activations = self._resolver.resolve_activation(window_id=window_id, now=now)
 
-        # Normal per-question reveal: the sabotage's source becomes visible to the
-        # target it was aimed at, timed to this window's resolution (not to Sting
-        # Operation's immediate-reveal exception, which is handled separately below).
-        if activation.source_reveal_at is not None and activation.target_id is not None:
+        events: list[ContentEvent] = []
+        for activation in activations:
+            if activation.effect_key not in outcomes:
+                raise KeyError(
+                    f"resolve_window: no outcome supplied for resolved effect "
+                    f"{activation.effect_key!r} in window {window_id!r}"
+                )
+            outcome = outcomes[activation.effect_key]
             events.append(
-                build_source_reveal_event(
+                build_effect_outcome_event(
                     session_id=session_id,
-                    revealed_source_id=UUID(activation.activator_id),
-                    recipient_id=UUID(activation.target_id),
+                    effect_key=activation.effect_key,
+                    outcome_payload=outcome.payload,
+                    audience=outcome.audience,
+                    recipient_id=outcome.recipient_id,
+                    category=outcome.category,
                     timestamp=now,
                 )
             )
 
-        return activation, events
+            # Normal per-question reveal: the sabotage's source becomes visible to
+            # the target it was aimed at, timed to this window's resolution (not
+            # to Sting Operation's immediate-reveal exception, handled separately
+            # in counter_and_reveal_source below).
+            if (
+                activation.source_reveal_at is not None
+                and activation.target_id is not None
+            ):
+                events.append(
+                    build_source_reveal_event(
+                        session_id=session_id,
+                        revealed_source_id=UUID(activation.activator_id),
+                        recipient_id=UUID(activation.target_id),
+                        timestamp=now,
+                    )
+                )
+
+        return activations, events
 
     def counter_and_reveal_source(
         self,

@@ -9,7 +9,7 @@ from engine.events.models import AudienceTarget, EventCategory
 from engine.resources.errors import ActivationNotFoundError
 from engine.resources.models import EffectDefinition, EffectFamily, ResourceBalance
 from engine.resources.resolver import ResourceResolver
-from engine.resources.runtime import ResourceRuntime
+from engine.resources.runtime import ActivationOutcome, ResourceRuntime
 
 NOW = datetime(2026, 7, 19, tzinfo=timezone.utc)
 SESSION_ID = UUID("00000000-0000-0000-0000-000000000030")
@@ -107,13 +107,18 @@ def test_resolve_window_returns_resolved_activation_outcome_and_reveal_events() 
         window_id="w1",
         now=NOW,
         session_id=SESSION_ID,
-        outcome_payload={"witness_state": "shaken"},
-        outcome_audience=AudienceTarget.all,
-        outcome_category=EventCategory.character_dialogue,
+        outcomes={
+            "sabotage.rattle_the_witness": ActivationOutcome(
+                payload={"witness_state": "shaken"},
+                audience=AudienceTarget.all,
+                category=EventCategory.character_dialogue,
+            )
+        },
     )
 
-    assert resolved.resolved_at == NOW
-    assert resolved.source_reveal_at == NOW
+    assert len(resolved) == 1
+    assert resolved[0].resolved_at == NOW
+    assert resolved[0].source_reveal_at == NOW
 
     assert len(events) == 2
     outcome_event, reveal_event = events
@@ -147,13 +152,18 @@ def test_resolve_window_without_target_produces_no_reveal_event() -> None:
         window_id="w1",
         now=NOW,
         session_id=SESSION_ID,
-        outcome_payload={"extra_cards": 1},
-        outcome_audience=AudienceTarget.specific_player,
-        outcome_category=EventCategory.private_delivery,
-        outcome_recipient_id=UUID(ACTIVATOR),
+        outcomes={
+            "advantage.extra_draw": ActivationOutcome(
+                payload={"extra_cards": 1},
+                audience=AudienceTarget.specific_player,
+                category=EventCategory.private_delivery,
+                recipient_id=UUID(ACTIVATOR),
+            )
+        },
     )
 
-    assert resolved.target_id is None
+    assert len(resolved) == 1
+    assert resolved[0].target_id is None
     assert len(events) == 1
     assert events[0].event_type == "resource_effect_outcome"
 
@@ -204,7 +214,5 @@ def test_resolve_window_raises_for_unknown_window() -> None:
             window_id="missing",
             now=NOW,
             session_id=SESSION_ID,
-            outcome_payload={},
-            outcome_audience=AudienceTarget.all,
-            outcome_category=EventCategory.state_transition,
+            outcomes={},
         )

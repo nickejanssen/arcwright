@@ -232,10 +232,11 @@ def main() -> None:
         "effect-outcome (public: table hears the guarded answer)", step3_outcome_event
     )
 
+    resolved_activation = resolved[0]
     step3_reveal_event = build_source_reveal_event(
         session_id=SESSION_ID,
-        revealed_source_id=UUID(resolved.activator_id),
-        recipient_id=UUID(resolved.target_id),
+        revealed_source_id=UUID(resolved_activation.activator_id),
+        recipient_id=UUID(resolved_activation.target_id),
         timestamp=_tick(21),
     )
     _print_event("source-reveal (private to Jordan only)", step3_reveal_event)

@@ -28,7 +28,7 @@ from engine.resources.models import (
     ResourceBalance,
 )
 from engine.resources.resolver import ResourceResolver
-from engine.resources.runtime import ResourceRuntime
+from engine.resources.runtime import ActivationOutcome, ResourceRuntime
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 COUCH_RACE_PATH = REPO_ROOT / "nightcap" / "couch-race.arc.json"
@@ -110,9 +110,13 @@ def test_reveal_scope_is_per_question_not_per_round() -> None:
         window_id="round1-question1",
         now=NOW,
         session_id=SESSION_ID,
-        outcome_payload={"witness_state": "shaken"},
-        outcome_audience=AudienceTarget.all,
-        outcome_category=EventCategory.character_dialogue,
+        outcomes={
+            "sabotage.rattle_the_witness": ActivationOutcome(
+                payload={"witness_state": "shaken"},
+                audience=AudienceTarget.all,
+                category=EventCategory.character_dialogue,
+            )
+        },
     )
 
     reveal_events_one = [
@@ -123,7 +127,8 @@ def test_reveal_scope_is_per_question_not_per_round() -> None:
     assert len(reveal_events_one) == 1
     assert reveal_events_one[0].payload == {"revealed_source_id": SABOTEUR_ONE}
     assert reveal_events_one[0].target_player_id == UUID(TARGET)
-    assert resolved_one.interaction_window_id == "round1-question1"
+    assert len(resolved_one) == 1
+    assert resolved_one[0].interaction_window_id == "round1-question1"
 
     # The second question's activation was untouched by resolving the first: it is
     # still resolvable on its own, and produces its own independent reveal naming
@@ -134,9 +139,13 @@ def test_reveal_scope_is_per_question_not_per_round() -> None:
         window_id="round1-question2",
         now=NOW,
         session_id=SESSION_ID,
-        outcome_payload={"witness_state": "shaken"},
-        outcome_audience=AudienceTarget.all,
-        outcome_category=EventCategory.character_dialogue,
+        outcomes={
+            "sabotage.rattle_the_witness": ActivationOutcome(
+                payload={"witness_state": "shaken"},
+                audience=AudienceTarget.all,
+                category=EventCategory.character_dialogue,
+            )
+        },
     )
 
     reveal_events_two = [
@@ -147,7 +156,8 @@ def test_reveal_scope_is_per_question_not_per_round() -> None:
     assert len(reveal_events_two) == 1
     assert reveal_events_two[0].payload == {"revealed_source_id": SABOTEUR_TWO}
     assert reveal_events_two[0].target_player_id == UUID(TARGET)
-    assert resolved_two.interaction_window_id == "round1-question2"
+    assert len(resolved_two) == 1
+    assert resolved_two[0].interaction_window_id == "round1-question2"
 
     # Each window resolves exactly once; re-resolving the first window now fails,
     # proving question 1's activation was never re-touched by question 2's call
@@ -157,9 +167,13 @@ def test_reveal_scope_is_per_question_not_per_round() -> None:
             window_id="round1-question1",
             now=NOW,
             session_id=SESSION_ID,
-            outcome_payload={"witness_state": "shaken"},
-            outcome_audience=AudienceTarget.all,
-            outcome_category=EventCategory.character_dialogue,
+            outcomes={
+                "sabotage.rattle_the_witness": ActivationOutcome(
+                    payload={"witness_state": "shaken"},
+                    audience=AudienceTarget.all,
+                    category=EventCategory.character_dialogue,
+                )
+            },
         )
 
 
@@ -244,7 +258,7 @@ def _run_seeded_sequence(resolver: ResourceResolver) -> list[EffectActivation]:
             now=NOW,
         )
     )
-    records.append(resolver.resolve_activation(window_id="round1-question2", now=NOW))
+    records.extend(resolver.resolve_activation(window_id="round1-question2", now=NOW))
 
     resolver.open_new_window()
     records.append(
