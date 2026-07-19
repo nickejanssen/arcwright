@@ -62,8 +62,12 @@ matches the design doc's targeting language ("a rival's next question," not
 "a rival's whole turn") and keeps the delay short enough to still feel like
 part of the same beat.
 
-**3. Immediately after, the table learns: "Marcus rattled the witness before
-Jordan's question."**
+**3. Immediately after, Jordan (and only Jordan) learns: "Marcus rattled the
+witness before your question."** Per D-075's actual reveal-timing decision,
+this is delivered privately to the sabotaged target, not broadcast to the
+table — an earlier draft of this walkthrough said "the table learns," which
+overstated the decision; the implementation (and the discovery record) both
+scope the reveal to the target only.
 This becomes Jordan's post-target protection window: per the design doc's
 danger-combination limit, Jordan cannot be the target of another
 information-control or witness-pressure sabotage until either another player
