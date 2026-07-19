@@ -638,6 +638,7 @@
       "tasks": [
         "AW-281",
         "AW-282",
+        "AW-287",
         "AW-283",
         "AW-284",
         "AW-285",
@@ -2124,6 +2125,23 @@
       "epic_id": "M5-I"
     },
     {
+      "id": "AW-287",
+      "title": "Nightcap Leverage Advantages And Sabotages",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "L",
+      "depends_on": [
+        "AW-281",
+        "AW-282"
+      ],
+      "path": "docs/roadmap/tasks/AW-287-nightcap-leverage-advantages-and-sabotages.md",
+      "github": {
+        "issue_number": 250,
+        "url": "https://github.com/nickejanssen/arcwright/issues/250"
+      },
+      "epic_id": "M5-I"
+    },
+    {
       "id": "AW-283",
       "title": "Suspect Answer Generation And Contradiction Detection",
       "milestone": "M5",
@@ -2132,6 +2150,7 @@
       "depends_on": [
         "AW-281",
         "AW-282",
+        "AW-287",
         "AW-212",
         "AW-272"
       ],

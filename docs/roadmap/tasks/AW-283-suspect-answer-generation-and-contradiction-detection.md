@@ -69,6 +69,8 @@ dates, and owner actions.
 ## Dependencies
 
 - AW-281, AW-282
+- AW-287 (Leverage advantages/sabotages — contradiction-catch and answer
+  behavior varies by active Leverage effect per the AW-283 discovery record)
 - Spec 0071 / PR #225 live-loop AI character dialogue
 - AW-212 knowledge-constrained dialogue pipeline; AW-272 eval suite
 
