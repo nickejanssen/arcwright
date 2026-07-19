@@ -117,6 +117,7 @@ async def generate_character_dialogue(
     pressure_boost: float = 0.25,
 ) -> CharacterDialogueEvent:
     """Generate one dialogue response after assembling knowledge constraints."""
+    generation_started = perf_counter()
     context = await build_character_generation_context(
         db_session,
         session_id=session_id,
@@ -162,7 +163,6 @@ async def generate_character_dialogue(
         matched_answer=matched_answer,
     )
 
-    generation_started = perf_counter()
     result = await generate(
         db_session,
         session_id=session_id,
