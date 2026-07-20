@@ -31,6 +31,8 @@ The technical scope is limited to the tasks listed below and the architecture re
 - [AW-284: Race Scoring And Accusation State](../tasks/AW-284-race-scoring-and-accusation-state.md)
 - [AW-285: Couch Race TV And Phone Rendering](../tasks/AW-285-couch-race-tv-and-phone-rendering.md)
 - [AW-286: Couch Race Rehearsal Slice And Rehearsal 1 Retarget](../tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md)
+- [AW-288: Couch Race Mini-Game Beat Coverage And Tell Me Something True Acceleration](../tasks/AW-288-couch-race-mini-game-beat-coverage-and-tmst-acceleration.md)
+- [AW-289: Couch Race Trivia Mini-Game](../tasks/AW-289-couch-race-trivia-mini-game.md)
 
 ## Supporting Rehearsal 1 Dependencies
 
@@ -62,7 +64,10 @@ Race experience by AW-286:
 - ADR-0013 / D-071 (this epic's charter)
 - PR #225 lineage: live-loop AI character dialogue (spec 0071), a direct dependency for suspect answers
 - D-069 narrative tasks AW-276–AW-280, aligned to the six-beat arc
-- Mini-game packages from D-062/D-064 (Crime Scene Smash, Evidence Locker) slot in unchanged
+- Mini-game packages from D-062/D-064 (Crime Scene Smash, Evidence Locker)
+  slot in unchanged; D-079 adds Tell Me Something True (AW-288) and a new
+  Trivia package (AW-289) ahead of Rehearsal 1, amending D-064's original
+  two-rehearsal split
 
 ## Must Not Do
 
