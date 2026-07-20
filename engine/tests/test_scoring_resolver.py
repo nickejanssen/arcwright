@@ -17,6 +17,7 @@ from engine.db.orm import (
     Character,
     Claim,
     ContradictionFlag,
+    Event,
     Session,
     SessionParticipant,
     SuspectLock,
@@ -143,6 +144,11 @@ async def test_wrong_accusation_persists_penalty_and_lockout(
     assert row.lockout_until.replace(tzinfo=timezone.utc) == _clock() + timedelta(
         seconds=60
     )
+    telemetry = await db_session.scalar(
+        select(Event).where(Event.event_type == "accusation_submitted")
+    )
+    assert telemetry is not None
+    assert telemetry.payload["points_awarded"] == -20
 
 
 async def test_correct_accusation_uses_confirmed_catches_for_momentum(

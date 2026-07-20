@@ -72,6 +72,10 @@ class AccusationResolver:
         self._clock = clock
         self._round_duration_seconds = round_duration_seconds
         self._last_call_duration_seconds = last_call_duration_seconds
+        if telemetry_recorder is None:
+            from engine.telemetry.scoring import record_accusation_submitted
+
+            telemetry_recorder = record_accusation_submitted
         self._telemetry_recorder = telemetry_recorder
 
     async def submit_accusation(
