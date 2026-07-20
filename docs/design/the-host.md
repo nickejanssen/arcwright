@@ -1,8 +1,8 @@
 # Vesper  -  The Host of Nightcap
 
-> Current version: v1.1
-> Last updated: 2026-07-19
-> Status: Approved (AW-267 v1.0, see docs/product/aw267-discovery-and-checkpoints.md; §3 roast amendment founder-approved 2026-07-19, D-081).
+> Current version: v1.2
+> Last updated: 2026-07-20
+> Status: Approved (AW-267 v1.0, see docs/product/aw267-discovery-and-checkpoints.md; §3 roast amendment founder-approved 2026-07-19, D-081; §5 race-master moods + nudge ladder founder-approved 2026-07-20, D-087).
 > Author: Design session 2026-07-17 (AW-267 PR #243 review); approved 2026-07-18
 > Canonical path: docs/design/the-host.md
 > Companion to: `docs/design/nightcap-art-direction.md` §6
@@ -171,13 +171,41 @@ Vesper's lines are **authored refrains + AI-filled specifics**.
 | Wrong accusation (compassionate + sharp) | 6 | |
 | The reveal (grave then jubilant) | 6 | |
 | Wink-at-camera (once per session) | 6 | |
-|  -  |  -  | ~74 |
+| **Countdown** (Last Call timer marks) *(v1.2, D-087)* | 5 | |
+| **Evidence wave** (release announcements) *(v1.2, D-087)* | 4 | |
+| **Nudge** (passive-player re-engagement) *(v1.2, D-087)* | 4 | |
+| **Superlative** (end-of-session awards) *(v1.2, D-087)* | 8 | |
+|  -  |  -  | ~95 |
 
-**~74 lines per wrapper × 12 wrappers = ~888 authored lines** in a
+**Race-master moods (v1.2, D-087).** The four moods above cover
+Vesper's duties as race master (Couch Race bible §5: "scoreboard
+moments are narrator moments, in-fiction, never system-voiced").
+Every session fires all four.
+
+**Nudge delivery is a three-step escalation ladder**, which preserves
+§7's rule that Vesper never appears on the phone in v1:
+
+1. Vesper, on the TV, addresses the room — names no one.
+2. Vesper, on the TV, names the detective — only if still disengaged.
+3. A silent UI-voice prompt on the phone (Inter, not Vesper) as the
+   floor.
+
+Vesper never delivers step 3; the UI does. No player is singled out
+cold.
+
+**~95 lines per wrapper × 12 wrappers = ~1,140 authored lines** in a
 full launch. Not launch-window commitment; launch-window commitment
-is the two skin wrappers (Séance 1928, Orbital Gala 2087)  -
-**~148 authored lines minimum for v1 launch**. That's a weekend of
-disciplined writing per wrapper.
+is two skin wrappers — **~190 authored lines minimum for v1 launch**.
+That's a weekend of disciplined writing per wrapper.
+
+> **Launch pair under review (2026-07-20).** The pair was
+> Séance 1928 + Orbital Gala 2087. The founder has indicated a
+> preference for Séance 1928 + Big Top 1899; that change also touches
+> `docs/specs/0069-nightcap-visual-design-system.md` §7A/§7B (launch
+> skin palettes) and its contrast/colorblind acceptance criterion, and
+> requires a Big Top identity pool. Pending confirmation — see the
+> decisions log. Both candidate wrappers have complete 78-line
+> refrain libraries; only the two original wrappers have identity pools.
 
 ## 6. Signature Beats (Vesper's Choreography)
 
@@ -295,6 +323,13 @@ considerations logged here for coordination but out of AW-267 scope:
 
 ## 10. Change Log
 
+- **2026-07-20**  -  v1.2. §5 amended per founder decision D-087:
+  four race-master moods added to the line-library table (countdown,
+  evidence wave, nudge, superlative; per-wrapper minimum rises from
+  ~74 to ~95), plus the three-step nudge escalation ladder that keeps
+  Vesper off the phone and preserves §7 unamended. Launch-pair
+  designation flagged as under review pending a founder confirmation
+  that also touches spec 0069 §7A/§7B.
 - **2026-07-19**  -  v1.1. §3 amended per founder decision D-081:
   "never mocks a player" replaced with roast-by-detective-name
   permission across eight tease registers. Approved live in founder
