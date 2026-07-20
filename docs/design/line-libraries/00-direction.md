@@ -81,7 +81,7 @@ Committed after each item completes. Status updated in place.
 | 1 | Direction doc + the-host.md v1.1 amendment + D-081 | — | This commit |
 | 2 | Séance 1928 refrain library (`seance-1928.md`) | AW-277, AW-280 | Committed (78 lines) |
 | 3 | Detective identity pools + opening briefing shapes (`detective-identities.md`) | AW-279 | Committed (16 identities, 4 briefing shapes) |
-| 4 | Clue-release content shapes (`clue-release-shapes.md`) | AW-280 | Queued |
+| 4 | Clue-release content shapes (`clue-release-shapes.md`) | AW-280 | Committed (discovery packet, 3 directions) |
 | 5 | Big Top 1899 refrain library (`big-top-1899.md`) | AW-277 | Queued |
 | 6 | Orbital Gala 2087 refrain library (`orbital-gala-2087.md`) | AW-277, launch pair | Queued |
 | 7 | Truth-sequence / reveal shapes (`truth-sequence-shapes.md`) — DRAFT-ONLY flag, most engine-coupled | AW-278 | Queued |
