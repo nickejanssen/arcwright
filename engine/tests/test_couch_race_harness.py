@@ -36,8 +36,8 @@ def _context_for_transition(src: str, dst: str) -> dict[str, bool]:
     return {
         "pour_to_scene": {"case_resolution_complete": True, "all_players_ready": True},
         "scene_to_grill": {"evidence_wave_delivered": True},
-        "grill_to_twist": {"interrogation_rounds_complete": True},
-        "twist_to_last_call": {"twist_delivered": True},
+        "grill_to_twist": {"grill_exit_ready": True},
+        "twist_to_last_call": {"twist_exit_ready": True},
         "last_call_to_truth": {"accusations_locked_or_countdown_expired": True},
     }[f"{src}_to_{dst}"]
 

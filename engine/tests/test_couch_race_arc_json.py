@@ -34,7 +34,7 @@ def test_beat_graph_linear() -> None:
     arc = ArcDefinition.model_validate_json(COUCH_RACE_PATH.read_text("utf-8"))
     assert arc.beat_graph["pour"] == ["scene"]
     assert arc.beat_graph["scene"] == ["grill"]
-    assert arc.beat_graph["grill"] == ["twist"]
+    assert arc.beat_graph["grill"] == ["twist", "last_call"]
     assert arc.beat_graph["twist"] == ["last_call"]
     assert arc.beat_graph["last_call"] == ["truth"]
     assert arc.beat_graph["truth"] == []

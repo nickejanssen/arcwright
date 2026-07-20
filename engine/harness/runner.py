@@ -48,6 +48,7 @@ class HarnessRunner:
         self._chart = ArcStateChart(self._arc_definition)
         self._assignment_rng = random.Random(seed)
         self._transition_edges = self._build_transition_edges()
+        self._transition_causes: dict[str, str] = {}
         self._run: HarnessRun | None = None
         self._generate = generate
 
@@ -134,6 +135,49 @@ class HarnessRunner:
     def trace(self) -> list[HarnessTraceEntry]:
         run = self._require_run()
         return [entry.model_copy(deep=True) for entry in run.trace]
+
+    @property
+    def transition_causes(self) -> dict[str, str]:
+        """Return the application-level cause recorded for each beat exit."""
+        return dict(self._transition_causes)
+
+    def advance_current_beat(
+        self,
+        *,
+        cause: str = "normal_completion",
+        target_beat_id: str | None = None,
+    ) -> HarnessTraceEntry:
+        """Choose and invoke the current beat's transition for its exit cause."""
+        run = self._require_run()
+        source_beat_id = run.configuration[0]
+        targets = self._arc_definition.beat_graph.get(source_beat_id, [])
+        if not targets:
+            raise ValueError(f"beat {source_beat_id!r} has no outgoing transition")
+        if cause == "first_correct_accusation" and len(targets) > 1:
+            expected_target = targets[-1]
+        elif cause == "normal_completion" or len(targets) == 1:
+            expected_target = targets[0]
+        else:
+            raise ValueError(f"unsupported beat exit cause {cause!r}")
+        if target_beat_id is not None and target_beat_id != expected_target:
+            raise ValueError(
+                f"transition target {target_beat_id!r} does not match cause "
+                f"{cause!r}; expected {expected_target!r}"
+            )
+
+        source_beat = next(
+            beat
+            for beat in self._arc_definition.beats
+            if beat.beat_id == source_beat_id
+        )
+        context = {condition: True for condition in source_beat.exit_conditions}
+        self._transition_causes[source_beat_id] = cause
+        return self.apply_action(
+            HarnessAction(
+                transition_name=transition_name_for(source_beat_id, expected_target),
+                payload={"context": context},
+            )
+        )
 
     def context_value(self, key: str, default: Any = None) -> Any:
         self._require_run()

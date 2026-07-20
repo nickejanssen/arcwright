@@ -842,3 +842,91 @@ class ContradictionFlag(Base):
         nullable=False,
         server_default=text("now()"),
     )
+
+
+class Accusation(Base):
+    __tablename__ = "accusations"
+    __table_args__ = (
+        Index(
+            "ix_accusations_session_id_accuser", "session_id", "accuser_participant_id"
+        ),
+        Index(
+            "ix_accusations_session_id_outcome_submitted_at",
+            "session_id",
+            "outcome",
+            "submitted_at",
+        ),
+    )
+
+    accusation_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        primary_key=True,
+        server_default=text("gen_random_uuid()"),
+    )
+    session_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("sessions.session_id"),
+        nullable=False,
+    )
+    accuser_participant_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("session_participants.participant_id"),
+        nullable=False,
+    )
+    beat_id: Mapped[str] = mapped_column(Text, nullable=False)
+    accused_cast_member_id: Mapped[str] = mapped_column(Text, nullable=False)
+    motive_correct: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
+    method_correct: Mapped[Optional[bool]] = mapped_column(Boolean, nullable=True)
+    outcome: Mapped[str] = mapped_column(Text, nullable=False)
+    catches_banked_at_submission: Mapped[int] = mapped_column(Integer, nullable=False)
+    points_awarded: Mapped[int] = mapped_column(Integer, nullable=False)
+    repeat_offense_count: Mapped[int] = mapped_column(
+        Integer, nullable=False, server_default=text("0")
+    )
+    lockout_until: Mapped[Optional[datetime]] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
+    used_last_word: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default=text("false")
+    )
+    triggered_last_call: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, server_default=text("false")
+    )
+    submitted_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=text("now()"),
+    )
+
+
+class SuspectLock(Base):
+    __tablename__ = "suspect_locks"
+    __table_args__ = (
+        UniqueConstraint(
+            "session_id",
+            "participant_id",
+            name="uq_suspect_locks_session_participant",
+        ),
+    )
+
+    suspect_lock_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        primary_key=True,
+        server_default=text("gen_random_uuid()"),
+    )
+    session_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("sessions.session_id"),
+        nullable=False,
+    )
+    participant_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("session_participants.participant_id"),
+        nullable=False,
+    )
+    suspect_cast_member_id: Mapped[str] = mapped_column(Text, nullable=False)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        server_default=text("now()"),
+    )
