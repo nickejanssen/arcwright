@@ -85,7 +85,7 @@ Committed after each item completes. Status updated in place.
 | 5 | Big Top 1899 refrain library (`big-top-1899.md`) | AW-277 | Committed (78 lines) |
 | 6 | Orbital Gala 2087 refrain library (`orbital-gala-2087.md`) | AW-277, launch pair | Committed (78 lines — launch pair complete) |
 | 7 | Truth-sequence / reveal shapes (`truth-sequence-shapes.md`) — DRAFT-ONLY flag, most engine-coupled | AW-278 | Committed (discovery packet, 3 architectures) |
-| 8 | Boardroom Severance refrain library (`boardroom-severance.md`) | AW-277 | Queued |
+| 8 | Boardroom Severance refrain library (`boardroom-severance.md`) | AW-277 | Committed (78 lines — queue complete) |
 
 **Deferred to a renewable model (not this session):** wrapper-neutral
 core extraction from items 2/5/6/8; conversion of libraries to the
@@ -102,10 +102,32 @@ direction.
 
 ## Open Questions for Founder (Monday)
 
-- Confirm the v1 launch wrapper pair (Séance + Orbital Gala per bible,
-  or re-rank after tonight's Big Top preference).
-- Review D-081 roast-register lines specifically: the by-name roast is
-  new territory; the wrong-accusation entries are where it either sings
-  or stings.
-- Per-suspect liar-texture trait (decision 3) needs a home in the case
-  generation schema — AW-283-adjacent, engineering to spec it.
+Consolidated across all committed artifacts, highest-leverage first:
+
+1. **Vesper's diegetic presence.** All four libraries give Vesper
+   first-person memory of the world ("I was pouring", "thirty years
+   under canvas", "the log was the recording", "I did the seating").
+   Consistent with "hosted a thousand evenings" — but one answer should
+   govern all four: is Vesper a witness inside the fiction, or an
+   observer who reports what the house/tent/station noticed?
+2. **D-081 roast calibration.** Each library flags its two probe lines
+   (unhinged + absurd registers) in its review notes. Read the four
+   wrong-accusation sections first; they are where the amendment sings
+   or stings.
+3. **AW-280 direction selection** — clue-release discovery packet
+   awaits your pick (recommendation: object-forward spine, testimony
+   release valve).
+4. **AW-278 architecture selection** — truth-sequence discovery packet
+   awaits your pick (recommendation: Unmasking spine + inline
+   crediting; Confession as post-Rehearsal-1 premium).
+5. **Launch wrapper pair.** Séance + Orbital Gala per bible (both now
+   authored), or re-rank after tonight's Big Top preference.
+6. **Per-wrapper audience address.** "detectives" / "friends" /
+   "everyone" — confirm the variation or flatten.
+7. **br-4 (Vesper's handwritten note)** tests the no-Vesper-on-phone
+   boundary — cut or keep.
+8. **Per-suspect liar-texture trait** needs a schema home —
+   AW-283-adjacent, engineering to spec it.
+9. **Per-wrapper slot whitelists** ({{stage_name}}, {{deck}}, {{floor}},
+   {{title}}, {{suspect_2}}, {{killer}}) — spec when converting to
+   runtime format at `nightcap/content/host_lines/`.
