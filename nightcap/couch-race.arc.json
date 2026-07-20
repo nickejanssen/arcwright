@@ -194,7 +194,7 @@
       "authored_content": {},
       "generative_triggers": ["character_dialogue"],
       "entry_conditions": [],
-      "exit_conditions": ["interrogation_rounds_complete"],
+      "exit_conditions": ["grill_exit_ready"],
       "pacing_config": {"stall_threshold_seconds": 240},
       "audience_targets": ["all", "individual"],
       "mini_games": [],
@@ -214,7 +214,7 @@
       "authored_content": {},
       "generative_triggers": ["clue_release", "narrator_beat"],
       "entry_conditions": [],
-      "exit_conditions": ["twist_delivered"],
+      "exit_conditions": ["twist_exit_ready"],
       "pacing_config": {"stall_threshold_seconds": 150},
       "audience_targets": ["all", "individual"],
       "mini_games": [
@@ -268,7 +268,7 @@
   "beat_graph": {
     "pour": ["scene"],
     "scene": ["grill"],
-    "grill": ["twist"],
+    "grill": ["twist", "last_call"],
     "twist": ["last_call"],
     "last_call": ["truth"],
     "truth": []

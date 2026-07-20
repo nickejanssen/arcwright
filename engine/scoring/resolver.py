@@ -27,6 +27,21 @@ TelemetryRecorder = Callable[[AsyncSession, UUID, AccusationAttempt], Awaitable[
 Clock = Callable[[], datetime]
 
 
+def accusations_locked_or_countdown_expired(
+    remaining_seconds: float,
+    *,
+    eligible_participant_ids: set[str],
+    locked_out_participant_ids: set[str],
+) -> bool:
+    """Return whether Last Call can end by expiry or an all-locked state."""
+    if remaining_seconds <= 0:
+        return True
+    return (
+        bool(eligible_participant_ids)
+        and eligible_participant_ids <= locked_out_participant_ids
+    )
+
+
 def _utcnow() -> datetime:
     return datetime.now(tz=timezone.utc)
 
