@@ -84,6 +84,9 @@ Each resolved question must contain:
 - A case fact or claim reference.
 - A deterministic set of answer options.
 - One canonical answer key.
+- A self-contained evidence basis sufficient to answer the question.
+- A narrative-grounding reference showing which resolved context is allowed at
+  the current moment.
 - A public explanation safe for the shared display.
 - A private result payload for the submitting player.
 - A clue or lead consequence for success.
@@ -96,6 +99,42 @@ against that source before play.
 
 The runtime must compare the submitted option with the resolved answer key.
 No model call may grade correctness or select the answer key after play begins.
+
+### Generation validation and failure handling
+
+Generated content must pass validation before it is shown to any player or
+used to select a clue. Validation is a hard gate, not a post-play telemetry
+check.
+
+The validator must confirm:
+
+- **Structure:** The requested answer format, options, timing, difficulty, and
+  required fields are present.
+- **Answer integrity:** Exactly one canonical answer is supported by the
+  approved fact source or resolved case data; distractors are distinct and
+  not accidentally correct.
+- **Self-containment:** The player has enough public information to answer;
+  the question does not rely on an unstated fact.
+- **Narrative grounding:** A case callback references only facts or claims
+  marked established and available at the current arc position. It must never
+  reveal a future clue, hidden truth, private evidence, killer identity, or
+  unresolved event.
+- **Safety and privacy:** Tone, wording, and payloads pass the AW-250 safety
+  policy and the two-surface privacy contract.
+- **Tone and fit:** The question matches the resolved session tone and the
+  intended humor, wonder, and genre without becoming gruesome or incoherent.
+- **Variety and pacing:** The question respects format cooldowns, category
+  rotation, difficulty bounds, and the current adaptive room momentum.
+
+If any check fails, the content is discarded before delivery. The system may
+make a bounded replacement attempt, but it must use the authored safe question
+or reduced clue fallback when the retry budget is exhausted or generation is
+late. The player receives no penalty for invalid content.
+
+Validation failures should emit a replayable, non-sensitive reason code such
+as `missing-evidence-basis`, `unestablished-reference`, `ambiguous-answer`,
+`unsafe-content`, or `format-contract-failure`. Raw private content must not
+be included in the telemetry payload.
 
 ### Adaptive room momentum
 
@@ -302,6 +341,22 @@ resolution.
 - [ ] Confirm adaptive room momentum as the runtime concept and immersion as
   a playtest outcome.
 - [ ] Confirm the V1 signal set and the adaptive policy guardrails.
+- [ ] Confirm pre-delivery validation of structure, answer integrity,
+  self-containment, narrative grounding, safety, privacy, tone, and variety.
+
+## Design test findings
+
+The first paper test used a three-format sequence in a fictional Murder at
+the Circus session. The third question was initially under-specified because
+it asked players to order events without providing the evidence that
+established the order. The question was invalid, and correctly received no
+score impact after correction.
+
+This test confirms that the implementation must validate narrative grounding
+and answer sufficiency before delivery. An invalid question can break
+immersion, and an invalid case callback could reveal a clue that the story has
+not established yet. This is a blocking content-resolution failure, not a
+player error.
 - [ ] Confirm AW-284 scoring integration.
 - [ ] Approve representative question and scoring sample.
 - [ ] Approve final diegetic framing and narrator copy direction.
@@ -313,6 +368,12 @@ resolution.
 - [ ] Package validates against the AW-249 schema and loader.
 - [ ] Every definition includes an authored delayed-clue fallback.
 - [ ] Question answer keys resolve deterministically before execution.
+- [ ] No question reaches a player unless its evidence basis, answer key,
+  narrative grounding, safety, privacy, and format contract validate.
+- [ ] A question cannot reference an unestablished clue, hidden truth, private
+  evidence, or future narrative event.
+- [ ] Invalid generated content is discarded without player penalty and uses
+  bounded regeneration or the authored fallback.
 - [ ] Correct, incorrect, late, duplicate, invalid, timeout, and abort cases
   resolve exactly once.
 - [ ] AW-284 scoring integration is deterministic and cannot alter accusation

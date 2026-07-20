@@ -103,6 +103,8 @@ brief:*
   Rehearsal 1 build.
 - [ ] Questions are generated per session within authored tone, safety,
   structure, answer, and solvability constraints.
+- [ ] Generated content validates its evidence basis and current narrative
+  grounding before delivery; unestablished or future clues cannot leak.
 - [ ] Adaptive selection uses platform-neutral room-momentum signals and
   bounded deterministic policy rules.
 - [ ] Correct, incorrect, late, duplicate, invalid, and timeout submissions
