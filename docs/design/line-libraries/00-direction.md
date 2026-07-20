@@ -90,6 +90,9 @@ Committed after each item completes. Status updated in place.
 | 10 | Race-master supplement (`race-master-supplement.md`) — bonus round; proposes 4 new §5 moods | AW-277, AW-284 | Committed (launch pair) |
 | 11 | Liar-texture calibration samples (`liar-texture-samples.md`) — bonus round | AW-283-adjacent | Committed (smooth/brittle/leaky) |
 | 12 | Ordinary last lines (`ordinary-last-lines.md`) — bonus round | AW-278 | Committed (24 archetype-keyed) |
+| 13 | Manor Gothic refrain library (`manor-gothic.md`) — D-082 round | AW-277 | Committed (78 lines) |
+
+D-082 platform round (see `docs/design/authoring/` and `docs/product/vision-narrative.md`): story-to-arc exemplar, vision narrative draft, Daily Case sample week, author craft guide.
 
 **Deferred to a renewable model (not this session):** wrapper-neutral
 core extraction from items 2/5/6/8; conversion of libraries to the
