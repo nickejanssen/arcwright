@@ -1,0 +1,111 @@
+# Vesper Line Libraries — Authoring Direction and Queue
+
+> Current version: v1.0
+> Last updated: 2026-07-19
+> Status: Founder-approved direction (interactive interview, 2026-07-19 evening); libraries in this directory are DRAFT until individually founder-reviewed
+> Canonical path: docs/design/line-libraries/00-direction.md
+> Parent authority: `docs/design/the-host.md` (Vesper bible, v1.1)
+> Feeds: AW-277, AW-278, AW-279, AW-280 (epic M5-I)
+
+## What This Is
+
+The founder-approved creative direction for authoring Vesper's refrain
+libraries (the-host.md §5), plus the execution queue for the authoring
+session that produced the drafts in this directory. Written so any
+future session — on any model — can resume exactly where this one
+stopped.
+
+**Context for future sessions:** these drafts were authored 2026-07-19
+on a creative-tier model available only that night. The direction below
+was locked live with the founder; the drafts were produced unattended
+afterward. Nothing in this directory is approved content until the
+founder reviews it (Monday review pass expected).
+
+## Founder Decisions Locked 2026-07-19
+
+1. **Voice register.** Vesper as already specified in the-host.md — no
+   new voice invented. Founder's register preference ordering when
+   choices arise: warm-theatrical host first, dry-complicit second,
+   lush-gothic third, clipped-procedural last. "I want a personality;
+   not a robot."
+2. **Roast rule amendment (D-081).** Vesper MAY tease players by
+   detective name or tease the room. Permitted tease registers: witty,
+   unhinged, absurd, silly, dad-jokey, solemn, gravitas, flirty. This
+   amends the-host.md §3's former "never mocks a player" rule (now
+   v1.1). Unchanged guardrails: teasing targets the detective identity,
+   never the human on the couch; Vesper still takes the death itself
+   seriously (§3); comedy lives in specificity of the awfulness, never
+   the death.
+3. **Liar texture (feeds AW-283-adjacent content).** Mixed by suspect:
+   some suspects are smooth liars, some crack visibly — a per-character
+   trait set at case resolution. Richest cast, best replay; accepted
+   authoring/balance cost.
+4. **Wrapper order.** Séance 1928 first and deepest, then Big Top 1899.
+   Wrapper-neutral core is NOT authored directly — it is extracted
+   later, analytically, from the concrete libraries (rationale: concrete
+   lines need the creative model; extraction doesn't, and the bible's
+   authoring model is per-wrapper on purpose). Boardroom Severance
+   ranked last by founder.
+5. **Launch-pair flag (open question for Monday).** the-host.md §5 names
+   the v1 launch skin pair as Séance 1928 + **Orbital Gala 2087**.
+   Tonight's founder order named Big Top second. Queue below authors
+   Orbital Gala immediately after Big Top to protect the launch
+   commitment; founder should confirm or re-rank the launch pair.
+
+## Library Format (Binding)
+
+Per the-host.md §5. Every entry carries:
+
+- `beat`: pour | scene | grill | twist | last-call | truth
+- `mood`: jubilant | grave | wondering | ominous | wink (plus the
+  §5 table's specialized slots: stinger-dry, stinger-ominous,
+  stinger-delighted, wrong-accusation, reveal)
+- `wrapper`: the wrapper tag
+- `shift_target`: which mood this line can shift into on delivery
+  (entries with no shift target are permitted but budgeted — shifts
+  are the signature)
+- `{{slot}}` variables: the ONLY parts AI may fill at runtime
+  (suspect name, location, timestamp, evidence detail, case callback)
+
+Minimum counts per wrapper (the-host.md §5 table): cold-open jubilant 8,
+drop 6, beat turns 18, stage stingers 24, wrong accusation 6, reveal 6,
+wink 6 — ~74 per wrapper. New since D-081: wrong-accusation entries may
+include by-name roasts across the permitted tease registers.
+
+## Execution Queue
+
+Committed after each item completes. Status updated in place.
+
+| # | Item | Feeds | Status |
+| --- | --- | --- | --- |
+| 1 | Direction doc + the-host.md v1.1 amendment + D-081 | — | This commit |
+| 2 | Séance 1928 refrain library (`seance-1928.md`) | AW-277, AW-280 | Queued |
+| 3 | Detective identity pools + opening briefing shapes (`detective-identities.md`) | AW-279 | Queued |
+| 4 | Clue-release content shapes (`clue-release-shapes.md`) | AW-280 | Queued |
+| 5 | Big Top 1899 refrain library (`big-top-1899.md`) | AW-277 | Queued |
+| 6 | Orbital Gala 2087 refrain library (`orbital-gala-2087.md`) | AW-277, launch pair | Queued |
+| 7 | Truth-sequence / reveal shapes (`truth-sequence-shapes.md`) — DRAFT-ONLY flag, most engine-coupled | AW-278 | Queued |
+| 8 | Boardroom Severance refrain library (`boardroom-severance.md`) | AW-277 | Queued |
+
+**Deferred to a renewable model (not this session):** wrapper-neutral
+core extraction from items 2/5/6/8; conversion of libraries to the
+runtime content format at `nightcap/content/host_lines/` (an AW-283 /
+narrative-content-pipeline engineering decision); AW-284 execution.
+
+## Resume Instructions
+
+If this session died mid-queue: pick the first non-committed item,
+re-read the-host.md v1.1 in full, match the entry format of the last
+committed library exactly, and keep everything DRAFT. Do not merge, do
+not convert to runtime format, do not touch engine code from this
+direction.
+
+## Open Questions for Founder (Monday)
+
+- Confirm the v1 launch wrapper pair (Séance + Orbital Gala per bible,
+  or re-rank after tonight's Big Top preference).
+- Review D-081 roast-register lines specifically: the by-name roast is
+  new territory; the wrong-accusation entries are where it either sings
+  or stings.
+- Per-suspect liar-texture trait (decision 3) needs a home in the case
+  generation schema — AW-283-adjacent, engineering to spec it.

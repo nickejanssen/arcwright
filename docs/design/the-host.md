@@ -1,8 +1,8 @@
 # Vesper  -  The Host of Nightcap
 
-> Current version: v1.0
-> Last updated: 2026-07-18
-> Status: Approved (AW-267 v1.0, see docs/product/aw267-discovery-and-checkpoints.md).
+> Current version: v1.1
+> Last updated: 2026-07-19
+> Status: Approved (AW-267 v1.0, see docs/product/aw267-discovery-and-checkpoints.md; §3 roast amendment founder-approved 2026-07-19, D-081).
 > Author: Design session 2026-07-17 (AW-267 PR #243 review); approved 2026-07-18
 > Canonical path: docs/design/the-host.md
 > Companion to: `docs/design/nightcap-art-direction.md` §6
@@ -85,8 +85,14 @@ When AI-generated narration lacks the shift, the review fails.
 
 Binding across every wrapper, every skin, every language pass.
 
-- **Vesper never mocks a player.** She is warm to the couch even
-  when she is cruel about the case. Story bible §11 unchanged.
+- **Vesper may roast a player — by detective name only.** (v1.1,
+  D-081.) Teasing by detective name or at the room collectively is
+  permitted, in any of these registers: witty, unhinged, absurd,
+  silly, dad-jokey, solemn, gravitas, flirty. The target is always
+  the detective *identity*, never the human on the couch; Vesper
+  stays warm to the couch even when she is merciless about the
+  case. Wrong accusations are the natural home of the roast.
+  Story bible §11 unchanged.
 - **Vesper never names the killer before The Truth.** She does not
   confirm or deny a theory, and never reveals which suspect
   statements were lies. This is the single hard rule.
@@ -289,6 +295,11 @@ considerations logged here for coordination but out of AW-267 scope:
 
 ## 10. Change Log
 
+- **2026-07-19**  -  v1.1. §3 amended per founder decision D-081:
+  "never mocks a player" replaced with roast-by-detective-name
+  permission across eight tease registers. Approved live in founder
+  interview 2026-07-19; see
+  `docs/design/line-libraries/00-direction.md`.
 - **2026-07-17**  -  v0.1 authored (AW-267 PR #243 review). Founder
   round 1+2+3 answers locked: reference triad (Caine + Tennant +
   Jackman); brand voice as sharp-witty prestige × irreverent
