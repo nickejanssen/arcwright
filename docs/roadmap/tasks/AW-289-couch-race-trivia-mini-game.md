@@ -56,6 +56,14 @@ The proposed design is recorded in `docs/specs/0076-aw-289-interrogation-room.md
 It remains a draft until the founder approves the design brief and
 representative question/scoring sample.
 
+The proposed content direction is per-session generated, setting- and
+genre-matched trivia with occasional case callbacks. The proposed adaptive
+runtime concept is platform-neutral **adaptive room momentum**. Immersion is
+treated as a playtest outcome, not an opaque runtime score. The first slice
+uses resolved narrative pacing context plus observable participation,
+response pace, challenge fit, player count, format variety, spotlight balance,
+session tone, and content readiness signals.
+
 ## Human Collaboration Contract
 
 **Interaction profile:** Creative collaboration.
@@ -93,6 +101,10 @@ brief:*
 - [ ] Package passes AW-250 content and safety review.
 - [ ] The Interrogation Room is the only new trivia game included in the
   Rehearsal 1 build.
+- [ ] Questions are generated per session within authored tone, safety,
+  structure, answer, and solvability constraints.
+- [ ] Adaptive selection uses platform-neutral room-momentum signals and
+  bounded deterministic policy rules.
 - [ ] Correct, incorrect, late, duplicate, invalid, and timeout submissions
   resolve deterministically.
 - [ ] Private answers and clue payloads respect the two-surface privacy

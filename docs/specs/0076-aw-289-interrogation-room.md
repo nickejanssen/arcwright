@@ -61,14 +61,18 @@ investigative lead or neutral observation, never a detached arcade score.
 - **Player range:** 2 to 8, with rehearsal coverage at 2 to 5 players and
   catalog compatibility through 8 players.
 - **Duration:** 90 seconds for the initial thin slice.
-- **Content mode:** Hybrid. Question templates, answer options, and clue
-  meanings are authored; case facts and permitted values are resolved from
-  deterministic session state before execution.
-- **Question source:** Case-specific by default, with optional general-trivia
-  framing only when it directly reinforces the case or setting. No question
-  may require an external fact to solve the mystery.
-- **Question count:** Three authored question slots in the first thin slice.
-- **Answer format:** Deterministic selected answer, not free text.
+- **Content mode:** Hybrid. Each session receives newly generated questions,
+  but every question is generated inside an authored schema, tone envelope,
+  difficulty band, answer contract, and safety policy.
+- **Question source:** Setting- and genre-matched general trivia by default,
+  with occasional case callbacks. Case-linked questions should be sparse and
+  memorable rather than repetitive. No question may require an external fact
+  to solve the mystery.
+- **Question count:** Three generated question slots in the first thin slice.
+- **Answer format:** A deliberate adaptive mix of selectable options,
+  true/false, ordering, and tightly bounded short answers with a
+  pre-resolved canonical answer and deterministic accepted aliases. Fully
+  open-ended prose grading is out of scope.
 - **Failure policy:** A wrong or missing answer does not eliminate a player or
   block the case. The game resolves to the fallback clue when the deadline or
   content delay requires it.
@@ -85,8 +89,86 @@ Each resolved question must contain:
 - A clue or lead consequence for success.
 - A reduced fallback clue that preserves solvability.
 
+General trivia facts must come from an approved, safety-reviewed fact and
+answer source. The session generator may compose the prompt, options, and
+presentation, but the canonical answer key must be derived from or validated
+against that source before play.
+
 The runtime must compare the submitted option with the resolved answer key.
-No model call may grade correctness or select the answer key.
+No model call may grade correctness or select the answer key after play begins.
+
+### Adaptive room momentum
+
+Immersion is the product outcome, not a runtime variable. The engine must not
+pretend to measure a player's psychological state with an opaque score. The
+platform-neutral runtime concept is **adaptive room momentum**, a bounded
+context assembled from observable events and resolved narrative intent.
+
+The mini-game reads this context only at question boundaries. It never reads
+Nightcap beat names, killer identity, hidden truth, raw knowledge-graph state,
+or private evidence.
+
+#### V1 adaptive context
+
+The following signals are the recommended first contract. Each is represented
+as a small enum or bounded value with an `unknown` state, not as an unbounded
+model judgment.
+
+| Signal | Meaning and measurement | Allowed effect |
+| --- | --- | --- |
+| `narrative_phase_role` | Platform-neutral arc role such as opening, discovery, pressure, reveal, or release, resolved by the arc | Selects an approved format family and presentation posture |
+| `tension_band` | Resolved narrative pacing state and target direction, supplied by the arc engine | Moves intensity one step toward rising, holding, or releasing |
+| `time_budget_band` | Server-authoritative time remaining before the next arc transition | Selects short, standard, or extended question timing |
+| `participation_health` | Rolling ratio of eligible players who started or submitted an answer, with disconnects and timeouts recorded separately | Invites faster, clearer, or more collaborative formats; never punishes low participation |
+| `response_pace_band` | Rolling median of response time normalized by the question deadline | Adjusts presentation tempo and pressure within configured bounds |
+| `challenge_fit_band` | Recent correctness and timeout rate over completed answers, requiring a minimum sample | Moves difficulty by at most one band; never makes the mystery less solvable |
+| `player_count_profile` | Active player count and whether the group is fully represented | Selects formats that remain legible and fair for the table size |
+| `format_variety_state` | Recent format history and per-format cooldown state | Prevents repetition and creates deliberate contrast |
+| `spotlight_balance_band` | Aggregate distribution of recent participation and successful moments | Offers quieter players opportunities without exposing a hidden ranking |
+| `session_tone_tags` | Authored or resolved tags such as wry, chaotic, wondrous, eerie, or competitive | Shapes generated language, humor, imagery, and format flavor |
+| `content_readiness` | Whether generated content has passed structural, safety, privacy, and solvability validation | Uses ready content or an authored fallback; never waits indefinitely |
+
+For the first thin slice, the rolling window is the most recent three resolved
+questions, with no adaptation from a single event. Thresholds are configuration
+and rehearsal-tunable. When sample size is insufficient, the value is
+`unknown` and the selector uses the safe default.
+
+#### Adaptive policy guardrails
+
+- Read context only between questions, never while a player is answering.
+- Change difficulty or pressure by at most one step at a time.
+- Use hysteresis so the game does not oscillate between states.
+- Preserve per-format cooldowns and minimum variety.
+- Do not interpret a slow answer as disengagement without corroborating data.
+- Do not adapt by removing a player's agency, hiding required information, or
+  making a failure state permanent.
+- Use deterministic seeded variation so a run can be replayed and debugged.
+- Log the input context, selected format, content validation result, and
+  outcome for rehearsal analysis.
+
+#### Visionary Arcwright signal families
+
+These are valuable engine capabilities to design toward, but they are not
+additional AW-289 runtime dependencies:
+
+- `narrative_obligation_pressure`: whether the arc has an unresolved,
+  platform-neutral obligation that a mini-game can help surface.
+- `emotional_contrast_need`: whether the experience needs levity, wonder,
+  tension, or release to avoid a flat emotional curve.
+- `curiosity_opportunity`: whether the resolved arc has a safe open question
+  or reveal opportunity that can invite player speculation.
+- `novelty_budget`: how much format, presentation, or content novelty the
+  session can spend before clarity and fairness suffer.
+- `agency_balance`: whether recent interactions have offered sufficient
+  player choice, risk, and expression across the group.
+- `cognitive_load_band`: a platform-neutral estimate from recent interaction
+  complexity, timing pressure, and accessibility constraints.
+- `memory_echo_opportunity`: a future continuity signal for experiences that
+  are allowed to reference prior sessions. It must remain outside Nightcap v1.
+
+These signals should be emitted as generic context by Arcwright and consumed
+through a declared mini-game capability contract. A mini-game may request a
+signal family, but it may not depend on a specific experience's internal state.
 
 ### Proposed scoring and investigative output
 
@@ -138,7 +220,9 @@ it may not manage state, grade answers, choose outcomes, or mutate the case.
 
 ### Content and safety
 
-- Use fictional, case-grounded content only.
+- Use fictional, setting-matched content only.
+- Keep general trivia dominant and case callbacks occasional.
+- Make generated humor witty, wry, irreverent, surprising, and non-gruesome.
 - Avoid graphic violence and real-person targeting.
 - Do not infer protected traits.
 - Do not expose private evidence through a public question or explanation.
@@ -208,10 +292,16 @@ resolution.
 
 ## Founder approval checklist
 
-- [ ] Confirm hybrid, case-grounded question source.
+- [ ] Confirm per-session generated questions within authored constraints.
+- [ ] Confirm setting-matched general trivia as the dominant source, with
+  sparse case callbacks.
 - [ ] Confirm Beat 3 placement.
+- [ ] Confirm the deliberate adaptive answer-format mix.
 - [ ] Confirm individual answer model with public resolution.
 - [ ] Confirm 90-second target and three-question thin slice.
+- [ ] Confirm adaptive room momentum as the runtime concept and immersion as
+  a playtest outcome.
+- [ ] Confirm the V1 signal set and the adaptive policy guardrails.
 - [ ] Confirm AW-284 scoring integration.
 - [ ] Approve representative question and scoring sample.
 - [ ] Approve final diegetic framing and narrator copy direction.
