@@ -2,8 +2,13 @@
 
 > Current version: v0.1 DRAFT — discovery material, NOT a locked direction
 > Last updated: 2026-07-19
-> Status: Awaiting founder direction selection (AW-278 creative-collaboration
-> contract; stopped at reversible research per human-collaboration rules)
+> Status: **DIRECTION LOCKED 2026-07-20 — D-086.** Architecture B (the
+> Unmasking) is the spine, with Architecture A's inline player-crediting
+> rule adopted into it. Architecture C (Confession) is NOT v1; retained
+> as a candidate premium variant post-Rehearsal-1. The three
+> architectures below remain as authored reference for the AW-278
+> implementation pass; read B and A's crediting rule as canonical, C as
+> deferred.
 > Canonical path: docs/design/line-libraries/truth-sequence-shapes.md
 > Feeds: AW-278 (truth sequence and reveal accounting)
 > Wrapper used for samples: Séance 1928

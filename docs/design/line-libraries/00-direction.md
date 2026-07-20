@@ -120,15 +120,17 @@ Consolidated across all committed artifacts, highest-leverage first:
    staff/host role. The declaration mechanism matters for future
    wrappers where Vesper may be non-diegetic.
 2. **D-081 roast calibration.** Each library flags its two probe lines
-   (unhinged + absurd registers) in its review notes. Read the four
+   (unhinged + absurd registers) in its review notes. Read the **six**
    wrong-accusation sections first; they are where the amendment sings
-   or stings.
-3. **AW-280 direction selection** — clue-release discovery packet
-   awaits your pick (recommendation: object-forward spine, testimony
-   release valve).
-4. **AW-278 architecture selection** — truth-sequence discovery packet
-   awaits your pick (recommendation: Unmasking spine + inline
-   crediting; Confession as post-Rehearsal-1 premium).
+   or stings. (Tier 2 work — does not gate engineering.)
+3. ~~**AW-280 direction selection**~~ **RESOLVED 2026-07-20 — D-085**
+   (provisional): object-forward spine + testimony valve; ledger register
+   rejected to preserve art-direction §4.4. Provisional because the
+   interrogation-experience review may change what testimony clues feed.
+4. ~~**AW-278 architecture selection**~~ **RESOLVED 2026-07-20 — D-086**:
+   Unmasking spine + inline player crediting; Confession deferred as a
+   post-Rehearsal-1 premium candidate. Vesper's 3-movement voice
+   structure (the-host.md §6.3) governs delivery within it.
 5. **Launch wrapper pair.** Séance + Orbital Gala per bible (both now
    authored), or re-rank after tonight's Big Top preference.
 6. **Per-wrapper audience address.** "detectives" / "friends" /

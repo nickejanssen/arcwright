@@ -2,9 +2,15 @@
 
 > Current version: v0.1 DRAFT — discovery material, NOT a locked direction
 > Last updated: 2026-07-19
-> Status: Awaiting founder direction selection (AW-280 creative-collaboration
-> contract requires founder discovery; founder was unavailable this session,
-> so per the human-collaboration contract this stops at reversible research)
+> Status: **DIRECTION LOCKED 2026-07-20 — D-085 (provisional).**
+> Direction A (object-forward) is the spine for Scene and Twist evidence
+> waves; Direction B (testimony) is the release valve for Grill-phase
+> releases. Direction C (ledger) is NOT adopted — it would introduce a
+> third voice against art-direction §4.4 — but C's discipline (every
+> clue names a checkable anchor) is retained as a writing rule inside A
+> and B. PROVISIONAL: re-confirm if the interrogation-experience review
+> (`../authoring/interrogation-experience-review.md`) changes the
+> interrogation loop, since B is justified by feeding it.
 > Canonical path: docs/design/line-libraries/clue-release-shapes.md
 > Feeds: AW-280 (clue release content)
 > Wrapper used for samples: Séance 1928
