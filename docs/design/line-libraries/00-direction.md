@@ -91,6 +91,7 @@ Committed after each item completes. Status updated in place.
 | 11 | Liar-texture calibration samples (`liar-texture-samples.md`) — bonus round | AW-283-adjacent | Committed (smooth/brittle/leaky) |
 | 12 | Ordinary last lines (`ordinary-last-lines.md`) — bonus round | AW-278 | Committed (24 archetype-keyed) |
 | 13 | Manor Gothic refrain library (`manor-gothic.md`) — D-082 round | AW-277 | Committed (78 lines) |
+| 14 | Sim Reunion refrain library (`sim-reunion.md`) — D-083 round, maximum Caine | AW-277 | Committed (78 lines — range proof complete) |
 
 D-082 platform round (see `docs/design/authoring/` and `docs/product/vision-narrative.md`): story-to-arc exemplar, vision narrative draft, Daily Case sample week, author craft guide.
 
