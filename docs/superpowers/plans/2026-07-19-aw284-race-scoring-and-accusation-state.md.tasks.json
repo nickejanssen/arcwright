@@ -1,0 +1,82 @@
+{
+  "planPath": "docs/superpowers/plans/2026-07-19-aw284-race-scoring-and-accusation-state.md",
+  "tasks": [
+    {
+      "id": 1,
+      "subject": "Task 1: Ground the real integration points",
+      "status": "pending",
+      "description": "**Goal:** Answer the integration questions this plan cannot fully resolve without live grounding access.\n\n```json:metadata\n{\"files\": [], \"verifyCommand\": \"\", \"acceptanceCriteria\": [\"migration head confirmed\", \"AW-283 claims interface confirmed or blocking gap reported\", \"evidence-delivery mechanism identified\", \"mini-game result mechanism identified\", \"orchestrator call site identified\", \"ResolvedCase loading mechanism confirmed\", \"participant/session ID types confirmed\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 2,
+      "subject": "Task 2: Accusation and SuspectLock schema (migration + ORM)",
+      "status": "pending",
+      "blockedBy": [1],
+      "description": "**Goal:** Add the accusations and suspect_locks tables (D-078 precedent).\n\n```json:metadata\n{\"files\": [\"migrations/versions/000N_add_accusations_table.py\", \"engine/db/orm.py\"], \"verifyCommand\": \"alembic upgrade head && alembic downgrade -1 && alembic upgrade head\", \"acceptanceCriteria\": [\"migration applies and reverses cleanly\", \"Accusation and SuspectLock ORM classes match migration\", \"submitted_at server-default now()\", \"suspect_locks unique constraint present\"], \"modelTier\": \"mechanical\"}\n```"
+    },
+    {
+      "id": 3,
+      "subject": "Task 3: Scoring Pydantic DTOs",
+      "status": "pending",
+      "blockedBy": [1],
+      "description": "**Goal:** Define engine/scoring/ in-process data shapes.\n\n```json:metadata\n{\"files\": [\"engine/scoring/__init__.py\", \"engine/scoring/models.py\", \"engine/tests/test_scoring_models.py\"], \"verifyCommand\": \"pytest engine/tests/test_scoring_models.py -v\", \"acceptanceCriteria\": [\"AccusationOutcome closed enum\", \"AccusationAttempt forbids extra fields\", \"ScoreBreakdown carries all per-dimension totals\"], \"modelTier\": \"mechanical\"}\n```"
+    },
+    {
+      "id": 4,
+      "subject": "Task 4: Deterministic score calculator (Tables 1-4)",
+      "status": "pending",
+      "blockedBy": [3],
+      "description": "**Goal:** Pure functions implementing Tables 1-4, proven against the design doc's three worked scenarios.\n\n```json:metadata\n{\"files\": [\"engine/scoring/errors.py\", \"engine/scoring/calculator.py\", \"engine/tests/test_scoring_calculator.py\"], \"verifyCommand\": \"pytest engine/tests/test_scoring_calculator.py -v\", \"acceptanceCriteria\": [\"evidence_points correct\", \"momentum_multiplier matches Table 2\", \"accusation_base_value interpolates continuously\", \"wrong_accusation_cost matches Table 3 with escalation\", \"chain_reaction_countdown matches Table 4 with floor\", \"Scenario A totals 384\", \"Scenario B totals 210\", \"Scenario C totals 56\", \"functions pure and deterministic\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 5,
+      "subject": "Task 5: Accusation resolver — submission, lockout, tie-break, Chain Reaction, Last Word, Suspect Lock",
+      "status": "pending",
+      "blockedBy": [2, 4],
+      "description": "**Goal:** AccusationResolver: DB-backed submission, server-side lockout gating, tie-break, Chain Reaction wiring, Last Word first-use flow, Suspect Lock.\n\n```json:metadata\n{\"files\": [\"engine/scoring/resolver.py\", \"engine/tests/test_scoring_resolver.py\"], \"verifyCommand\": \"pytest engine/tests/test_scoring_resolver.py -v\", \"acceptanceCriteria\": [\"lockout gating enforced server-side\", \"AlreadyCorrectError enforced\", \"wrong accusation scoring and lockout correct\", \"correct accusation scoring with momentum correct\", \"first-correct tie-break exactly one true per session\", \"Chain Reaction compresses persisted countdown\", \"Last Word first-use allows one follow-up then blocks\", \"Suspect Lock upserts, no Accusation row\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 6,
+      "subject": "Task 6: Early Last Call trigger — arc-content change and orchestration",
+      "status": "pending",
+      "blockedBy": [5],
+      "description": "**Goal:** Rename grill/twist exit conditions, add grill->last_call shortcut edge, wire orchestration invoking the correct transition for the correct cause.\n\n```json:metadata\n{\"files\": [\"nightcap/couch-race.arc.json\", \"engine/tests/test_scoring_integration.py\"], \"verifyCommand\": \"pytest engine/tests/test_scoring_integration.py -v\", \"acceptanceCriteria\": [\"exit conditions renamed correctly\", \"grill->last_call edge added\", \"last_call/twist entry_conditions remain empty\", \"orchestrator invokes correct event per cause\", \"wrong-event-for-wrong-cause test present\", \"both branches of accusations_locked_or_countdown_expired tested separately\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 7,
+      "subject": "Task 7: ContentEvent factories — animated stings, race track, reveal breakdown",
+      "status": "pending",
+      "blockedBy": [3],
+      "description": "**Goal:** Presentation-hint-driven events; no raw numbers/dimension names pre-reveal.\n\n```json:metadata\n{\"files\": [\"engine/scoring/events.py\", \"engine/tests/test_scoring_events.py\"], \"verifyCommand\": \"pytest engine/tests/test_scoring_events.py -v\", \"acceptanceCriteria\": [\"sting event payload excludes raw score and dimension names\", \"sting event always has non-default presentation_hints\", \"race track event has exactly one position field\", \"reveal breakdown event carries full ScoreBreakdown targeting AudienceTarget.all\"], \"modelTier\": \"mechanical\"}\n```"
+    },
+    {
+      "id": 8,
+      "subject": "Task 8: Scoring telemetry",
+      "status": "pending",
+      "blockedBy": [5],
+      "description": "**Goal:** Payload builders + recorders mirroring engine/telemetry/obligations.py.\n\n```json:metadata\n{\"files\": [\"engine/telemetry/scoring.py\", \"engine/tests/test_telemetry_scoring.py\", \"engine/scoring/resolver.py\"], \"verifyCommand\": \"pytest engine/tests/test_telemetry_scoring.py -v\", \"acceptanceCriteria\": [\"mirrors obligations.py telemetry pattern\", \"payload excludes other players' suspect locks\", \"recorder wired into resolver on every submission\"], \"modelTier\": \"mechanical\"}\n```"
+    },
+    {
+      "id": 9,
+      "subject": "Task 9: Superlative computation",
+      "status": "pending",
+      "blockedBy": [5, 8],
+      "description": "**Goal:** Pure functions computing Best Interrogator, Lie Detector, Most Confidently Wrong.\n\n```json:metadata\n{\"files\": [\"engine/scoring/superlatives.py\", \"engine/tests/test_scoring_superlatives.py\"], \"verifyCommand\": \"pytest engine/tests/test_scoring_superlatives.py -v\", \"acceptanceCriteria\": [\"all three superlative keys present\", \"lie_detector tie-break deterministic\", \"most_confidently_wrong tie-break deterministic\", \"reproducible on identical inputs\"], \"modelTier\": \"mechanical\"}\n```"
+    },
+    {
+      "id": 10,
+      "subject": "Task 10: End-path integration tests — all three paths plus passive-player coverage",
+      "status": "pending",
+      "blockedBy": [6, 7],
+      "description": "**Goal:** Prove all three endgame paths reachable and deterministic via headless harness runs, plus passive-player coverage.\n\n```json:metadata\n{\"files\": [\"engine/tests/test_scoring_integration.py\"], \"verifyCommand\": \"pytest engine/tests/test_scoring_integration.py -v\", \"acceptanceCriteria\": [\"Path 1 reachable and correct\", \"Path 2 reachable and correct\", \"Path 3 reachable and distinct from Path 2\", \"passive player doesn't block any path\", \"all scenarios use real resolver and real state machine\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 11,
+      "subject": "Task 11: Generic-naming enforcement and full suite",
+      "status": "pending",
+      "blockedBy": [9, 10],
+      "description": "**Goal:** Prove engine/scoring/ and engine/telemetry/scoring.py carry no Nightcap-specific identifiers; full suite green. Stopping point -- no sign-off or PR from this task.\n\n```json:metadata\n{\"files\": [\"engine/tests/test_scoring_naming_contract.py\"], \"verifyCommand\": \"pytest engine/tests/ -v && python -m ruff check engine api && python -m ruff format --check engine api\", \"acceptanceCriteria\": [\"naming contract test covers engine/scoring and engine/telemetry/scoring.py\", \"full suite green\", \"ruff clean\", \"routing evals still pass\"], \"modelTier\": \"mechanical\"}\n```"
+    }
+  ],
+  "lastUpdated": "2026-07-19"
+}

@@ -70,6 +70,9 @@ actions.
 - AW-281–AW-285 complete to thin-slice level
 - AW-276–AW-280 narrative pipeline tasks
 - D-065 local-tunnel deployment
+- AW-288 (mini-game beat coverage + Tell Me Something True acceleration)
+  and AW-289 (new Trivia mini-game) per D-079 -- the retargeted rehearsal
+  runs with four mini-games, not two, and does not begin until both close
 
 ## Must Not Do
 
