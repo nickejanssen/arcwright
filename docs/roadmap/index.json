@@ -2244,9 +2244,14 @@
       "depends_on": [
         "AW-249",
         "AW-250",
-        "AW-284"
+        "AW-284",
+        "AW-288"
       ],
       "path": "docs/roadmap/tasks/AW-289-couch-race-trivia-mini-game.md",
+      "github": {
+        "issue_number": 258,
+        "url": "https://github.com/nickejanssen/arcwright/issues/258"
+      },
       "epic_id": "M5-I"
     }
   ],
