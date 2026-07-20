@@ -37,9 +37,7 @@ async def db_session() -> AsyncIterator[AsyncSession]:
     await engine.dispose()
 
 
-def _to_grill(
-    runner: HarnessRunner, participants: list[str] | None = None
-) -> None:
+def _to_grill(runner: HarnessRunner, participants: list[str] | None = None) -> None:
     runner.start()
     runner.set_participants(participants or ["p1", "p2"])
     for source, target, conditions in (
@@ -113,9 +111,7 @@ def _clock() -> datetime:
     return datetime(2026, 7, 19, 12, 0, tzinfo=timezone.utc)
 
 
-def _resolver(
-    session_id: UUID, context: dict[str, object]
-) -> AccusationResolver:
+def _resolver(session_id: UUID, context: dict[str, object]) -> AccusationResolver:
     return AccusationResolver(
         session_id=session_id,
         resolved_case=_case(),
