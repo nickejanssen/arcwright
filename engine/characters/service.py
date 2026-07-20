@@ -25,6 +25,7 @@ from uuid import UUID, uuid4
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from engine.resources.models import EffectActivation
 from engine.session.service import SessionService, _session_service
 
 if TYPE_CHECKING:
@@ -161,6 +162,8 @@ class CharacterService:
         *,
         speaking_character_id: UUID,
         content: str,
+        pressure_activation: EffectActivation | None = None,
+        pressure_effect_key: str | None = None,
     ) -> list["CharacterDialogueEvent"]:
         """Generate at most one AI character response to a dialogue input.
 
@@ -215,6 +218,8 @@ class CharacterService:
                 content_rails=arc_definition.content_rails,
                 authorial_intent=arc_definition.authorial_intent,
                 tone_config=arc_definition.tone_config,
+                pressure_activation=pressure_activation,
+                pressure_effect_key=pressure_effect_key,
             )
         except KnowledgeConstraintViolation:
             return []

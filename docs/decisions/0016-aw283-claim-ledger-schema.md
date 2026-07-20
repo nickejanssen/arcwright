@@ -17,7 +17,7 @@ The founder explicitly delegated the choice ("do what is best for a world class 
 
 ## Decision
 
-We add dedicated `claims` and `contradiction_flags` tables (migration `0006_add_claims_and_contradiction_flags`), not the generic `events` table.
+We add dedicated `claims` and `contradiction_flags` tables (migration `0006_claims_contradiction_flags`), not the generic `events` table.
 
 Per `docs/architecture/11-telemetry.md`, the `events` table's stated purpose is append-only audit/analytics telemetry — its own documented concern includes GDPR deletion handling (`content_text` nullification) and is optimized for write-once, read-rarely analysis. Claims are the opposite access pattern: they are queried on the hot path, every time any player flags a statement, for the lifetime of a session, and they are the direct input to a live gameplay decision (confirmed vs. rejected), not a downstream analytics signal. Conflating the two would mean a core gameplay-state read competing with, and architecturally indistinguishable from, generic telemetry writes in the same table — and would require JSONB containment queries in place of indexed foreign-key lookups (`session_id, speaker_character_id`, `session_id, beat_id`) for a mechanic explicitly billed as this platform's flagship differentiator.
 

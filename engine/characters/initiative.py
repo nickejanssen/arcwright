@@ -31,6 +31,7 @@ from engine.characters.dialogue import (
     generate_character_dialogue,
 )
 from engine.db.orm import Event
+from engine.resources.models import EffectActivation
 from engine.routing import generate
 
 if TYPE_CHECKING:
@@ -518,6 +519,8 @@ def schedule_initiative_tasks(
     safety_policy_context: dict[str, Any] | str | None = None,
     content_rails: "ContentRailsConfig | None" = None,
     social_pressure_by_character: dict[UUID, float] | None = None,
+    pressure_activations_by_character: dict[UUID, EffectActivation] | None = None,
+    pressure_effect_key: str | None = None,
     tone_config: dict[str, Any] | None = None,
 ) -> list[asyncio.Task[NpcNpcExchangeEvent | CharacterDialogueEvent]]:
     """Dispatch each action as its own asyncio task. Returns immediately.
@@ -540,6 +543,8 @@ def schedule_initiative_tasks(
             safety_policy_context=safety_policy_context,
             content_rails=content_rails,
             social_pressure_by_character=social_pressure_by_character,
+            pressure_activations_by_character=pressure_activations_by_character,
+            pressure_effect_key=pressure_effect_key,
             tone_config=tone_config,
         )
         tasks.append(asyncio.create_task(coro))
@@ -559,6 +564,8 @@ async def _run_initiative_action(
     safety_policy_context: dict[str, Any] | str | None,
     content_rails: "ContentRailsConfig | None",
     social_pressure_by_character: dict[UUID, float] | None = None,
+    pressure_activations_by_character: dict[UUID, EffectActivation] | None = None,
+    pressure_effect_key: str | None = None,
     tone_config: dict[str, Any] | None = None,
 ) -> NpcNpcExchangeEvent | CharacterDialogueEvent:
     async with session_factory() as db_session:
@@ -603,6 +610,12 @@ async def _run_initiative_action(
             safety_policy_context=safety_policy_context,
             content_rails=content_rails,
             social_pressure=character_pressure,
+            pressure_activation=(
+                pressure_activations_by_character.get(action.initiating_character_id)
+                if pressure_activations_by_character is not None
+                else None
+            ),
+            pressure_effect_key=pressure_effect_key,
             tone_config=tone_config,
         )
         await db_session.commit()

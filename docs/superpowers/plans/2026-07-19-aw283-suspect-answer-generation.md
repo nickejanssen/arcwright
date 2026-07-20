@@ -4,7 +4,7 @@
 
 **Goal:** Generate suspect answers through the existing knowledge-constrained dialogue pipeline (spec 0071), rendering authorized lies deterministically alongside true answers; record every answer as a claim with real DB provenance; detect contradictions deterministically (possession-gated: a flag confirms only if the claim is an authorized lie AND the flagging player already holds contradicting evidence); and wire Rattle the Witness (AW-287) into the existing `social_pressure` mechanism.
 
-**Architecture:** New module `engine/claims/` (models, matcher, resolver, events — mirrors `engine/resources/`'s file shape) plus `engine/telemetry/claims.py` (mirrors `engine/telemetry/obligations.py`/`resources.py`). Unlike AW-282/287, this task needs real DB persistence (`Claim`, `ContradictionFlag` ORM tables) because claim provenance must survive to feed the end-of-session reveal — this was an explicit founder decision (D-078, see `docs/product/decisions-log.csv`) made because claims are this platform's headline differentiated mechanic and future consumer (AW-272 evals, Daily Case), not incidental telemetry, so they get their own indexed, queryable schema rather than being folded into the generic `events` table. The dialogue generation itself extends the existing `engine/characters/dialogue.py` pipeline (spec 0071) — it does not replace it. `AuthorizedFalsehood` (`engine/case/models.py`, already shipped by AW-281) is the source of truth for lie content; this task's job is wiring it into generation and detection, not inventing new lie content.
+**Architecture:** New module `engine/claims/` (evidence, models, matcher, resolver, events — mirrors `engine/resources/`'s file shape) plus `engine/telemetry/claims.py` (mirrors `engine/telemetry/obligations.py`/`resources.py`). Unlike AW-282/287, this task needs real DB persistence (`Claim`, `ContradictionFlag` ORM tables) because claim provenance must survive to feed the end-of-session reveal — this was an explicit founder decision (D-078, see `docs/product/decisions-log.csv`) made because claims are this platform's headline differentiated mechanic and future consumer (AW-272 evals, Daily Case), not incidental telemetry, so they get their own indexed, queryable schema rather than being folded into the generic `events` table. Evidence possession uses the existing generic knowledge graph via the D-080 primitives in `engine/claims/evidence.py`; AW-280 remains responsible for release timing and audience decisions. The dialogue generation itself extends the existing `engine/characters/dialogue.py` pipeline (spec 0071) — it does not replace it. `AuthorizedFalsehood` (`engine/case/models.py`, already shipped by AW-281) is the source of truth for lie content; this task's job is wiring it into generation and detection, not inventing new lie content.
 
 **Tech Stack:** Python 3.11+, Pydantic v2, SQLAlchemy 2.0 async ORM, Alembic migrations, pytest, pytest-asyncio.
 
@@ -26,7 +26,7 @@
 
 ## File Structure
 
-- `migrations/versions/0006_add_claims_and_contradiction_flags.py` — new tables.
+- `migrations/versions/0006_claims_contradiction_flags.py` — new tables.
 - `engine/db/orm.py` — add `Claim`, `ContradictionFlag` classes (append, do not restructure existing classes).
 - `engine/claims/__init__.py` — empty.
 - `engine/claims/models.py` — Pydantic DTOs: `ClaimRecord`, `ContradictionOutcome`, `FlagResult`.
@@ -41,26 +41,49 @@
 
 ---
 
-## Task 1: Ground the evidence-delivery / knowledge-state integration
+## Task 1: Evidence-delivery / knowledge-state integration (resolved)
 
-**Goal:** Answer the one integration question this plan could not fully resolve without live grounding access: how does a piece of `EvidenceEntry` (Pydantic, `engine/case/models.py`, `evidence_id: str`) become "delivered to a specific player" in live session state, and what's the exact query to check whether participant X currently holds evidence Y?
+**Goal:** Bridge a case `EvidenceEntry` to the existing knowledge graph so
+possession-gated contradiction checks can ask whether a participant currently
+holds a delivered evidence entry.
 
-**Files:** Read-only.
+**Files:**
+- Create: `engine/claims/evidence.py`
+- Create: `engine/claims/__init__.py`
+- Test: `engine/tests/test_claims_evidence.py`
+
+**Resolution:** Evidence delivery uses the existing generic knowledge APIs. The
+new `record_evidence_delivery` primitive resolves `SessionParticipant` by both
+`session_id` and `participant_id`, obtains its `character_id`, and calls
+`assert_knowledge` with `fact_type="evidence_delivered"` and
+`fact_content={"evidence_id": evidence.evidence_id, "evidence_type": evidence.evidence_type}`.
+There is no separate evidence-to-fact lookup table: the evidence ID remains in
+the fact content, while the generic `Fact.fact_id` identifies the stored fact.
+The `participant_has_evidence` primitive resolves the same participant, calls
+`get_character_knowledge`, and checks active `evidence_delivered` fact content
+for any requested evidence ID.
+
+AW-280 remains planned and owns clue-release composition and timing. This
+integration does not invent a release scheduler; its delivery primitive is the
+explicit seam for the eventual release path to record each delivery.
 
 **Acceptance Criteria:**
-- [ ] Exact mechanism identified: does evidence delivery create a `KnowledgeState` row (`engine/db/orm.py`) keyed by `fact_id`? If so, what bridges `EvidenceEntry.evidence_id` (case-resolution ID space) to `Fact.fact_id` (knowledge-graph ID space) — a 1:1 ID convention, a lookup table, or a separate mechanism entirely?
-- [ ] Exact existing query pattern for "what does character/participant X currently know" identified (grep `KnowledgeState` usage in `engine/knowledge/graph.py` and callers).
-- [ ] Confirm whether AW-280 (clue release content, `docs/roadmap/tasks/AW-280-couch-race-clue-release-content.md`) owns the evidence-release-timing mechanism this task depends on, and whether it's implemented yet — if AW-280 isn't implemented, this task's possession-gate check has no delivery-timing signal to query and that's a blocking dependency to report, not something to route around by assuming evidence is always available.
+- [x] Evidence delivery resolves participant to character and creates a
+  `KnowledgeState` through `assert_knowledge`.
+- [x] Evidence possession queries use `get_character_knowledge` and active fact
+  content, with no duplicate knowledge API.
+- [x] The implementation is covered by focused async SQLite tests for recording,
+  positive and negative possession checks, and empty requested IDs.
 
-**Verify:** N/A (grounding task).
+**Verify:** `pytest engine/tests/test_claims_evidence.py -q`
 
 **Steps:**
 
-- [ ] **Step 1:** Read `engine/knowledge/graph.py` in full.
-- [ ] **Step 2:** `grep -rn "KnowledgeState" engine/ --include=*.py | grep -v test` to find every construction/query site.
-- [ ] **Step 3:** Read `docs/roadmap/tasks/AW-280-couch-race-clue-release-content.md` and check `docs/roadmap/index.json` for AW-280's status (planned vs. shipped — check for a merged PR referencing it).
-- [ ] **Step 4:** Read `docs/architecture/04-knowledge-graph.md` for the documented (not just implemented) contract.
-- [ ] **Step 5:** No commit — grounding only. Write your findings as a short note in your task report; Task 6 depends on this note directly.
+- [x] Read `engine/knowledge/graph.py`, `engine/db/orm.py`, and the knowledge
+  graph architecture contract.
+- [x] Add failing tests for the two evidence primitives.
+- [x] Implement the minimal `engine/claims/evidence.py` bridge.
+- [x] Run the focused tests and confirm they pass.
 
 ---
 
@@ -69,7 +92,7 @@
 **Goal:** Add the two new tables per D-078's explicit approval.
 
 **Files:**
-- Create: `migrations/versions/0006_add_claims_and_contradiction_flags.py`
+- Create: `migrations/versions/0006_claims_contradiction_flags.py`
 - Modify: `engine/db/orm.py`
 
 **Acceptance Criteria:**
@@ -86,10 +109,10 @@
 - [ ] **Step 2: Write the migration**
 
 ```python
-# migrations/versions/0006_add_claims_and_contradiction_flags.py
+# migrations/versions/0006_claims_contradiction_flags.py
 """add_claims_and_contradiction_flags
 
-Revision ID: 0006_add_claims_and_contradiction_flags
+Revision ID: 0006_claims_contradiction_flags
 Revises: 0005_add_obligations_table
 Create Date: 2026-07-19
 
@@ -104,7 +127,7 @@ from alembic import op
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 
-revision = "0006_add_claims_and_contradiction_flags"
+revision = "0006_claims_contradiction_flags"
 down_revision = "0005_add_obligations_table"
 branch_labels = None
 depends_on = None
@@ -235,7 +258,7 @@ def downgrade() -> None:
 - [ ] **Step 5: Commit**
 
 ```bash
-git add migrations/versions/0006_add_claims_and_contradiction_flags.py engine/db/orm.py
+git add migrations/versions/0006_claims_contradiction_flags.py engine/db/orm.py
 git commit -m "feat(claims): add claims and contradiction_flags tables (D-078)"
 ```
 
@@ -443,6 +466,10 @@ git commit -m "feat(claims): outcome-only ContentEvent factories, no score value
 
 **Goal:** Extend the existing spec-0071 dialogue pipeline so a generated answer can draw on an `AuthorizedFalsehood` (rendered with a subtle tell, verbatim `claim_text` on repeat asks) as well as `KnownFactContext` (unchanged from today), and so Rattle the Witness can boost `social_pressure` for one specific question.
 
+**Grounding resolution:** The current `Session` ORM has no persisted `ResolvedCase` attachment; case resolution is held by its owning runtime (for example, the harness). Task 6 therefore adds an explicit optional authorized-falsehood input to context/dialogue assembly rather than inventing a new schema or hidden lookup. The caller that owns a resolved case supplies the sequence, and the default remains empty for existing callers.
+
+**Review resolution:** The explicit input now also requires an opaque caller-owned `authorized_falsehood_speaker_id` and rejects mixed-speaker sequences. The original cast/member ID is preserved in context; it is never overwritten with a character UUID.
+
 **Files:**
 - Modify: `engine/characters/context.py` — extend `CharacterGenerationContext` with an `authorized_falsehoods: tuple[AuthorizedFalsehoodContext, ...]` field (new small dataclass mirroring `KnownFactContext`'s shape: `falsehood_id`, `topic`, `claim_text`, `contradicted_by` — do NOT expose `contradicted_by` to the prompt itself, only to the internal claim-recording step; keep prompt-visible and detection-only data separated at the type level if that's cleaner, your call, but the boundary must exist).
 - Modify: `engine/characters/dialogue.py` — extend `build_dialogue_messages` to render a lie block when `matcher.match_answer_content` (Task 4) resolves to an `AuthorizedFalsehood` for this question; extend `generate_character_dialogue`'s caller contract so `social_pressure` can be boosted by an active Rattle the Witness effect (the boost computation lives in the caller, per Task 8 — this task only needs to confirm the existing `social_pressure: float | None` parameter is sufficient, or extend it if not).
@@ -477,6 +504,10 @@ git commit -m "feat(characters): render authorized lies verbatim in the dialogue
 
 **Goal:** Implement `ClaimResolver`: record a claim (DB-backed), and resolve a flag against it (possession-gated, deterministic, first-received-wins tie-break).
 
+**Grounding resolution:** The claim ledger stores the authorized-lie marker and falsehood ID, while the current session schema does not persist the resolved case's `contradicted_by` catalog. `ClaimResolver` therefore receives the caller-owned, speaker-scoped `AuthorizedFalsehood` sequence explicitly and combines it with the D-080 knowledge-graph possession query; it must not invent a case lookup, assume cast member IDs are character UUIDs, or duplicate evidence state. The resolver locks the claim row before checking confirmed flags so concurrent flags serialize first-received-wins.
+
+**Review resolution:** A second flag on a confirmed claim is now persisted as a deterministic rejected `ContradictionFlag` and contradiction telemetry event, preserving the full audit trail while retaining first-received confirmation. Evidence matching reads the knowledge graph once per flag and selects the first delivered contradiction evidence in authored order.
+
 **Files:**
 - Create: `engine/claims/resolver.py`
 - Test: `engine/tests/test_claims_resolver.py`
@@ -493,7 +524,7 @@ git commit -m "feat(characters): render authorized lies verbatim in the dialogue
 
 **Steps:**
 
-- [ ] **Step 1:** Read Task 1's grounding note (from your own task history or the plan's Task 1 report) for the exact evidence-possession query. If Task 1 found AW-280 isn't implemented yet, STOP and report BLOCKED here rather than inventing a possession check against nonexistent state — this is a real dependency gap, not something to route around.
+- [ ] **Step 1:** Read Task 1's grounding note (from your own task history or the plan's Task 1 report) for the exact evidence-possession query. The D-080 `engine/claims/evidence.py` primitives are the sanctioned possession check; AW-280 owns release timing and audience decisions, not this delivery-tracking primitive, so do not add a second state path or wait for an AW-280 call site.
 - [ ] **Step 2:** Write failing tests using an in-memory or test-DB-backed fixture (check `engine/tests/test_obligations.py` or `engine/tests/test_telemetry_resources.py` for this codebase's established async-DB test fixture pattern — reuse it, don't invent a new one).
 - [ ] **Step 3:** Implement `ClaimResolver` with `async def record_claim(self, db_session: AsyncSession, *, claim: ClaimRecord) -> ClaimRecord` and `async def resolve_flag(self, db_session: AsyncSession, *, claim_id: str, flagging_participant_id: str) -> FlagResult`.
 - [ ] **Step 4:** Run tests, iterate until PASS.
@@ -510,6 +541,10 @@ git commit -m "feat(claims): possession-gated contradiction detection with first
 ## Task 8: Rattle the Witness integration (AW-287 consumption)
 
 **Goal:** Wire an active Rattle the Witness effect (`engine/resources/`, AW-287) into a `social_pressure` boost for the one question it targets.
+
+**Grounding resolution:** The existing resource runtime resolves activations but has no live dialogue caller. Task 8 therefore exposes an explicit `EffectActivation` input on `generate_character_dialogue`; the owning interaction/session orchestrator can pass the resolved activation, while the helper applies no boost and does not mutate baseline pressure when no matching activation is supplied.
+
+**Review resolution:** The live `CharacterService.generate_ai_responses` and initiative scheduler paths now accept and forward the caller-owned activation plus effect key into `generate_character_dialogue`. Resource activation timing and audience decisions remain owned by the resource/session orchestrator; this task only consumes the resolved activation at the generation boundary.
 
 **Files:**
 - Create or modify: a thin orchestration point that, given a resolved `EffectActivation` with `effect_key == "sabotage.rattle_the_witness"` targeting the current question's speaker, computes a boosted `social_pressure` value to pass into `generate_character_dialogue` (Task 6). Exact file location depends on Task 1/6 findings about where session-level answer generation is actually orchestrated today (likely `engine/session/service.py` or a new thin `engine/claims/` orchestration function — ground this against the real call site before deciding, do not invent a new top-level module for a few lines of glue code).

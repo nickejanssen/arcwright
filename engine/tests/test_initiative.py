@@ -39,6 +39,7 @@ from engine.db.orm import (
     SessionParticipant,
 )
 from engine.knowledge import assert_knowledge
+from engine.resources.models import EffectActivation
 from engine.routing.router import RouteResult, resolve_model_key
 from engine.safety import L2_BLOCK_SENTINEL, NEUTRAL_L2_BRIDGE
 
@@ -1083,6 +1084,12 @@ async def test_schedule_initiative_tasks_threads_tone_config_into_player_group_d
         "voice_directive": "Wit-first ensemble mystery.",
         "scenario_defaults": {"wit_density": 0.75},
     }
+    activation = EffectActivation(
+        effect_key="sabotage.rattle_the_witness",
+        activator_id=str(uuid4()),
+        target_id=str(speaker.character_id),
+        interaction_window_id="window-1",
+    )
 
     @asynccontextmanager
     async def session_factory():
@@ -1104,6 +1111,9 @@ async def test_schedule_initiative_tasks_threads_tone_config_into_player_group_d
             session_id=session_row.session_id,
             quality_tier="standard",
             tone_config=tone_config,
+            social_pressure_by_character={speaker.character_id: 0.9},
+            pressure_activations_by_character={speaker.character_id: activation},
+            pressure_effect_key="sabotage.rattle_the_witness",
         )
         await asyncio.gather(*tasks)
 
@@ -1111,6 +1121,7 @@ async def test_schedule_initiative_tasks_threads_tone_config_into_player_group_d
     system_prompt = captured_messages[0][0]["content"]
     assert "[VOICE]" in system_prompt
     assert "Wit-first ensemble mystery." in system_prompt
+    assert "social_pressure: 1.00" in system_prompt
 
 
 async def test_schedule_initiative_tasks_threads_tone_config_into_npc_exchange(

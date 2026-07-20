@@ -22,6 +22,7 @@ class InteractionOption(BaseModel):
 
     option_id: str = Field(min_length=1)
     prompt_key: str = Field(min_length=1)
+    topic: str | None = Field(default=None, min_length=1)
     required_evidence_ids: list[str] = Field(default_factory=list)
     resolution_visibility: ResolutionVisibility = ResolutionVisibility.public
 

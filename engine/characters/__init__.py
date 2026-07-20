@@ -1,4 +1,5 @@
 from engine.characters.context import (
+    AuthorizedFalsehoodContext,
     BehaviorProfileContext,
     CharacterGenerationContext,
     KnownFactContext,
@@ -38,6 +39,7 @@ from engine.characters.pressure import (
 
 __all__ = [
     "BehaviorProfileContext",
+    "AuthorizedFalsehoodContext",
     "CharacterDialogueEvent",
     "CharacterGenerationContext",
     "CharacterInitiativeProfile",

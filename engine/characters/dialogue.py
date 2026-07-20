@@ -5,11 +5,13 @@ from __future__ import annotations
 import json
 import re
 from dataclasses import dataclass
+from time import perf_counter
 from typing import TYPE_CHECKING, Any
 from uuid import UUID
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from engine.case.models import AuthorizedFalsehood
 from engine.characters.context import (
     CharacterGenerationContext,
     KnownFactContext,
@@ -17,13 +19,19 @@ from engine.characters.context import (
     UnknownFactContext,
     build_character_generation_context,
 )
+from engine.characters.pressure import apply_per_question_pressure_boost
+from engine.claims.matcher import match_answer_content
+from engine.claims.models import ClaimRecord
+from engine.claims.resolver import ClaimResolver
 from engine.db.orm import Event
+from engine.resources.models import EffectActivation
 from engine.routing import generate
 from engine.safety import (
     L1_HARD_STOP_SENTINEL,
     L2_BLOCK_SENTINEL,
     L3_BLOCK_SENTINEL,
 )
+from engine.telemetry.claims import record_answer_latency, record_claim_recorded
 
 if TYPE_CHECKING:
     from engine.arc.models import AuthorialIntent, ContentRailsConfig
@@ -103,21 +111,63 @@ async def generate_character_dialogue(
     social_pressure: float | None = None,
     authorial_intent: "AuthorialIntent | None" = None,
     tone_config: dict[str, Any] | None = None,
+    authorized_falsehoods: list[AuthorizedFalsehood] | None = None,
+    authorized_falsehood_speaker_id: str | None = None,
+    question_topic: str | None = None,
+    asker_participant_id: UUID | None = None,
+    round_index: int = 0,
+    interaction_window_id: str | None = None,
+    pressure_activation: EffectActivation | None = None,
+    pressure_effect_key: str | None = None,
+    # Starting tuning value; Rehearsal 1 telemetry should retune it.
+    pressure_boost: float = 0.25,
 ) -> CharacterDialogueEvent:
     """Generate one dialogue response after assembling knowledge constraints."""
+    generation_started = perf_counter()
     context = await build_character_generation_context(
         db_session,
         session_id=session_id,
         character_id=character_id,
+        authorized_falsehoods=authorized_falsehoods,
+        authorized_falsehood_speaker_id=authorized_falsehood_speaker_id,
     )
+    matched_answer: AuthorizedFalsehood | None = None
+    if question_topic is not None:
+        falsehood_models = [
+            AuthorizedFalsehood(
+                falsehood_id=falsehood.falsehood_id,
+                speaker_id=falsehood.speaker_id,
+                topic=falsehood.topic,
+                claim_text=falsehood.claim_text,
+                contradicted_by=list(falsehood.contradicted_by),
+            )
+            for falsehood in context.authorized_falsehoods
+        ]
+        match = match_answer_content(
+            topic=question_topic,
+            falsehoods=falsehood_models,
+            known_facts=context.known_facts,
+        )
+        if isinstance(match, AuthorizedFalsehood):
+            matched_answer = match
+    effective_social_pressure = social_pressure
+    if pressure_activation is not None and pressure_effect_key is not None:
+        effective_social_pressure = apply_per_question_pressure_boost(
+            social_pressure,
+            activation=pressure_activation,
+            target_id=character_id,
+            pressure_effect_key=pressure_effect_key,
+            boost=pressure_boost,
+        )
     messages = build_dialogue_messages(
         context,
         player_input=player_input,
         current_beat_id=current_beat_id,
         scene_goal=scene_goal,
-        social_pressure=social_pressure,
+        social_pressure=effective_social_pressure,
         authorial_intent=authorial_intent,
         tone_config=tone_config,
+        matched_answer=matched_answer,
     )
 
     result = await generate(
@@ -130,6 +180,12 @@ async def generate_character_dialogue(
         tension_score=tension_score,
         safety_policy_context=safety_policy_context,
         content_rails=content_rails,
+    )
+    await record_answer_latency(
+        db_session,
+        session_id,
+        latency_ms=(perf_counter() - generation_started) * 1000.0,
+        quality_tier=quality_tier,
     )
 
     if _is_safety_blocked_result(result.model_used):
@@ -163,11 +219,30 @@ async def generate_character_dialogue(
             payload=payload,
         )
 
-    leaked_fact = find_unknown_fact_leak(result.content, context.unknown_facts)
+    delivered_content = _ensure_authorized_falsehood_text(
+        result.content, matched_answer
+    )
+    leaked_fact = find_unknown_fact_leak(delivered_content, context.unknown_facts)
     if leaked_fact is not None:
         raise KnowledgeConstraintViolation(
             f"dialogue referenced unknown fact {leaked_fact.fact_id}"
         )
+
+    claim = ClaimRecord(
+        speaker_id=str(character_id),
+        asker_id=(str(asker_participant_id) if asker_participant_id else None),
+        round_index=round_index,
+        beat_id=current_beat_id or "dialogue",
+        interaction_window_id=interaction_window_id or "dialogue",
+        claim_text=delivered_content,
+        referenced_fact_ids=tuple(str(fact.fact_id) for fact in context.known_facts),
+        is_authorized_lie=matched_answer is not None,
+        falsehood_id=matched_answer.falsehood_id if matched_answer else None,
+    )
+    claim = await ClaimResolver(session_id=session_id).record_claim(
+        db_session, claim=claim
+    )
+    await record_claim_recorded(db_session, session_id, claim)
 
     payload = _build_base_payload(
         context,
@@ -175,13 +250,14 @@ async def generate_character_dialogue(
         target_player_id=target_player_id,
         quality_tier=quality_tier,
         current_beat_id=current_beat_id,
+        claim_id=claim.claim_id,
     )
     event = Event(
         session_id=session_id,
         actor_char_id=character_id,
         event_type="dialogue",
         payload=payload,
-        content_text=result.content,
+        content_text=delivered_content,
     )
     db_session.add(event)
     await db_session.flush()
@@ -193,7 +269,7 @@ async def generate_character_dialogue(
         event_type="dialogue",
         target_audience=target_audience,
         target_player_id=target_player_id,
-        content=result.content,
+        content=delivered_content,
         payload=payload,
     )
 
@@ -207,6 +283,7 @@ def build_dialogue_messages(
     social_pressure: float | None = None,
     authorial_intent: "AuthorialIntent | None" = None,
     tone_config: dict[str, Any] | None = None,
+    matched_answer: AuthorizedFalsehood | None = None,
 ) -> list[dict[str, Any]]:
     """Build prompt messages with explicit known and not-known blocks."""
     blocks = [
@@ -229,6 +306,8 @@ def build_dialogue_messages(
             _format_relationship_block(context.relationship_dispositions),
         )
     )
+    if matched_answer is not None:
+        blocks.append(_format_lie_block(matched_answer))
     if (
         social_pressure is not None
         and social_pressure >= context.behavior_profile.crumble_threshold
@@ -266,6 +345,7 @@ def _build_base_payload(
     target_player_id: UUID | None,
     quality_tier: str,
     current_beat_id: str | None,
+    claim_id: str | None = None,
 ) -> dict[str, Any]:
     return {
         "target_audience": target_audience,
@@ -273,6 +353,7 @@ def _build_base_payload(
         "task_type": "character_dialogue",
         "quality_tier": quality_tier,
         "current_beat_id": current_beat_id,
+        "claim_id": claim_id,
         "knowledge_constraint": {
             "known_fact_ids": [str(fact.fact_id) for fact in context.known_facts],
             "unknown_fact_ids": [str(fact.fact_id) for fact in context.unknown_facts],
@@ -430,6 +511,29 @@ def _format_pressure_block(social_pressure: float, crumble_threshold: float) -> 
             "[END SOCIAL PRESSURE]",
         )
     )
+
+
+def _format_lie_block(falsehood: AuthorizedFalsehood) -> str:
+    return "\n".join(
+        (
+            "[AUTHORIZED FALSEHOOD]",
+            f"topic: {falsehood.topic}",
+            f"claim_text (render verbatim): {falsehood.claim_text}",
+            "Use a subtle delivery tell: be slightly less specific, slightly too smooth, or add a small hedge.",
+            "The tell is flavor only and is never a substitute for deterministic contradiction detection.",
+            "[END AUTHORIZED FALSEHOOD]",
+        )
+    )
+
+
+def _ensure_authorized_falsehood_text(
+    content: str, falsehood: AuthorizedFalsehood | None
+) -> str:
+    """Keep the authored lie text verbatim in the delivered answer."""
+    if falsehood is None or falsehood.claim_text in content:
+        return content
+    separator = " " if content and not content.endswith((" ", "\n")) else ""
+    return f"{content}{separator}{falsehood.claim_text}"
 
 
 def _format_scene_block(current_beat_id: str | None, scene_goal: str | None) -> str:

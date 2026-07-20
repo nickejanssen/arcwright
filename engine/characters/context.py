@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 from uuid import UUID
@@ -10,6 +11,7 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from engine.case.models import AuthorizedFalsehood
 from engine.db.orm import (
     Character,
     Fact,
@@ -67,6 +69,17 @@ class KnownFactContext:
 
 
 @dataclass(frozen=True)
+class AuthorizedFalsehoodContext:
+    """Internal lie context split from prompt-visible rendering data."""
+
+    speaker_id: str
+    falsehood_id: str
+    topic: str
+    claim_text: str
+    contradicted_by: tuple[str, ...]
+
+
+@dataclass(frozen=True)
 class UnknownFactContext:
     fact_id: UUID
     fact_type: str
@@ -99,6 +112,7 @@ class CharacterGenerationContext:
     is_ai_controlled: bool | None
     known_facts: tuple[KnownFactContext, ...]
     unknown_facts: tuple[UnknownFactContext, ...]
+    authorized_falsehoods: tuple[AuthorizedFalsehoodContext, ...] = ()
 
 
 async def build_character_generation_context(
@@ -107,6 +121,8 @@ async def build_character_generation_context(
     session_id: UUID,
     character_id: UUID,
     player_count: int | None = None,
+    authorized_falsehoods: Sequence[AuthorizedFalsehood] | None = None,
+    authorized_falsehood_speaker_id: str | None = None,
 ) -> CharacterGenerationContext:
     """Build the only sanctioned generation-time character context."""
     if player_count is None:
@@ -179,6 +195,28 @@ async def build_character_generation_context(
         for fact in all_session_facts
         if fact.fact_id not in known_fact_ids
     )
+    supplied_falsehoods = tuple(authorized_falsehoods or ())
+    if supplied_falsehoods and authorized_falsehood_speaker_id is None:
+        raise ValueError(
+            "authorized_falsehood_speaker_id is required when falsehoods are supplied"
+        )
+    if any(
+        falsehood.speaker_id != authorized_falsehood_speaker_id
+        for falsehood in supplied_falsehoods
+    ):
+        raise ValueError(
+            "authorized falsehoods must be scoped to the supplied speaker_id"
+        )
+    falsehood_contexts = tuple(
+        AuthorizedFalsehoodContext(
+            speaker_id=falsehood.speaker_id,
+            falsehood_id=falsehood.falsehood_id,
+            topic=falsehood.topic,
+            claim_text=falsehood.claim_text,
+            contradicted_by=tuple(falsehood.contradicted_by),
+        )
+        for falsehood in supplied_falsehoods
+    )
 
     return CharacterGenerationContext(
         session_id=session_id,
@@ -190,6 +228,7 @@ async def build_character_generation_context(
         ),
         known_facts=known_facts,
         unknown_facts=unknown_facts,
+        authorized_falsehoods=falsehood_contexts,
     )
 
 
