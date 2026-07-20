@@ -85,7 +85,11 @@ Committed after each item completes. Status updated in place.
 | 5 | Big Top 1899 refrain library (`big-top-1899.md`) | AW-277 | Committed (78 lines) |
 | 6 | Orbital Gala 2087 refrain library (`orbital-gala-2087.md`) | AW-277, launch pair | Committed (78 lines — launch pair complete) |
 | 7 | Truth-sequence / reveal shapes (`truth-sequence-shapes.md`) — DRAFT-ONLY flag, most engine-coupled | AW-278 | Committed (discovery packet, 3 architectures) |
-| 8 | Boardroom Severance refrain library (`boardroom-severance.md`) | AW-277 | Committed (78 lines — queue complete) |
+| 8 | Boardroom Severance refrain library (`boardroom-severance.md`) | AW-277 | Committed (78 lines — original queue complete) |
+| 9 | Orbital Gala detective identities (`detective-identities-orbital.md`) — bonus round | AW-279 | Committed (16 identities, 4 shapes) |
+| 10 | Race-master supplement (`race-master-supplement.md`) — bonus round; proposes 4 new §5 moods | AW-277, AW-284 | Committed (launch pair) |
+| 11 | Liar-texture calibration samples (`liar-texture-samples.md`) — bonus round | AW-283-adjacent | Committed (smooth/brittle/leaky) |
+| 12 | Ordinary last lines (`ordinary-last-lines.md`) — bonus round | AW-278 | Committed (24 archetype-keyed) |
 
 **Deferred to a renewable model (not this session):** wrapper-neutral
 core extraction from items 2/5/6/8; conversion of libraries to the
