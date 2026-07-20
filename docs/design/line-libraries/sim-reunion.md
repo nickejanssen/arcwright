@@ -4,6 +4,9 @@
 > Last updated: 2026-07-19
 > Status: Draft, awaiting founder review (see 00-direction.md)
 > Canonical path: docs/design/line-libraries/sim-reunion.md
+> Diegesis (D-084): **witness** — Vesper is present in-world as the
+> sim's customer-experience host; being inside the world is the
+> wrapper premise. Secondary memory-holder: the sim itself.
 > Authority: `docs/design/the-host.md` v1.1; `docs/design/moodboards/sim-reunion.md`
 > Wrapper: Sci-Fi — Sim Reunion. Vesper as the sim's customer-experience
 > host: bright, cheerful, slightly-off in her politeness, saying every

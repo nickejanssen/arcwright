@@ -4,6 +4,9 @@
 > Last updated: 2026-07-19
 > Status: Draft, awaiting founder review (see 00-direction.md)
 > Canonical path: docs/design/line-libraries/manor-gothic.md
+> Diegesis (D-084): **witness** — Vesper is present in-world as the
+> housekeeper; "forty years of service" is in-character. Secondary
+> memory-holder: the house (strongest co-narrator in the set).
 > Authority: `docs/design/the-host.md` v1.1; `docs/design/moodboards/manor-gothic.md`
 > Wrapper: High Society — Manor Gothic. Vesper as the housekeeper who
 > has been here longer than anyone can remember. Not spooky — *certain*.

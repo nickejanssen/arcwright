@@ -4,6 +4,9 @@
 > Last updated: 2026-07-19
 > Status: Draft, awaiting founder review (see 00-direction.md)
 > Canonical path: docs/design/line-libraries/orbital-gala-2087.md
+> Diegesis (D-084): **witness** — Vesper is present in-world as the
+> station's log/concierge; first-person recording claims are
+> in-character. Secondary memory-holder: the station.
 > Authority: `docs/design/the-host.md` v1.1; `docs/design/moodboards/orbital-gala-2087.md`
 > Wrapper: Sci-Fi — Orbital Gala 2087. Vesper as the ship's log: the
 > hospitality concierge, or the AI that isn't the station AI. Her
