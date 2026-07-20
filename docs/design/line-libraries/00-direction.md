@@ -112,12 +112,17 @@ direction.
 
 Consolidated across all committed artifacts, highest-leverage first:
 
-1. **Vesper's diegetic presence.** All four libraries give Vesper
+1. **Vesper's diegetic presence.** All six libraries give Vesper
    first-person memory of the world ("I was pouring", "thirty years
-   under canvas", "the log was the recording", "I did the seating").
-   Consistent with "hosted a thousand evenings" — but one answer should
-   govern all four: is Vesper a witness inside the fiction, or an
-   observer who reports what the house/tent/station noticed?
+   under canvas", "the log was the recording", "I did the seating",
+   "forty years of service", "I was the reviewer"). Consistent with
+   "hosted a thousand evenings" — but decide the governing rule.
+   Sim Reunion complicates it productively: there Vesper being inside
+   the world IS the wrapper premise, so the answer may legitimately
+   vary per wrapper (witness in some, observer-of-what-the-house-saw
+   in others). Recommended resolution: per-wrapper declaration in each
+   library header, defaulted to "observer" unless the wrapper premise
+   demands witness.
 2. **D-081 roast calibration.** Each library flags its two probe lines
    (unhinged + absurd registers) in its review notes. Read the four
    wrong-accusation sections first; they are where the amendment sings
