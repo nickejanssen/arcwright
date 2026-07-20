@@ -2208,13 +2208,45 @@
         "AW-282",
         "AW-283",
         "AW-284",
-        "AW-285"
+        "AW-285",
+        "AW-288",
+        "AW-289"
       ],
       "path": "docs/roadmap/tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md",
       "github": {
         "issue_number": 240,
         "url": "https://github.com/nickejanssen/arcwright/issues/240"
       },
+      "epic_id": "M5-I"
+    },
+    {
+      "id": "AW-288",
+      "title": "Couch Race Mini-Game Beat Coverage And Tell Me Something True Acceleration",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "M",
+      "depends_on": [
+        "AW-281",
+        "AW-262",
+        "AW-263",
+        "AW-264",
+        "AW-265"
+      ],
+      "path": "docs/roadmap/tasks/AW-288-couch-race-mini-game-beat-coverage-and-tmst-acceleration.md",
+      "epic_id": "M5-I"
+    },
+    {
+      "id": "AW-289",
+      "title": "Couch Race Trivia Mini-Game",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "L",
+      "depends_on": [
+        "AW-249",
+        "AW-250",
+        "AW-284"
+      ],
+      "path": "docs/roadmap/tasks/AW-289-couch-race-trivia-mini-game.md",
       "epic_id": "M5-I"
     }
   ],

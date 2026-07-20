@@ -11,9 +11,17 @@ humans.
 
 ## Why This Matters
 
-Spec 0061 (AW-258) is approved but unimplemented. D-064 sequences TMST as
-Rehearsal 2 (after the Rehearsal 1 promotion-only path closes M4). This
-epic carries that sequencing into execution.
+Spec 0061 (AW-258) is approved. D-064 sequences TMST as Rehearsal 2 (after
+the Rehearsal 1 promotion-only path closes M4). This epic carries that
+sequencing into execution.
+
+**Status note (2026-07-19, D-079):** AW-262 through AW-265 (package,
+runtime, API/SDK, web rendering) are complete -- only AW-266 (running TMST
+as a real-human Rehearsal 2 session) remains open in this epic. Separately,
+D-079 amends D-064's sequencing for the Couch Race arc specifically: TMST
+is now also bound into Couch Race ahead of Rehearsal 1 via AW-288, using
+the implementation this epic already produced. AW-266's own Rehearsal 2
+human-test scope is unchanged and still runs per this epic.
 
 ## Player Impact
 
