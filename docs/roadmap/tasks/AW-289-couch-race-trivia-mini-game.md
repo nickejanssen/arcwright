@@ -1,7 +1,7 @@
 # AW-289: Couch Race Trivia Mini-Game
 
 > Current version: v0.2
-> Last updated: 2026-07-20
+> Last updated: 2026-07-19
 > Status: Planned; design brief drafted and awaiting founder approval
 > Canonical path: docs/roadmap/tasks/AW-289-couch-race-trivia-mini-game.md
 
@@ -68,10 +68,14 @@ session tone, and content readiness signals.
 
 **Interaction profile:** Creative collaboration.
 
-**Founder input:** Confirm or revise the proposed hybrid question source,
-case-relevant question framing, difficulty/pacing target, individual answer
-model, scoring integration with AW-284, Beat 3 placement, and success
-definition.
+**Founder input:** The 2026-07-19 discovery checkpoint recorded the founder's
+direction: per-session generated questions, general trivia dominant with
+sparse case callbacks, a deliberate mixed-format set, table-level adaptive
+room momentum, individual private answers, correctness plus speed plus
+difficulty scoring, a small fixed wrong-answer penalty, a live themed
+leaderboard, and Beat 3 placement. The founder must still approve the
+canonical brief, representative sample, scoring table, and narrator framing
+before implementation.
 
 **Required phases:** Begin with focused discovery before authoring. Confirm
 a short design brief, then present a small representative question set and
@@ -89,9 +93,6 @@ and founder feedback, explicit checkpoint approvals, dates, and owner
 actions.
 
 ## Acceptance Criteria
-
-*To be finalized after discovery; placeholder criteria pending the design
-brief:*
 
 - [ ] A trivia mini-game package validates against the AW-249 schema and
   loader.

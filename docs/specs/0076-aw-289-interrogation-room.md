@@ -1,5 +1,5 @@
-> Current version: v0.1
-> Last updated: 2026-07-20
+> Current version: v0.2
+> Last updated: 2026-07-19
 > Status: Draft; awaiting founder design-gate approval
 > Canonical path: docs/specs/0076-aw-289-interrogation-room.md
 
@@ -34,6 +34,30 @@ The following are future candidates and are not current implementation scope:
 Those candidates should be reconsidered after Rehearsal 1 using observed
 player engagement, fairness, pacing, replay desire, and implementation cost.
 
+### Discovery record and approval status
+
+The founder discovery checkpoint on 2026-07-19 confirmed the following
+direction for this draft:
+
+- Questions are generated per session from an approved fact source, with
+  general trivia dominant and sparse case callbacks.
+- The question set uses deliberate format variety and adapts between
+  questions to table-level narrative and participation signals.
+- Players answer privately on phones. The shared display shows public
+  resolution and a live, circus-themed leaderboard. Each player receives an
+  individual score.
+- Points reflect correctness, speed, and difficulty. A wrong answer applies a
+  small fixed penalty. There are no modifiers, eliminations, or lockouts.
+- The first test uses four simulated players and multiple choice, true/false,
+  and ordering formats. Character selection and display names are simplified
+  fixtures for that test.
+
+These decisions are recorded as discovery evidence, not as implementation
+approval. The formal design gate remains open until the founder approves the
+brief, the representative sample, and the proposed scoring table below. The
+owner action is to confirm or revise those artifacts before package
+scaffolding.
+
 ## Proposed locked brief
 
 ### Concept
@@ -67,12 +91,15 @@ investigative lead or neutral observation, never a detached arcade score.
 - **Question source:** Setting- and genre-matched general trivia by default,
   with occasional case callbacks. Case-linked questions should be sparse and
   memorable rather than repetitive. No question may require an external fact
-  to solve the mystery.
+  to solve the mystery. The source union is explicit: general questions use
+  approved fact-bank records, while callbacks use established case-snapshot
+  records available at the current arc position.
 - **Question count:** Three generated question slots in the first thin slice.
-- **Answer format:** A deliberate adaptive mix of selectable options,
-  true/false, ordering, and tightly bounded short answers with a
-  pre-resolved canonical answer and deterministic accepted aliases. Fully
-  open-ended prose grading is out of scope.
+- **Answer format:** The thin slice uses a deliberate adaptive mix of
+  selectable options, true/false, and ordering. The schema also supports
+  tightly bounded short answers with a pre-resolved canonical answer and
+  deterministic accepted aliases, but short answers are not part of the
+  first rehearsal sample. Fully open-ended prose grading is out of scope.
 - **Failure policy:** A wrong or missing answer does not eliminate a player or
   block the case. The game resolves to the fallback clue when the deadline or
   content delay requires it.
@@ -81,7 +108,8 @@ investigative lead or neutral observation, never a detached arcade score.
 
 Each resolved question must contain:
 
-- A case fact or claim reference.
+- A source record reference. General questions use an approved fact-bank
+  record; case callbacks use an established case-snapshot fact or claim.
 - A deterministic set of answer options.
 - One canonical answer key.
 - A self-contained evidence basis sufficient to answer the question.
@@ -92,10 +120,34 @@ Each resolved question must contain:
 - A clue or lead consequence for success.
 - A reduced fallback clue that preserves solvability.
 
-General trivia facts must come from an approved, safety-reviewed fact and
-answer source. The session generator may compose the prompt, options, and
-presentation, but the canonical answer key must be derived from or validated
-against that source before play.
+General trivia facts must come from the versioned source contract below. The
+session generator may compose the prompt, options, and presentation, but the
+canonical answer key must be derived from or validated against the referenced
+record before play. A case callback must include a list of established fact
+IDs and may not use a hidden or future case record.
+
+#### Fact-source provenance contract
+
+The implementation must commit the source records before package authoring is
+approved. The first source is an authored, fictional-safe fact bank at
+`nightcap/mini_games/interrogation-room/content/general_trivia_v1.json` with
+these required metadata fields: `source_id`, `source_version`, `source_owner`,
+`fact_id`, `fact_text`, `canonical_answer`, `accepted_aliases`,
+`difficulty_band`, and `safety_review_status`. The source owner is the
+designated Nightcap content owner recorded in the package manifest. The
+package manifest must link every generated question to one `source_id`, one
+`source_version`, and one `fact_id`.
+
+Case callbacks use `session.case_snapshot` as the source class and must link
+to a resolved `fact_id` or `claim_id`, its snapshot version, and the
+`established_before_question` marker. The resolver records the source class,
+source ID, version, owner, and locator in the immutable content snapshot.
+External web lookup is not a source for the first slice.
+
+For bounded short answers, aliases are authored in the source record, are
+normalized with Unicode case folding, whitespace collapse, and punctuation
+removal, and are rejected if they collide with another answer in the same
+question. Generated content cannot invent aliases after resolution.
 
 The runtime must compare the submitted option with the resolved answer key.
 No model call may grade correctness or select the answer key after play begins.
@@ -205,19 +257,47 @@ additional AW-289 runtime dependencies:
 - `memory_echo_opportunity`: a future continuity signal for experiences that
   are allowed to reference prior sessions. It must remain outside Nightcap v1.
 
-These signals should be emitted as generic context by Arcwright and consumed
-through a declared mini-game capability contract. A mini-game may request a
-signal family, but it may not depend on a specific experience's internal state.
+These signal families are research notes only. They are not an AW-289 runtime
+contract or implementation dependency. Adding any of them to the shared
+Arcwright context requires a separate founder-approved ADR or specification,
+including ownership, privacy, cost, and compatibility review. AW-289 may use
+only the V1 adaptive context listed above.
 
 ### Proposed scoring and investigative output
 
-- Correct answer: award the AW-284-defined mini-game performance reward and
-  stage the associated investigative lead.
-- Incorrect answer: award no trivia reward and preserve the normal arc path;
+The following initial tuning is proposed for founder approval. AW-289 emits a
+deterministic per-player `mini_game_score_delta`; AW-284 owns accumulation,
+race-score persistence, and score presentation. One mini-game point maps to
+one AW-284 race-score point unless the approved AW-284 scoring brief specifies
+a different explicit conversion.
+
+| Result | Easy | Medium | Hard |
+| --- | ---: | ---: | ---: |
+| Correct base points | 100 | 150 | 200 |
+| Maximum speed bonus | 50 | 50 | 50 |
+| Wrong-answer delta | -10 | -10 | -10 |
+| Timeout, invalid, duplicate, or missing delta | 0 | 0 | 0 |
+
+For a correct answer, `delta = base_points + floor(50 * remaining_time /
+question_time_limit)`. The remaining-time ratio is clamped to 0 through 1 and
+uses the server receipt time. A wrong answer receives the fixed -10 delta;
+all other non-scoring outcomes receive 0. The authoritative score may not
+fall below zero. Each submission is resolved once by `(session_id,
+question_id, player_id)`.
+
+The live leaderboard is a staged, theme-specific presentation snapshot. It
+orders players by total score descending, then correct-answer count
+descending, then cumulative response time ascending, then stable join order.
+The shared display may show the themed rank title and points, but never private
+answers or private clues. The tie-break inputs are server-owned and are not
+client order.
+
+- Correct answer: apply the formula above and stage the associated
+  investigative lead or neutral observation.
+- Incorrect answer: apply the fixed penalty and preserve the normal arc path;
   do not apply elimination or a permanent lockout.
 - Timeout, invalid, duplicate, or missing submission: resolve once according
   to the authoritative server state and use the authored fallback policy.
-- Tie: resolve by the AW-284 deterministic tie policy, not by client order.
 - Trivia performance contributes to the documented evidence/mini-game
   scoring dimension only. It cannot alter accusation truth, killer identity,
   case resolution, or knowledge state.
@@ -280,54 +360,105 @@ The package must define an authored fallback with:
 
 ## Representative sample for founder review
 
-The following sample demonstrates the intended shape. It is illustrative
-content only and must be replaced or approved before package authoring.
+The following sample is the founder-review fixture for a fictional **Murder at
+the Circus** session. It demonstrates general-first content, three tested
+formats, occasional case use, deterministic answer keys, and the proposed
+scoring table. It remains pending explicit design-gate approval.
 
-### Sample question 1: timeline recall
+### Sample question 1: multiple-choice general trivia
 
-**Prompt:** The gallery ledger places the south door alarm before the lights
-failed. Which suspect's alibi does that immediately pressure?
+**Source:** `general-trivia-v1 / CF-001 / source_version 1.0 / Nightcap content
+owner`
+
+**Prompt:** What is a calliope, the instrument most likely to make a circus
+tent sound as though it has opinions?
 
 **Options:**
 
-- Mara Vale
-- Julian Cross
-- The night porter
-- It does not pressure an alibi yet
+- A steam-powered organ
+- A rope used by aerialists
+- A wagon wheel whistle
+- A ringmaster's ceremonial hat
 
-**Canonical answer:** The option resolved from the case ledger.
+**Canonical answer:** A steam-powered organ (`option_a`).
 
-**Success output:** A lead pointing to the affected timeline contradiction.
+**Difficulty and limit:** Easy, 20 seconds.
 
-**Fallback output:** The south-door timing is preserved as a reduced clue.
+**Validation result:** One source-backed answer, distinct distractors,
+self-contained, non-gruesome, no case dependency.
 
-### Sample question 2: claim provenance
+**Score examples:** A correct answer at 4 seconds earns 140 points. A correct
+answer at the deadline earns 100 points. A wrong answer earns -10 points.
 
-**Prompt:** Which statement was heard directly from the suspect rather than
-  inferred from the evidence board?
+**Success output:** The shared display reveals a whimsical instrument fact and
+the ringmaster advances the interrogation tempo.
 
-**Options:** Four resolved claim references.
+**Fallback output:** The narrator supplies the same safe fact without penalty.
 
-**Canonical answer:** The authored claim reference selected during case
-resolution.
+### Sample question 2: true/false general trivia
 
-**Success output:** A neutral observation identifying a claim worth testing.
+**Source:** `general-trivia-v1 / PF-002 / source_version 1.0 / Nightcap content
+owner`
 
-**Fallback output:** The claim remains available through the normal
-interrogation path.
+**Prompt:** True or false: stage magic often depends on directing the audience's
+attention toward one action while another action happens elsewhere.
 
-### Sample question 3: motive and method separation
+**Options:** True, False
 
-**Prompt:** Which detail establishes opportunity without proving motive?
+**Canonical answer:** True (`true`).
 
-**Options:** Four resolved evidence references.
+**Difficulty and limit:** Medium, 15 seconds.
 
-**Canonical answer:** The authored evidence reference selected during case
-resolution.
+**Validation result:** One source-backed answer, self-contained, no case
+dependency, tone aligned to theatrical misdirection.
 
-**Success output:** A lead that sharpens the next interrogation intent.
+**Score examples:** A correct answer at 7 seconds earns 176 points. A wrong
+answer earns -10 points. The same result is produced on replay with the same
+server receipt time.
 
-**Fallback output:** The opportunity detail is released in reduced form.
+**Success output:** The ringmaster calls the table "professionally
+distracted" and keeps the next question brisk.
+
+**Fallback output:** The narrator gives a neutral observation and preserves
+the next interrogation beat.
+
+### Sample question 3: ordering case callback
+
+**Source:** `session.case_snapshot / MURDER-AT-CIRCUS-001 / snapshot 1.0 / Nightcap
+story owner / established_before_question`
+
+**Public evidence basis:** The resolved snapshot establishes three facts before
+this question: the ringmaster announced the final act at 20:05, the house
+lights flickered at 20:07, and a brass key was found beneath the prop trunk at
+20:09.
+
+**Prompt:** Put the established events in chronological order.
+
+**Options:**
+
+- Ringmaster announces final act; house lights flicker; brass key is found
+- House lights flicker; ringmaster announces final act; brass key is found
+- Brass key is found; ringmaster announces final act; house lights flicker
+
+**Canonical answer:** The first option (`event_2005`, `event_2007`,
+`event_2009`).
+
+**Difficulty and limit:** Hard, 25 seconds.
+
+**Validation result:** Every ordered fact is established in the public basis;
+no future clue, hidden truth, or private evidence is referenced. The initial
+paper test failed this validation when the evidence basis was omitted, so the
+question is rejected rather than shown if any basis fact is missing.
+
+**Score examples:** A correct answer at 10 seconds earns 230 points. A wrong
+answer earns -10 points. The associated lead is not unlocked by the question
+unless the answer key and all three established facts validate.
+
+**Success output:** A lead sharpens the next interrogation intent without
+asserting who caused the incident.
+
+**Fallback output:** The already-established 20:07 timing observation remains
+available and the arc advances without penalty.
 
 ## Founder approval checklist
 
@@ -343,6 +474,10 @@ resolution.
 - [ ] Confirm the V1 signal set and the adaptive policy guardrails.
 - [ ] Confirm pre-delivery validation of structure, answer integrity,
   self-containment, narrative grounding, safety, privacy, tone, and variety.
+- [ ] Confirm AW-284 scoring integration and the proposed tuning table.
+- [ ] Approve the representative Murder at the Circus question and scoring
+  sample.
+- [ ] Approve final diegetic framing and narrator copy direction.
 
 ## Design test findings
 
@@ -357,9 +492,6 @@ and answer sufficiency before delivery. An invalid question can break
 immersion, and an invalid case callback could reveal a clue that the story has
 not established yet. This is a blocking content-resolution failure, not a
 player error.
-- [ ] Confirm AW-284 scoring integration.
-- [ ] Approve representative question and scoring sample.
-- [ ] Approve final diegetic framing and narrator copy direction.
 
 ## Acceptance criteria
 
