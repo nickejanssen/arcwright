@@ -1,5 +1,14 @@
 # AW-289: Couch Race Trivia Mini-Game
 
+> Current version: v0.2
+> Last updated: 2026-07-20
+> Status: Planned; design brief drafted and awaiting founder approval
+> Canonical path: docs/roadmap/tasks/AW-289-couch-race-trivia-mini-game.md
+
+**GitHub:** [#258](https://github.com/nickejanssen/arcwright/issues/258)
+
+**Selected Rehearsal 1 game:** The Interrogation Room
+
 **Milestone / Epic:** M5 / M5-I
 **Size:** L
 **Status:** Planned
@@ -22,8 +31,9 @@ received, not a shortcut.
 ## Player Impact
 
 A fourth distinct mini-game beat, adding pacing variety and a different kind
-of challenge (recall/speed under a case-relevant trivia frame) to the
-investigation loop.
+of challenge (case recall under interrogation pressure) to the investigation
+loop. The selected game must feel like Murder Mystery Trivia rather than a
+detached general-knowledge quiz.
 
 ## Business Value
 
@@ -42,13 +52,18 @@ the case unsolvable (same invariant every existing mini-game package
 follows); must not let AI grade or judge trivia answers in a way that
 mutates case truth or scoring outside deterministic rules.
 
+The proposed design is recorded in `docs/specs/0076-aw-289-interrogation-room.md`.
+It remains a draft until the founder approves the design brief and
+representative question/scoring sample.
+
 ## Human Collaboration Contract
 
 **Interaction profile:** Creative collaboration.
 
-**Founder input:** Trivia format and question source (case-specific facts
-vs. general trivia vs. both), difficulty/pacing target, scoring integration
-with AW-284, target beat placement, and success definition.
+**Founder input:** Confirm or revise the proposed hybrid question source,
+case-relevant question framing, difficulty/pacing target, individual answer
+model, scoring integration with AW-284, Beat 3 placement, and success
+definition.
 
 **Required phases:** Begin with focused discovery before authoring. Confirm
 a short design brief, then present a small representative question set and
@@ -76,6 +91,14 @@ brief:*
 - [ ] Scoring/reward integration with AW-284's race-scoring model is
   deterministic and documented.
 - [ ] Package passes AW-250 content and safety review.
+- [ ] The Interrogation Room is the only new trivia game included in the
+  Rehearsal 1 build.
+- [ ] Correct, incorrect, late, duplicate, invalid, and timeout submissions
+  resolve deterministically.
+- [ ] Private answers and clue payloads respect the two-surface privacy
+  contract.
+- [ ] Existing Crime Scene Smash, Evidence Locker, and Tell Me Something
+  True packages remain unaffected.
 
 ## Tests/Verification
 
@@ -89,6 +112,8 @@ brief:*
 - AW-249/AW-250 mini-game authoring and safety foundation (complete)
 - AW-284 (race scoring) for reward-integration shape
 - AW-288 (sibling task; both gate AW-286's Rehearsal 1 readiness)
+- AW-286 (rehearsal readiness; must not close until this task and AW-288 are
+  ready)
 
 ## Must Not Do
 
@@ -99,6 +124,11 @@ brief:*
 - Do not skip the discovery/sample-review gates to hit a rehearsal date --
   if discovery cannot complete in time, report that as a real blocker to
   AW-286's readiness, not something to route around.
+- Do not build or schedule Contradiction Trap, Planted Evidence, Alibi
+  Auction, or Chain of Custody before Rehearsal 1.
+- Do not introduce player-killer or informant roles into Couch Race.
+- Do not add client-side authority for timers, validation, scoring, outcomes,
+  persistence, or clue unlocking.
 
 ## Architecture References
 
