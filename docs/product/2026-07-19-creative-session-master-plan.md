@@ -161,9 +161,14 @@ on-branch before founder merge decision.
 Draft status survives merge — merged-as-draft content is still gated
 by per-task founder sign-off (the M5-I collaboration checkpoints).
 
-**Step 2 (Wed) — Schema-fit audit + slot registry enforcement (F8).**
-Map §5's registry to resolvable state. Gate: merge. Output: the
-runtime conversion contract for `nightcap/content/host_lines/`.
+**Step 2 — Schema-fit audit + slot registry enforcement (F8).**
+✅ **DONE 2026-07-21** — `../design/authoring/schema-fit-audit.md`.
+Findings resolved: Tier 1 slots map to `ResolvedCase`; Tier 2 slots
+depend on AW-279 (identity) and AW-284 (timer/scoring); Tier 3 gap
+closed by **ADR-0017 / D-089** — location & time promoted to
+structured case fields, other dressing to a per-wrapper dressing pack.
+That schema change is now the **prerequisite migration** for Step 4
+and must land (migration + review per AGENTS.md) before conversion.
 
 **Step 3 (Wed/Thu) — AW-284 execution.** Race scoring + accusation
 state — the plan PR (#257) is already founder-handed-off and is the
@@ -174,11 +179,13 @@ plan (it never depended on tonight).
 **Step 4 (Thu/Fri) — Runtime conversion.** Rehearsal-pair libraries
 (Séance 1928 + **Big Top 1899**, per D-088) + identities +
 race-master lines into engine-consumable content, with D-070 hints
-preserved. Note: Big Top adds the `{{stage_name}}` slot and needs a
-rehearsal identity pool (Orbital's pool does not serve Big Top). The
-v1 *launch* pair remains Séance + Orbital; converting Orbital's
-content is launch work, not rehearsal-blocking. Gate: Steps 1–2 +
-Tier 1 answers (D-084/D-087/D-088).
+preserved. **Prerequisite: the ADR-0017 / D-089 migration** (structured
+location/time + dressing pack) plus a refrain-resolver component (none
+exists yet — the audit confirmed the pipeline is declared but unbuilt).
+Big Top adds `{{stage_name}}` (dressing pack) and needs a rehearsal
+identity pool via AW-279. The v1 *launch* pair remains Séance + Orbital;
+converting Orbital's content is launch work, not rehearsal-blocking.
+Gate: Step 1 (merge) + ADR-0017 migration + AW-279 + Tier 1 answers.
 
 **Step 5 (following week) — AW-277/279/280 content tasks close.**
 Each cites tonight's artifacts as founder-reviewed evidence per its

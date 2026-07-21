@@ -50,6 +50,7 @@ When proposing changes:
 - `0014-structured-interaction-resolution.md` - AW-282 authored interaction resolution and public/private event boundary
 - `0015-nightcap-leverage-advantages-sabotages.md` - AW-287 generic resource/effect engine capability for Nightcap Leverage advantages and sabotages; Call Their Bluff replaced by Make Them Wait in the v1 launch set
 - `0016-aw283-claim-ledger-schema.md` - AW-283 claim ledger gets dedicated claims/contradiction_flags tables instead of the generic events table, since claims are the platform's headline mechanic and a hot-path gameplay query, not incidental telemetry
+- `0017-narrator-slot-resolution-and-wrapper-dressing.md` - Vesper refrain slots resolve via two mechanisms: location/time promoted to structured case-truth fields (fairness depends on them), while pure aesthetic dressing (drink, stage_name, tier, weather, etc.) moves to a per-wrapper dressing pack seeded from the moodboards; preserves the case model's arc-agnostic field-name policy and changes zero narrator lines
 
 ## Current Decision Categories
 
