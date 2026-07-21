@@ -198,14 +198,14 @@ full launch. Not launch-window commitment; launch-window commitment
 is two skin wrappers — **~190 authored lines minimum for v1 launch**.
 That's a weekend of disciplined writing per wrapper.
 
-> **Launch pair under review (2026-07-20).** The pair was
-> Séance 1928 + Orbital Gala 2087. The founder has indicated a
-> preference for Séance 1928 + Big Top 1899; that change also touches
-> `docs/specs/0069-nightcap-visual-design-system.md` §7A/§7B (launch
-> skin palettes) and its contrast/colorblind acceptance criterion, and
-> requires a Big Top identity pool. Pending confirmation — see the
-> decisions log. Both candidate wrappers have complete 78-line
-> refrain libraries; only the two original wrappers have identity pools.
+> **Launch pair vs. rehearsal pair (D-088, 2026-07-21).** The v1
+> **launch** pair is unchanged: Séance 1928 + Orbital Gala 2087 (per
+> spec 0069 §7A/§7B). **Rehearsal 1** deliberately tests a different
+> pair — Séance 1928 + Big Top 1899 — so the founder can evaluate the
+> maximum-Ringmaster register live. These are intentionally decoupled:
+> the launch pair is a spec commitment; the rehearsal pair is a taste
+> test. Big Top is not a launch skin unless a later spec-0069
+> amendment makes it one.
 
 ## 6. Signature Beats (Vesper's Choreography)
 

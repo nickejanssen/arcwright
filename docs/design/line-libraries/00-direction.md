@@ -131,8 +131,11 @@ Consolidated across all committed artifacts, highest-leverage first:
    Unmasking spine + inline player crediting; Confession deferred as a
    post-Rehearsal-1 premium candidate. Vesper's 3-movement voice
    structure (the-host.md §6.3) governs delivery within it.
-5. **Launch wrapper pair.** Séance + Orbital Gala per bible (both now
-   authored), or re-rank after tonight's Big Top preference.
+5. ~~**Launch wrapper pair.**~~ **RESOLVED 2026-07-21 — D-088.** Launch
+   pair stays Séance + Orbital (spec 0069). Rehearsal 1 tests
+   Séance + **Big Top** for the Ringmaster register — decoupled on
+   purpose. Big Top needs a rehearsal identity pool and adds
+   `{{stage_name}}` to the schema-fit audit.
 6. **Per-wrapper audience address.** "detectives" / "friends" /
    "everyone" — confirm the variation or flatten.
 7. **br-4 (Vesper's handwritten note)** tests the no-Vesper-on-phone

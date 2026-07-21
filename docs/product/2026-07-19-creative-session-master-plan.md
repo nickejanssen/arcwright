@@ -104,22 +104,28 @@ fixed or fixable now; F4–F8 are decisions or Wednesday work.
 Do these in order. Each tier is independently valuable; stop anywhere
 and the work above the line is usable.
 
-**Tier 1 — Unblocking decisions (~45 min, Monday).**
-The five answers that gate Wednesday engineering:
+**Tier 1 — Unblocking decisions. ✅ COMPLETE 2026-07-20/21.**
+All five recorded (D-084 through D-088):
 
-1. Diegetic presence — accept the per-wrapper-declaration
-   recommendation, or pick one global rule. *(5 min)*
-2. AW-280 clue direction — read `clue-release-shapes.md` §samples,
-   pick (recommendation: object spine + testimony valve). *(15 min)*
-3. AW-278 reveal architecture — read `truth-sequence-shapes.md`,
-   pick (recommendation: Unmasking + inline crediting; Confession as
-   premium later). *(15 min)*
-4. Launch pair confirm — Séance + Orbital Gala (both fully authored)
-   or re-rank. *(2 min)*
-5. Race-master §5 amendment — approve the four new moods
-   (countdown / evidence-wave / nudge / superlative) into
-   the-host.md, and pick the nudge surface (TV public vs
-   system-voiced phone). *(8 min)*
+1. ✅ Diegetic presence — **D-084**: one entity, per-wrapper
+   declaration; all six current libraries resolve to witness.
+2. ✅ AW-280 clue direction — **D-085** (provisional): object-forward
+   spine + testimony valve; ledger rejected (art-direction §4.4).
+3. ✅ AW-278 reveal architecture — **D-086**: Unmasking spine + inline
+   crediting; Confession deferred to post-Rehearsal-1 premium.
+4. ✅ Launch/rehearsal pair — **D-088**: launch stays Séance + Orbital;
+   Rehearsal 1 tests Séance + Big Top (decoupled).
+5. ✅ Race-master moods + nudge — **D-087**: four moods into
+   the-host.md v1.2; hybrid escalation nudge (TV room → TV named →
+   silent UI phone), §7 preserved.
+
+**Surfaced during Tier 1 (not a Tier 1 item):** the founder raised
+whether interrogating AI suspects delivers world-class gameplay. This
+is captured in `../design/authoring/interrogation-experience-review.md`
+and routed to a dedicated session (founder chose: finish Tier 1
+first). It gates nothing here but is the single highest-value open
+gameplay question — recommended de-risk is a 30-minute paper test
+before Rehearsal 1.
 
 **Tier 2 — Taste calibration (~60 min, any evening this week).**
 Read the six wrong-accusation sections + each library's flagged probe
@@ -162,9 +168,14 @@ critical path to the slice; superlative *selection* logic lands here
 consuming the race-master supplement. Gate: none beyond its existing
 plan (it never depended on tonight).
 
-**Step 4 (Thu/Fri) — Runtime conversion.** Launch-pair libraries +
-identities + race-master lines into engine-consumable content, with
-D-070 hints preserved. Gate: Steps 1–2 + Tier 1 answers #1/#4/#5.
+**Step 4 (Thu/Fri) — Runtime conversion.** Rehearsal-pair libraries
+(Séance 1928 + **Big Top 1899**, per D-088) + identities +
+race-master lines into engine-consumable content, with D-070 hints
+preserved. Note: Big Top adds the `{{stage_name}}` slot and needs a
+rehearsal identity pool (Orbital's pool does not serve Big Top). The
+v1 *launch* pair remains Séance + Orbital; converting Orbital's
+content is launch work, not rehearsal-blocking. Gate: Steps 1–2 +
+Tier 1 answers (D-084/D-087/D-088).
 
 **Step 5 (following week) — AW-277/279/280 content tasks close.**
 Each cites tonight's artifacts as founder-reviewed evidence per its
