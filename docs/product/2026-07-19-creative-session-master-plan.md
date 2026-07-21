@@ -14,7 +14,10 @@
 ## 1. What Exists (Complete Inventory)
 
 **Verified counts, no estimates.** Six libraries × 78 entries = 468
-Vesper lines. 22 files changed, ~4,000 lines, 21+ commits.
+Vesper refrain lines (plus race-master, twist-menu, and last-line
+supplements). As of the 2026-07-20/21 Tier-1 + review pass: ~30
+commits, 26 files, ~4,770 insertions vs main; 21 files retain DRAFT
+headers. Tier 1 decisions D-084–D-088 recorded.
 
 ### Rehearsal-1-critical (feeds M5-I directly)
 
