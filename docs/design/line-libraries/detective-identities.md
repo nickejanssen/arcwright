@@ -4,7 +4,7 @@
 > Last updated: 2026-07-19
 > Status: Draft, awaiting founder review (see 00-direction.md)
 > Canonical path: docs/design/line-libraries/detective-identities.md
-> Authority: AW-279 task contract; `docs/design/the-host.md` v1.1
+> Authority: AW-279 task contract; `docs/design/the-host.md` v1.2
 > Feeds: AW-279 (detective identity and opening briefing)
 
 ## AW-279 Contract Restated (Binding On Every Entry)

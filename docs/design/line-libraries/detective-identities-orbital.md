@@ -4,7 +4,7 @@
 > Last updated: 2026-07-19
 > Status: Draft, awaiting founder review (see 00-direction.md)
 > Canonical path: docs/design/line-libraries/detective-identities-orbital.md
-> Authority: AW-279 task contract; `docs/design/the-host.md` v1.1
+> Authority: AW-279 task contract; `docs/design/the-host.md` v1.2
 > Companion: `detective-identities.md` (Séance 1928 pool + AW-279 rules)
 > Completes AW-279 coverage for the launch wrapper pair.
 

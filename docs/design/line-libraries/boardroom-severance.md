@@ -7,7 +7,7 @@
 > Diegesis (D-084): **witness** — Vesper is present in-world as the
 > Chief of Staff; "I did the seating" is in-character. Secondary
 > memory-holder: the building and its records.
-> Authority: `docs/design/the-host.md` v1.1; `docs/design/moodboards/boardroom-severance.md`
+> Authority: `docs/design/the-host.md` v1.2; `docs/design/moodboards/boardroom-severance.md`
 > Wrapper: Corporate — Boardroom Severance. Vesper as the Chief of
 > Staff, or HR. Vesper *reduced*: dry, procedural, faintly resigned.
 > Every sentence is a talking point; every third sentence isn't. The

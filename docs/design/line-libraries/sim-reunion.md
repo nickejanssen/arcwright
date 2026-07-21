@@ -7,7 +7,7 @@
 > Diegesis (D-084): **witness** — Vesper is present in-world as the
 > sim's customer-experience host; being inside the world is the
 > wrapper premise. Secondary memory-holder: the sim itself.
-> Authority: `docs/design/the-host.md` v1.1; `docs/design/moodboards/sim-reunion.md`
+> Authority: `docs/design/the-host.md` v1.2; `docs/design/moodboards/sim-reunion.md`
 > Wrapper: Sci-Fi — Sim Reunion. Vesper as the sim's customer-experience
 > host: bright, cheerful, slightly-off in her politeness, saying every
 > awful thing with a smile you can hear. **Maximum Caine.** The craft

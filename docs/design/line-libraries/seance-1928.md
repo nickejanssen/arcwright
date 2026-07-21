@@ -7,7 +7,7 @@
 > Diegesis (D-084): **witness** — Vesper is present in-world as the
 > house's Master of Ceremonies; first-person memory of the evening is
 > in-character. Secondary memory-holder: the house.
-> Authority: `docs/design/the-host.md` v1.1; `docs/design/moodboards/seance-1928.md`
+> Authority: `docs/design/the-host.md` v1.2; `docs/design/moodboards/seance-1928.md`
 > Wrapper: High Society — Séance 1928. Vesper as the house's Master of
 > Ceremonies: decanter in one hand, lit cigarette in the other. Warm,
 > deco-cadenced, dangerous under the charm.

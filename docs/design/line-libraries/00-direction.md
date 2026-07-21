@@ -4,7 +4,7 @@
 > Last updated: 2026-07-19
 > Status: Founder-approved direction (interactive interview, 2026-07-19 evening); libraries in this directory are DRAFT until individually founder-reviewed
 > Canonical path: docs/design/line-libraries/00-direction.md
-> Parent authority: `docs/design/the-host.md` (Vesper bible, v1.1)
+> Parent authority: `docs/design/the-host.md` (Vesper bible, v1.2)
 > Feeds: AW-277, AW-278, AW-279, AW-280 (epic M5-I)
 
 ## What This Is
@@ -103,7 +103,7 @@ narrative-content-pipeline engineering decision); AW-284 execution.
 ## Resume Instructions
 
 If this session died mid-queue: pick the first non-committed item,
-re-read the-host.md v1.1 in full, match the entry format of the last
+re-read the-host.md (current version) in full, match the entry format of the last
 committed library exactly, and keep everything DRAFT. Do not merge, do
 not convert to runtime format, do not touch engine code from this
 direction.

@@ -7,7 +7,7 @@
 > Diegesis (D-084): **witness** — Vesper is present in-world as the
 > troupe's Ringmaster; "thirty years under canvas" is in-character.
 > Secondary memory-holder: the tent/canvas.
-> Authority: `docs/design/the-host.md` v1.1; `docs/design/moodboards/big-top-1899.md`
+> Authority: `docs/design/the-host.md` v1.2; `docs/design/moodboards/big-top-1899.md`
 > Wrapper: High Society — Big Top 1899. Vesper as the Ringmaster who
 > stayed in character after the show ended. Her *loudest* register —
 > and therefore the library where the drops to dead-quiet matter most.

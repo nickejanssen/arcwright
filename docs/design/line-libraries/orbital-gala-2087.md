@@ -7,7 +7,7 @@
 > Diegesis (D-084): **witness** — Vesper is present in-world as the
 > station's log/concierge; first-person recording claims are
 > in-character. Secondary memory-holder: the station.
-> Authority: `docs/design/the-host.md` v1.1; `docs/design/moodboards/orbital-gala-2087.md`
+> Authority: `docs/design/the-host.md` v1.2; `docs/design/moodboards/orbital-gala-2087.md`
 > Wrapper: Sci-Fi — Orbital Gala 2087. Vesper as the ship's log: the
 > hospitality concierge, or the AI that isn't the station AI. Her
 > *coolest* register — calibrated, precise, unimpressed. The shift here

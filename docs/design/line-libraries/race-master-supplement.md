@@ -4,7 +4,7 @@
 > Last updated: 2026-07-19
 > Status: Draft, awaiting founder review (see 00-direction.md)
 > Canonical path: docs/design/line-libraries/race-master-supplement.md
-> Authority: `docs/design/the-host.md` v1.1; Couch Race story bible §5
+> Authority: `docs/design/the-host.md` v1.2; Couch Race story bible §5
 > ("the narrator is also the race master… scoreboard moments are
 > narrator moments, in-fiction, never system-voiced")
 > Covers: Séance 1928 and Orbital Gala 2087
