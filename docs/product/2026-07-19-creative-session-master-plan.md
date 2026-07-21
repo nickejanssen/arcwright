@@ -179,13 +179,18 @@ plan (it never depended on tonight).
 **Step 4 (Thu/Fri) — Runtime conversion.** Rehearsal-pair libraries
 (Séance 1928 + **Big Top 1899**, per D-088) + identities +
 race-master lines into engine-consumable content, with D-070 hints
-preserved. **Prerequisite: the ADR-0017 / D-089 migration** (structured
-location/time + dressing pack) plus a refrain-resolver component (none
-exists yet — the audit confirmed the pipeline is declared but unbuilt).
-Big Top adds `{{stage_name}}` (dressing pack) and needs a rehearsal
-identity pool via AW-279. The v1 *launch* pair remains Séance + Orbital;
-converting Orbital's content is launch work, not rehearsal-blocking.
-Gate: Step 1 (merge) + ADR-0017 migration + AW-279 + Tier 1 answers.
+preserved. **Now decomposed into two engineering tasks** (drafted
+2026-07-21):
+- **AW-290** — narrator slot schema (structured location/time +
+  wrapper dressing pack; the ADR-0017 migration).
+- **AW-291** — narrator refrain resolver (the unbuilt consumer that
+  reads `host_lines`, fills slots, emits ContentEvents).
+Plus **AW-279** (detective identity assignment — already a task; its
+identity-pool *content* is now authored and founder-reviewable). Big
+Top adds `{{stage_name}}` (dressing pack). The v1 *launch* pair remains
+Séance + Orbital; converting Orbital's content is launch work, not
+rehearsal-blocking. Gate: Step 1 (merge) + AW-290 + AW-291 + AW-279.
+AW-286 (rehearsal slice) `depends_on` now includes AW-290/AW-291.
 
 **Step 5 (following week) — AW-277/279/280 content tasks close.**
 Each cites tonight's artifacts as founder-reviewed evidence per its

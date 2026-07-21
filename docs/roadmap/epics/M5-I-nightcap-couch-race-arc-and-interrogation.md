@@ -33,6 +33,8 @@ The technical scope is limited to the tasks listed below and the architecture re
 - [AW-286: Couch Race Rehearsal Slice And Rehearsal 1 Retarget](../tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md)
 - [AW-288: Couch Race Mini-Game Beat Coverage And Tell Me Something True Acceleration](../tasks/AW-288-couch-race-mini-game-beat-coverage-and-tmst-acceleration.md)
 - [AW-289: Couch Race Trivia Mini-Game](../tasks/AW-289-couch-race-trivia-mini-game.md)
+- [AW-290: Narrator Slot Schema — Structured Location/Time And Wrapper Dressing Pack](../tasks/AW-290-narrator-slot-schema-and-wrapper-dressing.md)
+- [AW-291: Narrator Refrain Resolver](../tasks/AW-291-narrator-refrain-resolver.md)
 
 ## Supporting Rehearsal 1 Dependencies
 
