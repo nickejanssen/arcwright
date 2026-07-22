@@ -58,6 +58,9 @@ approvals, dates, and owner actions.
 - [ ] Join flow stays under 30 seconds.
 - [ ] Extended privacy matrix passes: no private event type renders on the shared display.
 - [ ] TV renders D-070 presentation hints (voice/animation/pause) where assets exist; degrades to text cleanly where they do not (Tier 2 assets remain M5-G scope).
+- [ ] **Catch/squirm quality gate (D-090):** the suspect's reaction on a *confirmed contradiction catch* renders as a high-quality audiovisual moment (animation + audio per D-070), NOT a text fallback. Text degradation is acceptable for ambient narration but the catch moment is the mechanic's payoff and must clear the bar. This is validated in Rehearsal 1.
+- [ ] **Asker-crediting staging (D-091 / G3):** the shared display attributes each question to its asker and shows what it bought, on the co-opetition model.
+- [ ] **Room-watch staging (D-091 / G5):** the suspect's visible state (at ease / rattled / cracking) renders on the shared display during every question, giving the whole room a reason to watch another player's turn.
 
 ## Tests/Verification
 

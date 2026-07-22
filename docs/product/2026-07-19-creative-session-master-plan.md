@@ -122,13 +122,22 @@ All five recorded (D-084 through D-088):
    the-host.md v1.2; hybrid escalation nudge (TV room → TV named →
    silent UI phone), §7 preserved.
 
-**Surfaced during Tier 1 (not a Tier 1 item):** the founder raised
-whether interrogating AI suspects delivers world-class gameplay. This
-is captured in `../design/authoring/interrogation-experience-review.md`
-and routed to a dedicated session (founder chose: finish Tier 1
-first). It gates nothing here but is the single highest-value open
-gameplay question — recommended de-risk is a 30-minute paper test
-before Rehearsal 1.
+**The interrogation track (founder interview 2026-07-21, D-090/D-091).**
+The founder's "is AI interrogation actually fun?" question was worked
+through and is now a concrete track:
+- **Locked:** presentation is a hard quality gate (D-090 — the
+  catch/squirm must land as high-quality audio+animation, now an AW-285
+  acceptance criterion); G3/G5 staging adopted (AW-285); G2 quoting
+  proven-then-built (AW-292, gated).
+- **Held for a paper test:** the competition model (examined in
+  `../design/authoring/couch-race-competition-model.md`, recommended
+  co-opetition), G1 (strategy vs query menus), G4 (conflict verbs).
+- **The gate:** `../design/authoring/interrogation-paper-test.md` — a
+  ~30-min table test that resolves all held items in one evening before
+  any engineering spend. **Recommended to run before Rehearsal 1**; it
+  de-risks the single highest-value untested assumption in the product.
+  It does not block the PR or Steps 0-4, but it should gate the AW-292
+  build and inform AW-285.
 
 **Tier 2 — Taste calibration (~60 min, any evening this week).**
 Read the six wrong-accusation sections + each library's flagged probe

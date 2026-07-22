@@ -2276,6 +2276,20 @@
       ],
       "path": "docs/roadmap/tasks/AW-291-narrator-refrain-resolver.md",
       "epic_id": "M5-I"
+    },
+    {
+      "id": "AW-292",
+      "title": "Quote-Suspects Interrogation Mechanic",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "M",
+      "depends_on": [
+        "AW-282",
+        "AW-283",
+        "AW-285"
+      ],
+      "path": "docs/roadmap/tasks/AW-292-quote-suspects-interrogation-mechanic.md",
+      "epic_id": "M5-I"
     }
   ],
   "superseded_sources": [

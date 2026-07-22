@@ -35,6 +35,7 @@ The technical scope is limited to the tasks listed below and the architecture re
 - [AW-289: Couch Race Trivia Mini-Game](../tasks/AW-289-couch-race-trivia-mini-game.md)
 - [AW-290: Narrator Slot Schema — Structured Location/Time And Wrapper Dressing Pack](../tasks/AW-290-narrator-slot-schema-and-wrapper-dressing.md)
 - [AW-291: Narrator Refrain Resolver](../tasks/AW-291-narrator-refrain-resolver.md)
+- [AW-292: Quote-Suspects Interrogation Mechanic](../tasks/AW-292-quote-suspects-interrogation-mechanic.md) — gated on paper-test validation (D-091)
 
 ## Supporting Rehearsal 1 Dependencies
 

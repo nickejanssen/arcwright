@@ -1,12 +1,50 @@
 # Interrogation Experience — Founder Discovery Memo
 
-> Current version: v0.1 DRAFT — discovery material, NO direction locked
-> Last updated: 2026-07-20
-> Status: Raised by the founder during Tier 1 (master plan §3, decision
-> 2). Captured so the question is not lost. This memo does NOT change
-> AW-282's shipped behavior, AW-283's shipped behavior, or any approved
-> scope. It is input to a future AW-282/AW-283 follow-up discovery
-> cycle, whose collaboration contract governs.
+> Current version: v0.2 — founder interview held 2026-07-21; partially
+> resolved (see Resolution below)
+> Last updated: 2026-07-21
+> Status: Founder discovery interview complete (2026-07-21). Three items
+> locked, two held for a design examination + paper test. This memo does
+> NOT change AW-282's or AW-283's shipped behaviour. Resolution recorded
+> here and in the decisions log (D-090, D-091); the examination lives in
+> `couch-race-competition-model.md`; the validating test in
+> `interrogation-paper-test.md`.
+
+## Resolution (2026-07-21 founder interview)
+
+**Locked:**
+- **Presentation is a hard gate (D-090).** The interrogation mechanic
+  lives or dies on the suspect's *catch/squirm* landing as a
+  high-quality audiovisual performance (D-070). This is core scope, not
+  polish — a non-negotiable acceptance criterion for AW-285 and the
+  interrogation experience, tested in Rehearsal 1.
+- **G2 (quote suspects): prove in the paper test, then build (D-091).**
+  Highest-differentiation mechanic; validated on paper first, then a
+  first-class build (AW-292).
+- **G5 (room reasons to watch): adopt now** via staging (D-091);
+  **G3 (asking as public performance): adopt** under the co-opetition
+  model. Both AW-285 staging requirements.
+
+**Held for examination + paper test:**
+- **The competition model** — the founder surfaced that a shared TV +
+  public answers + identical menus has no obvious PvP edge. Examined in
+  `couch-race-competition-model.md` (recommendation: co-opetition);
+  decided after the paper test.
+- **G1 (strategy verbs vs data queries)** — held; both menus tested in
+  the paper test under the chosen model.
+- **G4 (productive conflict verbs)** — prototyped in the paper test,
+  designed post-rehearsal (tied to the D-077 tie-break minigame).
+
+**The viability verdict:** interrogating non-real suspects is a proven,
+beloved genre (Her Story, LA Noire, Ace Attorney, Obra Dinn) — the loop
+works IF the catch (not the ask) is the payoff AND the squirm clears the
+audiovisual bar. Couch Race's differentiator over all of them: infinite
+generated cases, social couch play, and knowledge-state-constrained
+suspects (systemic, not scripted, contradictions).
+
+---
+
+### Original memo (2026-07-20) follows unchanged for provenance.
 > Canonical path: docs/design/authoring/interrogation-experience-review.md
 > Authority: `docs/story-bibles/nightcap-couch-race.md` §6;
 > `engine/interactions/README.md` (shipped AW-282)
