@@ -85,12 +85,15 @@ are thin, and where they are missing.
   and any miss is fixed by swapping the game — not by blocking the
   night.
 
-**What is MISSING:**
+**What is MISSING (corrected — much less than first stated):**
 
-- **Unified scoring across systems.** It is unspecified whether a
-  minigame `final-score` feeds the race, and how it weighs against
-  interrogation catches and accusation accuracy. Without this, the
-  night has three disconnected scoreboards, not one race.
+- **Leverage was the missing link, and it already exists (D-094).**
+  Minigames pay out **Leverage** currency (AW-287), spent on
+  advantages/sabotages — the Mario-Party coins→items loop. What remains
+  genuinely open is only the *final scoring weighting* (catches vs
+  accusation), NOT "do minigames connect to anything" — they connect via
+  Leverage. The earlier "three disconnected scoreboards" worry was
+  overstated: Leverage is the connecting economy.
 - **Beat rhythm / minigame coverage.** Minigames sit in only 2 of 6
   beats. D-079 ("minigames throughout, like Mario Party") wants more;
   AW-288 is meant to expand coverage — but the *rhythm* (which energy in
@@ -142,25 +145,37 @@ A minigame may also simply drive engagement/points (Mario-Party role)
 without gating evidence at all — both are allowed; what is NOT allowed
 is a *required* clue locked behind minigame success.
 
-### System 2 — Scoring & Competition (the integrator)
+### System 2 — The Leverage Economy + Scoring (the integrator)
 
-This is where the competition-model examination
-(`couch-race-competition-model.md`) becomes concrete. One race,
-multiple contributing systems. Under the recommended **co-opetition**
-model, individual score accumulates from:
+**CORRECTION (D-094):** an earlier version of this doc treated scoring
+integration as an open question and never mentioned **Leverage** — the
+shipped economic + competitive spine (AW-287, ADR-0015). Corrected here.
+See `couch-race-systems-map.md` §5-7.
 
+Two connected systems tie the night together:
+
+**The Leverage economy (the currency loop, Mario-Party heart):**
+- **Minigames + accomplishments → Leverage** (an earned resource,
+  separate from question tokens). This is the primary minigame payout.
+- **Leverage → advantages** (Deep Read, Follow the Thread, Sting
+  Operation — sharpen your own investigation) **or sabotages** (Rattle
+  the Witness, Listen In, Make Them Wait — interfere with a rival).
+- This IS the primary player-vs-player layer. Anti-snowballing is
+  already designed (floor for non-winners; no unrecoverable leads —
+  Leverage design doc).
+
+**Scoring (the race outcome):**
 - **Contradiction catches** (interrogation) — the skill core.
-- **Minigame performance** — but converted into *evidence advantage*
-  first, so a strong minigame run pays off as better catches, not just
-  a parallel point stream (this keeps the systems from being three
-  scoreboards).
 - **Accusation accuracy + speed** (Last Call) — the decisive points.
+- Leverage is spent *during* play to improve your position; the score
+  is what you convert that position into.
 
-The open weighting question (how much each contributes, whether a
-dominant player runs away) is exactly the competition-model open
-question, now scoped to the whole night. **Recommendation:** minigames
-feed evidence (not direct points), catches score moderately, accusation
-accuracy dominates — so the mystery, not the arcade, decides the night.
+**Open weighting question (the remaining one):** how much do catches vs
+accusation accuracy contribute, and does a dominant player run away?
+**Recommendation:** minigames pay Leverage (not direct score), catches
+score moderately, accusation accuracy dominates — so the mystery, not
+the arcade or the sabotages, decides who wins. Sabotages change *tempo
+and information*, not the final truth.
 
 ### System 3 — Rhythm & Pacing (the variety)
 

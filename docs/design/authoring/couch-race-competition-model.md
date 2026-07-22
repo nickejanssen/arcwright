@@ -25,6 +25,20 @@ the competitive layer.** Making question intents richer (G1) does not,
 by itself, create competition. This doc separates the two layers and
 examines what competition model Couch Race should actually use.
 
+## CORRECTION (2026-07-21, D-094): Leverage is the primary PvP layer
+
+This doc's original version omitted the single most important
+competitive system: **Nightcap Leverage** (AW-287, ADR-0015) — an earned
+resource spent on **advantages** (help yourself) and **sabotages**
+(interfere with a rival). Earned through minigames and accomplishments.
+The "where is the player-vs-player edge?" question this doc opens is
+**primarily answered by Leverage sabotages**, not only by private
+evidence + race-to-flag. The correct framing: **co-opetition
+(investigate together, score individually) with competitive TEETH
+supplied by the Leverage advantage/sabotage economy.** Everything below
+still holds, but read it as the *secondary* asymmetry layer on top of
+Leverage. See `couch-race-systems-map.md` §5.
+
 ## What Already Creates Asymmetry (grounded in the bible, not invented)
 
 `nightcap-couch-race.md` §6-7 already contains competitive structure:

@@ -223,14 +223,19 @@ guide covers voice, mechanics, product, and whole-session integration
 (O13-O16). This also touches AW-284 (unified scoring across minigames +
 catches + accusation) and AW-288 (minigame beat coverage / rhythm).
 
-**The gameplay-integration track (D-092).** A parallel, non-narration
-concern the session surfaced late: we had strong components (narration,
-interrogation) with no whole-session design. Now addressed by
-`../design/authoring/couch-race-session-experience.md` (the integrating
-design), the competition-model examination, and the widened paper test.
-Its open decisions (evidence-economy rule, scoring weighting, thematic
-philosophy, minigame homes) feed AW-284/288 and should be resolved with
-the paper test before Rehearsal 1.
+**The gameplay-integration track (D-092/D-093/D-094).** A concern the
+session surfaced late: strong components (narration, interrogation) with
+no whole-session design — and an assistant error, designing "scoring
+integration" while **Leverage** (AW-287, the advantage/sabotage economy)
+already answered it. Now grounded by
+**`../design/authoring/couch-race-systems-map.md` — the canonical
+inventory of all 13 gameplay systems; READ IT FIRST before any Couch
+Race gameplay design.** Supporting: `couch-race-session-experience.md`
+(whole-night design), `couch-race-competition-model.md` (co-opetition +
+Leverage), North Star D-093. The confirmed loop: story spine → clues →
+minigames→Leverage → advantages/sabotages → interrogation/catches →
+accusation → cinematic reveal. Remaining open decision: final scoring
+weighting (feeds AW-284). Resolve with the paper test before Rehearsal 1.
 
 **Parallel track (any time, renewable model):** neutral-core
 extraction from the six libraries; Vesper name clearance (F5) added
