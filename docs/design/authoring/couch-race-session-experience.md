@@ -15,6 +15,33 @@
 > Changes no shipped behaviour; locks no scope. Feeds AW-284, AW-285,
 > AW-286, AW-288, AW-289, AW-292 and the paper test.
 
+## Product North Star (founder, 2026-07-21) — D-093
+
+Couch Race is defined by three reference points, in priority order:
+
+1. **A striking, premium murder-mystery STORY is the spine.** The story
+   is the differentiator and the load-bearing element — deep, authored,
+   world-class. Everything else serves it. This is what nobody else has.
+2. **Mario Party minigames drive engagement, variety, and rhythm.**
+   They are *swappable* modules, not story-critical. They may be
+   thematically loose ("charm and personality") because they are not
+   the point — the story is. Swappability is the safety valve: any
+   minigame that isn't working is replaced, and nothing breaks.
+3. **Jackbox Murder Mystery Trivia Party is the personality/format
+   inspiration — but we go deeper.** Jackbox's accessibility, party
+   energy, and trivia/minigame format are the template; its
+   *lightweight, vanilla, simple* feel is explicitly what we reject. Our
+   edge over Jackbox is depth, premium presentation (D-090), and a real
+   story spine. "Jackbox, but not shallow."
+
+**The load-bearing consequence — minigames give edge, not gates.**
+Because minigames are swappable and the story is the spine, the mystery
+must be **fully solvable without winning any minigame.** A minigame
+result is an *accelerator or advantage* (a sharper clue, a head start,
+bonus points), never the only path to a piece of core evidence. The
+existing `clue_fallback` (you always get the clue; playing well gets a
+better variant) is exactly this model — make it the universal rule.
+
 ## Why This Exists
 
 We have been building vertically — deep on Vesper narration (6 wrapper
@@ -44,15 +71,19 @@ are thin, and where they are missing.
   accusation state, first-correct trigger, superlatives (Best
   Interrogator, Lie Detector, Most Confidently Wrong).
 
-**What is THIN (the founder's real worry):**
+**On thematic fit (reframed by the North Star, D-093):**
 
-- **Minigame mechanics are thematically generic.** Crime Scene Smash is
-  match-3 (swap gems). It has nothing fictionally to do with
-  investigating a murder; it is an arcade skill-gate wearing a
-  crime-scene skin. Whether that reads as Mario-Party variety or
-  immersion-breaking filler is an unanswered design question — the same
-  family as interrogation viability, and it must be answered the same
-  way (test the feel).
+- Crime Scene Smash is a **time-bound "smash the most" competitive
+  race** (its match-3 board is the vehicle for the smash race). That is
+  a legitimate Mario-Party engagement minigame — competitive frenzy
+  skinned to the crime scene. Under the North Star this is *fine*:
+  minigames may be thematically loose ("charm and personality"), because
+  the story is the spine and minigames are swappable. The earlier worry
+  ("match-3 has nothing to do with murder") over-weighted thematic
+  purity; the real bars are (a) is it *fun* and (b) does it obey the
+  edge-not-gate rule. Thematic fit is a nice-to-have, tested by feel,
+  and any miss is fixed by swapping the game — not by blocking the
+  night.
 
 **What is MISSING:**
 
@@ -101,11 +132,15 @@ Every path to information, unified:
   private evidence into points.
 - **Twist minigame** (Evidence Locker) → second wave, same gating.
 
-Design rule to lock: **minigames are not detours from the mystery; they
-are how you _earn your evidence_.** A minigame that awards only points
-(not information) is the failure mode. Crime Scene Smash's
-`clue_fallback` shows the intended model — make it the standard: every
-minigame's primary output is *investigative advantage*, points second.
+Design rule (D-093, edge-not-gate): **a minigame result is an
+_accelerator or advantage_ toward the investigation — a sharper clue, a
+head start, bonus points — never the only path to core evidence.** The
+mystery is fully solvable without winning any minigame (that is what
+makes minigames swappable). Crime Scene Smash's `clue_fallback` is the
+model: you always get the clue; playing well gets a better variant.
+A minigame may also simply drive engagement/points (Mario-Party role)
+without gating evidence at all — both are allowed; what is NOT allowed
+is a *required* clue locked behind minigame success.
 
 ### System 2 — Scoring & Competition (the integrator)
 
@@ -139,25 +174,23 @@ accuracy dominates — so the mystery, not the arcade, decides the night.
 - The pacing engine (stall thresholds already in the arc) covers dead
   air; this doc covers *designed* energy, which is different.
 
-## The Thematic-Integration Question (the founder's worry, made a decision)
+## The Thematic-Integration Question — RESOLVED by the North Star (D-093)
 
-Match-3 as a crime-scene game is the test case. Two philosophies:
+Earlier this was framed as abstract-vs-diegetic minigames. The North
+Star resolves it: **story is the spine; minigames are swappable
+engagement drivers that may be thematically loose.** So both styles are
+allowed, and the deciding bars are, in order:
 
-- **A — Abstract minigames, thematic skins (current).** Generic
-  addictive mechanics (match-3, memory, reflex) skinned per case. Cheap,
-  proven-fun, infinitely reusable; risk: immersion-breaking, "why am I
-  playing Bejeweled at a murder."
-- **B — Diegetic minigames.** The mechanic *is* an investigative act
-  (reconstruct the timeline, match fingerprints, sort testimony). More
-  immersive; more expensive to author; harder to make reliably fun.
+1. **Is it fun?** (Mario-Party-grade engagement.) Non-negotiable.
+2. **Does it obey edge-not-gate?** (No required clue locked behind it.)
+3. Thematic fit — a nice-to-have that adds charm, not a requirement.
 
-**Recommendation:** B where cheap and clearly better (Evidence Locker
-and TMST lean diegetic already), A tolerated where a proven arcade loop
-carries a low-stakes energy beat — but every minigame must pass the
-**evidence-economy rule** (its output is investigative advantage). A
-match-3 that earns you a real clue is defensible; a match-3 that earns
-only points is not. This is the concrete design bar. Decide in the
-whole-session paper test.
+Diegetic minigames (Evidence Locker, TMST lean this way) are *preferred*
+where they are also fun, because they add immersion for free. Abstract
+ones (Crime Scene Smash) are welcome where they carry an energy beat.
+Any minigame that fails bar 1 or 2 is **swapped**, not patched — that is
+the whole point of the swappable-module architecture. This is the
+concrete standard; feel is confirmed in the paper test / Rehearsal 1.
 
 ## What The Whole-Session Paper Test Must Now Validate
 
@@ -181,13 +214,24 @@ rehearsal that only proves interrogation works would be a false pass.
 
 ## Open Decisions For The Founder
 
-1. **Evidence-economy rule** — lock "every minigame's primary output is
-   investigative advantage, points second"? (Recommended yes.)
-2. **Scoring weighting** — minigames→evidence, catches moderate,
-   accusation dominant? (Recommended yes — keeps the mystery decisive.)
-3. **Thematic philosophy** — B-where-cheap + A-with-the-evidence-rule?
-4. **Minigame homes** — TMST → Pour warm-up, Trivia → Last Call speed
-   round (giving 4/6 beats a minigame touchpoint)? This is AW-288's
-   beat-coverage decision; this doc recommends the placement.
-5. Confirm Rehearsal 1 as the whole-session test (reframes AW-286 +
-   the observation guide).
+1. ~~Evidence-economy rule~~ **RESOLVED (D-093): edge-not-gate.** A
+   minigame gives advantage, never a required-clue gate; the mystery is
+   solvable without any minigame; minigames may also just drive
+   engagement/points.
+2. **Scoring weighting** — still open. Recommendation: minigames feed
+   edge/engagement, interrogation catches score moderately, accusation
+   accuracy dominates — so the *story/mystery* decides the night, not
+   the arcade. Confirm the ordering, and whether minigame points count
+   directly toward the race at all or only as investigative edge.
+3. ~~Thematic philosophy~~ **RESOLVED (D-093): story-spine + swappable
+   loose-theme minigames + Jackbox-but-deeper.** Bars: fun, then
+   edge-not-gate, then thematic fit as charm.
+4. **Minigame homes / rhythm** — still open. Recommendation: TMST → a
+   Pour/Scene social warm-up, Trivia → a Last Call speed round, giving
+   ~4/6 beats a touchpoint. This is AW-288's beat-coverage decision.
+5. ~~Rehearsal 1 as the whole-session test~~ **RESOLVED (D-092).**
+6. **NEW — the "Jackbox but deeper" bar.** What concretely makes us
+   *not* lightweight/vanilla? Candidates: story depth, premium
+   audiovisual (D-090), knowledge-state suspects, real stakes/scoring.
+   Worth an explicit differentiation statement (recommend it lands in
+   the story bible's Strategic Role section on the next bible pass).
