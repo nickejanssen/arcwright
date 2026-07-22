@@ -213,9 +213,24 @@ Tier 1 #3.
 
 **Step 7 — AW-285/286: rendering + the rehearsal slice.** With
 content real, TV/phone rendering has something true to render.
-**Gate: everything above. Output: Rehearsal 1.** The breadth test you
-named as priority one — now with six beats of authored voice, both
-launch skins, race-master coverage, and reveal accounting to test.
+**Gate: everything above. Output: Rehearsal 1.** Per **D-092**,
+Rehearsal 1 is the **whole-session test** — it validates the integrated
+night (all six beats, minigame touchpoints, unified scoring, rhythm),
+not any single mechanic. Its design authority is
+`../design/authoring/couch-race-session-experience.md`; a rehearsal
+that only proves interrogation works is a false pass. The observation
+guide covers voice, mechanics, product, and whole-session integration
+(O13-O16). This also touches AW-284 (unified scoring across minigames +
+catches + accusation) and AW-288 (minigame beat coverage / rhythm).
+
+**The gameplay-integration track (D-092).** A parallel, non-narration
+concern the session surfaced late: we had strong components (narration,
+interrogation) with no whole-session design. Now addressed by
+`../design/authoring/couch-race-session-experience.md` (the integrating
+design), the competition-model examination, and the widened paper test.
+Its open decisions (evidence-economy rule, scoring weighting, thematic
+philosophy, minigame homes) feed AW-284/288 and should be resolved with
+the paper test before Rehearsal 1.
 
 **Parallel track (any time, renewable model):** neutral-core
 extraction from the six libraries; Vesper name clearance (F5) added

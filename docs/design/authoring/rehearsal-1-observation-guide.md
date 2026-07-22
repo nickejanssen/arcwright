@@ -11,13 +11,23 @@
 > first priority. A rehearsal only produces knowledge if someone
 > decided beforehand what to observe. This is that decision, drafted.
 
+## Rehearsal 1 Is The Whole-Session Test (D-092)
+
+Rehearsal 1's purpose is to validate the **integrated night** — all six
+beats, all minigame touchpoints, unified scoring, and the rhythm — not
+any single mechanic. A rehearsal that only proved interrogation works
+would be a *false pass*. The design authority for the whole night is
+`couch-race-session-experience.md`; this guide is how you watch it run.
+The observations below therefore cover voice, mechanics, product, AND
+the whole-session integration (rhythm, minigames-as-evidence, one race).
+
 ## The Principle
 
 You cannot debug what you did not watch for. Rehearsal 1 will be
 overwhelming — real people, real couch, live engine — and every
 observation you fail to plan will be replaced in memory by an
-anecdote. This guide converts tonight's content decisions into
-**twelve planned observations**, each with a trigger to stage, a
+anecdote. This guide converts the design decisions into **planned
+observations**, each with a trigger to stage, a
 signal to watch, and a note format fast enough to keep up with a
 live room.
 
@@ -107,6 +117,36 @@ unprompted-style: "what happened last night?" What survives 24 hours
 is the product. If they retell a Vesper line, a catch, or the twist —
 those are the load-bearing features. If they retell setup friction,
 that's the backlog's top item.
+
+### Whole-session integration (the thread we almost lost)
+
+**O13 — The rhythm.** Track energy across all six beats. Does it
+alternate (cinematic Pour → fast Scene → focused Grill → jolt Twist →
+loud Last Call → cathartic Truth), or does it flatline or lull? Note
+the exact beat where energy dropped, if it did. A night that sags in
+the middle is a pacing/rhythm defect, not a content one.
+
+**O14 — Minigame: evidence or detour?** When a minigame fires (Scene:
+Crime Scene Smash; Twist: Evidence Locker), watch whether players treat
+it as *earning their evidence* or as an interruption from the mystery.
+Do they carry the minigame result into the investigation ("I won so I
+got the good clue"), or forget it the moment it ends? Detour-feel = the
+evidence-economy rule (session-experience doc) isn't landing. This is
+the direct test of the founder's match-3 worry.
+
+**O15 — One race or three scoreboards?** At the scoreboard (Truth), ask
+players *why* they think they won or lost. If they can name it
+("I caught the most lies and accused right") the unified scoring reads.
+If they're confused about how minigame points, catches, and accusation
+combined, scoring is fragmented — the integration failed even if each
+part worked.
+
+**O16 — Does the mystery drive the night?** The meta-observation. Strip
+away the narration and minigames: did solving the case feel like the
+point, or did it feel like activities loosely wrapped in a story? If a
+player says "I didn't really care who did it, but the games were fun,"
+that is a *fail* for a mystery product, however fun the night was —
+and the most important thing to catch.
 
 ## What NOT To Fix During Rehearsal Week
 

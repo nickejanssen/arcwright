@@ -14,16 +14,28 @@
 > Not a milestone reinstatement: M0 (Wizard-of-Oz) stays overridden. This
 > is one narrow, one-evening use of the technique on one assumption.
 
-## What This Tests (and what it does not)
+## Scope: this is the Grill act of a whole-session test
 
-**Tests:** whether asking-and-catching AI suspects is enjoyable; which
-competition model (A/B) feels right; whether strategy verbs (G1) beat
-data queries; whether quoting suspects to each other (G2) is the payoff
-we think; whether room-conflict verbs (G4) add or distract.
+This protocol drills the **interrogation loop**. Per D-092, the fuller
+target is a **whole-session** paper test (all six beats, minigames, and
+unified scoring — see `couch-race-session-experience.md`, "What The
+Whole-Session Paper Test Must Now Validate"). Run this Grill act first
+(it is the highest-risk single loop); extend to a full-night table read
+using the session-experience rhythm map when validating the whole
+experience. The measurements below apply to both.
+
+**Tests (Grill act):** whether asking-and-catching AI suspects is
+enjoyable; which competition model (A/B) feels right; whether strategy
+verbs (G1) beat data queries; whether quoting suspects (G2) is the
+payoff we think; whether room-conflict verbs (G4) add or distract.
+
+**Whole-session extension also tests:** beat rhythm (does energy
+alternate or flatline), minigame-as-evidence vs detour, and whether one
+unified race reads clearly.
 
 **Does NOT test:** audiovisual quality (paper can't — that is the
-separate hard gate, D-090, tested in Rehearsal 1), generated-case
-variety, or the full six-beat arc. Keep scope to the Grill loop.
+separate hard gate, D-090, tested in Rehearsal 1) or generated-case
+variety.
 
 ## Setup (10 minutes, one-time)
 
