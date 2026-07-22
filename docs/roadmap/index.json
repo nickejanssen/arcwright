@@ -2210,7 +2210,9 @@
         "AW-284",
         "AW-285",
         "AW-288",
-        "AW-289"
+        "AW-289",
+        "AW-290",
+        "AW-291"
       ],
       "path": "docs/roadmap/tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md",
       "github": {
@@ -2252,6 +2254,46 @@
         "issue_number": 258,
         "url": "https://github.com/nickejanssen/arcwright/issues/258"
       },
+      "epic_id": "M5-I"
+    },
+    {
+      "id": "AW-290",
+      "title": "Narrator Slot Schema — Structured Location/Time And Wrapper Dressing Pack",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "M",
+      "depends_on": [
+        "AW-281"
+      ],
+      "path": "docs/roadmap/tasks/AW-290-narrator-slot-schema-and-wrapper-dressing.md",
+      "epic_id": "M5-I"
+    },
+    {
+      "id": "AW-291",
+      "title": "Narrator Refrain Resolver",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "M",
+      "depends_on": [
+        "AW-290",
+        "AW-279",
+        "AW-276"
+      ],
+      "path": "docs/roadmap/tasks/AW-291-narrator-refrain-resolver.md",
+      "epic_id": "M5-I"
+    },
+    {
+      "id": "AW-292",
+      "title": "Quote-Suspects Interrogation Mechanic",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "M",
+      "depends_on": [
+        "AW-282",
+        "AW-283",
+        "AW-285"
+      ],
+      "path": "docs/roadmap/tasks/AW-292-quote-suspects-interrogation-mechanic.md",
       "epic_id": "M5-I"
     }
   ],
