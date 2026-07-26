@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 from datetime import datetime, timezone
-from typing import Any
 
 from engine.scoring.models import AccusationAttempt
 
@@ -100,7 +99,7 @@ def _earliest_catch(value: CatchRecord) -> datetime:
     return min(_as_utc(timestamp) for timestamp in value)
 
 
-def _as_utc(value: Any) -> datetime:
+def _as_utc(value: datetime) -> datetime:
     if value.tzinfo is None:
         return value.replace(tzinfo=timezone.utc)
     return value.astimezone(timezone.utc)
