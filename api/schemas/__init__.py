@@ -303,6 +303,7 @@ class LobbyStateResponse(BaseModel):
     session_id: UUID
     join_code: Optional[str]
     status: str
+    current_beat_id: str
     player_count: int
     players: list[LobbyPlayerEntry]
 
@@ -317,3 +318,4 @@ class LobbyJoinResponse(BaseModel):
     session_id: UUID
     display_name: str
     character_id: UUID
+    player_token: str

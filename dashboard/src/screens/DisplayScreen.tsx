@@ -56,7 +56,7 @@ export default function DisplayScreen({ sessionId }: Props) {
         setLobbyError(e instanceof Error ? e.message : "Connection error");
       }
 
-      // Mini-game poll (unauthenticated — display surface)
+      // Mini-game poll (unauthenticated - display surface)
       try {
         const mgState = await fetchDisplayMiniGameState(sessionId);
         setMiniGameState(mgState);
@@ -257,11 +257,16 @@ export default function DisplayScreen({ sessionId }: Props) {
             ))}
           </ul>
 
-          {lobby.status === "created" && lobby.player_count >= 4 && (
+          {lobby.status === "created" && lobby.player_count >= 2 && (
             <p style={styles.readyHint}>
-              Ready to start — 4+ players in the room
+              Ready to start - 2+ players in the room
             </p>
           )}
+          <p style={styles.beatStatus}>
+            {lobby.status === "created"
+              ? "Waiting for the host to start"
+              : `Current beat: ${lobby.current_beat_id}`}
+          </p>
         </div>
       </div>
 
@@ -391,6 +396,11 @@ const styles: Record<string, CSSProperties> = {
     color: "var(--accent)",
     fontSize: "0.9rem",
     letterSpacing: "0.1em",
+  },
+  beatStatus: {
+    marginTop: "1rem",
+    color: "var(--text-muted)",
+    fontSize: "0.9rem",
   },
   footer: {
     display: "flex",

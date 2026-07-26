@@ -10,6 +10,7 @@ if /I "%~1"=="type" goto type
 if /I "%~1"=="test" goto test
 if /I "%~1"=="migrate" goto migrate
 if /I "%~1"=="rehearsal" goto rehearsal
+if /I "%~1"=="rehearsal-start" goto rehearsal-start
 if /I "%~1"=="rehearsal-stop" goto rehearsal-stop
 if /I "%~1"=="rehearsal-smoke" goto rehearsal-smoke
 
@@ -36,6 +37,10 @@ exit /b %ERRORLEVEL%
 %PYTHON% scripts\rehearsal.py
 exit /b %ERRORLEVEL%
 
+:rehearsal-start
+%PYTHON% scripts\rehearsal_start.py
+exit /b %ERRORLEVEL%
+
 :rehearsal-stop
 docker compose down
 exit /b %ERRORLEVEL%
@@ -45,5 +50,5 @@ exit /b %ERRORLEVEL%
 exit /b %ERRORLEVEL%
 
 :help
-echo Usage: make ^<lint^|type^|test^|migrate^|rehearsal^|rehearsal-stop^|rehearsal-smoke^>
+echo Usage: make ^<lint^|type^|test^|migrate^|rehearsal^|rehearsal-start^|rehearsal-stop^|rehearsal-smoke^>
 exit /b 1

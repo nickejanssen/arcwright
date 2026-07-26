@@ -1,7 +1,7 @@
 """Public lobby endpoints for the Nightcap rehearsal lobby.
 
-No auth required — these are public endpoints for the display screen
-and player phones. Production auth is deferred to M5 (AW-269).
+No auth required for lobby discovery and join-code entry. The join response
+now includes a Firebase custom token for the player's authenticated path.
 """
 
 from __future__ import annotations
@@ -9,9 +9,11 @@ from __future__ import annotations
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
+from firebase_admin import auth as firebase_auth
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from api.auth import _ensure_firebase_app
 from api.schemas import (
     LobbyJoinRequest,
     LobbyJoinResponse,
@@ -52,6 +54,7 @@ async def get_lobby_state(
         session_id=session_id,
         join_code=orm.join_code,
         status=orm.status,
+        current_beat_id=orm.current_beat_id,
         player_count=orm.player_count,
         players=[
             LobbyPlayerEntry(
@@ -80,9 +83,20 @@ async def lobby_join(
     except SessionStateError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
 
+    _ensure_firebase_app()
+    player_uid = f"session:{participant.session_id}:player:{participant.participant_id}"
+    player_claims = {
+        "arcwright_role": participant.surface_type,
+        "arcwright_session_id": str(participant.session_id),
+        "arcwright_player_id": str(participant.participant_id),
+    }
+    player_token_bytes = firebase_auth.create_custom_token(player_uid, player_claims)
+    player_token = player_token_bytes.decode("utf-8")
+
     return LobbyJoinResponse(
         participant_id=participant.participant_id,
         session_id=participant.session_id,
         display_name=body.name,
         character_id=participant.character_id,
+        player_token=player_token,
     )

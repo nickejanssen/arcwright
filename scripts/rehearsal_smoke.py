@@ -17,7 +17,7 @@ SHARED_ROOT = (
 ENV_FILE = REPO_ROOT / ".env"
 SHARED_ENV_FILE = SHARED_ROOT / ".env"
 BASE = "http://localhost:8000"
-DEFAULT_ARC_ID = "nightcap-v1"
+DEFAULT_ARC_ID = "nightcap-couch-race-v1"
 
 
 def fail(step: str, message: str) -> None:
@@ -55,7 +55,12 @@ def read_env() -> dict[str, str]:
             continue
         key, _, value = line.partition("=")
         env[key.strip()] = value.strip()
-    for key in ("ARCWRIGHT_API_KEY", "FIREBASE_WEB_API_KEY"):
+    for key in (
+        "ARCWRIGHT_API_KEY",
+        "FIREBASE_PROJECT_ID",
+        "FIREBASE_TOKEN_SIGNING_SERVICE_ACCOUNT",
+        "FIREBASE_WEB_API_KEY",
+    ):
         if not env.get(key):
             fail(".env", f"{key} must be set for rehearsal-smoke")
     return env
@@ -86,7 +91,7 @@ def call(
         detail = exc.read().decode("utf-8", errors="replace").strip()
         fail(step, f"HTTP {exc.code}\n{detail}")
     except urllib.error.URLError as exc:
-        fail(step, f"{exc.reason} — is `make rehearsal` running?")
+        fail(step, f"{exc.reason} - is `make rehearsal` running?")
     return {}
 
 

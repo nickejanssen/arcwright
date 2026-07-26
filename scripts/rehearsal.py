@@ -33,7 +33,7 @@ STATE_DIR = REPO_ROOT / ".rehearsal"
 STATE_FILE = STATE_DIR / "current-session.json"
 API_PORT = 8000
 WEB_PORT = 5173
-DEFAULT_ARC_ID = "nightcap-v1"
+DEFAULT_ARC_ID = "nightcap-couch-race-v1"
 # Provider-neutral required keys. Provider API-key names are derived from the
 # routing table at runtime (see required_provider_keys) so provider names stay
 # out of this script per AGENTS.md rule 8.
@@ -44,8 +44,10 @@ REQUIRED_KEYS = (
     "POSTGRES_USER",
     "POSTGRES_PASSWORD",
     "ARCWRIGHT_API_KEY",
+    "FIREBASE_PROJECT_ID",
+    "FIREBASE_TOKEN_SIGNING_SERVICE_ACCOUNT",
+    "FIREBASE_WEB_API_KEY",
 )
-OPTIONAL_KEYS = ("FIREBASE_WEB_API_KEY",)
 
 
 def required_provider_keys() -> list[str]:
@@ -364,7 +366,7 @@ def main() -> None:
         "Dashboard",
         [npm_bin, "run", "dev"],
         cwd=REPO_ROOT / "dashboard",
-        env=env,
+        env={**env, "VITE_FIREBASE_WEB_API_KEY": env["FIREBASE_WEB_API_KEY"]},
         capture_output=False,
         fix="run: cd dashboard && npm install",
     )

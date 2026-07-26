@@ -11,9 +11,11 @@
 - Docker Desktop installed and running.
 - Node.js LTS installed.
 - `cloudflared` installed and on your PATH.
-- `.env` at the repo root with real `ARCWRIGHT_API_KEY`, `ANTHROPIC_API_KEY`,
-  and `GROQ_API_KEY` values. Add `FIREBASE_WEB_API_KEY` too if you want
-  `make rehearsal-smoke` to cover the host start call.
+- `.env` at the repo root with real `ARCWRIGHT_API_KEY`,
+  `ANTHROPIC_API_KEY`, `GROQ_API_KEY`, `FIREBASE_PROJECT_ID`,
+  `FIREBASE_TOKEN_SIGNING_SERVICE_ACCOUNT`, and `FIREBASE_WEB_API_KEY`
+  values. Firebase web auth and server-side token signing are required for
+  the two-player phone action path and host start call.
 
 ## Start the stack
 
@@ -41,7 +43,7 @@ Expected: `SMOKE PASS`. If it fails, the failing step and response are printed.
 
 1. Open the printed display URL on the shared display.
 2. Send the printed player join URL to players' phones.
-3. Wait for at least 4 players to appear in the lobby.
+3. Wait for at least 2 players to appear in the lobby.
 4. Start the arc: in a second terminal, run `make rehearsal-start`. (The
    dashboard has no host-start control; this exchanges the host token and
    calls the start endpoint. Requires `FIREBASE_WEB_API_KEY` in `.env`.)
@@ -49,7 +51,7 @@ Expected: `SMOKE PASS`. If it fails, the failing step and response are printed.
    and killer reveal.
 6. When something breaks or feels wrong, log the timestamp, who it affected,
    and what happened.
-7. Keep `fun-observation-rubric.md` open (or printed) and tally as you go —
+7. Keep `fun-observation-rubric.md` open (or printed) and tally as you go -
    laughs, lean-ins, dead air, and verbatim quotes that reference
    personalized details. The quotes are the personalization-perception
    evidence the PRD gates require.

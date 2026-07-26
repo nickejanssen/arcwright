@@ -1,5 +1,6 @@
 import type { CSSProperties, FormEvent } from "react";
 import { useState } from "react";
+import { exchangePlayerToken, storePlayerToken } from "../api/auth";
 import { joinLobby } from "../api/lobby";
 
 export default function JoinScreen() {
@@ -25,11 +26,12 @@ export default function JoinScreen() {
     setError(null);
     try {
       const result = await joinLobby(name.trim(), code.trim());
+      const playerToken = await exchangePlayerToken(result.player_token);
+      storePlayerToken(result.session_id, playerToken);
       const params = new URLSearchParams({
         name: result.display_name,
         session_id: result.session_id,
       });
-      if (result.player_token) params.set("player_token", result.player_token);
       if (result.character_id) params.set("character_id", result.character_id);
       window.location.href = `/waiting?${params.toString()}`;
     } catch (e) {
