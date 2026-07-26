@@ -7,6 +7,7 @@ This directory holds product-level records that do not belong to architecture AD
 - Decisions log exports from the product workspace
 - Open-questions log exports from the product workspace
 - Product-log additions that are not architecture ADRs
+- [AI capability roadmap](ai-capability-roadmap.md): strategic capability overlay for AI runtime, evaluation, production acceleration, governance, and future experiments
 - [Nightcap Leverage advantages and sabotages design](nightcap-leverage-advantages-sabotages.md): proposed design-only catalog and playtest recommendation
 
 ## Rules
