@@ -11,6 +11,12 @@ import type {
 import { fetchLobbyState } from "../api/lobby";
 import type { LobbyState } from "../api/lobby";
 import { fetchDisplayMiniGameState } from "../api/miniGame";
+import {
+  exchangeCustomToken,
+  getValidHostToken,
+  loadHostAuth,
+  storeHostAuth,
+} from "../api/auth";
 import TmstDisplayScreen from "./tmst/TmstDisplayScreen";
 
 const TMST_GAME_ID = "tell-me-something-true";
@@ -39,10 +45,39 @@ export default function DisplayScreen({ sessionId }: Props) {
   });
   const [lobbyError, setLobbyError] = useState<string | null>(null);
   const [disconnected, setDisconnected] = useState(false);
+  const [hostReady, setHostReady] = useState(false);
+  const [hostStarting, setHostStarting] = useState(false);
+  const [hostError, setHostError] = useState<string | null>(null);
 
   const skippedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sseActiveRef = useRef(true);
   const sseSeqRef = useRef(0);
+
+  useEffect(() => {
+    const existingAuth = loadHostAuth(sessionId);
+    if (existingAuth) {
+      setHostReady(true);
+      return;
+    }
+
+    const fragment = new URLSearchParams(window.location.hash.slice(1));
+    const customToken = fragment.get("host_token");
+    if (!customToken) return;
+
+    exchangeCustomToken(customToken)
+      .then((auth) => {
+        storeHostAuth(sessionId, auth);
+        setHostReady(true);
+        window.history.replaceState(
+          null,
+          "",
+          `${window.location.pathname}${window.location.search}`,
+        );
+      })
+      .catch((error) => {
+        setHostError(error instanceof Error ? error.message : String(error));
+      });
+  }, [sessionId]);
 
   // Lobby + mini-game state polling
   useEffect(() => {
@@ -56,7 +91,7 @@ export default function DisplayScreen({ sessionId }: Props) {
         setLobbyError(e instanceof Error ? e.message : "Connection error");
       }
 
-      // Mini-game poll (unauthenticated — display surface)
+      // Mini-game poll (unauthenticated - display surface)
       try {
         const mgState = await fetchDisplayMiniGameState(sessionId);
         setMiniGameState(mgState);
@@ -70,6 +105,25 @@ export default function DisplayScreen({ sessionId }: Props) {
     const interval = setInterval(poll, 2000);
     return () => clearInterval(interval);
   }, [sessionId]);
+
+  async function startSession() {
+    setHostStarting(true);
+    setHostError(null);
+    try {
+      const token = await getValidHostToken(sessionId);
+      const response = await fetch(`/v1/sessions/${sessionId}/start`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!response.ok) {
+        throw new Error(`Start failed: ${response.status}`);
+      }
+    } catch (error) {
+      setHostError(error instanceof Error ? error.message : String(error));
+    } finally {
+      setHostStarting(false);
+    }
+  }
 
   // SSE event subscription for the display surface (no auth; best-effort).
   // Provides within-phase real-time updates for reveal/scoreboard/skipped events.
@@ -257,11 +311,28 @@ export default function DisplayScreen({ sessionId }: Props) {
             ))}
           </ul>
 
-          {lobby.status === "created" && lobby.player_count >= 4 && (
-            <p style={styles.readyHint}>
-              Ready to start — 4+ players in the room
-            </p>
+          {lobby.status === "created" &&
+            lobby.player_count >= lobby.min_players && (
+              <p style={styles.readyHint}>
+                Ready to start - {lobby.min_players}+ players in the room
+              </p>
+            )}
+          {lobby.status === "created" && hostReady && (
+            <button
+              type="button"
+              onClick={startSession}
+              disabled={hostStarting || lobby.player_count < lobby.min_players}
+              style={styles.startButton}
+            >
+              {hostStarting ? "Starting..." : "Start case"}
+            </button>
           )}
+          {hostError && <p style={styles.error}>{hostError}</p>}
+          <p style={styles.beatStatus}>
+            {lobby.status === "created"
+              ? "Waiting for the host to start"
+              : `Current beat: ${lobby.current_beat_id}`}
+          </p>
         </div>
       </div>
 
@@ -391,6 +462,26 @@ const styles: Record<string, CSSProperties> = {
     color: "var(--accent)",
     fontSize: "0.9rem",
     letterSpacing: "0.1em",
+  },
+  beatStatus: {
+    marginTop: "1rem",
+    color: "var(--text-muted)",
+    fontSize: "0.9rem",
+  },
+  startButton: {
+    marginTop: "1rem",
+    padding: "0.85rem 1.5rem",
+    background: "var(--accent)",
+    color: "#0a0a0f",
+    border: "none",
+    borderRadius: "6px",
+    fontSize: "1rem",
+    fontWeight: "bold",
+  },
+  error: {
+    marginTop: "0.75rem",
+    color: "var(--red)",
+    fontSize: "0.85rem",
   },
   footer: {
     display: "flex",

@@ -1,6 +1,8 @@
 import type { CSSProperties } from "react";
-import { useEffect, useState } from "react";
-import type { MiniGameState } from "@arcwright/sdk";
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { ArcwrightClient } from "@arcwright/sdk";
+import type { MiniGameState, PlayerInput } from "@arcwright/sdk";
+import { getValidPlayerToken, loadPlayerAuth } from "../api/auth";
 import { fetchPlayerMiniGameState } from "../api/miniGame";
 import TmstPlayerScreen from "./tmst/TmstPlayerScreen";
 
@@ -9,29 +11,70 @@ const TMST_GAME_ID = "tell-me-something-true";
 function readParams(): {
   name: string;
   sessionId: string | null;
-  playerToken: string | null;
+  hasPlayerAuth: boolean;
   characterId: string | null;
 } {
   const p = new URLSearchParams(window.location.search);
   return {
     name: p.get("name") ?? "You",
     sessionId: p.get("session_id"),
-    playerToken: p.get("player_token"),
+    hasPlayerAuth: p.get("session_id")
+      ? loadPlayerAuth(p.get("session_id")!) !== null
+      : false,
     characterId: p.get("character_id"),
   };
 }
 
 export default function WaitingScreen() {
-  const { name, sessionId, playerToken, characterId } = readParams();
+  const { name, sessionId, hasPlayerAuth, characterId } = readParams();
 
   const [miniGameState, setMiniGameState] = useState<MiniGameState | null>(
     null,
   );
+  const [action, setAction] = useState("Continue investigating.");
+  const [actionStatus, setActionStatus] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const clientRef = useRef<ArcwrightClient | null>(null);
 
-  // character_id is sufficient to poll game state via the public /display
-  // endpoint. player_token (Firebase ID token) is only required for action
-  // submissions and is not available until M5 auth (AW-269).
-  const hasCredentials = sessionId !== null && characterId !== null;
+  // The player token is kept in sessionStorage and is only used for
+  // authenticated action submissions.
+  const hasCredentials =
+    sessionId !== null && hasPlayerAuth && characterId !== null;
+
+  useEffect(() => {
+    if (!hasCredentials) return;
+    clientRef.current = new ArcwrightClient(
+      sessionId!,
+      () => getValidPlayerToken(sessionId!),
+      characterId!,
+      "",
+    );
+    return () => {
+      clientRef.current?.disconnect();
+      clientRef.current = null;
+    };
+  }, [characterId, hasCredentials, sessionId]);
+
+  async function submitAction(event: FormEvent) {
+    event.preventDefault();
+    const client = clientRef.current;
+    if (!client) {
+      setActionStatus("Player session is not authenticated yet.");
+      return;
+    }
+
+    setSubmitting(true);
+    setActionStatus(null);
+    const input: PlayerInput = { kind: "action", content: action.trim() };
+    try {
+      await client.submitInput(characterId!, input);
+      setActionStatus("Action submitted. The session advanced.");
+    } catch (error) {
+      setActionStatus(error instanceof Error ? error.message : String(error));
+    } finally {
+      setSubmitting(false);
+    }
+  }
 
   useEffect(() => {
     if (!hasCredentials) return;
@@ -63,7 +106,7 @@ export default function WaitingScreen() {
     return (
       <TmstPlayerScreen
         sessionId={sessionId!}
-        playerToken={playerToken ?? ""}
+        playerToken={() => getValidPlayerToken(sessionId!)}
         characterId={characterId!}
       />
     );
@@ -77,8 +120,31 @@ export default function WaitingScreen() {
 
         <div style={styles.messageBlock}>
           <p style={styles.greeting}>You&apos;re in, {name}.</p>
-          <p style={styles.waiting}>Waiting for everyone else to join.</p>
+          <p style={styles.waiting}>
+            {hasCredentials
+              ? "The host will start the case. Then submit an action to advance."
+              : "Waiting for player authentication."}
+          </p>
         </div>
+
+        {hasCredentials && (
+          <form onSubmit={submitAction} style={styles.actionForm}>
+            <label htmlFor="action" style={styles.label}>
+              Action
+            </label>
+            <input
+              id="action"
+              value={action}
+              onChange={(event) => setAction(event.target.value)}
+              disabled={submitting}
+              style={styles.input}
+            />
+            <button type="submit" disabled={submitting} style={styles.button}>
+              {submitting ? "Sending..." : "Submit action"}
+            </button>
+            {actionStatus && <p style={styles.hint}>{actionStatus}</p>}
+          </form>
+        )}
 
         <p style={styles.hint}>
           Keep this screen open. The game will begin soon.
@@ -137,6 +203,38 @@ const styles: Record<string, CSSProperties> = {
   hint: {
     fontSize: "0.8rem",
     color: "var(--text-muted)",
+    letterSpacing: "0.05em",
+  },
+  actionForm: {
+    width: "100%",
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.75rem",
+  },
+  label: {
+    fontSize: "0.8rem",
+    letterSpacing: "0.1em",
+    color: "var(--text-muted)",
+    textTransform: "uppercase",
+  },
+  input: {
+    width: "100%",
+    padding: "0.9rem 1rem",
+    background: "var(--surface)",
+    border: "1px solid var(--border)",
+    borderRadius: "6px",
+    color: "var(--text)",
+    fontSize: "1.1rem",
+    outline: "none",
+  },
+  button: {
+    padding: "1rem",
+    background: "var(--accent)",
+    color: "#0a0a0f",
+    border: "none",
+    borderRadius: "6px",
+    fontSize: "1rem",
+    fontWeight: "bold",
     letterSpacing: "0.05em",
   },
 };

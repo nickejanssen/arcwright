@@ -138,6 +138,44 @@ class TestGetCharacterForPlayer:
 
 class TestSubmitInput:
     @pytest.mark.asyncio
+    async def test_two_players_advance_one_beat_once_per_player_round(
+        self,
+        services: tuple[SessionService, CharacterService],
+        db: AsyncSession,
+    ) -> None:
+        sessions, characters = services
+        session, _ = await sessions.create_session(
+            db, arc_id="nightcap-couch-race-v1", host_account_id=uuid4()
+        )
+        first, _ = await sessions.add_player(db, session.session_id)
+        second, _ = await sessions.add_player(db, session.session_id)
+        await sessions.start_session(db, session.session_id)
+
+        await characters.submit_input(
+            db,
+            session_id=session.session_id,
+            character_id=first.character_id,
+            requesting_participant_id=first.participant_id,
+            kind="action",
+            content="Inspect the scene.",
+        )
+        assert (
+            await sessions.get_session(db, session.session_id)
+        ).current_beat_id == "pour"
+
+        await characters.submit_input(
+            db,
+            session_id=session.session_id,
+            character_id=second.character_id,
+            requesting_participant_id=second.participant_id,
+            kind="action",
+            content="Check the glasses.",
+        )
+        assert (
+            await sessions.get_session(db, session.session_id)
+        ).current_beat_id == "scene"
+
+    @pytest.mark.asyncio
     async def test_owner_can_submit_action(
         self,
         services: tuple[SessionService, CharacterService],

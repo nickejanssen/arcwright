@@ -9,6 +9,8 @@ export interface LobbyState {
   session_id: string;
   join_code: string | null;
   status: string;
+  current_beat_id: string;
+  min_players: number;
   player_count: number;
   players: LobbyPlayer[];
 }
@@ -18,10 +20,7 @@ export interface LobbyJoinResult {
   session_id: string;
   display_name: string;
   character_id: string;
-  // player_token is a Firebase custom token returned once auth is active (M5,
-  // AW-269). Not returned by POST /lobby-join in M4; leave optional here so
-  // callers can guard on its presence.
-  player_token?: string;
+  player_token: string;
 }
 
 export async function fetchLobbyState(sessionId: string): Promise<LobbyState> {

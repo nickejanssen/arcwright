@@ -1,10 +1,9 @@
 """Start the current rehearsal session.
 
-Run this after players have joined the lobby (the display shows
-"Ready to start"). Reads the session saved by `make rehearsal`, exchanges the
+Run this only as a CLI fallback when the host control on the rehearsal display
+cannot be used. It reads the session saved by `make rehearsal`, exchanges the
 host custom token for a Firebase ID token, and calls POST /start so the arc
-begins. The dashboard has no host-start control, so this is the founder's
-start path during a local rehearsal.
+begins.
 """
 
 from __future__ import annotations
@@ -91,7 +90,7 @@ def call_start(session_id: str, id_token: str) -> dict[str, Any]:
         detail = exc.read().decode("utf-8", errors="replace").strip()
         fail("start-session", f"HTTP {exc.code}\n{detail}")
     except urllib.error.URLError as exc:
-        fail("start-session", f"{exc.reason} — is `make rehearsal` running?")
+        fail("start-session", f"{exc.reason} - is `make rehearsal` running?")
     return {}
 
 
@@ -99,7 +98,7 @@ def main() -> None:
     if not STATE_FILE.exists():
         fail(
             "session-state",
-            f"{STATE_FILE} not found — run `make rehearsal` first",
+            f"{STATE_FILE} not found - run `make rehearsal` first",
         )
     details = json.loads(STATE_FILE.read_text(encoding="utf-8"))
     session_id = str(details["session_id"])
