@@ -3,6 +3,16 @@
 <!-- What changed and why. One paragraph. -->
 
 
+## Closes
+
+<!-- Every GitHub issue this PR fully resolves. Use "Closes #NNN" (one per
+     line) so GitHub auto-closes it on merge. This is required whenever the
+     PR completes a tracked issue's acceptance criteria - untracked closures
+     are how issues silently pile up after their work is actually done. -->
+
+Closes: <!-- #NNN or "N/A - no tracked issue" -->
+
+
 ## Spec
 
 <!-- Link to /docs/specs/ entry. Required for non-trivial changes. -->
