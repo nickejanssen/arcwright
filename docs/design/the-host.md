@@ -1,8 +1,8 @@
 # Vesper  -  The Host of Nightcap
 
-> Current version: v1.0
-> Last updated: 2026-07-18
-> Status: Approved (AW-267 v1.0, see docs/product/aw267-discovery-and-checkpoints.md).
+> Current version: v1.2
+> Last updated: 2026-07-20
+> Status: Approved (AW-267 v1.0, see docs/product/aw267-discovery-and-checkpoints.md; §3 roast amendment founder-approved 2026-07-19, D-081; §5 race-master moods + nudge ladder founder-approved 2026-07-20, D-087).
 > Author: Design session 2026-07-17 (AW-267 PR #243 review); approved 2026-07-18
 > Canonical path: docs/design/the-host.md
 > Companion to: `docs/design/nightcap-art-direction.md` §6
@@ -85,8 +85,14 @@ When AI-generated narration lacks the shift, the review fails.
 
 Binding across every wrapper, every skin, every language pass.
 
-- **Vesper never mocks a player.** She is warm to the couch even
-  when she is cruel about the case. Story bible §11 unchanged.
+- **Vesper may roast a player — by detective name only.** (v1.1,
+  D-081.) Teasing by detective name or at the room collectively is
+  permitted, in any of these registers: witty, unhinged, absurd,
+  silly, dad-jokey, solemn, gravitas, flirty. The target is always
+  the detective *identity*, never the human on the couch; Vesper
+  stays warm to the couch even when she is merciless about the
+  case. Wrong accusations are the natural home of the roast.
+  Story bible §11 unchanged.
 - **Vesper never names the killer before The Truth.** She does not
   confirm or deny a theory, and never reveals which suspect
   statements were lies. This is the single hard rule.
@@ -165,13 +171,41 @@ Vesper's lines are **authored refrains + AI-filled specifics**.
 | Wrong accusation (compassionate + sharp) | 6 | |
 | The reveal (grave then jubilant) | 6 | |
 | Wink-at-camera (once per session) | 6 | |
-|  -  |  -  | ~74 |
+| **Countdown** (Last Call timer marks) *(v1.2, D-087)* | 5 | |
+| **Evidence wave** (release announcements) *(v1.2, D-087)* | 4 | |
+| **Nudge** (passive-player re-engagement) *(v1.2, D-087)* | 4 | |
+| **Superlative** (end-of-session awards) *(v1.2, D-087)* | 8 | |
+|  -  |  -  | ~95 |
 
-**~74 lines per wrapper × 12 wrappers = ~888 authored lines** in a
+**Race-master moods (v1.2, D-087).** The four moods above cover
+Vesper's duties as race master (Couch Race bible §5: "scoreboard
+moments are narrator moments, in-fiction, never system-voiced").
+Every session fires all four.
+
+**Nudge delivery is a three-step escalation ladder**, which preserves
+§7's rule that Vesper never appears on the phone in v1:
+
+1. Vesper, on the TV, addresses the room — names no one.
+2. Vesper, on the TV, names the detective — only if still disengaged.
+3. A silent UI-voice prompt on the phone (Inter, not Vesper) as the
+   floor.
+
+Vesper never delivers step 3; the UI does. No player is singled out
+cold.
+
+**~95 lines per wrapper × 12 wrappers = ~1,140 authored lines** in a
 full launch. Not launch-window commitment; launch-window commitment
-is the two skin wrappers (Séance 1928, Orbital Gala 2087)  -
-**~148 authored lines minimum for v1 launch**. That's a weekend of
-disciplined writing per wrapper.
+is two skin wrappers — **~190 authored lines minimum for v1 launch**.
+That's a weekend of disciplined writing per wrapper.
+
+> **Launch pair vs. rehearsal pair (D-088, 2026-07-21).** The v1
+> **launch** pair is unchanged: Séance 1928 + Orbital Gala 2087 (per
+> spec 0069 §7A/§7B). **Rehearsal 1** deliberately tests a different
+> pair — Séance 1928 + Big Top 1899 — so the founder can evaluate the
+> maximum-Ringmaster register live. These are intentionally decoupled:
+> the launch pair is a spec commitment; the rehearsal pair is a taste
+> test. Big Top is not a launch skin unless a later spec-0069
+> amendment makes it one.
 
 ## 6. Signature Beats (Vesper's Choreography)
 
@@ -289,6 +323,18 @@ considerations logged here for coordination but out of AW-267 scope:
 
 ## 10. Change Log
 
+- **2026-07-20**  -  v1.2. §5 amended per founder decision D-087:
+  four race-master moods added to the line-library table (countdown,
+  evidence wave, nudge, superlative; per-wrapper minimum rises from
+  ~74 to ~95), plus the three-step nudge escalation ladder that keeps
+  Vesper off the phone and preserves §7 unamended. Launch-pair
+  designation flagged as under review pending a founder confirmation
+  that also touches spec 0069 §7A/§7B.
+- **2026-07-19**  -  v1.1. §3 amended per founder decision D-081:
+  "never mocks a player" replaced with roast-by-detective-name
+  permission across eight tease registers. Approved live in founder
+  interview 2026-07-19; see
+  `docs/design/line-libraries/00-direction.md`.
 - **2026-07-17**  -  v0.1 authored (AW-267 PR #243 review). Founder
   round 1+2+3 answers locked: reference triad (Caine + Tennant +
   Jackman); brand voice as sharp-witty prestige × irreverent
