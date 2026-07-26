@@ -328,6 +328,7 @@ class SessionService:
         session_id: UUID,
         *,
         player_action_count: int = 1,
+        transition_cause: str = "normal_completion",
     ) -> Session:
         """Advance arc beat state after validated REST player input.
 
@@ -352,7 +353,11 @@ class SessionService:
         )
 
         current_beat_id = orm.current_beat_id
-        next_beat_id = _next_beat_id(arc_definition, current_beat_id)
+        next_beat_id = _next_beat_id(
+            arc_definition,
+            current_beat_id,
+            transition_cause=transition_cause,
+        )
         if next_beat_id is None:
             return _orm_session_to_pydantic(orm)
 
@@ -750,13 +755,22 @@ def _orm_participant_to_pydantic(orm: OrmParticipant) -> SessionParticipant:
     )
 
 
-def _next_beat_id(arc_definition: ArcDefinition, current_beat_id: str) -> str | None:
+def _next_beat_id(
+    arc_definition: ArcDefinition,
+    current_beat_id: str,
+    *,
+    transition_cause: str = "normal_completion",
+) -> str | None:
     if current_beat_id not in arc_definition.beat_graph:
         raise SessionStateError(f"Unknown beat {current_beat_id!r}")
     targets = arc_definition.beat_graph[current_beat_id]
     if not targets:
         return None
-    return targets[0]
+    if transition_cause == "normal_completion":
+        return targets[0]
+    if transition_cause == "first_correct_accusation":
+        return targets[-1] if len(targets) > 1 else targets[0]
+    raise SessionStateError(f"Unknown transition cause: {transition_cause!r}")
 
 
 def _satisfy_transition_conditions(
