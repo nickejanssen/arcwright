@@ -7,6 +7,26 @@
   hands-on TV plus phone run has not yet been performed.
 - Tracking: GitHub issue #264. No new issues were opened.
 
+## PR review follow-up
+
+- The player-input path now aggregates distinct player submissions by the
+  current beat. One player's action holds the beat; the second player's
+  action advances it once. This prevents two phones acting together from
+  skipping `scene`.
+- Lobby readiness now reports the registered arc's `min_players`, so the
+  shared display no longer hardcodes Couch Race's two-player threshold for
+  other arcs.
+- The rehearsal display URL carries the host custom token in a URL fragment.
+  The display exchanges it for a refreshable Firebase session and exposes a
+  `Start case` control. The CLI start script remains a fallback.
+- Player and host Firebase sessions retain refresh credentials. The SDK accepts
+  a token provider, so authenticated requests obtain a current ID token.
+- `make rehearsal-smoke` now exchanges both player tokens, submits both
+  actions, asserts the beat remains `pour` after the first action, and asserts
+  `pour -> scene` after the second.
+- Real TV plus two-phone verification is still open. The code and local smoke
+  checks do not substitute for the required hands-on run.
+
 ## Blocker 01: Wrong arc selected by rehearsal scripts
 
 - Timestamp: 08:00:00 local, initial reproduction

@@ -17,6 +17,7 @@ import subprocess
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 from pathlib import Path
 from typing import Any
@@ -388,7 +389,10 @@ def main() -> None:
     )
     tunnel_url = wait_for_tunnel_url(tunnel_process)
 
-    display_url = f"http://localhost:{WEB_PORT}/display/{session['session_id']}"
+    display_url = (
+        f"http://localhost:{WEB_PORT}/display/{session['session_id']}"
+        f"#host_token={urllib.parse.quote(session['host_token'], safe='')}"
+    )
     player_join_url = f"{tunnel_url}/join?code={session['join_code']}"
 
     print("\n" + "=" * 68)

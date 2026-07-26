@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import { FormEvent, useEffect, useRef, useState } from "react";
 import { ArcwrightClient } from "@arcwright/sdk";
 import type { MiniGameState, PlayerInput } from "@arcwright/sdk";
-import { loadPlayerToken } from "../api/auth";
+import { getValidPlayerToken, loadPlayerAuth } from "../api/auth";
 import { fetchPlayerMiniGameState } from "../api/miniGame";
 import TmstPlayerScreen from "./tmst/TmstPlayerScreen";
 
@@ -11,22 +11,22 @@ const TMST_GAME_ID = "tell-me-something-true";
 function readParams(): {
   name: string;
   sessionId: string | null;
-  playerToken: string | null;
+  hasPlayerAuth: boolean;
   characterId: string | null;
 } {
   const p = new URLSearchParams(window.location.search);
   return {
     name: p.get("name") ?? "You",
     sessionId: p.get("session_id"),
-    playerToken: p.get("session_id")
-      ? loadPlayerToken(p.get("session_id")!)
-      : null,
+    hasPlayerAuth: p.get("session_id")
+      ? loadPlayerAuth(p.get("session_id")!) !== null
+      : false,
     characterId: p.get("character_id"),
   };
 }
 
 export default function WaitingScreen() {
-  const { name, sessionId, playerToken, characterId } = readParams();
+  const { name, sessionId, hasPlayerAuth, characterId } = readParams();
 
   const [miniGameState, setMiniGameState] = useState<MiniGameState | null>(
     null,
@@ -39,13 +39,13 @@ export default function WaitingScreen() {
   // The player token is kept in sessionStorage and is only used for
   // authenticated action submissions.
   const hasCredentials =
-    sessionId !== null && playerToken !== null && characterId !== null;
+    sessionId !== null && hasPlayerAuth && characterId !== null;
 
   useEffect(() => {
     if (!hasCredentials) return;
     clientRef.current = new ArcwrightClient(
       sessionId!,
-      playerToken!,
+      () => getValidPlayerToken(sessionId!),
       characterId!,
       "",
     );
@@ -53,7 +53,7 @@ export default function WaitingScreen() {
       clientRef.current?.disconnect();
       clientRef.current = null;
     };
-  }, [characterId, hasCredentials, playerToken, sessionId]);
+  }, [characterId, hasCredentials, sessionId]);
 
   async function submitAction(event: FormEvent) {
     event.preventDefault();
@@ -106,7 +106,7 @@ export default function WaitingScreen() {
     return (
       <TmstPlayerScreen
         sessionId={sessionId!}
-        playerToken={playerToken ?? ""}
+        playerToken={() => getValidPlayerToken(sessionId!)}
         characterId={characterId!}
       />
     );

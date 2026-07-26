@@ -20,6 +20,7 @@ from api.schemas import (
     LobbyPlayerEntry,
     LobbyStateResponse,
 )
+from engine.arc.registry import load_arc_definition
 from engine.db import get_async_session
 from engine.db.orm import Session as OrmSession
 from engine.db.orm import SessionParticipant as OrmParticipant
@@ -49,12 +50,14 @@ async def get_lobby_state(
         )
     )
     participants = result.scalars().all()
+    arc_definition = load_arc_definition(orm.arc_id)
 
     return LobbyStateResponse(
         session_id=session_id,
         join_code=orm.join_code,
         status=orm.status,
         current_beat_id=orm.current_beat_id,
+        min_players=arc_definition.min_players if arc_definition is not None else 1,
         player_count=orm.player_count,
         players=[
             LobbyPlayerEntry(

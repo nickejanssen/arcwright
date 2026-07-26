@@ -1,10 +1,9 @@
 """Start the current rehearsal session.
 
-Run this after players have joined the lobby (the display shows
-"Ready to start"). Reads the session saved by `make rehearsal`, exchanges the
+Run this only as a CLI fallback when the host control on the rehearsal display
+cannot be used. It reads the session saved by `make rehearsal`, exchanges the
 host custom token for a Firebase ID token, and calls POST /start so the arc
-begins. The dashboard has no host-start control, so this is the founder's
-start path during a local rehearsal.
+begins.
 """
 
 from __future__ import annotations

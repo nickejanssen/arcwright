@@ -10,6 +10,7 @@ export interface LobbyState {
   join_code: string | null;
   status: string;
   current_beat_id: string;
+  min_players: number;
   player_count: number;
   players: LobbyPlayer[];
 }

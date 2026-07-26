@@ -95,7 +95,7 @@ def call(
     return {}
 
 
-def exchange_host_token(custom_token: str, web_api_key: str) -> str:
+def exchange_firebase_token(step: str, custom_token: str, web_api_key: str) -> str:
     request = urllib.request.Request(
         "https://identitytoolkit.googleapis.com/v1/accounts:signInWithCustomToken"
         f"?key={web_api_key}",
@@ -110,14 +110,14 @@ def exchange_host_token(custom_token: str, web_api_key: str) -> str:
             data = json.loads(response.read() or b"{}")
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="replace").strip()
-        fail("host-token-exchange", f"HTTP {exc.code}\n{detail}")
+        fail(step, f"HTTP {exc.code}\n{detail}")
     except urllib.error.URLError as exc:
-        fail("host-token-exchange", str(exc.reason))
+        fail(step, str(exc.reason))
 
     token = data.get("idToken")
     if not token:
-        fail("host-token-exchange", "response did not include idToken")
-    print("[ok] host-token-exchange -> 200")
+        fail(step, "response did not include idToken")
+    print(f"[ok] {step} -> 200")
     return str(token)
 
 
@@ -139,21 +139,23 @@ def main() -> None:
     lobby = call("join-code-lookup", "GET", f"/v1/sessions/{session_id}/lobby")
     join_code = str(lobby["join_code"])
 
-    call(
+    first_player = call(
         "player-join-1",
         "POST",
         "/v1/lobby-join",
         body={"name": "Smoke One", "join_code": join_code},
     )
-    call(
+    second_player = call(
         "player-join-2",
         "POST",
         "/v1/lobby-join",
         body={"name": "Smoke Two", "join_code": join_code},
     )
 
-    host_id_token = exchange_host_token(
-        str(session["host_token"]), env["FIREBASE_WEB_API_KEY"]
+    host_id_token = exchange_firebase_token(
+        "host-token-exchange",
+        str(session["host_token"]),
+        env["FIREBASE_WEB_API_KEY"],
     )
     started = call(
         "start-session",
@@ -169,6 +171,53 @@ def main() -> None:
     if status != "active":
         fail("start-session", f"expected status 'active', got {status!r}")
     print(f"[ok] session-active -> status={status}")
+
+    first_player_token = exchange_firebase_token(
+        "player-token-exchange-1",
+        str(first_player["player_token"]),
+        env["FIREBASE_WEB_API_KEY"],
+    )
+    second_player_token = exchange_firebase_token(
+        "player-token-exchange-2",
+        str(second_player["player_token"]),
+        env["FIREBASE_WEB_API_KEY"],
+    )
+    first_character_id = str(first_player["character_id"])
+    second_character_id = str(second_player["character_id"])
+    call(
+        "player-action-1",
+        "POST",
+        f"/v1/sessions/{session_id}/characters/{first_character_id}/input",
+        body={"kind": "action", "content": "Inspect the scene."},
+        headers={"Authorization": f"Bearer {first_player_token}"},
+    )
+    before_second_action = call(
+        "beat-hold-after-one-action",
+        "GET",
+        f"/v1/sessions/{session_id}/lobby",
+    )
+    if before_second_action.get("current_beat_id") != "pour":
+        fail(
+            "beat-hold-after-one-action",
+            f"expected pour, got {before_second_action.get('current_beat_id')!r}",
+        )
+    call(
+        "player-action-2",
+        "POST",
+        f"/v1/sessions/{session_id}/characters/{second_character_id}/input",
+        body={"kind": "action", "content": "Check the glasses."},
+        headers={"Authorization": f"Bearer {second_player_token}"},
+    )
+    after_actions = call(
+        "beat-transition-pour-to-scene",
+        "GET",
+        f"/v1/sessions/{session_id}/lobby",
+    )
+    if after_actions.get("current_beat_id") != "scene":
+        fail(
+            "beat-transition-pour-to-scene",
+            f"expected scene, got {after_actions.get('current_beat_id')!r}",
+        )
     print("SMOKE PASS")
 
 

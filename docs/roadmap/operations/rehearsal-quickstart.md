@@ -24,7 +24,8 @@ make rehearsal
 ```
 
 Wait for the READY block. It prints:
-- `DISPLAY URL (this machine)` for the shared display.
+- `DISPLAY URL (this machine)` for the shared display, including the host
+  control fragment used by the start button.
 - `PLAYER JOIN URL (phones)` for players.
 - `JOIN CODE` for fallback/manual entry.
 
@@ -44,9 +45,9 @@ Expected: `SMOKE PASS`. If it fails, the failing step and response are printed.
 1. Open the printed display URL on the shared display.
 2. Send the printed player join URL to players' phones.
 3. Wait for at least 2 players to appear in the lobby.
-4. Start the arc: in a second terminal, run `make rehearsal-start`. (The
-   dashboard has no host-start control; this exchanges the host token and
-   calls the start endpoint. Requires `FIREBASE_WEB_API_KEY` in `.env`.)
+4. Start the arc from the shared display by pressing `Start case` once at
+   least 2 players are present. `make rehearsal-start` remains a CLI fallback
+   if the display host control cannot be used.
 5. Play end-to-end through join, private events, both mini-games, accusation,
    and killer reveal.
 6. When something breaks or feels wrong, log the timestamp, who it affected,

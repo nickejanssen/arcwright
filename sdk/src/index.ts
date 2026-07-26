@@ -47,7 +47,7 @@ import type {
 
 export class ArcwrightClient {
   private readonly _sessionId: string;
-  private readonly _playerToken: string;
+  private readonly _playerToken: string | (() => string | Promise<string>);
   private readonly _characterId: string;
   private readonly _baseUrl: string;
 
@@ -57,7 +57,7 @@ export class ArcwrightClient {
 
   constructor(
     sessionId: string,
-    playerToken: string,
+    playerToken: string | (() => string | Promise<string>),
     characterId: string,
     baseUrl: string,
   ) {
@@ -78,7 +78,7 @@ export class ArcwrightClient {
     const res = await fetch(url, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${this._playerToken}`,
+        Authorization: `Bearer ${await this._getPlayerToken()}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify(input),
@@ -91,7 +91,7 @@ export class ArcwrightClient {
   async getMyCharacter(): Promise<CharacterDetail> {
     const url = `${this._baseUrl}/v1/sessions/${this._sessionId}/characters/${this._characterId}`;
     const res = await fetch(url, {
-      headers: { Authorization: `Bearer ${this._playerToken}` },
+      headers: { Authorization: `Bearer ${await this._getPlayerToken()}` },
     });
     if (!res.ok) {
       throw new Error(`getMyCharacter failed: ${res.status} ${res.statusText}`);
@@ -104,7 +104,7 @@ export class ArcwrightClient {
     let res: Response;
     try {
       res = await fetch(url, {
-        headers: { Authorization: `Bearer ${this._playerToken}` },
+        headers: { Authorization: `Bearer ${await this._getPlayerToken()}` },
       });
     } catch {
       return null;
@@ -152,7 +152,7 @@ export class ArcwrightClient {
     const res = await fetch(url, {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${this._playerToken}`,
+        Authorization: `Bearer ${await this._getPlayerToken()}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ submission_id: submissionId, payload }),
@@ -182,6 +182,12 @@ export class ArcwrightClient {
     }
   }
 
+  private async _getPlayerToken(): Promise<string> {
+    return typeof this._playerToken === "function"
+      ? await this._playerToken()
+      : this._playerToken;
+  }
+
   private async _streamEvents(
     callback: (event: TypedContentEvent) => void,
     isReconnect: boolean,
@@ -190,7 +196,7 @@ export class ArcwrightClient {
     let res: Response;
     try {
       res = await fetch(url, {
-        headers: { Authorization: `Bearer ${this._playerToken}` },
+        headers: { Authorization: `Bearer ${await this._getPlayerToken()}` },
       });
     } catch {
       // Network failure before the stream even opened counts as an

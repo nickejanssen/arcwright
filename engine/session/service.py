@@ -329,6 +329,7 @@ class SessionService:
         *,
         player_action_count: int = 1,
         transition_cause: str = "normal_completion",
+        ready_to_advance: bool = True,
     ) -> Session:
         """Advance arc beat state after validated REST player input.
 
@@ -338,7 +339,7 @@ class SessionService:
         state.
         """
         orm = await self._require_session(db, session_id)
-        if orm.status != SessionStatus.active.value:
+        if orm.status != SessionStatus.active.value or not ready_to_advance:
             return _orm_session_to_pydantic(orm)
 
         arc_definition = load_arc_definition(orm.arc_id)

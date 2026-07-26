@@ -13,7 +13,7 @@ import { fetchPlayerMiniGameState } from "../../api/miniGame";
 
 interface Props {
   sessionId: string;
-  playerToken: string;
+  playerToken: string | (() => string | Promise<string>);
   characterId: string;
 }
 

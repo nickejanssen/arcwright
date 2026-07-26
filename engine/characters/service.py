@@ -68,6 +68,7 @@ class PlayerInputRecord:
     kind: InputKind
     content: str
     submitted_at: datetime
+    beat_id: str
 
 
 @dataclass
@@ -134,6 +135,9 @@ class CharacterService:
             raise CharacterAccessError(
                 "Player may only submit input as their own character"
             )
+        session = await self.sessions.get_session(db, session_id)
+        if session is None:
+            raise CharacterNotFoundError(character_id)
         record = PlayerInputRecord(
             input_id=uuid4(),
             session_id=session_id,
@@ -142,12 +146,20 @@ class CharacterService:
             kind=kind,
             content=content,
             submitted_at=datetime.now(tz=timezone.utc),
+            beat_id=session.current_beat_id,
         )
-        self._inputs.setdefault(session_id, []).append(record)
+        session_inputs = self._inputs.setdefault(session_id, [])
+        session_inputs.append(record)
+        submitted_player_ids = {
+            item.participant_id
+            for item in session_inputs
+            if item.beat_id == record.beat_id
+        }
         await self.sessions.advance_live_session_on_input(
             db,
             session_id,
-            player_action_count=len(self._inputs[session_id]),
+            player_action_count=len(session_inputs),
+            ready_to_advance=len(submitted_player_ids) >= session.player_count,
         )
         return record
 

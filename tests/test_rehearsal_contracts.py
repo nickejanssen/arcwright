@@ -30,3 +30,18 @@ def test_repo_make_wrapper_exposes_rehearsal_start() -> None:
     assert 'if /I "%~1"=="rehearsal-start" goto rehearsal-start' in make_cmd
     assert ":rehearsal-start" in make_cmd
     assert "scripts\\rehearsal_start.py" in make_cmd
+
+
+def test_rehearsal_display_url_carries_host_control_in_fragment() -> None:
+    rehearsal = (REPO_ROOT / "scripts" / "rehearsal.py").read_text(encoding="utf-8")
+
+    assert "#host_token=" in rehearsal
+    assert "DISPLAY URL" in rehearsal
+
+
+def test_rehearsal_smoke_covers_authenticated_player_actions_and_beat() -> None:
+    smoke = (REPO_ROOT / "scripts" / "rehearsal_smoke.py").read_text(encoding="utf-8")
+
+    assert '"player-token-exchange-1"' in smoke
+    assert '"player-action-1"' in smoke
+    assert '"beat-transition-pour-to-scene"' in smoke

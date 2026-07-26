@@ -130,6 +130,7 @@ class TestCreateSession:
         lobby = client.get(f"/v1/sessions/{session_id}/lobby")
         assert lobby.status_code == 200, lobby.text
         assert lobby.json()["current_beat_id"] == "pour"
+        assert lobby.json()["min_players"] == 2
 
         join_code = lobby.json()["join_code"]
         with patch("firebase_admin.auth.create_custom_token") as create_token:
@@ -168,11 +169,33 @@ class TestCreateSession:
             player_id=UUID(first_participant_id),
             role="player",
         )
-        submitted = client.post(
+        first_submitted = client.post(
             f"/v1/sessions/{session_id}/characters/{first_character_id}/input",
             json={"kind": "action", "content": "Inspect the scene."},
         )
-        assert submitted.status_code == 201, submitted.text
+        assert first_submitted.status_code == 201, first_submitted.text
+
+        before_second_player = client.get(f"/v1/sessions/{session_id}/lobby")
+        assert before_second_player.json()["current_beat_id"] == "pour"
+
+        app.dependency_overrides[require_player_or_host_jwt] = lambda: JwtClaims(
+            uid="second-player-uid",
+            session_id=UUID(session_id),
+            player_id=UUID(second.json()["participant_id"]),
+            role="player",
+        )
+        second_submitted = client.post(
+            f"/v1/sessions/{session_id}/characters/{second_character_id}/input",
+            json={"kind": "action", "content": "Check the glasses."},
+        )
+        assert second_submitted.status_code == 201, second_submitted.text
+
+        app.dependency_overrides[require_player_or_host_jwt] = lambda: JwtClaims(
+            uid="player-uid",
+            session_id=UUID(session_id),
+            player_id=UUID(first_participant_id),
+            role="player",
+        )
 
         wrong_character = client.post(
             f"/v1/sessions/{session_id}/characters/{second_character_id}/input",
@@ -183,6 +206,16 @@ class TestCreateSession:
         after_action = client.get(f"/v1/sessions/{session_id}/lobby")
         assert after_action.status_code == 200, after_action.text
         assert after_action.json()["current_beat_id"] == "scene"
+
+    def test_lobby_reports_minimum_players_from_registered_arc(
+        self, client: TestClient
+    ) -> None:
+        created = client.post("/v1/sessions", json={"arc_id": "nightcap-v1"})
+        assert created.status_code == 201, created.text
+
+        lobby = client.get(f"/v1/sessions/{created.json()['session_id']}/lobby")
+        assert lobby.status_code == 200, lobby.text
+        assert lobby.json()["min_players"] == 4
 
 
 class TestCreateHostSession:

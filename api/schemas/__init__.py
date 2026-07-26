@@ -304,6 +304,7 @@ class LobbyStateResponse(BaseModel):
     join_code: Optional[str]
     status: str
     current_beat_id: str
+    min_players: int
     player_count: int
     players: list[LobbyPlayerEntry]
 

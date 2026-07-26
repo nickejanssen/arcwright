@@ -37,6 +37,7 @@ from engine.arc.pacing import (
 from engine.db import get_async_session
 from engine.db.orm import Base, Event
 from engine.db.orm import Session as OrmSession
+from engine.db.orm import SessionParticipant as OrmParticipant
 from engine.db.testing import patch_metadata_for_sqlite
 from engine.session.service import SessionService
 
@@ -313,6 +314,22 @@ class TestLiveProgression:
             ),
         )
 
+        async def _other_player_slots() -> list[tuple[UUID, UUID]]:
+            async with db_factory() as db:
+                result = await db.execute(
+                    select(OrmParticipant).where(
+                        OrmParticipant.session_id == session_id,
+                        OrmParticipant.surface_type == "player",
+                        OrmParticipant.participant_id != player_a,
+                    )
+                )
+                return [
+                    (row.participant_id, row.character_id)
+                    for row in result.scalars().all()
+                ]
+
+        import asyncio
+
         with patch(
             "engine.arc.pacing.evaluate_pacing_interventions",
             return_value=[intervention],
@@ -323,8 +340,21 @@ class TestLiveProgression:
                     json={"kind": "dialogue", "content": "Advance the case."},
                 )
 
-        assert resp.status_code == 201
-        assert resp.json()["character_id"] == str(char_a)
+            assert resp.status_code == 201
+            assert resp.json()["character_id"] == str(char_a)
+
+            for (
+                other_player_id,
+                other_character_id,
+            ) in asyncio.get_event_loop().run_until_complete(_other_player_slots()):
+                for c in _client_for_role(
+                    "player", session_id, other_player_id, db_factory
+                ):
+                    resp = c.post(
+                        f"/v1/sessions/{session_id}/characters/{other_character_id}/input",
+                        json={"kind": "action", "content": "Advance the case."},
+                    )
+                assert resp.status_code == 201
 
         for c in _client_for_role("player", session_id, player_a, db_factory):
             state_resp = c.get(f"/v1/sessions/{session_id}")
