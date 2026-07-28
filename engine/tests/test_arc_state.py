@@ -7,7 +7,13 @@ from pathlib import Path
 
 import pytest
 
-from engine.arc import ArcDefinition, ArcStateChart, BeatDefinition, transition_name_for
+from engine.arc import (
+    ArcDefinition,
+    ArcStateChart,
+    BeatDefinition,
+    is_terminal_beat,
+    transition_name_for,
+)
 from engine.session.models import QualityTier
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -363,3 +369,8 @@ class TestArcStateChart:
         assert transition_name_for("introduction", "investigation") in (
             chart.transition_names
         )
+
+    def test_terminal_beat_is_derived_from_authored_graph(self, sample_arc_definition):
+        assert not is_terminal_beat(sample_arc_definition, "introduction")
+        assert is_terminal_beat(sample_arc_definition, "reveal")
+        assert not is_terminal_beat(sample_arc_definition, "missing")

@@ -23,8 +23,9 @@ from engine.characters.service import (
     CharacterService,
 )
 from engine.db.orm import Base
+from engine.db.orm import Session as OrmSession
 from engine.db.testing import patch_metadata_for_sqlite
-from engine.session.service import SessionService
+from engine.session.service import SessionService, SessionStateError
 
 patch_metadata_for_sqlite()
 
@@ -220,6 +221,34 @@ class TestSubmitInput:
             content="Where were you at midnight?",
         )
         assert record.kind == "dialogue"
+
+    @pytest.mark.asyncio
+    async def test_terminal_beat_rejects_further_player_input(
+        self,
+        services: tuple[SessionService, CharacterService],
+        db: AsyncSession,
+    ) -> None:
+        sessions, characters = services
+        session, _ = await sessions.create_session(
+            db, arc_id="nightcap-couch-race-v1", host_account_id=uuid4()
+        )
+        participant, _ = await sessions.add_player(db, session.session_id)
+        await sessions.start_session(db, session.session_id)
+        orm_session = await db.get(OrmSession, session.session_id)
+        assert orm_session is not None
+        orm_session.current_beat_id = "truth"
+        await db.flush()
+
+        with pytest.raises(SessionStateError, match="terminal beat"):
+            await characters.submit_input(
+                db,
+                session_id=session.session_id,
+                character_id=participant.character_id,
+                requesting_participant_id=participant.participant_id,
+                kind="action",
+                content="Try to keep going.",
+            )
+        assert characters.get_inputs(session.session_id) == []
 
     @pytest.mark.asyncio
     async def test_non_owner_cannot_submit(

@@ -3,6 +3,8 @@ import { FormEvent, useEffect, useRef, useState } from "react";
 import { ArcwrightClient } from "@arcwright/sdk";
 import type { MiniGameState, PlayerInput } from "@arcwright/sdk";
 import { getValidPlayerToken, loadPlayerAuth } from "../api/auth";
+import { fetchLobbyState } from "../api/lobby";
+import type { LobbyState } from "../api/lobby";
 import { fetchPlayerMiniGameState } from "../api/miniGame";
 import TmstPlayerScreen from "./tmst/TmstPlayerScreen";
 
@@ -31,6 +33,7 @@ export default function WaitingScreen() {
   const [miniGameState, setMiniGameState] = useState<MiniGameState | null>(
     null,
   );
+  const [lobby, setLobby] = useState<LobbyState | null>(null);
   const [action, setAction] = useState("Continue investigating.");
   const [actionStatus, setActionStatus] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
@@ -81,6 +84,11 @@ export default function WaitingScreen() {
 
     async function poll() {
       try {
+        setLobby(await fetchLobbyState(sessionId!));
+      } catch {
+        // The action form remains usable if the public lobby poll is delayed.
+      }
+      try {
         const mgState = await fetchPlayerMiniGameState(
           sessionId!,
           characterId!,
@@ -102,6 +110,8 @@ export default function WaitingScreen() {
     miniGameState.gameId === TMST_GAME_ID &&
     miniGameState.status === "active";
 
+  const isTerminal = lobby?.is_terminal === true;
+
   if (isTmstActive) {
     return (
       <TmstPlayerScreen
@@ -121,13 +131,19 @@ export default function WaitingScreen() {
         <div style={styles.messageBlock}>
           <p style={styles.greeting}>You&apos;re in, {name}.</p>
           <p style={styles.waiting}>
-            {hasCredentials
-              ? "The host will start the case. Then submit an action to advance."
-              : "Waiting for player authentication."}
+            {isTerminal
+              ? "The case is complete."
+              : hasCredentials
+                ? "The host will start the case. Then submit an action to advance."
+                : "Waiting for player authentication."}
           </p>
         </div>
 
-        {hasCredentials && (
+        {isTerminal ? (
+          <p style={styles.complete}>
+            The case has reached The Truth. Player actions are complete.
+          </p>
+        ) : hasCredentials ? (
           <form onSubmit={submitAction} style={styles.actionForm}>
             <label htmlFor="action" style={styles.label}>
               Action
@@ -144,10 +160,12 @@ export default function WaitingScreen() {
             </button>
             {actionStatus && <p style={styles.hint}>{actionStatus}</p>}
           </form>
-        )}
+        ) : null}
 
         <p style={styles.hint}>
-          Keep this screen open. The game will begin soon.
+          {isTerminal
+            ? "This rehearsal slice stops at the terminal beat; final reveal and scoreboard rendering are not enabled yet."
+            : "Keep this screen open. The game will begin soon."}
         </p>
       </div>
     </div>
@@ -204,6 +222,14 @@ const styles: Record<string, CSSProperties> = {
     fontSize: "0.8rem",
     color: "var(--text-muted)",
     letterSpacing: "0.05em",
+  },
+  complete: {
+    width: "100%",
+    padding: "1rem",
+    border: "1px solid var(--border)",
+    borderRadius: "6px",
+    color: "var(--accent)",
+    lineHeight: 1.5,
   },
   actionForm: {
     width: "100%",

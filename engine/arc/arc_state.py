@@ -107,6 +107,13 @@ def _build_state_attributes(arc_definition: ArcDefinition) -> dict[str, State]:
     return attrs
 
 
+def is_terminal_beat(arc_definition: ArcDefinition, beat_id: str) -> bool:
+    """Return whether the authored graph has no transition from ``beat_id``."""
+    return (
+        beat_id in arc_definition.beat_graph and not arc_definition.beat_graph[beat_id]
+    )
+
+
 def _build_transition_attributes(
     arc_definition: ArcDefinition,
     beats_by_id: dict[str, BeatDefinition],

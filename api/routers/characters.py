@@ -152,6 +152,8 @@ async def submit_character_input(
         raise HTTPException(status_code=404, detail="Character not found")
     except CharacterAccessError as exc:
         raise HTTPException(status_code=403, detail=str(exc))
+    except SessionStateError as exc:
+        raise HTTPException(status_code=409, detail=str(exc))
     if record.kind == "dialogue":
         # Live-loop AI response (spec 0071): at most one AI character reply,
         # generated engine-side after the deterministic advance, delivered

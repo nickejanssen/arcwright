@@ -13,6 +13,7 @@ import os
 import re
 import shutil
 import signal
+import socket
 import subprocess
 import sys
 import time
@@ -34,6 +35,8 @@ STATE_DIR = REPO_ROOT / ".rehearsal"
 STATE_FILE = STATE_DIR / "current-session.json"
 API_PORT = 8000
 WEB_PORT = 5173
+API_STARTUP_TIMEOUT_S = 120
+SESSION_BOOTSTRAP_TIMEOUT_S = 90
 DEFAULT_ARC_ID = "nightcap-couch-race-v1"
 # Provider-neutral required keys. Provider API-key names are derived from the
 # routing table at runtime (see required_provider_keys) so provider names stay
@@ -179,21 +182,72 @@ def http_json(
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="replace").strip()
         fail(step, f"HTTP {exc.code}: {detail or exc.reason}", "see the response above")
+    except TimeoutError:
+        fail(
+            step,
+            f"request timed out after {timeout}s",
+            "check the service log above and try again",
+        )
     except urllib.error.URLError as exc:
         fail(step, str(exc.reason), "check the service status above and try again")
     return {}
 
 
-def wait_http(name: str, url: str, timeout_s: int, fix: str) -> None:
-    deadline = time.monotonic() + timeout_s
-    while time.monotonic() < deadline:
+def ensure_port_available(name: str, port: int) -> None:
+    """Fail before startup when another process already owns a service port."""
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        if hasattr(socket, "SO_EXCLUSIVEADDRUSE"):
+            probe.setsockopt(socket.SOL_SOCKET, socket.SO_EXCLUSIVEADDRUSE, 1)
+        try:
+            probe.bind(("0.0.0.0", port))
+            probe.listen()
+        except OSError:
+            fail(
+                name,
+                f"port {port} is already in use by another process",
+                (
+                    f"stop the process using port {port}, then re-run make rehearsal "
+                    f"(PowerShell: Get-NetTCPConnection -LocalPort {port} "
+                    "| Select-Object OwningProcess)"
+                ),
+            )
+
+
+def wait_http(
+    name: str,
+    url: str,
+    timeout_s: int,
+    fix: str,
+    *,
+    process: subprocess.Popen[str] | None = None,
+) -> None:
+    started = time.monotonic()
+    deadline = started + timeout_s
+    next_progress = started + 15
+    while (now := time.monotonic()) < deadline:
+        if process is not None and process.poll() is not None:
+            fail(
+                name,
+                f"exited before becoming ready (code {process.returncode})",
+                fix,
+            )
         try:
             with urllib.request.urlopen(url, timeout=3) as response:
                 if response.status < 500:
+                    if process is not None and process.poll() is not None:
+                        fail(
+                            name,
+                            f"exited before becoming ready (code {process.returncode})",
+                            fix,
+                        )
                     print(f"[ok] {name} is up ({url})")
                     return
         except (urllib.error.URLError, OSError):
             pass
+        if now >= next_progress:
+            elapsed = int(now - started)
+            print(f"[wait] {name} is still starting ({elapsed}s/{timeout_s}s)")
+            next_progress += 15
         time.sleep(1.5)
     fail(name, f"not reachable at {url} after {timeout_s}s", fix)
 
@@ -231,13 +285,14 @@ def spawn(
 
 
 def create_session(env: dict[str, str]) -> dict[str, str]:
-    base = f"http://localhost:{API_PORT}"
+    base = f"http://127.0.0.1:{API_PORT}"
     session = http_json(
         "Session bootstrap",
         "POST",
         f"{base}/v1/sessions",
         headers={"X-Api-Key": env["ARCWRIGHT_API_KEY"]},
         body={"arc_id": DEFAULT_ARC_ID},
+        timeout=SESSION_BOOTSTRAP_TIMEOUT_S,
     )
     session_id = str(session["session_id"])
     lobby = http_json(
@@ -257,6 +312,14 @@ def create_session(env: dict[str, str]) -> dict[str, str]:
     STATE_FILE.write_text(json.dumps(details, indent=2), encoding="utf-8")
     print(f"[ok] Session ready ({session_id}, join code {join_code})")
     return details
+
+
+def build_display_url(session_id: str, host_token: str, tunnel_url: str) -> str:
+    """Build the host display URL with the public player origin for its QR code."""
+    display_path = f"http://127.0.0.1:{WEB_PORT}/display/{session_id}"
+    join_query = urllib.parse.urlencode({"join_base_url": tunnel_url})
+    host_fragment = urllib.parse.urlencode({"host_token": host_token})
+    return f"{display_path}?{join_query}#{host_fragment}"
 
 
 def exchange_host_token(custom_token: str, web_api_key: str) -> str | None:
@@ -335,7 +398,10 @@ def main() -> None:
         env,
     )
 
-    spawn(
+    ensure_port_available("API", API_PORT)
+    ensure_port_available("Dashboard", WEB_PORT)
+
+    api_process = spawn(
         "API",
         [
             python_bin,
@@ -356,16 +422,17 @@ def main() -> None:
     )
     wait_http(
         "API",
-        f"http://localhost:{API_PORT}/health",
-        60,
+        f"http://127.0.0.1:{API_PORT}/health",
+        API_STARTUP_TIMEOUT_S,
         "read the uvicorn output above; usually a bad .env value",
+        process=api_process,
     )
 
     session = create_session(env)
 
-    spawn(
+    dashboard_process = spawn(
         "Dashboard",
-        [npm_bin, "run", "dev"],
+        [npm_bin, "run", "dev", "--", "--host", "127.0.0.1"],
         cwd=REPO_ROOT / "dashboard",
         env={**env, "VITE_FIREBASE_WEB_API_KEY": env["FIREBASE_WEB_API_KEY"]},
         capture_output=False,
@@ -373,15 +440,16 @@ def main() -> None:
     )
     wait_http(
         "Dashboard",
-        f"http://localhost:{WEB_PORT}",
+        f"http://127.0.0.1:{WEB_PORT}",
         90,
         "run: cd dashboard && npm install, then re-run make rehearsal",
+        process=dashboard_process,
     )
 
     global tunnel_process
     tunnel_process = spawn(
         "Tunnel",
-        ["cloudflared", "tunnel", "--url", f"http://localhost:{WEB_PORT}"],
+        ["cloudflared", "tunnel", "--url", f"http://127.0.0.1:{WEB_PORT}"],
         cwd=REPO_ROOT,
         env=env,
         capture_output=True,
@@ -389,9 +457,10 @@ def main() -> None:
     )
     tunnel_url = wait_for_tunnel_url(tunnel_process)
 
-    display_url = (
-        f"http://localhost:{WEB_PORT}/display/{session['session_id']}"
-        f"#host_token={urllib.parse.quote(session['host_token'], safe='')}"
+    display_url = build_display_url(
+        session_id=session["session_id"],
+        host_token=session["host_token"],
+        tunnel_url=tunnel_url,
     )
     player_join_url = f"{tunnel_url}/join?code={session['join_code']}"
 
@@ -435,4 +504,7 @@ def main() -> None:
 
 if __name__ == "__main__":
     signal.signal(signal.SIGTERM, lambda *_: (_ for _ in ()).throw(KeyboardInterrupt()))
-    main()
+    try:
+        main()
+    finally:
+        teardown()

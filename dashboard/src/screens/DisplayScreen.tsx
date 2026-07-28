@@ -32,6 +32,23 @@ interface TmstEventState {
   skippedCharacterId: string | null;
 }
 
+function publicJoinBaseUrl(): string {
+  const configured = new URLSearchParams(window.location.search).get(
+    "join_base_url",
+  );
+  if (!configured) return window.location.origin;
+
+  try {
+    const parsed = new URL(configured);
+    if (parsed.protocol === "http:" || parsed.protocol === "https:") {
+      return parsed.origin;
+    }
+  } catch {
+    // Fall back to the display origin if the rehearsal URL is malformed.
+  }
+  return window.location.origin;
+}
+
 export default function DisplayScreen({ sessionId }: Props) {
   const [lobby, setLobby] = useState<LobbyState | null>(null);
   const [miniGameState, setMiniGameState] = useState<MiniGameState | null>(
@@ -260,8 +277,9 @@ export default function DisplayScreen({ sessionId }: Props) {
     );
   }
 
+  const joinBaseUrl = publicJoinBaseUrl();
   const joinUrl = lobby.join_code
-    ? `${window.location.origin}/join?code=${lobby.join_code}`
+    ? `${joinBaseUrl}/join?code=${encodeURIComponent(lobby.join_code)}`
     : null;
 
   return (
@@ -292,7 +310,7 @@ export default function DisplayScreen({ sessionId }: Props) {
             <p style={{ color: "var(--text-muted)" }}>No join code yet</p>
           )}
 
-          <p style={styles.urlHint}>{window.location.origin}/join</p>
+          <p style={styles.urlHint}>{joinBaseUrl}/join</p>
         </div>
 
         <div style={styles.playerPanel}>
