@@ -130,6 +130,7 @@ class TestCreateSession:
         lobby = client.get(f"/v1/sessions/{session_id}/lobby")
         assert lobby.status_code == 200, lobby.text
         assert lobby.json()["current_beat_id"] == "pour"
+        assert lobby.json()["is_terminal"] is False
         assert lobby.json()["min_players"] == 2
 
         join_code = lobby.json()["join_code"]

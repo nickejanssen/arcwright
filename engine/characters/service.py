@@ -26,7 +26,7 @@ from uuid import UUID, uuid4
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from engine.resources.models import EffectActivation
-from engine.session.service import SessionService, _session_service
+from engine.session.service import SessionService, SessionStateError, _session_service
 
 if TYPE_CHECKING:
     from engine.characters.dialogue import CharacterDialogueEvent
@@ -138,6 +138,12 @@ class CharacterService:
         session = await self.sessions.get_session(db, session_id)
         if session is None:
             raise CharacterNotFoundError(character_id)
+        if session.status.value == "active" and self.sessions.is_terminal_beat(
+            session.arc_id, session.current_beat_id
+        ):
+            raise SessionStateError(
+                "Session is at its terminal beat; player input is no longer accepted"
+            )
         record = PlayerInputRecord(
             input_id=uuid4(),
             session_id=session_id,

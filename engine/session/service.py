@@ -139,6 +139,13 @@ class SessionService:
         orm = await db.get(OrmSession, session_id)
         return _orm_session_to_pydantic(orm) if orm is not None else None
 
+    def is_terminal_beat(self, arc_id: str, beat_id: str) -> bool:
+        """Return whether the registered arc has no outgoing beat transition."""
+        from engine.arc import is_terminal_beat
+
+        arc_definition = load_arc_definition(arc_id)
+        return arc_definition is not None and is_terminal_beat(arc_definition, beat_id)
+
     async def start_session(self, db: AsyncSession, session_id: UUID) -> Session:
         orm = await self._require_session(db, session_id)
         if orm.status != SessionStatus.created.value:

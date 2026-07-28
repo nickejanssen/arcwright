@@ -218,7 +218,7 @@ async def end_session(
     return await _session_to_state_response(db, session)
 
 
-@router.post("/{session_id}/replay-intent", status_code=204)
+@router.post("/{session_id}/replay-intent", status_code=204, response_model=None)
 async def write_replay_intent(
     session_id: UUID,
     body: ReplayIntentRequest,

@@ -218,6 +218,40 @@ def main() -> None:
             "beat-transition-pour-to-scene",
             f"expected scene, got {after_actions.get('current_beat_id')!r}",
         )
+    rounds = [
+        ("scene", "grill", "Review the evidence.", "Compare the timelines."),
+        ("grill", "twist", "Question the suspect.", "Press the contradiction."),
+        ("twist", "last_call", "Reassess the motive.", "Share the new clue."),
+        ("last_call", "truth", "Lock in the accusation.", "Make the final call."),
+    ]
+    for source_beat, target_beat, first_content, second_content in rounds:
+        call(
+            f"player-action-{source_beat}-1",
+            "POST",
+            f"/v1/sessions/{session_id}/characters/{first_character_id}/input",
+            body={"kind": "action", "content": first_content},
+            headers={"Authorization": f"Bearer {first_player_token}"},
+        )
+        call(
+            f"player-action-{source_beat}-2",
+            "POST",
+            f"/v1/sessions/{session_id}/characters/{second_character_id}/input",
+            body={"kind": "action", "content": second_content},
+            headers={"Authorization": f"Bearer {second_player_token}"},
+        )
+        state = call(
+            f"beat-transition-{source_beat}-to-{target_beat}",
+            "GET",
+            f"/v1/sessions/{session_id}/lobby",
+        )
+        if state.get("current_beat_id") != target_beat:
+            fail(
+                f"beat-transition-{source_beat}-to-{target_beat}",
+                f"expected {target_beat}, got {state.get('current_beat_id')!r}",
+            )
+
+    if state.get("is_terminal") is not True:
+        fail("terminal-beat", "expected the truth beat to be terminal")
     print("SMOKE PASS")
 
 
