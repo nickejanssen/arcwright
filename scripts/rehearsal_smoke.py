@@ -218,7 +218,6 @@ def main() -> None:
             "beat-transition-pour-to-scene",
             f"expected scene, got {after_actions.get('current_beat_id')!r}",
         )
-
     rounds = [
         ("scene", "grill", "Review the evidence.", "Compare the timelines."),
         ("grill", "twist", "Question the suspect.", "Press the contradiction."),

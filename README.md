@@ -124,7 +124,7 @@ This repository is still scaffold-stage, so setup is intentionally light.
 python -m venv .venv
 . .venv/Scripts/activate
 pip install -r requirements.txt
-pip install pre-commit
+pip install "pre-commit>=3.7.0"
 pre-commit install
 ```
 

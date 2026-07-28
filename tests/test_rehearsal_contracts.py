@@ -43,6 +43,7 @@ def test_rehearsal_display_url_carries_host_control_in_fragment() -> None:
 
     assert "build_display_url" in rehearsal
     assert '"host_token"' in rehearsal
+    assert "host_fragment = urllib.parse.urlencode" in rehearsal
     assert "DISPLAY URL" in rehearsal
 
 
