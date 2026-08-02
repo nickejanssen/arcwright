@@ -1,6 +1,8 @@
 import { isSharedDisplayVisibleEvent } from "../filters.js";
 import type { ContentEvent } from "../types.js";
 
+// Phase 2 (visual layer) will add further kinds as event types get projections;
+// leverage_balance is reserved for the resource_balance_changed event, not yet handled.
 export type SharedDisplayProjectionKind =
   | "suspect_answer"
   | "resource_effect"
