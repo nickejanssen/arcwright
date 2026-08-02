@@ -23,7 +23,7 @@ evidence record. It is also the brief for the visual-exploration phase.
 | Discovery Q3 — G3 engine gap | Answered | 2026-08-01 | D-096 (fold into AW-285) |
 | Structural design approved | Cleared | 2026-08-01 | Projection layer chosen over two alternatives |
 | Spec written | Cleared | 2026-08-01 | `docs/superpowers/specs/2026-08-01-couch-race-tv-and-phone-rendering-design.md` |
-| **Spec review** | **Open** | — | Awaiting founder review of the written spec |
+| **Spec review** | **Open — explicit sign-off not yet obtained** | — | Founder invoked `/writing-plans` after the spec was written and continued directing implementation across Tasks 1-7 (including making the Task 8 game-design call), which is real engagement — but not the same as an explicit "I approve this spec" statement. AGENTS.md: "Never infer founder approval from silence... or prior general approval." Flagged by final branch review 2026-08-02; asking explicitly before the PR is presented as ready. |
 | Surface brief confirmed | Open | — | Awaiting founder return from Claude Design |
 | Wireframes | Open | — | — |
 | Prototype flows | Open | — | — |
