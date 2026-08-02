@@ -27,7 +27,29 @@ evidence record. It is also the brief for the visual-exploration phase.
 | Surface brief confirmed | Open | — | Awaiting founder return from Claude Design |
 | Wireframes | Open | — | — |
 | Prototype flows | Open | — | — |
-| Implemented thin slice | Open | — | — |
+| Implemented thin slice | Partial | 2026-08-02 | Tasks 1-7 (structural layer) implemented, reviewed, committed on `claude/aw-285-discovery`. Task 8 (arc minigame bindings) handed off — see below. Task 9 (PR) still open. |
+
+## Task 8 handoff (2026-08-02)
+
+Asked the founder which package binds to which of the four empty beats (Pour,
+Grill, Last Call, Truth), per D-095/Must-Not-Do ("do not design my game for
+me"). The founder's answer surfaced real design substance beyond a static
+binding: the Grill's minigame can **recur** within a session, or be
+**player-requested**, rather than being a fixed one-per-beat slot. The
+current arc schema (`mini_games: [{binding_id, game_id, version}]`, a static
+list per beat) may not represent that trigger/repetition model as-is — this
+looks like it could touch the mini-games framework, not just JSON content.
+
+The founder is having **Codex** implement the wiring directly, and will
+create the remaining game packages separately. This session did not
+implement Task 8 and confirmed (via `git fetch` + log at handoff time) no
+Codex work had landed yet, to avoid duplicate/conflicting work per the
+parallel-sessions sync discipline. Tasks 1-7 ship independently of Task 8 —
+Task 9 depends on Tasks 2, 4, 7 only.
+
+**If resuming Task 8 in this plan later:** re-check `nightcap/couch-race.arc.json`
+and the mini-games framework for schema changes first — do not assume the
+original static `binding_id`-based approach still applies.
 
 ## Process correction (2026-08-01)
 
