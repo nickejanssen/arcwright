@@ -30,6 +30,13 @@ function asNonEmptyString(value: unknown): string | null {
   return typeof value === "string" && value.trim().length > 0 ? value : null;
 }
 
+function asStringArray(value: unknown): string[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+  return value.filter((entry): entry is string => typeof entry === "string");
+}
+
 export function projectSharedDisplayEvent(
   event: ProjectableEvent,
 ): SharedDisplayProjection | null {
@@ -55,7 +62,7 @@ export function projectSharedDisplayEvent(
       kind: "suspect_answer",
       body,
       suspectId: asNonEmptyString(payload.target_id),
-      askerIds: [],
+      askerIds: asStringArray(payload.participant_ids),
       suspectState: null,
     };
   }

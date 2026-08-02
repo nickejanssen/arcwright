@@ -106,6 +106,53 @@ test("resource_effect_outcome projects only when publicly addressed", () => {
   assert.equal(projectSharedDisplayEvent(privateOutcome), null);
 });
 
+test("suspect answer projection carries asker identity for G3 crediting", () => {
+  const event = contentEvent({
+    event_type: "interaction_answer",
+    target_audience: "all",
+    payload: {
+      target_id: "suspect-vesper",
+      selection_ids: ["sel-1", "sel-2"],
+      participant_ids: ["player-a", "player-b"],
+      answer: { text: "I never touched the decanter." },
+    },
+  });
+
+  const projection = projectSharedDisplayEvent(event);
+
+  assert.deepEqual(projection?.askerIds, ["player-a", "player-b"]);
+});
+
+test("suspect answer projection defaults askerIds to an empty array", () => {
+  const event = contentEvent({
+    event_type: "interaction_answer",
+    target_audience: "all",
+    payload: {
+      target_id: "suspect-vesper",
+      answer: { text: "I never touched the decanter." },
+    },
+  });
+
+  assert.deepEqual(projectSharedDisplayEvent(event)?.askerIds, []);
+});
+
+test("suspect answer projection filters non-string entries out of participant_ids", () => {
+  const event = contentEvent({
+    event_type: "interaction_answer",
+    target_audience: "all",
+    payload: {
+      target_id: "suspect-vesper",
+      participant_ids: ["player-a", 42, null, "player-b"],
+      answer: { text: "I never touched the decanter." },
+    },
+  });
+
+  assert.deepEqual(projectSharedDisplayEvent(event)?.askerIds, [
+    "player-a",
+    "player-b",
+  ]);
+});
+
 // Regression guard, not a driver: the audience check in Task 1 already refuses
 // these. It exists so a future projection added for one of these event types
 // cannot quietly reach the shared display without this failing first.
