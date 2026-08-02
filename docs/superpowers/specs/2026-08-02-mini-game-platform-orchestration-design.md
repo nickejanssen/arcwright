@@ -199,7 +199,9 @@ implementation spec and acceptance suite.
 
 For Couch Race, the six authored beats should each expose at least one
 mini-game opportunity. This is an opportunity coverage requirement, not a
-requirement for six unique packages.
+one-package-per-beat ceiling. Each opportunity owns a pool of eligible,
+certified registrations so additional games can rotate in without changing
+engine code or weakening the human-authored story role.
 
 One package may be eligible for multiple opportunities when its authored
 repetition policy allows it. The Grill is the first explicit example:
@@ -211,6 +213,24 @@ repetition policy allows it. The Grill is the first explicit example:
 
 This prevents static package IDs from becoming part of the beat model and
 lets designers rebalance a session without rewriting engine code.
+
+The initial Couch Race roles and packages are:
+
+| Beat | Authored role | Initial package |
+| --- | --- | --- |
+| Pour | `social_opener` | Tell Me Something True |
+| Scene | `competitive_discovery` | Crime Scene Smash |
+| Grill | `interrogation` | The Grill |
+| Twist | `solo_recontextualization` | Evidence Locker 402 |
+| Last Call | `pressure_capstone` | The Interrogation Room |
+| Truth | `reveal_reconstruction` | The Unmasking |
+
+Last Call's game opens the convergence sequence. Final interrogation and
+Leverage use then settle, guesses lock, and The Truth begins. The Unmasking
+implements D-086 by clearing innocent portraits, crediting established catches,
+revealing the culprit, reconstructing the case, and handing off to score
+animation, ranks, podium, superlatives, and replay. Future certified games may
+rotate into either role while preserving these authored transition contracts.
 
 ## Core Contracts
 
@@ -243,6 +263,7 @@ The human-authored arc declares a story opportunity containing:
 - narrative role, such as opener, discovery, pressure, release, or finale;
 - eligible registration IDs and/or capability tags;
 - trigger mode;
+- deterministic selection policy and recent-candidate lookback;
 - invocation count, cooldown, and repetition policy;
 - time and pacing budget;
 - public-safe context fields;
@@ -340,6 +361,14 @@ Selection is deterministic from authored policy and replayable session state.
 AI may compose permitted presentation or content only after selection. AI never
 chooses the package, trigger, winner, or consequence.
 
+`authored_order` preserves explicit designer priority. For opportunities that
+opt into `session_seeded_rotation`, Arcwright orders eligible candidates by a
+stable hash of session, opportunity, and registration identity, then excludes
+the authored number of most-recent candidates from the current session when an
+alternative is eligible. The selected registration and reason are persisted.
+No-repeat history across prior sessions is an optional experience continuity
+input for later work, not a Nightcap v1 dependency.
+
 If no candidate is eligible, Arcwright executes the authored fallback and
 records a non-sensitive reason code.
 
@@ -418,6 +447,8 @@ Additional known work:
   not a registered mini-game package.
 - AW-289's Interrogation Room trivia has a design brief and prototype reference
   but no production package.
+- D-086 defines The Unmasking reveal direction, but no production package or
+  reveal-reconstruction mechanic exists.
 - Pour, Grill, Last Call, and Truth have no current static package binding.
 
 Platform-wide blockers that must land before package polish can produce an
@@ -487,15 +518,7 @@ matrix, including package-specific schema and lifecycle inconsistencies.
   context checks.
 - Document the complete internal developer path.
 
-### Phase 4: Nightcap foundation
-
-- Register Couch Race packages.
-- Author six beat opportunities.
-- Integrate Leverage and race-score consequences through generic services.
-- Implement Nightcap's theme and presentation contract.
-- Preserve the deferred request-cost extension without building it.
-
-### Phase 5: Make each game game-ready
+### Phase 4: Make each package a certified playtest candidate
 
 Recommended order:
 
@@ -507,10 +530,20 @@ Recommended order:
    repeatable gameplay.
 5. Interrogation Room trivia after its separate creative brief and content
    approval gates.
+6. The Unmasking after its reveal-reconstruction sequence and presentation
+   artifact are approved.
 
 Each game gets its own gameplay, presentation, tuning, and rehearsal plan.
-The final sixth-beat assignment is a creative placement decision and may reuse
-an eligible game. This architecture does not decide that placement.
+Package-only certification leaves registration and whole-session gates marked
+as integration pending.
+
+### Phase 5: Nightcap foundation
+
+- Register exact certified playtest package versions and digests.
+- Author six rotating beat-opportunity pools with the roles above.
+- Integrate Leverage and race-score consequences through generic services.
+- Implement Nightcap's theme and presentation contract.
+- Preserve the deferred request-cost extension without building it.
 
 ### Phase 6: End-to-end certification and closeout
 
@@ -518,6 +551,7 @@ an eligible game. This architecture does not decide that placement.
   multiplayer state, reconnect, pause/resume, and fallbacks.
 - Run the synthetic non-Nightcap host-authoritative reference.
 - Complete real-device and real-player rehearsal gates.
+- Promote only fully passing package versions from playtest to active.
 - Reconcile every related local and GitHub status artifact.
 - Only after this phase, reopen the optional currency-funded Grill design.
 

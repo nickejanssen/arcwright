@@ -52,6 +52,12 @@ and repetition policy, fallback, and declarative consequence mappings.
 Arcwright deterministically selects an eligible package from the authored
 intersection and creates a canonical invocation.
 
+An opportunity may select by authored priority or by deterministic
+session-seeded rotation. Rotation persists its selected registration and
+reason, applies an authored recent-candidate lookback within the session, and
+never asks AI to choose story placement. Cross-session history is an optional
+experience continuity input, not a platform or Nightcap v1 dependency.
+
 Mini-game execution uses one of two adapters:
 
 1. **arcwright_hosted.** Arcwright's Python runtime owns authoritative gameplay

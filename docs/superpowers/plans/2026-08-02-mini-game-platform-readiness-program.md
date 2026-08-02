@@ -1,446 +1,350 @@
-# Mini-game Platform and Nightcap Readiness Program Plan
+# Mini-game Platform and Nightcap Readiness Program Implementation Plan
 
-> **For Codex:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to execute
-> this plan task by task. Do not execute any task until the founder separately
-> approves implementation.
+> **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Make every existing Nightcap mini-game game-ready, give Couch Race a
-valid mini-game opportunity in every beat, and prove that the same Arcwright
-contracts work for a non-Nightcap game using its own engine.
+**Goal:** Make every known Nightcap mini-game game-ready, provide one valid mini-game opportunity per Couch Race beat, and prove the same Arcwright orchestration contracts with a synthetic non-Nightcap host.
 
-**Architecture:** Games register versioned mini-game packages. Human-authored
-arcs define story opportunities, eligible candidates, repetition, fallback,
-and consequence mappings. Arcwright deterministically schedules invocations
-and owns canonical narrative consequences. Arcwright-hosted games reuse the
-Python runtime; external games may use a host-authoritative adapter.
+**Architecture:** A game registers exact package versions with its human-authored arc. Arcwright deterministically schedules story opportunities and applies bounded narrative consequences; `arcwright_hosted` and `host_authoritative` adapters keep internal gameplay authority in the correct engine. This file controls sequencing and evidence gates while the linked subsystem plans contain implementation details.
 
-**Tech stack:** Python 3.11, Pydantic, SQLAlchemy and Alembic, FastAPI,
-TypeScript SDK, Nightcap web, JSON arc and package definitions, pytest,
-node:test, Ruff, and existing roadmap and GitHub tooling.
+**Tech Stack:** Python 3.11, Pydantic, SQLAlchemy, Alembic, FastAPI, TypeScript, Node test runner, Nightcap web, JSON, pytest, Ruff, Git, GitHub CLI.
 
-**Design input:**
-docs/superpowers/specs/2026-08-02-mini-game-platform-orchestration-design.md
+## Global Constraints
 
-**Accepted ADR:**
-docs/decisions/0018-mini-game-orchestration-and-execution-adapters.md
+- This plan is planning-only until the founder separately approves implementation.
+- Start every executable plan from a clean worktree based on current `origin/main`.
+- Inspect every pull request merged after baseline `52562723d5dd6374817e1299f8faf98ecd5dd120` before implementation.
+- Python 3.11 or newer owns deterministic arc execution and canonical state.
+- TypeScript renders authorized state and submits input; it does not own arc execution.
+- No provider or model name may appear outside `config/routing_table.json` and `engine/routing/router.py`.
+- Knowledge queries and engine safety layers remain mandatory for AI character content.
+- Do not add dependencies, migrations, cross-module changes, prompts, eval changes, secrets, or auth behavior without the approvals required by `AGENTS.md`.
+- Do not implement the D-097 currency-funded player-requested Grill flow.
+- Do not create a public marketplace, arbitrary code loader, Unity or Unreal SDK, billing system, or public third-party authentication in Horizon 1.
+- Preserve unrelated and agent-local files. Never stage `.claude/`, `.codex/`, `.cursor/`, or equivalent local state.
 
 ---
 
-## Execution Gate
+## Program Map
 
-This document authorizes planning only.
+| Order | Execution plan | Independently testable result |
+| --- | --- | --- |
+| 1 | `2026-08-02-mini-game-contracts-and-adapters.md` | Adapter-neutral registration, opportunities, invocations, results, consequences, telemetry, and synthetic host proof |
+| 2 | `2026-08-02-mini-game-onboarding-and-certification.md` | One reusable import, scaffold, preview, validation, and certification workflow |
+| 3 | `2026-08-02-tell-me-something-true-game-ready.md` | Playtest-ready social truth/bluff package and human artifact evidence |
+| 4 | `2026-08-02-crime-scene-smash-game-ready.md` | Playtest-ready competitive match-3 package and human artifact evidence |
+| 5 | `2026-08-02-evidence-locker-402-game-ready.md` | Playtest-ready selected-player puzzle package and human artifact evidence |
+| 6 | `2026-08-02-the-grill-game-ready.md` | Playtest-ready automatic Beat 3 interrogation package and human artifact evidence |
+| 7 | `2026-08-02-interrogation-room-trivia-game-ready.md` | Playtest-ready Last Call pressure-capstone trivia package after creative approval |
+| 8 | `2026-08-02-the-unmasking-game-ready.md` | Playtest-ready Truth reveal-reconstruction package, score animation, and podium |
+| 9 | `2026-08-02-nightcap-mini-game-foundation.md` | Exact Couch Race registrations, six rotating opportunity pools, production bootstrap, and generic consequences |
+| 10 | `2026-08-02-nightcap-existing-minigames-game-ready.md` | Six-beat integration, active promotion, device and real-player rehearsal, status reconciliation, and final sign-off |
 
-The founder approved the architecture artifact and ADR 0018 on 2026-08-02.
-Before implementation begins, the founder must still explicitly approve:
+The six Couch Race beats require six opportunities and allow additional
+certified candidates to rotate through each authored role. The initial homes
+are locked in the Nightcap foundation plan; they are candidate pools, not
+permanent one-package beat bindings.
 
-1. the canonical implementation specs created from this program;
-2. the selected first implementation plan; and
-3. implementation itself.
-
-Approval of a plan, branch, PR, issue update, or prior direction does not imply
-implementation approval.
-
-## Program Order
-
-| Order | Plan or workstream | Why it comes here | Completion gate |
-| --- | --- | --- | --- |
-| 0 | Mainline and tracker preflight | Prevent planning from building on stale or partial merges | Clean worktree at current origin/main, overlap report, founder go |
-| 1 | Canonical reconciliation | Repair false and stale status before creating new work | Local and GitHub records agree |
-| 2 | Contracts and adapters | Every game depends on invocation and consequence orchestration | Hosted and host-authoritative contract tests pass |
-| 3 | Onboarding and certification | Reuse existing skill, script, template, and validators | Synthetic developer can reach a readiness report |
-| 4 | Nightcap opportunity foundation | Connect generic contracts to Couch Race, Leverage, scoring, and theme | Six opportunities validate without package-specific engine logic |
-| 5 | Tell Me Something True | Most complete mechanic, best migration canary | Game-ready report passes |
-| 6 | Crime Scene Smash | Proves competitive real-time hosted mechanics | Game-ready report passes |
-| 7 | Evidence Locker 402 | Proves individual selection and puzzle flow | Game-ready report passes |
-| 8 | The Grill | Proves story-native, repeatable interrogation gameplay | Automatic Beat 3 path passes |
-| 9 | Interrogation Room trivia | New content and adaptive mechanic after separate creative approval | Game-ready report passes |
-| 10 | Couch Race end to end | Proves phones, TV, beats, multiplayer, reconnect, and story consequences | AW-286 rehearsal gates pass |
-| 11 | Program closeout | Prevent stale plans, specs, epics, and issues | All status surfaces reconciled |
-
-The final sixth-beat package placement is a creative decision. Six
-opportunities do not require six unique packages.
-
-## Task 0: Refresh Mainline and Verify Safety
-
-**Files:** None.
-
-**Step 1: Fetch current refs**
-
-Run:
-
-    git fetch origin --prune
-
-**Step 2: Inspect merged work since this plan baseline**
-
-Use GitHub and local Git to list every PR merged after commit
-52562723d5dd6374817e1299f8faf98ecd5dd120. Inspect titles, base and head refs,
-merge timestamps, changed files, and overlap with the selected plan.
-
-**Step 3: Verify branch ancestry**
-
-Run:
-
-    git rev-parse HEAD
-    git rev-parse origin/main
-    git merge-base --is-ancestor origin/main HEAD
-    git status --short --branch
-
-Expected: the execution worktree is clean and based on the current origin/main.
-If main advanced, rebase a clean plan branch or recreate the worktree. Never
-overwrite or clean another agent's local changes.
-
-**Step 4: Run baseline checks**
-
-Run the focused suites named by the selected subsystem plan. Separate genuine
-baseline failures from sandbox, database, or missing-dependency setup errors.
-
-**Step 5: Report and pause**
-
-Report merged PRs, head SHA, overlap, baseline results, and changed assumptions.
-Pause for explicit founder implementation approval.
-
-## Task 1: Reconcile Canonical and GitHub Status
+### Task 1: Refresh Mainline and Produce a Safety Report
 
 **Files:**
 
-- Modify: docs/product/aw285-discovery-and-checkpoints.md
-- Modify: docs/roadmap/tasks/AW-285-couch-race-tv-and-phone-rendering.md
-- Modify: docs/roadmap/tasks/AW-288-couch-race-mini-game-beat-coverage-and-tmst-acceleration.md
-- Modify: docs/roadmap/tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md
-- Modify: docs/roadmap/epics/M4-E-nightcap-mini-game-interaction-layer.md
-- Modify: docs/roadmap/epics/M5-F-tell-me-something-true-social-opener.md
-- Modify: docs/roadmap/epics/M5-I-nightcap-couch-race-arc-and-interrogation.md
-- Modify: docs/roadmap/index.json
-- Modify or supersede: docs/specs/0051-aw-254-first-production-nightcap-mini-game.md
-- Modify or supersede: docs/specs/0067-development-survey-and-path-to-first-playtest.md
-- Modify: docs/specs/0072-nightcap-couch-race-v1.md
-- Modify or supersede: docs/specs/0073-m5-canonical-reconciliation.md
-- Modify: docs/roadmap/operations/human-collaboration-open-work.md
-- Modify: docs/roadmap/milestones/M6-first-qualifying-sessions.md
+- Read: `docs/superpowers/plans/2026-08-02-mini-game-platform-readiness-program.md`
+- Read: `.git` refs and worktree metadata
+- Read: GitHub pull requests merged after baseline commit
+- Create: `docs/product/mini-game-readiness/mainline-safety-report.md`
 
-**Step 1: Write failing consistency checks**
+**Interfaces:**
 
-Add or extend roadmap validation so stale parent status, missing epic children,
-missing GitHub mapping, and an issue marked complete while required criteria
-remain open are reported.
+- Consumes: baseline SHA `52562723d5dd6374817e1299f8faf98ecd5dd120` and the selected execution-plan file list.
+- Produces: `PreflightReport { origin_main_sha, merged_prs, overlapping_files, worktree_clean, baseline_checks, changed_assumptions }` plus a founder go or stop decision.
 
-**Step 2: Reconcile completed foundations**
+- [ ] **Step 1: Fetch current refs without changing files**
 
-- Mark M4-E complete with evidence for AW-249 through AW-253.
-- Mark AW-287 complete with PR and verification evidence.
-- Mark AW-262 through AW-265 complete consistently.
-- Supersede obsolete AW-254 and spec 0051 scope while carrying its unproven
-  real-device gate into AW-285 and AW-286.
+```powershell
+git fetch origin --prune
+```
 
-**Step 3: Repair AW-285 status**
+Expected: exit 0 and current `origin/main` available locally.
 
-- Record PR #269 as Phase 1 structural completion only.
-- Record that PR #271 was reverted by PR #272 and its CI protection is absent.
-- Reopen GitHub issue #239.
-- Update #239 and the canonical task so Phase 2 phone, audiovisual, room-watch,
-  privacy, real-device, and integration criteria remain open.
-- Create a canonical docs/specs AW-285 contract from the approved design
-  evidence before Phase 2 implementation.
+- [ ] **Step 2: List merged pull requests since the planning baseline**
 
-**Step 4: Resolve AW-288 and AW-266 authority conflict**
+```powershell
+gh pr list --state merged --base main --search "merged:>=2026-08-02" --json number,title,mergedAt,mergeCommit,headRefName,baseRefName,url
+```
 
-Present one focused founder decision before mutation:
+Expected: JSON containing every same-day merge, including reverts.
 
-- recommended: D-079 controls, AW-266 is superseded by integrated Couch Race
-  rehearsal evidence;
-- alternative: preserve a separate TMST-focused human session as a later
-  evidence task.
+- [ ] **Step 3: Compare changed files with the selected plan**
 
-After confirmation:
+```powershell
+git diff --name-only 52562723d5dd6374817e1299f8faf98ecd5dd120..origin/main
+git status --short --branch
+git merge-base --is-ancestor origin/main HEAD
+```
 
-- reduce AW-288 to TMST activation, placement, and pacing integration;
-- remove beat coverage moved by D-095;
-- create the missing AW-288 GitHub issue;
-- close or rescope AW-266 and issue #183 exactly as approved.
+Expected: a clean worktree and exit 0 from the ancestry check. If main advanced,
+rebase a clean planning branch or recreate the execution worktree before any
+implementation.
 
-**Step 5: Synchronize M5-I and AW-286**
+- [ ] **Step 4: Run the selected plan's baseline commands**
 
-Give the epic, parent spec, roadmap manifest, and GitHub issue #234 one
-authoritative child list. Make AW-286 the integrated rehearsal gate for all
-required minigame, narrative, visual, and device work.
+Use the exact commands in that plan's first task. Record each result as
+`PASS`, `FAIL_BASELINE`, or `BLOCKED_ENVIRONMENT`; do not describe an unrun
+check as passing.
 
-**Step 6: Reconcile M5-G and M6**
+- [ ] **Step 5: Present the report and stop**
 
-- Add AW-275 to M5-G and issue #187.
-- Keep AW-268 as asset and motion execution against spec 0069.
-- Correct obsolete M6 pivot and player-count references.
-- Add explicit Couch Race readiness before the final rehearsal.
+Expected: explicit founder implementation approval is required after reviewing
+the current SHA, merged PRs, overlap, and baseline results.
 
-**Step 7: Verify**
-
-Run:
-
-    python -m json.tool docs/roadmap/index.json
-    git diff --check
-
-Run the repository's roadmap validation command if present. Fetch every mutated
-GitHub issue and compare title, state, body, labels, dependencies, and local
-status.
-
-**Step 8: Commit**
-
-    git add docs/product docs/roadmap docs/specs
-    git commit -m "docs(nightcap): reconcile minigame program status"
-
-## Task 2: Approve Canonical Contract Specs
+### Task 2: Reconcile Canonical and GitHub Authority
 
 **Files:**
 
-- Create: docs/specs/0077-mini-game-registration-and-story-opportunities.md
-- Create: docs/specs/0078-mini-game-invocation-and-execution-adapters.md
-- Create: docs/specs/0079-mini-game-result-consequences-and-theme.md
-- Create: docs/specs/0080-mini-game-onboarding-preview-and-certification.md
-- Modify: docs/decisions/0018-mini-game-orchestration-and-execution-adapters.md
-- Modify: docs/decisions/0009-mini-game-runtime-boundary.md
-- Modify: docs/decisions/README.md
-- Modify: docs/architecture/03-arc-execution.md
-- Modify: docs/architecture/09-developer-api.md
-- Modify: docs/architecture/14-architecture-validation.md
+- Modify: `docs/product/aw285-discovery-and-checkpoints.md`
+- Modify: `docs/roadmap/tasks/AW-285-couch-race-tv-and-phone-rendering.md`
+- Modify: `docs/roadmap/tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md`
+- Modify: `docs/roadmap/tasks/AW-288-couch-race-mini-game-beat-coverage-and-tmst-acceleration.md`
+- Modify: `docs/roadmap/epics/M4-E-nightcap-mini-game-interaction-layer.md`
+- Modify: `docs/roadmap/epics/M5-F-tell-me-something-true-social-opener.md`
+- Modify: `docs/roadmap/epics/M5-I-nightcap-couch-race-arc-and-interrogation.md`
+- Modify: `docs/roadmap/milestones/M6-first-qualifying-sessions.md`
+- Modify: `docs/roadmap/index.json`
+- Modify: GitHub issues `#183`, `#187`, `#234`, `#239`, `#258`, and `#270` only after their local canonical records are correct
 
-**Step 0: Recheck spec numbering**
+**Interfaces:**
 
-Immediately before creating specs, inspect the current spec index and mainline.
-If another merge has claimed any number from 0077 through 0084, renumber the
-entire proposed bundle and repair every plan reference before authoring. Spec
-numbers in this planning branch are reservations, not ownership.
+- Consumes: verified merged-PR evidence and canonical status hierarchy from `docs/README.md`.
+- Produces: one `ArtifactCloseoutMatrix` row per affected spec, plan, task, epic, milestone, issue, and PR with `action`, `evidence`, `final_status`, and `remaining_gate`.
 
-**Step 1: Split the approved design into four implementation contracts**
+- [ ] **Step 1: Add a failing roadmap consistency fixture**
 
-Each spec must define ownership, schemas, invariants, compatibility, API or SDK
-surfaces, tests, migration impact, telemetry, error behavior, and explicit
-non-goals. Include trusted host authority, package integrity and retirement,
-crash recovery, public-safe context, knowledge and safety constraints,
-generation cost and latency budgets, and privacy-safe lifecycle telemetry.
+```python
+def test_minigame_parent_status_matches_children(roadmap_index):
+    assert roadmap_index.task("AW-287").status == "Complete"
+    assert "AW-287" in roadmap_index.epic("M5-I").children
+```
 
-**Step 2: Preserve hosted compatibility**
+Place the assertion in the repository's roadmap validation test discovered by:
 
-Specs 0046 through 0050 remain historical foundations for arcwright_hosted.
-Add references without rewriting their original acceptance history.
+```powershell
+rg -n "roadmap.*index|parent.*children|GitHub issue" tests engine/tests docs -g "*.py"
+```
 
-**Step 3: Validate future engines**
+- [ ] **Step 2: Run the focused consistency test and confirm failure**
 
-Every contract must be walked against:
+Run the exact discovered test path with `pytest -q`.
 
-- Nightcap hosted web;
-- a synthetic non-Nightcap host-authoritative game;
-- Unity-style launch and result handoff;
-- an emergent arc with no fixed beat count.
+Expected: failure naming the stale parent or missing child before documentation
+changes.
 
-**Step 4: Founder review**
+- [ ] **Step 3: Apply the evidence-backed status corrections**
 
-Present schemas, example flows, failure scenarios, and compatibility impact.
-Obtain separate explicit approval for each spec and ADR 0018.
+Record these exact outcomes:
 
-**Step 5: Commit**
+```text
+M4-E: Complete with AW-249 through AW-253 evidence
+AW-287: Complete with merged implementation evidence
+AW-254/spec 0051: Superseded, real-device gate carried into AW-285/AW-286
+AW-285/#239: merged work complete to the ticket's accepted scope, subject to fresh GitHub checklist readback
+Issue #270: separate blocked restoration of reverted embedded-script CI coverage; do not silently reopen or duplicate AW-285
+AW-288: Reduced to TMST activation, placement, and pacing integration
+AW-286: Integrated minigame and device rehearsal gate
+M5-I: One authoritative child list including AW-287 through AW-292
+M6: Correct current Couch Race dependency and player-count language
+```
 
-    git add docs/specs docs/decisions docs/architecture
-    git commit -m "docs(arc): specify minigame orchestration contracts"
+Do not change AW-266 or issue #183 until the founder chooses whether integrated
+Couch Race evidence supersedes the separate TMST rehearsal.
 
-## Task 3: Execute the Contract and Adapter Plan
+- [ ] **Step 4: Validate local records**
 
-Use the separate detailed plan:
+```powershell
+python -m json.tool docs/roadmap/index.json
+git diff --check
+```
 
-    docs/superpowers/plans/2026-08-02-mini-game-contracts-and-adapters.md
+Expected: both commands exit 0.
 
-Required outcome:
+- [ ] **Step 5: Update GitHub from canonical truth and read it back**
 
-- registration and opportunity models;
-- deterministic selection;
-- shared invocation lifecycle;
-- arcwright_hosted compatibility adapter;
-- host_authoritative adapter;
-- result validation;
-- declarative consequence mapping;
-- API and SDK transport;
-- migration and replay compatibility;
-- trusted host submission and replay protection;
-- immutable package integrity and retirement behavior;
-- crash-safe exactly-once consequence application;
-- privacy, safety, telemetry, and cost guardrails;
-- synthetic non-Nightcap proof.
+Use `gh issue edit` only for approved rows in `ArtifactCloseoutMatrix`, then run:
 
-Pause after contract-only tests before Nightcap integration.
+```powershell
+gh issue view 239 --json number,title,state,body,labels,milestone,url
+gh issue view 258 --json number,title,state,body,labels,milestone,url
+```
 
-## Task 4: Execute the Onboarding and Certification Plan
+Expected: GitHub state matches the local task and spec status exactly.
 
-Use the separate detailed plan:
+- [ ] **Step 6: Commit the reconciliation**
 
-    docs/superpowers/plans/2026-08-02-mini-game-onboarding-and-certification.md
+```powershell
+git add docs/product docs/roadmap docs/specs
+git commit -m "docs(nightcap): reconcile minigame program status"
+```
 
-Required outcome:
-
-- existing skill and script updated, not duplicated;
-- package, registration, and opportunity scaffolding;
-- import and compatibility diagnostics;
-- deterministic preview and simulation;
-- theme and privacy validation;
-- trust, integrity, retirement, telemetry, and generative-budget validation;
-- machine-readable readiness report;
-- promotion blocked until required evidence passes.
-
-## Task 5: Execute the Nightcap Foundation Plan
-
-Use the separate detailed plan:
-
-    docs/superpowers/plans/2026-08-02-nightcap-mini-game-foundation.md
-
-Required outcome:
-
-- six Couch Race opportunities;
-- generic Leverage and race-score consequence mappings;
-- Nightcap semantic theme contract;
-- invocation launch from arc progression;
-- timeout driver;
-- player-count eligibility;
-- phone, shared-display, and host stage bootstrap;
-- no currency-funded optional Grill behavior.
-
-## Task 6: Execute Individual Game-ready Plans
-
-Write and approve one canonical game spec and one implementation plan per game
-before changing its gameplay or presentation.
-
-Execute in this order:
-
-1. Tell Me Something True.
-2. Crime Scene Smash.
-3. Evidence Locker 402.
-4. The Grill.
-5. Interrogation Room trivia.
-
-Each plan must include:
-
-- mechanic tests first;
-- package schema and lifecycle correction;
-- renderer and theme implementation;
-- privacy and reconnect;
-- public-safe knowledge projection and content-safety behavior;
-- player-count behavior;
-- deterministic consequence mapping;
-- package integrity, retirement, crash recovery, and lifecycle telemetry;
-- generation cost, latency, retry, and fallback budgets when applicable;
-- performance and accessibility;
-- gameplay artifact review;
-- real-device walkthrough;
-- real-human rehearsal;
-- readiness report;
-- issue and local status reconciliation.
-
-Do not promote a package merely because automated checks pass. Subjective
-gameplay, visual, animation, graphics, and session-fit gates require founder
-review.
-
-## Task 7: Run End-to-end Certification
+### Task 3: Reserve and Approve Canonical Specs
 
 **Files:**
 
-- Modify: engine/tests/test_couch_race_harness.py
-- Modify: engine/tests/test_couch_race_arc_json.py
-- Modify: api/tests/test_mini_games_api.py
-- Modify: nightcap-web/tests/mini-game-privacy-matrix.test.ts
-- Modify: nightcap-web/tests/mini-game-stage.test.ts
-- Modify: docs/roadmap/operations/rehearsal-1-runbook.md
-- Modify: docs/roadmap/operations/rehearsal-1-blocker-log.md
-- Create: docs/roadmap/operations/minigame-readiness-report.json
+- Create: `docs/specs/0077-mini-game-registration-and-story-opportunities.md`
+- Create: `docs/specs/0078-mini-game-invocation-and-execution-adapters.md`
+- Create: `docs/specs/0079-mini-game-results-consequences-theme-and-telemetry.md`
+- Create: `docs/specs/0080-mini-game-onboarding-preview-and-certification.md`
+- Modify: `docs/specs/0076-aw-289-interrogation-room.md`
+- Create: `docs/specs/0081-tell-me-something-true-game-ready.md`
+- Create: `docs/specs/0082-crime-scene-smash-game-ready.md`
+- Create: `docs/specs/0083-evidence-locker-402-game-ready.md`
+- Create: `docs/specs/0084-the-grill-interrogation-minigame.md`
+- Create: `docs/specs/0085-the-unmasking-reveal-reconstruction.md`
+- Modify: `docs/decisions/0018-mini-game-orchestration-and-execution-adapters.md`
+- Modify: `docs/architecture/03-arc-execution.md`
+- Modify: `docs/architecture/09-developer-api.md`
+- Modify: `docs/architecture/14-architecture-validation.md`
 
-**Step 1: Headless deterministic session**
+**Interfaces:**
 
-Run 2-player and 8-player Couch Race sessions through all six opportunities.
-Verify selection, invocation, consequences, fallback, repeat policy,
-pause/resume, reconnect, and deterministic replay.
+- Consumes: approved orchestration design v0.2 and ADR 0018.
+- Produces: ten approved specs with exact schemas and acceptance criteria used by plans 1 through 10.
 
-Verify that an interruption between result receipt and consequence application
-cannot double-apply state and that a retired exact version remains resumable.
+- [ ] **Step 1: Verify spec numbers are still free**
 
-**Step 2: Host-authoritative synthetic session**
+```powershell
+rg --files docs/specs | Sort-Object | Select-Object -Last 12
+```
 
-Run a non-Nightcap experience through registration, opportunity selection,
-launch, result receipt, consequence application, and replay without importing
-host gameplay code.
+Expected: no existing spec claims `0077` through `0085`, except the existing
+`0076` draft that this program amends. If any planned number is
+claimed, renumber this entire planned bundle and every reference before writing.
 
-Use a trusted internal host fixture. Verify player submissions cannot claim
-host authority, stale and forged results fail, identical retries are
-idempotent, and conflicting duplicates never alter canonical state.
+- [ ] **Step 2: Write nine new specs and amend spec 0076 from the approved interface blocks**
 
-**Step 3: Real-device preflight**
+Copy the exact models, method signatures, result vocabulary, trust boundary,
+telemetry events, and acceptance tests from the contract and onboarding plans.
+Each spec must include `Status: Draft`, then be reviewed before changing to
+`Approved`.
 
-Verify phone, shared display, host controls, privacy, stage bootstrap,
-disconnect, refresh, and timeout recovery.
+- [ ] **Step 3: Run architecture and placeholder checks**
 
-**Step 4: Founder walkthrough**
+```powershell
+rg -n "TBD|TODO|implement later|fill in details" docs/specs --glob "0076-*.md" --glob "0077-*.md" --glob "0078-*.md" --glob "0079-*.md" --glob "0080-*.md" --glob "0081-*.md" --glob "0082-*.md" --glob "0083-*.md" --glob "0084-*.md" --glob "0085-*.md"
+git diff --check
+```
 
-Pause for artifact and readiness approval before a real-player session.
+Expected: no placeholder matches and clean diff output.
 
-**Step 5: Real-player rehearsal**
+- [ ] **Step 4: Present schemas and failure scenarios for founder approval**
 
-Run AW-286 using the collaboration contract. Record game-specific fun,
-seamlessness, story enhancement, competition, style, motion, and confusion
-findings.
+Review registration, opportunity selection, host result forgery, exact-version
+resume, result-to-consequence crash recovery, public-safe context, generation
+budget fallback, each game's exact gameplay and presentation contract, and the
+synthetic non-Nightcap flow. Stop until all ten specs are
+explicitly approved.
 
-Confirm lifecycle telemetry is present without raw private payloads and that
-any generated content stayed within its declared cost and latency budget.
+- [ ] **Step 5: Commit approved specs**
 
-**Step 6: Remediation**
+```powershell
+git add docs/specs docs/decisions docs/architecture
+git commit -m "docs(arc): specify minigame orchestration contracts"
+```
 
-Open or update only evidence-backed issues. Do not close AW-286 or promote
-games while blocking findings remain.
+### Task 4: Execute and Gate the Subsystem Plans
 
-## Task 8: Reconcile Every Status Surface
+**Files:**
 
-**Files:** All related plan, spec, roadmap, operations, and decision artifacts.
+- Read: `docs/superpowers/plans/2026-08-02-mini-game-contracts-and-adapters.md`
+- Read: `docs/superpowers/plans/2026-08-02-mini-game-onboarding-and-certification.md`
+- Read: `docs/superpowers/plans/2026-08-02-tell-me-something-true-game-ready.md`
+- Read: `docs/superpowers/plans/2026-08-02-crime-scene-smash-game-ready.md`
+- Read: `docs/superpowers/plans/2026-08-02-evidence-locker-402-game-ready.md`
+- Read: `docs/superpowers/plans/2026-08-02-the-grill-game-ready.md`
+- Read: `docs/superpowers/plans/2026-08-02-interrogation-room-trivia-game-ready.md`
+- Read: `docs/superpowers/plans/2026-08-02-the-unmasking-game-ready.md`
+- Read: `docs/superpowers/plans/2026-08-02-nightcap-mini-game-foundation.md`
+- Read: `docs/superpowers/plans/2026-08-02-nightcap-existing-minigames-game-ready.md`
+- Modify: `docs/superpowers/plans/2026-08-02-mini-game-platform-readiness-program.md`
 
-**Step 1: Build the closeout matrix**
+**Interfaces:**
 
-For every affected artifact record:
+- Consumes: approved specs 0076 through 0085 and each plan's explicit founder implementation approval.
+- Produces: one reviewed commit series and completion-evidence block per independently testable plan.
 
-- intended final status;
-- evidence;
-- local path or GitHub URL;
-- owner;
-- close, update, supersede, or leave-open action.
+- [ ] **Step 1: Execute plans in Program Map order**
 
-**Step 2: Update local records**
+For each plan, run its preflight, TDD tasks, focused checks, review checkpoint,
+and status reconciliation before beginning the next plan.
 
-Update all completed plan tasks, canonical spec status, roadmap task and epic
-status, roadmap index entries, milestone gates, decision indexes, discovery
-logs, and rehearsal evidence.
+- [ ] **Step 2: Record each checkpoint**
 
-**Step 3: Update GitHub**
+Use this exact evidence shape in this file:
 
-Update issue bodies and checklists, dependencies, labels, epic issue, and
-milestone only where evidence supports it. Close a game issue only after its
-game-ready report and required human gates pass.
+```markdown
+- Plan: docs/superpowers/plans/2026-08-02-mini-game-contracts-and-adapters.md
+  Commit: Not created
+  Focused checks: Not run
+  Human gates: Implementation approval not granted
+  GitHub records: No execution updates made
+  Remaining blockers: Fresh-main audit and founder implementation approval
+```
 
-**Step 4: Verify bidirectionally**
+Copy this block once per Program Map row and replace every value with observed
+evidence as that plan executes.
 
-Fetch the mutated GitHub records and compare them with local canonical truth.
-Run:
+- [ ] **Step 3: Stop on a failed gate**
 
-    git diff --check
-    git status --short
+Do not continue to a dependent plan when contract tests, certification,
+creative approval, real-device evidence, or real-player evidence is missing.
 
-Run all focused and full checks required by the completed subsystem plans.
+### Task 5: Close the Program
 
-**Step 5: Commit**
+**Files:**
 
-    git add docs
-    git commit -m "docs(nightcap): close minigame readiness program"
+- Modify: `docs/superpowers/plans/2026-08-02-mini-game-platform-readiness-program.md`
+- Modify: `docs/product/mini-game-readiness/couch-race-program-status.json`
+- Modify: `docs/product/decisions-log.csv`
+- Modify: `docs/roadmap/index.json`
+- Modify: `docs/roadmap/operations/rehearsal-1-blocker-log.md`
+- Modify: `docs/roadmap/tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md`
+- Modify: `docs/roadmap/epics/M5-I-nightcap-couch-race-arc-and-interrogation.md`
+- Modify: `docs/roadmap/milestones/M6-first-qualifying-sessions.md`
 
-**Step 6: Final founder sign-off**
+**Interfaces:**
 
-Present:
+- Consumes: six game readiness reports, six-opportunity Couch Race report, synthetic host report, AW-286 rehearsal evidence, and `ArtifactCloseoutMatrix`.
+- Produces: one final inventory with package, automated, device, human, and founder status reported separately.
 
-- active game inventory;
-- six-beat opportunity coverage;
-- test and rehearsal evidence;
-- remaining non-blocking issues;
-- all closed, updated, superseded, and still-open artifacts.
+- [ ] **Step 1: Verify the required evidence files exist and pass schema validation**
 
-Only after this sign-off may the program be called complete. D-097's optional
-currency-funded Grill mechanic becomes eligible for a new design interview,
-not automatic implementation.
+```powershell
+python -m json.tool docs/product/mini-game-readiness/couch-race-program-status.json
+python -m json.tool docs/roadmap/index.json
+git diff --check
+```
+
+Expected: all commands exit 0.
+
+- [ ] **Step 2: Read back every mutated GitHub issue**
+
+```powershell
+gh issue list --state all --search "minigame OR mini-game" --json number,title,state,labels,milestone,url
+```
+
+Expected: no local `Complete` record points to an open blocking checklist and
+no closed issue retains unmet game-ready acceptance criteria.
+
+- [ ] **Step 3: Present final founder sign-off evidence**
+
+Report package active status, automated certification, real-device status,
+real-player status, founder sign-off, and non-blocking follow-ups separately.
+
+- [ ] **Step 4: Commit final status reconciliation**
+
+```powershell
+git add docs
+git commit -m "docs(nightcap): close minigame readiness program"
+```
+
+The D-097 optional currency-funded Grill mechanic becomes eligible for a new
+design interview only after this program is explicitly signed off. It is not
+part of this implementation plan.
