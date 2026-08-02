@@ -26,3 +26,6 @@ evals/reports/*
 
 # Rehearsal session state - contains host credentials, never commit
 .rehearsal/
+
+# Brainstorming visual-companion session state
+.superpowers/

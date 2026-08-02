@@ -22,6 +22,13 @@ Tier 1 polish bar (D-066): correct, legible, and snappy for the rehearsal surfac
 
 ## Technical Scope
 
+- **Minigames in every beat (D-079 / D-093 / D-095).** Surfaces must be designed
+  for six minigame-capable beats, not the 2-of-6 currently wired in
+  `nightcap/couch-race.arc.json`. Per D-095 this task also adds the missing beat
+  bindings to the arc; minigame rendering must be generic off the arc's
+  `mini_games` binding so later packages need no renderer change. Do not design
+  against the shipped 2-of-6 arc shape — it is stale relative to committed
+  product direction.
 - Shared display views: cold-open sequence staging (seq-* per spec 0069), suspect stage with answer presentation, group evidence, countdown, accusation results, reveal and scoreboard.
 - Phone views: identity card, private evidence list, intent menu with token counter, tell notifications, contradiction flag flow, accusation submission with lockout state.
 - Event subscription and input submission through the existing SDK; no arc logic in TypeScript.

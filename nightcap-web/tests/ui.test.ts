@@ -24,6 +24,7 @@ test("shared display body prefers narrator and group-visible text payloads", () 
   assert.equal(
     getSharedDisplayEventBody({
       event_type: "narrator_bridge",
+      target_audience: "all",
       payload: { text: "The room falls silent." },
     }),
     "The room falls silent.",
@@ -32,6 +33,7 @@ test("shared display body prefers narrator and group-visible text payloads", () 
   assert.equal(
     getSharedDisplayEventBody({
       event_type: "clue_acknowledged",
+      target_audience: "shared_display",
       payload: { message: "A clue has been passed to Rowan." },
     }),
     "A clue has been passed to Rowan.",
@@ -40,6 +42,7 @@ test("shared display body prefers narrator and group-visible text payloads", () 
   assert.equal(
     getSharedDisplayEventBody({
       event_type: "group_update",
+      target_audience: "all",
       payload: { summary: "The group is circling the kitchen." },
     }),
     "The group is circling the kitchen.",
@@ -48,10 +51,24 @@ test("shared display body prefers narrator and group-visible text payloads", () 
   assert.equal(
     getSharedDisplayEventBody({
       event_type: "clue_acknowledged",
+      target_audience: "shared_display",
       payload: { clue_id: "clue-7", note: "private" },
     }),
     "A private event was shared.",
   );
+});
+
+test("shared display body uses the Couch Race projection for suspect answers", () => {
+  const body = getSharedDisplayEventBody({
+    event_type: "interaction_answer",
+    target_audience: "all",
+    payload: {
+      target_id: "suspect-vesper",
+      answer: { text: "I was on the terrace the whole time." },
+    },
+  });
+
+  assert.equal(body, "I was on the terrace the whole time.");
 });
 
 test("player body preserves private payload text and raw structured payloads", () => {
@@ -122,7 +139,7 @@ test("shared display page reuses the canonical audience list", () => {
   );
   assert.match(
     html,
-    /const sharedDisplayVisibleAudiences = \["all","shared_display"\];/,
+    /const SHARED_DISPLAY_VISIBLE_AUDIENCES = \["all","shared_display"\];/,
   );
   assert.match(html, /getSharedDisplayEventBody/);
   assert.match(html, /getSharedDisplayPresentationHintTokens/);

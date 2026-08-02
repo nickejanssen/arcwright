@@ -38,8 +38,30 @@ def test_public_answer_event_contains_grouped_selection_metadata() -> None:
         "target_id": "host",
         "option_id": "observe",
         "selection_ids": ["selection-1", "selection-2"],
+        "participant_ids": [],
         "answer": {"text": "The room goes quiet."},
     }
+
+
+def test_public_answer_event_exposes_participant_ids() -> None:
+    asker_one = UUID("00000000-0000-0000-0000-0000000000a1")
+    asker_two = UUID("00000000-0000-0000-0000-0000000000a2")
+    group = PublicInteractionGroup(
+        group_id="window-1:host:observe",
+        target_id="host",
+        option_id="observe",
+        selection_ids=["selection-1", "selection-2"],
+        participant_ids=[asker_one, asker_two],
+    )
+
+    event = build_public_answer_event(
+        session_id=SESSION_ID,
+        group=group,
+        answer_payload={"text": "The room goes quiet."},
+        timestamp=TIMESTAMP,
+    )
+
+    assert event.payload["participant_ids"] == [str(asker_one), str(asker_two)]
 
 
 def test_private_feedback_event_targets_only_the_asking_player() -> None:

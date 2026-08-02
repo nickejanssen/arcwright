@@ -148,6 +148,27 @@ def test_lock_rotates_seating_order_and_groups_public_options() -> None:
     assert resolution.private_selections == ()
 
 
+def test_lock_groups_participant_ids_positionally_aligned_with_selection_ids() -> None:
+    director, window_id = open_director()
+    for participant in (P1, P2, P3):
+        director.submit_selection(
+            window_id=window_id,
+            participant_id=participant,
+            target_id="host",
+            option_id="observe",
+        )
+
+    resolution = director.lock_window(window_id=window_id)
+
+    window = director._windows[window_id]
+    group = resolution.public_groups[0]
+    assert len(group.selection_ids) == len(group.participant_ids)
+    for selection_id, participant_id in zip(
+        group.selection_ids, group.participant_ids, strict=True
+    ):
+        assert window.selections[selection_id].participant_id == participant_id
+
+
 def test_allowance_exhaustion_and_closed_window_are_rejected() -> None:
     director, window_id = open_director()
     director.submit_selection(
