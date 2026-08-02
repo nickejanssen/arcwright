@@ -139,7 +139,7 @@ test("shared display page reuses the canonical audience list", () => {
   );
   assert.match(
     html,
-    /const sharedDisplayVisibleAudiences = \["all","shared_display"\];/,
+    /const SHARED_DISPLAY_VISIBLE_AUDIENCES = \["all","shared_display"\];/,
   );
   assert.match(html, /getSharedDisplayEventBody/);
   assert.match(html, /getSharedDisplayPresentationHintTokens/);

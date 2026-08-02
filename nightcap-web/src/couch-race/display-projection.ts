@@ -13,6 +13,8 @@ export interface SharedDisplayProjection {
   body: string;
   suspectId: string | null;
   askerIds: string[];
+  // Reserved for G5 room-watch (Phase 2), same status as leverage_balance
+  // above: the field exists on the shape but nothing populates it yet.
   suspectState: string | null;
 }
 

@@ -274,14 +274,15 @@ export function getSharedDisplayEventBody(
     return payload;
   }
 
-  if (!payload || typeof payload !== "object" || Array.isArray(payload)) {
+  const record = asRecord(payload);
+  if (!record) {
     return SHARED_DISPLAY_UNKNOWN_PLACEHOLDER;
   }
 
   const fields = ["text", "message", "summary", "description"] as const;
   for (const field of fields) {
-    const value = payload[field];
-    if (typeof value === "string" && value.trim().length > 0) {
+    const value = asNonEmptyString(record[field]);
+    if (value) {
       return value;
     }
   }
@@ -898,9 +899,6 @@ export function renderSharedDisplayPage(sessionId = ""): string {
     ${renderMiniGameScriptTag()}
     <script>
       (function() {
-        const sharedDisplayVisibleAudiences = ${JSON.stringify(
-          SHARED_DISPLAY_VISIBLE_AUDIENCES,
-        )};
         const SHARED_DISPLAY_VISIBLE_AUDIENCES = ${JSON.stringify(
           SHARED_DISPLAY_VISIBLE_AUDIENCES,
         )};
@@ -929,7 +927,7 @@ export function renderSharedDisplayPage(sessionId = ""): string {
         }
 
         function shouldRender(event) {
-          return sharedDisplayVisibleAudiences.includes(event.target_audience);
+          return isSharedDisplayVisibleEvent(event);
         }
 
         function renderHintTokens(hints) {
