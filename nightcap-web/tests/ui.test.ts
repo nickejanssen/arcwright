@@ -1,5 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import vm from "node:vm";
 
 import {
   isSharedDisplayVisibleEvent,
@@ -283,4 +284,157 @@ test("host page persists and restores the exchanged host token across reload", (
   assert.match(html, /readPersistedHostToken\(existingSessionId\)/);
   // Cleared on sign-out so a stale token can't outlive the account session.
   assert.match(html, /clearPersistedHostToken\(\)/);
+});
+
+// renderSharedDisplayPage() and renderPlayerJoinPage() embed helper
+// functions into their inline <script> blocks via `${fn.toString()}`. That
+// stringified source can reference module-level constants/imports that
+// never make it into the browser script, producing a ReferenceError on the
+// real page. Calling the same functions through their normal ES imports (as
+// the tests above do) can't catch that, because free variables resolve fine
+// there. These tests extract the actual embedded declarations and eval them
+// in an isolated vm context to catch missing transitive dependencies.
+function extractInlineScriptBody(html: string): string {
+  const match = html.match(
+    /<script>\s*\(function\(\) \{([\s\S]*?)\}\)\(\);\s*<\/script>/,
+  );
+  if (!match || match[1] === undefined) {
+    throw new Error("expected an inline IIFE <script> block");
+  }
+  return match[1];
+}
+
+function extractPreDomDeclarations(scriptBody: string): string {
+  const lines = scriptBody.split("\n");
+  const cutIndex = lines.findIndex((line) =>
+    line.includes("document.getElementById("),
+  );
+  if (cutIndex === -1) {
+    throw new Error("expected a document.getElementById boundary line");
+  }
+  return lines.slice(0, cutIndex).join("\n");
+}
+
+function evalDeclarations(
+  declarations: string,
+  exportNames: string[],
+): Record<string, unknown> {
+  const returnExpression = `({ ${exportNames.join(", ")} })`;
+  return vm.runInNewContext(
+    `${declarations}\n${returnExpression}`,
+    {},
+  ) as Record<string, unknown>;
+}
+
+test("shared display page's embedded helpers eval without ReferenceError", () => {
+  const html = renderSharedDisplayPage("session-123");
+  const declarations = extractPreDomDeclarations(extractInlineScriptBody(html));
+  const helpers = evalDeclarations(declarations, [
+    "getSharedDisplayEventBody",
+    "getSharedDisplayEventLabel",
+    "getSharedDisplayPresentationHintTokens",
+  ]) as {
+    getSharedDisplayEventBody: (event: unknown) => string;
+    getSharedDisplayEventLabel: (event: unknown) => string;
+    getSharedDisplayPresentationHintTokens: (hints: unknown) => string[];
+  };
+
+  const payloadVariants: unknown[] = [
+    { text: "Text field body." },
+    { message: "Message field body." },
+    { summary: "Summary field body." },
+    { description: "Description field body." },
+    { clue_id: "unmatched-field" },
+    "raw string payload",
+  ];
+
+  for (const payload of payloadVariants) {
+    const event = {
+      event_type: "test_event",
+      category: "test_category",
+      payload,
+    };
+    assert.doesNotThrow(() => helpers.getSharedDisplayEventBody(event));
+    assert.equal(typeof helpers.getSharedDisplayEventBody(event), "string");
+  }
+
+  assert.doesNotThrow(() =>
+    helpers.getSharedDisplayEventLabel({
+      category: "narrative",
+      event_type: "narrator_bridge",
+    }),
+  );
+
+  assert.doesNotThrow(() =>
+    helpers.getSharedDisplayPresentationHintTokens({
+      emotion: "tense",
+      urgency: "high",
+      voice_hint: "low and hushed",
+      animation_hint: "slow fade",
+      lighting_hint: "blue wash",
+      pause_before_ms: 1500,
+    }),
+  );
+});
+
+test("player join page's embedded helpers eval without ReferenceError", () => {
+  const html = renderPlayerJoinPage("session-123", "join-token-1");
+  const declarations = extractPreDomDeclarations(extractInlineScriptBody(html));
+  const helpers = evalDeclarations(declarations, [
+    "buildPlayerSessionStorageKey",
+    "normalizePlayerSessionState",
+    "isNightcapPlayerSessionExpired",
+    "getPlayerEventBody",
+    "getPlayerEventLabel",
+  ]) as {
+    buildPlayerSessionStorageKey: (sessionId: string) => string;
+    normalizePlayerSessionState: (value: unknown) => unknown;
+    isNightcapPlayerSessionExpired: (session: unknown, now?: number) => boolean;
+    getPlayerEventBody: (event: unknown) => string;
+    getPlayerEventLabel: (event: unknown) => string;
+  };
+
+  assert.doesNotThrow(() =>
+    helpers.buildPlayerSessionStorageKey("session-123"),
+  );
+
+  const validSession = {
+    session_id: "session-123",
+    player_id: "player-1",
+    character_id: "character-1",
+    player_token: "token-1",
+    expires_at: Date.now() + 60_000,
+    last_sequence_number: 3,
+  };
+  assert.doesNotThrow(() => helpers.normalizePlayerSessionState(validSession));
+  assert.doesNotThrow(() => helpers.normalizePlayerSessionState(null));
+  assert.doesNotThrow(() =>
+    helpers.isNightcapPlayerSessionExpired(validSession, Date.now()),
+  );
+
+  const payloadVariants: unknown[] = [
+    { text: "Text field body." },
+    { message: "Message field body." },
+    { summary: "Summary field body." },
+    { description: "Description field body." },
+    { clue_id: "clue-7", note: "private" },
+    "raw string payload",
+  ];
+
+  for (const payload of payloadVariants) {
+    const event = {
+      event_type: "clue_delivery",
+      category: "private_delivery",
+      payload,
+    };
+    assert.doesNotThrow(() => helpers.getPlayerEventBody(event));
+    assert.equal(typeof helpers.getPlayerEventBody(event), "string");
+  }
+
+  assert.doesNotThrow(() =>
+    helpers.getPlayerEventLabel({
+      category: "private_delivery",
+      event_type: "clue_delivery",
+    }),
+  );
 });
