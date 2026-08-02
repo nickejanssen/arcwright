@@ -44,7 +44,7 @@
     {
       "id": 6,
       "subject": "Task 6: Surface asker identity in the projection",
-      "status": "pending",
+      "status": "completed",
       "blockedBy": [
         1,
         5
