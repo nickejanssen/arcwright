@@ -19,18 +19,18 @@ type ProjectableEvent = Pick<
   "event_type" | "target_audience" | "payload"
 >;
 
-function asRecord(value: unknown): Record<string, unknown> | null {
+export function asRecord(value: unknown): Record<string, unknown> | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) {
     return null;
   }
   return value as Record<string, unknown>;
 }
 
-function asNonEmptyString(value: unknown): string | null {
+export function asNonEmptyString(value: unknown): string | null {
   return typeof value === "string" && value.trim().length > 0 ? value : null;
 }
 
-function asStringArray(value: unknown): string[] {
+export function asStringArray(value: unknown): string[] {
   if (!Array.isArray(value)) {
     return [];
   }

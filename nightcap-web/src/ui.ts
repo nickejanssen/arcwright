@@ -1,4 +1,7 @@
-import { SHARED_DISPLAY_VISIBLE_AUDIENCES } from "./filters.js";
+import {
+  SHARED_DISPLAY_VISIBLE_AUDIENCES,
+  isSharedDisplayVisibleEvent,
+} from "./filters.js";
 import {
   HOST_SEED_PROMPTS,
   PLAYER_JOIN_PROMPTS,
@@ -19,6 +22,12 @@ import {
 import type { ContentEvent, PresentationHints } from "./types.js";
 import { renderDesignTokenCss, surfaceBodyClass } from "./design/index.js";
 import type { SurfaceMode } from "./design/index.js";
+import {
+  projectSharedDisplayEvent,
+  asRecord,
+  asNonEmptyString,
+  asStringArray,
+} from "./couch-race/display-projection.js";
 
 function pageShell(title: string, body: string, surface?: SurfaceMode): string {
   const bodyClass = surfaceBodyClass(surface);
@@ -253,8 +262,13 @@ function pageShell(title: string, body: string, surface?: SurfaceMode): string {
 const SHARED_DISPLAY_UNKNOWN_PLACEHOLDER = "A private event was shared.";
 
 export function getSharedDisplayEventBody(
-  event: Pick<ContentEvent, "payload" | "event_type">,
+  event: Pick<ContentEvent, "payload" | "event_type" | "target_audience">,
 ): string {
+  const projected = projectSharedDisplayEvent(event);
+  if (projected) {
+    return projected.body;
+  }
+
   const payload = event.payload;
   if (typeof payload === "string") {
     return payload;
@@ -886,6 +900,17 @@ export function renderSharedDisplayPage(sessionId = ""): string {
       (function() {
         const sharedDisplayVisibleAudiences = ${JSON.stringify(
           SHARED_DISPLAY_VISIBLE_AUDIENCES,
+        )};
+        const SHARED_DISPLAY_VISIBLE_AUDIENCES = ${JSON.stringify(
+          SHARED_DISPLAY_VISIBLE_AUDIENCES,
+        )};
+        const isSharedDisplayVisibleEvent = ${isSharedDisplayVisibleEvent.toString()};
+        const asRecord = ${asRecord.toString()};
+        const asNonEmptyString = ${asNonEmptyString.toString()};
+        const asStringArray = ${asStringArray.toString()};
+        const projectSharedDisplayEvent = ${projectSharedDisplayEvent.toString()};
+        const SHARED_DISPLAY_UNKNOWN_PLACEHOLDER = ${JSON.stringify(
+          SHARED_DISPLAY_UNKNOWN_PLACEHOLDER,
         )};
         const getSharedDisplayEventBody = ${getSharedDisplayEventBody.toString()};
         const getSharedDisplayEventLabel = ${getSharedDisplayEventLabel.toString()};
