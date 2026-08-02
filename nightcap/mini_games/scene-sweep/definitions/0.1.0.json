@@ -1,0 +1,173 @@
+{
+  "schema_version": "1.0",
+  "game_id": "scene-sweep",
+  "version": "0.1.0",
+  "mechanic_type": "evidence-search-race",
+  "participation_mode": "individual",
+  "content_mode": "hybrid",
+  "min_players": 4,
+  "max_players": 8,
+  "duration_seconds": 105,
+  "rules": {
+    "theme": "Nightcap clue-gated hidden-object evidence search",
+    "surface": "phone (pannable viewport) + shared display (full scene) + host",
+    "board_mode": "shared-coordinate-space race-to-claim",
+    "single_real_object": true,
+    "round_end_condition": "deadline expiry or every active object on the board claimed, whichever comes first; claiming the real object never ends the round early",
+    "claim_rule": "first accepted submission for a given object_id wins; later submissions for the same object_id are rejected",
+    "reveal_timing": "the real/decoy identity of every claim is withheld from all surfaces until round finalization",
+    "object_count_by_player_count": {
+      "4": 5,
+      "5": 6,
+      "6": 7,
+      "7": 8,
+      "8": 8
+    },
+    "player_count_behavior": {
+      "4": "5 total objects on the board, 1 real",
+      "5": "6 total objects on the board, 1 real",
+      "6": "7 total objects on the board, 1 real",
+      "7": "8 total objects on the board, 1 real",
+      "8": "8 total objects on the board, 1 real"
+    },
+    "failure_policy": {
+      "unclaimed_real_object_at_deadline": "reduced clue via clue_fallback",
+      "duplicate_claim": "rejected, no clue effect, no behavioral credit"
+    },
+    "replay_variance": [
+      "which object slots are active this round",
+      "which archetype is designated real",
+      "run seed for deterministic slot and real-object selection"
+    ],
+    "playtest_calibration": {
+      "duration_seconds_status": "estimate",
+      "object_count_status": "estimate",
+      "rationale": "The 90-120s ceiling (105s) and the per-player-count object counts are starting estimates from design, not yet playtested.",
+      "follow_up": "Recalibrate duration and object density after a real session, same posture Tell Me Something True's own duration_seconds already carries."
+    }
+  },
+  "authored_content": {
+    "package_summary": "A Nightcap hidden-object hunt: the shared display shows a full illustrated scene, each phone pans an independent viewport into the same coordinate space, and players race to claim objects. Exactly one is real evidence; the rest are decoys drawn from the same investigative-archetype pool. The truth is withheld until one staged reveal at the end.",
+    "backgrounds": [
+      {
+        "background_id": "the-study",
+        "label": "The Study"
+      }
+    ],
+    "object_slots": [
+      {"slot_id": "slot-1", "background_id": "the-study", "archetype": "murder-weapon", "position": {"x": 0.12, "y": 0.30}},
+      {"slot_id": "slot-2", "background_id": "the-study", "archetype": "motive", "position": {"x": 0.34, "y": 0.22}},
+      {"slot_id": "slot-3", "background_id": "the-study", "archetype": "alibi-breaker", "position": {"x": 0.48, "y": 0.55}},
+      {"slot_id": "slot-4", "background_id": "the-study", "archetype": "forgery", "position": {"x": 0.62, "y": 0.62}},
+      {"slot_id": "slot-5", "background_id": "the-study", "archetype": "struggle", "position": {"x": 0.80, "y": 0.70}},
+      {"slot_id": "slot-6", "background_id": "the-study", "archetype": "secret-correspondence", "position": {"x": 0.90, "y": 0.15}},
+      {"slot_id": "slot-7", "background_id": "the-study", "archetype": "missing-piece", "position": {"x": 0.20, "y": 0.75}},
+      {"slot_id": "slot-8", "background_id": "the-study", "archetype": "witness-trace", "position": {"x": 0.70, "y": 0.35}}
+    ],
+    "clues": [
+      {
+        "clue_id": "scene-sweep-evidence-summary",
+        "variant": "reduced",
+        "content": {
+          "text": "The search turned up something that matters. Not everything about it is clear yet, but the room won't be able to un-know that it's there."
+        }
+      },
+      {
+        "clue_id": "scene-sweep-evidence-detail",
+        "variant": "full",
+        "content": {
+          "text": "The search turned up the piece that actually matters — the room finally has something real to work with, not just a feeling that someone's lying."
+        }
+      }
+    ],
+    "surface_contract": {
+      "phone": "pannable viewport into the scene, a minimap showing current position, and the archetype-name list with checkmarks as objects are claimed by anyone",
+      "shared_display": "the entire scene always visible at once, live unlabeled claim markers, collective progress, and the end-of-round staged reveal",
+      "host": "progress and fallback visibility without revealing which object is real before the reveal fires"
+    },
+    "fallback_contract": {
+      "behavior": "If the deadline passes before the real object is claimed, the round finalizes with the reduced clue only. No object's real/decoy status is ever revealed before this point.",
+      "shared_display_line": "Six objects. Time's up. Whatever mattered in this room is still in this room.",
+      "host_line": "Deadline reached before the real object was claimed. Reduced clue released; advance when ready.",
+      "player_device_line": "Time. The room moves on, and so does the case.",
+      "clue_outcome": "reduced"
+    },
+    "diegetic_wrappers": {
+      "high-society": {
+        "title": "The Search",
+        "narrator_intro": "Someone tidied this room in a hurry. Find what they didn't want found — or find nothing at all, which is its own kind of answer.",
+        "narrator_reveal_success": "The room gives up its secret. {finder} was the one holding it, whether they knew it or not."
+      },
+      "corporate": {
+        "title": "The Audit",
+        "narrator_intro": "Somewhere in this office is the one thing that wasn't supposed to survive the reorg. Find it before the record does.",
+        "narrator_reveal_success": "Audit complete. {finder} pulled the one file that matters."
+      },
+      "sci-fi": {
+        "title": "The Sweep",
+        "narrator_intro": "Scan the compartment. One reading matters; the rest are noise the ship generated to keep you busy.",
+        "narrator_reveal_success": "Signal isolated. {finder}'s scan was the one that mattered."
+      }
+    },
+    "narrator_reveal_success_note": "{finder} in each diegetic_wrappers.<theme>.narrator_reveal_success line is a Python-side string substitution the future rendering/runtime task must implement; it is not resolved by content generation."
+  },
+  "generation_constraints": {
+    "tone": ["tense", "playful", "investigative"],
+    "allowed_session_personalization": [
+      "which archetype is real for this round",
+      "the specific in-fiction identity of each object per theme",
+      "decoy reveal quips",
+      "narrator intro and reveal lines per theme"
+    ],
+    "resolution_contract": {
+      "real_object_id": "the generated content payload must include a new top-level key real_object_id whose value is exactly one of authored_content.object_slots[].slot_id, chosen because that slot's archetype corresponds to a real, already-resolved fact in this session's case (e.g. pick the murder-weapon slot only if the case's actual weapon fact naturally maps to that archetype); this is a selection among existing authored slots, never an invented new slot",
+      "real_archetype_source": "the identity and clue text for the resolved real evidence object must be drawn from this session's actual generated case data (killer, weapon, motive, etc.) supplied via session_context; the model must never invent case facts independently",
+      "clue_text_source": "clues[].content.text is fully authored and does not require generation to fill; it stays deliberately general because per-clue case-specific text generation is not yet supported by the resolver's hybrid-merge (list values are not recursively merged — see engine/mini_games/resolver.py's _merge_into). Case-specific grounding for this round comes entirely through real_object_id (see the real_object_id key above), which the plugin combines with the deterministic object_slots archetype data; deeper per-clue text personalization is a legitimate future enhancement that would require a resolver.py change, out of scope here."
+    },
+    "surface_rules": {
+      "shared_display": "never reveal which claimed object is real or decoy before the staged reveal",
+      "phone": "may show only the archetype-label list and the claiming player's own claim acknowledgement",
+      "host": "may show progress and fallback state without revealing which object is real"
+    },
+    "runtime_boundaries": [
+      "Python owns object slot selection and which slot is designated real",
+      "Python owns claim arbitration and the deadline",
+      "Python owns success/fallback determination and clue release",
+      "Python owns behavioral output computation"
+    ],
+    "safety": [
+      "object identities and clue text must come from resolved case and character data only",
+      "no real-world player identity facts",
+      "no protected-trait inference",
+      "no graphic violence"
+    ]
+  },
+  "behavioral_outputs": [
+    {
+      "key": "completion-time-ms",
+      "description": "Elapsed time from round start until this participant's claim was accepted, if any.",
+      "value_type": "integer",
+      "scope": "participant",
+      "derived": false
+    },
+    {
+      "key": "decoys-claimed",
+      "description": "Count of decoy (non-real) objects claimed by this participant.",
+      "value_type": "integer",
+      "scope": "participant",
+      "derived": false
+    },
+    {
+      "key": "real-object-claimed",
+      "description": "Whether the real evidence object was claimed by anyone before the round ended.",
+      "value_type": "boolean",
+      "scope": "run",
+      "derived": false
+    }
+  ],
+  "clue_fallback": {
+    "delay_seconds": 20,
+    "clue_variant": "reduced",
+    "host_override": true
+  }
+}
