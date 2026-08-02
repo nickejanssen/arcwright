@@ -464,7 +464,20 @@ test("no privately addressed Couch Race event type reaches the shared display", 
 
 Run: `cd nightcap-web && npm test` → expect `pass 108, fail 0`.
 
-Now temporarily comment out the `isSharedDisplayVisibleEvent` guard in `display-projection.ts` and re-run. Expected: this test FAILS. A guard that cannot fail is not a guard. Restore the guard and confirm green again before committing.
+**Do not prove this by disabling `isSharedDisplayVisibleEvent` globally.** None of the five event types in this test have a handler branch in `projectSharedDisplayEvent` — they all fall through to the unconditional `return null;` regardless of the guard's state. Disabling the guard changes nothing for them; it only affects `interaction_answer` and `resource_effect_outcome`, which the *other* two tests already cover. A test that can't fail under that condition is proving nothing about this test's own claim.
+
+Instead, simulate the exact mistake this test exists to catch: a future maintainer adding a handler for one of these five types that reads the payload without going through the guard. Temporarily add this block to `display-projection.ts`, inserted *before* the `isSharedDisplayVisibleEvent` check (i.e., bypassing it, the way a careless addition would):
+
+```typescript
+  if (event.event_type === "clue_delivery") {
+    const body = asNonEmptyString(payload?.text);
+    if (body) {
+      return { kind: "suspect_answer", body, suspectId: null, askerIds: [], suspectState: null };
+    }
+  }
+```
+
+Re-run `npm test`. The regression-guard test MUST now fail — specifically on the `clue_delivery` iteration, with the leaked `"PRIVATE-CANARY"` text. Paste that failure. Then remove the temporary block entirely and confirm `display-projection.ts` is back to its exact pre-Step-2 state (`git diff` shows no changes to that file) and `npm test` is green at `pass 108, fail 0` again.
 
 - [ ] **Step 3: Commit**
 
