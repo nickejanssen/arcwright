@@ -60,5 +60,19 @@ export function projectSharedDisplayEvent(
     };
   }
 
+  if (event.event_type === "resource_effect_outcome") {
+    const body = asNonEmptyString(asRecord(payload.outcome)?.text);
+    if (!body) {
+      return null;
+    }
+    return {
+      kind: "resource_effect",
+      body,
+      suspectId: null,
+      askerIds: [],
+      suspectState: null,
+    };
+  }
+
   return null;
 }

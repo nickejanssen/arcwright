@@ -73,3 +73,35 @@ test("an interaction_answer with no answer text projects nothing", () => {
 
   assert.equal(projectSharedDisplayEvent(event), null);
 });
+
+test("resource_effect_outcome projects only when publicly addressed", () => {
+  // engine/resources/events.py emits this one event_type with a per-effect
+  // audience: table-wide for effects like Make Them Wait, specific_player for
+  // effects like Listen In. Both shapes are exercised here deliberately.
+  const publicOutcome = contentEvent({
+    category: "state_transition",
+    event_type: "resource_effect_outcome",
+    target_audience: "all",
+    payload: {
+      effect_key: "make-them-wait",
+      outcome: { text: "Rowan's next question is delayed." },
+    },
+  });
+
+  const privateOutcome = contentEvent({
+    category: "private_delivery",
+    event_type: "resource_effect_outcome",
+    target_audience: "specific_player",
+    target_player_id: "player-b",
+    payload: {
+      effect_key: "listen-in",
+      outcome: { text: "You overhear Vesper's private tell." },
+    },
+  });
+
+  const projected = projectSharedDisplayEvent(publicOutcome);
+  assert.equal(projected?.kind, "resource_effect");
+  assert.equal(projected?.body, "Rowan's next question is delayed.");
+
+  assert.equal(projectSharedDisplayEvent(privateOutcome), null);
+});
