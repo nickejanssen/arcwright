@@ -1,11 +1,12 @@
 # Couch Race Rehearsal 1 Blocker Log
 
-- Date: 2026-07-26
+- Date: 2026-08-01
 - Scope: One two-player Couch Race session on a shared TV and two phones.
-- Status: Local fixes are verified. Real-device rehearsal remains open because
-  this workstation lacks the required Firebase/provider configuration and a
-  hands-on TV plus phone run has not yet been performed.
-- Tracking: GitHub issue #264. No new issues were opened.
+- Status: Local fixes and founder-confirmed live beat-transition verification
+  are complete for the rehearsal thin slice. Full Couch-specific presentation
+  and UX follow-ups remain outside this debugging engagement.
+- Tracking: GitHub issue #264, closed as completed on 2026-08-01. No new issues
+  were opened.
 
 ## PR review follow-up
 
@@ -24,8 +25,9 @@
 - `make rehearsal-smoke` now exchanges both player tokens, submits both
   actions, asserts the beat remains `pour` after the first action, and asserts
   `pour -> scene` after the second.
-- Real TV plus two-phone verification is still open. The code and local smoke
-  checks do not substitute for the required hands-on run.
+- Founder confirmation: the live two-player Couch Race rehearsal transitions
+  through the authored beats after the merged fixes. The code and automated
+  smoke checks agree with that result.
 
 ## Blocker 01: Wrong arc selected by rehearsal scripts
 
@@ -225,10 +227,11 @@
   the same code, display shows two players, `make rehearsal-start` returns an
   active session, both phones submit one action, and the display reports the
   next beat.
-- Current result: Not yet performed. The local environment is missing the
-  credentials listed in Blocker 03, and this agent cannot substitute for the
-  founder's hands-on TV and phone hardware.
-- Close condition for #264: Record the device models, OS/browser versions,
-  timestamps, session ID, join success, host start success, both action
-  responses, and the observed beat transition here and in #264. Do not close
-  the issue until that evidence exists.
+- Current result: Founder confirmed that a live two-player rehearsal can join,
+  start, and transition through the authored beats. The focused automated
+  validation also passes: 84 tests, dashboard TypeScript, Ruff, and enforced
+  pre-commit checks.
+- Close condition for #264: Satisfied by the founder confirmation recorded in
+  GitHub issue #264 on 2026-08-01. Detailed device and session metadata was not
+  supplied in the confirmation; future rehearsals should continue recording
+  those details when available.
