@@ -29,6 +29,26 @@ evidence record. It is also the brief for the visual-exploration phase.
 | Prototype flows | Open | — | — |
 | Implemented thin slice | Partial | 2026-08-02 | Tasks 1-7 (structural layer) implemented, reviewed, committed on `claude/aw-285-discovery`. Task 8 (arc minigame bindings) handed off — see below. Task 9 (PR) still open. |
 
+## PR #269 review follow-ups (2026-08-02)
+
+A medium-effort automated review of PR #269 posted 4 inline findings. 3 were
+fixed directly on the branch (commit `2bd51e1`) and their threads resolved.
+The 4th (the `.toString()`-into-`<script>` architectural fragility itself) is
+tracked as its own out-of-branch follow-up, not fixed in this PR to avoid
+colliding with that work.
+
+One of the 3 fixes was **partial by design**: `getSharedDisplayEventBody`'s
+duplicate type-guard checks were deduped against the exported
+`asRecord`/`asNonEmptyString` helpers (zero new script-embedding risk, since
+that function's script block already imports them for the Couch Race
+projection). `getPlayerEventBody`'s matching duplicates were left alone —
+deduping them would require adding new embed lines to a currently-clean,
+separate script block (the player join page), which is exactly the risk
+class that produced two Critical bugs earlier in this branch. Filed as
+**issue #270**, labeled `blocked` pending the CI-coverage follow-up for
+`.toString()`-embedded scripts landing first, so the eventual fix has a real
+safety net instead of repeating the same manual-review burden.
+
 ## Task 8 handoff (2026-08-02)
 
 Asked the founder which package binds to which of the four empty beats (Pour,
