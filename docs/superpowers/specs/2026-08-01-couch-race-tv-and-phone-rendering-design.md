@@ -83,10 +83,15 @@ interface SharedDisplayProjection {
   kind: SharedDisplayProjectionKind; // closed union, not an open string
   body: string;               // human-readable text, already privacy-screened
   suspectId: string | null;   // who is on stage, when applicable
-  askerId: string | null;     // G3 — requires the D-096 engine change
+  askerIds: string[];         // G3 — requires the D-096 engine change
   suspectState: string | null; // G5 — at ease / rattled / cracking
 }
 ```
+
+`askerIds` is plural because the engine groups selections: `PublicInteractionGroup`
+collects every selection sharing a `(target_id, option_id)` pair, so two players
+who choose the same intent against the same suspect resolve into one answer with
+two askers. A singular `askerId` would silently drop the second.
 
 `kind` is a closed union rather than `string` so that adding a projection type is
 a deliberate, type-checked act. An open string would let a new event type reach
@@ -107,13 +112,18 @@ structured payload. So the phone already displays Couch Race event content
 today; it is ugly, not absent. The TV, by contrast, shows a placeholder and is
 genuinely non-functional for Couch Race.
 
-Consequently the projection layer is specified for the shared display first.
-Phone work in this task is limited to structural needs — intent menu with token
-counter, contradiction-flag submission, accusation submit with lockout state —
-all of which submit input through the existing SDK. A parallel player-side
-projection replacing the `JSON.stringify` fallback is desirable but is **not**
-required to clear any AW-285 acceptance criterion, and is listed as an open
-question rather than committed scope.
+Consequently the projection layer is specified for the shared display first, and
+**all phone work is Phase 2.**
+
+The phone's outstanding items — intent menu with token counter, contradiction-flag
+submission, accusation submit with lockout state — are input surfaces whose shape
+is a UI decision, not a data-contract decision. There is no taste-free version of
+"what the intent menu looks like." Grouping them into Phase 1 on the grounds that
+they are "structural" would repeat the error this spec exists to correct: calling
+a design choice structural because its data plumbing is obvious.
+
+A parallel player-side projection replacing the `JSON.stringify` fallback is
+desirable but clears no acceptance criterion, and stays an open question.
 
 ## Engine change (D-096)
 
