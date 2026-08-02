@@ -54,7 +54,7 @@
     {
       "id": 7,
       "subject": "Task 7: Wire the projection into the shared display renderer",
-      "status": "pending",
+      "status": "completed",
       "blockedBy": [
         6
       ],
