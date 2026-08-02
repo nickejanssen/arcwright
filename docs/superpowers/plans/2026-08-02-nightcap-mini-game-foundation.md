@@ -1,7 +1,7 @@
 # Nightcap Mini-game Opportunity Foundation Implementation Plan
 
 > **For Codex:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to execute
-> this plan task by task. Do not begin without separate founder approval.
+> this plan task by task. Do not begin without separate founder implementation approval.
 
 **Goal:** Connect Couch Race's six authored beats to generic mini-game
 opportunities, Nightcap consequences, semantic presentation, and production
@@ -85,6 +85,7 @@ Write failing tests for generic mappings to:
 - public acknowledgements;
 - no accusation-truth or killer-identity mutation;
 - story remains solvable after every loss or timeout.
+- result acceptance followed by crash-safe exactly-once consequence recovery.
 
 Keep Nightcap resource IDs in the arc and configuration, not generic engine
 code. Verify and commit:
@@ -113,6 +114,10 @@ Write failing tests proving the rendered stage receives:
 - adapter-neutral authoritative state;
 - reconnect revision.
 
+Also prove the stage receives only its public-safe story projection and opaque
+theme payload. It must not receive raw knowledge graph state, hidden roles,
+prompts, credentials, or another surface's private data.
+
 Implement without putting secrets into page content or routing private tokens
 to another surface. Preserve phase state on fetch and reconnect.
 
@@ -134,7 +139,9 @@ Verify and commit:
 - Modify: nightcap-web/tests/mini-game-perf.test.ts
 - Modify: docs/specs/0069-nightcap-visual-design-system.md
 
-Use the approved spec 0069 system. Write tests for semantic tokens, theme
+Use the approved spec 0069 system. The engine forwards an opaque validated
+Nightcap theme payload and surface-neutral posture; Nightcap renderers interpret
+it. Write tests for semantic tokens, theme
 switching, reduced motion, couch-distance typography, phone intimacy, shared
 display staging, and missing optional assets.
 
@@ -177,6 +184,10 @@ Cover 2 and 8 players, every beat, fallback, reconnect, pause/resume, one
 allowed repeat, exact package version, generic consequence events, and private
 payload matrix. Use placeholder test adapters for games not yet game-ready;
 do not mark package readiness passed from this foundation test.
+
+Cover package retirement during a session, result-to-consequence crash
+recovery, privacy-safe lifecycle telemetry, and generated-content fallback
+without exposing private case state.
 
 ## Task 8: Verify and Reconcile
 

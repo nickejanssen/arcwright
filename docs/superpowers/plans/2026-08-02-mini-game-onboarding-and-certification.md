@@ -76,10 +76,13 @@ Write failing command tests for:
 - scaffold experience registration;
 - scaffold story opportunity;
 - validate exact version;
+- validate package integrity digest and retirement behavior;
 - validate adapter support;
+- validate trusted-host capability without issuing public credentials;
 - validate player range and fallback;
 - validate consequence mappings;
 - validate theme and renderer declarations;
+- validate public-safe context, telemetry, safety, and generation budgets;
 - reject active but incomplete packages;
 - report required human gates.
 
@@ -157,10 +160,16 @@ Write failing tests for report fields and blocking rules:
 
 - package, registration, opportunity, adapter, and result contract;
 - exact-version delivery;
+- package integrity, retirement, rollback, and resume compatibility;
 - deterministic replay;
 - completion, timeout, cancellation, and fallback;
 - consequence idempotency;
+- trusted-host authority and forged-result rejection when applicable;
 - privacy and reconnect;
+- public-safe knowledge projection and content-safety coverage;
+- privacy-safe lifecycle telemetry;
+- generation cost, latency, retry, caching, and fallback budgets when
+  applicable;
 - accessibility and performance;
 - supported player counts;
 - required creative artifact approval;
@@ -168,6 +177,7 @@ Write failing tests for report fields and blocking rules:
 - lifecycle promotion recommendation.
 
 Automated checks must emit Not Run for human gates, never Passed.
+Certification evidence does not replace production telemetry.
 
 Verify and commit:
 
@@ -218,6 +228,10 @@ Use the tool exactly as a new developer would:
 
 Record elapsed steps, confusion, missing guidance, and resulting report. Fix
 only defects inside this plan's scope.
+
+The walkthrough validates an internal protocol and developer workflow. Do not
+publish public credentials, engine-specific SDKs, a marketplace, billing, or a
+multi-tenant package trust system in this plan.
 
 ## Task 9: Reconcile and Pause
 

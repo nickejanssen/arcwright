@@ -1,10 +1,14 @@
 # 0018 - Mini-game Orchestration and Execution Adapters
 
 **Date:** 2026-08-02
-**Status:** Proposed
-**Supersedes if accepted:** docs/decisions/0009-mini-game-runtime-boundary.md
+**Status:** Accepted
+**Decision authority:** Founder approval recorded 2026-08-02
+**Supersedes:** docs/decisions/0009-mini-game-runtime-boundary.md
 **Architecture references:** docs/architecture/03-arc-execution.md,
-docs/architecture/08-event-system.md, docs/architecture/09-developer-api.md
+docs/architecture/05-session-persistence.md,
+docs/architecture/08-event-system.md, docs/architecture/09-developer-api.md,
+docs/architecture/10-content-safety.md, docs/architecture/11-telemetry.md,
+docs/architecture/13-cost-model.md
 **Design reference:**
 docs/superpowers/specs/2026-08-02-mini-game-platform-orchestration-design.md
 
@@ -58,6 +62,13 @@ Mini-game execution uses one of two adapters:
    idempotent, versioned, schema-validated result envelope. Arcwright does not
    load or execute arbitrary host gameplay code.
 
+A host-authoritative result is accepted only through a trusted host boundary,
+never from a player client as canonical authority. It is bound to the session,
+invocation, registration, package version, schema version, status revision,
+and one-time result identity. Conflicting duplicates, stale results, and
+cross-invocation submissions are rejected and recorded without applying
+consequences.
+
 Across both adapters, Arcwright owns:
 
 - opportunity and registration validation;
@@ -69,6 +80,23 @@ Across both adapters, Arcwright owns:
 - platform safety for content generated or processed by Arcwright;
 - cross-game telemetry and certification evidence.
 
+Experience-owned theme and renderer configuration remains an opaque, validated
+payload to the engine. Arcwright may emit surface-neutral presentation posture
+and accessibility context, but it does not interpret CSS, screen topology,
+engine assets, or renderer implementation.
+
+Invocation state, result acceptance, and consequence application are
+recoverable and exactly-once from the append-only event and persistence record.
+A resumed invocation uses its immutable registered package version. A retired
+version cannot receive new invocations but remains available for valid resume
+and replay.
+
+Any Arcwright-generated mini-game content uses the provider-agnostic router,
+cost and latency logging, safety layers, and an explicitly allowed public-safe
+context projection. It does not receive raw private knowledge state. AI never
+selects a game, decides an outcome, grades a deterministic answer, or applies a
+canonical consequence.
+
 Mini-game results are facts about gameplay, not direct state patches. An arc
 maps allowed result semantics to bounded canonical services. Packages may not
 submit arbitrary Python, SQL, or unrestricted session-state mutations.
@@ -78,7 +106,9 @@ registration and opportunity contracts are introduced.
 
 No public marketplace, arbitrary plugin loader, or public third-party platform
 is added in Horizon 1. The architecture is proved with Nightcap plus a
-synthetic non-Nightcap host-authoritative reference.
+synthetic non-Nightcap host-authoritative protocol fixture. Unity, Unreal, and
+other engine-specific SDKs, public credentials, multi-tenant package trust, and
+commercial developer access remain later approved work.
 
 The Grill runs automatically in its Beat 3 opportunity. A generic request-cost
 extension may be represented in contracts, but the optional currency-funded
@@ -97,6 +127,8 @@ flow remain deferred per D-097.
 - One result and lifecycle contract works across hosted and external engines.
 - Developer tooling can validate story fit, compatibility, and readiness before
   deployment.
+- External result authority is constrained by invocation identity, trust,
+  replay protection, and bounded consequence mappings.
 
 ## Negative consequences
 
@@ -108,6 +140,8 @@ flow remain deferred per D-097.
   game-specific transport types need compatibility updates.
 - Certification must distinguish contract correctness from subjective gameplay
   quality.
+- Package integrity, retirement, recovery, privacy, safety, telemetry, cost,
+  and host trust become explicit certification responsibilities.
 
 ## Trade-offs
 
@@ -128,6 +162,9 @@ flow remain deferred per D-097.
 - docs/architecture/03-arc-execution.md
 - docs/architecture/08-event-system.md
 - docs/architecture/09-developer-api.md
+- docs/architecture/10-content-safety.md
+- docs/architecture/11-telemetry.md
+- docs/architecture/13-cost-model.md
 - docs/architecture/14-architecture-validation.md
 - docs/decisions/0009-mini-game-runtime-boundary.md
 - docs/product/decisions-log.csv D-093, D-094, D-095, and D-097

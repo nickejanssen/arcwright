@@ -1,8 +1,8 @@
 # Mini-game Platform Orchestration Design
 
-> Current version: v0.1
+> Current version: v0.2
 > Last updated: 2026-08-02
-> Status: Draft for founder review
+> Status: Approved direction, implementation not approved
 > Canonical implementation contracts: to be split into approved specs before implementation
 > Planning artifact: docs/superpowers/specs/2026-08-02-mini-game-platform-orchestration-design.md
 
@@ -26,7 +26,7 @@ story integration model, and deferred currency behavior require founder
 judgment. Each Nightcap game's gameplay, tuning, art, animation, and session
 fit require creative review and real-device playtesting.
 
-**Current phase:** Low-cost architecture and work-order artifact.
+**Current phase:** Approved low-cost architecture and work-order artifact.
 
 **Locked founder direction:**
 
@@ -44,9 +44,11 @@ fit require creative review and real-device playtesting.
   phone and TV connectivity, and multiplayer state.
 - Implementation requires a separate explicit founder approval after the
   plans are reviewed.
+- The founder approved this architecture and planning direction on 2026-08-02.
 
-**Next gate:** Founder approval of this v0.1 architecture and work-order
-direction. Approval of this artifact does not approve implementation.
+**Next gate:** Approval of the canonical implementation specs and separate
+approval to execute the selected implementation plan. Approval of this
+artifact does not approve implementation.
 
 ## Executive Recommendation
 
@@ -116,6 +118,82 @@ gameplay simulation into Python.
 - Nightcap-specific beat names, currencies, visual surfaces, or scoring terms
   in platform contracts.
 - A public marketplace or arbitrary plugin loader during Horizon 1.
+
+## SME Architecture Guardrails
+
+The approved direction carries the following platform constraints into every
+implementation spec and acceptance suite.
+
+### Host trust and result authority
+
+- A player token or renderer cannot submit a canonical host-authoritative
+  result.
+- Every accepted result is bound to its session, invocation, registration,
+  package version, result schema version, status revision, and one-time result
+  identity.
+- Duplicate identical delivery is idempotent. A conflicting duplicate, stale
+  revision, retired registration, or cross-invocation result is rejected and
+  logged without applying consequences.
+- Horizon 1 proves this with an internal protocol fixture. Public credentials,
+  multi-tenant package signing, and partner trust policy are deferred.
+
+### Recovery and package integrity
+
+- Package definitions used by playtest or active registrations are immutable
+  and identified by exact version plus integrity digest.
+- Retirement blocks new invocations, not valid resume or replay of an existing
+  invocation. Rollback selects a prior approved registration version for new
+  work.
+- Result receipt and consequence application are independently durable and
+  idempotent. A crash between them retries the authored mapping without
+  double-applying state.
+- Each spec must define whether a host-authoritative invocation resumes,
+  cancels, or falls back after host loss. It may not silently start a second
+  invocation.
+
+### Privacy, knowledge, and safety
+
+- Runtime story context is an explicit public-safe projection. Raw knowledge
+  graph state, private role information, prompts, credentials, and unrelated
+  session state are never package input.
+- AI-generated mini-game content is resolved only after deterministic
+  selection, through the provider-agnostic router and all applicable safety
+  layers.
+- AI character material still requires the mandatory knowledge query. Case
+  callbacks may use only authored or established facts allowed by the arc.
+- External result envelopes minimize content. Opaque evidence references are
+  diagnostic evidence, not trusted state mutations.
+
+### Surface and theme agnosticism
+
+- The engine forwards an opaque, schema-validated experience theme payload and
+  surface-neutral presentation posture. It does not interpret CSS tokens,
+  screen names, rendering engines, asset formats, or layout.
+- A hosted renderer or external engine translates that payload into its own
+  presentation. Presentation cannot affect selection, scoring, or canonical
+  consequences.
+
+### Telemetry and cost
+
+- Append-only lifecycle telemetry covers opportunity evaluation, selection,
+  invocation, completion, timeout, cancellation, result rejection,
+  consequence application, fallback, reconnect, duration, adapter, package,
+  version, and player count.
+- Cross-game telemetry uses reason codes and neutral metrics. Raw private
+  content is excluded unless separately consented and enabled.
+- Generative content declares cost, latency, retry, cache, and deterministic
+  fallback budgets. Every model call uses routing and generation cost logs.
+- Certification reports contract and operational evidence but do not replace
+  production telemetry.
+
+### Horizon 1 scope
+
+- Build internal contracts, a Nightcap implementation, and one synthetic
+  non-Nightcap protocol proof.
+- Do not build Unity or Unreal SDKs, a marketplace, public package execution,
+  external developer authentication, billing, or a no-code arc builder.
+- Before an H2 developer beta, validate the API and schema proposition with the
+  target developers required by the PRD non-goals and open-question gates.
 
 ## What One Mini-game Per Beat Means
 
@@ -237,11 +315,11 @@ uses a generic resource identifier.
 
 ### Theme and Presentation Contract
 
-Arcwright emits semantic presentation context, not surface instructions:
-session tone and theme tags, semantic design tokens supplied by the
-experience, accessibility settings, locale, narrative posture, urgency,
-attention hints, public-safe story context, duration, and stakes copy
-references.
+Arcwright forwards validated experience-owned presentation context, not
+surface instructions: an opaque theme payload, accessibility preferences,
+locale, narrative posture, urgency, attention hints, public-safe story context,
+duration, and stakes copy references. The engine understands only the
+surface-neutral fields needed for orchestration.
 
 Hosted web renderers consume the experience theme contract. External host
 engines translate the same semantics into their own rendering systems.
@@ -304,6 +382,9 @@ A mini-game is game-ready only when all applicable gates pass:
 - gameplay is tuned through creative review and real-player rehearsal;
 - performance budgets pass;
 - telemetry and replay evidence are available;
+- host trust, package integrity, retirement, and crash recovery pass;
+- generative content meets knowledge, safety, cost, latency, and fallback
+  budgets when applicable;
 - fallback preserves story progress;
 - lifecycle is active;
 - related specs, plans, roadmap records, GitHub issues, epics, and milestone
@@ -384,6 +465,8 @@ matrix, including package-specific schema and lifecycle inconsistencies.
 - Preserve compatibility for current static bindings.
 - Add contract tests with a synthetic non-Nightcap experience and a fake
   host-authoritative adapter.
+- Specify trusted host result submission, package integrity, retirement,
+  recovery, privacy, safety, telemetry, and generation budgets.
 - Do not expose a public marketplace or third-party code loader.
 
 ### Phase 2: Orchestrator and adapters
@@ -400,6 +483,8 @@ matrix, including package-specific schema and lifecycle inconsistencies.
 - Add registration and opportunity scaffolding.
 - Add preview, deterministic simulation, compatibility checks, and readiness
   reports.
+- Add trust-boundary, digest, retirement, cost, telemetry, and public-safe
+  context checks.
 - Document the complete internal developer path.
 
 ### Phase 4: Nightcap foundation
@@ -506,8 +591,8 @@ Baseline for this artifact:
 
 ## Planning Acceptance Criteria
 
-- [ ] Founder approves this architecture direction.
-- [ ] The proposed ADR is accepted before contract implementation.
+- [x] Founder approves this architecture direction.
+- [x] ADR 0018 is accepted before contract implementation.
 - [ ] Every implementation plan references one canonical approved spec.
 - [ ] Every plan includes the mainline safety gate.
 - [ ] Every plan includes a separate founder implementation-approval gate.
@@ -530,8 +615,9 @@ Baseline for this artifact:
 - Reverted PR #271 leaves a known inline-script integration risk.
 - Visual quality and tuning require creative collaboration and real humans.
 
-## Open Decision
+## Remaining Decision Gates
 
-Approve or revise this architecture and work-order direction. Implementation
-plans will be written against the approved version and presented for a separate
-approval. No implementation will begin from this draft.
+The architecture and work order are approved. Canonical specs, Nightcap
+placement, each game's creative artifact, the AW-266 disposition, and the
+selected implementation plan still require their named approvals. No
+implementation begins from this planning approval.

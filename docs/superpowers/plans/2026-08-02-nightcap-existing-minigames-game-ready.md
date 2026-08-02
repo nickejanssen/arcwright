@@ -30,10 +30,14 @@ Before each game:
 5. obtain separate implementation approval;
 6. write mechanic tests before code;
 7. implement in reviewable mechanic, renderer, and integration slices;
-8. run automated certification;
-9. run real-device walkthrough;
-10. run required real-player rehearsal;
-11. reconcile the game issue, task, spec, plan, epic, and readiness report.
+8. verify package integrity, retirement, recovery, privacy-safe telemetry, and
+   public-safe context;
+9. declare generation cost, latency, retry, safety, and fallback budgets when
+   applicable;
+10. run automated certification;
+11. run real-device walkthrough;
+12. run required real-player rehearsal;
+13. reconcile the game issue, task, spec, plan, epic, and readiness report.
 
 Do not promote from draft or playtest to active solely from automated checks.
 
@@ -283,10 +287,15 @@ approval.
 1. Validate generated questions before delivery.
 2. Reject ambiguous, ungrounded, future, hidden, private, unsafe, or invalid
    questions without player penalty.
-3. Grade answers and score deterministically.
-4. Bound adaptation to approved observable signals.
-5. Build private answer and public resolution renderers.
-6. Verify content fallback, replay, reconnect, privacy, performance, and
+3. Generate only after deterministic opportunity selection, from an approved
+   public-safe case projection, through provider-agnostic routing and all
+   applicable safety layers.
+4. Enforce and log cost, latency, caching, retry, and deterministic fallback
+   budgets without storing raw private content.
+5. Grade answers and score deterministically.
+6. Bound adaptation to approved observable signals.
+7. Build private answer and public resolution renderers.
+8. Verify content fallback, replay, reconnect, privacy, performance, and
    supported player range.
 
 Commit slices:

@@ -1,10 +1,14 @@
 # 0009 - Mini-game Runtime Boundary
 
 **Date:** 2026-06-20
-**Status:** Accepted
+**Status:** Superseded by ADR 0018
 **Architecture reference:** `docs/architecture/03-arc-execution.md`, `docs/architecture/08-event-system.md`, `docs/architecture/15-development-guide.md`
 **Spec reference:** `docs/specs/0046-aw-249-nightcap-mini-game-authoring-foundation.md`
 **Scope:** Nightcap v1 mini-game authoring and future runtime ownership
+
+ADR 0018 preserves this ADR's package lifecycle, immutable playtest versions,
+and Arcwright-hosted authority rules. It supersedes the claim that Python must
+own internal gameplay simulation for every possible host engine.
 
 ---
 

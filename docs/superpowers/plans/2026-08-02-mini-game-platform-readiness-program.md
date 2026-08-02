@@ -21,7 +21,7 @@ node:test, Ruff, and existing roadmap and GitHub tooling.
 **Design input:**
 docs/superpowers/specs/2026-08-02-mini-game-platform-orchestration-design.md
 
-**Proposed ADR:**
+**Accepted ADR:**
 docs/decisions/0018-mini-game-orchestration-and-execution-adapters.md
 
 ---
@@ -30,13 +30,12 @@ docs/decisions/0018-mini-game-orchestration-and-execution-adapters.md
 
 This document authorizes planning only.
 
-Before Task 1 begins, the founder must explicitly approve:
+The founder approved the architecture artifact and ADR 0018 on 2026-08-02.
+Before implementation begins, the founder must still explicitly approve:
 
-1. the architecture artifact version;
-2. ADR 0018;
-3. the canonical implementation specs created from this program;
-4. the selected first implementation plan; and
-5. implementation itself.
+1. the canonical implementation specs created from this program;
+2. the selected first implementation plan; and
+3. implementation itself.
 
 Approval of a plan, branch, PR, issue update, or prior direction does not imply
 implementation approval.
@@ -203,11 +202,20 @@ status.
 - Modify: docs/architecture/09-developer-api.md
 - Modify: docs/architecture/14-architecture-validation.md
 
+**Step 0: Recheck spec numbering**
+
+Immediately before creating specs, inspect the current spec index and mainline.
+If another merge has claimed any number from 0077 through 0084, renumber the
+entire proposed bundle and repair every plan reference before authoring. Spec
+numbers in this planning branch are reservations, not ownership.
+
 **Step 1: Split the approved design into four implementation contracts**
 
 Each spec must define ownership, schemas, invariants, compatibility, API or SDK
 surfaces, tests, migration impact, telemetry, error behavior, and explicit
-non-goals.
+non-goals. Include trusted host authority, package integrity and retirement,
+crash recovery, public-safe context, knowledge and safety constraints,
+generation cost and latency budgets, and privacy-safe lifecycle telemetry.
 
 **Step 2: Preserve hosted compatibility**
 
@@ -250,6 +258,10 @@ Required outcome:
 - declarative consequence mapping;
 - API and SDK transport;
 - migration and replay compatibility;
+- trusted host submission and replay protection;
+- immutable package integrity and retirement behavior;
+- crash-safe exactly-once consequence application;
+- privacy, safety, telemetry, and cost guardrails;
 - synthetic non-Nightcap proof.
 
 Pause after contract-only tests before Nightcap integration.
@@ -267,6 +279,7 @@ Required outcome:
 - import and compatibility diagnostics;
 - deterministic preview and simulation;
 - theme and privacy validation;
+- trust, integrity, retirement, telemetry, and generative-budget validation;
 - machine-readable readiness report;
 - promotion blocked until required evidence passes.
 
@@ -306,8 +319,11 @@ Each plan must include:
 - package schema and lifecycle correction;
 - renderer and theme implementation;
 - privacy and reconnect;
+- public-safe knowledge projection and content-safety behavior;
 - player-count behavior;
 - deterministic consequence mapping;
+- package integrity, retirement, crash recovery, and lifecycle telemetry;
+- generation cost, latency, retry, and fallback budgets when applicable;
 - performance and accessibility;
 - gameplay artifact review;
 - real-device walkthrough;
@@ -338,11 +354,18 @@ Run 2-player and 8-player Couch Race sessions through all six opportunities.
 Verify selection, invocation, consequences, fallback, repeat policy,
 pause/resume, reconnect, and deterministic replay.
 
+Verify that an interruption between result receipt and consequence application
+cannot double-apply state and that a retired exact version remains resumable.
+
 **Step 2: Host-authoritative synthetic session**
 
 Run a non-Nightcap experience through registration, opportunity selection,
 launch, result receipt, consequence application, and replay without importing
 host gameplay code.
+
+Use a trusted internal host fixture. Verify player submissions cannot claim
+host authority, stale and forged results fail, identical retries are
+idempotent, and conflicting duplicates never alter canonical state.
 
 **Step 3: Real-device preflight**
 
@@ -358,6 +381,9 @@ Pause for artifact and readiness approval before a real-player session.
 Run AW-286 using the collaboration contract. Record game-specific fun,
 seamlessness, story enhancement, competition, style, motion, and confusion
 findings.
+
+Confirm lifecycle telemetry is present without raw private payloads and that
+any generated content stayed within its declared cost and latency budget.
 
 **Step 6: Remediation**
 

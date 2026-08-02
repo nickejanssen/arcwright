@@ -53,6 +53,7 @@ Cover:
 - opportunity eligibility by registration and capability;
 - trigger and repetition policy;
 - public-safe context allowlist;
+- opaque experience theme configuration;
 - authored fallback;
 - result semantic and consequence mapping references;
 - duplicate IDs;
@@ -94,6 +95,10 @@ Prove:
 - an invocation loads the definition version pinned by registration;
 - historical versions remain loadable after current_version changes;
 - directory identity is enforced for every lifecycle;
+- a package digest mismatch fails before invocation;
+- retirement prevents new invocations but preserves exact-version resume and
+  replay;
+- rollback selects an explicitly approved prior registration version;
 - active packages without an executable adapter or required renderer fail
   production validation;
 - template and fixture directories remain excluded.
@@ -126,7 +131,8 @@ Do not silently fall back to latest.
 
 Cover opportunity ID, registration ID, adapter, package version, trigger,
 selection reason, result schema version, idempotency key, consequence status,
-and applied-consequence record.
+applied-consequence record, package digest, status revision, result receipt,
+and recovery disposition.
 
 **Step 2: Confirm failure**
 
@@ -166,6 +172,7 @@ Cover:
 - cooldown and repetition;
 - exactly-once invocation on retries;
 - no eligible candidate fallback;
+- privacy-safe selection reason telemetry;
 - automatic Beat 3 Grill shape without Nightcap IDs in coordinator code;
 - no player-request execution.
 
@@ -208,6 +215,11 @@ Prove host_authoritative:
 - rejects late or duplicate conflicting results;
 - never executes supplied code;
 - preserves opaque evidence references without trusting them as state writes.
+- rejects a player-authenticated result as canonical host authority;
+- binds trusted host authority to session, invocation, registration, package,
+  schema version, status revision, and one-time result identity;
+- rejects stale, retired, cross-invocation, and conflicting duplicate results;
+- accepts an identical delivery retry without a second consequence.
 
 **Step 2: Implement arcwright_hosted wrapper**
 
@@ -215,7 +227,9 @@ Move no mechanic behavior yet. Wrap existing runtime calls behind the adapter.
 
 **Step 3: Implement host_authoritative protocol**
 
-Keep it transport-independent and schema-only.
+Keep it transport-independent and schema-only. Horizon 1 uses an internal
+trusted-host fixture. Public partner credentials, package signing policy, and
+multi-tenant trust are explicit non-goals.
 
 **Step 4: Verify and commit**
 
@@ -241,6 +255,11 @@ Cover resource delta, score delta, clue variant, knowledge assertion,
 obligation or narrative signal, event emission, duplicate result, retry after
 partial failure, unknown semantic, unauthorized mapping, and edge-not-gate
 fallback.
+
+Also prove result persistence and consequence application form a recoverable,
+exactly-once workflow. A crash after accepting a result retries only the
+unapplied mapping. Knowledge assertions go through the existing knowledge
+service and cannot bypass provenance or private-state rules.
 
 **Step 2: Confirm failure**
 
@@ -276,6 +295,10 @@ package-provided callables.
 Require package and definition version, adapter, opportunity, status revision,
 public-safe runtime config, generic phase or presentation state, and generic
 result submission.
+
+Require a versioned compatibility contract and opaque theme payload. Verify
+that player tokens cannot call the trusted host result path and no response
+contains raw knowledge state, secrets, or another surface's private payload.
 
 Add a regression proving a resumed run never loads latest when pinned to an
 older version.
@@ -318,7 +341,39 @@ session coordinator lifecycle. Verify and commit:
 
     git commit -m "feat(session): drive minigame timeouts"
 
-## Task 10: Prove a Non-Nightcap Host
+## Task 10: Add Telemetry, Safety, and Generation Budgets
+
+**Files:**
+
+- Create: engine/telemetry/mini_games.py
+- Modify: engine/mini_games/coordinator.py
+- Modify: engine/mini_games/runtime.py
+- Modify: engine/routing/logging.py only if the approved spec requires
+- Create: engine/tests/test_mini_game_telemetry.py
+- Modify: engine/tests/test_generation_logging.py
+- Modify: engine/tests/test_safety_l1.py
+- Modify: engine/tests/test_safety_l2.py
+- Modify: engine/tests/test_safety_l3.py
+
+Write failing tests for privacy-safe append-only events covering opportunity
+evaluation, selection, invocation, completion, timeout, cancellation, result
+rejection reason, consequence application, fallback, reconnect, adapter,
+package version, duration, and player count.
+
+For authored, generative, and hybrid content, prove that generation occurs only
+after deterministic selection, receives only an approved public-safe context
+projection, uses the provider-agnostic router, records token, latency, and cost
+data, respects bounded retry and latency budgets, and falls back
+deterministically. AI character content must retain the mandatory knowledge
+query and all applicable safety layers.
+
+Do not store raw private mini-game payloads in cross-game telemetry. Verify and
+commit:
+
+    python -m pytest engine/tests/test_mini_game_telemetry.py engine/tests/test_generation_logging.py engine/tests/test_safety_l1.py engine/tests/test_safety_l2.py engine/tests/test_safety_l3.py -q
+    git commit -m "feat(session): instrument minigame orchestration"
+
+## Task 11: Prove a Non-Nightcap Host
 
 **Files:**
 
@@ -332,6 +387,9 @@ session coordinator lifecycle. Verify and commit:
 Create a session, enter an opportunity, receive launch data, emulate a host
 result, apply a generic consequence, reconnect, and replay. The fixture must
 contain no Nightcap beat, Leverage, TV, phone, suspect, or clue vocabulary.
+It proves the internal protocol only. It does not claim a production Unity or
+Unreal SDK, public authentication, package signing, billing, or multi-tenant
+deployment.
 
 **Step 2: Confirm failure, implement only missing generic behavior, and pass**
 
@@ -344,7 +402,7 @@ Record exactly what was proved and what remains deferred for real SDKs.
     git add engine/tests/fixtures engine/tests/test_mini_game_host_authoritative_integration.py docs/architecture/14-architecture-validation.md
     git commit -m "test(arc): prove host-authoritative minigame flow"
 
-## Task 11: Full Verification and Status Reconciliation
+## Task 12: Full Verification and Status Reconciliation
 
 Run:
 
