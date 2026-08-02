@@ -43,3 +43,33 @@ test("shared display refuses to project any event not addressed to it", () => {
 
   assert.equal(projectSharedDisplayEvent(event), null);
 });
+
+test("shared display projects a suspect's public answer text", () => {
+  const event = contentEvent({
+    event_type: "interaction_answer",
+    target_audience: "all",
+    payload: {
+      group_id: "window-1:suspect-vesper:intent-alibi",
+      target_id: "suspect-vesper",
+      option_id: "intent-alibi",
+      selection_ids: ["sel-1"],
+      answer: { text: "I was on the terrace the whole time." },
+    },
+  });
+
+  const projection = projectSharedDisplayEvent(event);
+
+  assert.equal(projection?.kind, "suspect_answer");
+  assert.equal(projection?.body, "I was on the terrace the whole time.");
+  assert.equal(projection?.suspectId, "suspect-vesper");
+});
+
+test("an interaction_answer with no answer text projects nothing", () => {
+  const event = contentEvent({
+    event_type: "interaction_answer",
+    target_audience: "all",
+    payload: { target_id: "suspect-vesper", answer: {} },
+  });
+
+  assert.equal(projectSharedDisplayEvent(event), null);
+});
