@@ -69,7 +69,7 @@
     {
       "id": 9,
       "subject": "Task 9: Final verification and PR",
-      "status": "pending",
+      "status": "completed",
       "blockedBy": [
         2,
         4,
