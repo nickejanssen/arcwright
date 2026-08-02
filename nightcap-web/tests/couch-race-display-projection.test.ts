@@ -105,3 +105,41 @@ test("resource_effect_outcome projects only when publicly addressed", () => {
 
   assert.equal(projectSharedDisplayEvent(privateOutcome), null);
 });
+
+// Regression guard, not a driver: the audience check in Task 1 already refuses
+// these. It exists so a future projection added for one of these event types
+// cannot quietly reach the shared display without this failing first.
+test("no privately addressed Couch Race event type reaches the shared display", () => {
+  const privateEventTypes = [
+    "interaction_feedback",
+    "resource_effect_source_revealed",
+    "clue_delivery",
+    "mini_game_clue_delivery",
+    "tmst_private_prompt_ready",
+  ];
+
+  for (const eventType of privateEventTypes) {
+    const event = contentEvent({
+      category: "private_delivery",
+      event_type: eventType,
+      target_audience: "specific_player",
+      target_player_id: "player-a",
+      payload: {
+        text: "PRIVATE-CANARY",
+        answer: { text: "PRIVATE-CANARY" },
+        outcome: { text: "PRIVATE-CANARY" },
+      },
+    });
+
+    const projection = projectSharedDisplayEvent(event);
+    assert.equal(
+      projection,
+      null,
+      `${eventType} must not project to the shared display`,
+    );
+    assert.ok(
+      !JSON.stringify(projection ?? {}).includes("PRIVATE-CANARY"),
+      `${eventType} leaked private payload text to the shared display`,
+    );
+  }
+});
