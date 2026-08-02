@@ -180,11 +180,11 @@ class InteractionDirector:
             if selection.participant_id == participant_id
         ]
         options = {option.option_id: option for option in self.definition.options}
-        grouped: dict[tuple[str, str], list[str]] = {}
+        grouped: dict[tuple[str, str], list[tuple[str, UUID]]] = {}
         private: list[InteractionSelection] = []
         for selection in ordered:
             grouped.setdefault((selection.target_id, selection.option_id), []).append(
-                selection.selection_id
+                (selection.selection_id, selection.participant_id)
             )
             if (
                 options[selection.option_id].resolution_visibility
@@ -196,9 +196,10 @@ class InteractionDirector:
                 group_id=f"{window.window_id}:{target_id}:{option_id}",
                 target_id=target_id,
                 option_id=option_id,
-                selection_ids=tuple(selection_ids),
+                selection_ids=tuple(selection_id for selection_id, _ in pairs),
+                participant_ids=tuple(participant_id for _, participant_id in pairs),
             )
-            for (target_id, option_id), selection_ids in grouped.items()
+            for (target_id, option_id), pairs in grouped.items()
         ]
         resolution = InteractionResolution(
             window_id=window.window_id,

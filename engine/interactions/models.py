@@ -161,6 +161,7 @@ class PublicInteractionGroup(BaseModel):
     target_id: str = Field(min_length=1)
     option_id: str = Field(min_length=1)
     selection_ids: tuple[str, ...] = Field(min_length=1)
+    participant_ids: tuple[UUID, ...] = ()
 
 
 class InteractionResolution(BaseModel):

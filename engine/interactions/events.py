@@ -28,6 +28,7 @@ def build_public_answer_event(
             "target_id": group.target_id,
             "option_id": group.option_id,
             "selection_ids": list(group.selection_ids),
+            "participant_ids": [str(pid) for pid in group.participant_ids],
             "answer": answer_payload,
         },
     )
