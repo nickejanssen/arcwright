@@ -71,6 +71,45 @@ def test_tmst_canary_requires_one_destination_and_only_high_impact_questions(
         "result_meaning",
         "placement_authority",
     }
+    assert all(item.confirmed_value is None for item in analysis.confirmations)
+
+
+def test_tmst_analysis_is_deterministic_evidence_backed_and_uncertainty_aware(
+    onboarding_service: MiniGameOnboardingService,
+    tmst_browser_source: Path,
+    tmp_path: Path,
+):
+    source = tmp_path / "source"
+    shutil.copytree(tmst_browser_source, source)
+    asset = source / "assets" / "signal.svg"
+    asset.parent.mkdir()
+    asset.write_text('<svg xmlns="http://www.w3.org/2000/svg" />')
+
+    first = onboarding_service.analyze(
+        source=source,
+        destination_game_id="nightcap-couch-race-v1",
+    )
+    second = onboarding_service.analyze(
+        source=source,
+        destination_game_id="nightcap-couch-race-v1",
+    )
+
+    assert first == second
+    assert first.evidence == (
+        "HTML documents: index.html",
+        "JavaScript sources: game.js",
+        "Other assets: assets/signal.svg",
+        "HTML controls: start, input[amber], input[violet], finish, reset",
+        "Published bridge events: finish, input, reset, result, start",
+        "Bridge transports: CustomEvent, postMessage",
+        "Observed preview result field: authoritative=false",
+    )
+    assert first.uncertainty == (
+        "Browser source does not reveal gameplay intent; confirm story_affordance.",
+        "Browser controls do not establish a participation model; confirm participation_model.",
+        "Observed result fields do not establish gameplay or story meaning; confirm result_meaning.",
+        "Published bridge events and preview authority flags do not grant runtime or placement authority; confirm placement_authority.",
+    )
 
 
 def test_import_copies_to_private_workspace_and_preserves_source(
