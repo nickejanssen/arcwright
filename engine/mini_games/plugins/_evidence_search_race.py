@@ -58,7 +58,7 @@ class EvidenceSearchRacePlugin:
         submissions: list[MiniGameSubmission],
     ) -> dict[str, Any]:
         real_object_id = self._real_object_id(snapshot)
-        claims = self._claims(submissions)
+        claims = self._accepted_claims_by_object(submissions)
 
         completion_time_ms: dict[str, int] = {}
         decoys_claimed: dict[str, int] = {}
@@ -67,7 +67,15 @@ class EvidenceSearchRacePlugin:
 
         start_time = min((s.submitted_at for s in submissions), default=None)
 
-        for submission in submissions:
+        # Iterate the deduped, earliest-wins claims (not raw submissions) so
+        # a rejected-but-flushed duplicate claim for an object_id someone
+        # else already won can never overwrite the true winner's credit or
+        # inflate a decoy count. See _accepted_claims_by_object for why raw
+        # `submissions` can legitimately contain such rejected duplicates.
+        # completion_time_ms is likewise derived only from these winning
+        # claims, so a participant's completion time reflects an accepted
+        # claim rather than a claim on-submission actually rejected.
+        for submission in sorted(claims.values(), key=lambda s: s.submitted_at):
             object_id = submission.payload.get("object_id")
             key = str(submission.character_id)
             if start_time is not None:
@@ -236,10 +244,22 @@ class EvidenceSearchRacePlugin:
         return active[:target]
 
     @staticmethod
-    def _claims(submissions: list[MiniGameSubmission]) -> dict[str, MiniGameSubmission]:
+    def _accepted_claims_by_object(
+        submissions: list[MiniGameSubmission],
+    ) -> dict[str, MiniGameSubmission]:
+        """Dedupe accepted submissions by object_id, keeping the earliest.
+
+        `submit_action` (engine/mini_games/runtime.py) flushes a submission
+        row with is_accepted=True before on_submission's own claim
+        arbitration runs; a losing race for an already-claimed object_id
+        still lands here with is_accepted=True even though on_submission
+        rejected it via a raised ValueError. This dedup is what makes
+        score() agree with the mechanic's own authoritative claimed_object_ids
+        state instead of crediting whoever happens to sort last.
+        """
         result: dict[str, MiniGameSubmission] = {}
-        for submission in submissions:
+        for submission in sorted(submissions, key=lambda s: s.submitted_at):
             object_id = submission.payload.get("object_id")
-            if isinstance(object_id, str):
+            if isinstance(object_id, str) and object_id not in result:
                 result[object_id] = submission
         return result

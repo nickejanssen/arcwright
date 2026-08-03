@@ -336,3 +336,102 @@ def test_score_reports_fallback_when_real_object_never_claimed() -> None:
     assert outcome["real-object-claimed"] is False
     assert outcome["finder-character-id"] is None
     assert outcome["decoys-claimed"][str(PARTICIPANTS_4[0][0])] == 1
+
+
+def test_score_credits_the_winner_not_the_loser_of_a_claim_race() -> None:
+    """Reproduces the runtime quirk documented in
+    _accepted_claims_by_object: submit_action (engine/mini_games/runtime.py)
+    flushes a submission row with is_accepted=True before on_submission's
+    claim arbitration runs, so a losing race for an already-claimed
+    object_id can still land in `submissions` with is_accepted=True even
+    though on_submission rejected it. score() must credit the earlier
+    (winning) claim, not whichever submission happens to sort last.
+    """
+    plugin = EvidenceSearchRacePlugin()
+    snapshot = load_snapshot(run_seed="seed-race-credit")
+    real_id = plugin._real_object_id(snapshot)
+    winner = PARTICIPANTS_4[0][0]
+    loser = PARTICIPANTS_4[1][0]
+    winning_submission = make_submission(
+        submission_id="s1",
+        character_id=winner,
+        object_id=real_id,
+        submitted_at=T0,
+    )
+    losing_submission = make_submission(
+        submission_id="s2",
+        character_id=loser,
+        object_id=real_id,
+        submitted_at=T0 + timedelta(seconds=1),
+    )
+    # Both submissions are "accepted" in the DB sense (the runtime's own
+    # is_accepted=True-before-on_submission-runs quirk), even though the
+    # loser was actually rejected by on_submission's claim arbitration.
+    outcome = plugin.score(snapshot, [winning_submission, losing_submission])  # type: ignore[list-item]
+    assert outcome["finder-character-id"] == str(winner)
+    assert outcome["real-object-claimed"] is True
+    assert outcome["claimed-object-ids"] == [real_id]
+
+
+def test_score_does_not_double_count_a_duplicate_decoy_claim() -> None:
+    """Same runtime quirk as the winner/loser race, but for a decoy object:
+    a rejected duplicate claim on the same decoy object_id must not inflate
+    decoys-claimed beyond the single accepted (earliest) claim.
+    """
+    plugin = EvidenceSearchRacePlugin()
+    snapshot = load_snapshot(run_seed="seed-race-decoy")
+    progress = plugin.initialize_state(snapshot, participants=PARTICIPANTS_4, now=T0)
+    real_id = plugin._real_object_id(snapshot)
+    decoy_id = next(
+        object_id
+        for object_id in progress.state["active_object_ids"]
+        if object_id != real_id
+    )
+    first_claimant = PARTICIPANTS_4[0][0]
+    second_claimant = PARTICIPANTS_4[1][0]
+    first_submission = make_submission(
+        submission_id="s1",
+        character_id=first_claimant,
+        object_id=decoy_id,
+        submitted_at=T0,
+    )
+    duplicate_submission = make_submission(
+        submission_id="s2",
+        character_id=second_claimant,
+        object_id=decoy_id,
+        submitted_at=T0 + timedelta(seconds=1),
+    )
+    outcome = plugin.score(snapshot, [first_submission, duplicate_submission])  # type: ignore[list-item]
+    assert outcome["decoys-claimed"] == {str(first_claimant): 1}
+    assert str(second_claimant) not in outcome["decoys-claimed"]
+    assert outcome["claimed-object-ids"] == [decoy_id]
+
+
+def test_real_object_id_falls_back_when_generation_supplies_invalid_slot() -> None:
+    """A generation-supplied real_object_id that doesn't match any authored
+    slot_id (e.g. a stale or malformed generation result) must not be
+    trusted; the plugin should fall back to the deterministic seeded-hash
+    pick exactly as if no real_object_id had been supplied at all.
+    """
+    plugin = EvidenceSearchRacePlugin()
+    snapshot = load_snapshot(run_seed="seed-invalid-generated")
+    resolved_content = dict(snapshot.resolved_content)
+    resolved_content["real_object_id"] = "not-a-real-slot-id"
+    tampered = snapshot.model_copy(update={"resolved_content": resolved_content})
+    fallback_expected = plugin._real_object_id(
+        snapshot
+    )  # no real_object_id present -> hash fallback
+    assert plugin._real_object_id(tampered) == fallback_expected
+
+
+@pytest.mark.parametrize("participant_count", [0, 1, 3, 9, 20])
+def test_select_active_object_ids_clamps_out_of_range_participant_counts(
+    participant_count: int,
+) -> None:
+    plugin = EvidenceSearchRacePlugin()
+    snapshot = load_snapshot(run_seed="seed-clamp")
+    active_ids = plugin._select_active_object_ids(snapshot, participant_count)
+    assert len(active_ids) > 0
+    assert len(active_ids) == len(set(active_ids))  # no duplicates
+    real_id = plugin._real_object_id(snapshot)
+    assert real_id in active_ids
