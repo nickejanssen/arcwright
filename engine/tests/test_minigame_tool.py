@@ -292,5 +292,36 @@ def test_help_keeps_legacy_commands_and_lists_guided_commands(run_tool):
     result = run_tool("--help")
 
     assert result.returncode == 0
-    for command in ("scaffold", "validate", "onboard-browser", "resume", "status"):
+    for command in (
+        "scaffold",
+        "validate",
+        "onboard-browser",
+        "resume",
+        "status",
+        "playtest",
+    ):
         assert command in result.stdout
+
+
+def test_playtest_records_preview_only_evidence(run_tool, tmp_path):
+    result = run_tool(
+        "playtest",
+        "--session",
+        "session-tool-playtest",
+        "--scenario",
+        "happy-path",
+        "--players",
+        "4",
+        "--out",
+        tmp_path / "playtests",
+        "--json",
+    )
+
+    assert result.returncode == 0
+    payload = result.json
+    assert payload["authority"] == "NON_AUTHORITATIVE_PREVIEW"
+    assert payload["state_label"] == "Playtest-ready"
+    assert payload["production_consequence_applied"] is False
+    assert payload["players"] == 4
+    assert str(payload["replay_file"]).endswith("replay.json")
+    assert str(payload["evidence_file"]).endswith("evidence.json")

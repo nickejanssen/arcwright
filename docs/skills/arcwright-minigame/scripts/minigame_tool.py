@@ -14,6 +14,7 @@ Guided browser onboarding actions:
   onboard-browser  Import and analyze a browser source in a private workspace.
   resume           Continue one resumable onboarding session.
   status           Display one onboarding session without changing it.
+  playtest         Record local preview-only playtest evidence.
 
 The engine is the single source of truth for the schema. This script never
 re-encodes field rules: ``scaffold`` copies the template and substitutes ids,
@@ -27,6 +28,7 @@ import argparse
 import json
 import re
 import shutil
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -586,6 +588,42 @@ def onboarding_status(args: argparse.Namespace) -> int:
     return 0
 
 
+def playtest(args: argparse.Namespace) -> int:
+    script = REPO_ROOT / "nightcap-web" / "scripts" / "playtest-mini-game.mjs"
+    cmd = [
+        "node",
+        str(script),
+        "--session",
+        args.session,
+        "--scenario",
+        args.scenario,
+        "--players",
+        str(args.players),
+        "--surfaces",
+        args.surfaces,
+        "--out",
+        args.out,
+        "--serve-ms",
+        str(args.serve_ms),
+    ]
+    if args.adaptation:
+        cmd.extend(["--adaptation", args.adaptation])
+    if args.as_json:
+        cmd.append("--json")
+    completed = subprocess.run(
+        cmd,
+        cwd=REPO_ROOT / "nightcap-web",
+        text=True,
+        capture_output=True,
+        check=False,
+    )
+    if completed.stdout:
+        print(completed.stdout, end="")
+    if completed.stderr:
+        print(completed.stderr, end="", file=sys.stderr)
+    return completed.returncode
+
+
 def _add_guided_output_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--workspace", required=True)
     parser.add_argument("--json", action="store_true", dest="as_json")
@@ -643,6 +681,26 @@ def main(argv: list[str] | None = None) -> int:
     status_parser.add_argument("session_id")
     _add_guided_output_arguments(status_parser)
 
+    playtest_parser = sub.add_parser(
+        "playtest",
+        help="record local preview-only playtest evidence",
+    )
+    playtest_parser.add_argument("--session", required=True)
+    playtest_parser.add_argument("--scenario", default="happy-path")
+    playtest_parser.add_argument("--players", type=int, default=4)
+    playtest_parser.add_argument(
+        "--surfaces",
+        default="phone,shared_display,host",
+        help="comma-separated surfaces to include in preview evidence",
+    )
+    playtest_parser.add_argument(
+        "--out",
+        default=str(REPO_ROOT / "nightcap-web" / ".mini-game-playtests"),
+    )
+    playtest_parser.add_argument("--adaptation", default=None)
+    playtest_parser.add_argument("--serve-ms", type=int, default=0)
+    playtest_parser.add_argument("--json", action="store_true", dest="as_json")
+
     args = parser.parse_args(argv)
 
     if args.command == "scaffold":
@@ -671,6 +729,8 @@ def main(argv: list[str] | None = None) -> int:
         return resume_onboarding(args)
     if args.command == "status":
         return onboarding_status(args)
+    if args.command == "playtest":
+        return playtest(args)
     return _fail(f"unknown command: {args.command}")
 
 

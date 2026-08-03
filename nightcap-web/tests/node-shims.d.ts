@@ -19,6 +19,8 @@ declare module "node:assert/strict" {
 
 declare module "node:fs" {
   export function existsSync(path: string): boolean;
+  export function mkdtempSync(prefix: string): string;
+  export function readFileSync(path: string, encoding: string): string;
 }
 
 declare module "node:fs/promises" {
@@ -29,7 +31,20 @@ declare module "node:fs/promises" {
 }
 
 declare module "node:path" {
+  export function join(...paths: string[]): string;
   export function resolve(...paths: string[]): string;
+}
+
+declare module "node:os" {
+  export function tmpdir(): string;
+}
+
+declare module "node:child_process" {
+  export function execFileSync(
+    file: string,
+    args: string[],
+    options?: { cwd?: string; encoding?: string },
+  ): string;
 }
 
 declare module "node:url" {

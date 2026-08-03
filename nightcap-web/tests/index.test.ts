@@ -19,3 +19,4 @@ import "./mini-game-host-status-card.test.js";
 import "./mini-game-submission-crypto.test.js";
 import "./mini-game-asset-route.test.js";
 import "./mini-game-tmst-renderer.test.js";
+import "./mini-game-local-playtest.test.js";

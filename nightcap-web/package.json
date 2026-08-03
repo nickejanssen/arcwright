@@ -8,6 +8,7 @@
     "typecheck": "node ../node_modules/typescript/bin/tsc -p tsconfig.json --noEmit && node ../node_modules/typescript/bin/tsc -p tsconfig.renderers.json",
     "build": "node ../node_modules/typescript/bin/tsc -p tsconfig.json && npm run bundle:mini-games",
     "bundle:mini-games": "node scripts/discover-mini-games.mjs",
+    "playtest:mini-game": "node scripts/playtest-mini-game.mjs",
     "test": "npm run build && node --import ./tests/register-cloudflare-workers-loader.mjs --test dist/tests/index.test.js"
   }
 }
