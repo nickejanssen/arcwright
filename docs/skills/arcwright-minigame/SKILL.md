@@ -52,15 +52,25 @@ and readiness workflow is being added in narrow slices.
   present. Its renderer, tuning, human evidence, and game-ready certification
   remain separate work under spec 0086.
 - **Browser onboarding and readiness:** the approved destination-first,
-  source-preserving workflow is defined in spec 0080. The canary contract is
-  characterized first; authoring sessions, generated adaptations, local labs,
-  readiness resources, and shared authoring routes arrive in later slices.
+  source-preserving workflow is defined in spec 0080. The local authoring
+  service now creates resumable private import sessions and performs
+  deterministic analysis with explicit uncertainty. The existing helper adds
+  `onboard-browser`, `resume`, and `status`; managed hosting and the
+  destination-first path are the defaults, `--json` exposes the same state for
+  automation, and `--non-interactive` requires a versioned answer file with
+  high-impact confirmations and an explicit generation-permission decision.
+  This slice stops at `Imported`. Generated adaptations, local labs, later
+  readiness transitions, shared authoring routes, and promotion remain later
+  work.
 
 The practical consequence: existing packages can be authored, validated,
 resolved, run through the implemented Nightcap runtime and transport, and
-rendered through the browser kit. Do not claim the assisted browser golden path
-is usable until its authoring service, readiness resources, and local lab ship,
-and never substitute automated checks for device or human playtest evidence.
+rendered through the browser kit. A browser source can now be imported,
+analyzed, resumed, and inspected through one helper, but it cannot yet be
+adapted or locally certified through that helper. Do not claim the full browser
+golden path is usable until generated adaptations, readiness resources, and the
+local lab ship, and never substitute automated checks for device or human
+playtest evidence.
 
 ## The Non-negotiable Boundary (ADR 0009)
 
