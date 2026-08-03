@@ -124,18 +124,22 @@ async def test_full_success_path_asserts_knowledge_for_every_participant(
     # the runtime doesn't expose them on the ORM row except via clue_unlock_record.
     active_ids = list(run.clue_unlock_record["runtime_state"]["active_object_ids"])
 
-    # Keep every returned submission referenced for the life of the loop.
-    # SQLAlchemy's identity map holds session objects via weak references;
-    # if a submission's only reference is the loop variable, CPython's
-    # refcounting frees it the instant the next iteration reassigns that
-    # name, evicting it from the identity map. A later in-process reload of
-    # that same row from SQLite then comes back with a naive submitted_at
-    # (SQLite has no timezone-aware storage), while any submission that is
-    # still referenced keeps its original tz-aware value — a mix that makes
-    # the plugin's own `sorted(..., key=lambda s: s.submitted_at)` raise
-    # "can't compare offset-naive and offset-aware datetimes". Holding a
-    # strong reference to every submission sidesteps this SQLite-only
-    # artifact; production Postgres preserves tzinfo through any reload.
+    # `run_id` (not `run`) drives the loop below, and every submission is
+    # kept referenced. SQLAlchemy's identity map holds ORM objects via weak
+    # references: if the loop instead reassigned `run` to each
+    # `submit_action()` return value, the `MiniGameRun` object would lose
+    # its only strong reference and get evicted the moment CPython reclaims
+    # it. `MiniGameRuntime.submit_action` (engine/mini_games/runtime.py)
+    # reloads the run internally on every call and checks
+    # `if run.deadline and now > run.deadline`; once the run has been
+    # evicted, that reload comes back from SQLite with a naive `deadline`
+    # (SQLite has no timezone-aware storage), while the injected clock's
+    # `now` is tz-aware, so the comparison raises "can't compare
+    # offset-naive and offset-aware datetimes" inside that deadline check —
+    # not inside the plugin's scoring/sort logic. Holding strong references
+    # to the submissions guards against the same class of bug if anything
+    # here later needed to compare their timestamps; production Postgres
+    # preserves tzinfo through any reload either way.
     submissions = []
     for index, object_id in enumerate(active_ids):
         submitter = char_ids[index % len(char_ids)]
