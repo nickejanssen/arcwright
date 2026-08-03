@@ -1,0 +1,46 @@
+{
+  "schema_version": "1.0",
+  "report_id": "tmst-nightcap-couch-race-v1-readiness-0.1.0",
+  "package_ref": {
+    "artifact_id": "tell-me-something-true",
+    "version": "0.1.0"
+  },
+  "adaptation_ref": {
+    "artifact_id": "tell-me-something-true-nightcap-couch-race-v1",
+    "version": "0.1.0"
+  },
+  "current_state": "reusable",
+  "state_label": "Reusable",
+  "state_explanation": "The Nightcap adaptation, preview renderer, and exact-version loading path exist. Local playtest evidence is still required before Playtest-ready.",
+  "next_action": "Run the local mini-game playtest lab and attach simulation evidence.",
+  "estimated_next_action_minutes": 10,
+  "blockers": [
+    "Local playtest evidence is not recorded yet.",
+    "Production promotion is blocked by preview-only authority."
+  ],
+  "evidence": [
+    {
+      "evidence_id": "tmst-adaptation-artifact",
+      "category": "arcwright.minigame.adaptation",
+      "status": "pass",
+      "summary": "Destination adaptation references exact package version 0.1.0 and preview-only authority.",
+      "artifact_refs": ["adaptations/nightcap-couch-race-v1/0.1.0.json"]
+    },
+    {
+      "evidence_id": "tmst-renderer-preview",
+      "category": "arcwright.minigame.renderer",
+      "status": "pass",
+      "summary": "Renderer covers phone, shared display, and host preview surfaces with privacy boundaries.",
+      "artifact_refs": ["client/renderer.ts", "client/styles.css"]
+    },
+    {
+      "evidence_id": "tmst-production-authority",
+      "category": "arcwright.minigame.authority",
+      "status": "blocked",
+      "summary": "NON_AUTHORITATIVE_PREVIEW evidence cannot prove production authority.",
+      "artifact_refs": ["adaptations/nightcap-couch-race-v1/0.1.0.json"]
+    }
+  ],
+  "first_time_elapsed_ms": null,
+  "returning_elapsed_ms": null
+}

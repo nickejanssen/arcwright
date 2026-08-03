@@ -5,5 +5,5 @@
   "lifecycle": "draft",
   "current_version": "0.1.0",
   "definition_path": "definitions/0.1.0.json",
-  "asset_paths": []
+  "asset_paths": ["client/styles.css"]
 }

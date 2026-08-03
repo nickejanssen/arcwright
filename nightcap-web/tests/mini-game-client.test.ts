@@ -93,6 +93,7 @@ test("client: boots, fetches state, mounts the registered renderer", async () =>
   const doc = window.document as unknown as Document;
   const stage = doc.createElement("section");
   const log: MountLog[] = [];
+  const loadedDefinitions: Array<{ gameId: string; version: string }> = [];
   const registry = new RendererRegistry();
   registry.register(makeTracingRenderer("fixture-individual", log));
 
@@ -102,6 +103,7 @@ test("client: boots, fetches state, mounts the registered renderer", async () =>
         JSON.stringify({
           run_id: "run-1",
           game_id: "fixture-individual",
+          definition_version: "0.1.0",
           status: "active",
           deadline_at: null,
           my_submissions: [],
@@ -119,7 +121,10 @@ test("client: boots, fetches state, mounts the registered renderer", async () =>
     surface: "phone",
     participantId: "p-1",
     characterId: "c-1",
-    loadDefinition: async () => makeDefinition("fixture-individual"),
+    loadDefinition: async (gameId, version) => {
+      loadedDefinitions.push({ gameId, version });
+      return makeDefinition("fixture-individual");
+    },
     view: window as unknown as Window,
     fetcher,
     perfTransport: "none",
@@ -128,6 +133,9 @@ test("client: boots, fetches state, mounts the registered renderer", async () =>
   assert.equal(log.length, 1);
   assert.equal(log[0]?.ctx.gameId, "fixture-individual");
   assert.equal(log[0]?.ctx.runId, "run-1");
+  assert.deepEqual(loadedDefinitions, [
+    { gameId: "fixture-individual", version: "0.1.0" },
+  ]);
   assert.equal(stage.getAttribute("data-test-mounted"), "fixture-individual");
   assert.match(stage.getAttribute("data-mini-game-state") ?? "", /active:/);
 

@@ -69,8 +69,11 @@ export interface MiniGameSubmissionResult {
 export interface MiniGameState {
   runId: string;
   gameId: string;
+  definitionVersion?: string;
   status: MiniGameStatus;
   deadlineAt: string | null;
+  runtimeState?: Record<string, unknown>;
+  presentation?: Record<string, unknown>;
   mySubmissions: MiniGameSubmissionResult[];
 }
 

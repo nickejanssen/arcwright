@@ -195,8 +195,11 @@ export async function bootMiniGameStage(
     const data = (await res.json()) as {
       run_id: string;
       game_id: string;
+      definition_version?: string | null;
       status: MiniGameState["status"];
       deadline_at: string | null;
+      runtime_state?: Record<string, unknown> | null;
+      presentation?: Record<string, unknown> | null;
       my_submissions: Array<{
         submission_id: string;
         is_accepted: boolean;
@@ -206,8 +209,13 @@ export async function bootMiniGameStage(
     return {
       runId: data.run_id,
       gameId: data.game_id,
+      ...(data.definition_version
+        ? { definitionVersion: data.definition_version }
+        : {}),
       status: data.status,
       deadlineAt: data.deadline_at,
+      ...(data.runtime_state ? { runtimeState: data.runtime_state } : {}),
+      ...(data.presentation ? { presentation: data.presentation } : {}),
       mySubmissions: data.my_submissions.map((s) =>
         toSubmissionResult(s.submission_id, s.is_accepted, s.rejection_reason),
       ),
@@ -290,7 +298,10 @@ export async function bootMiniGameStage(
     const renderer: MiniGameRenderer = opts.registry.get(state.gameId);
     let definition: MiniGameDefinition;
     try {
-      definition = await opts.loadDefinition(state.gameId, "latest");
+      definition = await opts.loadDefinition(
+        state.gameId,
+        state.definitionVersion ?? "0.1.0",
+      );
     } catch {
       if (mySeq !== refreshSequence) return;
       setStageState(stage, StageStates.DefinitionError);
