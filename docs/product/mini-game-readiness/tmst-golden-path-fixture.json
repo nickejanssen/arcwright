@@ -1,0 +1,58 @@
+{
+  "schema_version": "1.0",
+  "fixture_id": "tmst-browser-golden-path",
+  "source": {
+    "source_type": "static_bundle",
+    "source_ref": "engine/tests/fixtures/browser_minigames/tmst-canary",
+    "source_access": "source_and_build",
+    "existing_package_ref": "nightcap/mini_games/tell-me-something-true"
+  },
+  "destination": {
+    "game_id": "nightcap-couch-race-v1",
+    "recommended_path": "destination_first"
+  },
+  "browser_bridge": {
+    "protocol_version": "1.0",
+    "required_events": [
+      "start",
+      "input",
+      "finish",
+      "reset",
+      "result"
+    ],
+    "result_authoritative": false,
+    "destination_state_mutation": false
+  },
+  "required_confirmations": [
+    "story_affordance",
+    "participation_model",
+    "result_meaning",
+    "placement_authority"
+  ],
+  "required_generation_permissions": [
+    "code",
+    "art",
+    "animation",
+    "audio",
+    "copy",
+    "configuration"
+  ],
+  "required_artifacts": [
+    "source_fingerprint",
+    "onboarding_analysis",
+    "reusable_package_draft",
+    "destination_adaptation_draft",
+    "placement_policy_draft",
+    "generation_permission_receipt",
+    "readiness_report"
+  ],
+  "required_readiness_evidence": [
+    "import.browser_lifecycle",
+    "import.input_output",
+    "import.asset_inventory",
+    "import.network_behavior",
+    "import.surface_behavior",
+    "workspace.source_preservation",
+    "authority.preview_isolation"
+  ]
+}

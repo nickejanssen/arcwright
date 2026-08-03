@@ -26,26 +26,41 @@ authoritative mini-game runtime. Treat it as material to extract mechanics,
 visual direction, assets, and player intent from, then map those into the
 Arcwright package and runtime boundary.
 
-### What already exists vs. what does not
+### Current capability inventory
 
-Read this before promising anything. The authoring foundation is built; the
-runtime is not.
+Read this before promising anything. The original authoring foundation and the
+first Nightcap runtime path are built, while the assisted browser onboarding
+and readiness workflow is being added in narrow slices.
 
-- **Built (AW-249):** the generic schema in `engine/mini_games/models.py`
-  (`MiniGameManifest`, `MiniGameDefinition`, `MiniGameBinding`, lifecycle and
-  enum types), the package loader in `engine/mini_games/loader.py`
-  (`load_mini_game_package`, `load_mini_game_catalog`), the per-experience
-  package layout under `<experience>/mini_games/<game_id>/`, and a copyable
-  `_template/`.
-- **Not built yet (AW-250 → AW-254, Planned):** the deterministic runtime,
-  persistence (`mini_game_runs`, `mini_game_submissions`), the API and events,
-  the TypeScript SDK, and web rendering.
+- **Package authoring and loading:** `engine/mini_games/models.py` and
+  `engine/mini_games/loader.py` provide the schema, package loader, active
+  catalog, per-experience package layout, fixtures, and `_template/`.
+- **Runtime and persistence:** `engine/mini_games/resolver.py`,
+  `engine/mini_games/runtime.py`, the closed mechanic registry, and the
+  `mini_game_runs` and `mini_game_submissions` tables provide deterministic
+  content resolution, run lifecycle, submissions, scoring, fallback, and
+  replay-critical persistence for implemented mechanics.
+- **API, events, and SDK:** `api/routers/mini_games.py` exposes the current
+  Nightcap run and submission transport, and the TypeScript SDK exposes typed
+  mini-game state, actions, and events. These are the existing runtime path,
+  not the new authoring API from spec 0080.
+- **Renderer kit:** `nightcap-web/src/mini-game-kit/` plus the registry,
+  discovery script, and stage controller provide the current browser renderer
+  contract and phone, shared-display, and host surface support.
+- **Scene Sweep backend:** the `scene-sweep` package, deterministic
+  `evidence-search-race` mechanic, runtime integration, and API projection are
+  present. Its renderer, tuning, human evidence, and game-ready certification
+  remain separate work under spec 0086.
+- **Browser onboarding and readiness:** the approved destination-first,
+  source-preserving workflow is defined in spec 0080. The canary contract is
+  characterized first; authoring sessions, generated adaptations, local labs,
+  readiness resources, and shared authoring routes arrive in later slices.
 
-The practical consequence: today you can **author and validate** a mini-game,
-**check its fit**, and **promote its lifecycle metadata**. You cannot **run**
-one, and you cannot write a real end-to-end playability test. Say this plainly
-rather than faking a usability pass. The test phase is built to grow into
-runtime tests as those tasks ship.
+The practical consequence: existing packages can be authored, validated,
+resolved, run through the implemented Nightcap runtime and transport, and
+rendered through the browser kit. Do not claim the assisted browser golden path
+is usable until its authoring service, readiness resources, and local lab ship,
+and never substitute automated checks for device or human playtest evidence.
 
 ## The Non-negotiable Boundary (ADR 0009)
 
@@ -318,10 +333,12 @@ If the catalog test suite fails, check whether a package was promoted to
 and playtest packages are authoring-only and should stay out of the production
 catalog until promotion is intentional.
 
-Then state clearly: end-to-end runtime, persistence, API/SDK, and on-device
-usability tests **cannot run yet** because AW-250 through AW-254 are not built.
-Do not synthesize a fake "the game is playable" result. When those tasks land,
-extend this phase with their integration tests.
+Runtime, persistence, API/SDK, and browser renderer tests now exist. Run the
+focused checks that cover the package and surfaces being changed, and report
+their results separately from device or human playtest evidence. The assisted
+browser onboarding and readiness path from spec 0080 remains incomplete until
+its authoring service, readiness resources, and local lab land. Do not
+synthesize a fake "the game is playable" or "Production-ready" result.
 
 **Pause and report** which checks passed, which are blocked, and why, separating
 new failures from pre-existing ones.

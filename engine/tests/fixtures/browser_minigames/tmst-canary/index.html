@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Signal Match Canary</title>
+  </head>
+  <body>
+    <main>
+      <h1>Signal Match</h1>
+      <p>Choose a signal, then finish the round to publish a preview result.</p>
+
+      <p id="status" aria-live="polite">Ready</p>
+      <button id="start" type="button">Start</button>
+      <button class="input" data-value="amber" type="button" disabled>
+        Amber
+      </button>
+      <button class="input" data-value="violet" type="button" disabled>
+        Violet
+      </button>
+      <button id="finish" type="button" disabled>Finish</button>
+      <button id="reset" type="button">Reset</button>
+    </main>
+
+    <script src="game.js"></script>
+  </body>
+</html>
