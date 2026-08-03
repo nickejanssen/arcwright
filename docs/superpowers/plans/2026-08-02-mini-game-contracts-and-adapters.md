@@ -1,5 +1,11 @@
 # Mini-game Contracts and Execution Adapters Implementation Plan
 
+> **Execution status:** Superseded by the founder-approved 2026-08-03
+> browser-first package, adaptation, placement-policy, and
+> capability-negotiation design. Do not execute this plan. Its useful test and
+> compatibility details must be reconciled into the replacement capability and
+> trust plan after specs 0077 through 0079 are approved.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Connect human-authored story opportunities to executable mini-game invocations and bounded canonical consequences through Arcwright-hosted and host-authoritative adapters.

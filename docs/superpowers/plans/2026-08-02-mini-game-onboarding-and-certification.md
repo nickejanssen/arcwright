@@ -1,5 +1,10 @@
 # Mini-game Onboarding, Preview, and Certification Implementation Plan
 
+> **Execution status:** Superseded by the founder-approved 2026-08-03 browser
+> golden path and creator/readiness-lab design. Do not execute this plan. Its
+> useful validator and fixture details must be reconciled into the replacement
+> golden-path and readiness-lab plans after spec 0080 is approved.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Turn the existing Arcwright mini-game skill, helper, package template, loader, renderer kit, and CI into one coherent path from prototype import to evidence-backed deployment readiness.
@@ -33,6 +38,7 @@
 | `nightcap-web/src/mini-games/preview.ts` | Fixture-driven renderer preview |
 | `engine/mini_games/certification.py` | Readiness evidence evaluation |
 | `docs/specs/schemas/mini-game-readiness-report.schema.json` | Machine-readable report contract |
+| `docs/specs/schemas/mini-game-external-preview-evidence.schema.json` | Host-authoritative external-engine preview evidence contract |
 
 ### Task 1: Preflight and Baseline
 
@@ -221,13 +227,18 @@ def bind_opportunity(
 
 Load and validate before writing. Write UTF-8 JSON with two-space indentation
 and one trailing newline. Reject duplicate IDs, unknown beats, missing profiles,
-host-authoritative packages without adapter support, and `player_request`.
+host-authoritative packages without adapter support, selector-less
+opportunities, and both reserved request modes: `host_request` and
+`player_request`.
 
 - [ ] **Step 5: Make the template production-valid as a draft**
 
-Add a default-exported renderer created by `defineRenderer`, exact adapter and
-digest fields, one authored fallback, and a README that states every value the
-developer must replace before playtest promotion.
+Add a default-exported renderer created by `defineRenderer` for the
+`arcwright_hosted` starting path, exact adapter and digest fields, one authored
+fallback, and a README that states every value the developer must replace
+before playtest promotion. Document that `host_authoritative` may remove the
+Arcwright renderer only when it declares external presentation and later
+attaches version/digest-matched external preview evidence.
 
 - [ ] **Step 6: Run and commit**
 
@@ -296,9 +307,12 @@ export interface DiscoveredPackage {
 }
 ```
 
-Production discovery rejects an active package missing renderer, exact
-definition, matching digest, or supported hosted adapter. Draft packages are
-available only to preview. Retired packages are excluded from new bundles.
+Production discovery rejects an active `arcwright_hosted` package missing its
+renderer, exact definition, matching digest, or supported hosted adapter.
+`host_authoritative` packages with external presentation are excluded from the
+Arcwright renderer bundle without failing package integrity. Draft packages are
+available only to adapter-aware preview. Retired packages are excluded from new
+bundles.
 
 - [ ] **Step 4: Run and commit**
 
@@ -309,7 +323,7 @@ git add nightcap-web/scripts/discover-mini-games.mjs nightcap-web/src/mini-games
 git commit -m "fix(nightcap): validate minigame discovery"
 ```
 
-### Task 5: Add Deterministic Local Preview
+### Task 5: Add Adapter-aware Deterministic Preview
 
 **Files:**
 
@@ -320,8 +334,12 @@ git commit -m "fix(nightcap): validate minigame discovery"
 
 **Interfaces:**
 
-- Consumes: package definition, renderer, surface, fixture name, opaque theme, and adapter-neutral `MiniGameState`.
-- Produces: `renderMiniGamePreview(options: PreviewOptions) -> Promise<PreviewController>` and CLI `preview`.
+- Consumes: package adapter, definition, optional Arcwright renderer, surface,
+  fixture name, opaque theme, adapter-neutral `MiniGameState`, and optional
+  external-engine preview evidence.
+- Produces: hosted `renderMiniGamePreview(options: PreviewOptions) ->
+  Promise<PreviewController>`, host-authoritative protocol-fixture output, and
+  CLI `preview`.
 
 - [ ] **Step 1: Write a failing phone preview test**
 
@@ -340,6 +358,16 @@ test("preview mounts exact version without a production request", async () => {
   assert.equal(root.dataset.miniGameState, "active:sample-game");
   assert.deepEqual(calls, []);
   controller.unmount();
+});
+
+test("host-authoritative preview does not require Arcwright renderer", async () => {
+  const result = await previewHostAuthoritative({
+    definition,
+    protocolFixtures,
+    externalPreviewEvidence,
+  });
+  assert.equal(result.protocolStatus, "PASS");
+  assert.equal(result.arcwrightRendererRequired, false);
 });
 ```
 
@@ -373,14 +401,19 @@ export interface PreviewController {
 ```
 
 Use fixed IDs, fixed deadlines, and fixed sequence numbers. Make `ctx.submit`
-return an accepted fixture response without network access. Render a visible
-banner stating `Fixture preview, not device or gameplay evidence`.
+return a pre-authored accepted fixture response without network access or
+canonical score/outcome computation. Render a visible banner stating `Fixture
+preview, not device or gameplay evidence`.
 
 - [ ] **Step 4: Wire the existing Python command to the preview build**
 
-The `preview` command validates the package, runs the Nightcap preview build,
-and prints the local artifact path. It does not start a production session or
-invoke a model.
+For `arcwright_hosted`, the `preview` command validates the package, runs the
+Nightcap preview build, and prints the local artifact path. For
+`host_authoritative`, it runs only invocation, resume, rejection, result, and
+consequence protocol fixtures, validates the optional external evidence record,
+and reports that presentation runs in the developer's engine. It does not
+require or synthesize an Arcwright renderer, start a production session,
+compute canonical gameplay outcomes, execute external code, or invoke a model.
 
 - [ ] **Step 5: Run and commit**
 
@@ -399,6 +432,7 @@ git commit -m "feat(nightcap): preview minigame packages"
 - Create: `engine/mini_games/certification.py`
 - Test: `engine/tests/test_mini_game_certification.py`
 - Create: `docs/specs/schemas/mini-game-readiness-report.schema.json`
+- Create: `docs/specs/schemas/mini-game-external-preview-evidence.schema.json`
 - Modify: `docs/skills/arcwright-minigame/scripts/minigame_tool.py`
 
 **Interfaces:**
@@ -429,6 +463,22 @@ def test_package_only_certification_marks_integration_pending(package_request):
     assert report.gates["story_opportunity"].status == "INTEGRATION_PENDING"
     assert report.gates["integrated_session"].status == "INTEGRATION_PENDING"
     assert report.overall_status == "BLOCKED"
+
+
+def test_host_authoritative_package_does_not_require_arcwright_renderer(host_request):
+    host_request.arcwright_renderer_path = None
+    host_request.external_preview_evidence = matching_external_preview_evidence()
+    report = certify_package(host_request)
+    assert report.gates["package_integrity"].status == "PASS"
+    assert report.gates["presentation_preview"].status == "PASS"
+
+
+def test_host_authoritative_preview_evidence_must_match_digest(host_request):
+    host_request.external_preview_evidence = external_preview_evidence(
+        definition_sha256="0" * 64,
+    )
+    report = certify_package(host_request)
+    assert report.gates["presentation_preview"].status == "FAIL"
 ```
 
 - [ ] **Step 2: Run and confirm failure**
@@ -467,7 +517,7 @@ class MiniGameReadinessReport(BaseModel):
 ```
 
 Required gate keys are `contract`, `exact_version`, `package_integrity`,
-`adapter`, `deterministic_replay`, `lifecycle`, `registration`,
+`adapter`, `presentation_preview`, `deterministic_replay`, `lifecycle`, `registration`,
 `story_opportunity`, `integrated_session`, `consequence_idempotency`,
 `privacy`, `safety`, `telemetry`, `generation_budget`, `reconnect`,
 `accessibility`, `performance`, `player_counts`, `creative_approval`,
@@ -475,11 +525,15 @@ Required gate keys are `contract`, `exact_version`, `package_integrity`,
 
 - [ ] **Step 4: Implement report evaluation and schema**
 
-Set `READY` only when every required gate is `PASS`. Package-only mode evaluates
-all package, mechanic, renderer, privacy, safety, simulation, and human gates,
-then marks registration, story opportunity, and integrated session as
-`INTEGRATION_PENDING`. Human gates accept only explicit evidence file paths and
-approval metadata; absence is `NOT_RUN`.
+Set `READY` only when every adapter-required gate is `PASS`. Package-only mode
+evaluates package, hosted mechanic or host protocol, adapter-aware presentation
+preview, privacy, safety, simulation, and human gates, then marks registration,
+story opportunity, and integrated session as `INTEGRATION_PENDING`.
+`arcwright_hosted` requires an exact-version Arcwright fixture renderer.
+`host_authoritative` requires passing protocol fixtures and matching external
+preview evidence; missing Arcwright renderer is not a failure. Human gates
+accept only explicit evidence file paths and approval metadata; absence is
+`NOT_RUN`.
 Serialize with Pydantic and validate the output against the JSON Schema in the
 test.
 
@@ -487,7 +541,7 @@ test.
 
 ```powershell
 python -m pytest engine/tests/test_mini_game_certification.py engine/tests/test_mini_game_tool.py -q
-git add engine/mini_games/certification.py engine/tests/test_mini_game_certification.py docs/specs/schemas/mini-game-readiness-report.schema.json docs/skills/arcwright-minigame/scripts/minigame_tool.py
+git add engine/mini_games/certification.py engine/tests/test_mini_game_certification.py docs/specs/schemas/mini-game-readiness-report.schema.json docs/specs/schemas/mini-game-external-preview-evidence.schema.json docs/skills/arcwright-minigame/scripts/minigame_tool.py
 git commit -m "feat(arc): certify minigame readiness"
 ```
 
@@ -560,8 +614,11 @@ git commit -m "test(arc): enforce minigame certification"
 
 - [ ] **Step 1: Execute every onboarding command from a clean temporary directory**
 
-Run scaffold, register, bind, preview, validate, and certify exactly as written
-in the canonical skill. Use `host_authoritative` and neutral story vocabulary.
+Run scaffold, register, bind, adapter-aware preview, validate, and certify
+exactly as written in the canonical skill. Use `host_authoritative`, neutral
+story vocabulary, Arcwright protocol fixtures, no Arcwright renderer, and an
+external-engine preview evidence fixture whose version and digest match the
+package.
 
 - [ ] **Step 2: Record exact command results**
 
@@ -573,7 +630,7 @@ Use this fixed table:
 | scaffold | 0 | synthetic package | None |
 | register | 0 | exact registration | None |
 | bind | 0 | story opportunity | None |
-| preview | 0 | fixture preview | None |
+| preview | 0 | protocol fixture output plus external preview evidence | None |
 | validate | 0 | validation output | None |
 | certify | 0 | blocked readiness report with human gates NOT_RUN | None |
 ```

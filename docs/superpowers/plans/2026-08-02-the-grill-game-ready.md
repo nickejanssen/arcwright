@@ -17,6 +17,7 @@
 - Knowledge state queries remain mandatory before every suspect answer.
 - Existing interaction claims and contradiction flags remain canonical.
 - D-090 catch audiovisual quality, G3 asker credit, and G5 room-watch are hard gates.
+- D-090 forbids flat text-only degradation for the contradiction catch. Captions, muted operation, and reduced motion must preserve a designed audiovisual-equivalent squirm.
 - Do not implement player-request UI, currency deduction, price, refund, or cross-beat invocation from D-097.
 - Human interrogation-flow, device, audiovisual, and player gates are required before activation.
 
@@ -248,7 +249,11 @@ test("confirmed catch credits the asker and stages the suspect reaction", () => 
 Build phone suspect and intent selection, private notebook and tell, catch
 control, shared suspect portrait/answer/asker stage, D-090 audiovisual catch,
 room-watch progress, host controls, timeout, reconnect, accessibility, sound
-controls, and reduced motion.
+controls, captions, and reduced motion. The catch may not fall back to plain
+text. Captions retain audio meaning; reduced motion uses a deliberate static or
+low-motion reaction plus timed audio/caption cues; muted mode retains the
+designed visual reaction. If the equivalent cannot render, use an authored
+audiovisual-safe pause/recovery and leave the D-090 gate failed.
 
 - [ ] **Step 4: Run and commit**
 
@@ -288,7 +293,7 @@ python docs/skills/arcwright-minigame/scripts/minigame_tool.py certify --package
 Verify automatic start, phone notebook, suspect choice, public asker credit,
 private tell, shared answer, catch, false flag, room-watch, host operations,
 reconnect, timeout, 2-player and 8-player pacing, D-090 sound/motion, reduced
-motion, and privacy.
+motion, captions, muted visual reaction, no text-only degradation, and privacy.
 
 - [ ] **Step 3: Run real-player rehearsal**
 

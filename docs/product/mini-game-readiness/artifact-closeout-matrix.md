@@ -1,7 +1,7 @@
 # Mini-game Readiness Artifact Closeout Matrix
 
-> Current version: v1.0
-> Last updated: 2026-08-02
+> Current version: v1.1
+> Last updated: 2026-08-03
 > Status: Current
 > Canonical path: docs/product/mini-game-readiness/artifact-closeout-matrix.md
 
@@ -13,13 +13,22 @@ mistaken for a game-ready session.
 | --- | --- | --- | --- | --- | --- |
 | Spec | Spec 0051, AW-254 first production mini-game | Supersede | AW-257 promoted the initial packages; its original device checklist remains unrun for Couch Race | Superseded | AW-285/AW-286 integrated device, privacy, accessibility, fallback, and founder-demo evidence |
 | Spec | Spec 0076, AW-289 The Interrogation Room | Correct placement record | Founder direction and the program map place the pressure capstone at Last Call | Draft, creative approval pending | Founder approval of the brief, sample, scoring, and presentation before package implementation |
-| Plan | Mini-game Platform and Nightcap Readiness Program | Execute in approved order | Founder approved plan commit `1e65dc5`; mainline safety report records current baseline | Active | Program specs, certification, six-beat integration, device and real-player gates |
+| Specs | Specs 0077 through 0080, platform contracts | Preserve approved v0.2 contracts | Founder explicitly approved the serialized package, adaptation, placement, capability, authority, consequence, onboarding, and readiness contracts on 2026-08-03 | Approved, implementation not approved | Review the four replacement plans, then give a separate implementation go-ahead |
+| Specs | Specs 0081 through 0086, game readiness | Amend or create in place | Existing package audit plus merged Scene Sweep PRs #273 and #274 | Draft amendment ready for review | Per-game creative artifact, local Playtest-ready evidence, Production-ready evidence, and founder promotion |
+| Plan | Mini-game Platform and Nightcap Readiness Program | Execute only after fresh approval | Program map now sequences the browser canary, capability and trust platform, creator labs, game readiness, integration, and final reconciliation | Planning current, implementation stopped | Founder review of replacement plans and separate implementation go-ahead |
+| Plans | 2026-08-02 contracts/adapters and onboarding/certification | Superseded | Fixed adapters and manual register/bind workflow conflict with the approved 2026-08-03 direction; both files carry stop notices | Superseded, do not execute | Preserve useful tests only through the replacement plans |
+| Plans | 2026-08-03 browser golden path, capability and trust platform, creator and readiness labs | Review for execution approval | Exact TDD plans now implement the approved platform contracts without a second package model, CLI, API, lab backend, or no-code backend | Written, not executed | Founder plan review, current-main preflight, and separate implementation go-ahead |
+| Plan | 2026-08-03 Scene Sweep game-ready | Review for execution approval | Plan preserves PRs #273 and #274, adds only adaptation, presentation, rotation, and readiness work | Written, not executed | Participation and presentation approvals, implementation go-ahead, device and player evidence, production promotion |
 | Task | AW-254 | Supersede without reopening | M4 interaction layer and AW-257 complete; scope transferred above | Superseded | Same integrated gates as Spec 0051 |
 | Task | AW-285 / issue #239 | Preserve accepted Phase 1 closure | PR #269, merge `7aa3f92`, delivered the structural projection layer | Complete to accepted Phase 1 scope | Six-opportunity surface integration, privacy/device checks, audiovisual catch, real-player rehearsal |
 | Task | AW-286 | Reframe as integrated mini-game and device rehearsal gate | Couch Race bible defines six beats and 2–8 players | Planned | Approved opportunity pools, device walkthrough, founder rehearsal, blocker log |
 | Task | AW-287 | Close | PR #251, merge `84abf52`, delivered the approved Leverage capability | Complete | No redesign implied; later packages only consume configured resource semantics |
 | Task | AW-288 | Narrow | D-079 and M5-F implementation evidence establish TMST as already built | Planned | Certified host registration, founder-approved placement and pacing, separate AW-266 disposition preserved |
 | Task | AW-289 / issue #258 | Keep open and align to Last Call | D-079 creates the new game; program plan defines The Interrogation Room as Last Call pressure capstone | Planned, creative approval pending | Founder approval of spec, sample, scoring, and presentation before implementation |
+| Task | AW-278 / issue #228 | Align with spec 0085 | The Truth reveal accounting and The Unmasking are one delivery path, not parallel reveal systems | Planned | Approved Truth artifact, reusable package, Nightcap adaptation, Production-ready evidence |
+| Task | AW-275 / issue #223 | Keep open as shared presentation dependency | Semantic mini-game tokens and focus-visible states apply to every browser adaptation | Planned | Implement once in the destination design system and verify across active renderers |
+| Task | AW-286 / issue #240 | Preserve as final live-operation gate | Current issue already owns founder rehearsal and blocker log | Open | Six placement policies, Production-ready adaptations, real devices, real players, go/no-go, debrief |
+| Issue | #254, contradiction tie-break mini-game | Keep deferred | D-077 requires Rehearsal 1 tie-frequency evidence before design | Open, post-rehearsal | Reassess only after AW-286 evidence; do not include in current critical path |
 | Epic | M4-E | Close | AW-249 through AW-253 complete; AW-257 promoted initial packages | Complete | None in M4-E; integrated Couch Race gates are successors, not retroactive evidence |
 | Epic | M5-F | Keep active | AW-262 through AW-265 complete; AW-266 remains open | Active | Founder must decide AW-266's separate TMST rehearsal disposition |
 | Epic | M5-I / issue #234 | Correct child authority | Canonical task list now includes AW-281 through AW-292 | Active | Remaining Couch Race implementation and integrated rehearsal gates |
@@ -31,11 +40,16 @@ mistaken for a game-ready session.
 | Issue | #270 | Keep blocked and separate | PR #271 embedded-script coverage was reverted by PR #272 | Open, blocked | Safe restoration of CI coverage before deferred player-script dedupe |
 | PR | #251 | Retain merged evidence | Merge `84abf52` | Complete | None for AW-287 closeout |
 | PR | #269 | Retain merged evidence | Merge `7aa3f92` | Complete to accepted Phase 1 scope | Follow-on gates remain in this program |
+| PR | #273, Scene Sweep backend | Retain as authoritative baseline | Merge `55cd4e6` | Backend complete to merged scope | Renderer, reusable package, Nightcap adaptation, Scene rotation, readiness evidence |
+| PR | #274, Scene Sweep design and plan | Retain as authoritative design evidence | Merge `d26d7b8` | Complete to merged scope | Spec 0086 carries only remaining game-ready work |
 | PR | #271 / #272 | Record reverted CI state | #272 reverted #271; no current coverage proof | Reverted | Separate issue #270 restoration work |
 
 ## Guardrails
 
 - Do not reopen AW-285 or duplicate its accepted Phase 1 work.
+- Do not duplicate Scene Sweep backend or design work from PRs #273 and #274.
+- Do not create a second issue for AW-288 until its canonical task is
+  reconciled and the founder approves any genuinely missing ticket.
 - Do not change AW-266 or issue #183 until the founder explicitly chooses its
   separate TMST rehearsal disposition.
 - Do not use any closed record in this matrix as proof that a full Couch Race

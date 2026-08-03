@@ -1,18 +1,60 @@
-> Current version: v1.0
-> Last updated: 2026-08-02
-> Status: Current
+> Current version: v1.1
+> Last updated: 2026-08-03
+> Status: Current planning audit, implementation stopped
 > Canonical path: docs/product/mini-game-readiness/mainline-safety-report.md
 
 # Mini-game Readiness Program Mainline Safety Report
 
 ## Decision
 
-**GO for Task 1 execution.** The founder approved execution in the current
-turn, conditional on this fresh audit. The audit found no changed execution
-assumptions and no overlap between changes after the stated baseline and the
-selected execution-plan file list.
+**STOP before implementation.** The prior GO applied to planning commit
+`1e65dc5` and its fixed-adapter design. The founder has since approved a
+materially different browser-first package, adaptation, placement-policy,
+progressive-readiness, and capability-negotiation architecture. Specs 0077
+through 0080 now record that approval, and the replacement implementation
+plans are written. The plans have not received the separate implementation
+go-ahead required by the Human Collaboration Contract.
 
-## PreflightReport
+Current `origin/main` is
+`d26d7b8dee2aafa59ef6a0fd985da5bea771dbf1` and includes PR #273 and PR #274.
+The replacement planning branch was created in a new isolated worktree from
+that exact commit. Five reviewed planning commits were replayed onto it, and
+only approved planning revisions were migrated. The dirty main checkout and
+the older dirty planning worktree were not stashed, rebased, cleaned, or
+modified. Main still contains an unrelated uncommitted
+`docs/product/decisions-log.csv` change being handled by another agent.
+
+## 2026-08-03 planning refresh
+
+| Field | Result |
+| --- | --- |
+| `origin_main_sha` | `d26d7b8dee2aafa59ef6a0fd985da5bea771dbf1` (`d26d7b8`) |
+| `new_merged_prs` | #273 Scene Sweep backend and #274 Scene Sweep design and plan |
+| `overlap` | Direct scope overlap. Scene Sweep is now an existing package and second Scene candidate. Preserve merged backend and design work. |
+| `planning_worktree` | `codex/minigame-platform-browser-plans`, created from exact `origin/main`; ahead 5 by replayed planning commits, not behind, with uncommitted reviewed planning revisions |
+| `main_worktree` | Up to date with origin/main; unrelated `docs/product/decisions-log.csv` modification present |
+| `baseline_checks` | Focused current baseline: 91 passed, 1 skipped because `DATABASE_URL` is unset, 2 pre-existing warnings. Broader engine run: 828 passed, 1 skipped, 13 sandbox temp-permission errors, and 3 sandbox-slow timing-budget failures. |
+| `decision` | STOP pending founder review of the replacement plans and explicit implementation approval. Repeat fresh-main and focused baseline checks before each executable plan. |
+
+## 2026-08-03 replacement-plan baseline
+
+The focused baseline was rerun from the new worktree after planning migration:
+
+```powershell
+C:\Users\nicke\OneDrive\Desktop\arcwright\.aw102-venv\Scripts\python.exe -m pytest engine/tests/test_mini_game_models.py engine/tests/test_mini_game_runtime.py engine/tests/test_mini_game_runtime_aw252.py api/tests/test_mini_games_api.py -q --basetemp .pytest-baseline-current
+```
+
+Result: `91 passed, 1 skipped, 2 warnings` in 53.15 seconds. The temporary
+directory was resolved inside the worktree and removed after the run.
+
+The broad `engine/tests` diagnostic collected 845 tests. It reached 828 passes
+and one expected database skip. Thirteen tests could not create temporary
+directories under the sandbox account, and three property sweeps exceeded a
+15-second performance threshold under sandbox load. These are recorded as
+environment-constrained baseline results, not attributed to documentation
+changes and not described as a green full-suite baseline.
+
+## Historical 2026-08-02 PreflightReport
 
 | Field | Result |
 | --- | --- |

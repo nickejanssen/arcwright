@@ -1,9 +1,9 @@
 # Mini-game Platform Orchestration Design
 
-> Current version: v0.2
-> Last updated: 2026-08-02
-> Status: Approved direction, implementation not approved
-> Canonical implementation contracts: to be split into approved specs before implementation
+> Current version: v0.3
+> Last updated: 2026-08-03
+> Status: Founder-approved design, implementation not approved
+> Canonical implementation contracts: docs/specs/0077-mini-game-registration-and-story-opportunities.md through docs/specs/0080-mini-game-onboarding-preview-and-certification.md
 > Planning artifact: docs/superpowers/specs/2026-08-02-mini-game-platform-orchestration-design.md
 
 ## Purpose
@@ -12,10 +12,13 @@ Define the platform direction, developer experience, Nightcap integration
 path, and work order required to make every existing mini-game game-ready
 without turning Arcwright into a general-purpose game engine.
 
-This design replaces the assumption that every mini-game must execute inside
-Arcwright's Python runtime. Arcwright remains authoritative for narrative
-orchestration and canonical story consequences. Mini-game execution authority
-varies by an explicit adapter contract.
+This design replaces two assumptions: that every mini-game must execute inside
+Arcwright's Python runtime, and that developers should manually assemble the
+platform's registration, binding, adapter, preview, and certification
+machinery. Arcwright remains authoritative for narrative orchestration and
+canonical story consequences. Developers experience an assisted browser-first
+golden path while hosting, execution, result authority, presentation, and
+distribution remain independently negotiable platform capabilities.
 
 ## Human Collaboration Contract
 
@@ -44,7 +47,41 @@ fit require creative review and real-device playtesting.
   phone and TV connectivity, and multiplayer state.
 - Implementation requires a separate explicit founder approval after the
   plans are reviewed.
-- The founder approved this architecture and planning direction on 2026-08-02.
+- Browser games are the first supported onboarding target. The first-time
+  target is 10 to 15 minutes and 20 minutes maximum; returning-user target is
+  5 to 10 minutes and 15 minutes maximum.
+- The onboarding clock ends when a game is integrated, story-aware, styled,
+  simulated, locally testable, and ready for a controlled playtest. Production
+  certification is the next explicit gate.
+- Managed browser hosting is the default. Bring-your-own browser hosting is an
+  advanced path over the same protocol.
+- The developer and original game remain authoritative over original source
+  and assets. Arcwright creates a non-destructive, versioned adaptation.
+  Arcwright-powered adaptation capabilities require the licensed Arcwright
+  runtime; Arcwright platform source is not exported.
+- Onboarding supports destination-first and reusable-first paths, with
+  destination-first recommended for the fastest useful result.
+- The game designer controls placement authority. A designer may pin a game
+  to an exact moment or beat, delegate a bounded window or candidate pool to
+  Arcwright, allow a host or player request, or compose these modes.
+- Arcwright may generate private draft code, art, animation, audio, copy, and
+  configuration only after asking permission. Generated work is reviewable,
+  reversible, and cannot enter production without approval.
+- A one-player source game may be adapted into an approved multiplayer form.
+  Arcwright recommends one strong participation model and up to two playable
+  alternatives for designer review.
+- Readiness states are Imported, Reusable, Playtest-ready, and
+  Production-ready. Every state and next action must be easy to see and
+  understand. Playtest-ready includes one-click local testing;
+  Production-ready includes visual evidence and rehearsal tooling.
+- Intelligent authoring and deterministic runtime execution are separate
+  planes. Only approved, versioned artifacts cross into live execution.
+- Hosting, execution, result authority, presentation, and distribution are
+  separate negotiated capabilities. Initial browser profiles do not become a
+  permanent adapter ceiling.
+- The founder approved the original direction on 2026-08-02 and the expanded
+  browser-first developer experience and capability architecture on
+  2026-08-03.
 
 **Next gate:** Approval of the canonical implementation specs and separate
 approval to execute the selected implementation plan. Approval of this
@@ -52,15 +89,17 @@ artifact does not approve implementation.
 
 ## Executive Recommendation
 
-Arcwright should be a narrative gameplay orchestrator, not a universal
-mini-game engine.
+Arcwright should be the easiest way to turn a playable mechanic into reusable,
+story-aware gameplay. It is a narrative gameplay orchestrator and adaptation
+platform, not a replacement for every game engine.
 
-The platform should expose a small, versioned contract that connects:
+The platform should compile a designer-friendly onboarding conversation into
+a small, versioned contract that connects:
 
 1. a game-owned mini-game package;
 2. a human-authored story opportunity;
 3. a deterministic Arcwright scheduler;
-4. an execution adapter;
+4. negotiated hosting, execution, authority, and presentation profiles;
 5. a typed result envelope; and
 6. a declarative mapping from result semantics to canonical story
    consequences.
@@ -68,16 +107,19 @@ The platform should expose a small, versioned contract that connects:
 This creates a compelling developer proposition:
 
 - Keep the engine, renderer, assets, and gameplay technology you already use.
-- Tell Arcwright what the mini-game can do for a story.
+- Import a browser game and let Arcwright infer the mechanical contract.
+- Confirm what the mini-game can do for a story in designer language.
+- Let Arcwright adapt player count, presentation, and destination fit without
+  overwriting the original.
 - Let Arcwright place it only where the human-authored experience allows.
 - Receive runtime story context without exposing private or hidden state.
-- Return a typed result.
+- Return a typed, authority-verified result.
 - Let Arcwright apply the authored narrative consequences, persistence,
   telemetry, and downstream pacing effects.
 
-Nightcap uses an Arcwright-hosted web adapter. Unity, Unreal, Godot, native,
-or custom games can use a host-authoritative adapter without moving their
-gameplay simulation into Python.
+Nightcap proves the managed browser path. Later Unity, Unreal, Godot, native,
+edge, spatial, voice, and custom runtimes negotiate compatible profiles
+without changing placement policy or canonical consequence contracts.
 
 ## Product Boundary
 
@@ -92,15 +134,19 @@ gameplay simulation into Python.
   other narrative consequences.
 - Safety enforcement for content generated or processed by Arcwright.
 - Cross-game telemetry and certification evidence.
+- Import analysis, adaptation generation, managed hosting, local simulation,
+  readiness visualization, and licensed adaptation runtime capabilities.
 
 ### The game developer owns
 
 - Mini-game rules, internal simulation, controls, and moment-to-moment feel.
 - Game-specific scoring and result semantics.
 - Renderer implementation, assets, audio, animation, and platform integration.
-- Registration of package capabilities and supported execution adapters.
+- Confirmation or correction of inferred package capabilities.
 - Declaring how the mini-game can contribute to that game's story.
 - Experience-specific runtime configuration and theme implementation.
+- Original source, original assets, and authored content supplied to
+  Arcwright.
 
 ### The human arc author owns
 
@@ -118,13 +164,30 @@ gameplay simulation into Python.
 - Nightcap-specific beat names, currencies, visual surfaces, or scoring terms
   in platform contracts.
 - A public marketplace or arbitrary plugin loader during Horizon 1.
+- Placement authority the game designer did not explicitly delegate.
+- Silent mutation of imported source or silent generation of presentation
+  assets.
 
 ## SME Architecture Guardrails
 
 The approved direction carries the following platform constraints into every
 implementation spec and acceptance suite.
 
-### Host trust and result authority
+### Capability negotiation and result authority
+
+- Hosting, execution, result authority, presentation, and distribution are
+  independent versioned profiles. A profile advertises capabilities and proof
+  requirements; it does not authorize arbitrary executable plugins.
+- The first profiles are local browser sandbox, managed browser transcript
+  validation, and authenticated external browser authority.
+- Future profiles may support deterministic WebAssembly, signed replay proofs,
+  certified third-party operators, confidential execution, edge coordination,
+  native engines, or new surfaces without changing story placement or result
+  consequence contracts.
+- Every production authority profile proves producer identity, exact package
+  and adaptation versions, input provenance, replay or independent
+  verification, permitted consequence classes, revocation, audit, and
+  rollback.
 
 - A player token or renderer cannot submit a canonical host-authoritative
   result.
@@ -136,6 +199,9 @@ implementation spec and acceptance suite.
   logged without applying consequences.
 - Horizon 1 proves this with an internal protocol fixture. Public credentials,
   multi-tenant package signing, and partner trust policy are deferred.
+- Local sandbox results are visibly non-authoritative. They may support local
+  playtests but cannot mutate production score, currency, clues, winners, or
+  canonical story state.
 
 ### Recovery and package integrity
 
@@ -172,6 +238,10 @@ implementation spec and acceptance suite.
 - A hosted renderer or external engine translates that payload into its own
   presentation. Presentation cannot affect selection, scoring, or canonical
   consequences.
+- Each destination owns an experience design system containing semantic
+  presentation roles, typography, art direction, motion, audio, copy voice,
+  surface layouts, accessibility, intensity ranges, and immutable elements.
+  Generation of incompatible replacements is permission-first and draft-only.
 
 ### Telemetry and cost
 
@@ -188,10 +258,14 @@ implementation spec and acceptance suite.
 
 ### Horizon 1 scope
 
-- Build internal contracts, a Nightcap implementation, and one synthetic
-  non-Nightcap protocol proof.
+- Build the browser golden path, managed hosting, local preview, initial trust
+  profiles, a Nightcap implementation, and one synthetic non-Nightcap browser
+  proof.
 - Do not build Unity or Unreal SDKs, a marketplace, public package execution,
   external developer authentication, billing, or a no-code arc builder.
+- Define all authoring contracts as versioned API resources usable by Studio,
+  CLI, and SDK clients so a later no-code builder is a first-class client, not
+  a parallel system.
 - Before an H2 developer beta, validate the API and schema proposition with the
   target developers required by the PRD non-goals and open-question gates.
 
@@ -219,7 +293,7 @@ The initial Couch Race roles and packages are:
 | Beat | Authored role | Initial package |
 | --- | --- | --- |
 | Pour | `social_opener` | Tell Me Something True |
-| Scene | `competitive_discovery` | Crime Scene Smash |
+| Scene | `competitive_discovery` | Crime Scene Smash and Scene Sweep rotation |
 | Grill | `interrogation` | The Grill |
 | Twist | `solo_recontextualization` | Evidence Locker 402 |
 | Last Call | `pressure_capstone` | The Interrogation Room |
@@ -234,82 +308,85 @@ rotate into either role while preserving these authored transition contracts.
 
 ## Core Contracts
 
-### MiniGamePackageManifest
+### ReusableMiniGamePackage
 
-Extend the current manifest with versioned input and result schemas, supported
-execution adapters, capability and story-role tags, participation and
-player-count capabilities, time budget, runtime configuration schema,
-presentation declarations, assets, fallback, compatibility, and certification
-metadata.
+The reusable package is the destination-neutral mechanic. Arcwright infers a
+draft package from an imported browser build or source bundle, then asks the
+developer to confirm only unresolved or high-impact facts. The immutable,
+versioned package records:
 
-The package declares capabilities. It does not decide where it runs.
+- input and result schemas;
+- participation capabilities and supported transformation patterns;
+- active and session player-count ranges;
+- duration and pacing ranges;
+- runtime configuration schema and certified bounds;
+- semantic presentation roles and required assets;
+- lifecycle, reconnect, fallback, accessibility, and performance behavior;
+- story affordances expressed as namespaced, extensible capabilities; and
+- provenance, integrity digest, licensing, and readiness evidence.
 
-### MiniGameRegistration
+The package describes what the mechanic can do. It never decides where it
+runs or what destination-specific story state it changes.
 
-The experience registers a package version for use in that game. Registration
-contains an experience-scoped ID, package and version, enabled adapter,
-configuration defaults, allowed story roles, theme and localization bindings,
-result semantic vocabulary, optional request-policy extension fields, and
-compatibility constraints.
+### DestinationAdaptation
 
-Registration is explicit and version-pinned. Installing a package does not
-authorize its use in an arc.
+A destination adaptation is a non-destructive, versioned layer over one exact
+package version. It records the approved participation model, destination
+experience design system mapping, content bindings, configuration defaults,
+result semantics, consequence profile, compatible execution profiles, and
+certification evidence. The original package remains unchanged.
 
-### MiniGameOpportunity
+One package may have many destination adaptations. An adaptation can be
+updated without forking the underlying mechanic, and a package update triggers
+compatibility analysis rather than silently rewriting its adaptations.
 
-The human-authored arc declares a story opportunity containing:
+### PlacementPolicy
 
-- stable opportunity ID and graph position;
-- narrative role, such as opener, discovery, pressure, release, or finale;
-- eligible registration IDs and/or capability tags;
-- trigger mode;
-- deterministic selection policy and recent-candidate lookback;
-- invocation count, cooldown, and repetition policy;
-- time and pacing budget;
-- public-safe context fields;
-- fallback behavior;
-- consequence mapping profile;
-- presentation posture and attention target.
+Placement is a composable policy, not one trigger enum. The policy combines:
 
-The current BeatDefinition.mini_games binding list becomes a compatibility
-input to this richer opportunity contract.
+- anchors, including exact authored moments, beats, phases, story windows, or
+  session-wide eligibility;
+- authority grants for designer-required, engine-selected, host-triggered, or
+  player-requested invocation;
+- deterministic eligibility expressions over public canonical state;
+- recurrence, cooldown, limit, and future game-owned cost references;
+- exact package, approved pool, weighted rotation, novelty, and fallback
+  selection;
+- immediate or next-safe-transition timing; and
+- bounded result-to-consequence mappings.
+
+The designer may delegate any amount of placement authority, including none.
+The policy is a versioned expression tree shared by Studio, CLI, SDK, and
+runtime. New policy nodes require schema registration and validation; they do
+not require editing every package.
+
+### Capability profiles
+
+The platform negotiates five independent profile families:
+
+1. hosting;
+2. execution;
+3. result authority;
+4. presentation; and
+5. distribution.
+
+Horizon 1 registers local browser sandbox, Arcwright-managed browser hosting,
+managed deterministic transcript validation, and authenticated external
+browser authority. Profile registration is closed and reviewed. Descriptors
+cannot load arbitrary code or bypass the permanent trust invariants.
 
 ### MiniGameInvocation
 
-Arcwright creates one canonical invocation containing the session,
-opportunity, registration, package version, deterministic selection reason,
-adapter, public-safe configuration, status, revision, lifecycle timestamps,
+Arcwright creates one canonical invocation containing the session, placement
+policy evaluation, adaptation, exact package version and digest, selected
+capability profiles, deterministic selection reason, public-safe
+configuration, status, revision, lifecycle timestamps, authority proof,
 result receipt, and consequence application state.
 
-The current mini_game_runs model can evolve into this role for hosted games.
-
-### MiniGameExecutionAdapter
-
-Two adapters are required.
-
-#### arcwright_hosted
-
-For Nightcap web mini-games and packages that choose Arcwright hosting:
-
-- Python owns authoritative gameplay lifecycle, submissions, mechanic state,
-  timing, and result calculation.
-- Existing runtime, persistence, API, SDK, and event work is reused.
-- Mechanic implementations remain closed and explicitly registered.
-- Browser clients render authorized state and submit actions.
-
-#### host_authoritative
-
-For Unity, Unreal, Godot, native, or custom engines:
-
-- Arcwright creates and schedules the invocation.
-- The host engine launches and runs the mini-game.
-- The host owns internal gameplay state and scoring.
-- The host returns one idempotent, schema-validated result envelope.
-- Arcwright validates identity, version, lifecycle, and result shape, then
-  applies only the authored consequence mapping.
-- Arcwright never loads or executes arbitrary host gameplay code.
-
-Both adapters emit the same platform lifecycle and consequence events.
+The current mini_game_runs model can evolve into this role for legacy hosted
+games. A compatibility translator consumes static MiniGameBinding values
+during migration, but new authoring uses packages, adaptations, and placement
+policies.
 
 ### MiniGameResultEnvelope
 
@@ -375,30 +452,69 @@ records a non-sensitive reason code.
 ## Developer Workflow
 
 Retain and upgrade the existing arcwright-minigame skill, helper script,
-package template, loader, fixtures, and validation commands.
+package template, loader, fixtures, and validation commands. These remain
+internal automation and expert escape hatches. They are not the first-time
+developer experience.
 
-The target flow is:
+The first screen asks where the game should be used first. A developer may
+select a destination or create a reusable package without one. Destination
+selection is recommended because it produces an immediate useful adaptation.
 
-1. Intake or import a concept or prototype.
-2. Scaffold a standard package.
-3. Implement an Arcwright-hosted or host-authoritative adapter.
-4. Register the versioned package with the experience.
-5. Author a story opportunity in the arc.
-6. Map result semantics to narrative consequences.
-7. Bind theme, motion, asset, accessibility, and localization contracts.
-8. Validate schema, privacy, safety, compatibility, and lifecycle.
-9. Preview deterministic selection and surface or host payloads.
-10. Rehearse headless, reconnect, multiplayer, and real-device paths.
-11. Produce a machine-readable certification report.
-12. Promote lifecycle metadata only after all gates pass.
+The first-time browser golden path is:
 
-This is the developer value: Arcwright handles story placement, session
-orchestration, narrative consequence, persistence, safety boundaries, and
-diagnostics while preserving the developer's engine and creative ownership.
+1. Import a static browser bundle or connect a hosted browser build and select
+   managed hosting by default.
+2. Arcwright launches the game in a private sandbox, analyzes its interaction
+   and lifecycle, and generates a draft reusable package.
+3. The developer confirms inferred capabilities and destination story intent
+   in plain language. Arcwright exposes structured fields only when requested.
+4. Arcwright detects participation mismatch and generates one recommended
+   multiplayer adaptation plus up to two meaningful alternatives.
+5. Arcwright asks permission before generating private draft code, art,
+   animation, audio, copy, or destination styling.
+6. The designer composes or confirms placement authority and result
+   consequences using natural language and visual policy controls.
+7. Arcwright runs a deterministic multi-surface story simulation, displays why
+   the game was selected, and opens a one-click local playtest.
+8. The readiness view reports Playtest-ready or explains the smallest
+   concrete action needed.
 
-## Game-ready Definition
+First-time target is 10 to 15 minutes and 20 minutes maximum. Returning target
+is 5 to 10 minutes and 15 minutes maximum. Time is saved through inference,
+generated adapters, reusable destination profiles, defaults, and progressive
+disclosure, never by removing quality capabilities.
 
-A mini-game is game-ready only when all applicable gates pass:
+CLI, SDK, and future graphical Studio call the same versioned authoring APIs
+and produce the same artifacts. The no-code experience is therefore prepared
+from the first contract release rather than reimplemented later.
+
+## Progressive readiness
+
+Every state is always visible in plain language, with current evidence, next
+action, blockers, and estimated effort. Status never relies on color alone.
+
+1. **Imported:** Arcwright can launch and analyze the original browser game.
+2. **Reusable:** The destination-neutral package has configurable
+   participation, presentation, inputs, outputs, and lifecycle behavior.
+3. **Playtest-ready:** One destination adaptation has approved participation,
+   placement, styling, story consequences, multi-surface behavior, and passing
+   local preflight. This is the onboarding time target.
+4. **Production-ready:** Automated and human evidence proves the adaptation is
+   safe, authoritative, resilient, accessible, performant, and successful in
+   its destination.
+
+Playtest-ready includes one-click local launch, hot reload, simulated players,
+phone and shared-focus previews, QR codes for local devices, deterministic
+fixtures, record and replay, reset, reconnect, timeout, and failure simulation.
+No cloud deployment is required.
+
+Production-ready includes a visual gate map, multi-surface timeline, scenario
+and player-count matrix, side-by-side version comparison, evidence recordings,
+one-click staged rehearsal, and separate display of automated passes and human
+approvals.
+
+A destination adaptation is production-ready only when all applicable gates
+pass:
 
 - package and registration schemas validate;
 - execution adapter works end to end;
@@ -419,27 +535,30 @@ A mini-game is game-ready only when all applicable gates pass:
 - related specs, plans, roadmap records, GitHub issues, epics, and milestone
   gates agree.
 
-Package existence, schema validation, or visibility in Nightcap is not
-game-ready evidence by itself.
+One package may be Production-ready for one destination while another
+adaptation remains Playtest-ready. Package existence, schema validation, or
+visibility in Nightcap is not readiness evidence by itself.
 
 ## Current Couch Race Inventory
 
-At the verified baseline, the repository has:
+At the refreshed 2026-08-03 mainline baseline, the repository has:
 
-- three authored packages;
-- two active catalog entries;
-- two bindings across six Couch Race beats;
-- one implemented deterministic mechanic;
-- zero production package renderers; and
-- zero game-ready packages.
+- four authored packages, including Scene Sweep from PR #273;
+- Scene Sweep backend package, mechanic, and API implementation plus its
+  founder-approved design and implementation plan from PRs #273 and #274;
+- two legacy bindings across six Couch Race beats;
+- no reusable-package plus destination-adaptation onboarding path;
+- no measured 10-to-15-minute browser golden path; and
+- zero packages with complete per-adaptation Production-ready evidence.
 
-The repository contains three authored packages:
+The repository contains four authored packages:
 
 | Package | Current role | Known gap |
 | --- | --- | --- |
 | crime-scene-smash | Bound to Scene | Prototype renderer and incomplete hosted mechanic |
 | evidence-locker-402 | Bound to Twist | Prototype renderer and incomplete hosted mechanic |
 | tell-me-something-true | Implemented social truth/bluff path, not bound | Needs migration into generic registration, opportunity, and presentation contracts |
+| scene-sweep | Backend implemented, not bound | Needs renderer, reusable-package migration, Nightcap adaptation, local playtest, and certification; should rotate with Crime Scene Smash in Scene |
 
 Additional known work:
 
@@ -449,7 +568,9 @@ Additional known work:
   but no production package.
 - D-086 defines The Unmasking reveal direction, but no production package or
   reveal-reconstruction mechanic exists.
-- Pour, Grill, Last Call, and Truth have no current static package binding.
+- Pour, Grill, Last Call, and Truth have no current legacy package binding.
+- Scene has two intended candidates, Crime Scene Smash and Scene Sweep, but the
+  current static binding cannot express the approved rotation.
 
 Platform-wide blockers that must land before package polish can produce an
 end-to-end game:
@@ -479,81 +600,105 @@ matrix, including package-specific schema and lifecycle inconsistencies.
 
 ## Recommended Work Order
 
-### Phase 0: Reconcile authority and trackers
+### Phase 0: Reconcile approved design and current mainline
 
-- Accept the superseding ADR.
-- Update canonical architecture references.
-- Record D-097.
-- Correct AW-285's partial-merge status without treating its full original
-  acceptance criteria as complete.
-- Reconcile AW-288 and AW-289 so no work is duplicated.
-- Create or update one GitHub issue per approved implementation plan.
+- Amend ADR 0018 and specs 0077 through 0080 from fixed adapters and manual
+  onboarding to the approved browser-first adaptation architecture.
+- Incorporate PR #273 and PR #274 as the authoritative Scene Sweep baseline.
+- Reconcile AW-285, AW-288, AW-289, AW-278, AW-275, AW-286, M5-I, and the
+  artifact closeout matrix without reopening completed scope.
+- Map every implementation plan to an existing issue or one approved missing
+  issue before creating new GitHub work.
 
-### Phase 1: Contract and compatibility layer
+### Phase 1: Prove the browser golden path as a vertical slice
 
-- Add registration, opportunity, invocation, adapter, result, consequence,
-  and theme contracts.
-- Preserve compatibility for current static bindings.
-- Add contract tests with a synthetic non-Nightcap experience and a fake
-  host-authoritative adapter.
-- Specify trusted host result submission, package integrity, retirement,
-  recovery, privacy, safety, telemetry, and generation budgets.
-- Do not expose a public marketplace or third-party code loader.
+- Use Tell Me Something True as the canary because its deterministic mechanic
+  is the most complete.
+- Import it through the same browser onboarding path an external developer
+  will use.
+- Generate a reusable package and Nightcap destination adaptation.
+- Provide managed local hosting, one-click multi-surface preview, simulated
+  players, deterministic fixtures, placement-policy preview, and a visible
+  Playtest-ready result.
+- Instrument first-time and returning onboarding duration. Do not declare the
+  golden path complete without observed 10-to-15-minute and 5-to-10-minute
+  usability evidence.
 
-### Phase 2: Orchestrator and adapters
+This phase intentionally produces working value before a broad horizontal
+platform build. The contract is then hardened from a real integration rather
+than designed only from abstractions.
 
-- Implement deterministic opportunity selection.
-- Implement the shared invocation lifecycle.
-- Adapt the current Python runtime as arcwright_hosted.
-- Add the host-authoritative protocol.
-- Add result validation and declarative consequence application.
+### Phase 2: Generalize the platform from the canary
 
-### Phase 3: Onboarding and certification
+- Implement reusable package, destination adaptation, placement-policy, result,
+  consequence, experience-design-system, and readiness resources.
+- Implement capability negotiation for hosting, execution, result authority,
+  presentation, and distribution.
+- Register local sandbox, managed browser transcript validation, and
+  authenticated external browser authority profiles.
+- Preserve legacy MiniGameBinding and hosted Python mechanics through explicit
+  compatibility translators.
+- Add a synthetic non-Nightcap browser game and an independent first-time
+  developer walkthrough before claiming platform usability.
 
-- Upgrade the existing skill, script, templates, validators, and fixtures.
-- Add registration and opportunity scaffolding.
-- Add preview, deterministic simulation, compatibility checks, and readiness
-  reports.
-- Add trust-boundary, digest, retirement, cost, telemetry, and public-safe
-  context checks.
-- Document the complete internal developer path.
+### Phase 3: Build the creator and assurance experience
 
-### Phase 4: Make each package a certified playtest candidate
+- Extend the existing skill, script, templates, loaders, fixtures, and
+  validators rather than duplicating them.
+- Add permission-first adaptation generation, multiplayer alternatives,
+  destination experience design systems, story simulation, and selection
+  explanations.
+- Add the always-visible Imported, Reusable, Playtest-ready, and
+  Production-ready journey.
+- Add the local playtest lab and visual production-readiness lab.
+- Expose the same authoring APIs to CLI and SDK so a future graphical Studio
+  uses the same resources.
 
-Recommended order:
+### Phase 4: Make existing packages Playtest-ready
 
-1. Tell Me Something True as the migration canary because its deterministic
-   mechanic path is the most complete.
-2. Crime Scene Smash to complete the competitive real-time hosted path.
-3. Evidence Locker 402 to complete the individual puzzle path.
-4. The Grill to package the interrogation loop and verify story-native,
-   repeatable gameplay.
-5. Interrogation Room trivia after its separate creative brief and content
-   approval gates.
-6. The Unmasking after its reveal-reconstruction sequence and presentation
-   artifact are approved.
+Recommended order after the Tell Me Something True canary:
 
-Each game gets its own gameplay, presentation, tuning, and rehearsal plan.
-Package-only certification leaves registration and whole-session gates marked
-as integration pending.
+1. Crime Scene Smash and Scene Sweep as one Scene rotation milestone. Preserve
+   the merged Scene Sweep backend and add only its missing renderer,
+   adaptation, placement, and readiness work.
+2. Evidence Locker 402 to prove selected-player and spectator adaptation.
+3. The Grill to package the existing interrogation capability and prove exact
+   beat placement plus future repeat and request policy seams.
 
-### Phase 5: Nightcap foundation
+Each package receives a reusable contract and a Nightcap adaptation. Gameplay,
+presentation, tuning, device, and rehearsal evidence remain package-specific.
 
-- Register exact certified playtest package versions and digests.
-- Author six rotating beat-opportunity pools with the roles above.
-- Integrate Leverage and race-score consequences through generic services.
-- Implement Nightcap's theme and presentation contract.
-- Preserve the deferred request-cost extension without building it.
+### Phase 5: Create the missing Last Call and Truth games
 
-### Phase 6: End-to-end certification and closeout
+1. Complete AW-289's Interrogation Room creative gates and build it as Last
+   Call's pressure capstone with simultaneous guesses, reveal handoff, scoring,
+   ranks, and podium transition.
+2. Reconcile AW-278 with spec 0085 and build The Unmasking as Truth's
+   pressure-release and case-reconstruction game.
 
-- Run the six-opportunity Couch Race session across phones, shared display,
-  multiplayer state, reconnect, pause/resume, and fallbacks.
-- Run the synthetic non-Nightcap host-authoritative reference.
-- Complete real-device and real-player rehearsal gates.
-- Promote only fully passing package versions from playtest to active.
-- Reconcile every related local and GitHub status artifact.
-- Only after this phase, reopen the optional currency-funded Grill design.
+Neither game is reduced to a static beat binding. Both become reusable
+packages with approved Nightcap adaptations and placement policies.
+
+### Phase 6: Integrate and certify Nightcap
+
+- Author six placement policies and candidate pools. Scene initially rotates
+  Crime Scene Smash and Scene Sweep.
+- Integrate score, knowledge, evidence, Leverage-compatible resources, and
+  pacing consequences through generic services.
+- Run the complete Couch Race session across phones, shared focus, multiplayer
+  state, reconnect, pause/resume, fallbacks, and exact-version replay.
+- Complete real-device, real-player, creative, and founder gates per
+  adaptation before Production-ready promotion.
+
+### Phase 7: Close the program and validate the platform promise
+
+- Repeat the synthetic non-Nightcap onboarding with a first-time external
+  developer and record time, confusion, intervention, and outcome.
+- Verify every live result uses an approved authority profile and every
+  production consequence is replayable or independently verifiable.
+- Reconcile specs, plans, roadmap tasks, GitHub issues, epics, milestones,
+  readiness reports, and PR evidence.
+- Only after sign-off, reopen the optional currency-funded Grill design.
 
 ## Artifact Reconciliation
 
@@ -616,17 +761,22 @@ Immediately before any implementation plan begins:
 8. report changed assumptions or conflicts;
 9. obtain separate explicit founder implementation approval.
 
-Baseline for this artifact:
+Refreshed planning baseline for this artifact:
 
-- origin/main: 52562723d5dd6374817e1299f8faf98ecd5dd120
-- Includes PR #269 and PR #268.
+- origin/main: d26d7b8dee2aafa59ef6a0fd985da5bea771dbf1
+- Includes PR #273 and PR #274 for Scene Sweep, plus PR #269 and PR #268.
 - PR #271's inline-script tests were reverted by PR #272 and are absent.
 - Issue #270 remains blocked on restored CI coverage.
+- The planning worktree is intentionally not rebased while its approved draft
+  amendments are uncommitted. Every implementation worktree must be created
+  from the then-current origin/main after a fresh merged-PR audit.
 
 ## Planning Acceptance Criteria
 
 - [x] Founder approves this architecture direction.
 - [x] ADR 0018 is accepted before contract implementation.
+- [x] Browser-first golden path, adaptation ownership, progressive readiness,
+  placement-policy composition, and capability-negotiated trust are approved.
 - [ ] Every implementation plan references one canonical approved spec.
 - [ ] Every plan includes the mainline safety gate.
 - [ ] Every plan includes a separate founder implementation-approval gate.

@@ -180,3 +180,40 @@ creates or resolves an obligation directly. The session context exposes
 `exit_conditions` exactly like any other condition key under the generic
 evaluation contract in Section 3.2. The engine never interprets the key name.
 Contract details: `docs/specs/0065-aw-271-narrative-obligations-model.md`.
+
+## 3.9 Reusable Mini-games and Placement Policies
+
+Arcwright stores destination-neutral reusable mini-game packages and
+non-destructive destination adaptations. A human-authored arc declares
+composable placement policies. A policy may require an exact authored moment,
+constrain eligibility to a beat or story window, delegate bounded selection to
+Arcwright, allow an authenticated host or future player request, or combine
+those grants. The package never decides where it runs, and Arcwright never
+receives more placement authority than the designer grants.
+
+The coordinator evaluates only allowlisted public canonical facts. It
+intersects active anchors, authority grants, eligibility expressions,
+recurrence, exact adaptation and package versions, negotiated capabilities,
+content readiness, and fallback availability. Selection uses a registered
+deterministic strategy such as authored order or session-seeded rotation.
+Selection, reason, versions, profiles, and resolved snapshot are persisted
+before execution. Re-evaluation of the same state returns the original
+invocation.
+
+Hosting, execution, result authority, presentation, and distribution negotiate
+independently. Initial profiles support local browser preview, managed browser
+transcript validation, authenticated external browser authority, and legacy
+closed Python mechanics. Profile negotiation cannot load arbitrary code or
+silently downgrade result authority. Arcwright owns invocation lifecycle,
+replay, result validation, and bounded consequence dispatch across profiles.
+
+Static `MiniGameBinding` remains a read-only compatibility path while arcs
+migrate. A beat cannot use both legacy bindings and placement policies. New
+authoring writes placement policies only.
+
+A future player-requested grant requires a separately approved authenticated,
+session-bound, idempotent game-owned policy. Currency names, prices,
+deductions, refunds, and UI are never inferred by this engine contract.
+
+Contracts: `docs/specs/0077-mini-game-registration-and-story-opportunities.md`
+through `docs/specs/0079-mini-game-results-consequences-theme-and-telemetry.md`.
