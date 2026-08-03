@@ -233,7 +233,7 @@ class EvidenceSearchRacePlugin:
         if not ordered:
             return []
         clamped_count = min(8, max(4, participant_count))
-        target = _OBJECT_COUNT_BY_PLAYER_COUNT.get(clamped_count, len(ordered))
+        target = self._object_count_for(snapshot, clamped_count, default=len(ordered))
         target = min(target, len(ordered))
         real_id = self._real_object_id(snapshot)
         # The real object (generation-supplied or hash-fallback) must always
@@ -242,6 +242,28 @@ class EvidenceSearchRacePlugin:
         decoys = [slot_id for slot_id in ordered if slot_id != real_id]
         active = ([real_id] if real_id is not None else []) + decoys
         return active[:target]
+
+    @staticmethod
+    def _object_count_for(
+        snapshot: ResolvedMiniGameSnapshot,
+        clamped_count: int,
+        *,
+        default: int,
+    ) -> int:
+        """Read the authored object_count_by_player_count table from the
+        package's rules first, falling back to the module-level constant
+        (then to `default`) only if the content doesn't declare it or the
+        value is malformed. Content-only rebalancing (per the package's own
+        playtest_calibration.follow_up note) must actually take effect
+        without a code change, so this must not silently prefer the
+        hardcoded copy over the authored one.
+        """
+        authored_table = snapshot.rules.get("object_count_by_player_count")
+        if isinstance(authored_table, dict):
+            authored_value = authored_table.get(str(clamped_count))
+            if isinstance(authored_value, int):
+                return authored_value
+        return _OBJECT_COUNT_BY_PLAYER_COUNT.get(clamped_count, default)
 
     @staticmethod
     def _accepted_claims_by_object(

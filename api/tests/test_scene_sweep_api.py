@@ -398,7 +398,9 @@ def test_plugin_emitted_events_validate_against_api_schema() -> None:
     assert board_event.event_type == "scene_sweep_board_started"
     SceneSweepBoardStartedPayload.model_validate(board_event.payload)
 
-    active_object_id = init_progress.state["active_object_ids"][0]
+    init_state = init_progress.state
+    assert init_state is not None
+    active_object_id = init_state["active_object_ids"][0]
     submission = make_submission(
         submission_id="s1",
         character_id=participants[0][0],
@@ -407,7 +409,7 @@ def test_plugin_emitted_events_validate_against_api_schema() -> None:
     )
     submit_progress = plugin.on_submission(
         snapshot,
-        state=init_progress.state,
+        state=init_state,
         participants=participants,
         submission=submission,  # type: ignore[arg-type]
         accepted_submissions=[submission],  # type: ignore[list-item]

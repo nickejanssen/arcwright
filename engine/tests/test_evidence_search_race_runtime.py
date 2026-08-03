@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any
 from uuid import UUID
 
 import pytest
@@ -9,6 +10,7 @@ import pytest
 from engine.mini_games.loader import load_mini_game_package
 from engine.mini_games.plugins._evidence_search_race import EvidenceSearchRacePlugin
 from engine.mini_games.resolver import ResolvedMiniGameSnapshot
+from engine.mini_games.runtime import MechanicProgress
 
 T0 = datetime(2026, 8, 2, 20, 0, 0, tzinfo=timezone.utc)
 PACKAGE_PATH = (
@@ -66,13 +68,33 @@ class FakeSubmission:
         *,
         submission_id: str,
         character_id: UUID,
-        payload: dict,
+        payload: dict[str, Any],
         submitted_at: datetime,
     ) -> None:
         self.submission_id = submission_id
         self.character_id = character_id
         self.payload = payload
         self.submitted_at = submitted_at
+
+
+def _state(progress: MechanicProgress) -> dict[str, Any]:
+    """Narrow MechanicProgress.state (declared dict[str, Any] | None) for
+    tests that know a given call always returns populated state — every
+    EvidenceSearchRacePlugin method under test here always does.
+    """
+    assert progress.state is not None
+    return progress.state
+
+
+def _real_id(
+    plugin: EvidenceSearchRacePlugin, snapshot: ResolvedMiniGameSnapshot
+) -> str:
+    """Narrow _real_object_id's str | None return for tests that know the
+    package always has object_slots, so a real id always exists.
+    """
+    real_id = plugin._real_object_id(snapshot)
+    assert real_id is not None
+    return real_id
 
 
 def test_scene_sweep_registered_and_package_passes_strict_validation() -> None:
@@ -95,7 +117,7 @@ def test_validate_payload_accepts_valid_claim() -> None:
         {"action": "claim", "object_id": 5},
     ],
 )
-def test_validate_payload_rejects_invalid_shapes(payload: dict) -> None:
+def test_validate_payload_rejects_invalid_shapes(payload: dict[str, Any]) -> None:
     plugin = EvidenceSearchRacePlugin()
     with pytest.raises(ValueError):
         plugin.validate_payload(payload)
@@ -160,11 +182,11 @@ def test_real_object_id_changes_with_seed() -> None:
 def test_initialize_state_includes_real_object_in_active_set() -> None:
     plugin = EvidenceSearchRacePlugin()
     snapshot = load_snapshot(run_seed="seed-init")
-    real_id = plugin._real_object_id(snapshot)
+    real_id = _real_id(plugin, snapshot)
 
     progress = plugin.initialize_state(snapshot, participants=PARTICIPANTS_4, now=T0)
 
-    active_ids = progress.state["active_object_ids"]
+    active_ids = _state(progress)["active_object_ids"]
     assert len(active_ids) == 5  # 4 players -> 5 objects per rules table
     assert real_id in active_ids
     assert len(progress.events) == 1
@@ -180,7 +202,7 @@ def test_on_submission_rejects_object_not_on_board() -> None:
     off_board = next(
         slot["slot_id"]
         for slot in plugin._object_slots(snapshot)
-        if slot["slot_id"] not in progress.state["active_object_ids"]
+        if slot["slot_id"] not in _state(progress)["active_object_ids"]
     )
     submission = make_submission(
         submission_id="s1",
@@ -191,7 +213,7 @@ def test_on_submission_rejects_object_not_on_board() -> None:
     with pytest.raises(ValueError, match="not on this round's board"):
         plugin.on_submission(
             snapshot,
-            state=progress.state,
+            state=_state(progress),
             participants=PARTICIPANTS_4,
             submission=submission,  # type: ignore[arg-type]
             accepted_submissions=[submission],  # type: ignore[list-item]
@@ -203,7 +225,7 @@ def test_on_submission_rejects_double_claim() -> None:
     plugin = EvidenceSearchRacePlugin()
     snapshot = load_snapshot(run_seed="seed-double")
     progress = plugin.initialize_state(snapshot, participants=PARTICIPANTS_4, now=T0)
-    object_id = progress.state["active_object_ids"][0]
+    object_id = _state(progress)["active_object_ids"][0]
     first = make_submission(
         submission_id="s1",
         character_id=PARTICIPANTS_4[0][0],
@@ -212,7 +234,7 @@ def test_on_submission_rejects_double_claim() -> None:
     )
     first_progress = plugin.on_submission(
         snapshot,
-        state=progress.state,
+        state=_state(progress),
         participants=PARTICIPANTS_4,
         submission=first,  # type: ignore[arg-type]
         accepted_submissions=[first],  # type: ignore[list-item]
@@ -227,7 +249,7 @@ def test_on_submission_rejects_double_claim() -> None:
     with pytest.raises(ValueError, match="already been claimed"):
         plugin.on_submission(
             snapshot,
-            state=first_progress.state,
+            state=_state(first_progress),
             participants=PARTICIPANTS_4,
             submission=second,  # type: ignore[arg-type]
             accepted_submissions=[first, second],  # type: ignore[list-item]
@@ -239,10 +261,10 @@ def test_board_exhaustion_sets_finalize_status_completed() -> None:
     plugin = EvidenceSearchRacePlugin()
     snapshot = load_snapshot(run_seed="seed-exhaust")
     progress = plugin.initialize_state(snapshot, participants=PARTICIPANTS_4, now=T0)
-    active_ids = list(progress.state["active_object_ids"])
-    state = dict(progress.state)
+    active_ids = list(_state(progress)["active_object_ids"])
+    state = dict(_state(progress))
     accepted: list[FakeSubmission] = []
-    last_progress = None
+    last_progress: MechanicProgress | None = None
     for index, object_id in enumerate(active_ids):
         submission = make_submission(
             submission_id=f"s{index}",
@@ -256,10 +278,10 @@ def test_board_exhaustion_sets_finalize_status_completed() -> None:
             state=state,
             participants=PARTICIPANTS_4,
             submission=submission,  # type: ignore[arg-type]
-            accepted_submissions=list(accepted),  # type: ignore[list-item]
+            accepted_submissions=list(accepted),  # type: ignore[arg-type]
             now=T0 + timedelta(seconds=index),
         )
-        state = dict(last_progress.state)
+        state = dict(_state(last_progress))
 
     assert last_progress is not None
     assert last_progress.finalize_status == "completed"
@@ -268,7 +290,7 @@ def test_board_exhaustion_sets_finalize_status_completed() -> None:
 def test_claiming_real_object_alone_does_not_finalize_early() -> None:
     plugin = EvidenceSearchRacePlugin()
     snapshot = load_snapshot(run_seed="seed-no-early-exit")
-    real_id = plugin._real_object_id(snapshot)
+    real_id = _real_id(plugin, snapshot)
     progress = plugin.initialize_state(snapshot, participants=PARTICIPANTS_4, now=T0)
     submission = make_submission(
         submission_id="s1",
@@ -278,7 +300,7 @@ def test_claiming_real_object_alone_does_not_finalize_early() -> None:
     )
     result = plugin.on_submission(
         snapshot,
-        state=progress.state,
+        state=_state(progress),
         participants=PARTICIPANTS_4,
         submission=submission,  # type: ignore[arg-type]
         accepted_submissions=[submission],  # type: ignore[list-item]
@@ -293,7 +315,7 @@ def test_on_deadline_expired_always_times_out() -> None:
     progress = plugin.initialize_state(snapshot, participants=PARTICIPANTS_4, now=T0)
     result = plugin.on_deadline_expired(
         snapshot,
-        state=progress.state,
+        state=_state(progress),
         participants=PARTICIPANTS_4,
         accepted_submissions=[],
         now=T0 + timedelta(seconds=105),
@@ -304,7 +326,7 @@ def test_on_deadline_expired_always_times_out() -> None:
 def test_score_reports_success_when_real_object_claimed() -> None:
     plugin = EvidenceSearchRacePlugin()
     snapshot = load_snapshot(run_seed="seed-score-success")
-    real_id = plugin._real_object_id(snapshot)
+    real_id = _real_id(plugin, snapshot)
     finder = PARTICIPANTS_4[2][0]
     submission = make_submission(
         submission_id="s1",
@@ -323,7 +345,7 @@ def test_score_reports_fallback_when_real_object_never_claimed() -> None:
     progress = plugin.initialize_state(snapshot, participants=PARTICIPANTS_4, now=T0)
     decoy_id = next(
         object_id
-        for object_id in progress.state["active_object_ids"]
+        for object_id in _state(progress)["active_object_ids"]
         if object_id != plugin._real_object_id(snapshot)
     )
     submission = make_submission(
@@ -349,7 +371,7 @@ def test_score_credits_the_winner_not_the_loser_of_a_claim_race() -> None:
     """
     plugin = EvidenceSearchRacePlugin()
     snapshot = load_snapshot(run_seed="seed-race-credit")
-    real_id = plugin._real_object_id(snapshot)
+    real_id = _real_id(plugin, snapshot)
     winner = PARTICIPANTS_4[0][0]
     loser = PARTICIPANTS_4[1][0]
     winning_submission = make_submission(
@@ -384,7 +406,7 @@ def test_score_does_not_double_count_a_duplicate_decoy_claim() -> None:
     real_id = plugin._real_object_id(snapshot)
     decoy_id = next(
         object_id
-        for object_id in progress.state["active_object_ids"]
+        for object_id in _state(progress)["active_object_ids"]
         if object_id != real_id
     )
     first_claimant = PARTICIPANTS_4[0][0]
@@ -435,3 +457,44 @@ def test_select_active_object_ids_clamps_out_of_range_participant_counts(
     assert len(active_ids) == len(set(active_ids))  # no duplicates
     real_id = plugin._real_object_id(snapshot)
     assert real_id in active_ids
+
+
+def test_select_active_object_ids_honors_authored_rules_table_over_hardcoded_default() -> (
+    None
+):
+    """The package's own rules.object_count_by_player_count is meant to be a
+    content-only rebalancing lever (see its playtest_calibration.follow_up
+    note). Board size must actually track that authored table rather than
+    silently falling back to the plugin's own hardcoded copy whenever the
+    content declares a different value.
+    """
+    plugin = EvidenceSearchRacePlugin()
+    snapshot = load_snapshot(run_seed="seed-authored-count")
+    rules = dict(snapshot.rules)
+    rules["object_count_by_player_count"] = {"4": 3, "5": 3, "6": 3, "7": 3, "8": 3}
+    retuned = snapshot.model_copy(update={"rules": rules})
+
+    default_count = len(plugin._select_active_object_ids(snapshot, 4))
+    authored_count = len(plugin._select_active_object_ids(retuned, 4))
+
+    assert default_count == 5  # package's shipped table for 4 players
+    assert authored_count == 3  # overridden table takes effect
+
+
+def test_select_active_object_ids_falls_back_when_authored_rules_table_missing_or_malformed() -> (
+    None
+):
+    plugin = EvidenceSearchRacePlugin()
+    snapshot = load_snapshot(run_seed="seed-authored-count-fallback")
+    rules_without_table = {
+        key: value
+        for key, value in snapshot.rules.items()
+        if key != "object_count_by_player_count"
+    }
+    stripped = snapshot.model_copy(update={"rules": rules_without_table})
+    assert len(plugin._select_active_object_ids(stripped, 4)) == 5  # hardcoded fallback
+
+    rules_with_bad_table = dict(snapshot.rules)
+    rules_with_bad_table["object_count_by_player_count"] = "not-a-dict"
+    malformed = snapshot.model_copy(update={"rules": rules_with_bad_table})
+    assert len(plugin._select_active_object_ids(malformed, 4)) == 5  # same fallback
