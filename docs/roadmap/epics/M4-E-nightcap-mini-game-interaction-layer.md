@@ -1,7 +1,15 @@
 # M4-E: Nightcap Mini-game Interaction Layer
 
 **Milestone:** M4
-**Status:** Planned
+**Status:** Complete
+
+## Closeout Note (2026-08-02)
+
+AW-249 through AW-253 completed the authoring, safety, deterministic runtime,
+API/SDK, and web-rendering interaction layer. AW-257 promoted the two initial
+packages. AW-254 is superseded rather than evidence of a completed Couch Race
+device rehearsal; those integrated surface gates move forward under AW-285 and
+AW-286.
 
 ## Plain-English Summary
 
@@ -21,7 +29,7 @@ gate clues, create competition, and produce investigative leads across the arc.
 - [AW-252: Mini-game API, Events, And TypeScript SDK](../tasks/AW-252-mini-game-api-events-and-sdk.md)
 - [AW-253: Nightcap Web Mini-game Rendering And Device Integration](../tasks/AW-253-nightcap-web-mini-game-rendering.md)
 - [AW-257: Promote Crime Scene Smash and Evidence Locker to active](../tasks/AW-257-promote-crime-scene-smash-and-evidence-locker.md)
-- [AW-254: First Production Nightcap Mini-game And Rehearsal](../tasks/AW-254-first-production-nightcap-mini-game.md)
+- [AW-254: First Production Nightcap Mini-game And Rehearsal (superseded)](../tasks/AW-254-first-production-nightcap-mini-game.md)
 
 ## Acceptance Criteria
 
@@ -31,8 +39,8 @@ gate clues, create competition, and produce investigative leads across the arc.
 - Web clients contain no arc execution or canonical mini-game state logic.
 - Behavioral output does not affect killer assignment or cross-session behavior
   in v1.
-- One approved production mini-game completes on real devices without private
-  information leakage before the M4 rehearsal gate closes.
+- Historical real-device requirements are superseded by the integrated Couch
+  Race gates in AW-285 and AW-286.
 
 ## Dependencies
 

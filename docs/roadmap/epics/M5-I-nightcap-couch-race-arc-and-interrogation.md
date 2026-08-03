@@ -1,7 +1,7 @@
 # M5-I: Nightcap Couch Race Arc And Interrogation Layer
 
 **Milestone:** M5
-**Status:** Planned
+**Status:** Active
 
 ## Plain-English Summary
 
@@ -31,11 +31,16 @@ The technical scope is limited to the tasks listed below and the architecture re
 - [AW-284: Race Scoring And Accusation State](../tasks/AW-284-race-scoring-and-accusation-state.md)
 - [AW-285: Couch Race TV And Phone Rendering](../tasks/AW-285-couch-race-tv-and-phone-rendering.md)
 - [AW-286: Couch Race Rehearsal Slice And Rehearsal 1 Retarget](../tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md)
-- [AW-288: Couch Race Mini-Game Beat Coverage And Tell Me Something True Acceleration](../tasks/AW-288-couch-race-mini-game-beat-coverage-and-tmst-acceleration.md)
-- [AW-289: Couch Race Trivia Mini-Game](../tasks/AW-289-couch-race-trivia-mini-game.md)
+- [AW-287: Nightcap Leverage Advantages And Sabotages](../tasks/AW-287-nightcap-leverage-advantages-and-sabotages.md)
+- [AW-288: Tell Me Something True Couch Race Activation, Placement, And Pacing](../tasks/AW-288-couch-race-mini-game-beat-coverage-and-tmst-acceleration.md)
+- [AW-289: The Interrogation Room Last Call Pressure Capstone](../tasks/AW-289-couch-race-trivia-mini-game.md)
 - [AW-290: Narrator Slot Schema — Structured Location/Time And Wrapper Dressing Pack](../tasks/AW-290-narrator-slot-schema-and-wrapper-dressing.md)
 - [AW-291: Narrator Refrain Resolver](../tasks/AW-291-narrator-refrain-resolver.md)
 - [AW-292: Quote-Suspects Interrogation Mechanic](../tasks/AW-292-quote-suspects-interrogation-mechanic.md) — gated on paper-test validation (D-091)
+
+This is the authoritative child list for the Couch Race arc and interrogation
+layer. It includes AW-287 through AW-292; supporting rehearsal dependencies
+below are not duplicate children.
 
 ## Supporting Rehearsal 1 Dependencies
 

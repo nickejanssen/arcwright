@@ -1,0 +1,42 @@
+# Mini-game Readiness Artifact Closeout Matrix
+
+> Current version: v1.0
+> Last updated: 2026-08-02
+> Status: Current
+> Canonical path: docs/product/mini-game-readiness/artifact-closeout-matrix.md
+
+This matrix reconciles the pre-program Nightcap mini-game records. It records
+evidence separately from remaining gates so a closed issue or merged PR is not
+mistaken for a game-ready session.
+
+| Kind | Artifact | Action | Evidence | Final status | Remaining gate |
+| --- | --- | --- | --- | --- | --- |
+| Spec | Spec 0051, AW-254 first production mini-game | Supersede | AW-257 promoted the initial packages; its original device checklist remains unrun for Couch Race | Superseded | AW-285/AW-286 integrated device, privacy, accessibility, fallback, and founder-demo evidence |
+| Spec | Spec 0076, AW-289 The Interrogation Room | Correct placement record | Founder direction and the program map place the pressure capstone at Last Call | Draft, creative approval pending | Founder approval of the brief, sample, scoring, and presentation before package implementation |
+| Plan | Mini-game Platform and Nightcap Readiness Program | Execute in approved order | Founder approved plan commit `1e65dc5`; mainline safety report records current baseline | Active | Program specs, certification, six-beat integration, device and real-player gates |
+| Task | AW-254 | Supersede without reopening | M4 interaction layer and AW-257 complete; scope transferred above | Superseded | Same integrated gates as Spec 0051 |
+| Task | AW-285 / issue #239 | Preserve accepted Phase 1 closure | PR #269, merge `7aa3f92`, delivered the structural projection layer | Complete to accepted Phase 1 scope | Six-opportunity surface integration, privacy/device checks, audiovisual catch, real-player rehearsal |
+| Task | AW-286 | Reframe as integrated mini-game and device rehearsal gate | Couch Race bible defines six beats and 2–8 players | Planned | Approved opportunity pools, device walkthrough, founder rehearsal, blocker log |
+| Task | AW-287 | Close | PR #251, merge `84abf52`, delivered the approved Leverage capability | Complete | No redesign implied; later packages only consume configured resource semantics |
+| Task | AW-288 | Narrow | D-079 and M5-F implementation evidence establish TMST as already built | Planned | Certified host registration, founder-approved placement and pacing, separate AW-266 disposition preserved |
+| Task | AW-289 / issue #258 | Keep open and align to Last Call | D-079 creates the new game; program plan defines The Interrogation Room as Last Call pressure capstone | Planned, creative approval pending | Founder approval of spec, sample, scoring, and presentation before implementation |
+| Epic | M4-E | Close | AW-249 through AW-253 complete; AW-257 promoted initial packages | Complete | None in M4-E; integrated Couch Race gates are successors, not retroactive evidence |
+| Epic | M5-F | Keep active | AW-262 through AW-265 complete; AW-266 remains open | Active | Founder must decide AW-266's separate TMST rehearsal disposition |
+| Epic | M5-I / issue #234 | Correct child authority | Canonical task list now includes AW-281 through AW-292 | Active | Remaining Couch Race implementation and integrated rehearsal gates |
+| Milestone | M6 | Correct entry dependency | Couch Race bible and PRD amendment define six beats and 2–8 players | Planned | Completed Couch Race integrated rehearsal and qualifying-session evidence |
+| Issue | #187, M5-G visual identity | No change | Separate Tier 2 visual-polish epic | Open, separate | Its own approved visual identity scope |
+| Issue | #234, M5-I | Update child list | Canonical M5-I list includes AW-287 through AW-292 | Open | Epic execution and rehearsal exit criteria |
+| Issue | #239, AW-285 | Update closed-scope description only | PR #269 accepted Phase 1; original checklist is superseded for integrated gates | Closed to accepted Phase 1 scope | Program-owned integrated surface and rehearsal gates |
+| Issue | #258, AW-289 | Update Last Call placement and creative gate | Program plan and Couch Race bible define Last Call convergence | Open | Founder-approved creative contract and package work |
+| Issue | #270 | Keep blocked and separate | PR #271 embedded-script coverage was reverted by PR #272 | Open, blocked | Safe restoration of CI coverage before deferred player-script dedupe |
+| PR | #251 | Retain merged evidence | Merge `84abf52` | Complete | None for AW-287 closeout |
+| PR | #269 | Retain merged evidence | Merge `7aa3f92` | Complete to accepted Phase 1 scope | Follow-on gates remain in this program |
+| PR | #271 / #272 | Record reverted CI state | #272 reverted #271; no current coverage proof | Reverted | Separate issue #270 restoration work |
+
+## Guardrails
+
+- Do not reopen AW-285 or duplicate its accepted Phase 1 work.
+- Do not change AW-266 or issue #183 until the founder explicitly chooses its
+  separate TMST rehearsal disposition.
+- Do not use any closed record in this matrix as proof that a full Couch Race
+  session is device-ready, human-ready, or founder-signed-off.

@@ -1,9 +1,9 @@
-> Current version: v0.2
-> Last updated: 2026-07-19
+> Current version: v0.3
+> Last updated: 2026-08-02
 > Status: Draft; awaiting founder design-gate approval
 > Canonical path: docs/specs/0076-aw-289-interrogation-room.md
 
-# AW-289: The Interrogation Room
+# AW-289: The Interrogation Room Last Call Pressure Capstone
 
 ## References
 
@@ -23,7 +23,8 @@ This is a proposed design brief, not an implementation authorization. The
 founder must approve the brief and the representative sample in this document
 before a package is scaffolded or bound into `nightcap/arc.json`.
 
-The only new trivia game authorized for Rehearsal 1 is The Interrogation Room.
+The only new trivia game authorized for Rehearsal 1 is The Interrogation Room
+at Last Call.
 The following are future candidates and are not current implementation scope:
 
 1. Contradiction Trap
@@ -79,7 +80,7 @@ investigative lead or neutral observation, never a detached arcade score.
 
 ### Proposed runtime shape
 
-- **Target beat:** Beat 3, The Grill, between interrogation rounds.
+- **Target beat:** Last Call, as the session's pressure capstone.
 - **Participation:** Individual, with simultaneous or staggered private
   answers and a table-visible resolution.
 - **Player range:** 2 to 8, with rehearsal coverage at 2 to 5 players and
@@ -465,7 +466,8 @@ available and the arc advances without penalty.
 - [ ] Confirm per-session generated questions within authored constraints.
 - [ ] Confirm setting-matched general trivia as the dominant source, with
   sparse case callbacks.
-- [ ] Confirm Beat 3 placement.
+- [ ] Confirm Last Call placement and the post-submission reveal, score,
+  rank, and podium presentation.
 - [ ] Confirm the deliberate adaptive answer-format mix.
 - [ ] Confirm individual answer model with public resolution.
 - [ ] Confirm 90-second target and three-question thin slice.

@@ -2,7 +2,7 @@
 
 **Milestone / Epic:** M4 / M4-E
 **Size:** M
-**Status:** Complete
+**Status:** Superseded
 **Parent:** AW-259
 
 ## Repurpose Note
@@ -13,6 +13,15 @@ scope (promote one founder-selected mini-game) is fulfilled by AW-257. This
 task now owns the device-matrix verification of the two production
 mini-games AW-257 promotes (Crime Scene Smash + Evidence Locker). Original
 acceptance criteria are preserved and extended for dual-game coverage.
+
+## Closeout Note (2026-08-02)
+
+AW-254 is superseded as the authoritative real-device gate. Its outstanding
+device, privacy, fallback, accessibility, and founder-demo requirements now
+belong to the integrated Couch Race surface and rehearsal gates in AW-285 and
+AW-286, and are tracked by the Mini-game Platform and Nightcap Readiness
+Program. This prevents a closed M4 task from implying that unrun Couch Race
+surface evidence exists.
 
 ## Plain-English Summary
 
