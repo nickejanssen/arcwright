@@ -1,5 +1,19 @@
 """Mini-game authoring schema and package loading helpers."""
 
+from engine.mini_games.authoring import (
+    ArtifactVersionRef,
+    BrowserImportSource,
+    GenerationPermissionReceipt,
+    LocalAuthoringWorkspace,
+    MiniGameOnboardingRequest,
+    MiniGameOnboardingService,
+    MiniGameOnboardingSession,
+    MiniGameReadinessReport,
+    OnboardingAnalysis,
+    OnboardingConfirmation,
+    ReadinessEvidence,
+    ReadinessState,
+)
 from engine.mini_games.loader import (
     LoadedMiniGame,
     MiniGamePackageError,
@@ -28,20 +42,32 @@ from engine.mini_games.resolver import (
 )
 
 __all__ = [
+    "ArtifactVersionRef",
     "BehavioralOutputDeclaration",
     "BehavioralScope",
     "BehavioralValueType",
+    "BrowserImportSource",
     "ClueVariant",
     "ContentMode",
     "DelayedClueFallback",
+    "GenerationPermissionReceipt",
     "LoadedMiniGame",
+    "LocalAuthoringWorkspace",
     "MiniGameBinding",
     "MiniGameContentResolutionError",
     "MiniGameDefinition",
     "MiniGameLifecycle",
     "MiniGameManifest",
+    "MiniGameOnboardingRequest",
+    "MiniGameOnboardingService",
+    "MiniGameOnboardingSession",
     "MiniGamePackageError",
+    "MiniGameReadinessReport",
+    "OnboardingAnalysis",
+    "OnboardingConfirmation",
     "ParticipationMode",
+    "ReadinessEvidence",
+    "ReadinessState",
     "ResolvedMiniGameSnapshot",
     "build_mini_game_resolution_messages",
     "load_mini_game_catalog",
