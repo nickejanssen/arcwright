@@ -130,6 +130,7 @@ async def _seed_scene_sweep_session_and_run(
     active_object_ids: list[str],
     claimed_object_ids: list[str],
     submissions: list[dict[str, Any]] | None = None,
+    deadline: datetime | None = datetime(2026, 8, 2, 21, 0, tzinfo=timezone.utc),
 ) -> tuple[UUID, UUID]:
     async with factory() as db:
         account_id = uuid4()
@@ -186,7 +187,7 @@ async def _seed_scene_sweep_session_and_run(
                 status=status,
                 revision=0,
                 started_at=datetime.now(tz=timezone.utc),
-                deadline=datetime(2026, 8, 2, 21, 0, tzinfo=timezone.utc),
+                deadline=deadline,
                 clue_unlock_record={
                     "runtime_state": {
                         "active_object_ids": active_object_ids,
@@ -277,3 +278,142 @@ class TestSceneSweepPhaseState:
         )
         assert phase_state.phase == "active"
         assert phase_state.claimed_object_ids == []
+
+
+class TestSceneSweepSubmission:
+    def test_malformed_payload_returns_422(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        session_id, run_id = asyncio.run(
+            _seed_scene_sweep_session_and_run(
+                db_factory,
+                status="active",
+                active_object_ids=["slot-1", "slot-2", "slot-3", "slot-4", "slot-5"],
+                claimed_object_ids=[],
+            )
+        )
+
+        resp = client.post(
+            f"/v1/sessions/{session_id}/mini-games/{run_id}/submissions",
+            json={"submission_id": "bad-1", "payload": {"action": "vote"}},
+        )
+
+        assert resp.status_code == 422
+
+    def test_valid_claim_submission_is_accepted(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        session_id, run_id = asyncio.run(
+            _seed_scene_sweep_session_and_run(
+                db_factory,
+                status="active",
+                active_object_ids=["slot-1", "slot-2", "slot-3", "slot-4", "slot-5"],
+                claimed_object_ids=[],
+                # SQLite round-trips DateTime(timezone=True) as tz-naive, which
+                # would make runtime.submit_action's `now > run.deadline` check
+                # raise TypeError comparing aware vs naive. Unlike the
+                # malformed-payload test above, this test reaches that check,
+                # so it needs no deadline to compare against (pre-existing
+                # aiosqlite quirk, unrelated to Scene Sweep itself).
+                deadline=None,
+            )
+        )
+
+        resp = client.post(
+            f"/v1/sessions/{session_id}/mini-games/{run_id}/submissions",
+            json={
+                "submission_id": "claim-1",
+                "payload": {"action": "claim", "object_id": "slot-1"},
+            },
+        )
+
+        assert resp.status_code == 200
+        body = resp.json()
+        assert body["submission_id"] == "claim-1"
+        assert body["is_accepted"] is True
+
+
+def test_plugin_emitted_events_validate_against_api_schema() -> None:
+    """Closes the schema-conformance gap Task 3 deferred to this task: proves
+    the plugin's actual MechanicEventDirective payloads (not just what the
+    schema classes assume) validate against SceneSweepBoardStartedPayload
+    and SceneSweepObjectClaimedPayload.
+    """
+    from datetime import datetime, timezone
+    from pathlib import Path
+    from uuid import UUID
+
+    from api.schemas import (
+        SceneSweepBoardStartedPayload,
+        SceneSweepObjectClaimedPayload,
+    )
+    from engine.mini_games.loader import load_mini_game_package
+    from engine.mini_games.models import ContentMode
+    from engine.mini_games.plugins._evidence_search_race import (
+        EvidenceSearchRacePlugin,
+    )
+    from engine.mini_games.resolver import ResolvedMiniGameSnapshot
+    from engine.tests.test_evidence_search_race_runtime import make_submission
+
+    package_path = (
+        Path(__file__).resolve().parents[2] / "nightcap" / "mini_games" / "scene-sweep"
+    )
+    loaded = load_mini_game_package(package_path)
+    definition = loaded.definition
+    resolved_content = dict(definition.authored_content or {})
+    resolved_content["run_seed"] = "schema-conformance-seed"
+    snapshot = ResolvedMiniGameSnapshot(
+        game_id=definition.game_id,
+        definition_version=definition.version,
+        source_content_mode=ContentMode.hybrid,
+        mechanic_type=definition.mechanic_type,
+        participation_mode=definition.participation_mode.value,
+        min_players=definition.min_players,
+        max_players=definition.max_players,
+        duration_seconds=definition.duration_seconds,
+        rules=definition.rules,
+        behavioral_outputs=tuple(definition.behavioral_outputs),
+        clue_fallback=definition.clue_fallback,
+        resolved_content=resolved_content,
+    )
+
+    plugin = EvidenceSearchRacePlugin()
+    participants = [
+        (UUID(int=1), UUID(int=101)),
+        (UUID(int=2), UUID(int=102)),
+        (UUID(int=3), UUID(int=103)),
+        (UUID(int=4), UUID(int=104)),
+    ]
+    now = datetime(2026, 8, 2, 20, 0, 0, tzinfo=timezone.utc)
+
+    init_progress = plugin.initialize_state(
+        snapshot, participants=participants, now=now
+    )
+    assert len(init_progress.events) == 1
+    board_event = init_progress.events[0]
+    assert board_event.event_type == "scene_sweep_board_started"
+    SceneSweepBoardStartedPayload.model_validate(board_event.payload)
+
+    active_object_id = init_progress.state["active_object_ids"][0]
+    submission = make_submission(
+        submission_id="s1",
+        character_id=participants[0][0],
+        object_id=active_object_id,
+        submitted_at=now,
+    )
+    submit_progress = plugin.on_submission(
+        snapshot,
+        state=init_progress.state,
+        participants=participants,
+        submission=submission,  # type: ignore[arg-type]
+        accepted_submissions=[submission],  # type: ignore[list-item]
+        now=now,
+    )
+    assert len(submit_progress.events) == 1
+    claim_event = submit_progress.events[0]
+    assert claim_event.event_type == "scene_sweep_object_claimed"
+    SceneSweepObjectClaimedPayload.model_validate(claim_event.payload)
