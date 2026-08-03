@@ -325,6 +325,23 @@ creative approval, real-device evidence, or real-player evidence is missing.
 
 ### Task 5: Close the Program
 
+### Execution Checkpoints
+
+- Plan: `docs/superpowers/plans/2026-08-03-browser-minigame-golden-path.md`
+  Commit: `d435bf9`, `2a0906e273ff70f057518cc3dbb06bb533a621dd`,
+  `5e50f10c07b7b3f705c6255be54708f459079efe`,
+  `fa0878ae2431161215dcf53d4470287af2477bbe`, `315a1e0`, `775c63e`
+  Focused checks: Python onboarding/helper tests passed, Nightcap web
+  typecheck passed, Nightcap web suite passed, TMST package validation passed
+  Human gates: First-time developer session not run; returning user session not run
+  GitHub records: No execution updates made in this slice
+  Remaining blockers: Human timing and comprehension evidence required before
+  generalizing the browser golden path
+
+Decision: `REVISE` for the browser golden path. The internal walking skeleton
+reaches local Playtest-ready with preview-only evidence, but the human
+developer proof required by the plan is still missing.
+
 **Files:**
 
 - Modify: `docs/superpowers/plans/2026-08-02-mini-game-platform-readiness-program.md`
