@@ -43,7 +43,6 @@ from api.schemas import (
     MiniGameSubmissionRequest,
     MiniGameSubmissionResponse,
     SceneSweepBoardPhaseState,
-    SceneSweepClaimActionPayload,
     SceneSweepObjectState,
     TmstInputActionPayload,
     TmstInputPhaseState,
@@ -543,9 +542,8 @@ async def submit_mini_game_action(
         action_payload = validated.model_dump()
     elif run.game_id == _SCENE_SWEEP_GAME_ID:
         try:
-            validated_claim = cast(
-                SceneSweepClaimActionPayload,
-                SCENE_SWEEP_SUBMISSION_PAYLOAD_ADAPTER.validate_python(body.payload),
+            validated_claim = SCENE_SWEEP_SUBMISSION_PAYLOAD_ADAPTER.validate_python(
+                body.payload
             )
         except ValidationError as exc:
             raise HTTPException(status_code=422, detail=str(exc)) from exc
