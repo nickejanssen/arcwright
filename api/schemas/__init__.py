@@ -170,6 +170,16 @@ TMST_SUBMISSION_PAYLOAD_ADAPTER: TypeAdapter[TmstSubmissionPayload] = TypeAdapte
 )
 
 
+class SceneSweepClaimActionPayload(BaseModel):
+    action: Literal["claim"]
+    object_id: str = Field(min_length=1, max_length=64)
+
+
+SCENE_SWEEP_SUBMISSION_PAYLOAD_ADAPTER: TypeAdapter[SceneSweepClaimActionPayload] = (
+    TypeAdapter(SceneSweepClaimActionPayload)
+)
+
+
 class TmstPhaseStartedPayload(BaseModel):
     phase: Literal["input"]
     deadline: datetime
@@ -227,10 +237,38 @@ class TmstScoreboardReadyPayload(BaseModel):
     deflection_tendency: dict[str, dict[str, int]]
 
 
-TmstPhaseState = Annotated[
-    Union[TmstInputPhaseState, TmstSpotlightPhaseState],
+class SceneSweepObjectState(BaseModel):
+    object_id: str
+    archetype: str
+    position: dict[str, float]
+
+
+class SceneSweepBoardStartedPayload(BaseModel):
+    phase: Literal["active"]
+    objects: list[SceneSweepObjectState]
+
+
+class SceneSweepObjectClaimedPayload(BaseModel):
+    object_id: str
+    claimed_count: int = Field(ge=0)
+
+
+class SceneSweepBoardPhaseState(BaseModel):
+    phase: Literal["active"]
+    deadline_at: Optional[datetime] = None
+    objects: list[SceneSweepObjectState]
+    claimed_object_ids: list[str]
+
+
+MiniGamePhaseState = Annotated[
+    Union[
+        TmstInputPhaseState,
+        TmstSpotlightPhaseState,
+        SceneSweepBoardPhaseState,
+    ],
     Field(discriminator="phase"),
 ]
+TmstPhaseState = MiniGamePhaseState
 
 
 class MiniGameSubmissionResponse(BaseModel):
@@ -245,7 +283,7 @@ class MiniGameRunResponse(BaseModel):
     status: str
     mechanic_type: Optional[str] = None
     deadline_at: Optional[datetime] = None
-    phase_state: Optional[TmstPhaseState] = None
+    phase_state: Optional[MiniGamePhaseState] = None
     my_submissions: list[MiniGameSubmissionResponse]
 
 

@@ -35,12 +35,15 @@ from api.auth import (
 )
 from api.routers.events import _get_or_create_session_state
 from api.schemas import (
+    SCENE_SWEEP_SUBMISSION_PAYLOAD_ADAPTER,
     TMST_SUBMISSION_PAYLOAD_ADAPTER,
     HostCommandRequest,
     HostCommandResponse,
     MiniGameRunResponse,
     MiniGameSubmissionRequest,
     MiniGameSubmissionResponse,
+    SceneSweepBoardPhaseState,
+    SceneSweepObjectState,
     TmstInputActionPayload,
     TmstInputPhaseState,
     TmstPhaseState,
@@ -56,6 +59,7 @@ from engine.mini_games.runtime import MiniGameRuntime, MiniGameRuntimeError
 
 router = APIRouter(prefix="/sessions", tags=["mini-games"])
 _TMST_GAME_ID = "tell-me-something-true"
+_SCENE_SWEEP_GAME_ID = "scene-sweep"
 
 
 @dataclass(frozen=True)
@@ -237,6 +241,78 @@ def _build_tmst_phase_state(
     return None
 
 
+def _scene_sweep_runtime_state(run: MiniGameRun) -> dict[str, Any]:
+    record = dict(run.clue_unlock_record or {})
+    state = record.get("runtime_state")
+    if isinstance(state, dict):
+        return state
+    return {}
+
+
+def _build_scene_sweep_phase_state(
+    run: MiniGameRun,
+) -> SceneSweepBoardPhaseState | None:
+    # get_active_run (engine/mini_games/runtime.py) already excludes terminal
+    # statuses before a run ever reaches here, so this only needs to handle
+    # the in-progress board; the reveal itself travels via the
+    # mini_game_finalized ContentEvent, not this REST response. The status
+    # guard below is defensive only, matching how _build_tmst_phase_state
+    # returns None for any phase it doesn't recognize.
+    if run.status != "active":
+        return None
+
+    state = _scene_sweep_runtime_state(run)
+    active_ids = state.get("active_object_ids", [])
+    claimed_ids = state.get("claimed_object_ids", [])
+    if not isinstance(active_ids, list):
+        return None
+
+    definition_snapshot = run.definition_snapshot or {}
+    slots_by_id = {
+        slot["slot_id"]: slot
+        for slot in definition_snapshot.get("resolved_content", {}).get(
+            "object_slots", []
+        )
+        if isinstance(slot, dict)
+    }
+
+    return SceneSweepBoardPhaseState(
+        phase="active",
+        deadline_at=run.deadline,
+        objects=[
+            SceneSweepObjectState(
+                object_id=object_id,
+                archetype=slots_by_id.get(object_id, {}).get("archetype", ""),
+                position=slots_by_id.get(object_id, {}).get(
+                    "position", {"x": 0.0, "y": 0.0}
+                ),
+            )
+            for object_id in active_ids
+            if object_id in slots_by_id
+        ],
+        claimed_object_ids=list(claimed_ids) if isinstance(claimed_ids, list) else [],
+    )
+
+
+def _build_phase_state_for_game(
+    run: MiniGameRun,
+    *,
+    claims: JwtClaims,
+    character_id: UUID | None,
+    participant_character_ids: list[UUID],
+) -> Any:
+    if run.game_id == _TMST_GAME_ID:
+        return _build_tmst_phase_state(
+            run,
+            claims=claims,
+            character_id=character_id,
+            participant_character_ids=participant_character_ids,
+        )
+    if run.game_id == _SCENE_SWEEP_GAME_ID:
+        return _build_scene_sweep_phase_state(run)
+    return None
+
+
 async def _participant_character_ids(
     db: AsyncSession,
     session_id: UUID,
@@ -360,14 +436,12 @@ async def get_active_mini_game(
         if isinstance(run.definition_snapshot, dict)
         else None,
         deadline_at=run.deadline,
-        phase_state=_build_tmst_phase_state(
+        phase_state=_build_phase_state_for_game(
             run,
             claims=claims,
             character_id=character_id,
             participant_character_ids=participant_character_ids,
-        )
-        if run.game_id == _TMST_GAME_ID
-        else None,
+        ),
         my_submissions=[
             MiniGameSubmissionResponse(
                 submission_id=s.submission_id,
@@ -434,14 +508,12 @@ async def get_active_mini_game_display(
         if isinstance(run.definition_snapshot, dict)
         else None,
         deadline_at=run.deadline,
-        phase_state=_build_tmst_phase_state(
+        phase_state=_build_phase_state_for_game(
             run,
             claims=display_claims,
             character_id=character_id,
             participant_character_ids=participant_character_ids,
-        )
-        if run.game_id == _TMST_GAME_ID
-        else None,
+        ),
         my_submissions=[],
     )
 
@@ -468,6 +540,14 @@ async def submit_mini_game_action(
         validated = _validate_tmst_submission_payload(body.payload)
         _ensure_tmst_phase_accepts_action(run, validated)
         action_payload = validated.model_dump()
+    elif run.game_id == _SCENE_SWEEP_GAME_ID:
+        try:
+            validated_claim = SCENE_SWEEP_SUBMISSION_PAYLOAD_ADAPTER.validate_python(
+                body.payload
+            )
+        except ValidationError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+        action_payload = validated_claim.model_dump()
 
     runtime = _make_runtime(db, session_id)
     try:

@@ -7,6 +7,7 @@ import pytest
 from pydantic import ValidationError
 
 from engine.mini_games import (
+    ClueVariant,
     ContentMode,
     MiniGameDefinition,
     MiniGameLifecycle,
@@ -52,6 +53,24 @@ def test_tmst_package_validates() -> None:
     assert loaded.manifest.game_id == "tell-me-something-true"
     assert loaded.definition.content_mode is ContentMode.hybrid
     assert len(loaded.definition.behavioral_outputs) == 8
+
+
+def test_scene_sweep_package_loads_and_validates() -> None:
+    loaded = load_mini_game_package(MINI_GAME_ROOT / "scene-sweep")
+    assert loaded.manifest.game_id == "scene-sweep"
+    assert loaded.definition.mechanic_type == "evidence-search-race"
+    assert loaded.definition.content_mode is ContentMode.hybrid
+    assert loaded.definition.authored_content is not None
+    assert loaded.definition.generation_constraints is not None
+    assert loaded.definition.clue_fallback.clue_variant is ClueVariant.reduced
+
+    clues = loaded.definition.authored_content["clues"]
+    reduced = [c for c in clues if c["variant"] == "reduced"]
+    full = [c for c in clues if c["variant"] != "reduced"]
+    assert len(reduced) == 1
+    assert len(full) == 1
+    for clue in clues:
+        assert not clue["content"]["text"].strip().startswith("[")
 
 
 def test_reserved_directories_are_not_loaded_as_production_catalog() -> None:

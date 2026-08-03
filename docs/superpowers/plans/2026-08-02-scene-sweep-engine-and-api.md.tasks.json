@@ -1,0 +1,40 @@
+{
+  "planPath": "docs/superpowers/plans/2026-08-02-scene-sweep-engine-and-api.md",
+  "tasks": [
+    {
+      "id": 0,
+      "subject": "Task 1: Record the product-scope decision",
+      "status": "pending",
+      "description": "**Goal:** Add a decisions-log entry recording founder approval of Scene Sweep as new v1 mini-game scope, following the exact precedent of D-095/D-096 in `docs/product/decisions-log.csv`.\n\n**Files:**\n- Modify: `docs/product/decisions-log.csv`\n\n**Acceptance Criteria:**\n- [ ] A new row is appended with `Decision` id `D-098`, matching the CSV's existing 6-column format.\n- [ ] The row cites the design doc path and explicitly notes Leverage-economy integration (AW-287) was not decided either way.\n- [ ] `git diff` shows only an appended line.\n\n**Verify:** `git diff docs/product/decisions-log.csv`\n\n```json:metadata\n{\"files\": [\"docs/product/decisions-log.csv\"], \"verifyCommand\": \"git diff docs/product/decisions-log.csv\", \"acceptanceCriteria\": [\"D-098 row appended matching CSV format\", \"diff is additive only\"], \"modelTier\": \"mechanical\"}\n```"
+    },
+    {
+      "id": 1,
+      "subject": "Task 2: Author the Scene Sweep content package",
+      "status": "pending",
+      "blockedBy": [0],
+      "description": "**Goal:** Produce a valid `nightcap/mini_games/scene-sweep/` package that loads and validates through the existing AW-249 schema.\n\n**Files:**\n- Create: `nightcap/mini_games/scene-sweep/manifest.json`\n- Create: `nightcap/mini_games/scene-sweep/definitions/0.1.0.json`\n- Test: `engine/tests/test_mini_game_models.py`\n\n**Acceptance Criteria:**\n- [ ] Package loads via `load_mini_game_package` without raising.\n- [ ] `content_mode` is `hybrid` with both `authored_content` and `generation_constraints` present.\n- [ ] `clue_fallback.clue_variant` is `reduced`.\n- [ ] `authored_content[\"clues\"]` has exactly one `\"reduced\"`-tagged entry and one not.\n- [ ] `lifecycle` is `\"draft\"`.\n\n**Verify:** `pytest engine/tests/test_mini_game_models.py -k scene_sweep -v`\n\n```json:metadata\n{\"files\": [\"nightcap/mini_games/scene-sweep/manifest.json\", \"nightcap/mini_games/scene-sweep/definitions/0.1.0.json\", \"engine/tests/test_mini_game_models.py\"], \"verifyCommand\": \"pytest engine/tests/test_mini_game_models.py -k scene_sweep -v\", \"acceptanceCriteria\": [\"package loads via load_mini_game_package\", \"content_mode hybrid with both authored_content and generation_constraints\", \"clue_fallback.clue_variant is reduced\", \"clues list has one reduced and one non-reduced entry\"], \"modelTier\": \"mechanical\"}\n```"
+    },
+    {
+      "id": 2,
+      "subject": "Task 3: Implement the evidence-search-race mechanic plugin",
+      "status": "pending",
+      "blockedBy": [1],
+      "description": "**Goal:** A `StatefulMechanicPlugin` implementation that selects the round's object board, arbitrates claims, and scores success/fallback outcomes.\n\n**Files:**\n- Create: `engine/mini_games/plugins/_evidence_search_race.py`\n- Test: `engine/tests/test_evidence_search_race_runtime.py`\n\n**Acceptance Criteria:**\n- [ ] `validate_payload` accepts `{\"action\": \"claim\", \"object_id\": str}` only.\n- [ ] Real object derived from generation-supplied `resolved_content[\"real_object_id\"]` first, seeded-hash fallback second.\n- [ ] `initialize_state` selects active subset sized by player count, always including the real slot; never reveals which is real.\n- [ ] `on_submission` rejects off-board and double claims; sets `finalize_status=\"completed\"` only on full board exhaustion, never early on the real object alone.\n- [ ] `on_deadline_expired` always times out.\n- [ ] `score` derives outcome purely from snapshot+submissions.\n\n**Verify:** `pytest engine/tests/test_evidence_search_race_runtime.py -v`\n\n```json:metadata\n{\"files\": [\"engine/mini_games/plugins/_evidence_search_race.py\", \"engine/tests/test_evidence_search_race_runtime.py\"], \"verifyCommand\": \"pytest engine/tests/test_evidence_search_race_runtime.py -v\", \"acceptanceCriteria\": [\"validate_payload correct\", \"real_object_id generation-first hash-fallback-second\", \"active selection always includes real slot\", \"double-claim/off-board raise ValueError\", \"exhaustion not real-claim triggers finalize\", \"deadline always times out\", \"score pure function of snapshot+submissions\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 3,
+      "subject": "Task 4: Register the plugin and add runtime integration tests",
+      "status": "pending",
+      "blockedBy": [2],
+      "description": "**Goal:** Wire `EvidenceSearchRacePlugin` into the closed `MechanicRegistry` and prove the full async lifecycle against a real SQLite-backed `MiniGameRuntime`.\n\n**Files:**\n- Modify: `engine/mini_games/plugins/__init__.py`\n- Create: `engine/tests/test_scene_sweep_runtime_integration.py`\n\n**Acceptance Criteria:**\n- [ ] `default_registry()` includes the new plugin.\n- [ ] Success path (4 and 8 players): create->start->claim all->finalize completed, 2 Facts x participant_count KnowledgeState rows.\n- [ ] Fallback path (4 and 8 players): timeout, 1 reduced Fact x participant_count KnowledgeState rows.\n- [ ] Concurrent double-claim: second raises RunStateError; claimed_object_ids state (not row is_accepted flag) contains the object exactly once.\n\n**Verify:** `pytest engine/tests/test_scene_sweep_runtime_integration.py -v && pytest engine/tests/ -k mini_game -q`\n\n```json:metadata\n{\"files\": [\"engine/mini_games/plugins/__init__.py\", \"engine/tests/test_scene_sweep_runtime_integration.py\"], \"verifyCommand\": \"pytest engine/tests/test_scene_sweep_runtime_integration.py -v && pytest engine/tests/ -k mini_game -q\", \"acceptanceCriteria\": [\"plugin registered\", \"success path knowledge assertion correct at 4 and 8 players\", \"fallback path knowledge assertion correct at 4 and 8 players\", \"double-claim resolves to exactly one true claim\", \"no regressions in other games\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 4,
+      "subject": "Task 5: Expose Scene Sweep phase state through the API",
+      "status": "pending",
+      "blockedBy": [3],
+      "description": "**Goal:** Add `SceneSweep*` schema classes, widen `MiniGameRunResponse.phase_state`'s union, and add router dispatch for the in-progress board view. No REST 'revealed' state — `get_active_run` excludes terminal runs, so the reveal travels via the existing `mini_game_finalized` ContentEvent instead.\n\n**Files:**\n- Modify: `api/schemas/__init__.py`\n- Modify: `api/routers/mini_games.py`\n- Create: `api/tests/test_scene_sweep_api.py`\n\n**Acceptance Criteria:**\n- [ ] `SceneSweepBoardPhaseState` never exposes which object is real.\n- [ ] `MiniGameRunResponse.phase_state` union widened additively (TMST unaffected).\n- [ ] Scene Sweep submission payload validated, 422 on malformed shape.\n- [ ] Both `/active` and `/active/display` proven to never leak real-object identity.\n- [ ] All pre-existing TMST tests still pass.\n\n**Verify:** `pytest api/tests/test_scene_sweep_api.py api/tests/test_mini_games_api.py -v`\n\n```json:metadata\n{\"files\": [\"api/schemas/__init__.py\", \"api/routers/mini_games.py\", \"api/tests/test_scene_sweep_api.py\"], \"verifyCommand\": \"pytest api/tests/test_scene_sweep_api.py api/tests/test_mini_games_api.py -v\", \"acceptanceCriteria\": [\"schema withholds real object identity\", \"union widened additively\", \"422 on malformed payload\", \"active and display endpoints leak nothing\", \"pre-existing TMST tests pass\"], \"modelTier\": \"standard\"}\n```"
+    }
+  ],
+  "lastUpdated": "2026-08-02T00:00:00Z"
+}
