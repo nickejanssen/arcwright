@@ -9,13 +9,13 @@
     "artifact_id": "tell-me-something-true-nightcap-couch-race-v1",
     "version": "0.1.0"
   },
-  "current_state": "reusable",
-  "state_label": "Reusable",
-  "state_explanation": "The Nightcap adaptation, preview renderer, and exact-version loading path exist. Local playtest evidence is still required before Playtest-ready.",
-  "next_action": "Run the local mini-game playtest lab and attach simulation evidence.",
-  "estimated_next_action_minutes": 10,
+  "current_state": "playtest_ready",
+  "state_label": "Playtest-ready",
+  "state_explanation": "The Nightcap adaptation, preview renderer, exact-version loading path, and deterministic local playtest evidence exist. Human usability timing gates are still required before developer proof can be generalized, and preview-only authority blocks production promotion.",
+  "next_action": "Run the first-time and returning human usability gate sessions, then record timing and comprehension evidence.",
+  "estimated_next_action_minutes": 35,
   "blockers": [
-    "Local playtest evidence is not recorded yet.",
+    "First-time and returning human usability gate sessions are not recorded yet.",
     "Production promotion is blocked by preview-only authority."
   ],
   "evidence": [
@@ -32,6 +32,16 @@
       "status": "pass",
       "summary": "Renderer covers phone, shared display, and host preview surfaces with privacy boundaries.",
       "artifact_refs": ["client/renderer.ts", "client/styles.css"]
+    },
+    {
+      "evidence_id": "tmst-local-playtest",
+      "category": "arcwright.minigame.playtest",
+      "status": "pass",
+      "summary": "Deterministic local preview playtest evidence records phone, shared-display, and host surfaces without production consequences.",
+      "artifact_refs": [
+        "docs/product/mini-game-readiness/tmst-golden-path-evidence.json",
+        "docs/product/mini-game-readiness/tmst-golden-path-report.md"
+      ]
     },
     {
       "evidence_id": "tmst-production-authority",

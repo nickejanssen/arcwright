@@ -280,6 +280,7 @@ class MiniGameSubmissionResponse(BaseModel):
 class MiniGameRunResponse(BaseModel):
     run_id: UUID
     game_id: str
+    definition_version: str
     status: str
     mechanic_type: Optional[str] = None
     deadline_at: Optional[datetime] = None

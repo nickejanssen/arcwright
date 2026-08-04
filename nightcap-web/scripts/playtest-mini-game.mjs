@@ -3,7 +3,7 @@ import { createServer } from "node:http";
 import { createHash } from "node:crypto";
 import { hostname, networkInterfaces } from "node:os";
 import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, resolve, relative } from "node:path";
+import { dirname, isAbsolute, resolve, relative } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { build as esbuild } from "esbuild";
 import { Window as HappyWindow } from "happy-dom";
@@ -13,6 +13,7 @@ const __dirname = dirname(__filename);
 const REPO_ROOT = resolve(__dirname, "..", "..");
 const DEFAULT_OUT = resolve(REPO_ROOT, "nightcap-web", ".mini-game-playtests");
 const RENDERER_CACHE = resolve(DEFAULT_OUT, ".renderer-cache");
+const MINI_GAMES_ROOT = resolve(REPO_ROOT, "nightcap", "mini_games");
 const PREVIEW = "NON_AUTHORITATIVE_PREVIEW";
 const DEFAULT_ADAPTATION =
   "nightcap/mini_games/tell-me-something-true/adaptations/nightcap-couch-race-v1/0.1.0.json";
@@ -132,8 +133,37 @@ async function readJson(path) {
   return JSON.parse(await readFile(path, "utf8"));
 }
 
+function requireInside(root, child, label) {
+  const rel = relative(root, child);
+  if (rel === "" || rel.startsWith("..") || isAbsolute(rel)) {
+    throw new Error(`${label} must stay under ${root}`);
+  }
+  return child;
+}
+
+function requireSlug(value, label) {
+  if (typeof value !== "string" || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(value)) {
+    throw new Error(`${label} must be a lowercase slug`);
+  }
+  return value;
+}
+
+function requireVersion(value, label) {
+  if (
+    typeof value !== "string" ||
+    !/^[0-9]+[.][0-9]+[.][0-9]+(?:[-+][A-Za-z0-9.-]+)?$/.test(value)
+  ) {
+    throw new Error(`${label} must be an exact version`);
+  }
+  return value;
+}
+
 async function loadArtifacts(args) {
-  const adaptationPath = resolve(REPO_ROOT, args.adaptation);
+  const adaptationPath = requireInside(
+    MINI_GAMES_ROOT,
+    resolve(REPO_ROOT, args.adaptation),
+    "adaptation path",
+  );
   const adaptation = await readJson(adaptationPath);
   if (adaptation.authority_profile !== "arcwright.authority.preview-only.v1") {
     throw new Error("playtest requires preview-only authority");
@@ -144,28 +174,37 @@ async function loadArtifacts(args) {
       "adaptation must reference an exact package game_id and version",
     );
   }
-  const packageDir = resolve(
-    REPO_ROOT,
-    "nightcap",
-    "mini_games",
-    packageRef.game_id,
+  const gameId = requireSlug(packageRef.game_id, "package game_id");
+  const version = requireVersion(packageRef.version, "package version");
+  const packageDir = requireInside(
+    MINI_GAMES_ROOT,
+    resolve(MINI_GAMES_ROOT, gameId),
+    "package directory",
   );
   const manifest = await readJson(resolve(packageDir, "manifest.json"));
-  if (manifest.game_id !== packageRef.game_id) {
+  if (manifest.game_id !== gameId) {
     throw new Error("manifest game_id does not match adaptation package ref");
   }
-  if (manifest.current_version !== packageRef.version) {
+  if (manifest.current_version !== version) {
     throw new Error(
       "manifest current_version does not match adaptation package ref",
     );
   }
   const definition = await readJson(
-    resolve(packageDir, manifest.definition_path),
+    requireInside(
+      packageDir,
+      resolve(packageDir, manifest.definition_path),
+      "definition path",
+    ),
   );
-  if (definition.version !== packageRef.version) {
+  if (definition.version !== version) {
     throw new Error("definition version does not match adaptation package ref");
   }
-  const rendererPath = resolve(packageDir, "client", "renderer.ts");
+  const rendererPath = requireInside(
+    packageDir,
+    resolve(packageDir, "client", "renderer.ts"),
+    "renderer path",
+  );
   const rendererSource = await readFile(rendererPath, "utf8");
   const rendererHash = createHash("sha256")
     .update(rendererSource)
@@ -174,7 +213,7 @@ async function loadArtifacts(args) {
   await mkdir(RENDERER_CACHE, { recursive: true });
   const bundlePath = resolve(
     RENDERER_CACHE,
-    `${packageRef.game_id}-${packageRef.version}-${rendererHash}.mjs`,
+    `${gameId}-${version}-${rendererHash}.mjs`,
   );
   try {
     await readFile(bundlePath, "utf8");

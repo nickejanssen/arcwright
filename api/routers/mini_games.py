@@ -431,6 +431,7 @@ async def get_active_mini_game(
     return MiniGameRunResponse(
         run_id=run.run_id,
         game_id=run.game_id,
+        definition_version=run.definition_version,
         status=run.status,
         mechanic_type=run.definition_snapshot.get("mechanic_type")
         if isinstance(run.definition_snapshot, dict)
@@ -503,6 +504,7 @@ async def get_active_mini_game_display(
     return MiniGameRunResponse(
         run_id=run.run_id,
         game_id=run.game_id,
+        definition_version=run.definition_version,
         status=run.status,
         mechanic_type=run.definition_snapshot.get("mechanic_type")
         if isinstance(run.definition_snapshot, dict)

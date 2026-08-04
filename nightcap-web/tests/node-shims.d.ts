@@ -12,6 +12,7 @@ declare module "node:assert/strict" {
     ok(value: unknown, message?: string): void;
     match(actual: string, expected: RegExp, message?: string): void;
     doesNotMatch(actual: string, expected: RegExp, message?: string): void;
+    throws(block: () => unknown, validator: (err: unknown) => boolean): void;
   };
 
   export default assert;
@@ -21,6 +22,11 @@ declare module "node:fs" {
   export function existsSync(path: string): boolean;
   export function mkdtempSync(prefix: string): string;
   export function readFileSync(path: string, encoding: string): string;
+  export function rmSync(
+    path: string,
+    options?: { recursive?: boolean; force?: boolean },
+  ): void;
+  export function writeFileSync(path: string, data: string): void;
 }
 
 declare module "node:fs/promises" {

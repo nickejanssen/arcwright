@@ -1,6 +1,12 @@
 import assert from "node:assert/strict";
 import { execFileSync } from "node:child_process";
-import { existsSync, mkdtempSync, readFileSync } from "node:fs";
+import {
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import test from "node:test";
@@ -35,6 +41,83 @@ function runPlaytest(args: string[]): Record<string, unknown> {
 function tempOut(): string {
   return mkdtempSync(join(tmpdir(), "arcwright-minigame-playtest-"));
 }
+
+function assertPlaytestFails(args: string[], pattern: RegExp): void {
+  assert.throws(
+    () => runPlaytest(args),
+    (err) => {
+      const stderr = (err as { stderr?: { toString?: () => string } | string })
+        .stderr;
+      const message =
+        err instanceof Error
+          ? `${err.message}\n${
+              typeof stderr === "string" ? stderr : (stderr?.toString?.() ?? "")
+            }`
+          : String(err);
+      assert.match(message, pattern);
+      return true;
+    },
+  );
+}
+
+test("local playtest: rejects adaptation paths outside mini-game catalog", () => {
+  const outside = join(tempOut(), "adaptation.json");
+  writeFileSync(
+    outside,
+    JSON.stringify({
+      authority_profile: "arcwright.authority.preview-only.v1",
+      package: {
+        game_id: "tell-me-something-true",
+        version: "0.1.0",
+      },
+    }),
+  );
+
+  assertPlaytestFails(
+    [
+      "--session",
+      "session-outside-adaptation",
+      "--adaptation",
+      outside,
+      "--out",
+      tempOut(),
+    ],
+    /adaptation path must stay under/,
+  );
+});
+
+test("local playtest: rejects unsafe package ids before resolving paths", () => {
+  const fixtureDir = mkdtempSync(
+    join(REPO_ROOT, "nightcap", "mini_games", ".playtest-validation-"),
+  );
+  const adaptation = join(fixtureDir, "unsafe-package.json");
+  try {
+    writeFileSync(
+      adaptation,
+      JSON.stringify({
+        authority_profile: "arcwright.authority.preview-only.v1",
+        package: {
+          game_id: "../outside",
+          version: "0.1.0",
+        },
+      }),
+    );
+
+    assertPlaytestFails(
+      [
+        "--session",
+        "session-unsafe-package",
+        "--adaptation",
+        adaptation,
+        "--out",
+        tempOut(),
+      ],
+      /package game_id must be a lowercase slug/,
+    );
+  } finally {
+    rmSync(fixtureDir, { recursive: true, force: true });
+  }
+});
 
 for (const scenario of [
   "active",
