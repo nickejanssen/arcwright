@@ -19,15 +19,14 @@ const GAME_ID = "tell-me-something-true";
 
 type Status = MiniGameContext["state"]["status"];
 
-interface PrivatePrompt {
-  statementId: string;
+interface PromptContent {
   prompt: string;
   trueLabel: string;
   lieLabel: string;
 }
 
 interface VotePrompt {
-  statementId: string;
+  targetCharacterId: string;
   spotlightLabel: string;
 }
 
@@ -66,30 +65,28 @@ function phaseLabel(status: Status): string {
   }
 }
 
-function isPrivatePrompt(payload: unknown): payload is PrivatePrompt {
-  const data = record(payload);
-  return (
-    typeof data.statement_id === "string" && typeof data.prompt === "string"
-  );
-}
-
-function readPrivatePrompt(payload: unknown): PrivatePrompt | null {
-  if (!isPrivatePrompt(payload)) return null;
-  const data = record(payload);
+function readPromptContent(ctx: MiniGameContext): PromptContent {
+  const authored = record(ctx.definition.authored_content);
+  const presentationData = presentation(ctx);
   return {
-    statementId: String(data.statement_id),
-    prompt: String(data.prompt),
-    trueLabel: text(data.true_label, "Tell the truth"),
-    lieLabel: text(data.lie_label, "Sell the lie"),
+    prompt: text(
+      presentationData.prompt,
+      text(
+        authored.phone_prompt,
+        "Complete your statement, then decide whether to tell the truth or sell the lie.",
+      ),
+    ),
+    trueLabel: text(presentationData.true_label, "Tell the truth"),
+    lieLabel: text(presentationData.lie_label, "Sell the lie"),
   };
 }
 
 function readVotePrompt(payload: unknown): VotePrompt | null {
   const data = record(payload);
-  if (typeof data.statement_id !== "string") return null;
+  if (typeof data.target_character_id !== "string") return null;
   return {
-    statementId: data.statement_id,
-    spotlightLabel: text(data.spotlight_label, "Someone at the table"),
+    targetCharacterId: data.target_character_id,
+    spotlightLabel: text(data.spotlight_label, "Current spotlight"),
   };
 }
 
@@ -170,6 +167,13 @@ export default defineRenderer({
         { class: "tmst-prompt", "data-role": "private-prompt", hidden: true },
         [""],
       );
+      const statementInput = el(doc, "textarea", {
+        class: "tmst-input",
+        "data-role": "statement-input",
+        rows: "3",
+        maxlength: "280",
+        hidden: true,
+      });
       const actionRow = el(doc, "div", {
         class: "tmst-actions",
         role: "group",
@@ -225,12 +229,13 @@ export default defineRenderer({
       });
       shell.appendChild(status);
       shell.appendChild(prompt);
+      shell.appendChild(statementInput);
       shell.appendChild(actionRow);
       shell.appendChild(voteRow);
       shell.appendChild(result);
       const timer = addTimer(shell, ctx);
 
-      let privatePrompt: PrivatePrompt | null = null;
+      let promptReady = false;
       let currentVote: VotePrompt | null = null;
       const statementGuard = createSubmissionGuard({
         submit: async (submissionId, payload) =>
@@ -252,10 +257,22 @@ export default defineRenderer({
       const applyStatus = (state: MiniGameContext["state"]): void => {
         setText(status, phaseLabel(state.status));
         const active = state.status === "active";
-        setDisabled(truthButton, !active || statementGuard.hasSubmitted());
-        setDisabled(lieButton, !active || statementGuard.hasSubmitted());
-        setDisabled(voteTruth, !active || voteGuard.hasSubmitted());
-        setDisabled(voteLie, !active || voteGuard.hasSubmitted());
+        setDisabled(
+          truthButton,
+          !active || !promptReady || statementGuard.hasSubmitted(),
+        );
+        setDisabled(
+          lieButton,
+          !active || !promptReady || statementGuard.hasSubmitted(),
+        );
+        setDisabled(
+          voteTruth,
+          !active || !currentVote || voteGuard.hasSubmitted(),
+        );
+        setDisabled(
+          voteLie,
+          !active || !currentVote || voteGuard.hasSubmitted(),
+        );
         if (state.status === "completed" || state.status === "timed_out") {
           setText(
             result,
@@ -269,12 +286,17 @@ export default defineRenderer({
 
       const submitStatement =
         (declaredTruth: boolean) => async (): Promise<void> => {
-          if (!privatePrompt || statementGuard.hasSubmitted()) return;
+          if (!promptReady || statementGuard.hasSubmitted()) return;
+          const statementText = statementInput.value.trim();
+          if (!statementText) {
+            setText(status, "Write the statement before submitting.");
+            return;
+          }
           setDisabled(truthButton, true);
           setDisabled(lieButton, true);
           const submitted = await statementGuard.submit({
-            action: "submit_statement",
-            statement_id: privatePrompt.statementId,
+            action: "input",
+            statement_text: statementText,
             declared_truth: declaredTruth,
           });
           if (submitted?.isAccepted) {
@@ -290,8 +312,8 @@ export default defineRenderer({
         setDisabled(voteTruth, true);
         setDisabled(voteLie, true);
         const submitted = await voteGuard.submit({
-          action: "vote_statement",
-          statement_id: currentVote.statementId,
+          action: "vote",
+          target_character_id: currentVote.targetCharacterId,
           vote,
         });
         if (submitted?.isAccepted) {
@@ -313,18 +335,19 @@ export default defineRenderer({
           applyStatus(state);
         },
         handleEvent(event) {
-          if (event.event_type === "mini_game_private_prompt") {
-            privatePrompt = readPrivatePrompt(event.payload);
-            if (!privatePrompt) return;
-            setText(prompt, privatePrompt.prompt);
-            setText(truthButton, privatePrompt.trueLabel);
-            setText(lieButton, privatePrompt.lieLabel);
+          if (event.event_type === "tmst_private_prompt_ready") {
+            const promptContent = readPromptContent(ctx);
+            promptReady = true;
+            setText(prompt, promptContent.prompt);
+            setText(truthButton, promptContent.trueLabel);
+            setText(lieButton, promptContent.lieLabel);
             setHidden(prompt, false);
+            setHidden(statementInput, false);
             setHidden(actionRow, false);
             applyStatus(ctx.state);
             return;
           }
-          if (event.event_type === "mini_game_vote_opened") {
+          if (event.event_type === "tmst_spotlight_started") {
             currentVote = readVotePrompt(event.payload);
             if (!currentVote) return;
             setText(votePrompt, `${currentVote.spotlightLabel}: truth or lie?`);
@@ -332,9 +355,9 @@ export default defineRenderer({
             applyStatus(ctx.state);
             return;
           }
-          if (event.event_type === "mini_game_personal_result") {
+          if (event.event_type === "tmst_reveal_resolved") {
             const data = record(event.payload);
-            setText(result, text(data.summary, "Personal result received."));
+            setText(result, text(data.statement_text, "Statement resolved."));
             setHidden(result, false);
           }
         },
@@ -414,20 +437,31 @@ export default defineRenderer({
           applyStatus(state);
         },
         handleEvent(event) {
-          if (event.event_type === "mini_game_private_prompt") return;
+          if (event.event_type === "tmst_private_prompt_ready") return;
           if (event.event_type === "mini_game_submission_accepted") {
             count += 1;
             setText(tally, `${count} response${count === 1 ? "" : "s"} in.`);
             return;
           }
-          if (event.event_type === "mini_game_spotlight") {
+          if (event.event_type === "tmst_spotlight_started") {
             const data = record(event.payload);
-            setText(spotlight, text(data.spotlight_label, "Spotlight is up."));
+            setText(
+              spotlight,
+              text(data.spotlight_label, "A statement is under the light."),
+            );
             return;
           }
-          if (event.event_type === "mini_game_public_result") {
+          if (event.event_type === "tmst_reveal_resolved") {
             const data = record(event.payload);
-            setText(reveal, text(data.summary, "Public result received."));
+            setText(reveal, text(data.statement_text, "Statement resolved."));
+            setHidden(reveal, false);
+            return;
+          }
+          if (event.event_type === "tmst_scoreboard_ready") {
+            setText(
+              reveal,
+              "Scoreboard ready. Final scoring remains engine-owned.",
+            );
             setHidden(reveal, false);
           }
         },

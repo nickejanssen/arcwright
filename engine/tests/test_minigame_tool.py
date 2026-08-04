@@ -2,6 +2,7 @@ import importlib.util
 import json
 from dataclasses import dataclass
 from pathlib import Path
+from types import SimpleNamespace
 from uuid import UUID
 
 import pytest
@@ -303,7 +304,28 @@ def test_help_keeps_legacy_commands_and_lists_guided_commands(run_tool):
         assert command in result.stdout
 
 
-def test_playtest_records_preview_only_evidence(run_tool, tmp_path):
+def test_playtest_delegates_to_local_preview_harness(run_tool, tmp_path, monkeypatch):
+    calls: list[list[str]] = []
+
+    def fake_run(cmd, **kwargs):
+        calls.append([str(item) for item in cmd])
+        assert kwargs["cwd"] == REPO_ROOT / "nightcap-web"
+        return SimpleNamespace(
+            returncode=0,
+            stdout=json.dumps(
+                {
+                    "authority": "NON_AUTHORITATIVE_PREVIEW",
+                    "state_label": "Playtest-ready",
+                    "production_consequence_applied": False,
+                    "players": 4,
+                    "replay_file": "nightcap-web/.mini-game-playtests/replay.json",
+                    "evidence_file": "nightcap-web/.mini-game-playtests/evidence.json",
+                }
+            ),
+            stderr="",
+        )
+
+    monkeypatch.setattr(MINIGAME_TOOL.subprocess, "run", fake_run)
     result = run_tool(
         "playtest",
         "--session",
@@ -325,3 +347,6 @@ def test_playtest_records_preview_only_evidence(run_tool, tmp_path):
     assert payload["players"] == 4
     assert str(payload["replay_file"]).endswith("replay.json")
     assert str(payload["evidence_file"]).endswith("evidence.json")
+    assert calls
+    assert "--session" in calls[0]
+    assert "--json" in calls[0]

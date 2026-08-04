@@ -52,16 +52,18 @@
   },
   "generation_permission_receipt": {
     "receipt_id": "permission-tmst-nightcap-couch-race-v1-0.1.0",
+    "destination_game_id": "nightcap-couch-race-v1",
+    "adaptation_id": "tell-me-something-true-nightcap-couch-race-v1",
     "approved_categories": [
       "code",
-      "styling",
+      "art",
       "copy",
       "animation",
       "configuration"
     ],
-    "denied_categories": ["audio"],
+    "denied_asset_refs": [],
     "approved_by": "founder",
-    "recorded_in": "Codex task 5 execution",
+    "approved_at": "2026-08-03T00:00:00Z",
     "remember_for_project": false
   }
 }

@@ -210,6 +210,50 @@ test("client: unknown gameId surfaces unknown-game state", async () => {
   controller.unmount();
 });
 
+test("client: missing definition version surfaces definition-error", async () => {
+  const window = new HappyWindow();
+  const doc = window.document as unknown as Document;
+  const stage = doc.createElement("section");
+  const registry = new RendererRegistry();
+  registry.register(makeTracingRenderer("fixture-individual", []));
+  let loadCalls = 0;
+  const fetcher = makeFetcher({
+    "/mini-games/active": () =>
+      new Response(
+        JSON.stringify({
+          run_id: "run-1",
+          game_id: "fixture-individual",
+          status: "active",
+          deadline_at: null,
+          my_submissions: [],
+        }),
+        { status: 200 },
+      ),
+    "/events?since=": () => makeStreamingResponse(""),
+  });
+
+  const controller = await bootMiniGameStage(stage, {
+    registry,
+    baseUrl: "https://arcwright.test",
+    sessionId: "session-1",
+    token: "token-x",
+    surface: "phone",
+    participantId: "p-1",
+    characterId: "c-1",
+    loadDefinition: async () => {
+      loadCalls += 1;
+      return makeDefinition("fixture-individual");
+    },
+    view: window as unknown as Window,
+    fetcher,
+    perfTransport: "none",
+  });
+
+  assert.equal(stage.getAttribute("data-mini-game-state"), "definition-error");
+  assert.equal(loadCalls, 0);
+  controller.unmount();
+});
+
 test("client: refresh remounts when runId changes", async () => {
   const window = new HappyWindow();
   const doc = window.document as unknown as Document;
@@ -225,6 +269,7 @@ test("client: refresh remounts when runId changes", async () => {
         JSON.stringify({
           run_id: runId,
           game_id: "fixture-individual",
+          definition_version: "0.1.0",
           status: "active",
           deadline_at: null,
           my_submissions: [],
@@ -292,6 +337,7 @@ test("client: caller-supplied submissionId reaches the server unchanged", async 
         JSON.stringify({
           run_id: "run-1",
           game_id: "test-game",
+          definition_version: "0.1.0",
           status: "active",
           deadline_at: null,
           my_submissions: [],
@@ -377,6 +423,7 @@ test("client: submits action with generated submission id", async () => {
         JSON.stringify({
           run_id: "run-1",
           game_id: "test-game",
+          definition_version: "0.1.0",
           status: "active",
           deadline_at: null,
           my_submissions: [],

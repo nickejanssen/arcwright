@@ -9,8 +9,9 @@
 Tell Me Something True now reaches a local `Playtest-ready` preview path through
 the browser onboarding flow. The path imports, analyzes, records permission,
 creates a Nightcap Couch Race adaptation, mounts phone/shared-display/host
-preview renderers, loads exact package versions, and records deterministic local
-playtest evidence.
+preview renderers, loads exact package and adaptation versions, drives the real
+Tell Me Something True runtime event/submission contract, and records
+deterministic local playtest evidence.
 
 The result is not Production-ready and should not be generalized as a complete
 developer proof yet. The first-time and returning human developer timing
@@ -30,15 +31,22 @@ sessions required by the plan were not run.
 Internal walkthrough command:
 
 ```powershell
-python docs/skills/arcwright-minigame/scripts/minigame_tool.py playtest --session tmst-golden-path-internal --scenario happy-path --players 4 --out .superpowers/sdd/2026-08-03-browser-minigame-golden-path/task7-playtest --json
+python docs/skills/arcwright-minigame/scripts/minigame_tool.py playtest --session tmst-golden-path-review-fixed --scenario happy-path --players 4 --out C:\tmp\arcwright-tmst-golden-path-review-fixed --json
 ```
 
 Observed result:
 
 - State: `Playtest-ready`
 - Authority: `NON_AUTHORITATIVE_PREVIEW`
+- Authority profile: `arcwright.authority.preview-only.v1`
+- Package: `tell-me-something-true@0.1.0`
+- Adaptation: `tell-me-something-true-nightcap-couch-race-v1@0.1.0`
 - Players: 4
 - Surfaces: phone, shared display, host
+- Surface checks:
+  - Phone mounted and submitted real TMST `input` and `vote` payloads
+  - Shared display mounted and did not render private prompt payloads
+  - Host mounted with preview authority visible
 - Production consequence applied: false
 - Cloud credentials required: false
 - Production model call required: false

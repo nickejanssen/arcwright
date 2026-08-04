@@ -295,12 +295,16 @@ export async function bootMiniGameStage(
       setStageState(stage, StageStates.UnknownGame);
       return;
     }
+    if (!state.definitionVersion) {
+      setStageState(stage, StageStates.DefinitionError);
+      return;
+    }
     const renderer: MiniGameRenderer = opts.registry.get(state.gameId);
     let definition: MiniGameDefinition;
     try {
       definition = await opts.loadDefinition(
         state.gameId,
-        state.definitionVersion ?? "0.1.0",
+        state.definitionVersion,
       );
     } catch {
       if (mySeq !== refreshSequence) return;

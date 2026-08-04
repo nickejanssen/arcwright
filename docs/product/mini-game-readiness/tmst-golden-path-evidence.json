@@ -21,18 +21,36 @@
   ],
   "internal_walkthrough": {
     "status": "pass",
-    "command": "python docs/skills/arcwright-minigame/scripts/minigame_tool.py playtest --session tmst-golden-path-internal --scenario happy-path --players 4 --out .superpowers/sdd/2026-08-03-browser-minigame-golden-path/task7-playtest --json",
+    "command": "python docs/skills/arcwright-minigame/scripts/minigame_tool.py playtest --session tmst-golden-path-review-fixed --scenario happy-path --players 4 --out C:\\tmp\\arcwright-tmst-golden-path-review-fixed --json",
     "readiness_state": "playtest_ready",
     "state_label": "Playtest-ready",
     "authority": "NON_AUTHORITATIVE_PREVIEW",
+    "authority_profile": "arcwright.authority.preview-only.v1",
+    "package_id": "tell-me-something-true",
+    "package_version": "0.1.0",
+    "adaptation_id": "tell-me-something-true-nightcap-couch-race-v1",
+    "adaptation_version": "0.1.0",
     "players": 4,
-    "surfaces": [
-      "phone",
-      "shared_display",
-      "host"
+    "surfaces": ["phone", "shared_display", "host"],
+    "surface_checks": [
+      {
+        "surface": "phone",
+        "mounted": true,
+        "submissions": 2
+      },
+      {
+        "surface": "shared_display",
+        "mounted": true,
+        "submissions": 0
+      },
+      {
+        "surface": "host",
+        "mounted": true,
+        "submissions": 0
+      }
     ],
-    "local_url": "http://127.0.0.1:8787/playtest/tmst-golden-path-internal",
-    "lan_url": "http://10.5.0.2:8787/playtest/tmst-golden-path-internal",
+    "local_url": "http://127.0.0.1:8787/playtest/tmst-golden-path-review-fixed",
+    "lan_url": "http://10.5.0.2:8787/playtest/tmst-golden-path-review-fixed",
     "production_consequence_applied": false,
     "summary": "Local deterministic preview evidence recorded without cloud credentials, model calls, database writes, or production consequences."
   },

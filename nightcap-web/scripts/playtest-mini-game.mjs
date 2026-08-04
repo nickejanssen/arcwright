@@ -1,14 +1,18 @@
 #!/usr/bin/env node
 import { createServer } from "node:http";
+import { createHash } from "node:crypto";
 import { hostname, networkInterfaces } from "node:os";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, resolve, relative } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
+import { build as esbuild } from "esbuild";
+import { Window as HappyWindow } from "happy-dom";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const REPO_ROOT = resolve(__dirname, "..", "..");
 const DEFAULT_OUT = resolve(REPO_ROOT, "nightcap-web", ".mini-game-playtests");
+const RENDERER_CACHE = resolve(DEFAULT_OUT, ".renderer-cache");
 const PREVIEW = "NON_AUTHORITATIVE_PREVIEW";
 const DEFAULT_ADAPTATION =
   "nightcap/mini_games/tell-me-something-true/adaptations/nightcap-couch-race-v1/0.1.0.json";
@@ -124,7 +128,227 @@ function lanUrl(port, path) {
   return null;
 }
 
-function buildReplay(args, port) {
+async function readJson(path) {
+  return JSON.parse(await readFile(path, "utf8"));
+}
+
+async function loadArtifacts(args) {
+  const adaptationPath = resolve(REPO_ROOT, args.adaptation);
+  const adaptation = await readJson(adaptationPath);
+  if (adaptation.authority_profile !== "arcwright.authority.preview-only.v1") {
+    throw new Error("playtest requires preview-only authority");
+  }
+  const packageRef = adaptation.package ?? {};
+  if (!packageRef.game_id || !packageRef.version) {
+    throw new Error(
+      "adaptation must reference an exact package game_id and version",
+    );
+  }
+  const packageDir = resolve(
+    REPO_ROOT,
+    "nightcap",
+    "mini_games",
+    packageRef.game_id,
+  );
+  const manifest = await readJson(resolve(packageDir, "manifest.json"));
+  if (manifest.game_id !== packageRef.game_id) {
+    throw new Error("manifest game_id does not match adaptation package ref");
+  }
+  if (manifest.current_version !== packageRef.version) {
+    throw new Error(
+      "manifest current_version does not match adaptation package ref",
+    );
+  }
+  const definition = await readJson(
+    resolve(packageDir, manifest.definition_path),
+  );
+  if (definition.version !== packageRef.version) {
+    throw new Error("definition version does not match adaptation package ref");
+  }
+  const rendererPath = resolve(packageDir, "client", "renderer.ts");
+  const rendererSource = await readFile(rendererPath, "utf8");
+  const rendererHash = createHash("sha256")
+    .update(rendererSource)
+    .digest("hex")
+    .slice(0, 12);
+  await mkdir(RENDERER_CACHE, { recursive: true });
+  const bundlePath = resolve(
+    RENDERER_CACHE,
+    `${packageRef.game_id}-${packageRef.version}-${rendererHash}.mjs`,
+  );
+  try {
+    await readFile(bundlePath, "utf8");
+  } catch {
+    await esbuild({
+      entryPoints: [rendererPath],
+      outfile: bundlePath,
+      bundle: true,
+      format: "esm",
+      target: ["es2022"],
+      platform: "browser",
+      alias: {
+        "@arcwright/mini-game-kit": resolve(
+          REPO_ROOT,
+          "nightcap-web",
+          "src",
+          "mini-game-kit",
+          "index.ts",
+        ),
+      },
+      logLevel: "silent",
+    });
+  }
+  const mod = await import(`${pathToFileURL(bundlePath).href}?t=${Date.now()}`);
+  return {
+    adaptation,
+    adaptationPath,
+    bundlePath,
+    definition,
+    manifest,
+    renderer: mod.default,
+  };
+}
+
+function assertTextAbsent(root, pattern, label) {
+  if (pattern.test(root.textContent ?? "")) {
+    throw new Error(label);
+  }
+}
+
+async function driveSurface(surface, artifacts, args) {
+  const window = new HappyWindow();
+  const doc = window.document;
+  const root = doc.createElement("section");
+  const submissions = [];
+  const state = {
+    runId: `${args.session}-${surface}`,
+    gameId: artifacts.manifest.game_id,
+    definitionVersion: artifacts.definition.version,
+    status: "active",
+    deadlineAt: null,
+    runtimeState: {},
+    presentation: {
+      title: "Tell Me Something True",
+      prompt: "I once hid the ledger under ____.",
+    },
+    mySubmissions: [],
+  };
+  const ctx = {
+    surface,
+    sessionId: args.session,
+    participantId: "sim-player-1",
+    characterId: "sim-character-1",
+    state,
+    definition: artifacts.definition,
+    submit: async (payload) => {
+      submissions.push(payload);
+      return { submissionId: `sub-${submissions.length}`, isAccepted: true };
+    },
+    onEvent: () => () => {},
+    reportPerf: () => {},
+  };
+  const lifecycle = artifacts.renderer.mount(root, ctx);
+  if (root.getAttribute("data-authority") !== PREVIEW) {
+    throw new Error(`${surface} did not render preview authority`);
+  }
+  if (surface === "phone") {
+    lifecycle.handleEvent({
+      event_type: "tmst_private_prompt_ready",
+      payload: { phase: "input" },
+    });
+    const input = root.querySelector('[data-role="statement-input"]');
+    if (!input) throw new Error("phone surface did not render statement input");
+    input.value = "the old piano";
+    root.querySelector('[data-role="truth-action"]')?.click();
+    await new Promise((resolveDone) => setTimeout(resolveDone, 0));
+    lifecycle.handleEvent({
+      event_type: "tmst_spotlight_started",
+      payload: {
+        target_character_id: "sim-character-2",
+        spotlight_label: "Vesper",
+        other_player_vote: "must stay hidden",
+      },
+    });
+    root.querySelector('[data-role="vote-lie"]')?.click();
+    await new Promise((resolveDone) => setTimeout(resolveDone, 0));
+    if (
+      !submissions.some(
+        (item) =>
+          item.action === "input" &&
+          item.statement_text === "the old piano" &&
+          item.declared_truth === true,
+      )
+    ) {
+      throw new Error("phone surface did not submit TMST input payload");
+    }
+    if (
+      !submissions.some(
+        (item) =>
+          item.action === "vote" &&
+          item.target_character_id === "sim-character-2" &&
+          item.vote === "lie",
+      )
+    ) {
+      throw new Error("phone surface did not submit TMST vote payload");
+    }
+    assertTextAbsent(
+      root,
+      /must stay hidden/,
+      "phone leaked another player's vote",
+    );
+  }
+  if (surface === "shared_display") {
+    lifecycle.handleEvent({
+      event_type: "tmst_private_prompt_ready",
+      payload: { prompt: "private text must not appear" },
+    });
+    assertTextAbsent(
+      root,
+      /private text/i,
+      "shared display leaked private prompt",
+    );
+    lifecycle.handleEvent({
+      event_type: "tmst_spotlight_started",
+      payload: { target_character_id: "sim-character-2" },
+    });
+    lifecycle.handleEvent({
+      event_type: "tmst_reveal_resolved",
+      payload: { statement_text: "public reveal" },
+    });
+  }
+  lifecycle.update({
+    ...state,
+    status: args.scenario === "timeout" ? "timed_out" : "completed",
+  });
+  lifecycle.unmount();
+  return {
+    surface,
+    mounted: true,
+    submissions: submissions.length,
+  };
+}
+
+async function proveArtifacts(args) {
+  const artifacts = await loadArtifacts(args);
+  const surface_checks = [];
+  for (const surface of args.surfaces) {
+    surface_checks.push(await driveSurface(surface, artifacts, args));
+  }
+  return {
+    adaptation_id: artifacts.adaptation.adaptation_id,
+    adaptation_version: artifacts.adaptation.adaptation_version,
+    authority_profile: artifacts.adaptation.authority_profile,
+    package_id: artifacts.manifest.game_id,
+    package_version: artifacts.definition.version,
+    renderer_bundle: relative(REPO_ROOT, artifacts.bundlePath).replace(
+      /\\/g,
+      "/",
+    ),
+    surface_checks,
+  };
+}
+
+function buildReplay(args, port, proof) {
   const path = `/playtest/${encodeURIComponent(args.session)}`;
   const localUrl = `http://127.0.0.1:${port}${path}`;
   const players = playerIds(args.players);
@@ -140,7 +364,12 @@ function buildReplay(args, port) {
     session_id: args.session,
     scenario: args.scenario,
     adaptation_ref: args.adaptation,
+    adaptation_id: proof.adaptation_id,
+    adaptation_version: proof.adaptation_version,
+    package_id: proof.package_id,
+    package_version: proof.package_version,
     authority: PREVIEW,
+    authority_profile: proof.authority_profile,
     local_url: localUrl,
     lan_url: lanUrl(port, path),
     host_name: hostname(),
@@ -148,6 +377,7 @@ function buildReplay(args, port) {
     surfaces: args.surfaces,
     states,
     events,
+    surface_checks: proof.surface_checks,
     production_consequence_applied: false,
     preview_banner: PREVIEW,
   };
@@ -168,6 +398,7 @@ function buildEvidence(replay, replayFile) {
     local_url: replay.local_url,
     lan_url: replay.lan_url,
     surfaces: replay.surfaces,
+    surface_checks: replay.surface_checks,
     players: replay.players.length,
     scenario: replay.scenario,
     production_consequence_applied: false,
@@ -199,7 +430,6 @@ async function maybeServe(replay, serveMs) {
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   const port = 8787;
-  const replay = buildReplay(args, port);
   const dir = resolve(
     args.out,
     args.session,
@@ -207,6 +437,8 @@ async function main() {
     String(args.players),
   );
   await mkdir(dir, { recursive: true });
+  const proof = await proveArtifacts(args);
+  const replay = buildReplay(args, port, proof);
   const replayPath = resolve(dir, "replay.json");
   const evidencePath = resolve(dir, "evidence.json");
   const replayRef = relative(REPO_ROOT, replayPath).replace(/\\/g, "/");

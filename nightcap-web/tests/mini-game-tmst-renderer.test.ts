@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import { mkdir } from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { resolve } from "node:path";
@@ -20,15 +21,37 @@ import type {
 
 let rendererPromise: Promise<MiniGameRenderer> | null = null;
 
+const nightcapWebRoot = [
+  resolve("."),
+  resolve("nightcap-web"),
+  resolve("..", "nightcap-web"),
+].find((candidate) =>
+  existsSync(resolve(candidate, "src", "mini-game-kit", "index.ts")),
+);
+
+if (!nightcapWebRoot) {
+  throw new Error("Could not locate nightcap-web source root");
+}
+
+const NIGHTCAP_WEB_ROOT = nightcapWebRoot;
+const REPO_ROOT = resolve(NIGHTCAP_WEB_ROOT, "..");
+
 async function loadRenderer(): Promise<MiniGameRenderer> {
   if (rendererPromise) return rendererPromise;
   rendererPromise = (async () => {
-    const outfile = resolve("dist", "tests", "tmst-renderer-bundle.mjs");
-    await mkdir(resolve("dist", "tests"), { recursive: true });
+    const outfile = resolve(
+      NIGHTCAP_WEB_ROOT,
+      "dist",
+      "tests",
+      "tmst-renderer-bundle.mjs",
+    );
+    await mkdir(resolve(NIGHTCAP_WEB_ROOT, "dist", "tests"), {
+      recursive: true,
+    });
     await esbuild({
       entryPoints: [
         resolve(
-          "..",
+          REPO_ROOT,
           "nightcap",
           "mini_games",
           "tell-me-something-true",
@@ -42,7 +65,12 @@ async function loadRenderer(): Promise<MiniGameRenderer> {
       target: ["es2022"],
       platform: "browser",
       alias: {
-        "@arcwright/mini-game-kit": resolve("src", "mini-game-kit", "index.ts"),
+        "@arcwright/mini-game-kit": resolve(
+          NIGHTCAP_WEB_ROOT,
+          "src",
+          "mini-game-kit",
+          "index.ts",
+        ),
       },
       logLevel: "silent",
     });
@@ -66,7 +94,9 @@ function makeDefinition(): MiniGameDefinition {
     max_players: 8,
     duration_seconds: 240,
     rules: {},
-    authored_content: {},
+    authored_content: {
+      phone_prompt: "Complete the private statement.",
+    },
     generation_constraints: null,
     behavioral_outputs: [],
     clue_fallback: {
@@ -85,7 +115,10 @@ function makeState(overrides: Partial<MiniGameState> = {}): MiniGameState {
     status: "active",
     deadlineAt: null,
     runtimeState: {},
-    presentation: { title: "Tell Me Something True" },
+    presentation: {
+      title: "Tell Me Something True",
+      prompt: "I once hid the ledger under ____.",
+    },
     mySubmissions: [],
     ...overrides,
   };
@@ -150,16 +183,18 @@ test("tmst renderer: phone shows private prompt and submits engine-owned payload
   );
 
   lifecycle.handleEvent(
-    event("mini_game_private_prompt", {
-      statement_id: "stmt-1",
-      prompt: "I once hid the ledger under ____.",
-      true_label: "Tell the truth",
-      lie_label: "Sell the lie",
+    event("tmst_private_prompt_ready", {
+      phase: "input",
     }),
   );
 
   assert.match(root.textContent ?? "", /I once hid the ledger/);
   assert.match(root.textContent ?? "", /NON_AUTHORITATIVE_PREVIEW/);
+  const input = root.querySelector<HTMLTextAreaElement>(
+    '[data-role="statement-input"]',
+  );
+  if (!input) throw new Error("expected statement input");
+  input.value = "the old piano";
   const truthButton = root.querySelector<HTMLButtonElement>(
     '[data-role="truth-action"]',
   );
@@ -167,8 +202,8 @@ test("tmst renderer: phone shows private prompt and submits engine-owned payload
   await new Promise((resolveDone) => setTimeout(resolveDone, 0));
   assert.deepEqual(submissions, [
     {
-      action: "submit_statement",
-      statement_id: "stmt-1",
+      action: "input",
+      statement_text: "the old piano",
       declared_truth: true,
     },
   ]);
@@ -185,8 +220,8 @@ test("tmst renderer: shared display never renders private prompt payload", async
   );
 
   lifecycle.handleEvent(
-    event("mini_game_private_prompt", {
-      statement_id: "stmt-secret",
+    event("tmst_private_prompt_ready", {
+      phase: "input",
       prompt: "This private text must not appear.",
     }),
   );
@@ -200,11 +235,15 @@ test("tmst renderer: phone vote prompt hides other players' vote choices", async
   const window = new HappyWindow();
   const doc = window.document as unknown as Document;
   const root = doc.createElement("section");
-  const lifecycle = renderer.mount(root, makeContext("phone", makeState()));
+  const submissions: unknown[] = [];
+  const lifecycle = renderer.mount(
+    root,
+    makeContext("phone", makeState(), submissions),
+  );
 
   lifecycle.handleEvent(
-    event("mini_game_vote_opened", {
-      statement_id: "stmt-2",
+    event("tmst_spotlight_started", {
+      target_character_id: "character-2",
       spotlight_label: "Vesper",
       other_player_vote: "p-2 voted Truth",
     }),
@@ -212,6 +251,15 @@ test("tmst renderer: phone vote prompt hides other players' vote choices", async
 
   assert.match(root.textContent ?? "", /Vesper: truth or lie/);
   assert.doesNotMatch(root.textContent ?? "", /p-2 voted Truth/);
+  root.querySelector<HTMLButtonElement>('[data-role="vote-lie"]')?.click();
+  await new Promise((resolveDone) => setTimeout(resolveDone, 0));
+  assert.deepEqual(submissions, [
+    {
+      action: "vote",
+      target_character_id: "character-2",
+      vote: "lie",
+    },
+  ]);
 });
 
 test("tmst renderer: reduced motion is visible as state, not color only", async () => {
