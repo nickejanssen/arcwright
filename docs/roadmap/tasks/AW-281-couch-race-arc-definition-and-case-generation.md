@@ -2,7 +2,13 @@
 
 **Milestone / Epic:** M5 / M5-I
 **Size:** L
-**Status:** Planned
+**Status:** Complete
+
+## Closeout Evidence
+
+Merged PR #247 (`646647f`) delivered the canonical six-beat Couch Race
+ArcDefinition and deterministic case-generation step. Issue #235 is closed.
+This task is complete.
 
 ## Plain-English Summary
 
@@ -53,10 +59,10 @@ dates, and owner actions.
 
 ## Acceptance Criteria
 
-- [ ] A headless harness run completes all six beats with synthetic players at counts 2 and 8.
-- [ ] Case resolution is reproducible under a fixed seed (deterministic replay per AW-112).
-- [ ] Every authorized suspect lie is falsifiable against the resolved genuine evidence set (validation check in arc tests).
-- [ ] Arc validates against ArcDefinition schema with zero engine schema changes, or any required schema change goes through the Hard Rules review path.
+- [x] A headless harness run completes all six beats with synthetic players at counts 2 and 8.
+- [x] Case resolution is reproducible under a fixed seed (deterministic replay per AW-112).
+- [x] Every authorized suspect lie is falsifiable against the resolved genuine evidence set (validation check in arc tests).
+- [x] Arc validates against ArcDefinition schema with zero engine schema changes, or any required schema change goes through the Hard Rules review path.
 
 ## Tests/Verification
 

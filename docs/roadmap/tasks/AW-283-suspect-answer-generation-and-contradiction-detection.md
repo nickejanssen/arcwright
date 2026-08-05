@@ -2,7 +2,13 @@
 
 **Milestone / Epic:** M5 / M5-I
 **Size:** L
-**Status:** Planned
+**Status:** Complete
+
+## Closeout Evidence
+
+Merged PR #256 (`87c25b5`) delivered knowledge-constrained answer generation,
+claim-ledger provenance, and deterministic possession-gated contradiction
+detection. Issue #237 is closed. This task is complete.
 
 ## Plain-English Summary
 
@@ -57,11 +63,11 @@ dates, and owner actions.
 
 ## Acceptance Criteria
 
-- [ ] Suspect answers never reference facts outside the suspect's knowledge state (AW-272 eval batch reports zero leaks on a clean seed).
-- [ ] A seeded authorized lie is catchable: the contradicting evidence exists and a flag on it confirms deterministically.
-- [ ] Flags on consistent statements reject deterministically (false-positive guard).
-- [ ] Claim provenance is queryable per session (feeds the reveal accounting).
-- [ ] Answer-generation p95 latency recorded in telemetry.
+- [x] Suspect answers never reference facts outside the suspect's knowledge state (AW-272 eval batch reports zero leaks on a clean seed).
+- [x] A seeded authorized lie is catchable: the contradicting evidence exists and a flag on it confirms deterministically.
+- [x] Flags on consistent statements reject deterministically (false-positive guard).
+- [x] Claim provenance is queryable per session (feeds the reveal accounting).
+- [x] Answer-generation p95 latency recorded in telemetry.
 
 ## Tests/Verification
 

@@ -2,7 +2,13 @@
 
 **Milestone / Epic:** M5 / M5-I
 **Size:** M
-**Status:** Planned
+**Status:** Complete
+
+## Closeout Evidence
+
+Merged PR #260 (`6f7a7ee`) delivered deterministic race scoring and
+accusation state across every win/end path. Issue #238 is closed. This
+task is complete.
 
 ## Plain-English Summary
 
@@ -53,10 +59,10 @@ checkpoint approvals, dates, and owner actions.
 
 ## Acceptance Criteria
 
-- [ ] All win/end paths reachable in harness: first-correct then table lock-in; countdown expiry; all-players-locked-early.
-- [ ] Wrong accusation applies lockout and penalty deterministically; no elimination state exists.
-- [ ] Scores and superlatives reproducible under deterministic replay.
-- [ ] Guarded transitions verified by configuration values after firing (StateChart silent-guard behavior).
+- [x] All win/end paths reachable in harness: first-correct then table lock-in; countdown expiry; all-players-locked-early.
+- [x] Wrong accusation applies lockout and penalty deterministically; no elimination state exists.
+- [x] Scores and superlatives reproducible under deterministic replay.
+- [x] Guarded transitions verified by configuration values after firing (StateChart silent-guard behavior).
 
 ## Tests/Verification
 
