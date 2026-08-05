@@ -8,7 +8,7 @@ Adds mini_game_runs (canonical run state) and mini_game_submissions
 (append-only player actions) per AW-251.
 
 Schema source of truth: docs/specs/0048-aw-251-mini-game-runtime-persistence-and-clue-gating.md
-ADR: docs/decisions/0009-mini-game-runtime-boundary.md
+ADR: docs/decisions/0018-mini-game-orchestration-and-execution-adapters.md (supersedes docs/decisions/0009-mini-game-runtime-boundary.md)
 """
 
 import sqlalchemy as sa
