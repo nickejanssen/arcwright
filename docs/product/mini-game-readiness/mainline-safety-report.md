@@ -1,9 +1,25 @@
-> Current version: v1.1
-> Last updated: 2026-08-03
-> Status: Current planning audit, browser golden path implementation approved
+> Current version: v1.2
+> Last updated: 2026-08-04
+> Status: Browser golden path merged; other program plans still require their own execution approval
 > Canonical path: docs/product/mini-game-readiness/mainline-safety-report.md
 
 # Mini-game Readiness Program Mainline Safety Report
+
+## 2026-08-04 post-merge refresh
+
+PR #275 (`docs/superpowers/plans/2026-08-03-browser-minigame-golden-path.md`,
+approved for execution as D-099 below) merged into `main` as `78166d4` on
+2026-08-04. `origin/main` and local `main` are both at `78166d4` and clean.
+The "dirty main checkout" `docs/product/decisions-log.csv` modification noted
+throughout this report (an unrelated, pre-existing local change, not authored
+by this program) was resolved separately and no longer applies.
+
+This refresh is additive only. It does not revise the approvals, baselines,
+or findings recorded below, which remain the historical record for the
+planning and implementation-approval decisions they describe. The
+`docs/product/mini-game-readiness/artifact-closeout-matrix.md` companion
+document is the reconciled program-status source; consult it for current
+per-artifact gate status.
 
 ## Decision
 
