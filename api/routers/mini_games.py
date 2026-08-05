@@ -2,7 +2,7 @@
 
 Architecture: docs/architecture/09-developer-api.md §9.2.
 ADR-0008: docs/decisions/0008-content-event-type-layering.md (event schema).
-ADR-0009: docs/decisions/0009-mini-game-runtime-boundary.md (runtime boundary).
+ADR-0018: docs/decisions/0018-mini-game-orchestration-and-execution-adapters.md (runtime boundary; supersedes ADR-0009).
 
 Route handlers are thin: authenticate, validate, delegate to MiniGameRuntime.
 No arc logic, scoring, or state decisions here.

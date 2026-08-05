@@ -1,6 +1,6 @@
 ---
 name: arcwright-minigame
-description: Add, import, validate, fit-check, test, and promote a mini-game package in the Arcwright repo as a single gated lifecycle. Use whenever someone wants to bring a mini-game into the platform or move one along its lifecycle, even if they only say "add a mini-game", "import this game", "new puzzle/clue mini-game", "scaffold a Nightcap mini-game", "validate my mini-game package", "does this mini-game fit the story", "is this on-spec", "promote the mini-game to playtest/active", or hands over a zip or folder of a game to ingest. Keeps the engine boundary from ADR 0009 intact: Python owns timers, scoring, submissions, outcomes, clue unlocking, and persistence; clients only render and submit; AI never decides outcomes. Author packages under <experience>/mini_games/, defaulting to nightcap/mini_games/.
+description: Add, import, validate, fit-check, test, and promote a mini-game package in the Arcwright repo as a single gated lifecycle. Use whenever someone wants to bring a mini-game into the platform or move one along its lifecycle, even if they only say "add a mini-game", "import this game", "new puzzle/clue mini-game", "scaffold a Nightcap mini-game", "validate my mini-game package", "does this mini-game fit the story", "is this on-spec", "promote the mini-game to playtest/active", or hands over a zip or folder of a game to ingest. Keeps the engine boundary from ADR 0018 intact: for Arcwright-hosted mini-games, Python owns timers, scoring, submissions, outcomes, clue unlocking, and persistence; clients only render and submit; AI never decides outcomes. Author packages under <experience>/mini_games/, defaulting to nightcap/mini_games/.
 ---
 
 # Arcwright Mini-game Integrator
@@ -72,11 +72,15 @@ golden path is usable until generated adaptations, readiness resources, and the
 local lab ship, and never substitute automated checks for device or human
 playtest evidence.
 
-## The Non-negotiable Boundary (ADR 0009)
+## The Non-negotiable Boundary (ADR 0018)
 
 Every phase enforces these. A change that erodes one is a blocker, not a
-preference. Source: `docs/decisions/0009-mini-game-runtime-boundary.md` and
+preference. Source: `docs/decisions/0018-mini-game-orchestration-and-execution-adapters.md`
+(supersedes `docs/decisions/0009-mini-game-runtime-boundary.md`) and
 `docs/architecture/08-event-system.md`.
+
+This skill authors and runs games under `<experience>/mini_games/`, which is
+the Arcwright-hosted path. For that path:
 
 - Python owns authoritative timers, submission validation, scoring, outcomes,
   clue unlocking, and persistence. Clients render authorized state and submit
@@ -93,8 +97,16 @@ preference. Source: `docs/decisions/0009-mini-game-runtime-boundary.md` and
 - `client/` is a presentation workspace. Timers, scoring, and clue logic must
   never live there.
 
-If a requested mini-game needs any of those guarantees broken, stop and say so.
-Do not design around the boundary.
+ADR 0018 supersedes ADR 0009's claim that Python must own internal gameplay
+simulation for *every* possible host engine. Non-Arcwright-hosted profiles
+(an external developer's own Unity, Unreal, or custom backend) may hold result
+authority through a trusted backend boundary instead of Python-owned timers
+and scoring. That path is outside this skill's current scope; if a request
+needs it, say so rather than forcing it into the Arcwright-hosted model above.
+
+If a requested mini-game needs any of the Arcwright-hosted guarantees broken
+without following the ADR 0018 external-authority path, stop and say so. Do
+not design around the boundary.
 
 ## How to collaborate on design
 
@@ -133,7 +145,7 @@ are created or changed. Do not start coding in this phase unless the user
 explicitly asks for implementation.
 
 First, read the relevant canonical docs: `docs/README.md`,
-`docs/prd/02-requirements.md`, `docs/decisions/0009-mini-game-runtime-boundary.md`,
+`docs/prd/02-requirements.md`, `docs/decisions/0018-mini-game-orchestration-and-execution-adapters.md`,
 `docs/story-bibles/nightcap-murder-mystery.md`, and the relevant mini-game
 specs. If the game may touch surfaces, events, or arc execution, also read
 `docs/architecture/03-arc-execution.md` and
@@ -193,7 +205,7 @@ If the user asks for a handoff prompt instead of implementation, generate a
 copy-paste-ready build prompt from the locked brief. The handoff must require
 the next agent to read `AGENTS.md`, read canonical docs, inspect existing
 mini-games, create or update a spec before implementation when scope is new,
-respect ADR 0009, run validation, and avoid em dashes.
+respect ADR 0018, run validation, and avoid em dashes.
 
 ## Phase 1: Scaffold or Import
 
@@ -379,7 +391,7 @@ an arc binding was added.
 
 ## Stop Conditions
 
-- A request that requires breaking the ADR 0009 boundary (client-side scoring,
+- A request that requires breaking the ADR 0018 boundary (client-side scoring,
   AI deciding outcomes, no fallback, v1 behavioral wiring into killer
   assignment).
 - A new mechanic or scope with no durable approval evidence.
@@ -402,5 +414,6 @@ Codex, and ChatGPT. Codex and ChatGPT pick it up via
 - Use the host's file and git tooling when present. If absent, ask the user to
   paste the package files and continue with the same workflow.
 - Treat this file as the procedure of record. Read canonical docs
-  (`docs/decisions/0009-mini-game-runtime-boundary.md`, the story bible, the
-  story-relevant specs `docs/specs/0046`–`0051`) when a phase needs detail.
+  (`docs/decisions/0018-mini-game-orchestration-and-execution-adapters.md`, the
+  story bible, the story-relevant specs `docs/specs/0046`–`0051`) when a phase
+  needs detail.
