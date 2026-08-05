@@ -2,7 +2,13 @@
 
 **Milestone / Epic:** M5 / M5-I
 **Size:** M
-**Status:** In Progress
+**Status:** Complete
+
+## Closeout Evidence
+
+Merged PR #248 (`122e01e`) delivered the structured interaction loop:
+deterministic question menus, per-beat token accounting, and audience-filtered
+public/private answer routing. Issue #236 is closed. This task is complete.
 
 ## Plain-English Summary
 

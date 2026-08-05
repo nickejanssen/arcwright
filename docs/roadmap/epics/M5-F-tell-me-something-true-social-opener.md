@@ -1,7 +1,7 @@
 # M5-F: Tell Me Something True Social Opener Implementation
 
 **Milestone:** M5
-**Status:** Planned
+**Status:** Active
 
 ## Plain-English Summary
 

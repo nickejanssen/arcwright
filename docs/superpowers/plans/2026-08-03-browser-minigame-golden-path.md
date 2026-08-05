@@ -1,5 +1,14 @@
 # Browser Mini-game Golden Path Implementation Plan
 
+> **Execution status:** Executed as PR #275 (merged `78166d4`, 2026-08-04).
+> Reached local Playtest-ready for Tell Me Something True only; human
+> first-time and returning-user usability sessions remain required before
+> generalizing the flow. See
+> `docs/product/mini-game-readiness/tmst-golden-path-report.md` for evidence
+> and the Decision: REVISE gate. The in-doc task checkboxes below were not
+> updated during execution and should not be read as a completion tracker;
+> the readiness report is the authoritative record.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 **Goal:** Prove that Tell Me Something True can move from an existing browser-capable package to a destination-fitted, locally Playtest-ready Nightcap adaptation through one measured workflow that a first-time external browser developer can understand.
