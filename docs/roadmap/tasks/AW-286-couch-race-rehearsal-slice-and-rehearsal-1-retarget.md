@@ -6,7 +6,7 @@
 
 ## Plain-English Summary
 
-Retarget Rehearsal 1 to a Couch Race thin slice: update the rehearsal runbook, quickstart, failure cheat sheet, and fun-observation rubric for the six-beat arc and interrogation loop; align the D-069 narrative tasks (AW-276–AW-280) to the new beats; run the founder rehearsal and log blockers.
+Retarget Rehearsal 1 to a Couch Race thin slice: update the rehearsal runbook, quickstart, failure cheat sheet, and fun-observation rubric for the six-beat arc, integrated mini-game opportunities, and interrogation loop; align the D-069 narrative tasks (AW-276–AW-280) to the new beats; run the founder rehearsal and log blockers.
 
 ## Why This Matters
 
@@ -24,7 +24,11 @@ Protects the founder's validation loop: several complete cases per rehearsal eve
 
 - Update `docs/roadmap/operations/rehearsal-1-runbook.md`, `rehearsal-quickstart.md`, `rehearsal-1-failure-cheat-sheet.md`, and `fun-observation-rubric.md` for Couch Race (interrogation engagement, catch fairness, race aliveness, "another case?" conversion).
 - Map AW-276–AW-280 narrative content targets onto the six beats (voice blocks, narrator beat lines, cold-open sequence, clue release, reveal accounting); record the mapping in each task's issue.
-- Execute the founder rehearsal (2–5 players, local tunnel), capture blocker log, run the event-dump verification showing narrative content_text at cold open, interrogation answers, twist, and reveal.
+- Execute the founder rehearsal across the supported 2–8 player range when
+  practical, with at least 2 players required for every qualifying run, using
+  the local tunnel. Capture the blocker log and run event-dump verification
+  showing narrative content_text at cold open, interrogation answers, twist,
+  mini-game opportunities, and reveal.
 
 ## Human Collaboration Contract
 
@@ -70,9 +74,11 @@ actions.
 - AW-281–AW-285 complete to thin-slice level
 - AW-276–AW-280 narrative pipeline tasks
 - D-065 local-tunnel deployment
-- AW-288 (mini-game beat coverage + Tell Me Something True acceleration)
-  and AW-289 (new Trivia mini-game) per D-079 -- the retargeted rehearsal
-  runs with four mini-games, not two, and does not begin until both close
+- AW-288 (Tell Me Something True activation, placement, and pacing) and
+  AW-289 (The Interrogation Room Last Call pressure capstone) as applicable
+  to the approved opportunity pools
+- The Mini-game Platform and Nightcap Readiness Program's six-opportunity,
+  device, and real-player certification gates
 
 ## Must Not Do
 

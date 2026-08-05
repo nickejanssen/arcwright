@@ -1,9 +1,9 @@
-> Current version: v0.2
-> Last updated: 2026-07-19
-> Status: Draft; awaiting founder design-gate approval
+> Current version: v0.5
+> Last updated: 2026-08-03
+> Status: Draft
 > Canonical path: docs/specs/0076-aw-289-interrogation-room.md
 
-# AW-289: The Interrogation Room
+# AW-289: The Interrogation Room Last Call Pressure Capstone
 
 ## References
 
@@ -12,7 +12,8 @@
 - Rehearsal gate: `docs/roadmap/tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md`
 - Scoring dependency: `docs/roadmap/tasks/AW-284-race-scoring-and-accusation-state.md`
 - Product approval: `docs/product/decisions-log.csv` D-079
-- Runtime boundary: `docs/decisions/0009-mini-game-runtime-boundary.md`
+- Runtime boundary: `docs/decisions/0018-mini-game-orchestration-and-execution-adapters.md`
+- Platform contracts: `docs/specs/0077-mini-game-registration-and-story-opportunities.md` through `docs/specs/0080-mini-game-onboarding-preview-and-certification.md`
 - Story bible: `docs/story-bibles/nightcap-couch-race.md` Sections 4, 6, 7, and 8
 - Authoring foundation: `docs/specs/0046-aw-249-nightcap-mini-game-authoring-foundation.md`
 - Content and safety foundation: `docs/specs/0047-aw-250-mini-game-content-resolution-and-safety.md`
@@ -21,9 +22,11 @@
 
 This is a proposed design brief, not an implementation authorization. The
 founder must approve the brief and the representative sample in this document
-before a package is scaffolded or bound into `nightcap/arc.json`.
+before a reusable package and Nightcap destination adaptation are promoted to
+playtest.
 
-The only new trivia game authorized for Rehearsal 1 is The Interrogation Room.
+The only new trivia game authorized for Rehearsal 1 is The Interrogation Room
+at Last Call.
 The following are future candidates and are not current implementation scope:
 
 1. Contradiction Trap
@@ -79,7 +82,7 @@ investigative lead or neutral observation, never a detached arcade score.
 
 ### Proposed runtime shape
 
-- **Target beat:** Beat 3, The Grill, between interrogation rounds.
+- **Target beat:** Last Call, as the session's pressure capstone.
 - **Participation:** Individual, with simultaneous or staggered private
   answers and a table-visible resolution.
 - **Player range:** 2 to 8, with rehearsal coverage at 2 to 5 players and
@@ -199,6 +202,59 @@ The mini-game reads this context only at question boundaries. It never reads
 Nightcap beat names, killer identity, hidden truth, raw knowledge-graph state,
 or private evidence.
 
+### Package, invocation, and handoff contract
+
+The reusable package uses exact version `0.1.0`, the legacy hosted-mechanic
+execution compatibility profile, result schema `1.0.0`, session range 2
+through 8, three questions, and a destination-neutral pressure-capstone
+affordance. Its Nightcap adaptation maps presentation, results, and story
+consequences. The Last Call placement policy selects it deterministically from
+the human-authored eligible pool only within delegated authority. A later
+certified pressure-capstone game may rotate into that pool without engine or
+renderer changes.
+
+Python resolves all three immutable questions and answer keys, enforces server
+deadlines and idempotency, scores submissions, orders standings, applies the
+authored fallback, and emits neutral result semantics. The browser renders
+only authorized state and submits an answer plus revision and idempotency
+identity. The generic API and SDK contain no Interrogation Room branch.
+
+The exact authored sequence is:
+
+1. Vesper opens Last Call and frames the rapid evidence check.
+2. Players answer three private, simultaneous questions on their own surfaces.
+3. Each resolution shows a table-safe explanation and live standings.
+4. The package completes and emits score and resource-compatible facts.
+5. The arc resumes final interrogation and the approved Leverage window.
+6. Every eligible player submits a private final guess; the arc locks all
+   guesses immutably.
+7. The arc enters The Truth, where a certified `reveal_reconstruction`
+   opportunity, initially The Unmasking, performs the reveal, score animation,
+   ranks, and podium.
+
+The package never locks guesses, reveals the killer, computes final session
+scores, or owns the podium. Those are deterministic arc and The Truth
+responsibilities.
+
+### Presentation and certification contract
+
+The player surface shows the private question, options, authoritative
+deadline, acknowledgement, and personal result. The shared-focus surface
+shows safe framing, countdown, resolution, explanation, and standings without
+private answers. The host surface shows progress, deadline, fallback, and safe
+operational controls. The package-local renderer uses the existing renderer
+kit and maps semantic presentation roles through the Nightcap experience
+design system for art, animation, audio, locale, accessibility, captions, and
+reduced motion.
+
+Playtest-ready must be locally testable through the local lab.
+Production-ready evidence is shown through the visual lab. Real-device and
+real-player gates cover all three
+formats, 2-player and 8-player pacing, privacy, reconnect, fallback, animation,
+audio, reduced motion, pressure, question quality, fairness, story handoff,
+and replay desire. Active promotion waits for founder sign-off and whole-session
+certification.
+
 #### V1 adaptive context
 
 The following signals are the recommended first contract. Each is represented
@@ -234,8 +290,11 @@ and rehearsal-tunable. When sample size is insufficient, the value is
 - Do not adapt by removing a player's agency, hiding required information, or
   making a failure state permanent.
 - Use deterministic seeded variation so a run can be replayed and debugged.
-- Log the input context, selected format, content validation result, and
-  outcome for rehearsal analysis.
+- Emit `mini_game_adaptation_selected` with only privacy-reviewed aggregate
+  bands, selected approved format ID, validation reason code, and aggregate
+  outcome band for rehearsal analysis. Never log the runtime context object,
+  raw signal inputs, per-player answers, private story context, or knowledge
+  state.
 
 #### Visionary Arcwright signal families
 
@@ -266,7 +325,7 @@ only the V1 adaptive context listed above.
 ### Proposed scoring and investigative output
 
 The following initial tuning is proposed for founder approval. AW-289 emits a
-deterministic per-player `mini_game_score_delta`; AW-284 owns accumulation,
+deterministic per-player `mini-game-score-delta`; AW-284 owns accumulation,
 race-score persistence, and score presentation. One mini-game point maps to
 one AW-284 race-score point unless the approved AW-284 scoring brief specifies
 a different explicit conversion.
@@ -465,7 +524,9 @@ available and the arc advances without penalty.
 - [ ] Confirm per-session generated questions within authored constraints.
 - [ ] Confirm setting-matched general trivia as the dominant source, with
   sparse case callbacks.
-- [ ] Confirm Beat 3 placement.
+- [ ] Confirm Last Call placement, per-question public resolution and
+  standings, and the arc-owned handoff through final guesses to The Truth's
+  reveal, score animation, ranks, and podium.
 - [ ] Confirm the deliberate adaptive answer-format mix.
 - [ ] Confirm individual answer model with public resolution.
 - [ ] Confirm 90-second target and three-question thin slice.
@@ -497,6 +558,8 @@ player error.
 
 - [ ] Founder approves this brief and representative sample before package
   authoring.
+- [ ] The mechanic is a destination-neutral reusable package with a
+  non-destructive, independently versioned Nightcap adaptation.
 - [ ] Package validates against the AW-249 schema and loader.
 - [ ] Every definition includes an authored delayed-clue fallback.
 - [ ] Question answer keys resolve deterministically before execution.
@@ -513,6 +576,11 @@ player error.
 - [ ] Private payloads are excluded from unauthorized players and the shared
   display.
 - [ ] Reconnect restores the authorized authoritative state.
+- [ ] The local lab makes 2-player and 8-player question, timeout, invalid
+  content, fallback, reconnect, standings, and story-handoff scenarios easy to
+  test without cloud deployment.
+- [ ] The production lab visualizes content validity, privacy, pacing,
+  accessibility, device, real-player, and founder evidence separately.
 - [ ] Content passes AW-250 safety review.
 - [ ] Existing Crime Scene Smash, Evidence Locker, and Tell Me Something True
   behavior remains unchanged.

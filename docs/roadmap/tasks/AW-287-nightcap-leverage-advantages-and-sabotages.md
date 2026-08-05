@@ -2,7 +2,14 @@
 
 **Milestone / Epic:** M5 / M5-I
 **Size:** L
-**Status:** Planned
+**Status:** Complete
+
+## Closeout Evidence
+
+Merged PR #251 (`84abf52`) delivered the approved Leverage capability and its
+deterministic, platform-neutral boundary. This task is complete; later
+mini-game work may award or spend configured resources, but must not redesign
+the Leverage economy without a separately approved decision.
 
 ## Plain-English Summary
 

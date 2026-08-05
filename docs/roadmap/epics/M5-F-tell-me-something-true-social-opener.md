@@ -18,10 +18,11 @@ sequencing into execution.
 **Status note (2026-07-19, D-079):** AW-262 through AW-265 (package,
 runtime, API/SDK, web rendering) are complete -- only AW-266 (running TMST
 as a real-human Rehearsal 2 session) remains open in this epic. Separately,
-D-079 amends D-064's sequencing for the Couch Race arc specifically: TMST
-is now also bound into Couch Race ahead of Rehearsal 1 via AW-288, using
-the implementation this epic already produced. AW-266's own Rehearsal 2
-human-test scope is unchanged and still runs per this epic.
+D-079 now routes TMST's Couch Race host registration, placement, and pacing
+through AW-288 and the Mini-game Platform and Nightcap Readiness Program.
+TMST is an eligible rotating opportunity, not a permanent mandatory binding.
+AW-266's own Rehearsal 2 human-test scope is unchanged and still runs per this
+epic; no Couch Race evidence supersedes it without a founder decision.
 
 ## Player Impact
 

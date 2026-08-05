@@ -2,7 +2,16 @@
 
 **Milestone / Epic:** M5 / M5-I
 **Size:** L
-**Status:** Planned
+**Status:** Complete — accepted Phase 1 structural scope
+
+## Closeout Scope (2026-08-02)
+
+PR #269 (`7aa3f92`) delivered the accepted Phase 1 structural projection layer
+and the associated reviewed fixes. Issue #239 is closed to that accepted scope.
+The unchecked original full-device and visual-quality criteria below are not
+claimed as complete: the Mini-game Platform and Nightcap Readiness Program
+carries them forward as integrated six-beat surface, device, and rehearsal
+gates. This task must not be reopened or duplicated to pursue that work.
 
 ## Plain-English Summary
 

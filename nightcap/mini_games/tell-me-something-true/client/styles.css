@@ -1,0 +1,80 @@
+.tmst-root {
+  color: #f7f4ec;
+  background: #17151a;
+}
+
+.tmst-phone,
+.tmst-shared,
+.tmst-host {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border: 1px solid rgba(247, 244, 236, 0.22);
+  border-radius: 8px;
+  background: linear-gradient(135deg, #1b1720 0%, #26202a 55%, #1b1e24 100%);
+}
+
+.tmst-preview {
+  width: fit-content;
+  padding: 0.25rem 0.5rem;
+  border: 1px solid #f0b84d;
+  border-radius: 6px;
+  color: #f0b84d;
+  font-size: 0.72rem;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.tmst-title,
+.tmst-prompt {
+  margin: 0;
+  color: #fff8dc;
+  letter-spacing: 0;
+}
+
+.tmst-status,
+.tmst-spotlight,
+.tmst-vote-prompt,
+.tmst-tally,
+.tmst-result,
+.tmst-timer {
+  margin: 0;
+  line-height: 1.35;
+}
+
+.tmst-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tmst-button {
+  min-height: 2.75rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid #f0b84d;
+  border-radius: 6px;
+  color: #17151a;
+  background: #f0b84d;
+  font: inherit;
+}
+
+.tmst-button:disabled {
+  opacity: 0.52;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .tmst-shared[data-role="tmst-shell"] {
+    animation: tmst-pressure 900ms ease-out both;
+  }
+}
+
+@keyframes tmst-pressure {
+  from {
+    transform: translateY(4px);
+    opacity: 0.72;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

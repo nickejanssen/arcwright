@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import test from "node:test";
 
 function expectThrows(fn: () => unknown, messagePattern: RegExp): void {
@@ -88,4 +90,16 @@ test("registry: defaultRegistry is a usable singleton", () => {
   defaultRegistry.register(makeRenderer("sentinel"));
   assert.equal(defaultRegistry.has("sentinel"), true);
   defaultRegistry.clear();
+});
+
+test("discovery: publishes exact definition versions without latest alias", () => {
+  const definitionsRoot = resolve(
+    "dist",
+    "static",
+    "mini-games",
+    "definitions",
+    "tell-me-something-true",
+  );
+  assert.equal(existsSync(resolve(definitionsRoot, "0.1.0.json")), true);
+  assert.equal(existsSync(resolve(definitionsRoot, "latest.json")), false);
 });

@@ -1,0 +1,69 @@
+{
+  "schema_version": "1.0",
+  "adaptation_id": "tell-me-something-true-nightcap-couch-race-v1",
+  "adaptation_version": "0.1.0",
+  "package": {
+    "game_id": "tell-me-something-true",
+    "version": "0.1.0"
+  },
+  "destination_game_id": "nightcap-couch-race-v1",
+  "authority_profile": "arcwright.authority.preview-only.v1",
+  "hosting": {
+    "mode": "managed",
+    "local_default": true,
+    "bring_your_own_hosting_allowed": false
+  },
+  "placement_policy": {
+    "policy_id": "tmst-pour-preview",
+    "allowed_authority_sources": ["designer_required", "engine_selected"],
+    "default_beat_window": ["Pour"],
+    "designer_can_pin_exact_beat": true,
+    "engine_can_select_within_window": true,
+    "player_requested": false
+  },
+  "surfaces": {
+    "phone": {
+      "renderer": "client/renderer.ts",
+      "private_fields": ["prompt", "statement_id", "personal_result"]
+    },
+    "shared_display": {
+      "renderer": "client/renderer.ts",
+      "public_context_allowlist": [
+        "title",
+        "phase",
+        "spotlight_label",
+        "response_count",
+        "public_result"
+      ]
+    },
+    "host": {
+      "renderer": "client/renderer.ts",
+      "host_context_allowlist": [
+        "status",
+        "fallback",
+        "accepted_submission_count"
+      ]
+    }
+  },
+  "result_mapping": {
+    "preview_only": true,
+    "simulation_ledger_label": "NON_AUTHORITATIVE_PREVIEW",
+    "production_consequences": []
+  },
+  "generation_permission_receipt": {
+    "receipt_id": "permission-tmst-nightcap-couch-race-v1-0.1.0",
+    "destination_game_id": "nightcap-couch-race-v1",
+    "adaptation_id": "tell-me-something-true-nightcap-couch-race-v1",
+    "approved_categories": [
+      "code",
+      "art",
+      "copy",
+      "animation",
+      "configuration"
+    ],
+    "denied_asset_refs": [],
+    "approved_by": "founder",
+    "approved_at": "2026-08-03T00:00:00Z",
+    "remember_for_project": false
+  }
+}

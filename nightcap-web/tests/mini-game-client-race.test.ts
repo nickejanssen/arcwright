@@ -108,6 +108,7 @@ test("client: stale refresh skips mount when loadDefinition is still in flight",
         JSON.stringify({
           run_id: runId,
           game_id: "test",
+          definition_version: "0.1.0",
           status: "active",
           deadline_at: null,
           my_submissions: [],
@@ -219,6 +220,7 @@ test("client: concurrent refresh() calls do not double-mount", async () => {
         JSON.stringify({
           run_id: "run-1",
           game_id: "fixture-individual",
+          definition_version: "0.1.0",
           status: "active",
           deadline_at: null,
           my_submissions: [],
@@ -330,6 +332,7 @@ test("client: handler unsubscribing mid-dispatch does not skip siblings", async 
         JSON.stringify({
           run_id: "run-1",
           game_id: "test",
+          definition_version: "0.1.0",
           status: "active",
           deadline_at: null,
           my_submissions: [],

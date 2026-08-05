@@ -1,12 +1,20 @@
 # AW-254: First Production Nightcap Mini-game And Rehearsal
 
-**Status**: Draft, blocked on AW-257
+**Status**: Superseded by AW-285/AW-286 integrated device gates
 
 **Author**: Codex | **Date**: 2026-06-20
 
 ---
 
 # Gate Outcome (2026-06-24)
+
+## Supersession Note (2026-08-02)
+
+This historical specification is no longer an execution authority. The
+remaining real-device, privacy, accessibility, fallback, and founder-demo
+requirements are carried by AW-285 and AW-286 inside the Mini-game Platform
+and Nightcap Readiness Program. No result in this draft is evidence that those
+integrated gates have passed.
 
 A pre-implementation gate check found no founder-selected production game ID in
 canonical docs, specs, or decision records, and no `active`-lifecycle package in

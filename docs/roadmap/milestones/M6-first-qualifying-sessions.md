@@ -7,6 +7,12 @@
 
 This is the measurement milestone where the product proves itself with real outside groups.
 
+The current Nightcap dependency is the Couch Race launch target: a six-beat,
+20–40 minute session for 2–8 players. M6 does not begin from a generic
+four-player or eight-beat assumption. Its Nightcap entry gate is the completed
+integrated Couch Race rehearsal, including the Mini-game Platform and Nightcap
+Readiness Program's device and real-player evidence.
+
 ## Epics
 
 - [M6-A: Playtest Operations](../epics/M6-A-playtest-operations.md)

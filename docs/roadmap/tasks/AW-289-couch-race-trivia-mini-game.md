@@ -1,13 +1,13 @@
-# AW-289: Couch Race Trivia Mini-Game
+# AW-289: The Interrogation Room Last Call Pressure Capstone
 
-> Current version: v0.2
-> Last updated: 2026-07-19
+> Current version: v0.3
+> Last updated: 2026-08-02
 > Status: Planned; design brief drafted and awaiting founder approval
 > Canonical path: docs/roadmap/tasks/AW-289-couch-race-trivia-mini-game.md
 
 **GitHub:** [#258](https://github.com/nickejanssen/arcwright/issues/258)
 
-**Selected Rehearsal 1 game:** The Interrogation Room
+**Selected Rehearsal 1 game:** The Interrogation Room, at Last Call
 
 **Milestone / Epic:** M5 / M5-I
 **Size:** L
@@ -15,9 +15,10 @@
 
 ## Plain-English Summary
 
-Design and build a net-new trivia-style mini-game package for Couch Race, a
-fourth mini-game alongside Crime Scene Smash, Evidence Locker, and Tell Me
-Something True (AW-288), per the founder's direction in D-079.
+Design and build The Interrogation Room, a net-new pressure-capstone
+trivia-style mini-game package for Last Call in Couch Race. It culminates in
+simultaneous player guesses, a reveal, score presentation, ranks, and a final
+podium, per the founder's direction in D-079.
 
 ## Why This Matters
 
@@ -30,10 +31,9 @@ received, not a shortcut.
 
 ## Player Impact
 
-A fourth distinct mini-game beat, adding pacing variety and a different kind
-of challenge (case recall under interrogation pressure) to the investigation
-loop. The selected game must feel like Murder Mystery Trivia rather than a
-detached general-knowledge quiz.
+A Last Call pressure capstone that turns case recall under interrogation
+pressure into a shared reveal, while remaining a Murder Mystery Trivia game
+rather than a detached general-knowledge quiz.
 
 ## Business Value
 
@@ -73,7 +73,7 @@ direction: per-session generated questions, general trivia dominant with
 sparse case callbacks, a deliberate mixed-format set, table-level adaptive
 room momentum, individual private answers, correctness plus speed plus
 difficulty scoring, a small fixed wrong-answer penalty, a live themed
-leaderboard, and Beat 3 placement. The founder must still approve the
+leaderboard, and Last Call placement. The founder must still approve the
 canonical brief, representative sample, scoring table, and narrator framing
 before implementation.
 

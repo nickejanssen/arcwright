@@ -72,7 +72,7 @@ Base path: `/v1/`. All endpoints require auth (API key for developer calls; sess
 
 ## 9.3 Arc Definition Format
 
-Arc definitions are JSON files. Nightcap's arc definition at `nightcap/arc.json` is the canonical reference. Every field name here must match the `ArcDefinition` Pydantic schema in `engine/arc/models.py`. Nightcap v1 has a four-human-player floor. Two- and three-player sessions require interrogatable AI participants and are deferred to v1.1. Beat count is arc-level: Nightcap uses eight Story Circle beats, Monster RPG is emergent, and the platform does not assume a fixed count.
+Arc definitions are JSON files. Nightcap's current registered arc is the canonical reference. Every field name here must match the `ArcDefinition` Pydantic schema in `engine/arc/models.py`. The Couch Race v1 launch target supports 2 through 8 human players and uses six authored beats under the `docs/prd/03-scope.md` amendment. Beat count remains arc-level: other experiences may use a different fixed structure or an emergent one, and the platform does not assume a fixed count. The JSON below illustrates the schema shape and must not override a current registered arc or later canonical product amendment.
 
 **Top-level structure:**
 
@@ -80,8 +80,8 @@ Arc definitions are JSON files. Nightcap's arc definition at `nightcap/arc.json`
 {
   "arc_id": "nightcap-v1",
   "name": "Nightcap",
-  "min_players": 4,
-  "max_players": 10,
+  "min_players": 2,
+  "max_players": 8,
   "character_mode": "generated",
   "aesthetic_config": {
     "selection_model": {
@@ -250,3 +250,42 @@ Three documents ship with the API, sufficient for a technical co-founder to read
 3. **Nightcap arc schema.** The complete `nightcap/arc.json` published as the canonical reference implementation. Every structural decision in this arc is annotated with why it was made that way.
 
 These documents are not sufficient for a public API launch. A full developer documentation investment is required before the H2 external developer beta (scope debt, PRD Section 9).
+
+## 9.7 Mini-game Developer Workflow and Transport
+
+Mini-game onboarding extends the existing `arcwright-minigame` skill and
+`docs/skills/arcwright-minigame/scripts/minigame_tool.py`. The canonical flow
+is `import -> analyze -> confirm -> adapt -> place -> simulate -> local
+playtest -> production evidence -> promote`. The default path is destination
+first and managed browser hosting; reusable-first and externally hosted browser
+paths use the same resources. Pydantic models remain schema authority, and
+existing package loaders, fixtures, renderer kit, and validators remain the
+implementation foundation.
+
+The authoring API exposes imports, reusable packages, destination adaptations,
+generation permissions, participation variants, placement-policy simulation,
+local labs, readiness reports, rehearsals, promotion, and rollback. Studio,
+CLI, SDK, and the canonical skill call the same endpoints and produce the same
+versioned artifacts. A future no-code editor is a client of this API, not a
+separate backend.
+
+The generic invocation response exposes run, exact package and adaptation
+versions, negotiated profiles, status, revision, deadline, authorized runtime
+state, surface-neutral presentation, and the caller's submissions. The SDK
+maps that transport without mechanic-specific validation or arc logic.
+Preview-only results cannot reach production consequences. Managed browser
+production uses an exact input transcript and approved deterministic reducer.
+External production results require an auth-derived backend principal and
+matching authority proof. Presentation metadata never grants authority.
+
+The first-time Playtest-ready target is 10 to 15 minutes, 20 minutes maximum.
+The returning target is 5 to 10 minutes, 15 minutes maximum. Playtest-ready
+includes one-click local hosting, simulated players, multi-surface preview,
+real-device QR join, fixtures, replay, reset, reconnect, and fallback.
+Production-ready adds a visual gate map, scenario matrix, version comparison,
+evidence recordings, staged rehearsal, and separate automated and human status.
+
+Public marketplace, arbitrary plugin loading, engine-specific SDKs, partner
+credentials, billing, and commercial access remain deferred under ADR 0018.
+
+Contract: `docs/specs/0080-mini-game-onboarding-preview-and-certification.md`.

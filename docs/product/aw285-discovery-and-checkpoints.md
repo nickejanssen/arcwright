@@ -1,8 +1,8 @@
 # AW-285 Discovery and Checkpoints — Couch Race TV and Phone Rendering
 
-> Current version: v0.1 (discovery in progress)
-> Last updated: 2026-08-01
-> Status: Discovery — visual exploration delegated to Claude Design
+> Current version: v0.2 (Phase 1 closed; integrated gates carried forward)
+> Last updated: 2026-08-02
+> Status: Phase 1 structural scope complete; remaining surface gates active
 > Canonical path: docs/product/aw285-discovery-and-checkpoints.md
 > Serves: AW-285 (issue #239), Creative-collaboration contract evidence
 
@@ -12,6 +12,15 @@ AW-285's Human Collaboration Contract is **Creative collaboration**: it requires
 founder discovery before layout choices, and preservation of discovery answers,
 options, recommendations, and explicit checkpoint approvals. This file is that
 evidence record. It is also the brief for the visual-exploration phase.
+
+## Status Reconciliation (2026-08-02)
+
+PR #269 completed AW-285's accepted Phase 1 structural scope and issue #239
+is closed to that scope. The original issue checklist is not proof of a full
+game-ready Couch Race surface: six-opportunity integration, device and privacy
+verification, visual-quality gates, and real-player rehearsal are carried by
+the Mini-game Platform and Nightcap Readiness Program. The canonical
+cross-artifact disposition is [the Artifact Closeout Matrix](mini-game-readiness/artifact-closeout-matrix.md).
 
 ## Gate status
 

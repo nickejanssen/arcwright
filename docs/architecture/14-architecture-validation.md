@@ -56,7 +56,25 @@ Validation: the event system's `target_audience` model already supports per-play
 
 No component in the MVP architecture requires a rebuild to support monster RPG requirements.
 
-## 14.3 Couch Co-op Placeholder
+## 14.3 Mini-game Platform Validation
+
+The mini-game contract is validated against a synthetic non-Nightcap browser
+game and destination. Arcwright imports it, creates a reusable package and
+destination adaptation, simulates a composable chapter placement policy,
+launches local preview, negotiates an initial browser authority profile,
+resumes an exact invocation, returns a verified team-progress result, and
+applies only the authored bounded consequence. The fixture contains no
+Nightcap beat, clue, suspect, Leverage, phone, or TV vocabulary.
+
+An internal fixture proves protocol behavior. A separate first-time developer
+who did not build the platform must reach Playtest-ready within the approved
+time budget before Arcwright claims onboarding usability. This proves browser
+protocol agnosticism, exact-version replay, verified result acceptance,
+bounded consequences, and initial usability. It does not prove public platform
+availability, marketplace safety, Unity or Unreal support, device quality, or
+game fun. Those require separate scope and human evidence.
+
+## 14.4 Couch Co-op Placeholder
 
 Couch co-op describes same-room multi-player patterns where players share a physical space and may share a single display while having individual input devices. This is distinct from Nightcap's phone-per-player model in that input device assignment, display sharing, and local network play introduce new delivery constraints.
 
@@ -69,6 +87,6 @@ Placeholder capabilities that the architecture must not foreclose:
 
 These requirements do not conflict with the current architecture. The event system's surface-agnostic design and the SDK's thin client model leave room for a couch co-op delivery adapter. Full design is deferred to Chat 8 (Story Bible: Monster RPG), where the specific arc type will inform which couch co-op patterns are actually needed.
 
-## 14.4 Architecture Fitness Summary
+## 14.5 Architecture Fitness Summary
 
 The MVP architecture passes validation for Horizon 2 requirements. All necessary extensions are additive. No committed decision requires reversal or rebuild to support the monster RPG or couch co-op patterns. The boundary between platform components and game-specific components is clean enough that new arc types require new arc definition files and targeted module additions, not changes to the platform foundation.

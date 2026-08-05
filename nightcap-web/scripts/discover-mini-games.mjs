@@ -5,10 +5,10 @@
 //    looking for manifest.json + client/renderer.ts pairs.
 // 2. Generates a virtual registry-bindings module via esbuild plugin.
 // 3. Runs esbuild on browser-entry.ts to produce dist/static/mini-games.js.
-// 4. Copies each package's definition JSON to dist/static/mini-games/definitions/.
+// 4. Copies each package's exact definition JSON to dist/static/mini-games/definitions/.
 // 5. Asserts per-package and total bundle size budgets; exits non-zero on breach.
 
-import { readFile, mkdir, readdir, copyFile } from "node:fs/promises";
+import { readFile, mkdir, readdir, copyFile, rm } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { gzipSync } from "node:zlib";
 import { fileURLToPath } from "node:url";
@@ -190,8 +190,7 @@ async function copyDefinitions(packages) {
     const outDir = join(DEFINITIONS_OUT, pkg.gameId);
     await mkdir(outDir, { recursive: true });
     await copyFile(pkg.definitionPath, join(outDir, `${pkg.version}.json`));
-    // Also write a stable "latest.json" alias.
-    await copyFile(pkg.definitionPath, join(outDir, "latest.json"));
+    await rm(join(outDir, "latest.json"), { force: true });
   }
 }
 

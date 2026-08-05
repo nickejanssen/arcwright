@@ -351,6 +351,7 @@ class TestGetActiveMiniGame:
         assert resp.status_code == 200
         body = resp.json()
         assert body["run_id"] == str(run_id)
+        assert body["definition_version"] == "0.1.0"
         assert body["status"] == "active"
         assert body["my_submissions"] == []
 
@@ -858,6 +859,7 @@ class TestGetActiveMiniGameDisplay:
         resp = client.get(f"/v1/sessions/{_SESSION_ID}/mini-games/active/display")
         assert resp.status_code == 200
         body = resp.json()
+        assert body["definition_version"] == "0.1.0"
         assert body["status"] == "active"
         assert body["my_submissions"] == []
 

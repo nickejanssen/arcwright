@@ -633,7 +633,7 @@
       "id": "M5-I",
       "milestone": "M5",
       "title": "Nightcap Couch Race Arc And Interrogation Layer",
-      "status": "planned",
+      "status": "active",
       "path": "docs/roadmap/epics/M5-I-nightcap-couch-race-arc-and-interrogation.md",
       "tasks": [
         "AW-281",
@@ -642,7 +642,12 @@
         "AW-283",
         "AW-284",
         "AW-285",
-        "AW-286"
+        "AW-286",
+        "AW-288",
+        "AW-289",
+        "AW-290",
+        "AW-291",
+        "AW-292"
       ],
       "github": {
         "issue_number": 234,
@@ -2223,7 +2228,7 @@
     },
     {
       "id": "AW-288",
-      "title": "Couch Race Mini-Game Beat Coverage And Tell Me Something True Acceleration",
+      "title": "Tell Me Something True Couch Race Activation, Placement, And Pacing",
       "milestone": "M5",
       "epic": "M5-I",
       "size": "M",
@@ -2239,7 +2244,7 @@
     },
     {
       "id": "AW-289",
-      "title": "Couch Race Trivia Mini-Game",
+      "title": "The Interrogation Room Last Call Pressure Capstone",
       "milestone": "M5",
       "epic": "M5-I",
       "size": "L",
