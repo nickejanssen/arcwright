@@ -82,6 +82,7 @@ test("mount-to-paint stays under budget (cold)", async () => {
         JSON.stringify({
           run_id: "run-1",
           game_id: "fixture-individual",
+          definition_version: "0.1.0",
           status: "active",
           deadline_at: null,
           my_submissions: [],
