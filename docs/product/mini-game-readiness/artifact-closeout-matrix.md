@@ -1,7 +1,7 @@
 # Mini-game Readiness Artifact Closeout Matrix
 
-> Current version: v1.1
-> Last updated: 2026-08-03
+> Current version: v1.2
+> Last updated: 2026-08-05
 > Status: Current
 > Canonical path: docs/product/mini-game-readiness/artifact-closeout-matrix.md
 
@@ -46,6 +46,16 @@ mistaken for a game-ready session.
 
 ## Guardrails
 
+- **Unresolved ownership conflict, recorded 2026-08-05 by D-100.** Row 23 of
+  this matrix assigns six-beat integration, privacy and device checks, and
+  audiovisual polish to the program. `docs/product/road-to-live/status.md`
+  assigns the same items to AW-286. Row 30 makes AW-286 the gate waiting on the
+  program, while the program's order 12 plan
+  `docs/superpowers/plans/2026-08-02-nightcap-existing-minigames-game-ready.md`
+  Task 6 waits on AW-286. No agent may pick an owner from these rows. All
+  further program execution beyond the merged browser golden path is held until
+  the founder assigns one. See
+  `docs/decisions/0019-minigame-readiness-execution-gated-on-ownership-reconciliation.md`.
 - Do not reopen AW-285 or duplicate its accepted Phase 1 work.
 - Do not duplicate Scene Sweep backend or design work from PRs #273 and #274.
 - Do not create a second issue for AW-288 until its canonical task is
