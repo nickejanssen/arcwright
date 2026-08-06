@@ -4,6 +4,30 @@
 **Size:** M
 **Status:** Planned
 
+> **Spec:** `docs/specs/0087-aw-290-narrator-slot-schema-and-wrapper-dressing.md`
+> (Draft, awaiting founder approval). It is the implementation contract for this
+> task and supersedes this file where they differ.
+>
+> **Decision interview complete, 2026-08-05 (D-103).** The three ADR-0017 open
+> questions this contract required are answered, plus two more. Anchors are a
+> shared `CaseAnchor` value object referenced by id, typed location reference
+> plus ordered time ordinal with display labels; `{{evidence}}` gets a generated
+> `EvidenceEntry.short_label`; the dressing pack is founder-reviewed content
+> capped at the D-088 Rehearsal 1 pair.
+>
+> **Scope grew. The migration criteria below are real, not stale.** D-103 and
+> `docs/decisions/0022-resolved-case-persistence.md` add persistence of the
+> resolved case in six normalized tables. ADR-0017 did not authorize that; ADR
+> 0022 does. Persistence is approved in principle only. The concrete table
+> design, foreign keys, indexes, and downgrade path need separate founder
+> approval before the migration is written, per the `AGENTS.md` Hard Rules.
+>
+> **Planner handoff.** Size `M` no longer reflects this task. It now carries
+> typed anchors, `short_label`, six tables, a migration, ORM models, a
+> read/write path, resolver changes, a dressing pack, and a content approval
+> gate. Re-estimate and consider splitting along the seam suggested in spec
+> 0087 before scheduling.
+
 ## Plain-English Summary
 
 Give the narrator refrain slots real data to resolve from: promote

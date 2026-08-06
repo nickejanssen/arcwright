@@ -55,6 +55,7 @@ When proposing changes:
 - `0019-minigame-readiness-execution-gated-on-ownership-reconciliation.md` - D-100 holds all mini-game readiness execution at the merged browser golden path until three conflicting records agree on who owns the remaining AW-285 scope and the AW-286 mutual dependency is broken; the owner itself is an open founder call, since resolved by ADR 0020
 - `0020-aw-286-owns-remaining-couch-race-integration.md` - D-101 assigns the remaining AW-285 scope (six-beat mini-game integration, privacy and device checks, audiovisual polish) to AW-286 and reclassifies the mini-game readiness program as a supplier rather than a gate; breaks the AW-286 circular dependency and frees Rehearsal 1 from platform work
 - `0021-minigame-readiness-program-deferred-until-after-rehearsal-1.md` - D-102 defers the whole mini-game readiness program until after AW-286 Rehearsal 1 has run and been debriefed, keeping scope capped at the merged browser golden path and redirecting capacity to the Couch Race content path (AW-277 to AW-280, AW-290, AW-291)
+- `0022-resolved-case-persistence.md` - D-103 persists the resolved case in six normalized tables with real foreign keys, extending ADR-0017 which authorized only the anchor shape; follows the ADR-0016 dedicated-table precedent and makes the alibi contradiction an integrity-enforced join, at the cost of growing AW-290 well past its recorded size
 
 ## Current Decision Categories
 
