@@ -1,4 +1,4 @@
-> Current version: v1.1
+> Current version: v1.2
 > Last updated: 2026-08-05
 > Status: Current
 > Canonical path: docs/product/road-to-live/status.md
@@ -80,10 +80,15 @@ Recorded as blocking and unresolved:
   versus program mutual dependency.~~ Answered 2026-08-05 by D-101: AW-286 owns
   it; the program is a supplier, not a gate. Recorded in
   `docs/decisions/0020-aw-286-owns-remaining-couch-race-integration.md`.
-- **Re-decide mini-game readiness program execution** (the second pass ADR 0019
-  called for). Now unblocked. Note the changed premise: with the program
-  reclassified as a supplier, deferring it no longer blocks AW-286 or
-  Rehearsal 1.
+- ~~Re-decide mini-game readiness program execution (the second pass ADR 0019
+  called for).~~ Answered 2026-08-05 by D-102: the program is **deferred in
+  full** until AW-286 Rehearsal 1 has run and been debriefed. Scope stays capped
+  at the merged browser golden path. Capacity redirects to the Couch Race
+  content path (AW-277 to AW-280, AW-290, AW-291). Recorded in
+  `docs/decisions/0021-minigame-readiness-program-deferred-until-after-rehearsal-1.md`.
+
+No founder decisions from the 2026-08-05 mini-game readiness review remain open.
+The AW-289 creative brief above is the only carried-over blocking item.
 
 ## Nightcap trademark status
 
