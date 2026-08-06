@@ -36,12 +36,11 @@ Verified directly against the repository on 2026-08-04:
   sabotage loop exists.
 - **AW-285**: complete to accepted Phase 1 structural scope (PR #269). The
   shared-display projection layer exists. Six-beat integration, privacy and
-  device checks, and audiovisual polish remain open under AW-286.
-  **Ownership of that remaining scope is disputed and unresolved.**
-  `docs/product/mini-game-readiness/artifact-closeout-matrix.md` line 23
-  assigns the same items to the mini-game readiness program instead. Do not
-  treat either record as settled. See D-100 and
-  `docs/decisions/0019-minigame-readiness-execution-gated-on-ownership-reconciliation.md`.
+  device checks, and audiovisual polish remain open under AW-286. **AW-286 owns
+  that scope**, confirmed 2026-08-05 by D-101. The mini-game readiness program
+  supplies certified packages into it and is not a gate on it. This line was
+  previously in conflict with the closeout matrix; both records now agree. See
+  `docs/decisions/0020-aw-286-owns-remaining-couch-race-integration.md`.
 - **AW-281, AW-282, AW-283, AW-284**: all Complete. PR #277 (2026-08-04)
   corrected their task files, which were stale at Planned or In Progress.
 - **AW-276 Arc Voice Block Injection**: Done (PR #231), unblocking AW-277
@@ -77,11 +76,14 @@ Recorded as blocking and unresolved:
   readiness program.~~ Answered 2026-08-05 by D-100: no execution approval
   beyond the merged browser golden path. The decision is deferred to a second
   pass that runs only after the ownership question below is settled.
-- **Assign a single owner for the remaining AW-285 scope** (six-beat
-  integration, privacy and device checks, audiovisual polish) and break the
-  AW-286 versus program mutual dependency. This is the gate on all further
-  mini-game readiness execution per
-  `docs/decisions/0019-minigame-readiness-execution-gated-on-ownership-reconciliation.md`.
+- ~~Assign a single owner for the remaining AW-285 scope and break the AW-286
+  versus program mutual dependency.~~ Answered 2026-08-05 by D-101: AW-286 owns
+  it; the program is a supplier, not a gate. Recorded in
+  `docs/decisions/0020-aw-286-owns-remaining-couch-race-integration.md`.
+- **Re-decide mini-game readiness program execution** (the second pass ADR 0019
+  called for). Now unblocked. Note the changed premise: with the program
+  reclassified as a supplier, deferring it no longer blocks AW-286 or
+  Rehearsal 1.
 
 ## Nightcap trademark status
 

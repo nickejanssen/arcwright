@@ -148,10 +148,16 @@ reconciliation.
 
 ## Open questions this decision does not resolve
 
-- Who owns six-beat integration, privacy and device checks, and audiovisual
-  polish: AW-286, the program, or a new task. Founder call required.
-- How the AW-286 and Order 12 mutual dependency is broken.
+- ~~Who owns six-beat integration, privacy and device checks, and audiovisual
+  polish: AW-286, the program, or a new task. Founder call required.~~
+  **Resolved 2026-08-05 by D-101 and ADR
+  `docs/decisions/0020-aw-286-owns-remaining-couch-race-integration.md`:**
+  AW-286 owns it; the program is a supplier, not a gate.
+- ~~How the AW-286 and Order 12 mutual dependency is broken.~~ Resolved by the
+  same decision. The dependency is now one-way, program to AW-286.
 - Whether Order 2 proceeds after the golden-path human usability session runs.
+  This is the second pass this ADR called for. Its gate is now cleared, and the
+  premise has changed: deferring the program no longer blocks Rehearsal 1.
 - `docs/specs/0086-scene-sweep-game-ready.md` Task 3 Step 3 in the linked plan
   requires removing the generated `run_seed` stopgap. That is a cross-module
   change across `engine/mini_games/resolver.py`,

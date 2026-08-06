@@ -313,6 +313,13 @@ tuning from deferred ideas. Do not convert a failed quality gate into a pass.
 
 ### Task 6: Run AW-286 Real-player Rehearsal and Remediate
 
+> **Corrected 2026-08-05 by D-101.** This plan does not own or gate AW-286.
+> AW-286 owns the Couch Race rehearsal and the remaining AW-285 scope; this
+> program is a supplier of certified packages to it. This task is retained only
+> as the program's own record of supplying evidence into a rehearsal that AW-286
+> schedules and runs. It must not be read as a dependency AW-286 waits on. See
+> `docs/decisions/0020-aw-286-owns-remaining-couch-race-integration.md`.
+
 **Files:**
 
 - Modify: `docs/roadmap/tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md`
