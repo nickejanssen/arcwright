@@ -1,7 +1,7 @@
 # Human Collaboration Open Work
 
-> Current version: v1.0
-> Last updated: 2026-07-17
+> Current version: v1.1
+> Last updated: 2026-08-05
 > Status: Current
 > Canonical path: docs/roadmap/operations/human-collaboration-open-work.md
 > Live GitHub snapshot: 2026-07-17
@@ -47,7 +47,7 @@ only after the applicable repository change merges.
 | [#237](https://github.com/nickejanssen/arcwright/issues/237) | AW-283 Suspect Answer Generation And Contradiction Detection | `docs/roadmap/tasks/AW-283-suspect-answer-generation-and-contradiction-detection.md` | Creative collaboration | Answer tone, lie fairness, contradiction expectations, and success definition | Begin founder discovery before answer and fairness samples |
 | [#238](https://github.com/nickejanssen/arcwright/issues/238) | AW-284 Race Scoring And Accusation State | `docs/roadmap/tasks/AW-284-race-scoring-and-accusation-state.md` | Creative collaboration | Scoring feel, risk tolerance, pacing, and success definition | Begin founder discovery before tuning tables |
 | [#239](https://github.com/nickejanssen/arcwright/issues/239) | AW-285 Couch Race TV And Phone Rendering | `docs/roadmap/tasks/AW-285-couch-race-tv-and-phone-rendering.md` | Creative collaboration | Surface priorities, visual hierarchy, interaction expectations, and success definition | Begin founder discovery before wireframes or prototypes |
-| [#240](https://github.com/nickejanssen/arcwright/issues/240) | AW-286 Couch Race Rehearsal Slice And Rehearsal 1 Retarget | `docs/roadmap/tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md` | Facilitated live operation | Readiness, walkthrough feedback, live go or no-go, and debrief | Review preflight evidence and approve readiness |
+| [#240](https://github.com/nickejanssen/arcwright/issues/240) | AW-286 Couch Race Rehearsal Slice And Rehearsal 1 Retarget | `docs/roadmap/tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md` | Independent execution and facilitated live operation (D-101 added build scope) | Readiness, walkthrough feedback, live go or no-go, and debrief; plus approval of any Planner-proposed split | Planner re-estimation and split recommendation, then review preflight evidence and approve readiness |
 
 ## Live GitHub Snapshot
 

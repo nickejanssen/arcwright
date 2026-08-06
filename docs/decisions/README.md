@@ -54,6 +54,7 @@ When proposing changes:
 - `0018-mini-game-orchestration-and-execution-adapters.md` - accepted browser-first mini-game orchestration, non-destructive adaptation, composable placement, and capability-negotiated execution and trust boundary; supersedes ADR 0009
 - `0019-minigame-readiness-execution-gated-on-ownership-reconciliation.md` - D-100 holds all mini-game readiness execution at the merged browser golden path until three conflicting records agree on who owns the remaining AW-285 scope and the AW-286 mutual dependency is broken; the owner itself is an open founder call, since resolved by ADR 0020
 - `0020-aw-286-owns-remaining-couch-race-integration.md` - D-101 assigns the remaining AW-285 scope (six-beat mini-game integration, privacy and device checks, audiovisual polish) to AW-286 and reclassifies the mini-game readiness program as a supplier rather than a gate; breaks the AW-286 circular dependency and frees Rehearsal 1 from platform work
+- `0021-minigame-readiness-program-deferred-until-after-rehearsal-1.md` - D-102 defers the whole mini-game readiness program until after AW-286 Rehearsal 1 has run and been debriefed, keeping scope capped at the merged browser golden path and redirecting capacity to the Couch Race content path (AW-277 to AW-280, AW-290, AW-291)
 
 ## Current Decision Categories
 

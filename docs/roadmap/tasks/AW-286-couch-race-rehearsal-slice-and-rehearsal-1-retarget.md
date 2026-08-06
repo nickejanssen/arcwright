@@ -9,8 +9,23 @@
 > audiovisual polish. The Mini-game Platform and Nightcap Readiness Program is a
 > **supplier** to this task, not a gate on it. AW-286 does not wait for program
 > completion and proceeds with whatever certified packages exist at rehearsal
-> time. Size may need re-estimation by the Planner against the added scope. See
+> time. See
 > `docs/decisions/0020-aw-286-owns-remaining-couch-race-integration.md`.
+>
+> **Planner handoff, opened 2026-08-05 by D-101.** This task needs
+> re-estimation and a split recommendation before it is scheduled. Two reasons:
+> the recorded size `M` predates the three scope items added below, and the task
+> now spans two collaboration profiles, build work plus facilitated live
+> operation, which the contract in `docs/conventions/human-collaboration.md`
+> handles as separate profiles with separate gates. The Planner proposes; the
+> founder approves any split. Do not schedule AW-286 against the current
+> estimate.
+>
+> **Sequencing context, D-102.** The mini-game readiness program is deferred
+> until after this task's rehearsal has run and been debriefed. AW-286 therefore
+> runs against the certified candidates that exist today, not against a
+> six-beat certified set. See
+> `docs/decisions/0021-minigame-readiness-program-deferred-until-after-rehearsal-1.md`.
 
 ## Plain-English Summary
 
