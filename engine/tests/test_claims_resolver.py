@@ -108,6 +108,7 @@ def _evidence(evidence_id: str) -> EvidenceEntry:
         evidence_id=evidence_id,
         evidence_type="trace",
         text="A trace links the object to the location.",
+        short_label="the trace",
         points_toward=["member-1"],
         points_away_from=[],
         delivery="private",

@@ -25,6 +25,7 @@ from engine.case.loader import (
 )
 from engine.case.models import (
     AuthorizedFalsehood,
+    CaseAnchor,
     CaseFact,
     CaseSkeleton,
     CastMember,
@@ -36,6 +37,7 @@ from engine.case.solver import SolverVerdict, synthetic_detective
 
 __all__ = [
     "AuthorizedFalsehood",
+    "CaseAnchor",
     "CaseFact",
     "CaseInvariantError",
     "CaseResolutionConfig",

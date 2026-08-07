@@ -7,6 +7,7 @@ from pydantic import ValidationError
 
 from engine.case import (
     AuthorizedFalsehood,
+    CaseAnchor,
     CaseFact,
     CaseInvariantError,
     CaseResolutionError,
@@ -15,6 +16,23 @@ from engine.case import (
     EvidenceEntry,
     ResolvedCase,
 )
+
+
+def _minimal_case(**overrides) -> ResolvedCase:
+    payload = {
+        "case_id": "c1",
+        "arc_id": "nightcap-couch-race-v1",
+        "seed": 42,
+        "skeleton_id": "locked_room_poisoning",
+        "cast": [],
+        "culprit_id": "s1",
+        "evidence": [],
+        "falsehoods": [],
+        "facts": [],
+        "reveal_shape": {"steps": []},
+    }
+    payload.update(overrides)
+    return ResolvedCase(**payload)
 
 
 def test_cast_member_minimal() -> None:
@@ -42,6 +60,7 @@ def test_evidence_entry_minimal() -> None:
         evidence_id="e1",
         evidence_type="trace",
         text="A faint bruise on the left hand.",
+        short_label="the bruise",
         points_toward=["s3"],
         points_away_from=[],
         delivery="private",
@@ -94,6 +113,7 @@ def test_resolved_case_minimal() -> None:
         evidence_id="e1",
         evidence_type="trace",
         text="a torn playbill",
+        short_label="the playbill",
         points_toward=["s1"],
         points_away_from=[],
         delivery="group",
@@ -245,6 +265,7 @@ def test_visible_evidence_for_partitions_by_delivery() -> None:
         evidence_id="e1",
         evidence_type="trace",
         text="group clue",
+        short_label="group clue",
         points_toward=[],
         points_away_from=[],
         delivery="group",
@@ -254,6 +275,7 @@ def test_visible_evidence_for_partitions_by_delivery() -> None:
         evidence_id="e2",
         evidence_type="trace",
         text="private clue for p1",
+        short_label="p1 clue",
         points_toward=[],
         points_away_from=[],
         delivery="private",
@@ -263,6 +285,7 @@ def test_visible_evidence_for_partitions_by_delivery() -> None:
         evidence_id="e3",
         evidence_type="trace",
         text="private clue for p2",
+        short_label="p2 clue",
         points_toward=[],
         points_away_from=[],
         delivery="private",
@@ -286,3 +309,52 @@ def test_visible_evidence_for_partitions_by_delivery() -> None:
     assert {e.evidence_id for e in visible_p2} == {"e1", "e3"}
     visible_stranger = case.visible_evidence_for("p999")
     assert {e.evidence_id for e in visible_stranger} == {"e1"}
+
+
+def test_case_anchor_carries_typed_location_and_ordered_time() -> None:
+    anchor = CaseAnchor(
+        anchor_id="a1",
+        location_ref="loc_study",
+        location_label="the study",
+        time_ordinal=2,
+        time_label="just after nine",
+    )
+    assert anchor.time_ordinal == 2
+    assert anchor.location_ref == "loc_study"
+
+
+def test_case_anchor_forbids_extra_fields() -> None:
+    with pytest.raises(ValidationError):
+        CaseAnchor(
+            anchor_id="a1",
+            location_ref="loc_study",
+            location_label="the study",
+            time_ordinal=2,
+            time_label="just after nine",
+            drink="gin rickey",  # type: ignore[call-arg]
+        )
+
+
+def test_resolved_case_resolves_anchor_by_id() -> None:
+    anchor = CaseAnchor(
+        anchor_id="a1",
+        location_ref="loc_study",
+        location_label="the study",
+        time_ordinal=2,
+        time_label="just after nine",
+    )
+    case = _minimal_case(anchors=[anchor])
+    assert case.anchor_by_id("a1") is anchor
+    assert case.anchor_by_id("nope") is None
+
+
+def test_evidence_entry_requires_short_label() -> None:
+    with pytest.raises(ValidationError):
+        EvidenceEntry(  # type: ignore[call-arg]
+            evidence_id="e1",
+            evidence_type="trace",
+            text="A cut-crystal glass, still wet, on the study desk.",
+            points_toward=["s1"],
+            points_away_from=[],
+            delivery="group",
+        )
