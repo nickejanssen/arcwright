@@ -125,6 +125,9 @@ def resolve(
     descriptor, trace = _pick_method_descriptor_and_trace(rng, method_family)
 
     anchors = _resolve_anchors(rng, taxonomy, count=len(cast))
+    # _resolve_lies may append a synthesized fallback anchor to this list
+    # when no natural same-time/different-location pair exists for a
+    # location lie, so `anchors` can grow past `len(cast)` below.
 
     facts = _resolve_facts(rng, cast, culprit, victim, taxonomy, descriptor)
     evidence = _resolve_evidence(
