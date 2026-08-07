@@ -564,11 +564,11 @@ architecture references named in those task files.
 
 ## Tasks
 
-- [AW-262: TMST Package Authoring and Schema Resolution](../tasks/AW-262-tmst-package-authoring-and-schema-resolution.md)
-- [AW-263: TMST Runtime — social-truth-bluff Mechanic](../tasks/AW-263-tmst-runtime-social-truth-bluff-mechanic.md)
-- [AW-264: TMST API, Events, and SDK](../tasks/AW-264-tmst-api-events-and-sdk.md)
-- [AW-265: TMST Web Rendering for Four Phases](../tasks/AW-265-tmst-web-rendering-four-phases.md)
-- [AW-266: Rehearsal 2 — TMST Real-Human Session](../tasks/AW-266-rehearsal-2-tmst-real-human-session.md)
+- [AW-262: TMST Package Authoring and Schema Resolution](../../roadmap/tasks/AW-262-tmst-package-authoring-and-schema-resolution.md)
+- [AW-263: TMST Runtime — social-truth-bluff Mechanic](../../roadmap/tasks/AW-263-tmst-runtime-social-truth-bluff-mechanic.md)
+- [AW-264: TMST API, Events, and SDK](../../roadmap/tasks/AW-264-tmst-api-events-and-sdk.md)
+- [AW-265: TMST Web Rendering for Four Phases](../../roadmap/tasks/AW-265-tmst-web-rendering-four-phases.md)
+- [AW-266: Rehearsal 2 — TMST Real-Human Session](../../roadmap/tasks/AW-266-rehearsal-2-tmst-real-human-session.md)
 
 ## Acceptance Criteria
 
@@ -645,8 +645,8 @@ The technical scope is limited to the tasks listed below.
 
 ## Tasks
 
-- [AW-267: Nightcap Art Direction Brief](../tasks/AW-267-nightcap-art-direction-brief.md)
-- [AW-268: Nightcap Asset Pipeline and Motion System](../tasks/AW-268-nightcap-asset-pipeline-and-motion-system.md)
+- [AW-267: Nightcap Art Direction Brief](../../roadmap/tasks/AW-267-nightcap-art-direction-brief.md)
+- [AW-268: Nightcap Asset Pipeline and Motion System](../../roadmap/tasks/AW-268-nightcap-asset-pipeline-and-motion-system.md)
 
 ## Acceptance Criteria
 
@@ -691,10 +691,10 @@ Append to `docs/roadmap/milestones/M4-nightcap-experience-layer.md` (after the e
 
 M4 closes via the AW-259 parent task. The four M4 close items are:
 
-- [AW-257: Promote Crime Scene Smash and Evidence Locker to active](../tasks/AW-257-promote-crime-scene-smash-and-evidence-locker.md)
-- [AW-260: Founder Rehearsal Runbook and Blocker Log](../tasks/AW-260-founder-rehearsal-runbook-and-blocker-log.md)
-- [AW-261: ADR-0003 Cloudflare vs GCP Validation Decision](../tasks/AW-261-adr-0003-cloudflare-vs-gcp-validation-decision.md)
-- [AW-259: Rehearsal 1 — M4 Exit, First Real-Human Nightcap Session](../tasks/AW-259-rehearsal-1-m4-exit.md) (parent; consumes AW-254 and AW-231 as sub-issues)
+- [AW-257: Promote Crime Scene Smash and Evidence Locker to active](../../roadmap/tasks/AW-257-promote-crime-scene-smash-and-evidence-locker.md)
+- [AW-260: Founder Rehearsal Runbook and Blocker Log](../../roadmap/tasks/AW-260-founder-rehearsal-runbook-and-blocker-log.md)
+- [AW-261: ADR-0003 Cloudflare vs GCP Validation Decision](../../roadmap/tasks/AW-261-adr-0003-cloudflare-vs-gcp-validation-decision.md)
+- [AW-259: Rehearsal 1 — M4 Exit, First Real-Human Nightcap Session](../../roadmap/tasks/AW-259-rehearsal-1-m4-exit.md) (parent; consumes AW-254 and AW-231 as sub-issues)
 
 AW-254 and AW-231 retain their original issue numbers (#148, #84) but their
 scope is rewritten per `docs/superpowers/specs/2026-06-26-m4-exit-rehearsal-design.md`.
@@ -705,8 +705,8 @@ scope is rewritten per `docs/superpowers/specs/2026-06-26-m4-exit-rehearsal-desi
 Modify `docs/roadmap/milestones/M5-hardening-proof-prerequisites.md`. After the existing "M5-E" line in the "## Epics" section, add:
 
 ```markdown
-- [M5-F: Tell Me Something True Social Opener Implementation](../epics/M5-F-tell-me-something-true-social-opener.md)
-- [M5-G: Nightcap Visual Identity and Polish](../epics/M5-G-nightcap-visual-identity-and-polish.md)
+- [M5-F: Tell Me Something True Social Opener Implementation](../../roadmap/epics/M5-F-tell-me-something-true-social-opener.md)
+- [M5-G: Nightcap Visual Identity and Polish](../../roadmap/epics/M5-G-nightcap-visual-identity-and-polish.md)
 ```
 
 - [ ] **Step 10: Append D-064, D-065, D-066, D-067 to decisions log**

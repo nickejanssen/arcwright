@@ -208,7 +208,7 @@ Deployment behavior expected by the workflow:
 
 ### 2.10 Pre-deploy architecture note
 
-Before the first live production rollout, record the unresolved API-service to worker-service communication decision from [docs/architecture/05-session-persistence.md](/C:/Users/nicke/OneDrive/Desktop/arcwright/docs/architecture/05-session-persistence.md). AW-269 deploys `arcwright-api` plus the Nightcap worker, but it does not resolve that longer-term architecture decision by itself.
+Before the first live production rollout, record the unresolved API-service to worker-service communication decision from [docs/architecture/05-session-persistence.md](../../architecture/05-session-persistence.md). AW-269 deploys `arcwright-api` plus the Nightcap worker, but it does not resolve that longer-term architecture decision by itself.
 
 ## 3. GitHub Actions Secrets
 
@@ -257,7 +257,7 @@ The repo already defines:
 - Durable Object binding: `ROOMS`
 - Durable Object class: `NightcapRoom`
 
-You do not need to create the Durable Object manually in the dashboard. Wrangler will provision it on first deploy because it is declared in [nightcap-web/wrangler.toml](/C:/Users/nicke/OneDrive/Desktop/arcwright/nightcap-web/wrangler.toml).
+You do not need to create the Durable Object manually in the dashboard. Wrangler will provision it on first deploy because it is declared in [nightcap-web/wrangler.toml](../../../nightcap-web/wrangler.toml).
 
 ### 4.3 Create the Cloudflare API token for GitHub Actions
 
@@ -360,7 +360,7 @@ The current API workflow must bind all of these secrets into Cloud Run:
 - `SECONDARY_LLM_API_KEY=SECONDARY_LLM_API_KEY:latest`
 - `FIREBASE_SERVICE_ACCOUNT_JSON=FIREBASE_SERVICE_ACCOUNT_JSON:latest`
 
-Verify that list in [deploy-api.yml](/C:/Users/nicke/OneDrive/Desktop/arcwright/.github/workflows/deploy-api.yml) before your first production push.
+Verify that list in [deploy-api.yml](../../../.github/workflows/deploy-api.yml) before your first production push.
 
 These bindings are intentionally provider-neutral (`PRIMARY_LLM_API_KEY`, `SECONDARY_LLM_API_KEY`), per the provider-agnostic routing principle in `AGENTS.md`. The translation to the provider-specific env vars LiteLLM expects (`ANTHROPIC_API_KEY`, `GROQ_API_KEY`) happens at runtime in `engine/routing/router.py`, not in this workflow.
 

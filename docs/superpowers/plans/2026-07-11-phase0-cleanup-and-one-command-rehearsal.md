@@ -810,8 +810,8 @@ make rehearsal-smoke
 
 Expected: `SMOKE PASS`. If it fails, the failing step and response are
 printed — see the troubleshooting sections of
-[rehearsal-1-runbook.md](rehearsal-1-runbook.md) and
-[rehearsal-1-failure-cheat-sheet.md](rehearsal-1-failure-cheat-sheet.md).
+[rehearsal-1-runbook.md](../../roadmap/operations/rehearsal-1-runbook.md) and
+[rehearsal-1-failure-cheat-sheet.md](../../roadmap/operations/rehearsal-1-failure-cheat-sheet.md).
 
 ## During the session
 
@@ -839,7 +839,7 @@ At the top of `docs/roadmap/operations/rehearsal-1-runbook.md`, directly under t
 
 ```markdown
 > **Superseded for day-of use (2026-07-11):** start with
-> [rehearsal-quickstart.md](rehearsal-quickstart.md) — the stack is now one
+> [rehearsal-quickstart.md](../../roadmap/operations/rehearsal-quickstart.md) — the stack is now one
 > command (`make rehearsal`). This document remains as the deep
 > troubleshooting reference; its five-terminal manual procedure is obsolete.
 ```

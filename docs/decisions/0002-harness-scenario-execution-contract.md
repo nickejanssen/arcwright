@@ -2,8 +2,8 @@
 
 **Date:** 2026-06-01
 **Status:** Accepted
-**Architecture reference:** [docs/architecture/02-technology-stack.md](/C:/Users/nicke/OneDrive/Desktop/arcwright/docs/architecture/02-technology-stack.md), [docs/architecture/03-arc-execution.md](/C:/Users/nicke/OneDrive/Desktop/arcwright/docs/architecture/03-arc-execution.md), [docs/architecture/12-build-plan.md](/C:/Users/nicke/OneDrive/Desktop/arcwright/docs/architecture/12-build-plan.md), [docs/architecture/15-development-guide.md](/C:/Users/nicke/OneDrive/Desktop/arcwright/docs/architecture/15-development-guide.md)
-**Spec reference:** [docs/specs/0016-aw-111-scripted-synthetic-player-driver.md](/C:/Users/nicke/OneDrive/Desktop/arcwright/docs/specs/0016-aw-111-scripted-synthetic-player-driver.md)
+**Architecture reference:** [docs/architecture/02-technology-stack.md](../architecture/02-technology-stack.md), [docs/architecture/03-arc-execution.md](../architecture/03-arc-execution.md), [docs/architecture/12-build-plan.md](../architecture/12-build-plan.md), [docs/architecture/15-development-guide.md](../architecture/15-development-guide.md)
+**Spec reference:** [docs/specs/0016-aw-111-scripted-synthetic-player-driver.md](../specs/0016-aw-111-scripted-synthetic-player-driver.md)
 **Scope:** `engine/harness/` scripted synthetic player execution for AW-111
 
 ---
@@ -63,7 +63,7 @@ We use the following harness scenario execution contract for AW-111:
 
 # References
 
-- [docs/specs/0015-aw-110-headless-session-runner-core.md](/C:/Users/nicke/OneDrive/Desktop/arcwright/docs/specs/0015-aw-110-headless-session-runner-core.md)
-- [docs/specs/0016-aw-111-scripted-synthetic-player-driver.md](/C:/Users/nicke/OneDrive/Desktop/arcwright/docs/specs/0016-aw-111-scripted-synthetic-player-driver.md)
-- [docs/roadmap/tasks/AW-111-scripted-synthetic-player-driver.md](/C:/Users/nicke/OneDrive/Desktop/arcwright/docs/roadmap/tasks/AW-111-scripted-synthetic-player-driver.md)
+- [docs/specs/0015-aw-110-headless-session-runner-core.md](../specs/0015-aw-110-headless-session-runner-core.md)
+- [docs/specs/0016-aw-111-scripted-synthetic-player-driver.md](../specs/0016-aw-111-scripted-synthetic-player-driver.md)
+- [docs/roadmap/tasks/AW-111-scripted-synthetic-player-driver.md](../roadmap/tasks/AW-111-scripted-synthetic-player-driver.md)
 - Future follow-up: pre-existing `make type` failures in `engine/arc/arc_state.py` and `engine/harness/runner.py` should be resolved before M1 is marked complete.

@@ -428,9 +428,9 @@ raises confidence going into qualifying sessions.
 
 ## Tasks
 
-- [AW-272: Continuity and Coherence Eval Suite](../tasks/AW-272-continuity-coherence-eval-suite.md)
-- [AW-270: Authorial Intent Block and Intent Fidelity Telemetry](../tasks/AW-270-authorial-intent-block-and-fidelity-telemetry.md) (post-M6)
-- [AW-271: Narrative Obligations Model and Reveal-Readiness Condition](../tasks/AW-271-narrative-obligations-model.md) (post-M6)
+- [AW-272: Continuity and Coherence Eval Suite](../../roadmap/tasks/AW-272-continuity-coherence-eval-suite.md)
+- [AW-270: Authorial Intent Block and Intent Fidelity Telemetry](../../roadmap/tasks/AW-270-authorial-intent-block-and-fidelity-telemetry.md) (post-M6)
+- [AW-271: Narrative Obligations Model and Reveal-Readiness Condition](../../roadmap/tasks/AW-271-narrative-obligations-model.md) (post-M6)
 
 ## Acceptance Criteria
 
@@ -475,7 +475,7 @@ the other two tasks harden the platform for the sessions after proof.
 In `docs/roadmap/milestones/M5-hardening-proof-prerequisites.md`, after the M5-G bullet add:
 
 ```markdown
-- [M5-H: Narrative Fidelity Layer](../epics/M5-H-narrative-fidelity-layer.md)
+- [M5-H: Narrative Fidelity Layer](../../roadmap/epics/M5-H-narrative-fidelity-layer.md)
 ```
 
 And append to the Exit Gate list:
@@ -777,7 +777,7 @@ Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>"
 - [ ] **Step 2: Append to 03-scope.md** at the end of "Future Directions (Post-MVP)":
 
 ```markdown
-- **Narrative Fidelity Layer (ADR-0012):** Authorial intent as a structured ArcDefinition block with per-beat emotional targets, and a narrative obligations model with a reveal-readiness condition, are adopted platform scope sequenced post-M6 under epic M5-H. The companion continuity and coherence eval suite (AW-272) is pre-M6 hardening scope inside M5. See [ADR-0012](../decisions/0012-authorial-intent-obligations-continuity-evals.md).
+- **Narrative Fidelity Layer (ADR-0012):** Authorial intent as a structured ArcDefinition block with per-beat emotional targets, and a narrative obligations model with a reveal-readiness condition, are adopted platform scope sequenced post-M6 under epic M5-H. The companion continuity and coherence eval suite (AW-272) is pre-M6 hardening scope inside M5. See [ADR-0012](../../decisions/0012-authorial-intent-obligations-continuity-evals.md).
 ```
 
 - [ ] **Step 3: Verify and commit**

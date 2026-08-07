@@ -9,15 +9,15 @@
 
 ## References
 
-- [AW-282: Interrogation Round Loop And Question Intents](../../roadmap/tasks/AW-282-interrogation-round-loop-and-question-intents.md)
-- [Nightcap Couch Race v1 parent spec](../../specs/0072-nightcap-couch-race-v1.md)
-- [Nightcap Couch Race story bible](../../story-bibles/nightcap-couch-race.md)
-- [AW-281 Couch Race arc and deterministic case resolution](../../roadmap/tasks/AW-281-couch-race-arc-definition-and-case-generation.md)
-- [Architecture: Arc Execution](../../architecture/03-arc-execution.md)
-- [Architecture: Event System](../../architecture/08-event-system.md)
-- [Architecture: Telemetry](../../architecture/11-telemetry.md)
-- [Product decisions log](../../product/decisions-log.csv)
-- [Nightcap Couch Race design](2026-07-15-nightcap-couch-race-design.md)
+- [AW-282: Interrogation Round Loop And Question Intents](../roadmap/tasks/AW-282-interrogation-round-loop-and-question-intents.md)
+- [Nightcap Couch Race v1 parent spec](../specs/0072-nightcap-couch-race-v1.md)
+- [Nightcap Couch Race story bible](../story-bibles/nightcap-couch-race.md)
+- [AW-281 Couch Race arc and deterministic case resolution](../roadmap/tasks/AW-281-couch-race-arc-definition-and-case-generation.md)
+- [Architecture: Arc Execution](../architecture/03-arc-execution.md)
+- [Architecture: Event System](../architecture/08-event-system.md)
+- [Architecture: Telemetry](../architecture/11-telemetry.md)
+- [Product decisions log](decisions-log.csv)
+- [Nightcap Couch Race design](../superpowers/specs/2026-07-15-nightcap-couch-race-design.md)
 
 ## Overview
 
