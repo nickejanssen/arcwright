@@ -646,6 +646,9 @@
         "AW-288",
         "AW-289",
         "AW-290",
+        "AW-293",
+        "AW-294",
+        "AW-295",
         "AW-291",
         "AW-292"
       ],
@@ -2217,6 +2220,8 @@
         "AW-288",
         "AW-289",
         "AW-290",
+        "AW-293",
+        "AW-294",
         "AW-291"
       ],
       "path": "docs/roadmap/tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md",
@@ -2263,15 +2268,68 @@
     },
     {
       "id": "AW-290",
-      "title": "Narrator Slot Schema — Structured Location/Time And Wrapper Dressing Pack",
+      "title": "Typed Case Anchors And Evidence Short Form",
       "milestone": "M5",
       "epic": "M5-I",
       "size": "M",
       "depends_on": [
         "AW-281"
       ],
-      "path": "docs/roadmap/tasks/AW-290-narrator-slot-schema-and-wrapper-dressing.md",
-      "epic_id": "M5-I"
+      "path": "docs/roadmap/tasks/AW-290-typed-case-anchors-and-evidence-short-form.md",
+      "epic_id": "M5-I",
+      "github": {
+        "issue_number": 284,
+        "url": "https://github.com/nickejanssen/arcwright/issues/284"
+      }
+    },
+    {
+      "id": "AW-293",
+      "title": "Wrapper Dressing Pack (Seance 1928 + Big Top 1899)",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "M",
+      "depends_on": [
+        "AW-290"
+      ],
+      "path": "docs/roadmap/tasks/AW-293-wrapper-dressing-pack.md",
+      "epic_id": "M5-I",
+      "github": {
+        "issue_number": 285,
+        "url": "https://github.com/nickejanssen/arcwright/issues/285"
+      }
+    },
+    {
+      "id": "AW-294",
+      "title": "Machine-Readable Slot Registry And Coverage Test",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "S",
+      "depends_on": [
+        "AW-290",
+        "AW-293"
+      ],
+      "path": "docs/roadmap/tasks/AW-294-slot-registry-and-coverage-test.md",
+      "epic_id": "M5-I",
+      "github": {
+        "issue_number": 286,
+        "url": "https://github.com/nickejanssen/arcwright/issues/286"
+      }
+    },
+    {
+      "id": "AW-295",
+      "title": "Resolved Case Persistence (Six Normalized Tables)",
+      "milestone": "M5",
+      "epic": "M5-I",
+      "size": "L",
+      "depends_on": [
+        "AW-290"
+      ],
+      "path": "docs/roadmap/tasks/AW-295-resolved-case-persistence.md",
+      "epic_id": "M5-I",
+      "github": {
+        "issue_number": 287,
+        "url": "https://github.com/nickejanssen/arcwright/issues/287"
+      }
     },
     {
       "id": "AW-291",
@@ -2281,6 +2339,8 @@
       "size": "M",
       "depends_on": [
         "AW-290",
+        "AW-293",
+        "AW-294",
         "AW-279",
         "AW-276"
       ],
