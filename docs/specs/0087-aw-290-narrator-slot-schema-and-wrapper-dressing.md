@@ -1,11 +1,17 @@
-> Current version: v0.1
+> Current version: v0.2
 > Last updated: 2026-08-05
-> Status: Draft
+> Status: Approved
 > Canonical path: docs/specs/0087-aw-290-narrator-slot-schema-and-wrapper-dressing.md
 
 # AW-290 Narrator Slot Schema: Structured Location and Time, Case Persistence, and Wrapper Dressing Pack
 
-**Status**: Draft
+**Status**: Approved
+
+**Approved**: 2026-08-05 by the founder, conditional on the three Open Questions
+being resolved first. They were resolved in the same session and are recorded
+below under "Open questions resolved at approval". Spec approval does **not**
+carry migration-design approval or dressing-content approval; those remain
+phase gates 2 and 3 and are separate records.
 
 **Author**: Claude Opus 5 (Spec Author role), from a founder decision interview | **Date**: 2026-08-05
 
@@ -258,23 +264,98 @@ none may be inferred from another.
   the typed fields silently diverge from what players read. Mitigated by
   generating prose from the anchor and by the consistency test above.
 
+- **The moodboards do not contain the vocabulary this spec assumes they do.**
+  Verified 2026-08-05 against the two Rehearsal 1 files. ADR-0017 line 67,
+  D-089, and D-103 all describe the dressing pack as "seeded from the
+  moodboards", which "already name drinks, stage titles, tiers". Against
+  `docs/design/moodboards/seance-1928.md`: no drink pool exists; the word
+  "drink" never appears; only incidental prose ("decanter" at :33, :59, :109;
+  "absinthe" at :60; "cut crystal" at :80; "second glass" at :125). Against
+  `docs/design/moodboards/big-top-1899.md`: **no drink vocabulary at all**, and
+  exactly two stage titles ("The Whispering Blade", "Madame Corvax" at :50-52
+  and :117-119) — and that file's own AW-268 handoff list at :170-171 records
+  the stage-title set as still to be authored. Consequence: the dressing pack is
+  **authoring from near-scratch with the moodboards as tone reference**, not
+  transcription. Phase gate 3 is therefore a creative-authoring gate, not a
+  review-what-was-extracted gate, and costs accordingly.
+
+- **The canonical registry contains two factual errors.** Verified 2026-08-05
+  by grepping `docs/design/line-libraries/`. (1) Master plan §5 line 259 states
+  `{{tier}}` "appears in both sci-fi wrappers — shared sci-fi slot". It does
+  not: all 9 occurrences are in `sim-reunion.md` and `orbital-gala-2087.md` has
+  zero. `docs/design/authoring/schema-fit-audit.md` inherited this error and
+  assigns `{{tier}}` to Orbital. (2) Master plan §5 line 270 lists
+  `{{complication_object}}` as existing "in discovery samples"; it appears
+  nowhere in `docs/design/line-libraries/`, and its only occurrence in the repo
+  is `docs/design/authoring/story-to-arc-exemplar.md:126`. The registry must be
+  reconciled against actual line usage before the Q3 coverage test is written,
+  or the test will assert a false mapping from its first commit.
+
 **Unknowns**
 
 - Whether the case should be written at generation or lazily on first read.
 - Whether `case_anchors` needs a uniqueness constraint on
   `(case_id, location_id, time_ordinal)` or whether duplicate anchors are
-  legitimate.
+  legitimate. Carried into the phase gate 2 migration design note.
 - How the dressing pack interacts with `era`, which is currently host-selected
-  and independent of wrapper.
+  and independent of wrapper. Note that **no engine or API code reads
+  `aesthetic_config` at all today** — it is parsed into a Pydantic model
+  (`engine/arc/models.py:42-47`, `:248`) and never consumed. "Selected at
+  session start alongside `era` and `occasion`" describes a pattern that does
+  not yet execute anywhere.
+
+*(Q1's session-versus-standalone question, previously listed here, is resolved
+above.)*
 
 ---
 
-# Open Questions
+# Open questions resolved at approval
 
-- Q1: Does the persisted case need a `session_id` foreign key, or is `case_id`
-  standalone with the session referencing it? Affects whether a case can be
-  reused across sessions.
-- Q2: Do the four non-Rehearsal-1 wrappers get empty dressing packs that fail
-  loudly, or no pack at all until authored?
-- Q3: Should the registry coverage test live in `engine/tests` or as a build
-  step, given AW-291 is the consumer that actually needs the guarantee?
+Resolved by the founder on 2026-08-05 as the condition of spec approval. These
+are now binding on the implementation, not open.
+
+**Q1 — case-to-session relationship. Resolved: `session_id` foreign key, one
+case row per session.** `cases.session_id` references `sessions.session_id` and
+is `NOT NULL`. This follows every gameplay table already in `engine/db/orm.py`:
+`claims`, `contradiction_flags`, `accusations`, `suspect_locks`, and
+`obligations` all hang off `session_id`. It matches ADR-0022's stated benefit,
+which is session-scoped ("case state survives process restart, so a session
+resuming mid-play does not depend on regenerating from seed"). Session deletion
+cascades cleanly rather than requiring refcounts.
+
+Consequence: a case is **not** shared across sessions. Two sessions on the same
+arc and seed each store their own copy. This is accepted; the storage cost is a
+few rows. A future Daily Case feature (one case, many sessions) would need a
+shared-case pointer added later, which is a smaller migration than the reverse.
+Daily Case is out of scope here per the Out of Scope section.
+
+Consequence: `ResolvedCase.case_id` is a **string**, `f"{arc_id}::case::{seed}"`
+(`engine/case/resolver.py:443`), while every primary key in `engine/db/orm.py`
+is `PGUUID`. The `cases` table therefore uses a `PGUUID` surrogate primary key
+and carries the deterministic string as a separate indexed column. It is not
+unique on its own, because the same arc and seed can legitimately recur across
+sessions.
+
+**Q2 — the four non-Rehearsal-1 wrappers. Resolved: declare all six, author
+two, raise loudly on the unauthored four.** The dressing pack names all six
+wrapper ids (Séance 1928, Orbital Gala 2087, Big Top 1899, Boardroom Severance,
+Manor Gothic, Sim Reunion) so the wrapper universe is explicit in one place.
+Only Séance 1928 and Big Top 1899 carry content.
+
+Two distinct failures, two distinct errors, because they are two distinct bugs:
+requesting a declared wrapper that has no authored content raises
+`DressingPackNotAuthored(wrapper_id)`; requesting an id that is not one of the
+six raises `UnknownWrapper(wrapper_id)`. No empty content object is created,
+so nothing can be mistaken for authored content.
+
+Note for sequencing: the v1 **launch** pair is Séance 1928 + Orbital Gala 2087,
+so Orbital is the first of the four unauthored wrappers that will need content.
+
+**Q3 — registry coverage test placement. Resolved: `pytest` in `engine/tests`,
+reading a machine-readable registry file checked in under `nightcap/`.** The
+registry becomes a data file in `nightcap/` (it is game content) and the test
+in `engine/tests` enumerates whatever that file declares. No Nightcap slot
+vocabulary is written into engine code, so the engine stays game-agnostic;
+`engine/tests/test_case_resolver.py` is the existing precedent for an
+engine test that loads `nightcap/` data. `pytest engine/tests/` is already a
+blocking check, and AW-291 needs the machine-readable registry regardless.
