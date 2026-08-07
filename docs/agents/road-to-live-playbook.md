@@ -1,4 +1,4 @@
-> Current version: v1.0
+> Current version: v1.1
 > Last updated: 2026-08-07
 > Status: Active
 > Canonical path: docs/agents/road-to-live-playbook.md
@@ -9,7 +9,8 @@ Session-by-session prompts for resuming Nightcap work toward M6 (live). Each
 prompt is one fresh session. Never continue past a prompt's STOP: the durable
 file it writes is what makes the next session cheap.
 
-**Entry point is executing the AW-290 plan.** Planning is done and merged.
+**Entry point is executing the AW-290 plan.** Planning is done and merged, and
+execution is already underway in a live session (see Local environment below).
 
 ## Current position (verify before relying on it)
 
@@ -22,11 +23,41 @@ file it writes is what makes the next session cheap.
 | Mini-game readiness program | **Deferred in full until after Rehearsal 1** | D-102, PR #281; see also D-100/D-101, PR #280 |
 | Spec 0087 (AW-290 narrator slot schema) | **Approved** v0.2 | PR #283, PR #288 |
 | AW-290 split four ways | Issues #284, #285, #286, #287 — all open | PR #288 |
-| AW-290 implementation plan | Merged, 14 tasks, all pending | `docs/superpowers/plans/2026-08-05-aw-290-narrator-slot-schema.md` |
+| AW-290 implementation plan | Merged, 14 tasks | `docs/superpowers/plans/2026-08-05-aw-290-narrator-slot-schema.md` |
+| AW-290 execution | **In progress** — active session on issue #284, task 1 | worktree `aw-290-typed-anchors`, 2026-08-07 |
 | AW-291, AW-288/289, AW-277–280, AW-286 | Planned, not started | — |
 
 D-102 means the Scene Sweep game-ready track and further mini-game platform
 slices are **out of scope until after Rehearsal 1**. Do not pick them up.
+
+## Local environment (as of 2026-08-07 cleanup)
+
+Six abandoned worktrees were verified content-safe (diffed against their actual
+merge commits, not just ancestry — ancestry checks false-negative on squash
+merges) and removed: `aw-290-planning`, `game-agnosticism`'s two absorbed
+commits, `engine-game-agnosticism`, and two detached-HEAD worktrees whose
+commits were already merged or reverted upstream.
+
+**Two worktrees hold real uncommitted content and were deliberately left alone —
+do not delete either without asking first:**
+
+- `C:/Users/nicke/arcwright-worktrees/game-agnosticism` (branch
+  `feat/aw-271-obligations`) — 569 uncommitted lines: a new Alembic migration,
+  `engine/session/obligations.py`, `engine/telemetry/obligations.py`, plus edits
+  to `arc/models.py`, `db/orm.py`, `session/service.py`. Unclear ownership or
+  intent; not referenced by any open issue found at cleanup time.
+- `.worktrees/minigame-platform-planning` (branch
+  `codex/minigame-platform-planning`) — mostly stale duplicates of already-
+  shipped docs, but `docs/specs/0076-aw-289-interrogation-room.md` diverges by
+  ~1000 lines and `0077-*.md` by ~30 lines from what's on main. A real unlanded
+  draft. Low urgency under D-102, but check the diff before ever deleting it.
+
+**Concurrency guardrail — read before running any prompt below that touches
+git.** A locked worktree (`git worktree list --porcelain` showing `locked`) or a
+branch name matching your target task means another session already owns that
+work. Do not create a second worktree or branch for the same task. Check first;
+if one exists, either resume that session or ask the founder before starting a
+duplicate.
 
 ## How to run it
 
@@ -36,6 +67,10 @@ Paste the standing rules at the top of every session, then the prompt.
 STANDING RULES:
 - Never state a status (spec, plan, task, PR, issue) without checking it against
   actual repo/gh state in this session. No status from memory or summary.
+- Before creating a worktree or branch, run `git worktree list --porcelain` and
+  check for a `locked` entry or existing branch matching your target task. If
+  found, another session owns it — do not duplicate; tell me instead of
+  proceeding.
 - Use Explore subagents for all searching. Keep your own context clean.
 - Stop at every gate. Never infer my approval from silence, a PR existing, or
   prior general approval.
@@ -43,13 +78,17 @@ STANDING RULES:
 - The mini-game readiness program is deferred until after Rehearsal 1 (D-102).
   Do not start Scene Sweep game-ready or further platform slices.
 - Do not create, modify, or delete anything in `.claude/` unless I ask.
+- Two worktrees hold known uncommitted work-in-progress (see "Local environment"
+  in this playbook: `feat/aw-271-obligations` obligations feature,
+  `codex/minigame-platform-planning` AW-289 draft). Never touch either without
+  asking first, even if they look abandoned.
 ```
 
 ## Run order
 
 | # | Prompt | Model | Skills / commands | Produces | Stops at |
 |---|---|---|---|---|---|
-| 1 | **H** Hygiene: links + worktrees | Sonnet | Explore | Fix PR + worktree report | PR open |
+| 1 | **H** Hygiene: broken links | Sonnet | Explore | Fix PR | PR open |
 | 2 | **E** Execute AW-290 plan ×14 | Sonnet\* | `executing-plans`, `test-driven-development`, `using-git-worktrees` | Commit per task | Every task; hard stop at 5, 10, 11 |
 | 3 | **R2** Close out AW-290 | Opus | `requesting-code-review`, `receiving-code-review`, `/review-pr`, `finishing-a-development-branch`, `/scribe` | Merged, issues #284–287 closed | Before merge |
 | 4 | **P1** AW-291 plan | Opus | `brainstorming`†, `writing-plans` | Plan + `.tasks.json` | Plan approval |
@@ -67,46 +106,36 @@ Collaboration.
 
 ---
 
-## H — Hygiene: broken links and worktrees
+## H — Hygiene: broken links
 
-**Sonnet** · 1 Explore subagent · ~30 min
+**Sonnet** · 1 Explore subagent · ~20 min
+
+Worktree cleanup is done (see Local environment above) — this prompt is now
+links-only.
 
 ```
 Maintenance session. Verify before changing anything.
 
-1. BROKEN RELATIVE LINKS. A partial scan found a systematic off-by-one: files in
-   `docs/product/` link with `../../roadmap/...`, which resolves outside the repo;
-   correct is `../roadmap/...`. Confirmed in
-   `docs/product/nightcap-leverage-advantages-sabotages.md` (8+ links).
-   Also: `docs/decisions/0002-harness-scenario-execution-contract.md` contains
-   absolute Windows paths (`/C:/Users/nicke/...`) instead of repo-relative links.
-   Also: `docs/roadmap/epics/M5-C-second-arc-schema-validation.md` links to
-   `../tasks/AW-256-remove-beat-id-hardcode-from-arc-transition-gate.md`, which
-   may have been renamed.
+BROKEN RELATIVE LINKS. A partial scan found a systematic off-by-one: files in
+`docs/product/` link with `../../roadmap/...`, which resolves outside the repo;
+correct is `../roadmap/...`. Confirmed in
+`docs/product/nightcap-leverage-advantages-sabotages.md` (8+ links).
+Also: `docs/decisions/0002-harness-scenario-execution-contract.md` contains
+absolute Windows paths (`/C:/Users/nicke/...`) instead of repo-relative links.
+Also: `docs/roadmap/epics/M5-C-second-arc-schema-validation.md` links to
+`../tasks/AW-256-remove-beat-id-hardcode-from-arc-transition-gate.md`, which
+may have been renamed.
 
-   Run a COMPLETE relative-link scan across `docs/` EXCLUDING
-   `docs/archive/notion-export/` (non-canonical per AGENTS.md; its broken links
-   are expected export artifacts — do not fix them). Scope the scan so it
-   finishes; a naive recursive grep over the whole tree times out.
+Run a COMPLETE relative-link scan across `docs/` EXCLUDING
+`docs/archive/notion-export/` (non-canonical per AGENTS.md; its broken links
+are expected export artifacts — do not fix them). Scope the scan so it
+finishes; a naive recursive grep over the whole tree times out — batch by
+subdirectory if needed.
 
-   Fix only links whose correct target is unambiguous. List ambiguous ones for
-   me; do not guess.
+Fix only links whose correct target is unambiguous. List ambiguous ones for
+me; do not guess.
 
-2. WORKTREES. `git worktree list` shows 9 registered; several under
-   `.claude/worktrees/` have deleted directories but live registrations. Per
-   AGENTS.md do NOT delete anything in `.claude/` yourself.
-
-   Report per worktree: branch, last commit date, whether its commits are
-   ancestors of main (`git merge-base --is-ancestor`), and whether the directory
-   exists. `feat/aw-271-obligations`, `feat/live-loop-ai-dialogue`, and
-   `codex/minigame-platform-planning` held UNMERGED commits as of 2026-08-07 —
-   re-verify and flag any that still do as must-not-prune. `docs/aw-290-planning`
-   merged via PR #288 (squashed, so its commits are not ancestors — confirm
-   content parity with `git diff` before treating it as safe).
-
-   Give me a prune command with per-worktree safety assessment. Do not run it.
-
-PR for item 1 only. Item 2 is a report. STOP before merge.
+PR. STOP before merge.
 ```
 
 **Note on GitHub issue links:** issue and PR bodies here reference docs as bare
@@ -123,6 +152,11 @@ make a doc clickable from an issue, use a full
 **Sonnet** for build tasks, **Opus** for gate tasks · `executing-plans`,
 `test-driven-development`, `using-git-worktrees`
 
+**Check for a live session on this task before starting** (see Concurrency
+guardrail above). A worktree named `aw-290-typed-anchors` may already be
+running task 1 as of 2026-08-07 — resume it instead of starting a duplicate if
+so.
+
 The plan has **14 tasks across four issues**. Three are founder gates that must
 not be auto-resolved:
 
@@ -136,6 +170,10 @@ Issue mapping: #284 AW-290 typed case anchors · #285 AW-293 wrapper dressing pa
 Run one session per task, or per small batch between gates.
 
 ```
+Before anything else: run `git worktree list --porcelain` and check for a
+locked worktree or existing branch already working this plan. If one exists,
+STOP and tell me instead of starting a duplicate.
+
 Execute Task <N> of `docs/superpowers/plans/2026-08-05-aw-290-narrator-slot-schema.md`
 using `superpowers-extended-cc:executing-plans` with
 `superpowers-extended-cc:test-driven-development`.
@@ -186,9 +224,10 @@ Close out `<branch>` for `<AW-NNN>` / issue(s) `<#NN>`.
 
 After I merge: `superpowers-extended-cc:finishing-a-development-branch`. Verify
 the squash preserved content (`git diff <base>..<head> -- <paths>` empty) before
-deleting anything. Then `/scribe` to update each task file's Status with Closeout
-Evidence in the style of AW-282/283/284, and update
-`docs/product/road-to-live/status.md`.
+deleting anything. Confirm the worktree is unlocked before removing it — a
+locked worktree means another session still needs it. Then `/scribe` to update
+each task file's Status with Closeout Evidence in the style of AW-282/283/284,
+and update `docs/product/road-to-live/status.md`.
 
 Then remind me to run `make rehearsal` on real hardware.
 ```
@@ -206,6 +245,10 @@ review, billed, founder-triggered only.
 Use for plans without founder gates. For gated plans use **E** above.
 
 ```
+Before anything else: run `git worktree list --porcelain` and check for a
+locked worktree or existing branch already working this task. If one exists,
+STOP and tell me instead of starting a duplicate.
+
 Execute Task <N> from `<plan path>` using
 `superpowers-extended-cc:subagent-driven-development` with
 `superpowers-extended-cc:test-driven-development`.
