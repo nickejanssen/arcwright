@@ -1,0 +1,12 @@
+{
+  "times": [
+    {"id": "time_just_after_eight", "label": "just after eight"},
+    {"id": "time_half_past_eight", "label": "half past eight"},
+    {"id": "time_just_after_nine", "label": "just after nine"},
+    {"id": "time_half_past_nine", "label": "half past nine"},
+    {"id": "time_just_after_ten", "label": "just after ten"},
+    {"id": "time_half_past_ten", "label": "half past ten"},
+    {"id": "time_just_before_eleven", "label": "just before eleven"},
+    {"id": "time_at_midnight", "label": "at the stroke of midnight"}
+  ]
+}

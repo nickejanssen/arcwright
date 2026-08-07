@@ -29,6 +29,12 @@ class Taxonomy(BaseModel):
     victim_names: list[str] = Field(default_factory=list)
     secrets: list[str] = Field(default_factory=list)
     relationships: list[str] = Field(default_factory=list)
+    location_pool: list[dict[str, Any]] = Field(default_factory=list)
+    """Per-case place anchors: ``{"id": ..., "label": ...}`` entries."""
+
+    time_pool: list[dict[str, Any]] = Field(default_factory=list)
+    """Per-case time anchors, in the order the resolver assigns
+    ``time_ordinal`` from: ``{"id": ..., "label": ...}`` entries."""
 
 
 class CaseResolutionConfig(BaseModel):
@@ -81,6 +87,8 @@ def load_taxonomy(directory: Path) -> Taxonomy:
         victim_names=_load("cast_pool.json", "victim_names"),
         secrets=_load("character_facts.json", "secrets"),
         relationships=_load("character_facts.json", "relationships"),
+        location_pool=_load("location_pool.json", "locations"),
+        time_pool=_load("time_pool.json", "times"),
     )
 
 
