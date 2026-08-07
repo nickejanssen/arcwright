@@ -370,7 +370,7 @@ def _resolve_evidence(
                 evidence_id=f"e{i + 1}",
                 evidence_type=stage.get("kind", "trace"),
                 text=text,
-                short_label="",
+                short_label="",  # placeholder — real short-label generation lands in AW-290 Task 2
                 points_toward=points_toward,
                 points_away_from=points_away_from,
                 delivery=delivery,
@@ -415,7 +415,7 @@ def _resolve_lies(
                 evidence_id=contradiction_evidence_id,
                 evidence_type=topic_entry.get("evidence_type", "testimony"),
                 text=contradiction_text,
-                short_label="",
+                short_label="",  # placeholder — real short-label generation lands in AW-290 Task 2
                 points_toward=[],
                 points_away_from=[],
                 delivery="group",
