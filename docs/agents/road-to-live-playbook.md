@@ -9,8 +9,24 @@ Session-by-session prompts for resuming Nightcap work toward M6 (live). Each
 prompt is one fresh session. Never continue past a prompt's STOP: the durable
 file it writes is what makes the next session cheap.
 
-**Entry point is the AW-290 track, not Stage 1.** Stage 0 (credentials) closed
-2026-08-01. AW-285 shipped Phase 1 structural scope.
+**Entry point is executing the AW-290 plan.** Planning is done and merged.
+
+## Current position (verify before relying on it)
+
+| Item | State | Evidence |
+|---|---|---|
+| Stage 0 credentials | Done | Issue #264 closed 2026-08-01 |
+| AW-285 | Complete, Phase 1 structural scope | PR #269 |
+| AW-281–284, AW-287, AW-276 | Complete | PR #277 reconciled stale statuses |
+| Road to Live status record | Written | PR #278 → `docs/product/road-to-live/status.md` |
+| Mini-game readiness program | **Deferred in full until after Rehearsal 1** | D-102, PR #281; see also D-100/D-101, PR #280 |
+| Spec 0087 (AW-290 narrator slot schema) | **Approved** v0.2 | PR #283, PR #288 |
+| AW-290 split four ways | Issues #284, #285, #286, #287 — all open | PR #288 |
+| AW-290 implementation plan | Merged, 14 tasks, all pending | `docs/superpowers/plans/2026-08-05-aw-290-narrator-slot-schema.md` |
+| AW-291, AW-288/289, AW-277–280, AW-286 | Planned, not started | — |
+
+D-102 means the Scene Sweep game-ready track and further mini-game platform
+slices are **out of scope until after Rehearsal 1**. Do not pick them up.
 
 ## How to run it
 
@@ -24,7 +40,8 @@ STANDING RULES:
 - Stop at every gate. Never infer my approval from silence, a PR existing, or
   prior general approval.
 - Implement only what's in scope. Note unrelated bugs; don't fix them.
-- Do not touch `run_seed` in `resolver.py` — known gap, needs cross-module approval.
+- The mini-game readiness program is deferred until after Rehearsal 1 (D-102).
+  Do not start Scene Sweep game-ready or further platform slices.
 - Do not create, modify, or delete anything in `.claude/` unless I ask.
 ```
 
@@ -32,124 +49,25 @@ STANDING RULES:
 
 | # | Prompt | Model | Skills / commands | Produces | Stops at |
 |---|---|---|---|---|---|
-| 1 | **P0** Land AW-290 planning | Sonnet | `/review-pr` | Merged plan + issues 284–287 | Before merge |
-| 2 | **P1** Record state | Sonnet | `/scribe`, Explore | `road-to-live/status.md` | Docs PR open |
-| 3 | **P2** Hygiene + link repair | Sonnet | Explore | Fix PR + worktree report | PR open |
-| 4 | **D2** Mini-game greenlight | Opus | `arcwright-sme`, `/scribe` | Decision, recorded | AskUserQuestion |
-| 5 | **R1** ×4 (issues 284–287) | Sonnet | `subagent-driven-development`, `test-driven-development`, `using-git-worktrees` | Commit per task | Each task done |
-| 6 | **R2** | Opus | `requesting-code-review`, `receiving-code-review`, `/review-pr`, `finishing-a-development-branch`, `/scribe` | Merged AW-290 | Before merge |
-| 7 | **P4** AW-291 plan | Opus | `brainstorming`\*, `writing-plans` | Plan + `.tasks.json` | Plan approval |
-| 8 | **R1** ×N → **R2** | Sonnet → Opus | as above | Merged AW-291 | Before merge |
+| 1 | **H** Hygiene: links + worktrees | Sonnet | Explore | Fix PR + worktree report | PR open |
+| 2 | **E** Execute AW-290 plan ×14 | Sonnet\* | `executing-plans`, `test-driven-development`, `using-git-worktrees` | Commit per task | Every task; hard stop at 5, 10, 11 |
+| 3 | **R2** Close out AW-290 | Opus | `requesting-code-review`, `receiving-code-review`, `/review-pr`, `finishing-a-development-branch`, `/scribe` | Merged, issues #284–287 closed | Before merge |
+| 4 | **P1** AW-291 plan | Opus | `brainstorming`†, `writing-plans` | Plan + `.tasks.json` | Plan approval |
+| 5 | **R1** ×N → **R2** | Sonnet → Opus | as above | Merged AW-291 | Before merge |
 | — | **▶ `make rehearsal`** | — | — | Vesper on the TV | **Founder plays it** |
-| 9 | **P5** Mystery loop discovery | Opus | `brainstorming`, `arcwright-doc-bundler` | Design doc | Doc approval |
-| 10 | **P6** Mystery loop plan | Opus | `writing-plans` | Plan + `.tasks.json` | Plan approval |
-| 11 | **R1** ×N → **R2** | Sonnet → Opus | as above | Merged AW-277–280 | Before merge |
+| 6 | **P2** Mystery loop discovery | Opus | `brainstorming`, `arcwright-doc-bundler` | Design doc | Doc approval |
+| 7 | **P3** Mystery loop plan | Opus | `writing-plans` | Plan + `.tasks.json` | Plan approval |
+| 8 | **R1** ×N → **R2** | Sonnet → Opus | as above | Merged AW-277–280 | Before merge |
 | — | **▶ `make rehearsal`** | — | — | Full mystery loop | **Founder plays it** |
 | later | **D1** AW-289 brief | Opus | — | Decision | AskUserQuestion |
 
-\* conditional — only if the task file's Human Collaboration Contract says
-Creative Collaboration.
-
-`R1` runs **once per plan task**, fresh session each. `R2` runs **once per branch**.
-
----
-
-## P0 — Land the AW-290 planning branch
-
-**Sonnet** · `/review-pr` · ~20 min
-
-AW-290 is already specified and split. Branch `docs/aw-290-planning` holds two
-unmerged commits; do not re-plan it.
-
-```
-Branch `docs/aw-290-planning` is 2 commits ahead of main:
-- 70098c6 docs(specs): approve spec 0087, add migration design and AW-290 plan
-- 7a397b3 docs(roadmap): split AW-290 four ways and create issues 284-287
-
-Verify that branch state yourself (`git log main..docs/aw-290-planning`) before
-acting. Read what it actually changes (`git diff main...docs/aw-290-planning --stat`
-then the substantive files).
-
-Confirm before recommending a merge:
-- Spec 0087 (`docs/specs/0087-aw-290-narrator-slot-schema-and-wrapper-dressing.md`)
-  Status and whether the branch changes it from Draft to Approved.
-- ADR-0017 (narrator slot resolution and wrapper dressing) is Accepted.
-- ADR-0022 (resolved case persistence) exists and the spec's dependency on it holds.
-- Issues 284 (AW-290), 285 (AW-293), 286 (AW-294), 287 (AW-295) exist, are open,
-  and their titles match what the branch's roadmap files claim.
-- The branch is docs-only. If it touches engine/api/sdk, STOP and tell me.
-
-APPROVAL GATE: spec 0087 involves a migration and case-persistence schema. Per
-AGENTS.md Hard Rules that needs my explicit approval. Summarize the schema change
-in plain language and what it costs to reverse. Do not assume prior approval
-carries.
-
-Run `/review-pr` against the branch. Open a PR. STOP before merge.
-```
+\* Opus for the three GATE tasks (5, 10, 11) — they need judgment, not execution.
+† conditional — only if the task file's Human Collaboration Contract says Creative
+Collaboration.
 
 ---
 
-## P1 — Record verified state
-
-**Sonnet** · `/scribe` + 1 Explore subagent · ~15 min
-
-```
-Act as Scribe (`/scribe`). Recording session, not an audit. Do not re-derive
-what is already established below; make it durable.
-
-Write `docs/product/road-to-live/status.md`, dated today, following the format of
-the existing files in `docs/product/mini-game-readiness/`.
-
-DONE since the 26 Jul "Road to Live" roadmap snapshot:
-- Stage 0 credentials — issue #264 closed 2026-08-01. Live two-player rehearsal
-  joins, starts, transitions pour -> scene on real devices; automated smoke passes.
-  Hidden blockers fixed en route: wrong default arc, missing `rehearsal-start` make
-  target, token leaking into a URL, Firebase preflight gaps.
-- AW-287 Leverage payout — merged (PRs #251/#253). The "minigames don't pay
-  Leverage" gap is CLOSED; win -> currency -> sabotage loop exists.
-- AW-285 — Complete, accepted Phase 1 structural scope (PR #269). Shared-display
-  projection layer exists. Six-beat integration, privacy/device checks, and
-  audiovisual polish remain OPEN under AW-286.
-- AW-281, AW-282, AW-283, AW-284 — all Complete. PR #277 corrected their task
-  files, which were stale at Planned/In Progress.
-- AW-276 Arc Voice Block Injection — done, unblocking AW-277 through AW-280.
-- AW-290 — NO LONGER unplanned. ADR-0017 (Accepted, the charter), ADR-0022
-  (resolved case persistence), and spec 0087 landed (PR #283, D-089/D-103, from a
-  founder decision interview). AW-290 has been split four ways into issues 284
-  (typed case anchors + evidence short form), 285 (AW-293 wrapper dressing pack),
-  286 (AW-294 machine-readable slot registry), 287 (AW-295 resolved case
-  persistence). Record the current merge state of `docs/aw-290-planning`.
-- Parallel track: mini-game readiness program — Scene Sweep backend + design (PRs
-  #273/#274), browser-first mini-game platform specs 0077-0080 partially
-  implemented (PR #275). Capped at the browser golden path; further slices gated
-  on founder execution approval.
-
-STILL UNMOVED:
-- AW-291 (the line reader): Planned. 468 authored lines remain docs-only prose
-  under `docs/design/line-libraries/` with no engine reader.
-- AW-288 / AW-289: Planned, blocked on founder creative approval.
-- AW-277-280: Planned but UNBLOCKED (AW-276 done). Each carries a creative gate.
-- AW-286 and Stage 6+ (art): untouched, correctly sequenced after the above.
-
-OPEN FOUNDER DECISIONS (record as blocking, unresolved):
-- Approve the AW-289 Interrogation Room creative brief.
-- Greenlight (or not) the next slice of the mini-game readiness program.
-
-Dispatch ONE Explore subagent to spot-check only these three:
-1. AW-276 really is Complete (it unblocks AW-277-280).
-2. `nightcap/content/` still does not exist and no engine reader for
-   `docs/design/line-libraries/` exists.
-3. `git status` clean, local main == origin/main.
-
-Also record whether the "Nightcap" trademark blocker (fallback: Revel) is still
-open — check `docs/product/` open-questions, don't guess.
-
-Docs-only PR. STOP.
-```
-
----
-
-## P2 — Hygiene and link repair
+## H — Hygiene: broken links and worktrees
 
 **Sonnet** · 1 Explore subagent · ~30 min
 
@@ -157,82 +75,159 @@ Docs-only PR. STOP.
 Maintenance session. Verify before changing anything.
 
 1. BROKEN RELATIVE LINKS. A partial scan found a systematic off-by-one: files in
-   `docs/product/` link with `../../roadmap/...` which resolves outside the repo;
-   correct is `../roadmap/...`. Confirmed instances in
+   `docs/product/` link with `../../roadmap/...`, which resolves outside the repo;
+   correct is `../roadmap/...`. Confirmed in
    `docs/product/nightcap-leverage-advantages-sabotages.md` (8+ links).
    Also: `docs/decisions/0002-harness-scenario-execution-contract.md` contains
    absolute Windows paths (`/C:/Users/nicke/...`) instead of repo-relative links.
    Also: `docs/roadmap/epics/M5-C-second-arc-schema-validation.md` links to
-   `../tasks/AW-256-remove-beat-id-hardcode-from-arc-transition-gate.md` which
+   `../tasks/AW-256-remove-beat-id-hardcode-from-arc-transition-gate.md`, which
    may have been renamed.
 
    Run a COMPLETE relative-link scan across `docs/` EXCLUDING
    `docs/archive/notion-export/` (non-canonical per AGENTS.md; its broken links
-   are expected export artifacts — do not fix them). Fix only links where the
-   correct target is unambiguous. List ambiguous ones for me; do not guess.
+   are expected export artifacts — do not fix them). Scope the scan so it
+   finishes; a naive recursive grep over the whole tree times out.
 
-2. `docs/skills/arcwright-minigame/SKILL.md` frontmatter cites "the engine
-   boundary from ADR 0009." Confirm ADR-0009 is superseded by ADR-0018. If so,
-   update the skill to match what ADR-0018 actually says — read it first, don't
-   just swap the number. Report other stale ADR-0009 references.
+   Fix only links whose correct target is unambiguous. List ambiguous ones for
+   me; do not guess.
 
-3. WORKTREES. `git worktree list` shows 9 registered, several abandoned under
-   `.claude/worktrees/` with directories already deleted. Per AGENTS.md do NOT
-   delete anything in `.claude/` yourself. Report per worktree: branch, last
-   commit date, whether commits are ancestors of main (`git merge-base
-   --is-ancestor`), and whether the directory still exists. Note that
-   `docs/aw-290-planning`, `feat/aw-271-obligations`,
-   `feat/live-loop-ai-dialogue`, and `codex/minigame-platform-planning` all hold
-   UNMERGED commits — flag those as must-not-prune until reviewed. Give me a
-   prune command with per-worktree safety assessment.
+2. WORKTREES. `git worktree list` shows 9 registered; several under
+   `.claude/worktrees/` have deleted directories but live registrations. Per
+   AGENTS.md do NOT delete anything in `.claude/` yourself.
 
-PR for items 1 and 2. Item 3 is a report. STOP before merge.
+   Report per worktree: branch, last commit date, whether its commits are
+   ancestors of main (`git merge-base --is-ancestor`), and whether the directory
+   exists. `feat/aw-271-obligations`, `feat/live-loop-ai-dialogue`, and
+   `codex/minigame-platform-planning` held UNMERGED commits as of 2026-08-07 —
+   re-verify and flag any that still do as must-not-prune. `docs/aw-290-planning`
+   merged via PR #288 (squashed, so its commits are not ancestors — confirm
+   content parity with `git diff` before treating it as safe).
+
+   Give me a prune command with per-worktree safety assessment. Do not run it.
+
+PR for item 1 only. Item 2 is a report. STOP before merge.
 ```
 
-**Note on GitHub issue links:** issue and PR bodies in this repo reference docs as
-bare backticked paths (`` `docs/architecture/03-arc-execution.md` ``), which
-GitHub does not render as links. That is the existing convention, not a
-regression. GitHub also does not resolve repo-relative markdown links inside
-issue bodies. To make a doc clickable from an issue, use a full
+**Note on GitHub issue links:** issue and PR bodies here reference docs as bare
+backticked paths (`` `docs/architecture/03-arc-execution.md` ``), which GitHub
+renders as code, not links. That is the existing convention, not a regression.
+GitHub also does not resolve repo-relative markdown links inside issue bodies. To
+make a doc clickable from an issue, use a full
 `https://github.com/nickejanssen/arcwright/blob/main/<path>` URL.
 
 ---
 
-## D2 — Mini-game program greenlight
+## E — Execute the AW-290 plan
 
-**Opus** · `arcwright-sme`, `/scribe` · ~30 min
+**Sonnet** for build tasks, **Opus** for gate tasks · `executing-plans`,
+`test-driven-development`, `using-git-worktrees`
+
+The plan has **14 tasks across four issues**. Three are founder gates that must
+not be auto-resolved:
+
+- **Task 5** — GATE: present dressing vocabulary for founder approval
+- **Task 10** — GATE: prove no Vesper refrain line was edited
+- **Task 11** — GATE: founder approval of the migration design
+
+Issue mapping: #284 AW-290 typed case anchors · #285 AW-293 wrapper dressing pack ·
+#286 AW-294 slot registry · #287 AW-295 resolved case persistence.
+
+Run one session per task, or per small batch between gates.
 
 ```
-Invoke the `arcwright-sme` skill — this is an architecture-overlap judgment.
+Execute Task <N> of `docs/superpowers/plans/2026-08-05-aw-290-narrator-slot-schema.md`
+using `superpowers-extended-cc:executing-plans` with
+`superpowers-extended-cc:test-driven-development`.
 
-Read `docs/product/road-to-live/status.md` first.
+Read the plan and its `.tasks.json` first. Confirm every prior task is marked
+completed AND its verify command still passes. If one fails, STOP and tell me —
+do not work around it.
 
-The mini-game readiness program is capped at the browser golden path (PR #275,
-specs 0077-0080). Further slices need my execution approval. Frame that decision.
+Ground in spec 0087 (`docs/specs/0087-aw-290-narrator-slot-schema-and-wrapper-dressing.md`,
+Status: Approved) and ADR-0017. Read what the plan actually says this task is; my
+summary of it is not authoritative.
 
-Read specs 0077-0080, ADR-0018, `docs/specs/0086-scene-sweep-game-ready.md`, and
-`docs/superpowers/plans/2026-08-03-scene-sweep-game-ready.md`. Use Explore to
-locate; read the decisive ones yourself.
+GATE TASKS — 5, 10, and 11 are founder gates. If this is one of them: produce the
+artifact, present it for my review, and STOP. Do not mark it complete, do not
+proceed to the next task, do not infer approval. Task 11 covers a migration and
+case-persistence schema, which AGENTS.md Hard Rules require me to approve
+explicitly.
 
-Tell me, with file-path evidence:
-- What the next slice delivers, and its process overhead (that program runs heavy
-  — multiple specs, worktrees, audit trails).
-- Whether it OVERLAPS with AW-286 (remaining six-beat integration, privacy and
-  device checks, polish). Name the specific surfaces, schemas, and components
-  that collide.
-- Whether the game-ready plan's dependencies (capability-and-trust platform,
-  creator-and-readiness-labs) exist yet. Verify. Assume nothing.
-- What the roadmap costs if I defer the whole program until after Rehearsal 1.
+Use `superpowers-extended-cc:using-git-worktrees`. Implement only this task's
+acceptance criteria. Note unrelated bugs; do not fix them.
 
-ONE AskUserQuestion, bounded options, your pick marked. Do not hedge across
-options. After I answer, `/scribe` the decision into
-`docs/product/decisions-log.csv` plus an ADR if it affects sequencing or
-architecture. STOP.
+Tasks 13-14 touch Alembic migration 0008 and case_store. Verify the migration
+applies AND rolls back cleanly before claiming done.
+
+DONE = task verify command passes, `make lint` and `make type` pass, each
+acceptance criterion reported with evidence. Update `.tasks.json`. Commit. STOP.
 ```
 
 ---
 
-## P4 — AW-291: the line reader
+## R2 — Closeout (reusable; once per branch)
+
+**Opus** · `requesting-code-review`, `receiving-code-review`,
+`finishing-a-development-branch`, `/review-pr`, `/scribe`
+
+```
+Close out `<branch>` for `<AW-NNN>` / issue(s) `<#NN>`.
+
+1. `superpowers-extended-cc:requesting-code-review`, then `/review-pr` for the
+   repo's own checklist. Report findings; do not silently fix.
+2. `superpowers-extended-cc:receiving-code-review` to address them. New commits,
+   never amend.
+3. Confirm every acceptance criterion passes with evidence, and that CI's required
+   `verify` check is green — read the actual GitHub Actions log, not local runs
+   only.
+4. Open the PR with `Closes: #NN` for every issue it closes. STOP before merge —
+   I merge.
+
+After I merge: `superpowers-extended-cc:finishing-a-development-branch`. Verify
+the squash preserved content (`git diff <base>..<head> -- <paths>` empty) before
+deleting anything. Then `/scribe` to update each task file's Status with Closeout
+Evidence in the style of AW-282/283/284, and update
+`docs/product/road-to-live/status.md`.
+
+Then remind me to run `make rehearsal` on real hardware.
+```
+
+For high-stakes PRs the founder runs `/code-review ultra` — multi-agent cloud
+review, billed, founder-triggered only.
+
+---
+
+## R1 — Execute a generic plan task (reusable)
+
+**Sonnet** · `subagent-driven-development`, `test-driven-development`,
+`using-git-worktrees`
+
+Use for plans without founder gates. For gated plans use **E** above.
+
+```
+Execute Task <N> from `<plan path>` using
+`superpowers-extended-cc:subagent-driven-development` with
+`superpowers-extended-cc:test-driven-development`.
+
+Read the plan and its `.tasks.json`. Confirm every prior task is marked completed
+AND its verify command still passes before starting. If one fails, STOP and tell
+me — do not work around it.
+
+Use `superpowers-extended-cc:using-git-worktrees`. Implement only this task's
+acceptance criteria. Note unrelated bugs in your report; do not fix them.
+
+DONE = task verify command passes, `make lint` and `make type` pass, each
+acceptance criterion reported with evidence. Update `.tasks.json`. Commit. STOP
+and let me decide whether to continue or play it first.
+```
+
+For a well-specified GitHub issue, `/implement AW-NNN` is equivalent and carries
+the repo's own scope contract via the `implementer` subagent.
+
+---
+
+## P1 — AW-291: the line reader
 
 **Opus** · `brainstorming` (conditional), `writing-plans` · ~45 min
 
@@ -256,7 +251,8 @@ HARD CONSTRAINTS — verify each against the actual docs before relying on it:
 - Line selection is deterministic. AI composes from resolved state; it does not
   decide which line fires or what is true.
 - Authored line text renders as written — substitution fills tonight's specifics,
-  it does not paraphrase.
+  it does not paraphrase. AW-290 Task 10 gated on proving no refrain line was
+  edited; hold the same bar here.
 
 Check the collaboration contract; if Creative Collaboration, invoke
 `superpowers-extended-cc:brainstorming` and interview me first, one question at a
@@ -275,7 +271,7 @@ beats, naming tonight's actual suspects and rooms.
 
 ---
 
-## P5 — Mystery loop discovery
+## P2 — Mystery loop discovery
 
 **Opus** · `brainstorming`, `arcwright-doc-bundler` · ~60–90 min
 
@@ -311,14 +307,13 @@ ENFORCE and call out any violation:
 Use cheap artifacts I can react to, one at a time. Ask what's wrong with each.
 
 END BY writing the approved direction to a design doc under
-`docs/superpowers/specs/` with a "Locked design decisions" section, following the
-format of `2026-08-02-nightcap-scene-sweep-mini-game-design.md`. Get my explicit
-approval, commit, STOP.
+`docs/superpowers/specs/` with a "Locked design decisions" section. Get my
+explicit approval, commit, STOP.
 ```
 
 ---
 
-## P6 — Mystery loop plan
+## P3 — Mystery loop plan
 
 **Opus** · `writing-plans` · ~30 min
 
@@ -334,66 +329,11 @@ and function referenced must actually exist. Verify by reading, not assuming.
 
 Each task needs a concrete verify command and must be completable by one subagent
 in one session. Any task touching a surface needs a leak test in its acceptance
-criteria (private info never reaches the shared display).
+criteria (private info never reaches the shared display). Mark any task needing
+founder judgment as an explicit GATE task, following the AW-290 plan's precedent.
 
 Produce the plan and `.tasks.json`. Present for approval. STOP.
 ```
-
----
-
-## R1 — Execute (reusable; once per task, fresh session)
-
-**Sonnet** · `subagent-driven-development`, `test-driven-development`, `using-git-worktrees`
-
-```
-Execute Task <N> from `<plan path>` using
-`superpowers-extended-cc:subagent-driven-development` with
-`superpowers-extended-cc:test-driven-development`.
-
-Read the plan and its `.tasks.json`. Confirm every prior task is marked completed
-AND its verify command still passes before starting. If one fails, STOP and tell
-me — do not work around it.
-
-Use `superpowers-extended-cc:using-git-worktrees`. Implement only this task's
-acceptance criteria. Note unrelated bugs in your report; do not fix them.
-
-DONE = task verify command passes, `make lint` and `make type` pass, each
-acceptance criterion reported with evidence. Update `.tasks.json`. Commit. STOP
-and let me decide whether to continue or play it first.
-```
-
-For a well-specified GitHub issue, `/implement AW-NNN` is equivalent and carries
-the repo's own scope contract via the `implementer` subagent.
-
----
-
-## R2 — Closeout (reusable; once per branch)
-
-**Opus** · `requesting-code-review`, `receiving-code-review`, `finishing-a-development-branch`, `/review-pr`, `/scribe`
-
-```
-Close out `<branch>` for `<AW-NNN>` / issue `<#NN>`.
-
-1. `superpowers-extended-cc:requesting-code-review`, then `/review-pr` for the
-   repo's own checklist. Report findings; do not silently fix.
-2. `superpowers-extended-cc:receiving-code-review` to address them. New commits,
-   never amend.
-3. Confirm every acceptance criterion passes with evidence, and that CI's required
-   `verify` check is green — read the actual GitHub Actions log, not local runs
-   only.
-4. Open the PR with `Closes: #NN`. STOP before merge — I merge.
-
-After I merge: `superpowers-extended-cc:finishing-a-development-branch`. Verify
-the squash preserved content (`git diff <base>..<head> -- <paths>` empty) before
-deleting anything. Then `/scribe` to update the task file Status with Closeout
-Evidence in the style of AW-282/283/284, and update
-`docs/product/road-to-live/status.md`.
-
-Then remind me to run `make rehearsal` on real hardware.
-```
-
-For high-stakes PRs the founder runs `/code-review ultra` — multi-agent cloud
-review, billed, founder-triggered only.
 
 ---
 
@@ -407,6 +347,8 @@ file and any existing brief or discovery record. Do NOT write a new brief.
 
 Tell me: what specifically needs my approval, what each option costs, what stays
 blocked while it's unapproved, and what happens if I defer past Rehearsal 1.
+Note that D-102 defers the mini-game readiness program until after Rehearsal 1 —
+check whether that already answers this.
 
 ONE AskUserQuestion, your pick marked. STOP.
 ```
@@ -415,8 +357,8 @@ ONE AskUserQuestion, your pick marked. STOP.
 
 ## Cost discipline
 
-- **Sonnet** for P0, P1, P2, R1 — mechanical, evidence-gathering, execution.
-- **Opus** for D1, D2, P4, P5, P6, R2 — judgment, creative gates, review.
+- **Sonnet** for H, R1, and non-gate E tasks — mechanical execution.
+- **Opus** for D1, P1, P2, P3, R2, and E gate tasks — judgment and creative gates.
 - Search always through `Explore` subagents; their context dies with them instead
   of filling the main session.
 - If a session feels heavy, invoke `arcwright-doc-bundler` and work from the
@@ -430,7 +372,7 @@ is fun — not at Rehearsal 1.
 
 ## References
 
+- `docs/product/road-to-live/status.md` — current verified state
 - `docs/conventions/human-collaboration.md` — interaction profiles and gates
 - `docs/agents/USAGE.md` — role contracts and operating model
-- `docs/product/road-to-live/status.md` — current verified state (written by P1)
 - `AGENTS.md` — always-on rules, Hard Rules requiring explicit approval
