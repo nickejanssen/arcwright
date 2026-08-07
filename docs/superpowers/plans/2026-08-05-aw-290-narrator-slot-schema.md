@@ -690,16 +690,19 @@ Add a row to `docs/product/decisions-log.csv` recording dressing content approva
 **Goal:** Load per-wrapper dressing vocabulary from game content, with the two distinct errors Q2 specified.
 
 **Files:**
-- Create: `nightcap/dressing/wrappers.json`
+- Create: `nightcap/dressing/couch-race-wrappers.json`
+- Create: `config/dressing_registry.json`
 - Create: `engine/dressing/__init__.py`, `engine/dressing/models.py`, `engine/dressing/loader.py`, `engine/dressing/errors.py`
 - Test: `engine/tests/test_dressing_pack.py`
 
 **Acceptance Criteria:**
 - [ ] All six wrapper ids are declared; only Séance 1928 and Big Top 1899 carry content
-- [ ] `load_dressing_pack(wrapper_id)` returns the vocabulary for an authored wrapper
+- [ ] `load_dressing_pack(arc_id, wrapper_id)` returns the vocabulary for an authored wrapper
 - [ ] An unauthored but declared wrapper raises `DressingPackNotAuthored`
 - [ ] An id outside the six raises `UnknownWrapper`
-- [ ] The two errors are distinct classes, both subclassing a common base
+- [ ] The two lookup errors are distinct classes, both subclassing `DressingError`
+- [ ] **No literal `nightcap` string appears anywhere in `engine/dressing/`** — the path comes from `config/dressing_registry.json` via prefix match, mirroring `engine/case/loader.py:95`
+- [ ] An unregistered `arc_id` raises `DressingRegistryError`, not a silent fallback to whichever pack shipped first
 - [ ] No dressing vocabulary appears as a Python identifier — it is data only
 
 **Verify:** `python -m pytest engine/tests/test_dressing_pack.py -v` → all pass
@@ -709,38 +712,54 @@ Add a row to `docs/product/decisions-log.csv` recording dressing content approva
 - [ ] **Step 1: Write the failing tests**
 
 ```python
+ARC = "nightcap-couch-race"
+
+
 def test_authored_wrapper_returns_vocabulary():
-    pack = load_dressing_pack("seance_1928")
+    pack = load_dressing_pack(ARC, "seance_1928")
     assert pack.drinks
 
 
 def test_big_top_carries_stage_name_templates():
-    pack = load_dressing_pack("big_top_1899")
+    pack = load_dressing_pack(ARC, "big_top_1899")
     assert pack.stage_name_templates
 
 
 def test_declared_but_unauthored_wrapper_raises_not_authored():
     with pytest.raises(DressingPackNotAuthored) as exc:
-        load_dressing_pack("manor_gothic")
+        load_dressing_pack(ARC, "manor_gothic")
     assert "manor_gothic" in str(exc.value)
 
 
 def test_id_outside_the_six_raises_unknown_wrapper():
     with pytest.raises(UnknownWrapper) as exc:
-        load_dressing_pack("atlantis_1911")
+        load_dressing_pack(ARC, "atlantis_1911")
     assert "atlantis_1911" in str(exc.value)
 
 
-def test_the_two_errors_are_distinct_types():
+def test_the_two_lookup_errors_are_distinct_types():
     assert not issubclass(DressingPackNotAuthored, UnknownWrapper)
     assert not issubclass(UnknownWrapper, DressingPackNotAuthored)
 
 
 def test_all_six_wrappers_are_declared():
-    assert set(declared_wrapper_ids()) == {
+    assert set(declared_wrapper_ids(ARC)) == {
         "seance_1928", "orbital_gala_2087", "big_top_1899",
         "boardroom_severance", "manor_gothic", "sim_reunion",
     }
+
+
+def test_unregistered_arc_raises_rather_than_falling_back():
+    with pytest.raises(DressingRegistryError):
+        load_dressing_pack("some-other-arc", "seance_1928")
+
+
+def test_engine_dressing_never_names_a_game():
+    """Guard the platform/game boundary. engine/ knows no game exists."""
+    for path in Path("engine/dressing").glob("*.py"):
+        source = path.read_text(encoding="utf-8").lower()
+        assert "nightcap" not in source, f"{path.name} names a specific game"
+        assert "seance" not in source, f"{path.name} names a specific wrapper"
 ```
 
 - [ ] **Step 2: Run to verify failure**
@@ -801,8 +820,21 @@ class DressingPack(BaseModel):
 
 - [ ] **Step 5: Write `engine/dressing/loader.py`**
 
+**Do not hardcode a `nightcap/` path here.** `engine/` must not know any game
+exists. `engine/case/loader.py:98-102` states the rule in its own words: the
+registry pattern is "a generic, arc-agnostic prefix match against a registry
+file, never a hardcoded path… another `detective_race` arc gets its own
+registration and its own config, never Nightcap's by default." Mirror
+`resolve_case_resolution_config_path` (`engine/case/loader.py:95`) exactly.
+
 ```python
-"""Load per-wrapper dressing packs from arc content (AW-290)."""
+"""Load per-wrapper dressing packs, arc-agnostically (AW-293).
+
+This module knows nothing about any specific game. It resolves an arc_id
+to a dressing-pack path through a registry file, the same way
+engine/case/loader.py resolves case-resolution configs and
+engine/arc/registry.py resolves arc definitions.
+"""
 
 from __future__ import annotations
 
@@ -810,34 +842,73 @@ import json
 from functools import lru_cache
 from pathlib import Path
 
-from engine.dressing.errors import DressingPackNotAuthored, UnknownWrapper
+from engine.dressing.errors import (
+    DressingPackNotAuthored,
+    DressingRegistryError,
+    UnknownWrapper,
+)
 from engine.dressing.models import DressingPack
 
-DEFAULT_DRESSING_PATH = Path("nightcap/dressing/wrappers.json")
+DEFAULT_DRESSING_REGISTRY_PATH = Path("config/dressing_registry.json")
 
 
-@lru_cache(maxsize=1)
-def _load_raw(path: str) -> dict[str, dict]:
-    return json.loads(Path(path).read_text(encoding="utf-8"))["wrappers"]
+def resolve_dressing_pack_path(arc_id: str, registry_path: Path) -> Path:
+    """Resolve which dressing pack an arc_id should load.
+
+    Generic prefix match against a registry file, never a hardcoded path,
+    so a second arc gets its own dressing content rather than inheriting
+    whichever one happened to ship first.
+    """
+    if not registry_path.exists():
+        raise DressingRegistryError(f"dressing registry missing: {registry_path}")
+    data = json.loads(registry_path.read_text(encoding="utf-8"))
+    registrations = data.get("registrations")
+    if not isinstance(registrations, list) or not registrations:
+        raise DressingRegistryError(
+            "dressing registry must contain a non-empty 'registrations' "
+            f"list: {registry_path}"
+        )
+    for entry in registrations:
+        prefix = entry.get("arc_id_prefix")
+        pack_rel_path = entry.get("pack_path")
+        if not prefix or not pack_rel_path:
+            raise DressingRegistryError(
+                f"registry entry needs 'arc_id_prefix' and 'pack_path': {entry!r}"
+            )
+        if arc_id.startswith(str(prefix)):
+            return Path(pack_rel_path)
+    raise DressingRegistryError(
+        f"no dressing pack registered for arc_id {arc_id!r} in {registry_path}"
+    )
 
 
-def declared_wrapper_ids(path: Path | None = None) -> list[str]:
-    """Return every declared wrapper id, authored or not."""
-    return sorted(_load_raw(str(path or DEFAULT_DRESSING_PATH)))
+@lru_cache(maxsize=4)
+def _load_raw(pack_path: str) -> dict[str, dict]:
+    return json.loads(Path(pack_path).read_text(encoding="utf-8"))["wrappers"]
 
 
-def load_dressing_pack(wrapper_id: str, path: Path | None = None) -> DressingPack:
-    """Return the dressing vocabulary for a wrapper.
+def declared_wrapper_ids(arc_id: str, *, registry_path: Path | None = None) -> list[str]:
+    """Return every wrapper id this arc declares, authored or not."""
+    pack = resolve_dressing_pack_path(
+        arc_id, registry_path or DEFAULT_DRESSING_REGISTRY_PATH
+    )
+    return sorted(_load_raw(str(pack)))
 
-    Raises UnknownWrapper if the id is not declared, and
+
+def load_dressing_pack(
+    arc_id: str, wrapper_id: str, *, registry_path: Path | None = None
+) -> DressingPack:
+    """Return the dressing vocabulary for one wrapper of one arc.
+
+    Raises UnknownWrapper if the id is not declared by this arc, and
     DressingPackNotAuthored if it is declared but has no content yet.
     """
-    raw = _load_raw(str(path or DEFAULT_DRESSING_PATH))
+    pack = resolve_dressing_pack_path(
+        arc_id, registry_path or DEFAULT_DRESSING_REGISTRY_PATH
+    )
+    raw = _load_raw(str(pack))
     if wrapper_id not in raw:
-        msg = (
-            f"{wrapper_id!r} is not a declared wrapper; "
-            f"declared: {sorted(raw)}"
-        )
+        msg = f"{wrapper_id!r} is not a declared wrapper; declared: {sorted(raw)}"
         raise UnknownWrapper(msg)
     entry = raw[wrapper_id]
     if not entry.get("authored", False):
@@ -849,9 +920,34 @@ def load_dressing_pack(wrapper_id: str, path: Path | None = None) -> DressingPac
     return DressingPack(wrapper_id=wrapper_id, **entry)
 ```
 
-- [ ] **Step 6: Write `nightcap/dressing/wrappers.json`**
+`engine/dressing/errors.py` gains a third class alongside the two Q2 errors:
 
-Use the founder-approved vocabulary from Task 5. Structure:
+```python
+class DressingRegistryError(DressingError):
+    """The dressing registry is missing, malformed, or has no entry for this arc.
+
+    Distinct from the two lookup errors: this is a deployment or configuration
+    fault, not a content gap or a bad wrapper id.
+    """
+```
+
+Create `config/dressing_registry.json` alongside the existing `config/arcs.json`:
+
+```json
+{
+  "registrations": [
+    {
+      "arc_id_prefix": "nightcap-couch-race",
+      "pack_path": "nightcap/dressing/couch-race-wrappers.json"
+    }
+  ]
+}
+```
+
+- [ ] **Step 6: Write `nightcap/dressing/couch-race-wrappers.json`**
+
+This file is game content and lives under `nightcap/`. Use the founder-approved
+vocabulary from Task 5.
 
 ```json
 {
@@ -866,16 +962,22 @@ Use the founder-approved vocabulary from Task 5. Structure:
 }
 ```
 
-- [ ] **Step 7: Run tests and the naming guard**
+- [ ] **Step 7: Run tests and both boundary guards**
 
 Run: `python -m pytest engine/tests/test_dressing_pack.py engine/tests/test_case_naming_contract.py -v`
-Expected: all pass
+Expected: all pass, including `test_engine_dressing_never_names_a_game`
+
+Then confirm the boundary directly:
+
+```bash
+grep -ri "nightcap\|seance\|big_top" engine/dressing/ && echo "VIOLATION" || echo "clean: engine names no game"
+```
 
 - [ ] **Step 8: Commit**
 
 ```bash
-git add engine/dressing/ nightcap/dressing/ engine/tests/test_dressing_pack.py
-git commit -m "feat(dressing): per-wrapper dressing pack with distinct unknown and unauthored errors"
+git add engine/dressing/ nightcap/dressing/ config/dressing_registry.json engine/tests/test_dressing_pack.py
+git commit -m "feat(dressing): arc-agnostic dressing pack loader with registry-resolved paths"
 ```
 
 ---
@@ -909,10 +1011,15 @@ def test_arc_declares_wrapper_selection():
 
 
 def test_selected_wrapper_resolves_to_a_dressing_pack():
-    pack = load_dressing_pack("seance_1928")
+    arc = load_arc(Path("nightcap/couch-race.arc.json"))
+    pack = load_dressing_pack(arc.arc_id, "seance_1928")
     assert pack.wrapper_id == "seance_1928"
     assert pack.drinks
 ```
+
+Note the arc id comes from the loaded arc, not a literal. The test lives in
+`engine/tests/` and may name `nightcap/` paths — `engine/tests/test_case_resolver.py`
+is the existing precedent. Production code under `engine/` may not.
 
 - [ ] **Step 2: Run to verify failure**
 

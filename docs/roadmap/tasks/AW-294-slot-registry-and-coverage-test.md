@@ -46,6 +46,16 @@ instead of a manual read-through.
 - The registry file lives under `nightcap/` and the test enumerates whatever it
   declares, so no Nightcap slot vocabulary enters engine code.
 
+**Note for AW-291, which is the production consumer.** A test under
+`engine/tests/` may name a `nightcap/` path directly —
+`engine/tests/test_case_resolver.py` is the existing precedent. **Production
+code under `engine/` may not.** When AW-291 reads this registry at runtime it
+must resolve the path by generic `arc_id` prefix match against a registry file
+in `config/`, the way `resolve_case_resolution_config_path`
+(`engine/case/loader.py:95`) and `engine/arc/registry.py` already do. AW-293
+establishes exactly this pattern for the dressing pack in
+`config/dressing_registry.json`; follow it rather than hardcoding a path.
+
 ## Two registry errors to correct
 
 Verified 2026-08-05 by grepping `docs/design/line-libraries/`:

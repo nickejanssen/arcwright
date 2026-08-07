@@ -40,11 +40,24 @@ config, not code — directly serving the easy-to-create-games goal.
 
 - `engine/dressing/` — `models.py`, `loader.py`, `errors.py`. Arc-agnostic
   container field names only; wrapper vocabulary lives in the string values.
-- `nightcap/dressing/wrappers.json` — all six wrapper ids declared, two authored.
+- `config/dressing_registry.json` — maps `arc_id_prefix` to a pack path.
+- `nightcap/dressing/couch-race-wrappers.json` — all six wrapper ids declared,
+  two authored. Game content, under `nightcap/`.
 - Two distinct errors per the founder's Q2 answer: `DressingPackNotAuthored`
   for a declared wrapper with no content, `UnknownWrapper` for an id outside
-  the six. They are different bugs and must not share an error type.
+  the six. They are different bugs and must not share an error type. A third,
+  `DressingRegistryError`, covers a missing or unregistered registry entry.
 - Declare `wrapper` in `nightcap/couch-race.arc.json` `selection_model`.
+
+**Platform boundary, non-negotiable.** `engine/dressing/` must contain no
+literal `nightcap` string and no wrapper name. The pack path is resolved by
+generic `arc_id` prefix match against `config/dressing_registry.json`, mirroring
+`resolve_case_resolution_config_path` at `engine/case/loader.py:95`, whose
+docstring at `:98-102` states the rule: "a generic, arc-agnostic prefix match
+against a registry file, never a hardcoded path… another `detective_race` arc
+gets its own registration and its own config, never Nightcap's by default."
+An unregistered arc must raise, never silently fall back to whichever pack
+shipped first. A committed test asserts the boundary.
 
 ## Human Collaboration Contract
 
@@ -70,7 +83,11 @@ tone reference, not transcription. Budget accordingly.
       coverage and Big Top stage-name templates.
 - [ ] All six wrapper ids are declared; the four unauthored ones raise
       `DressingPackNotAuthored`, and an unknown id raises `UnknownWrapper`.
-- [ ] The two errors are distinct classes, neither subclassing the other.
+- [ ] The two lookup errors are distinct classes, neither subclassing the other.
+- [ ] `grep -ri "nightcap\|seance\|big_top" engine/dressing/` returns nothing,
+      and a committed test asserts it.
+- [ ] An unregistered `arc_id` raises `DressingRegistryError` rather than
+      falling back to another arc's pack.
 - [ ] `wrapper` is declared in `aesthetic_config.selection_model` alongside
       `era` and `occasion`.
 - [ ] No game-specific dressing vocabulary appears as a schema field name.
