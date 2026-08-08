@@ -168,3 +168,51 @@ def test_lies_are_contradicted_by_topic_matching_evidence(arc: ArcDefinition) ->
                 f"evidence {evidence_id!r} which never mentions the speaker: "
                 f"{contradicting.text!r}"
             )
+
+
+def test_resolver_populates_unique_anchor_ids(arc: ArcDefinition) -> None:
+    case = resolve(arc, seed=4242, participant_ids=_participant_ids(3))
+    ids = [a.anchor_id for a in case.anchors]
+    assert ids
+    assert len(ids) == len(set(ids))
+
+
+def test_resolver_time_ordinals_order_within_case(arc: ArcDefinition) -> None:
+    # The per-case anchor set may contain more than one anchor sharing a
+    # time_ordinal (a location lie's claimed anchor and its contradicting
+    # evidence's actual anchor share a time_ordinal by design, so a
+    # contradiction is a typed comparison — see engine/case/resolver.py's
+    # _resolve_lies). What must hold is that the *distinct* time_ordinal
+    # values in play form a dense 0-based range, matching the taxonomy's
+    # ordered time_pool.
+    case = resolve(arc, seed=4242, participant_ids=_participant_ids(3))
+    distinct_ordinals = sorted({a.time_ordinal for a in case.anchors})
+    assert distinct_ordinals == list(range(len(distinct_ordinals)))
+
+
+def test_every_evidence_entry_has_short_label_that_is_not_a_prefix_of_text(
+    arc: ArcDefinition,
+) -> None:
+    case = resolve(arc, seed=4242, participant_ids=_participant_ids(3))
+    for entry in case.evidence:
+        assert entry.short_label
+        assert not entry.text.startswith(entry.short_label)
+
+
+def test_anchored_prose_is_generated_from_the_anchor(arc: ArcDefinition) -> None:
+    case = resolve(arc, seed=4242, participant_ids=_participant_ids(3))
+    anchored = [e for e in case.evidence if e.anchor_id is not None]
+    assert anchored, "expected at least one anchored evidence entry"
+    for entry in anchored:
+        anchor = case.anchor_by_id(entry.anchor_id)
+        assert anchor is not None
+        assert anchor.location_label in entry.text
+        assert anchor.time_label in entry.text
+
+
+def test_anchor_set_is_deterministic_for_a_seed(arc: ArcDefinition) -> None:
+    case_a = resolve(arc, seed=99, participant_ids=_participant_ids(2))
+    case_b = resolve(arc, seed=99, participant_ids=_participant_ids(2))
+    assert [x.model_dump() for x in case_a.anchors] == [
+        x.model_dump() for x in case_b.anchors
+    ]

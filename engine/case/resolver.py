@@ -57,6 +57,7 @@ from engine.case.loader import (
 )
 from engine.case.models import (
     AuthorizedFalsehood,
+    CaseAnchor,
     CaseFact,
     CaseSkeleton,
     CastMember,
@@ -123,11 +124,21 @@ def resolve(
     method_family = _find_method_family(taxonomy, skeleton.method_family_id)
     descriptor, trace = _pick_method_descriptor_and_trace(rng, method_family)
 
+    anchors = _resolve_anchors(rng, taxonomy, count=len(cast))
+    # _resolve_lies appends a synthesized contradicting anchor to this
+    # list for every location-topic lie, so `anchors` can grow past
+    # `len(cast)` below. Base anchors each get a unique time_ordinal
+    # (see _resolve_anchors), so no two of them ever share one -- a
+    # location lie's contradicting anchor is always a fresh synthesis,
+    # never a reused base anchor.
+
     facts = _resolve_facts(rng, cast, culprit, victim, taxonomy, descriptor)
     evidence = _resolve_evidence(
-        rng, skeleton, cast, culprit, participant_ids, descriptor, trace
+        rng, skeleton, cast, culprit, participant_ids, descriptor, trace, anchors
     )
-    lies, contradiction_evidence = _resolve_lies(rng, skeleton, cast, culprit, taxonomy)
+    lies, contradiction_evidence = _resolve_lies(
+        rng, skeleton, cast, culprit, taxonomy, anchors
+    )
     evidence = evidence + contradiction_evidence
 
     case = ResolvedCase(
@@ -141,6 +152,7 @@ def resolve(
         falsehoods=lies,
         facts=facts,
         reveal_shape=skeleton.reveal_shape,
+        anchors=anchors,
     )
 
     ok, detail = solvability_check(case)
@@ -249,6 +261,44 @@ def _pick_method_descriptor_and_trace(
     )
 
 
+def _resolve_anchors(
+    rng: random.Random,
+    taxonomy: Taxonomy,
+    count: int,
+) -> list[CaseAnchor]:
+    """Build the per-case anchor set from the taxonomy's place and time pools.
+
+    Locations are drawn without replacement so two anchors never share a
+    location_ref by accident; time ordinals are assigned densely from
+    zero, in the taxonomy's own time-pool order, so they order within
+    the case. Evidence and lie text is generated FROM these anchors
+    (never the reverse), so a later comparison of two statements about
+    place and time can be an exact comparison of these typed fields
+    instead of a comparison of generated prose.
+    """
+    places = list(taxonomy.location_pool)
+    times = list(taxonomy.time_pool)
+    if len(places) < count or len(times) < count:
+        raise CaseResolutionError(
+            f"case taxonomy supplies {len(places)} locations and "
+            f"{len(times)} times; need at least {count} of each"
+        )
+    chosen_places = rng.sample(places, count)
+    chosen_times = rng.sample(times, count)
+    chosen_times.sort(key=lambda t: times.index(t))
+
+    return [
+        CaseAnchor(
+            anchor_id=f"a{i + 1}",
+            location_ref=place["id"],
+            location_label=place["label"],
+            time_ordinal=i,
+            time_label=chosen_times[i]["label"],
+        )
+        for i, place in enumerate(chosen_places)
+    ]
+
+
 def _resolve_facts(
     rng: random.Random,
     suspects: list[CastMember],
@@ -335,6 +385,7 @@ def _resolve_evidence(
     participant_ids: list[str],
     descriptor: str,
     trace: str,
+    anchors: list[CaseAnchor],
 ) -> list[EvidenceEntry]:
     stages = skeleton.clue_chain_pattern["stages"]
     evidence: list[EvidenceEntry] = []
@@ -345,6 +396,7 @@ def _resolve_evidence(
     ]
     for i, stage in enumerate(stages):
         prompt = stage.get("prompt", "evidence detail")
+        anchor = anchors[i % len(anchors)]
         if i == 0:
             # Broad, vague first clue: names the descriptor and trace but
             # not a suspect, matching the archetype's "not yet narrowed"
@@ -355,13 +407,21 @@ def _resolve_evidence(
                     culprit.member_id,
                     *rng.sample(other_suspects, min(2, len(other_suspects))),
                 ]
-            text = f"{prompt} ({trace} on the {descriptor})."
+            text = (
+                f"{prompt} ({trace} on the {descriptor}), "
+                f"in {anchor.location_label}, {anchor.time_label}."
+            )
         else:
             # Narrowing stages name the culprit specifically, so a
             # player (or the text-driven solver) reading the card can
             # actually make progress without any out-of-band label.
             points_toward = [culprit.member_id]
-            text = f"{prompt} The {descriptor} traces back to {culprit.display_name}."
+            text = (
+                f"{prompt} The {descriptor} traces back to "
+                f"{culprit.display_name}, in {anchor.location_label}, "
+                f"{anchor.time_label}."
+            )
+        short_label = f"the {descriptor} in {anchor.location_label}"
         points_away_from: list[str] = []
         delivery = "group" if i % 2 == 0 else "private"
         delivery_target = rng.choice(participant_ids) if delivery == "private" else None
@@ -370,11 +430,13 @@ def _resolve_evidence(
                 evidence_id=f"e{i + 1}",
                 evidence_type=stage.get("kind", "trace"),
                 text=text,
+                short_label=short_label,
                 points_toward=points_toward,
                 points_away_from=points_away_from,
                 delivery=delivery,
                 delivery_target=delivery_target,
                 truth_value="genuine",
+                anchor_id=anchor.anchor_id,
             )
         )
     return evidence
@@ -386,6 +448,7 @@ def _resolve_lies(
     cast: list[CastMember],
     culprit: CastMember,
     taxonomy: Taxonomy,
+    anchors: list[CaseAnchor],
 ) -> tuple[list[AuthorizedFalsehood], list[EvidenceEntry]]:
     lies: list[AuthorizedFalsehood] = []
     contradiction_evidence: list[EvidenceEntry] = []
@@ -399,26 +462,93 @@ def _resolve_lies(
             topics = skeleton.lie_shapes_by_role.get(role_tag, ["location"])
         topic = rng.choice(topics)
         topic_entry = _find_lie_topic(taxonomy, topic)
-        claim_text = rng.choice(
-            topic_entry.get("claim_templates", ["You are mistaken about that."])
-        )
-        contradiction_templates = topic_entry.get(
-            "contradiction_templates", ["This claim does not hold up."]
-        )
-        contradiction_template = rng.choice(contradiction_templates)
-        contradiction_text = contradiction_template.format(speaker=member.display_name)
         contradiction_evidence_id = f"contra_{member.member_id}_{i}"
+
+        if topic == "location":
+            # topic_entry's claim_templates/contradiction_templates
+            # (nightcap/case_taxonomy/lie_topics.json) are intentionally
+            # unused here: a location lie must be generated FROM its
+            # anchor, not from a static authored string, so the anchor
+            # comparison below stays exact. Only non-location topics
+            # (below) read topic_entry's templates.
+            #
+            # Anchor the lie to one place-and-time and its contradicting
+            # evidence to a different place at the same time, so a later
+            # comparison is an exact comparison of typed anchor fields
+            # (same time_ordinal, different location_ref) rather than a
+            # comparison of the generated prose. The claim and its
+            # contradiction are generated FROM these two anchors, never
+            # the reverse.
+            #
+            # Base anchors each get a unique time_ordinal (see
+            # _resolve_anchors), so no two of them ever share one -- a
+            # contradicting anchor for a location lie is always a fresh
+            # synthesis sharing the claimed anchor's time_ordinal, never
+            # a reused base anchor. Draw its location from the taxonomy's
+            # unused pool when one remains; otherwise fall back to a
+            # synthetic "not here" label.
+            claimed = anchors[i % len(anchors)]
+            used_refs = {a.location_ref for a in anchors}
+            alt_pool = [
+                place
+                for place in taxonomy.location_pool
+                if place["id"] not in used_refs
+            ]
+            if alt_pool:
+                alt_place = rng.choice(alt_pool)
+                alt_location_ref = alt_place["id"]
+                alt_location_label = alt_place["label"]
+            else:
+                alt_location_ref = claimed.location_ref + "_alt"
+                alt_location_label = f"somewhere other than {claimed.location_label}"
+            actual = CaseAnchor(
+                anchor_id=f"a_contra_{member.member_id}_{i}",
+                location_ref=alt_location_ref,
+                location_label=alt_location_label,
+                time_ordinal=claimed.time_ordinal,
+                time_label=claimed.time_label,
+            )
+            anchors.append(actual)
+            lie_anchor_id = claimed.anchor_id
+            contra_anchor_id = actual.anchor_id
+            claim_text = (
+                f"I was in {claimed.location_label} the whole time, "
+                f"{claimed.time_label}."
+            )
+            contradiction_text = (
+                f"{member.display_name} was seen in {actual.location_label}, "
+                f"{actual.time_label}, not in {claimed.location_label} as claimed."
+            )
+            contradiction_short_label = (
+                f"{member.display_name} seen in {actual.location_label}"
+            )
+        else:
+            claim_text = rng.choice(
+                topic_entry.get("claim_templates", ["You are mistaken about that."])
+            )
+            contradiction_templates = topic_entry.get(
+                "contradiction_templates", ["This claim does not hold up."]
+            )
+            contradiction_template = rng.choice(contradiction_templates)
+            contradiction_text = contradiction_template.format(
+                speaker=member.display_name
+            )
+            lie_anchor_id = None
+            contra_anchor_id = None
+            contradiction_short_label = f"{member.display_name}'s account of {topic}"
 
         contradiction_evidence.append(
             EvidenceEntry(
                 evidence_id=contradiction_evidence_id,
                 evidence_type=topic_entry.get("evidence_type", "testimony"),
                 text=contradiction_text,
+                short_label=contradiction_short_label,
                 points_toward=[],
                 points_away_from=[],
                 delivery="group",
                 delivery_target=None,
                 truth_value="genuine",
+                anchor_id=contra_anchor_id,
             )
         )
         lies.append(
@@ -428,6 +558,7 @@ def _resolve_lies(
                 topic=topic,
                 claim_text=claim_text,
                 contradicted_by=[contradiction_evidence_id],
+                anchor_id=lie_anchor_id,
             )
         )
     return lies, contradiction_evidence

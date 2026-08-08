@@ -13,6 +13,37 @@ from typing import Any, Optional
 from pydantic import BaseModel, ConfigDict, Field
 
 
+class CaseAnchor(BaseModel):
+    """A typed place-and-time reference shared across a resolved case.
+
+    Declared once per case on ``ResolvedCase.anchors`` and referenced by
+    ``anchor_id`` from evidence, facts, and falsehoods, so that comparing
+    two statements about where and when is an exact comparison of typed
+    values rather than a comparison of generated prose.
+
+    ``time_ordinal`` indexes into the case's own ordered sequence of time
+    anchors. It is self-describing within the case; there is no global
+    clock and no cross-case comparability.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    anchor_id: str
+    """Unique within one case."""
+
+    location_ref: str
+    """Reference into the per-case location set. Compared by equality."""
+
+    location_label: str
+    """Display text. Never compared; only rendered."""
+
+    time_ordinal: int
+    """Orders this anchor against others in the same case. Compared by equality."""
+
+    time_label: str
+    """Display text. Never compared; only rendered."""
+
+
 class CastMember(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -60,6 +91,16 @@ class EvidenceEntry(BaseModel):
     truth_value: str = "genuine"
     """``genuine`` or ``false_signal``, every false signal must be falsifiable."""
 
+    short_label: str
+    """Short reference to this clue, generated alongside ``text`` at case
+    resolution. Not a truncation of ``text``: it names the object or
+    observation in a few words so a narrator line can refer to the clue
+    without reciting it."""
+
+    anchor_id: Optional[str] = None
+    """Optional CaseAnchor reference. Set when this clue is tied to a
+    specific place and time."""
+
 
 class AuthorizedFalsehood(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -80,6 +121,11 @@ class AuthorizedFalsehood(BaseModel):
     ``location`` lie is contradicted by testimony placing the speaker
     elsewhere, a ``possession`` lie by a found object, etc. (see
     resolver.py's per-topic contradiction generation)."""
+
+    anchor_id: Optional[str] = None
+    """Optional CaseAnchor reference. For a ``location`` topic lie this is
+    the place and time the speaker falsely claims, which is what makes the
+    contradiction against anchored evidence a typed comparison."""
 
 
 class CaseSkeleton(BaseModel):
@@ -147,6 +193,9 @@ class CaseFact(BaseModel):
     architecture principle 5) once AW-283 wires character generation
     to this graph."""
 
+    anchor_id: Optional[str] = None
+    """Optional CaseAnchor reference for facts that assert a place and time."""
+
 
 class ResolvedCase(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -161,6 +210,9 @@ class ResolvedCase(BaseModel):
     falsehoods: list[AuthorizedFalsehood]
     facts: list[CaseFact]
     reveal_shape: dict[str, Any]
+    anchors: list[CaseAnchor] = Field(default_factory=list)
+    """The per-case anchor set, declared once. Evidence, facts, and
+    falsehoods reference these by ``anchor_id``."""
 
     def members_by_role(self, role: str) -> list[CastMember]:
         """Return all cast members whose ``role`` string equals ``role``.
@@ -173,6 +225,13 @@ class ResolvedCase(BaseModel):
     def facts_by_predicate(self, predicate: str) -> list[CaseFact]:
         """Return all facts whose ``predicate`` string equals ``predicate``."""
         return [f for f in self.facts if f.predicate == predicate]
+
+    def anchor_by_id(self, anchor_id: str) -> Optional[CaseAnchor]:
+        """Return the anchor with this id, or None if the case has no such anchor."""
+        for anchor in self.anchors:
+            if anchor.anchor_id == anchor_id:
+                return anchor
+        return None
 
     def visible_evidence_for(self, participant_id: str) -> list[EvidenceEntry]:
         """Return evidence a specific participant can actually see.

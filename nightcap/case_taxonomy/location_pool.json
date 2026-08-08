@@ -1,0 +1,12 @@
+{
+  "locations": [
+    {"id": "loc_study", "label": "the study"},
+    {"id": "loc_conservatory", "label": "the conservatory"},
+    {"id": "loc_drawing_room", "label": "the drawing room"},
+    {"id": "loc_terrace", "label": "the terrace"},
+    {"id": "loc_garden", "label": "the garden"},
+    {"id": "loc_kitchen", "label": "the kitchen"},
+    {"id": "loc_library", "label": "the library"},
+    {"id": "loc_billiard_room", "label": "the billiard room"}
+  ]
+}
