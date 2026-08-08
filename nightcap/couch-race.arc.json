@@ -7,7 +7,8 @@
   "aesthetic_config": {
     "selection_model": {
       "era": {"type": "host_select", "allow_random": true},
-      "occasion": {"type": "host_select", "allow_random": true}
+      "occasion": {"type": "host_select", "allow_random": true},
+      "wrapper": {"type": "host_select", "allow_random": true}
     },
     "asset_generation": {
       "background_art": "pre_produced_per_theme",
