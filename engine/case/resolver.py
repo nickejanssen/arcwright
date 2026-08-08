@@ -125,9 +125,12 @@ def resolve(
     descriptor, trace = _pick_method_descriptor_and_trace(rng, method_family)
 
     anchors = _resolve_anchors(rng, taxonomy, count=len(cast))
-    # _resolve_lies may append a synthesized fallback anchor to this list
-    # when no natural same-time/different-location pair exists for a
-    # location lie, so `anchors` can grow past `len(cast)` below.
+    # _resolve_lies appends a synthesized contradicting anchor to this
+    # list for every location-topic lie, so `anchors` can grow past
+    # `len(cast)` below. Base anchors each get a unique time_ordinal
+    # (see _resolve_anchors), so no two of them ever share one -- a
+    # location lie's contradicting anchor is always a fresh synthesis,
+    # never a reused base anchor.
 
     facts = _resolve_facts(rng, cast, culprit, victim, taxonomy, descriptor)
     evidence = _resolve_evidence(
@@ -462,6 +465,13 @@ def _resolve_lies(
         contradiction_evidence_id = f"contra_{member.member_id}_{i}"
 
         if topic == "location":
+            # topic_entry's claim_templates/contradiction_templates
+            # (nightcap/case_taxonomy/lie_topics.json) are intentionally
+            # unused here: a location lie must be generated FROM its
+            # anchor, not from a static authored string, so the anchor
+            # comparison below stays exact. Only non-location topics
+            # (below) read topic_entry's templates.
+            #
             # Anchor the lie to one place-and-time and its contradicting
             # evidence to a different place at the same time, so a later
             # comparison is an exact comparison of typed anchor fields
@@ -469,40 +479,36 @@ def _resolve_lies(
             # comparison of the generated prose. The claim and its
             # contradiction are generated FROM these two anchors, never
             # the reverse.
+            #
+            # Base anchors each get a unique time_ordinal (see
+            # _resolve_anchors), so no two of them ever share one -- a
+            # contradicting anchor for a location lie is always a fresh
+            # synthesis sharing the claimed anchor's time_ordinal, never
+            # a reused base anchor. Draw its location from the taxonomy's
+            # unused pool when one remains; otherwise fall back to a
+            # synthetic "not here" label.
             claimed = anchors[i % len(anchors)]
-            actual = next(
-                (
-                    a
-                    for a in anchors
-                    if a.time_ordinal == claimed.time_ordinal
-                    and a.location_ref != claimed.location_ref
-                ),
-                None,
+            used_refs = {a.location_ref for a in anchors}
+            alt_pool = [
+                place
+                for place in taxonomy.location_pool
+                if place["id"] not in used_refs
+            ]
+            if alt_pool:
+                alt_place = rng.choice(alt_pool)
+                alt_location_ref = alt_place["id"]
+                alt_location_label = alt_place["label"]
+            else:
+                alt_location_ref = claimed.location_ref + "_alt"
+                alt_location_label = f"somewhere other than {claimed.location_label}"
+            actual = CaseAnchor(
+                anchor_id=f"a_contra_{member.member_id}_{i}",
+                location_ref=alt_location_ref,
+                location_label=alt_location_label,
+                time_ordinal=claimed.time_ordinal,
+                time_label=claimed.time_label,
             )
-            if actual is None:
-                used_refs = {a.location_ref for a in anchors}
-                alt_pool = [
-                    place
-                    for place in taxonomy.location_pool
-                    if place["id"] not in used_refs
-                ]
-                if alt_pool:
-                    alt_place = rng.choice(alt_pool)
-                    alt_location_ref = alt_place["id"]
-                    alt_location_label = alt_place["label"]
-                else:
-                    alt_location_ref = claimed.location_ref + "_alt"
-                    alt_location_label = (
-                        f"somewhere other than {claimed.location_label}"
-                    )
-                actual = CaseAnchor(
-                    anchor_id=f"a_contra_{member.member_id}_{i}",
-                    location_ref=alt_location_ref,
-                    location_label=alt_location_label,
-                    time_ordinal=claimed.time_ordinal,
-                    time_label=claimed.time_label,
-                )
-                anchors.append(actual)
+            anchors.append(actual)
             lie_anchor_id = claimed.anchor_id
             contra_anchor_id = actual.anchor_id
             claim_text = (

@@ -63,6 +63,16 @@ def _tokenize(identifier: str) -> list[str]:
     identifier that merely contains those letters (e.g. "frontier",
     "groom") -- the term must appear as a whole token, or contiguous
     sequence of tokens for multi-word terms like "stage_name".
+
+    Known, accepted gap: an identifier that runs a forbidden term into
+    neighboring letters with no `_` or case-boundary at all (an
+    all-lowercase concatenation like "nightcapfestival") tokenizes as a
+    single opaque word and is not caught. Catching that too would mean
+    going back to substring matching, which reintroduces the "tier"-in-
+    "frontier" false positive this rewrite exists to fix. The engine/case
+    tree is snake_case/PascalCase throughout, so an unseparated run-on
+    identifier would already be unusual style; this guard trades that
+    narrow, atypical case for correctness on ordinary English words.
     """
     tokens: list[str] = []
     for part in identifier.split("_"):
