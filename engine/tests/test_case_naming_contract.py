@@ -30,6 +30,7 @@ all -- it is always presentation content owned by a specific wrapper.
 from __future__ import annotations
 
 import ast
+import re
 from pathlib import Path
 
 import pytest
@@ -51,9 +52,27 @@ FORBIDDEN_TERMS = [
     "nightcap",
 ]
 
+_WORD_RE = re.compile(r"[A-Z][a-z0-9]*|[a-z0-9]+|[A-Z]+(?![a-z])")
 
-def _normalize(text: str) -> str:
-    return text.replace("_", "").lower()
+
+def _tokenize(identifier: str) -> list[str]:
+    """Split an identifier into lowercase word tokens on `_` and case boundaries.
+
+    Token-based, not substring, matching: this is what keeps a forbidden
+    term like "tier" or "room" from false-positiving on an unrelated
+    identifier that merely contains those letters (e.g. "frontier",
+    "groom") -- the term must appear as a whole token, or contiguous
+    sequence of tokens for multi-word terms like "stage_name".
+    """
+    tokens: list[str] = []
+    for part in identifier.split("_"):
+        tokens.extend(match.group(0).lower() for match in _WORD_RE.finditer(part))
+    return tokens
+
+
+def _contains_subsequence(tokens: list[str], sub: list[str]) -> bool:
+    span = len(sub)
+    return any(tokens[i : i + span] == sub for i in range(len(tokens) - span + 1))
 
 
 def _case_files() -> list[Path]:
@@ -87,12 +106,12 @@ def _identifier_names(tree: ast.AST) -> list[str]:
 @pytest.mark.parametrize("path", _case_files(), ids=lambda p: p.name)
 def test_no_wrapper_dressing_identifier_names_in_case_modules(path: Path) -> None:
     tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(path))
-    normalized_forbidden = [_normalize(term) for term in FORBIDDEN_TERMS]
+    forbidden_token_sequences = [term.split("_") for term in FORBIDDEN_TERMS]
     violations = [
         f"identifier {identifier!r} contains {term!r}"
         for identifier in _identifier_names(tree)
-        for term, normalized in zip(FORBIDDEN_TERMS, normalized_forbidden)
-        if normalized in _normalize(identifier)
+        for term, term_tokens in zip(FORBIDDEN_TERMS, forbidden_token_sequences)
+        if _contains_subsequence(_tokenize(identifier), term_tokens)
     ]
 
     assert not violations, (
