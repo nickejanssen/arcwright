@@ -5,6 +5,7 @@ from pathlib import Path
 import pytest
 
 from engine.dressing import (
+    DressingError,
     DressingPackNotAuthored,
     DressingRegistryError,
     UnknownWrapper,
@@ -81,6 +82,13 @@ def test_unknown_wrapper_raises_distinct_error() -> None:
 def test_unregistered_arc_raises_registry_error() -> None:
     with pytest.raises(DressingRegistryError, match="no dressing registration"):
         declared_wrapper_ids("other-arc-v1")
+
+
+def test_lookup_errors_share_base_without_subclassing_each_other() -> None:
+    assert issubclass(DressingPackNotAuthored, DressingError)
+    assert issubclass(UnknownWrapper, DressingError)
+    assert not issubclass(DressingPackNotAuthored, UnknownWrapper)
+    assert not issubclass(UnknownWrapper, DressingPackNotAuthored)
 
 
 def test_engine_dressing_package_contains_no_arc_specific_terms() -> None:
