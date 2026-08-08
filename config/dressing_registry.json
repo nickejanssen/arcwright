@@ -1,0 +1,8 @@
+{
+  "registrations": [
+    {
+      "arc_id_prefix": "nightcap-couch-race",
+      "pack_path": "nightcap/dressing/couch-race-wrappers.json"
+    }
+  ]
+}
