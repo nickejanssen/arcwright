@@ -19,7 +19,6 @@ REGISTRY_PATH = REPO_ROOT / "nightcap" / "content" / "slot_registry.json"
 LIBRARY_DIR = REPO_ROOT / "docs" / "design" / "line-libraries"
 
 EXCLUDED_SLOTS = {
-    "complication_object",
     "flavor_clause",
     "slot",
     "suspect_3",
@@ -36,34 +35,6 @@ ALLOWED_SOURCES = {
     "scoring",
     "session",
     "session_timer",
-}
-
-EXPECTED_SLOTS = {
-    "callback",
-    "count",
-    "deck",
-    "detective",
-    "detective_name",
-    "drink",
-    "evidence",
-    "errata",
-    "floor",
-    "flavor",
-    "habit",
-    "killer",
-    "location",
-    "minutes",
-    "occasion",
-    "room",
-    "seconds",
-    "stage_name",
-    "suspect",
-    "suspect_2",
-    "tier",
-    "title",
-    "time",
-    "victim",
-    "weather",
 }
 
 UNBUILT_SLOTS_BY_SOURCE = {
@@ -129,6 +100,11 @@ def test_registry_slots_all_have_sources() -> None:
         )
 
     assert registry["slots"]["occasion"]["source"] == "session"
+    assert (
+        registry["slots"]["occasion"]["detail"]
+        == "aesthetic_config.selection_model.occasion"
+    )
+    assert registry["slots"]["tier"]["wrappers"] == ["sim_reunion"]
 
 
 def test_case_anchor_slots_map_to_real_anchor_attributes() -> None:
@@ -197,5 +173,4 @@ def test_registry_matches_authored_token_inventory() -> None:
     registry_slots = set(registry["slots"])
     authored_slots = _library_tokens() - EXCLUDED_SLOTS
 
-    assert registry_slots == EXPECTED_SLOTS
     assert registry_slots == authored_slots

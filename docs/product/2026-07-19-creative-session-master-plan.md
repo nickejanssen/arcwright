@@ -265,14 +265,15 @@ against this table; anything not here fails the build.
 `{{day_ref}}` `{{claim_count}}` `{{flag_count}}`
 
 **Sample-doc-only (do NOT whitelist; rewrite at library authoring):**
-`{{time_1..3}}`, `{{suspect_3}}` — these exist in discovery samples, not in
-refrain libraries.
+`{{time_1..3}}`, `{{suspect_3}}`, `{{complication_object}}` — these belong to
+discovery or sample docs, not refrain libraries.
 
-Correction note (2026-08-09): `{{tier}}` is Sim Reunion-only. The earlier
-shared-sci-fi note was false because `orbital-gala-2087.md` has zero `{{tier}}`
-occurrences and all 9 live in `sim-reunion.md`. `{{complication_object}}` was
-removed from the whitelist because it does not appear in `docs/design/line-libraries/`;
-its only repo occurrence is in `docs/design/authoring/story-to-arc-exemplar.md`.
+Correction note (verified 2026-08-05; applied 2026-08-08): `{{tier}}` is Sim
+Reunion-only. The earlier shared-sci-fi note was false because
+`orbital-gala-2087.md` has zero `{{tier}}` occurrences and all 9 live in
+`sim-reunion.md`. `{{complication_object}}` remains an explicit sample-doc-only
+exclusion, but it is not a line-library token; its only repo occurrence is
+`docs/design/authoring/story-to-arc-exemplar.md:126`.
 
 ## 6. Risk Register (the productively adversarial section)
 
