@@ -66,14 +66,20 @@ EXPECTED_SLOTS = {
     "weather",
 }
 
-UNBUILT_SLOTS = {
-    "count",
-    "detective",
-    "detective_name",
-    "flavor",
-    "habit",
-    "minutes",
-    "seconds",
+UNBUILT_SLOTS_BY_SOURCE = {
+    "identity_aw279": {
+        "detective",
+        "detective_name",
+        "flavor",
+        "habit",
+    },
+    "session_timer": {
+        "minutes",
+        "seconds",
+    },
+    "scoring": {
+        "count",
+    },
 }
 
 
@@ -174,13 +180,16 @@ def test_dressing_pack_slots_map_to_real_fields_or_wrapper_scope() -> None:
 def test_declared_but_unbuilt_sources_are_exhaustive() -> None:
     registry = _load_registry()
 
-    unbuilt = {
-        slot_name
-        for slot_name, slot_entry in registry["slots"].items()
-        if slot_entry["source"] in {"identity_aw279", "session_timer", "scoring"}
-    }
-
-    assert unbuilt == UNBUILT_SLOTS
+    for source, expected_slots in UNBUILT_SLOTS_BY_SOURCE.items():
+        actual_slots = {
+            slot_name
+            for slot_name, slot_entry in registry["slots"].items()
+            if slot_entry["source"] == source
+        }
+        assert actual_slots == expected_slots, (
+            f"{source} slots mismatch: expected {sorted(expected_slots)}, "
+            f"got {sorted(actual_slots)}"
+        )
 
 
 def test_registry_matches_authored_token_inventory() -> None:
