@@ -1137,7 +1137,7 @@ Expected: FAIL — registry file does not exist
 
 - [ ] **Step 4: Write `nightcap/content/slot_registry.json`**
 
-Each entry names its source. Sources are: `case_anchor`, `case_field`, `dressing_pack`, `session_timer`, `scoring`, `identity_aw279`.
+Each entry names its source. Sources are: `case_anchor`, `case_field`, `dressing_pack`, `session`, `session_timer`, `scoring`, `identity_aw279`. Use `session` for `aesthetic_config.selection_model.occasion`.
 
 ```json
 {
