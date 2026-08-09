@@ -1,0 +1,145 @@
+{
+  "source_vocab": [
+    "case_anchor",
+    "case_field",
+    "dressing_pack",
+    "identity_aw279",
+    "scoring",
+    "session",
+    "session_timer"
+  ],
+  "slots": {
+    "callback": {
+      "detail": "prior EvidenceEntry or CaseFact",
+      "source": "case_field"
+    },
+    "count": {
+      "detail": "AW-284 scoring output; superlatives only",
+      "source": "scoring"
+    },
+    "deck": {
+      "detail": "Orbital wrapper vocabulary",
+      "source": "dressing_pack",
+      "wrappers": [
+        "orbital_gala_2087"
+      ]
+    },
+    "detective": {
+      "detail": "AW-279 identity assignment, unbuilt",
+      "source": "identity_aw279"
+    },
+    "detective_name": {
+      "detail": "AW-279; never on shared surfaces",
+      "source": "identity_aw279"
+    },
+    "drink": {
+      "detail": "DressingPack.drinks",
+      "source": "dressing_pack",
+      "wrappers": [
+        "seance_1928",
+        "big_top_1899",
+        "boardroom_severance",
+        "manor_gothic",
+        "orbital_gala_2087",
+        "sim_reunion"
+      ]
+    },
+    "evidence": {
+      "detail": "EvidenceEntry.short_label",
+      "source": "case_field"
+    },
+    "errata": {
+      "detail": "DressingPack.errata",
+      "source": "dressing_pack",
+      "wrappers": [
+        "sim_reunion"
+      ]
+    },
+    "flavor": {
+      "detail": "AW-279; never on shared surfaces",
+      "source": "identity_aw279"
+    },
+    "floor": {
+      "detail": "Boardroom wrapper vocabulary",
+      "source": "dressing_pack",
+      "wrappers": [
+        "boardroom_severance"
+      ]
+    },
+    "habit": {
+      "detail": "AW-279; never on shared surfaces",
+      "source": "identity_aw279"
+    },
+    "killer": {
+      "detail": "display_name where member_id == culprit_id; Beat 6 only",
+      "source": "case_field"
+    },
+    "location": {
+      "detail": "CaseAnchor.location_label",
+      "source": "case_anchor"
+    },
+    "minutes": {
+      "detail": "Last Call countdown; AW-284/AW-286 own it",
+      "source": "session_timer"
+    },
+    "occasion": {
+      "detail": "aesthetic_config.selection_model.occasion",
+      "source": "session"
+    },
+    "room": {
+      "detail": "Manor wrapper vocabulary",
+      "source": "dressing_pack",
+      "wrappers": [
+        "manor_gothic"
+      ]
+    },
+    "seconds": {
+      "detail": "Last Call countdown; AW-284/AW-286 own it",
+      "source": "session_timer"
+    },
+    "stage_name": {
+      "detail": "DressingPack.stage_name_templates",
+      "source": "dressing_pack",
+      "wrappers": [
+        "big_top_1899"
+      ]
+    },
+    "suspect": {
+      "detail": "CastMember.display_name where role == suspect",
+      "source": "case_field"
+    },
+    "suspect_2": {
+      "detail": "second suspect display_name",
+      "source": "case_field"
+    },
+    "tier": {
+      "detail": "Sim Reunion wrapper vocabulary",
+      "source": "dressing_pack",
+      "wrappers": [
+        "sim_reunion"
+      ]
+    },
+    "time": {
+      "detail": "CaseAnchor.time_label",
+      "source": "case_anchor"
+    },
+    "title": {
+      "detail": "Boardroom wrapper vocabulary",
+      "source": "dressing_pack",
+      "wrappers": [
+        "boardroom_severance"
+      ]
+    },
+    "victim": {
+      "detail": "CastMember.display_name where role == victim",
+      "source": "case_field"
+    },
+    "weather": {
+      "detail": "Manor wrapper vocabulary",
+      "source": "dressing_pack",
+      "wrappers": [
+        "manor_gothic"
+      ]
+    }
+  }
+}

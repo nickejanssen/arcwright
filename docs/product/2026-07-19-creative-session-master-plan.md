@@ -253,10 +253,9 @@ against this table; anything not here fails the build.
 `{{time}}` `{{evidence}}` `{{drink}}` `{{occasion}}` `{{callback}}`
 `{{minutes}}` `{{seconds}}` `{{count}}` (superlatives only)
 
-**Per-wrapper:** Big Top `{{stage_name}}` · Orbital `{{deck}}`
-`{{tier}}`* · Boardroom `{{floor}}` `{{title}}` · Manor `{{room}}`
-`{{weather}}` · Sim Reunion `{{tier}}` `{{errata}}`
-*(`{{tier}}` appears in both sci-fi wrappers — shared sci-fi slot.)*
+**Per-wrapper:** Big Top `{{stage_name}}` · Orbital `{{deck}}` · Boardroom
+`{{floor}}` `{{title}}` · Manor `{{room}}` `{{weather}}` · Sim Reunion
+`{{tier}}` `{{errata}}`
 
 **Identity/briefing docs only:** `{{detective_name}}` `{{flavor}}`
 `{{habit}}` (never on shared surfaces — AW-279 privacy contract);
@@ -266,8 +265,14 @@ against this table; anything not here fails the build.
 `{{day_ref}}` `{{claim_count}}` `{{flag_count}}`
 
 **Sample-doc-only (do NOT whitelist; rewrite at library authoring):**
-`{{time_1..3}}`, `{{suspect_3}}`, `{{complication_object}}` — these
-exist in discovery samples, not in refrain libraries.
+`{{time_1..3}}`, `{{suspect_3}}` — these exist in discovery samples, not in
+refrain libraries.
+
+Correction note (2026-08-09): `{{tier}}` is Sim Reunion-only. The earlier
+shared-sci-fi note was false because `orbital-gala-2087.md` has zero `{{tier}}`
+occurrences and all 9 live in `sim-reunion.md`. `{{complication_object}}` was
+removed from the whitelist because it does not appear in `docs/design/line-libraries/`;
+its only repo occurrence is in `docs/design/authoring/story-to-arc-exemplar.md`.
 
 ## 6. Risk Register (the productively adversarial section)
 
