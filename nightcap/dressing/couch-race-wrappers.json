@@ -1,0 +1,69 @@
+{
+  "declared_wrapper_ids": [
+    "seance_1928",
+    "big_top_1899",
+    "orbital_gala_2087",
+    "boardroom_severance",
+    "manor_gothic",
+    "sim_reunion"
+  ],
+  "wrappers": {
+    "seance_1928": {
+      "wrapper_id": "seance_1928",
+      "authored": true,
+      "drinks": [
+          "The Reliable Medium",
+          "Cross My Palm With Gin",
+          "Cold Reading",
+          "The Spirit Cabinet",
+          "The Bee's Sting",
+          "One Rap for Yes",
+          "The Planchette",
+          "Second Sight, Second Pour"
+      ],
+      "stage_name_templates": []
+    },
+    "big_top_1899": {
+      "wrapper_id": "big_top_1899",
+      "authored": true,
+      "drinks": [
+          "Sawdust Lemonade",
+          "The Ringmaster's Ration",
+          "Fairy Floss Fizz",
+          "The Calliope's Steam",
+          "The Roustabout's Reward",
+          "The Barker's Own Recipe",
+          "Popcorn and Regret",
+          "The Big Top Toast"
+      ],
+      "stage_name_templates": [
+          "The Astonishing Vespertine",
+          "Madame Corvelle",
+          "The Great Alaric",
+          "Doctor Pellucid",
+          "Constance the Uncanny",
+          "Mademoiselle Query",
+          "The Vanishing Duchess",
+          "Baroness Vell",
+          "The Melancholy Strongman",
+          "The Lantern-Eyed Lark"
+      ]
+    },
+    "orbital_gala_2087": {
+      "wrapper_id": "orbital_gala_2087",
+      "authored": false
+    },
+    "boardroom_severance": {
+      "wrapper_id": "boardroom_severance",
+      "authored": false
+    },
+    "manor_gothic": {
+      "wrapper_id": "manor_gothic",
+      "authored": false
+    },
+    "sim_reunion": {
+      "wrapper_id": "sim_reunion",
+      "authored": false
+    }
+  }
+}
