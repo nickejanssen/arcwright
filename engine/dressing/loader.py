@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+from typing import TypeVar
 
 from pydantic import ValidationError
 
@@ -13,6 +14,7 @@ from engine.dressing.models import DressingCatalog, DressingPack, DressingRegist
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _REGISTRY_PATH = _REPO_ROOT / "config" / "dressing_registry.json"
+_ModelT = TypeVar("_ModelT", DressingCatalog, DressingRegistry)
 
 
 def declared_wrapper_ids(arc_id: str) -> tuple[str, ...]:
@@ -67,8 +69,11 @@ def _load_catalog(pack_path: Path) -> DressingCatalog:
 
 
 def _load_model(
-    path: Path, model_type: type, missing_message: str, invalid_message: str
-):
+    path: Path,
+    model_type: type[_ModelT],
+    missing_message: str,
+    invalid_message: str,
+) -> _ModelT:
     if not path.is_file():
         raise DressingRegistryError(f"{missing_message}: {path}")
     try:
