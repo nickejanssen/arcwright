@@ -3,18 +3,20 @@ from __future__ import annotations
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
-class WrapperContent(BaseModel):
+class DressingPack(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     wrapper_id: str
-    option_lists: dict[str, tuple[str, ...]] = Field(default_factory=dict)
+    authored: bool = False
+    drinks: tuple[str, ...] = Field(default_factory=tuple)
+    stage_name_templates: tuple[str, ...] = Field(default_factory=tuple)
 
 
 class DressingCatalog(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     declared_wrapper_ids: tuple[str, ...] = Field(default_factory=tuple)
-    authored_packs: dict[str, WrapperContent] = Field(default_factory=dict)
+    wrappers: dict[str, DressingPack]
 
     @model_validator(mode="after")
     def validate_catalog(self) -> "DressingCatalog":
@@ -22,13 +24,13 @@ class DressingCatalog(BaseModel):
         if len(declared) != len(set(declared)):
             msg = "declared_wrapper_ids must be unique"
             raise ValueError(msg)
-        undeclared = sorted(set(self.authored_packs) - set(declared))
+        undeclared = sorted(set(self.wrappers) - set(declared))
         if undeclared:
-            msg = f"authored_packs contain undeclared wrapper ids: {', '.join(undeclared)}"
+            msg = f"wrappers contain undeclared wrapper ids: {', '.join(undeclared)}"
             raise ValueError(msg)
-        for wrapper_id, content in self.authored_packs.items():
-            if content.wrapper_id != wrapper_id:
-                msg = f"authored pack key {wrapper_id!r} must match wrapper_id"
+        for wrapper_id, pack in self.wrappers.items():
+            if pack.wrapper_id != wrapper_id:
+                msg = f"wrapper key {wrapper_id!r} must match wrapper_id"
                 raise ValueError(msg)
         return self
 

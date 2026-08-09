@@ -31,7 +31,7 @@ def test_declared_wrapper_ids_returns_all_six_for_registered_arc() -> None:
 def test_load_dressing_pack_returns_authored_beverage_list() -> None:
     pack = load_dressing_pack("nightcap-couch-race-v1", "seance_1928")
     assert pack.wrapper_id == "seance_1928"
-    assert pack.option_lists["beverages"] == (
+    assert pack.drinks == (
         "The Reliable Medium",
         "Cross My Palm With Gin",
         "Cold Reading",
@@ -45,7 +45,7 @@ def test_load_dressing_pack_returns_authored_beverage_list() -> None:
 
 def test_load_dressing_pack_returns_big_top_stage_titles() -> None:
     pack = load_dressing_pack("nightcap-couch-race-v1", "big_top_1899")
-    assert pack.option_lists["beverages"] == (
+    assert pack.drinks == (
         "Sawdust Lemonade",
         "The Ringmaster's Ration",
         "Fairy Floss Fizz",
@@ -55,7 +55,7 @@ def test_load_dressing_pack_returns_big_top_stage_titles() -> None:
         "Popcorn and Regret",
         "The Big Top Toast",
     )
-    assert pack.option_lists["presentation_titles"] == (
+    assert pack.stage_name_templates == (
         "The Astonishing Vespertine",
         "Madame Corvelle",
         "The Great Alaric",

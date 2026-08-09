@@ -24,4 +24,4 @@ def test_seance_wrapper_selection_loads_wrapper_id_and_drinks() -> None:
     pack = load_dressing_pack(arc.arc_id, "seance_1928")
 
     assert pack.wrapper_id == "seance_1928"
-    assert pack.option_lists["beverages"]
+    assert pack.drinks

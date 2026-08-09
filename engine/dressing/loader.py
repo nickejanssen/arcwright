@@ -9,7 +9,7 @@ from engine.dressing.errors import (
     DressingRegistryError,
     UnknownWrapper,
 )
-from engine.dressing.models import DressingCatalog, DressingRegistry, WrapperContent
+from engine.dressing.models import DressingCatalog, DressingPack, DressingRegistry
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 _REGISTRY_PATH = _REPO_ROOT / "config" / "dressing_registry.json"
@@ -19,15 +19,16 @@ def declared_wrapper_ids(arc_id: str) -> tuple[str, ...]:
     return _load_catalog_for_arc(arc_id).declared_wrapper_ids
 
 
-def load_dressing_pack(arc_id: str, wrapper_id: str) -> WrapperContent:
+def load_dressing_pack(arc_id: str, wrapper_id: str) -> DressingPack:
     catalog = _load_catalog_for_arc(arc_id)
-    if wrapper_id not in catalog.declared_wrapper_ids:
+    if wrapper_id not in catalog.wrappers:
         raise UnknownWrapper(f"unknown wrapper id: {wrapper_id}")
-    if wrapper_id not in catalog.authored_packs:
+    pack = catalog.wrappers[wrapper_id]
+    if not pack.authored:
         raise DressingPackNotAuthored(
             f"dressing pack not authored for wrapper: {wrapper_id}"
         )
-    return catalog.authored_packs[wrapper_id]
+    return pack
 
 
 def _load_catalog_for_arc(arc_id: str) -> DressingCatalog:

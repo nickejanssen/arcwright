@@ -7,11 +7,11 @@
     "manor_gothic",
     "sim_reunion"
   ],
-  "authored_packs": {
+  "wrappers": {
     "seance_1928": {
       "wrapper_id": "seance_1928",
-      "option_lists": {
-        "beverages": [
+      "authored": true,
+      "drinks": [
           "The Reliable Medium",
           "Cross My Palm With Gin",
           "Cold Reading",
@@ -20,13 +20,13 @@
           "One Rap for Yes",
           "The Planchette",
           "Second Sight, Second Pour"
-        ]
-      }
+      ],
+      "stage_name_templates": []
     },
     "big_top_1899": {
       "wrapper_id": "big_top_1899",
-      "option_lists": {
-        "beverages": [
+      "authored": true,
+      "drinks": [
           "Sawdust Lemonade",
           "The Ringmaster's Ration",
           "Fairy Floss Fizz",
@@ -35,8 +35,8 @@
           "The Barker's Own Recipe",
           "Popcorn and Regret",
           "The Big Top Toast"
-        ],
-        "presentation_titles": [
+      ],
+      "stage_name_templates": [
           "The Astonishing Vespertine",
           "Madame Corvelle",
           "The Great Alaric",
@@ -47,8 +47,23 @@
           "Baroness Vell",
           "The Melancholy Strongman",
           "The Lantern-Eyed Lark"
-        ]
-      }
+      ]
+    },
+    "orbital_gala_2087": {
+      "wrapper_id": "orbital_gala_2087",
+      "authored": false
+    },
+    "boardroom_severance": {
+      "wrapper_id": "boardroom_severance",
+      "authored": false
+    },
+    "manor_gothic": {
+      "wrapper_id": "manor_gothic",
+      "authored": false
+    },
+    "sim_reunion": {
+      "wrapper_id": "sim_reunion",
+      "authored": false
     }
   }
 }
