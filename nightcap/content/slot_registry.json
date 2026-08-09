@@ -10,7 +10,7 @@
   ],
   "slots": {
     "callback": {
-      "detail": "prior EvidenceEntry or CaseFact",
+      "detail": "EvidenceEntry.short_label or CaseFact.value",
       "source": "case_field"
     },
     "count": {
