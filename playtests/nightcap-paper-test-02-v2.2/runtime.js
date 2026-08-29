@@ -76,3 +76,8 @@ export function detectEnvironment(userAgent = '', width = 1024) {
   else if (ua.includes('firefox/') || ua.includes('fxios/')) browserClass = 'Firefox';
   return { deviceClass: width < 768 ? 'mobile' : width < 1100 ? 'tablet' : 'desktop', browserClass };
 }
+
+export function filterEligibleOptions(options, earned = []) {
+  const known = new Set(earned);
+  return options.filter(option => !option.requiresAny?.length || option.requiresAny.some(id => known.has(id)));
+}
