@@ -7,6 +7,7 @@ import {
   completeSession,
   serializeTelemetry,
   buildFeedbackUrl,
+  filterEligibleOptions,
 } from '../runtime.js';
 
 test('run IDs are anonymous and readable', () => {
@@ -49,4 +50,13 @@ test('feedback URL uses configured Jotform unique-name mapping', () => {
   const url = new URL(buildFeedbackUrl(base, telemetry, map));
   assert.equal(url.searchParams.get('prototypeVersion'), 'v2.2');
   assert.equal(url.searchParams.get('runId'), 'PT2-ABC123');
+});
+
+test('filters fixture choices that depend on undiscovered evidence', () => {
+  const options = [
+    { label: 'Use cufflink', requiresAny: ['cufflink'] },
+    { label: 'Use corridor', requiresAny: ['bookcase', 'corridor'] },
+    { label: 'Stay private' },
+  ];
+  assert.deepEqual(filterEligibleOptions(options, ['bookcase']).map(x => x.label), ['Use corridor', 'Stay private']);
 });
