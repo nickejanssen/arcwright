@@ -26,6 +26,10 @@ def _route_output_path(route: str) -> PurePosixPath:
     return PurePosixPath(route.lstrip("/"))
 
 
+def _legacy_alias_path(entry: dict[str, Any]) -> PurePosixPath:
+    return PurePosixPath(PurePosixPath(entry["source_dir"]).name)
+
+
 def _read_template(template_dir: Path, relative_path: str) -> str:
     return (template_dir / relative_path).read_text(encoding="utf-8")
 
@@ -54,6 +58,9 @@ def _enrich_catalog(catalog: dict[str, Any]) -> dict[str, Any]:
             {
                 **entry,
                 "public_url": _public_url(route),
+                "legacy_public_urls": [
+                    _public_url(str(_legacy_alias_path(entry)) + "/")
+                ],
                 "output_path": str(_route_output_path(route)),
             }
         )
@@ -77,6 +84,16 @@ def _catalog_items(entries: list[dict[str, Any]]) -> str:
         )
         for entry in entries
     )
+
+
+def _current_first(entries: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    return [
+        entry
+        for _, entry in sorted(
+            enumerate(entries),
+            key=lambda item: (item[1]["status"] != "current", item[0]),
+        )
+    ]
 
 
 def _render(template: str, replacements: dict[str, str]) -> str:
@@ -145,7 +162,7 @@ def build_site(
                 "CATALOG_SCRIPT": catalog_script,
                 "NIGHTCAP_TEST_LINK": current_nightcap["public_url"],
                 "NIGHTCAP_TEST_TITLE": current_nightcap["title"],
-                "CATALOG_ITEMS": _catalog_items(nightcap_entries),
+                "CATALOG_ITEMS": _catalog_items(_current_first(nightcap_entries)),
                 "GENERATED_AT": enriched_catalog["generated_at"],
             },
         ),
@@ -156,6 +173,8 @@ def build_site(
         destination = output_dir / Path(entry["output_path"])
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copytree(source_dir, destination)
+        legacy_destination = output_dir / Path(str(_legacy_alias_path(entry)))
+        shutil.copytree(source_dir, legacy_destination)
 
 
 def main() -> None:

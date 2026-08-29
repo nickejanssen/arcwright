@@ -80,11 +80,21 @@ The ordered event/action strings capture opening completion, five major investig
 
 ## Deployment
 
-GitHub Pages is enabled and the existing workflow `.github/workflows/nightcap-playtest-pages.yml` deploys this folder after changes reach `main`.
+GitHub Pages is enabled and `.github/workflows/nightcap-playtest-pages.yml` builds the Playtest Lab site after changes reach `main`.
 
 Public URL:
 
 `https://nickejanssen.github.io/arcwright/`
+
+Current fixture URL:
+
+`https://nickejanssen.github.io/arcwright/nightcap/paper-test-02/v2.2/`
+
+Legacy fixture alias:
+
+`https://nickejanssen.github.io/arcwright/nightcap-paper-test-02-v2.2/`
+
+The Pages root now serves the Playtest Lab catalog. The legacy alias preserves direct fixture access for bookmarks from the earlier root-hosted deployment while new links should use the catalog route above.
 
 ## Intentionally deferred
 
