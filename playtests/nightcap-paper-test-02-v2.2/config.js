@@ -7,13 +7,12 @@ window.NIGHTCAP_PLAYTEST = {
   notice: 'This is an early Nightcap game prototype. Your gameplay choices and feedback will be recorded to help improve the game. We do not ask for your name or email.',
   feedback: {
     url: 'https://form.jotform.com/262397917027062',
-    // Jotform URL-prefill keys are configured here, not in runtime logic.
-    // Verify these Unique Names once in Jotform before the first research run.
+    // Jotform URL-prefill keys intentionally match the telemetry field labels/Unique Names.
     prefillMap: {
-      prototype_version: 'prototypeVersion', run_id: 'runId', started_at: 'startedAt', completed_at: 'completedAt',
-      duration_seconds: 'durationSeconds', action_sequence: 'actionSequence', investigation_branches: 'investigationBranches',
-      discoveries: 'discoveries', pulse_result: 'pulseResult', case_commitment: 'caseCommitment',
-      final_next_interest: 'finalNextInterest', device_class: 'deviceClass', browser_class: 'browserClass', completion_status: 'completionStatus'
+      prototype_version: 'prototype_version', run_id: 'run_id', started_at: 'started_at', completed_at: 'completed_at',
+      duration_seconds: 'duration_seconds', action_sequence: 'action_sequence', investigation_branches: 'investigation_branches',
+      discoveries: 'discoveries', pulse_result: 'pulse_result', case_commitment: 'case_commitment',
+      final_next_interest: 'final_next_interest', device_class: 'device_class', browser_class: 'browser_class', completion_status: 'completion_status'
     }
   },
   intro: {
