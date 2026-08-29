@@ -88,6 +88,7 @@ window.NIGHTCAP_PLAYTEST = {
     suspects:['Mara Voss','Dr. Theo Bell','Celeste Vale','Julian Cross'],
     mechanism:[
       {label:'Different tablet scoring in the silver case', requiresAny:['minigame_case','staff_inventory']},
+      {label:'Staff found the substituted tablet in the silver case', requiresAny:['staff_inventory']},
       {label:'Delivery log says every prescribed tablet had one deep score line', requiresAny:['medication_inventory']},
       {label:'Theo says the collapse fits an excessive dose better than champagne', requiresAny:['theo_followup']},
       {label:'Shared champagne bottle did not affect the other guests', requiresAny:['champagne']}
