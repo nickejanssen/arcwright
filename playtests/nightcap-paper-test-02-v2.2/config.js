@@ -1,3 +1,4 @@
+/* global window */
 window.NIGHTCAP_PLAYTEST = {
   version: 'nightcap-paper-test-02-v2.2',
   fixtureStatus: 'NON-CANON TEST FIXTURE',
