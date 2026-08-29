@@ -13,6 +13,9 @@ import {
   filterEligibleOptions,
 } from '../runtime.js';
 
+globalThis.window = {};
+await import('../config.js');
+
 test('run IDs are anonymous and readable', () => {
   assert.match(createRunId(() => 0.123456), /^PT2-[A-Z0-9]{6}$/);
 });
@@ -69,13 +72,34 @@ test('telemetry exports one-row friendly strings and representative-test signals
   assert.equal(row.event_sequence, 'minigame_result:win');
 });
 
-test('feedback URL uses configured field mapping', () => {
+test('feedback URL maps all telemetry keys to the observed Jotform names', () => {
   const base = 'https://form.jotform.com/262397917027062';
-  const telemetry = { prototype_version: 'v2.2', run_id: 'PT2-ABC123' };
-  const map = { prototype_version: 'prototype_version', run_id: 'run_id' };
-  const url = new URL(buildFeedbackUrl(base, telemetry, map));
-  assert.equal(url.searchParams.get('prototype_version'), 'v2.2');
-  assert.equal(url.searchParams.get('run_id'), 'PT2-ABC123');
+  const map = {
+    prototype_version: 'q13_textbox11',
+    run_id: 'q14_textbox12',
+    started_at: 'q15_textbox13',
+    completed_at: 'q16_textbox14',
+    duration_seconds: 'q17_textbox15',
+    action_sequence: 'q18_textbox16',
+    investigation_branches: 'q19_textbox17',
+    discoveries: 'q20_textbox18',
+    pulse_result: 'q21_textbox19',
+    case_commitment: 'q22_textbox20',
+    final_next_interest: 'q23_textbox21',
+    device_class: 'q24_textbox22',
+    browser_class: 'q25_textbox23',
+    completion_status: 'q26_textbox24',
+    time_to_first_investigation_seconds: 'q28_time_to_first_investigation_seconds',
+    major_investigations: 'q29_major_investigations',
+    event_sequence: 'q30_event_sequence',
+    abandonment_point: 'q31_abandonment_point',
+  };
+  const telemetry = Object.fromEntries(Object.keys(map).map(key => [key, `value-${key}`]));
+  const configuredMap = window.NIGHTCAP_PLAYTEST.feedback.prefillMap;
+  const url = new URL(buildFeedbackUrl(base, telemetry, configuredMap));
+  for (const [key, parameter] of Object.entries(map)) {
+    assert.equal(url.searchParams.get(parameter), `value-${key}`);
+  }
 });
 
 test('filters fixture choices that depend on undiscovered evidence', () => {

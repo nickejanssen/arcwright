@@ -8,12 +8,12 @@ window.NIGHTCAP_PLAYTEST = {
   feedback: {
     url: 'https://form.jotform.com/262397917027062',
     prefillMap: {
-      prototype_version: 'prototype_version', run_id: 'run_id', started_at: 'started_at', completed_at: 'completed_at',
-      duration_seconds: 'duration_seconds', action_sequence: 'action_sequence', investigation_branches: 'investigation_branches',
-      discoveries: 'discoveries', pulse_result: 'pulse_result', case_commitment: 'case_commitment',
-      final_next_interest: 'final_next_interest', device_class: 'device_class', browser_class: 'browser_class', completion_status: 'completion_status',
-      time_to_first_investigation_seconds: 'time_to_first_investigation_seconds', major_investigations: 'major_investigations',
-      event_sequence: 'event_sequence', abandonment_point: 'abandonment_point'
+      prototype_version: 'q13_textbox11', run_id: 'q14_textbox12', started_at: 'q15_textbox13', completed_at: 'q16_textbox14',
+      duration_seconds: 'q17_textbox15', action_sequence: 'q18_textbox16', investigation_branches: 'q19_textbox17',
+      discoveries: 'q20_textbox18', pulse_result: 'q21_textbox19', case_commitment: 'q22_textbox20',
+      final_next_interest: 'q23_textbox21', device_class: 'q24_textbox22', browser_class: 'q25_textbox23', completion_status: 'q26_textbox24',
+      time_to_first_investigation_seconds: 'q28_time_to_first_investigation_seconds', major_investigations: 'q29_major_investigations',
+      event_sequence: 'q30_event_sequence', abandonment_point: 'q31_abandonment_point'
     }
   },
   opening: {

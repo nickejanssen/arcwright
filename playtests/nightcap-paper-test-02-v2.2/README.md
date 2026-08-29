@@ -53,7 +53,9 @@ The survey occurs after Case File commitment and before the reveal. The Jotform 
 
 Form ID: `262397917027062`
 
-Research questions live in Jotform, not this repository. Hidden telemetry Unique Names must match `feedback.prefillMap` in `config.js`. Respondents should never see or edit telemetry fields.
+Research questions live in Jotform, not this repository. Hidden telemetry Unique Names must match `feedback.prefillMap` in `config.js`. The 14 generated legacy fields use the observed `q13_textbox11` through `q26_textbox24` parameter names; this is an intentional exception to the otherwise readable internal telemetry keys. The four v2.2 fields retain their `q28` through `q31` names. Respondents should never see or edit telemetry fields.
+
+Prefill mapping verification is read-only: inspect the public form's field metadata and load a generated prefill URL with a `GET`, confirming the expected parameter names without submitting a response. Never use the harness or verification process to submit a Jotform response.
 
 Jotform may retain submission-level technical metadata such as IP address. The prototype itself does not request names, emails, accounts, persistent identity, advertising IDs, or cross-run identity.
 
