@@ -4,14 +4,26 @@ Version: `nightcap-paper-test-02-v2.2`
 
 Disposable, static research tooling for independent Nightcap playtests. It is intentionally **not** Arcwright/Nightcap production architecture.
 
+## Current instrument
+
+Paper Test #2 v2.2 is the **Representative Time-to-Fun / Cohesion Test** using the explicitly non-canon fixture **The Last Toast**. It is designed as a roughly 15–20 minute solo test with one authored rival and five major investigation commitments.
+
+Playable rhythm:
+
+`WATCH → HUNT → HUNT → rival pressure → PLAY → REACT → HUNT → story reaction → HUNT → HUNT → LAST CALL → CASE FILE → POST-PLAY RESEARCH → THE TRUTH`
+
+The fixture implements simple crime / layered proof. It does not establish permanent Nightcap rules or validate real multiplayer behavior.
+
 ## Architecture
 
 - Plain HTML/CSS/JavaScript; no build step and no dependencies.
-- `config.js` contains all test copy/fixture choices and the feedback integration mapping.
-- `runtime.js` contains only anonymous session/telemetry utilities.
-- `app.js` renders the test flow and stores the current run in `sessionStorage` so an accidental refresh can resume.
-- Jotform receives post-play research responses and URL-prefilled telemetry.
-- GitHub Pages hosts only this folder through the included workflow.
+- `config.js` contains all non-canon fixture content, proof requirements, rival behavior, minigame content, and Jotform mapping.
+- `runtime.js` contains anonymous session and telemetry utilities only.
+- `app.js` renders the state flow and stores the current run in `sessionStorage` for refresh-safe re-entry.
+- `tests/runtime.test.mjs` covers telemetry/session behavior.
+- `tests/fixture.test.mjs` covers suspect representation, proof redundancy, minigame-loss solvability, red-herring routes, and bounded Leverage.
+- Jotform receives post-play research responses plus URL-prefilled hidden telemetry.
+- GitHub Pages hosts only this folder through the existing workflow.
 
 ## Run locally
 
@@ -26,64 +38,52 @@ Open `http://localhost:8000`.
 Run the dependency-free tests:
 
 ```bash
-node --test tests/runtime.test.mjs
+node --test tests/runtime.test.mjs tests/fixture.test.mjs
 ```
 
-## Change prototype content
+## Test-design boundaries
 
-Edit only `config.js` for story copy, investigation choices, discoveries, fixture pulse content, commitments, and survey URL/prefill mapping. Do not turn fixture convenience into GDD canon.
+The Last Toast has four suspects, one deterministic authored rival (Rhea Pike), one observation minigame for temporary first access, one bounded Leverage decision, five major investigation choices, and a four-part Case File.
 
-The included **Room With No Door** content is explicitly a NON-CANON TEST FIXTURE recovered from Paper Test #2 material. The reaction and party-pulse interactions are likewise fixture-only placeholders to exercise v2.2-shaped harness slots; they are not approved Nightcap mechanics.
+Essential truths have redundant proof routes. Losing the minigame does not remove the ability to establish medication substitution. Rival observations are presented as knowledge rather than automatically owned proof.
 
-## Change research questions
+The survey occurs after Case File commitment and before the reveal. The Jotform completion flow redirects to `?reveal=1` so baseline fun/detective ratings are not influenced by learning whether the accusation was correct.
 
-Research questions live in Jotform, not this codebase. Form ID: `262397917027062`. Keep gameplay free of research prompts. When questions change, edit the Jotform form; no site deployment is needed unless telemetry fields or the form URL change.
+## Jotform
 
-## Jotform telemetry prefill — one-time check
+Form ID: `262397917027062`
 
-Jotform prepopulates fields using each field's **Unique Name**. In the form builder, open each hidden telemetry field → Advanced → Field Details → Unique Name. Make sure the values match `feedback.prefillMap` in `config.js`. This is the only field-specific integration configuration.
+Research questions live in Jotform, not this repository. Hidden telemetry Unique Names must match `feedback.prefillMap` in `config.js`. Respondents should never see or edit telemetry fields.
 
-Jotform may retain submission-level technical metadata such as IP address. The prototype itself does not collect names, emails, cross-run identifiers, cookies, advertising IDs, or third-party analytics.
+Jotform may retain submission-level technical metadata such as IP address. The prototype itself does not request names, emails, accounts, persistent identity, advertising IDs, or cross-run identity.
 
-## Results / export
+## Telemetry
 
-Use Jotform's submission table as the central result store. Export to CSV for analysis. The intended shape is one row per submitted run, with readable telemetry strings such as `Examine bookcase > Press Jonas`.
-
-## Increment the test version
-
-1. Change `version` in `config.js`, e.g. `nightcap-paper-test-02-v2.3`.
-2. Change only the fixture/research content required for that version.
-3. Commit/deploy. The version is attached to every survey handoff automatically.
-
-## Telemetry fields
+Existing fields remain:
 
 `prototype_version`, `run_id`, `started_at`, `completed_at`, `duration_seconds`, `action_sequence`, `investigation_branches`, `discoveries`, `pulse_result`, `case_commitment`, `final_next_interest`, `device_class`, `browser_class`, `completion_status`.
 
-No fingerprinting. Device/browser are coarse classes only.
+v2.2 adds lightweight fields:
+
+`time_to_first_investigation_seconds`, `major_investigations`, `event_sequence`, `abandonment_point`.
+
+The ordered event/action strings capture opening completion, five major investigations, rival lead, minigame outcome, Leverage choice, story reaction, Last Call, Case File commitment, completion/abandonment, and survey handoff without interrupting the tester.
 
 ## Failure / abandonment limits
 
-- Completed run: telemetry is passed to the survey with `completion_status=completed`.
-- Voluntary early exit: the explicit **End test early & give feedback** path passes `completion_status=abandoned`.
-- Browser/tab close cannot be reliably recorded without a backend and is intentionally deferred.
-- An incomplete Jotform submission cannot be distinguished from a tester who never opened/submitted the survey without adding event ingestion; also deferred.
+- Completed run passes `completion_status=completed`.
+- Voluntary early exit passes `completion_status=abandoned` and the current state as `abandonment_point`.
+- Browser/tab close cannot be reliably recorded without a backend and remains intentionally deferred.
+- Incomplete Jotform submissions cannot be distinguished from survey non-entry without event ingestion.
 
 ## Deployment
 
-The repo currently has GitHub Pages disabled. The workflow `.github/workflows/nightcap-playtest-pages.yml` deploys this folder once Pages is enabled for GitHub Actions.
+GitHub Pages is enabled and the existing workflow `.github/workflows/nightcap-playtest-pages.yml` deploys this folder after changes reach `main`.
 
-One owner action:
-
-**GitHub → `nickejanssen/arcwright` → Settings → Pages → Build and deployment → Source → GitHub Actions.**
-
-Then run/re-run the workflow or push any change under this playtest folder. Expected URL:
+Public URL:
 
 `https://nickejanssen.github.io/arcwright/`
 
-## QR code
-
-Do not make QR generation a deployment dependency. After the public URL is live, Chrome/Edge can generate one directly with **Share → Create QR code**. Use the exact public test URL so the QR automatically follows the deployed version.
-
 ## Intentionally deferred
 
-Accounts/auth, backend/API, database, custom analytics, CMS/admin UI, production Case Board, multiplayer networking, persistent identity, production minigame systems, cross-run tracking, closed-tab abandonment telemetry, and any custom QR service.
+Memory Support A/B, advanced Case Board, Heat, full Counterintel, auctions/economy, Group Rescue, player-count balancing, accessibility minigame filtering, numerical Case Strength, full Postmortem, production AI generation, multiplayer networking, custom backend analytics, closed-tab abandonment telemetry, and custom QR infrastructure.

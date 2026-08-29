@@ -1,85 +1,133 @@
 # Nightcap External Playtest Harness
 
-**Status**: In Progress
-
-**Author**: OpenAI | **Date**: 2026-08-28
-
----
-
-# References
-
-- Canonical Nightcap GDD: `docs/story-bibles/nightcap-murder-mystery.md`
-- Repo guardrails: `AGENTS.md`
-- Paper Test #2 v2/v2.1 supporting evidence supplied by founder
+> Current version: v2.2
+> Last updated: 2026-08-28
+> Status: In Progress — representative instrument implemented on PR #299, pending integration/live verification
+> Canonical path: docs/specs/nightcap-external-playtest-harness.md
 
 ---
 
 # Overview
 
-Define the smallest disposable external playtest surface for Nightcap Paper Test #2 v2.2: static browser UI, silent anonymous run telemetry, post-play Jotform research, and GitHub Pages hosting.
+Nightcap Paper Test #2 v2.2 is the **Representative Time-to-Fun / Cohesion Test**. It preserves the disposable static external-testing harness while replacing the thin earlier fixture with a materially fuller non-canon microcase, **The Last Toast**.
 
-This spec defines research tooling only. It does not approve or alter Nightcap production gameplay.
+This spec governs research tooling and the test fixture only. It does not alter the authoritative Nightcap GDD or convert fixture convenience into product rules.
 
-# Human Collaboration Contract
+# Infrastructure preserved
 
-**Interaction profiles:** Independent execution + Decision interview (privacy/deployment external-service constraints) + Facilitated live operation (future playtest only).
+- Static HTML/CSS/vanilla JavaScript under `playtests/nightcap-paper-test-02-v2.2/`.
+- No framework, build step, backend, database, auth, or new dependency.
+- GitHub Pages deployment through the existing workflow.
+- Jotform form `262397917027062` as the central research/submission store.
+- Anonymous session-scoped run ID and coarse device/browser classification.
+- `sessionStorage` for accidental-refresh re-entry.
+- Readable URL-prefilled telemetry rather than a new analytics service.
 
-**Classification rationale:** The founder supplied explicit implementation constraints and directed implementation. Third-party account configuration and live tester observations remain owner/facilitator actions.
+# Approved v2.2 fixture direction
 
-**Required founder inputs:** One GitHub Pages enablement action; verify Jotform hidden-field Unique Names after form generation.
+**Fixture:** The Last Toast — NON-CANON TEST FIXTURE.
 
-**Approval evidence:** Founder prompt dated 2026-08-28 explicitly directs assessment followed by implementation with static HTML/CSS/JS, GitHub Pages preference, external form collection, versioning, telemetry, and no production infrastructure.
+**Test player model:** one real solo tester plus one visible deterministic authored rival, Rhea Pike. Authored rival behavior is a research proxy for competitive pressure and must not be interpreted as proof of multiplayer behavior.
 
-# Supplied Game Design Boundaries
+**Mystery architecture:** simple crime, layered proof. Sebastian Vale is killed by a substituted medication dose before/around the toast; champagne is misdirection rather than an elaborate murder mechanism. The intended solve requires the equivalent of killer + substitution/core-act proof + opportunity/access + a broken account.
 
-- Investigation/deduction remain central.
-- Gameplay precedes research questions.
-- Confirm discovered facts, never inferred truth.
-- Representative slice should include story, investigation, information use/reaction, competitive/social pressure, a short story-wrapped party/minigame pulse, consequence, resumed investigation, and lightweight commitment.
-- Existing Room With No Door fixture is non-canon test material.
+**Suspects:** Mara Voss, Dr. Theo Bell, Celeste Vale, and Julian Cross. Each has a concrete suspicious behavior, a credible motive/secret, and information that complicates the obvious interpretation.
 
-# Harness Decisions
+# Representative flow
 
-- Static HTML/CSS/vanilla JavaScript under `playtests/`.
-- No dependencies or build step.
-- Content/config separated from runtime code.
-- Session-scoped anonymous run ID and coarse device/browser classification only.
-- `sessionStorage` preserves accidental refresh state; Restart generates a new run.
-- Human-readable telemetry is URL-prefilled into Jotform after the playable slice.
-- Explicit early-exit path records `completion_status=abandoned`; closed-tab abandonment is deferred.
-- GitHub Actions deploys only the playtest folder to GitHub Pages.
+1. **WATCH:** short cinematic opening with four observable irregularities.
+2. **HUNT 1:** player follows one thing they actually noticed.
+3. **HUNT 2:** the first discovery opens a concrete follow-up question.
+4. **Competitive interruption:** Rhea visibly pursues an unchosen lead and reacts to the player's first move.
+5. **PLAY:** story-wrapped Effects Tray observation minigame contests first access to Sebastian's effects.
+6. **Consequence:** winner gets first access. A loss still leaves redundant proof routes.
+7. **REACT / Leverage:** spend one bounded advantage to learn Rhea's direction, or save it for a private Julian follow-up. Rival knowledge does not become owned proof.
+8. **HUNT 3:** investigate under the changed competitive state.
+9. **Story reaction:** Theo/corridor behavior changes the room and creates new investigative intent.
+10. **HUNT 4:** test a claim, route, object, or suspect.
+11. **HUNT 5:** one final open investigative commitment.
+12. **LAST CALL:** investigation closes; Rhea commits without revealing whether she is correct.
+13. **CASE FILE:** select killer, critical act/mechanism proof, opportunity/access proof, and failed statement/cover story using owned evidence where proof ownership matters.
+14. **POST-PLAY RESEARCH:** existing Jotform survey receives baseline ratings before the truth is shown.
+15. **THE TRUTH:** survey completion redirects back to the static reveal route (`?reveal=1`).
 
-# Missing Game Design — Not Approved Here
+Target runtime is roughly 15–20 minutes for an engaged first-time tester. Experiential completeness is more important than enforcing a timer.
 
-The harness does not approve exact v2.2 suspect/evidence logic, social competition rules, Leverage behavior, minigame rules/scoring, production Case Board UX, or production consequence tuning. Fixture interactions needed to exercise those harness slots remain explicitly NON-CANON.
+# Evidence principles
 
-# Privacy Constraint
+- **Equal solvability, unequal information:** Rhea may know something the tester does not own; minigame outcome changes temporary access rather than truth.
+- **Redundant truth:** mechanism, access, movement, and contradiction each have multiple proof routes. No single minigame result or mandatory clue is the only path.
+- **Knowledge ≠ Proof:** the minigame-loss state explicitly distinguishes seeing Rhea react from owning her evidence.
+- **No correctness confirmation:** no suspect is cleared or confirmed and no clue is ranked for importance before the Case File.
+- **Player-owned deduction:** discoveries state observations/facts, not the inference the tester should draw.
 
-The prototype asks for no name, email, account, persistent identity, advertising identifier, or cross-run identifier. Jotform may retain service-level technical metadata such as submitter IP; this limitation must remain documented. No additional analytics are enabled.
+# Telemetry
 
-# Acceptance Criteria
+Existing telemetry is preserved:
 
-- [x] Static site runs in modern browsers without installation or account.
-- [x] Gameplay contains no research prompts.
-- [x] Anonymous session telemetry accumulates silently.
-- [x] Refresh can resume a run; restart creates a new run.
-- [x] Post-play boundary clearly labels research.
-- [x] Jotform handoff includes configurable hidden-field prefill mapping.
-- [x] Test version is automatically attached.
-- [x] Content can be changed in one config file.
-- [x] No production Arcwright/Nightcap engine code is modified.
-- [ ] GitHub Pages is enabled for the repository and the public URL is live.
-- [ ] Jotform generated field Unique Names are verified against `config.js` before collecting research evidence.
+`prototype_version`, `run_id`, `started_at`, `completed_at`, `duration_seconds`, `action_sequence`, `investigation_branches`, `discoveries`, `pulse_result`, `case_commitment`, `final_next_interest`, `device_class`, `browser_class`, `completion_status`.
 
-# Test Plan
+The representative test adds four lightweight fields:
 
-- Node built-in unit tests for run IDs, ordered telemetry, duration/status, CSV-friendly serialization, and feedback URL prefill.
-- Static server smoke test for `index.html`.
-- Static assertions for mobile viewport, tap target sizing, post-play research boundary, and voluntary exit path.
-- Live phone/desktop smoke test after GitHub Pages enablement.
+- `time_to_first_investigation_seconds`
+- `major_investigations`
+- `event_sequence`
+- `abandonment_point`
 
-# Known Research Limitations
+The event stream records opening completion, five major investigation selections, rival lead, minigame result, Leverage choice, story reaction, Last Call, Case File commitment, and survey handoff without adding research prompts during gameplay.
 
-- Closed-tab/connection-loss abandonment cannot be observed without event ingestion.
-- Incomplete Jotform submissions cannot be distinguished from survey non-entry without more infrastructure.
-- The included v2.2-shaped reaction/pulse content is harness fixture material, not validated game design.
+# Re-entry and state
+
+Exact current state is persisted for discoveries, rival/minigame stages, Leverage, five investigation stages, and partial Case File selections. A refresh must not replay or double-count a completed major choice or minigame result.
+
+# Acceptance criteria
+
+- [x] Existing hosting/survey/telemetry architecture preserved.
+- [x] Fresh The Last Toast fixture replaces Room With No Door.
+- [x] Four meaningful suspects are presented.
+- [x] Scene-first observation drives the first investigative act.
+- [x] Five major investigation commitments exist.
+- [x] Named deterministic rival creates bounded pressure and reacts to player behavior.
+- [x] One story-wrapped skill minigame contests temporary first access.
+- [x] Losing the minigame preserves viable proof routes.
+- [x] One bounded Leverage decision has a real opportunity cost.
+- [x] Story reaction reshapes the next investigative decision.
+- [x] No explicit theory/research checkpoint occurs before Case File.
+- [x] Case File captures killer + mechanism/core proof + access + failed account.
+- [x] Baseline survey occurs before truth/reveal.
+- [x] Refresh-safe state prevents duplicate major actions/minigame resolution.
+- [x] No production Nightcap/engine/API/SDK/dashboard code is modified.
+- [ ] Dependency-free playtest runtime and fixture tests pass on the final branch head.
+- [ ] Repository CI, CodeQL, and roadmap verification pass on the final branch head.
+- [ ] Jotform hidden telemetry additions and post-submit reveal redirect are confirmed after the edit completes.
+- [ ] Final merged GitHub Pages deployment is live-smoke-tested.
+
+# QA matrix
+
+The instrument must be exercised across:
+
+- minigame win + Leverage spend;
+- minigame win + Leverage save;
+- minigame loss + Leverage spend;
+- minigame loss + Leverage save;
+- Julian investigated early;
+- a non-killer/red-herring investigated first;
+- a route that reaches Case File without the most direct medication path;
+- refresh/re-entry at discovery, minigame consequence, and partial Case File;
+- voluntary abandonment;
+- mobile-width layout;
+- survey handoff and reveal ordering.
+
+Fixture-level automated assertions cover representative suspect count, opening observations, proof redundancy, minigame-loss solvability, red-herring information value, bounded Leverage, and several indirect proof-route combinations.
+
+# Deliberately deferred
+
+Memory Support A/B, advanced Case Board, Heat, full Counterintel, auctions, full Leverage economy, Group Rescue, 2-vs-4 balancing, accessibility minigame filtering, numerical Case Strength, full Postmortem, production AI generation, broad player-count scaling, backend analytics, closed-tab abandonment ingestion, and production multiplayer behavior.
+
+# Remaining research risks
+
+- Authored rival pressure cannot validate actual social multiplayer behavior.
+- A static text prototype still understates production cinematic/audio/social presentation.
+- Fifteen-to-twenty-minute target runtime is a design estimate until real independent testers establish observed duration.
+- Voluntary early exit can be tracked, but silent tab closes cannot be reliably captured without a backend.
+- A fuller fixture improves representativeness but does not prove Nightcap is fun; it creates a better instrument for real testers to answer that question.

@@ -17,12 +17,25 @@ export function createSession(version, startedAt = new Date().toISOString()) {
     actionSequence: [],
     investigationBranches: [],
     discoveries: [],
+    events: [],
+    majorInvestigations: [],
+    timeToFirstInvestigationSeconds: null,
     pulseResult: '',
+    leverageResult: '',
     caseCommitment: '',
     finalNextInterest: '',
     completionStatus: 'in_progress',
-    currentStep: 0,
+    abandonmentPoint: '',
+    currentStep: 'welcome',
+    nextStep: '',
+    lastLeadId: '',
     earned: [],
+    majorCount: 0,
+    rivalLead: '',
+    minigameOutcome: '',
+    leverageUsed: false,
+    firstAccess: '',
+    caseDraft: { killer: '', mechanism: '', access: '', contradiction: '' },
   };
 }
 
@@ -33,10 +46,24 @@ export function recordAction(session, { label, branch = '', discovery = '' }) {
   return session;
 }
 
+export function recordEvent(session, name, detail = '') {
+  session.events.push(detail ? `${name}:${detail}` : name);
+  return session;
+}
+
+export function recordMajorInvestigation(session, id, at = new Date().toISOString()) {
+  if (!session.majorInvestigations.includes(id)) session.majorInvestigations.push(id);
+  if (session.timeToFirstInvestigationSeconds === null) {
+    session.timeToFirstInvestigationSeconds = Math.max(0, Math.round((Date.parse(at) - Date.parse(session.startedAt)) / 1000));
+  }
+  return session;
+}
+
 export function completeSession(session, completedAt = new Date().toISOString(), status = 'completed') {
   session.completedAt = completedAt;
   session.durationSeconds = Math.max(0, Math.round((Date.parse(completedAt) - Date.parse(session.startedAt)) / 1000));
   session.completionStatus = status;
+  if (status === 'abandoned') session.abandonmentPoint = String(session.currentStep || 'unknown');
   return session;
 }
 
@@ -56,6 +83,10 @@ export function serializeTelemetry(session, environment = {}) {
     device_class: environment.deviceClass || '',
     browser_class: environment.browserClass || '',
     completion_status: session.completionStatus,
+    time_to_first_investigation_seconds: session.timeToFirstInvestigationSeconds ?? '',
+    major_investigations: session.majorInvestigations.join(' > '),
+    event_sequence: session.events.join(' > '),
+    abandonment_point: session.abandonmentPoint,
   };
 }
 
