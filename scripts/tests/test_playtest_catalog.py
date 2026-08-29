@@ -108,3 +108,10 @@ def test_current_tests_resolves_declared_references():
     value["current_tests"] = {"other": "other", "nightcap": first["id"]}
 
     assert current_tests(value) == [second, first]
+
+
+def test_non_object_catalog_returns_actionable_error(tmp_path):
+    assert validate_catalog([], tmp_path) == ["catalog root must be a JSON object"]
+    assert validate_catalog("catalog", tmp_path) == [
+        "catalog root must be a JSON object"
+    ]

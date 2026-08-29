@@ -51,6 +51,9 @@ def _safe_source(value: Any) -> bool:
 def validate_catalog(catalog: dict, repo_root: Path) -> list[str]:
     """Return deterministic, actionable validation errors for *catalog*."""
 
+    if not isinstance(catalog, dict):
+        return ["catalog root must be a JSON object"]
+
     errors: list[str] = []
     if catalog.get("schema_version") != 1:
         errors.append("schema_version must be 1")
@@ -60,7 +63,7 @@ def validate_catalog(catalog: dict, repo_root: Path) -> list[str]:
     if not isinstance(declared_current, dict):
         errors.append("current_tests must be an object")
         declared_current = {}
-    entries = catalog.get("entries") if isinstance(catalog, dict) else None
+    entries = catalog.get("entries")
     if not isinstance(entries, list):
         return ["catalog entries must be a list"]
 
