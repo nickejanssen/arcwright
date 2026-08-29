@@ -1,3 +1,4 @@
+/* global URL */
 const ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
 
 export function createRunId(random = Math.random) {
