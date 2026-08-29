@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#161412">
+    <title>Arcwright Playtest Lab</title>
+    <link rel="stylesheet" href="{{BASE_PATH}}styles.css">
+  </head>
+  <body>
+    <main class="page">
+      <header class="masthead">
+        <p class="eyebrow">Arcwright Playtest Lab</p>
+        <h1>Current external playtest builds</h1>
+        <p>
+          Static research instruments for validating Arcwright experiences before
+          production runtime work. Fixtures here are test tools, not canon.
+        </p>
+        <a class="button primary" href="{{CURRENT_TEST_LINK}}">Open {{CURRENT_TEST_TITLE}}</a>
+      </header>
+      <section aria-labelledby="catalog-heading">
+        <div class="section-head">
+          <h2 id="catalog-heading">Catalog</h2>
+          <a href="{{BASE_PATH}}catalog.js">Catalog data</a>
+        </div>
+        <div class="catalog-grid">
+          {{CATALOG_ITEMS}}
+        </div>
+      </section>
+      <footer>
+        Generated from the catalog at {{GENERATED_AT}}.
+      </footer>
+    </main>
+    {{CATALOG_SCRIPT}}
+  </body>
+</html>

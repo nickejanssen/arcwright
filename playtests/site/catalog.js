@@ -1,0 +1,2 @@
+/* global window */
+window.ARCWRIGHT_PLAYTEST_CATALOG = JSON.parse("__ARCWRIGHT_CATALOG_JSON__");
