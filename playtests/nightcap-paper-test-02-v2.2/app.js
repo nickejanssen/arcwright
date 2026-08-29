@@ -1,3 +1,4 @@
+/* global window, document, sessionStorage, navigator, innerWidth */
 import {createSession,recordAction,completeSession,serializeTelemetry,buildFeedbackUrl,detectEnvironment,filterEligibleOptions} from './runtime.js';
 const cfg=window.NIGHTCAP_PLAYTEST, app=document.querySelector('#app'), notebook=document.querySelector('#notebook'), notes=document.querySelector('#notes');
 document.querySelector('#version').textContent=cfg.version.replace('nightcap-paper-test-02-','');
