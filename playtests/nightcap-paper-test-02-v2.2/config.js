@@ -37,9 +37,10 @@ window.NIGHTCAP_PLAYTEST = {
     title:'A chance to make the information bite',
     body:'You can spend one moment testing something you discovered. This interaction is fixture-only; it is not a locked Nightcap mechanic.',
     options:[
-      {label:'Show Jonas the blue-painted cufflink', result:'Jonas glances at it too quickly, then says the fox symbol proves nothing. His response changes, but the game does not tell you what it means.'},
-      {label:'Challenge the “sealed room” story in front of the guests', result:'The room goes quiet. Celia immediately asks who knew about the corridor. Jonas says every contractor did.'},
-      {label:'Keep your discovery private', result:'You keep the information to yourself. The others continue arguing from the original “sealed room” assumption.'}
+      {label:'Show Jonas the blue-painted cufflink', requiresAny:['cufflink'], result:'Jonas glances at it too quickly, then says the fox symbol proves nothing. His response changes, but the game does not tell you what it means.'},
+      {label:'Challenge the “sealed room” story in front of the guests', requiresAny:['bookcase','corridor'], result:'The room goes quiet. Celia immediately asks who knew about the corridor. Jonas says every contractor did.'},
+      {label:'Ask Jonas about the damaged-heel footprint', requiresAny:['footprints'], result:'Jonas says damaged work boots are hardly unusual on a restoration site. The answer does not settle whether the print is his.'},
+      {label:'Keep what you found private', result:'You keep your discoveries to yourself. The others continue arguing from what they already know.'}
     ]
   },
   pulse: {
@@ -47,9 +48,10 @@ window.NIGHTCAP_PLAYTEST = {
     body:'The fire alarm chirps once and dies. A burst pipe floods the west hallway. Staff rush to move guests while restoration materials are dragged out of the way.',
     prompt:'You get one quick grab before the hallway is cleared. What do you secure?',
     options:[
-      {label:'Photograph the damaged-heel footprint', result:'You preserve a clear image of the damaged-heel footprint before water reaches it.'},
-      {label:'Bag a sample of the blue paint', result:'You preserve a sample from the tacky blue-painted temporary panel.'},
-      {label:'Keep the hidden corridor accessible', result:'You stop staff from sealing the concealed route behind the materials they are moving.'}
+      {label:'Photograph the damaged-heel footprint', requiresAny:['footprints'], result:'You preserve a clear image of the footprint before water reaches it.'},
+      {label:'Secure the blue-painted cufflink', requiresAny:['cufflink'], result:'You keep the cufflink from being misplaced during the scramble.'},
+      {label:'Keep the hidden corridor accessible', requiresAny:['bookcase','corridor'], result:'You stop staff from sealing the concealed route behind the materials they are moving.'},
+      {label:'Stay with the guests', result:'You skip the evidence scramble and keep your attention on the room. No new fact is awarded.'}
     ],
     disclaimer:'NON-CANON pulse: this exists only to exercise the party/minigame transition and consequence slot.'
   },
