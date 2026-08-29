@@ -52,6 +52,14 @@ def validate_catalog(catalog: dict, repo_root: Path) -> list[str]:
     """Return deterministic, actionable validation errors for *catalog*."""
 
     errors: list[str] = []
+    if catalog.get("schema_version") != 1:
+        errors.append("schema_version must be 1")
+    if catalog.get("generated_at_policy") != "build-time":
+        errors.append("generated_at_policy must be 'build-time'")
+    declared_current = catalog.get("current_tests")
+    if not isinstance(declared_current, dict):
+        errors.append("current_tests must be an object")
+        declared_current = {}
     entries = catalog.get("entries") if isinstance(catalog, dict) else None
     if not isinstance(entries, list):
         return ["catalog entries must be a list"]
@@ -117,19 +125,49 @@ def validate_catalog(catalog: dict, repo_root: Path) -> list[str]:
             else:
                 current_games[game] = index
 
+    by_id = {item.get("id"): item for item in entries if isinstance(item, dict)}
+    for game, entry_id in declared_current.items():
+        if not isinstance(game, str) or not isinstance(entry_id, str):
+            errors.append("current_tests keys and values must be strings")
+            continue
+        referenced = by_id.get(entry_id)
+        if referenced is None:
+            errors.append(f"current_tests['{game}'] references unknown id '{entry_id}'")
+        elif referenced.get("game") != game:
+            errors.append(
+                f"current_tests['{game}'] references id '{entry_id}' for game "
+                f"'{referenced.get('game')}'"
+            )
+        elif referenced.get("status") != "current":
+            errors.append(
+                f"current_tests['{game}'] must reference a current entry, "
+                f"but '{entry_id}' is {referenced.get('status')!r}"
+            )
+
+    declared_ids = set(declared_current.values())
+    for index, item in enumerate(entries):
+        if isinstance(item, dict) and item.get("status") == "current":
+            if item.get("id") not in declared_ids:
+                errors.append(
+                    f"entries[{index}] current entry '{item.get('id')}' is not declared in current_tests"
+                )
     return errors
 
 
 def current_tests(catalog: dict) -> list[dict]:
-    """Return current entries in manifest order."""
+    """Resolve declared current entries in current_tests mapping order."""
 
     entries = catalog.get("entries", [])
     if not isinstance(entries, list):
         return []
+    by_id = {entry.get("id"): entry for entry in entries if isinstance(entry, dict)}
+    declared = catalog.get("current_tests", {})
+    if not isinstance(declared, dict):
+        return []
     return [
-        entry
-        for entry in entries
-        if isinstance(entry, dict) and entry.get("status") == "current"
+        by_id[entry_id]
+        for entry_id in declared.values()
+        if isinstance(entry_id, str) and entry_id in by_id
     ]
 
 

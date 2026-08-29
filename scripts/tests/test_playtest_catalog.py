@@ -69,3 +69,42 @@ def test_multiple_current_entries_for_game_are_reported(tmp_path):
     assert any(
         "more than one current entry for game 'nightcap'" in error for error in result
     )
+
+
+def test_missing_current_tests_reference_is_reported(tmp_path):
+    value = catalog(entry())
+    del value["current_tests"]
+
+    result = validate_catalog(value, tmp_path)
+
+    assert any("current_tests must be an object" in error for error in result)
+
+
+def test_unknown_current_tests_reference_is_reported(tmp_path):
+    value = catalog(entry())
+    value["current_tests"] = {"nightcap": "missing"}
+
+    result = validate_catalog(value, tmp_path)
+
+    assert any(
+        "current_tests['nightcap'] references unknown id 'missing'" in error
+        for error in result
+    )
+
+
+def test_mismatched_current_tests_reference_is_reported(tmp_path):
+    value = catalog(entry())
+    value["entries"][0]["status"] = "archived"
+
+    result = validate_catalog(value, tmp_path)
+
+    assert any("must reference a current entry" in error for error in result)
+
+
+def test_current_tests_resolves_declared_references():
+    first = entry()
+    second = entry(id="other", game="other", route="/other/", status="current")
+    value = catalog(first, second)
+    value["current_tests"] = {"other": "other", "nightcap": first["id"]}
+
+    assert current_tests(value) == [second, first]
