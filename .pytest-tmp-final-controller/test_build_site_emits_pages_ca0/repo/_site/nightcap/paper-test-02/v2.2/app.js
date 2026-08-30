@@ -1,1 +1,0 @@
-const revealUrl='?reveal=1';if(new URLSearchParams(window.location.search).get('reveal')==='1')reveal();
