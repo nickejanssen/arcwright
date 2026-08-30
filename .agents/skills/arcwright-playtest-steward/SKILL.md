@@ -1,6 +1,6 @@
 ---
 name: arcwright-playtest-steward
-description: Thin launcher for the canonical Arcwright Playtest Steward skill.
+description: Use when organizing Arcwright Playtest Lab work, adding a new case or test draft, routing harness, Jotform feedback, research analysis, publishing, archive, or GDD/product/architecture follow-up.
 ---
 
 # Arcwright Playtest Steward Launcher

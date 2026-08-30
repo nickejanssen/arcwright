@@ -1,6 +1,6 @@
 ---
 name: arcwright-playtest-harness
-description: Thin launcher for the canonical Arcwright Playtest Harness skill.
+description: Use when validating or troubleshooting an Arcwright playtest harness, fixture, telemetry handoff, reveal return, refresh/re-entry state, mobile layout, or local smoke evidence.
 ---
 
 # Arcwright Playtest Harness Launcher
