@@ -60,6 +60,30 @@ def test_invalid_route_is_reported(tmp_path):
     assert any("unsafe route" in error for error in result)
 
 
+def test_drive_qualified_route_is_reported(tmp_path):
+    result = validate_catalog(catalog(entry(route="C:/Windows")), tmp_path)
+
+    assert any("unsafe route" in error for error in result)
+
+
+def test_rooted_windows_route_is_reported(tmp_path):
+    result = validate_catalog(catalog(entry(route="/C:/Windows")), tmp_path)
+
+    assert any("unsafe route" in error for error in result)
+
+
+def test_drive_qualified_source_directory_is_reported(tmp_path):
+    result = validate_catalog(catalog(entry(source_dir="C:/Windows")), tmp_path)
+
+    assert any("unsafe source_dir" in error for error in result)
+
+
+def test_rooted_windows_source_directory_is_reported(tmp_path):
+    result = validate_catalog(catalog(entry(source_dir="/C:/Windows")), tmp_path)
+
+    assert any("unsafe source_dir" in error for error in result)
+
+
 def test_multiple_current_entries_for_game_are_reported(tmp_path):
     result = validate_catalog(
         catalog(entry(), entry(id="nightcap-second", route="/nightcap/second/")),
@@ -115,3 +139,20 @@ def test_non_object_catalog_returns_actionable_error(tmp_path):
     assert validate_catalog("catalog", tmp_path) == [
         "catalog root must be a JSON object"
     ]
+
+
+def test_symlink_escaping_source_directory_is_reported(tmp_path):
+    external_root = tmp_path.parent / "external-playtest-source"
+    external_root.mkdir()
+    escaped = external_root / "nightcap-paper-test-02-v2.2"
+    escaped.mkdir()
+    linked = tmp_path / "playtests" / "nightcap-paper-test-02-v2.2"
+    linked.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        linked.symlink_to(escaped, target_is_directory=True)
+    except (OSError, NotImplementedError):
+        return
+
+    result = validate_catalog(catalog(entry()), tmp_path)
+
+    assert any("unsafe source_dir" in error for error in result)

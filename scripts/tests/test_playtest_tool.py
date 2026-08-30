@@ -334,7 +334,8 @@ def test_archive_requires_exact_id_and_preserves_artifact_history(tmp_path, caps
     source_dir.mkdir(parents=True)
     marker = source_dir / "index.html"
     marker.write_text("published artifact", encoding="utf-8")
-    write_catalog(tmp_path, catalog(entry()))
+    manifest = write_catalog(tmp_path, catalog(entry()))
+    before = manifest.read_text(encoding="utf-8")
 
     result, captured = run_cli(
         tmp_path,
@@ -348,15 +349,16 @@ def test_archive_requires_exact_id_and_preserves_artifact_history(tmp_path, caps
         capsys=capsys,
     )
 
-    assert result == 0
+    assert result == 2
     payload = json.loads(captured.out)
-    assert payload["entry"]["status"] == "archived"
+    assert "would leave the catalog without a current entry" in payload["errors"][0]
+    assert manifest.read_text(encoding="utf-8") == before
     assert marker.read_text(encoding="utf-8") == "published artifact"
     manifest = json.loads(
         (tmp_path / "playtests" / "catalog.json").read_text(encoding="utf-8")
     )
-    assert manifest["current_tests"] == {}
-    assert manifest["entries"][0]["archived"] == "2026-08-29"
+    assert manifest["current_tests"] == {"nightcap": "nightcap-paper-test-02-v2.2"}
+    assert "archived" not in manifest["entries"][0]
 
     second_result, second_capture = run_cli(
         tmp_path,
@@ -369,7 +371,7 @@ def test_archive_requires_exact_id_and_preserves_artifact_history(tmp_path, caps
     )
 
     assert second_result == 2
-    assert "already archived" in second_capture.out
+    assert "would leave the catalog without a current entry" in second_capture.out
 
 
 def test_build_delegates_to_static_site_builder(tmp_path, capsys):

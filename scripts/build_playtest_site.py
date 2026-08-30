@@ -39,6 +39,51 @@ def _write_text(path: Path, body: str) -> None:
     path.write_text(body, encoding="utf-8")
 
 
+def _is_overlapping_path(left: Path, right: Path) -> bool:
+    return left == right or left in right.parents or right in left.parents
+
+
+def _ensure_safe_output_dir(
+    output_dir: Path,
+    repo_root: Path,
+    manifest_path: Path,
+    template_dir: Path,
+    catalog: dict[str, Any],
+) -> None:
+    resolved_output = output_dir.resolve()
+    resolved_root = repo_root.resolve()
+    if resolved_output == resolved_root or resolved_root not in resolved_output.parents:
+        raise ValueError(f"refusing to clean output outside repo root: {output_dir}")
+
+    protected_paths = {
+        manifest_path.resolve(),
+        manifest_path.parent.resolve(),
+        template_dir.resolve(),
+    }
+    existing_top_level = set()
+    for child in repo_root.iterdir():
+        if child.is_dir():
+            child_resolved = child.resolve()
+            if child.name != "_site":
+                existing_top_level.add(child_resolved)
+            if child_resolved != resolved_output:
+                protected_paths.add(child_resolved)
+    for entry in catalog["entries"]:
+        protected_paths.add((repo_root / Path(entry["source_dir"])).resolve())
+
+    if resolved_output in existing_top_level:
+        raise ValueError(
+            f"refusing to clean output overlapping source tree: {output_dir}"
+        )
+    if any(
+        _is_overlapping_path(resolved_output, protected)
+        for protected in protected_paths
+    ):
+        raise ValueError(
+            f"refusing to clean output overlapping source tree: {output_dir}"
+        )
+
+
 def _clean_output(output_dir: Path, repo_root: Path) -> None:
     resolved_output = output_dir.resolve()
     resolved_root = repo_root.resolve()
@@ -79,7 +124,8 @@ def _catalog_items(entries: list[dict[str, Any]]) -> str:
             f'<div class="status">{html.escape(entry["status"])}</div>'
             f"<h2>{html.escape(entry['title'])}</h2>"
             f"<p>{html.escape(entry['summary'])}</p>"
-            f'<a class="button" href="{entry["public_url"]}">Open test</a>'
+            f'<a class="button" href="{html.escape(entry["public_url"], quote=True)}">'
+            "Open test</a>"
             "</article>"
         )
         for entry in entries
@@ -121,6 +167,7 @@ def build_site(
     if problems:
         raise ValueError("\n".join(problems))
 
+    _ensure_safe_output_dir(output_dir, repo_root, manifest_path, template_dir, catalog)
     enriched_catalog = _enrich_catalog(catalog)
     current = current_tests(enriched_catalog)
     current_by_game = {entry["game"]: entry for entry in current}
@@ -146,8 +193,10 @@ def build_site(
             {
                 "BASE_PATH": PAGES_BASE_PATH,
                 "CATALOG_SCRIPT": catalog_script,
-                "CURRENT_TEST_LINK": current_nightcap["public_url"],
-                "CURRENT_TEST_TITLE": current_nightcap["title"],
+                "CURRENT_TEST_LINK": html.escape(
+                    current_nightcap["public_url"], quote=True
+                ),
+                "CURRENT_TEST_TITLE": html.escape(current_nightcap["title"]),
                 "CATALOG_ITEMS": _catalog_items(current),
                 "GENERATED_AT": enriched_catalog["generated_at"],
             },
@@ -160,8 +209,10 @@ def build_site(
             {
                 "BASE_PATH": PAGES_BASE_PATH,
                 "CATALOG_SCRIPT": catalog_script,
-                "NIGHTCAP_TEST_LINK": current_nightcap["public_url"],
-                "NIGHTCAP_TEST_TITLE": current_nightcap["title"],
+                "NIGHTCAP_TEST_LINK": html.escape(
+                    current_nightcap["public_url"], quote=True
+                ),
+                "NIGHTCAP_TEST_TITLE": html.escape(current_nightcap["title"]),
                 "CATALOG_ITEMS": _catalog_items(_current_first(nightcap_entries)),
                 "GENERATED_AT": enriched_catalog["generated_at"],
             },

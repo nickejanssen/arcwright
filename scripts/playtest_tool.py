@@ -333,13 +333,22 @@ def _command_archive(args: argparse.Namespace) -> int:
         raise InvalidInputError(f"unknown playtest id: {args.id}")
     if entry.get("status") == "archived":
         raise InvalidInputError(f"entry already archived: {args.id}")
+    current_tests = catalog.get("current_tests")
+    if (
+        entry.get("status") == "current"
+        and isinstance(current_tests, dict)
+        and current_tests.get(entry.get("game")) == args.id
+    ):
+        raise InvalidInputError(
+            f"archiving '{args.id}' would leave the catalog without a current entry "
+            f"for game '{entry.get('game')}'"
+        )
 
     entry["status"] = "archived"
     entry["archived"] = args.archived_on
     if args.reason:
         _reject_secret_like_metadata([args.reason])
         entry["archive_reason"] = args.reason
-    current_tests = catalog.get("current_tests")
     if isinstance(current_tests, dict):
         for game, current_id in list(current_tests.items()):
             if current_id == args.id:

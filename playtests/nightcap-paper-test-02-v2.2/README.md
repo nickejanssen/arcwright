@@ -86,6 +86,8 @@ Public URL:
 
 `https://nickejanssen.github.io/arcwright/`
 
+The Pages root now hosts the Arcwright homepage and Playtests catalog, not the fixture itself.
+
 Current fixture URL:
 
 `https://nickejanssen.github.io/arcwright/nightcap/paper-test-02/v2.2/`
@@ -94,7 +96,9 @@ Legacy fixture alias:
 
 `https://nickejanssen.github.io/arcwright/nightcap-paper-test-02-v2.2/`
 
-The Pages root now serves the Playtest Lab catalog. The legacy alias preserves direct fixture access for bookmarks from the earlier root-hosted deployment while new links should use the catalog route above.
+The legacy alias preserves direct fixture access for bookmarks from the earlier root-hosted deployment while new links should use the catalog route above. The alias is the migration target for old direct fixture links.
+
+Smoke-test verification of the public pages and survey handoff remains a separate gate from local build validation.
 
 ## Intentionally deferred
 

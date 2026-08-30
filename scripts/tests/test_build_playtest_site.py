@@ -35,6 +35,11 @@ def write_template(path, body):
     path.write_text(body, encoding="utf-8")
 
 
+def write_catalog(manifest_path, value):
+    manifest_path.parent.mkdir(parents=True, exist_ok=True)
+    manifest_path.write_text(json.dumps(value, indent=2), encoding="utf-8")
+
+
 def write_fixture(path):
     path.mkdir(parents=True)
     (path / "index.html").write_text(
@@ -138,6 +143,44 @@ def test_build_site_emits_pages_catalog_and_fixture_under_pages_base(tmp_path):
     assert "NON-CANON TEST FIXTURE" in copied_config.read_text(encoding="utf-8")
 
 
+def test_build_site_refuses_output_paths_that_overlap_repo_sources(tmp_path):
+    repo_root = tmp_path / "repo"
+    template_dir = repo_root / "playtests" / "site"
+    fixture_dir = repo_root / "playtests" / "nightcap-paper-test-02-v2.2"
+    manifest_path = repo_root / "playtests" / "catalog.json"
+    write_fixture(fixture_dir)
+    write_template(template_dir / "index.html", "{{CATALOG_ITEMS}}")
+    write_template(template_dir / "nightcap" / "index.html", "{{CATALOG_ITEMS}}")
+    write_template(
+        template_dir / "catalog.js",
+        'window.ARCWRIGHT_PLAYTEST_CATALOG = JSON.parse("__ARCWRIGHT_CATALOG_JSON__");\n',
+    )
+    write_template(template_dir / "styles.css", "")
+    write_catalog(
+        manifest_path,
+        catalog(
+            entry(),
+        ),
+    )
+    playtests_marker = repo_root / "playtests" / "marker.txt"
+    docs_marker = repo_root / "docs" / "marker.txt"
+    playtests_marker.parent.mkdir(parents=True, exist_ok=True)
+    docs_marker.parent.mkdir(parents=True, exist_ok=True)
+    playtests_marker.write_text("keep", encoding="utf-8")
+    docs_marker.write_text("keep", encoding="utf-8")
+
+    for blocked_output in (repo_root / "playtests", repo_root / "docs"):
+        try:
+            build_site(manifest_path, template_dir, blocked_output, repo_root)
+        except ValueError as exc:
+            assert "refusing to clean output" in str(exc)
+        else:
+            raise AssertionError("expected build_site to refuse overlapping output")
+
+    assert playtests_marker.read_text(encoding="utf-8") == "keep"
+    assert docs_marker.read_text(encoding="utf-8") == "keep"
+
+
 def test_nightcap_catalog_renders_current_entries_before_archived_entries(tmp_path):
     repo_root = tmp_path / "repo"
     template_dir = repo_root / "playtests" / "site"
@@ -179,3 +222,47 @@ def test_nightcap_catalog_renders_current_entries_before_archived_entries(tmp_pa
     assert nightcap.index("Nightcap Paper Test #2 v2.2") < nightcap.index(
         "Nightcap Paper Test #2 v2.1"
     )
+
+
+def test_generated_pages_escape_catalog_text_and_route_attributes(tmp_path):
+    repo_root = tmp_path / "repo"
+    template_dir = repo_root / "playtests" / "site"
+    output_dir = repo_root / "_site"
+    fixture_dir = repo_root / "playtests" / "nightcap-paper-test-02-v2.2"
+    manifest_path = repo_root / "playtests" / "catalog.json"
+    write_fixture(fixture_dir)
+    write_template(
+        template_dir / "index.html",
+        "<html><body>{{CATALOG_ITEMS}}{{CURRENT_TEST_LINK}}{{CATALOG_SCRIPT}}</body></html>",
+    )
+    write_template(
+        template_dir / "nightcap" / "index.html",
+        "<html><body>{{CATALOG_ITEMS}}{{NIGHTCAP_TEST_LINK}}{{CATALOG_SCRIPT}}</body></html>",
+    )
+    write_template(
+        template_dir / "catalog.js",
+        'window.ARCWRIGHT_PLAYTEST_CATALOG = JSON.parse("__ARCWRIGHT_CATALOG_JSON__");\n',
+    )
+    write_template(template_dir / "styles.css", "")
+    write_catalog(
+        manifest_path,
+        catalog(
+            entry(
+                title='Nightcap <script>alert("x")</script> Paper Test',
+                summary='Summary with <img src=x onerror="alert(1)"> markup.',
+                route="/nightcap/paper-test-02/v2.2/foo&bar's/",
+                source_dir="playtests/nightcap-paper-test-02-v2.2",
+            ),
+        ),
+    )
+
+    build_site(manifest_path, template_dir, output_dir, repo_root)
+
+    home = (output_dir / "index.html").read_text(encoding="utf-8")
+    nightcap = (output_dir / "nightcap" / "index.html").read_text(encoding="utf-8")
+
+    assert '<script>alert("x")</script>' not in home
+    assert '<img src=x onerror="alert(1)">' not in nightcap
+    assert "foo&bar's" not in home
+    assert "foo&amp;bar&#x27;s" in home
+    assert "foo&amp;bar&#x27;s" in nightcap

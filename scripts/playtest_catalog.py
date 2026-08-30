@@ -32,20 +32,45 @@ def load_catalog(path: Path) -> dict:
     return catalog
 
 
-def _safe_route(value: Any) -> bool:
+def _path_within(root: Path, candidate: Path) -> bool:
+    try:
+        root_resolved = root.resolve()
+        candidate_resolved = candidate.resolve(strict=False)
+    except OSError:
+        return False
+    return (
+        root_resolved == candidate_resolved
+        or root_resolved in candidate_resolved.parents
+    )
+
+
+def _safe_route(value: Any, repo_root: Path) -> bool:
     if not isinstance(value, str) or not value.startswith("/"):
         return False
-    if "\\" in value or "?" in value or "#" in value or "//" in value:
+    if value.startswith("//") or value.startswith("\\\\"):
+        return False
+    if "\\" in value or "?" in value or "#" in value or ":" in value:
+        return False
+    path = Path(value.lstrip("/"))
+    if path.is_absolute() or path.drive or path.anchor:
         return False
     parts = PurePosixPath(value).parts
-    return ".." not in parts
-
-
-def _safe_source(value: Any) -> bool:
-    if not isinstance(value, str) or not value or "\\" in value:
+    if ".." in parts:
         return False
-    path = PurePosixPath(value)
-    return not path.is_absolute() and ".." not in path.parts
+    return _path_within(repo_root, repo_root / path)
+
+
+def _safe_source(value: Any, repo_root: Path) -> bool:
+    if not isinstance(value, str) or not value:
+        return False
+    if value.startswith("//") or value.startswith("\\\\") or "\\" in value:
+        return False
+    path = Path(value)
+    if path.is_absolute() or path.drive or path.anchor:
+        return False
+    if ".." in PurePosixPath(value).parts:
+        return False
+    return _path_within(repo_root, repo_root / path)
 
 
 def validate_catalog(catalog: dict, repo_root: Path) -> list[str]:
@@ -104,7 +129,7 @@ def validate_catalog(catalog: dict, repo_root: Path) -> list[str]:
             )
 
         route = item.get("route")
-        if not _safe_route(route):
+        if not _safe_route(route, repo_root):
             errors.append(f"{label} unsafe route '{route}'")
         elif route in seen_routes:
             errors.append(
@@ -114,7 +139,7 @@ def validate_catalog(catalog: dict, repo_root: Path) -> list[str]:
             seen_routes[route] = index
 
         source_dir = item.get("source_dir")
-        if not _safe_source(source_dir):
+        if not _safe_source(source_dir, repo_root):
             errors.append(f"{label} unsafe source_dir '{source_dir}'")
         elif not (repo_root / Path(source_dir)).is_dir():
             errors.append(f"{label} source directory does not exist: {source_dir}")
