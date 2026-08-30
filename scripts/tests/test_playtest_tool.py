@@ -1,4 +1,8 @@
 import json
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from scripts import playtest_tool
 
@@ -230,6 +234,76 @@ def test_new_rejects_secret_like_metadata_without_creating_files(tmp_path, capsy
     assert not (tmp_path / "playtests" / "nightcap-paper-test-03-v1.0").exists()
 
 
+def test_new_rejects_creative_fixture_prose_without_creating_files(tmp_path, capsys):
+    write_catalog(tmp_path, catalog())
+
+    result, captured = run_cli(
+        tmp_path,
+        "--json",
+        "new",
+        "--id",
+        "nightcap-paper-test-03-v1.0",
+        "--game",
+        "nightcap",
+        "--version",
+        "1.0",
+        "--title",
+        "Nightcap: The Last Toast Returns",
+        "--summary",
+        "Rhea whispers that the killer switched Sebastian's dose before the toast.",
+        "--route",
+        "/nightcap/paper-test-03/v1.0/",
+        "--source-dir",
+        "playtests/nightcap-paper-test-03-v1.0",
+        "--instrument-id",
+        "research-instrument-03",
+        "--instrument-version",
+        "1.0",
+        "--published",
+        "2026-08-29",
+        capsys=capsys,
+    )
+
+    assert result == 2
+    assert "creative content is not accepted by the Steward CLI" in captured.out
+    assert not (tmp_path / "playtests" / "nightcap-paper-test-03-v1.0").exists()
+
+
+def test_new_rejects_narrative_summary_with_neutral_title(tmp_path, capsys):
+    write_catalog(tmp_path, catalog())
+
+    result, captured = run_cli(
+        tmp_path,
+        "--json",
+        "new",
+        "--id",
+        "nightcap-paper-test-03-v1.0",
+        "--game",
+        "nightcap",
+        "--version",
+        "1.0",
+        "--title",
+        "Nightcap Paper Test #3 v1.0",
+        "--summary",
+        "Sebastian Vale dies before the toast and Rhea knows why.",
+        "--route",
+        "/nightcap/paper-test-03/v1.0/",
+        "--source-dir",
+        "playtests/nightcap-paper-test-03-v1.0",
+        "--instrument-id",
+        "research-instrument-03",
+        "--instrument-version",
+        "1.0",
+        "--published",
+        "2026-08-29",
+        capsys=capsys,
+    )
+
+    assert result == 2
+    assert "creative content is not accepted by the Steward CLI" in captured.out
+    assert not (tmp_path / "playtests" / "nightcap-paper-test-03-v1.0").exists()
+
+
 def test_new_missing_required_metadata_returns_stable_invalid_exit(tmp_path, capsys):
     write_catalog(tmp_path, catalog())
 
@@ -244,6 +318,15 @@ def test_new_missing_required_metadata_returns_stable_invalid_exit(tmp_path, cap
 
     assert result == 2
     assert "required" in captured.out
+
+
+def test_list_missing_catalog_returns_stable_operational_failure(tmp_path, capsys):
+    result, captured = run_cli(tmp_path, "--json", "list", capsys=capsys)
+
+    assert result == 1
+    payload = json.loads(captured.out)
+    assert payload["ok"] is False
+    assert any("could not read catalog" in error for error in payload["errors"])
 
 
 def test_archive_requires_exact_id_and_preserves_artifact_history(tmp_path, capsys):

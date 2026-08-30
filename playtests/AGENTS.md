@@ -95,7 +95,19 @@ Use `python scripts/playtest_tool.py` for deterministic local operations:
 
 - `list` and `validate` are read-only.
 - `new` creates a metadata-only draft scaffold after validating explicit
-  metadata and an unused ID.
+  metadata and an unused ID. It accepts only neutral titles derived from game,
+  test type, and version:
+  - `<Game> Playtest v<version>`
+  - `<Game> Test v<version>`
+  - `<Game> Paper Test #<number> v<version>` when the ID contains
+    `paper-test-<number>`
+- `new` accepts only these neutral summaries:
+  - `Metadata-only draft scaffold.`
+  - `Research scaffold awaiting approved fixture content.`
+  - `Non-canon research scaffold awaiting approved fixture content.`
+- `new` rejects narrative titles, dialogue, scene copy, suspect names, mystery
+  facts, or fixture prose because creative content requires founder approval and
+  belongs in a reviewed artifact change, not catalog metadata.
 - `archive` requires an exact ID and preserves artifact history.
 - `build` delegates to `scripts/build_playtest_site.py`.
 

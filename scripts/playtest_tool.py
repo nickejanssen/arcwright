@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 from copy import deepcopy
 from pathlib import Path, PurePosixPath
@@ -29,6 +30,12 @@ _SECRET_MARKERS = (
     "sk-",
     "-----begin",
 )
+_NEUTRAL_SUMMARIES = {
+    "Metadata-only draft scaffold.",
+    "Research scaffold awaiting approved fixture content.",
+    "Non-canon research scaffold awaiting approved fixture content.",
+}
+_PAPER_TEST_ID = re.compile(r"(?:^|-)paper-test-(\d+)(?:-|$)")
 
 
 class PlaytestToolError(Exception):
@@ -112,6 +119,36 @@ def _reject_secret_like_metadata(values: Sequence[str]) -> None:
             raise InvalidInputError("metadata contains a secret-like value")
 
 
+def _display_game(value: str) -> str:
+    return " ".join(part.capitalize() for part in value.replace("_", "-").split("-"))
+
+
+def _neutral_titles(entry_id: str, game: str, version: str) -> set[str]:
+    display_game = _display_game(game)
+    titles = {
+        f"{display_game} Playtest v{version}",
+        f"{display_game} Test v{version}",
+    }
+    match = _PAPER_TEST_ID.search(entry_id)
+    if match:
+        number = str(int(match.group(1)))
+        titles.add(f"{display_game} Paper Test #{number} v{version}")
+    return titles
+
+
+def _reject_creative_metadata(args: argparse.Namespace) -> None:
+    if args.title not in _neutral_titles(args.id, args.game, args.version):
+        raise InvalidInputError(
+            "creative content is not accepted by the Steward CLI; "
+            "use a neutral title derived from game, test type, and version"
+        )
+    if args.summary not in _NEUTRAL_SUMMARIES:
+        raise InvalidInputError(
+            "creative content is not accepted by the Steward CLI; "
+            "use an approved neutral scaffold summary"
+        )
+
+
 def _validate_full_catalog(catalog: dict[str, Any], repo_root: Path) -> list[str]:
     return validate_catalog(catalog, repo_root)
 
@@ -192,6 +229,7 @@ def _proposed_entry(args: argparse.Namespace) -> dict[str, Any]:
         args.published,
     ]
     _reject_secret_like_metadata(metadata_values)
+    _reject_creative_metadata(args)
     if not _safe_route(args.route):
         raise InvalidInputError(f"unsafe route '{args.route}'")
     if not _safe_playtests_source(args.source_dir):
