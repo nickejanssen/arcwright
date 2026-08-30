@@ -44,6 +44,8 @@ Live GitHub Pages verification on 2026-08-30 found the deployed root URL reachab
 - `https://nickejanssen.github.io/arcwright/nightcap/paper-test-02/v2.2/`: GitHub Pages 404.
 - `https://nickejanssen.github.io/arcwright/nightcap/paper-test-02/v2.2/?reveal=1`: GitHub Pages 404.
 
+Task 6 review fix round 1 attempted read-only browser verification of the deployed root and root `?reveal=1` routes. The connected browser runtime returned `No browser is available` before navigation, so browser-rendered verification remains pending. The HTTP status evidence above came from read-only network GET checks rather than an interactive browser session.
+
 The local source route still supports the authorized reveal flag through `app.js`, and the local build contains `_site/nightcap/paper-test-02/v2.2/index.html`. The deployed reveal route must be retested after the Playtest Lab branch reaches `main` and the Pages workflow succeeds.
 
 # Approved v2.2 fixture direction
