@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "generated_at_policy": "build-time",
+  "current_tests": {
+    "nightcap": "nightcap-paper-test-02-v2.2"
+  },
+  "entries": [
+    {
+      "id": "nightcap-paper-test-02-v2.2",
+      "game": "nightcap",
+      "version": "2.2",
+      "title": "Nightcap <script>alert(\"x\")</script> Paper Test",
+      "summary": "Summary with <img src=x onerror=\"alert(1)\"> markup.",
+      "status": "current",
+      "route": "/nightcap/paper-test-02/v2.2/foo&bar's/",
+      "source_dir": "playtests/nightcap-paper-test-02-v2.2",
+      "instrument_id": "262397917027062",
+      "instrument_version": "2.2",
+      "published": "2026-08-28"
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "generated_at_policy": "build-time",
+  "current_tests": {
+    "nightcap": "nightcap-copy"
+  },
+  "entries": [
+    {
+      "id": "nightcap-paper-test-02-v2.2",
+      "game": "nightcap",
+      "version": "2.2",
+      "title": "Nightcap Paper Test #2 v2.2",
+      "summary": "Representative test using non-canon The Last Toast.",
+      "status": "current",
+      "route": "/nightcap/paper-test-02/v2.2/",
+      "source_dir": "playtests/missing",
+      "instrument_id": "262397917027062",
+      "instrument_version": "2.2",
+      "published": "2026-08-28"
+    },
+    {
+      "id": "nightcap-copy",
+      "game": "nightcap",
+      "version": "2.2",
+      "title": "Nightcap Paper Test #2 v2.2",
+      "summary": "Representative test using non-canon The Last Toast.",
+      "status": "current",
+      "route": "/nightcap/paper-test-02/v2.2/",
+      "source_dir": "playtests/nightcap-paper-test-02-v2.2",
+      "instrument_id": "262397917027062",
+      "instrument_version": "2.2",
+      "published": "2026-08-28"
+    }
+  ]
+}
