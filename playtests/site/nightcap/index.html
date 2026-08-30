@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="theme-color" content="#161412">
+    <title>Nightcap Playtests</title>
+    <link rel="stylesheet" href="{{BASE_PATH}}styles.css">
+  </head>
+  <body>
+    <main class="page">
+      <header class="masthead compact">
+        <p class="eyebrow">Nightcap</p>
+        <h1>Nightcap external playtests</h1>
+        <p>
+          Current static test fixtures for Nightcap research. The Last Toast and
+          any companion fixture content are explicitly non-canon.
+        </p>
+        <a class="button primary" href="{{NIGHTCAP_TEST_LINK}}">Open {{NIGHTCAP_TEST_TITLE}}</a>
+      </header>
+      <section aria-labelledby="nightcap-catalog-heading">
+        <div class="section-head">
+          <h2 id="nightcap-catalog-heading">Available Nightcap tests</h2>
+          <a href="{{BASE_PATH}}">All playtests</a>
+        </div>
+        <div class="catalog-grid">
+          {{CATALOG_ITEMS}}
+        </div>
+      </section>
+      <footer>
+        Generated from the catalog at {{GENERATED_AT}}.
+      </footer>
+    </main>
+    {{CATALOG_SCRIPT}}
+  </body>
+</html>
