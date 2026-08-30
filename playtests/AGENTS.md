@@ -1,13 +1,37 @@
 # Playtest Lab Agent Rules
 
 > Current version: v1.0
-> Last updated: 2026-08-29
+> Last updated: 2026-08-30
 > Status: Current
 > Canonical path: playtests/AGENTS.md
 
 These rules apply to every human or AI agent working inside `playtests/`.
 The Playtest Lab is research tooling for published test artifacts. It is not
 Nightcap canon and it is not production Arcwright runtime code.
+
+## Skill Routing
+
+For any request involving playtest cases, fixtures, the harness, Jotform,
+tester feedback, response analysis, survey instruments, GitHub Pages routes,
+catalog metadata, current-test promotion, or archived tests, start with
+`arcwright-playtest-steward` unless the user explicitly names a narrower
+playtest skill.
+
+Before creating a new role, skill, script, catalog shape, fixture route, or
+document, inspect and reuse the existing architecture and structure. If an
+existing SME, skill, or document partly covers the need, preserve it, summarize
+the gap, and ask the user how to proceed with concrete options.
+
+Use the narrower skills for direct work:
+
+- `arcwright-playtest-harness`: fixture QA, telemetry handoff, reveal return,
+  refresh/re-entry, mobile layout, and smoke evidence.
+- `arcwright-playtest-research`: Jotform submissions, tester feedback,
+  telemetry completeness, research synthesis, and evidence limits.
+- `arcwright-playtest-publishing`: catalog validation, static site builds,
+  GitHub Pages routes, archive preparation, and deployment evidence.
+- `arcwright-sme`: GDD, product, architecture, roadmap, spec, ADR, and canon
+  implications after evidence is summarized.
 
 ## Naming
 

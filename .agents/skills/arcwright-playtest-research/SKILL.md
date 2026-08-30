@@ -1,6 +1,6 @@
 ---
 name: arcwright-playtest-research
-description: Thin launcher for the canonical Arcwright Playtest Research skill.
+description: Use when inspecting Jotform submissions, consolidating tester feedback, analyzing playtest responses, reviewing telemetry completeness, or mapping evidence into research findings.
 ---
 
 # Arcwright Playtest Research Launcher

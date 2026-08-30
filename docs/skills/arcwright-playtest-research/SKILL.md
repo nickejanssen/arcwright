@@ -28,6 +28,18 @@ For instrument work, define or verify:
 
 For new research scaffolds, route metadata-only creation through `scripts/playtest_tool.py` after approval. For analysis, keep raw data private unless the user explicitly asks for a shareable artifact and approves the redaction standard.
 
+For feedback consolidation, produce this structure:
+
+- Dataset boundary: catalog id, fixture version, instrument id, instrument version, submission count, date range, source type, and whether raw data was fetched this turn.
+- Telemetry health: which hidden fields are populated, empty, inconsistent, or not available.
+- Player experience themes: comprehension, engagement, friction, pacing, solvability, emotional response, and replay intent.
+- Evidence strength: high-confidence findings, weak signals, contradictions, and sample-size limits.
+- Research gaps: missing tester contexts, missing paths through the fixture, unverified survey handoff, or unverified reveal return.
+- Product implications: questions for the GDD, PRD, roadmap, architecture, or telemetry, stated as proposals rather than decisions.
+- Founder decisions needed: exact choices required before canonical docs, published artifacts, survey instruments, or implementation change.
+
+Do not turn feedback into canon directly. If findings suggest GDD, product, roadmap, architecture, or telemetry changes, hand the summarized evidence to `arcwright-sme` and keep the final output separated into evidence, interpretation, and proposed decision.
+
 ## Evidence And Stop Conditions
 
 Report findings with source paths, version ids, commands run, dataset boundaries, redactions, and confidence level. Separate survey response evidence from live observation and from automated harness telemetry.
