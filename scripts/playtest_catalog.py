@@ -94,6 +94,7 @@ def validate_catalog(catalog: dict, repo_root: Path) -> list[str]:
 
     seen_ids: dict[str, int] = {}
     seen_routes: dict[str, int] = {}
+    seen_output_paths: dict[PurePosixPath, tuple[str, int]] = {}
     current_games: dict[str, int] = {}
     for index, item in enumerate(entries):
         label = f"entries[{index}]"
@@ -143,6 +144,39 @@ def validate_catalog(catalog: dict, repo_root: Path) -> list[str]:
             errors.append(f"{label} unsafe source_dir '{source_dir}'")
         elif not (repo_root / Path(source_dir)).is_dir():
             errors.append(f"{label} source directory does not exist: {source_dir}")
+
+        if isinstance(route, str) and _safe_route(route, repo_root):
+            route_output = PurePosixPath(route.lstrip("/"))
+            legacy_output = (
+                PurePosixPath(PurePosixPath(str(source_dir)).name)
+                if isinstance(source_dir, str) and source_dir
+                else None
+            )
+            output_paths = (("route", route_output),)
+            if legacy_output is not None:
+                output_paths += (("legacy alias", legacy_output),)
+            for output_kind, output_path in output_paths:
+                collision = next(
+                    (
+                        (existing_path, existing_kind, existing_index)
+                        for existing_path, (
+                            existing_kind,
+                            existing_index,
+                        ) in seen_output_paths.items()
+                        if output_path == existing_path
+                        or output_path in existing_path.parents
+                        or existing_path in output_path.parents
+                    ),
+                    None,
+                )
+                if collision is not None:
+                    existing_path, existing_kind, existing_index = collision
+                    errors.append(
+                        f"{label} {output_kind} path '{output_path}' overlaps "
+                        f"{existing_kind} path '{existing_path}' from entries[{existing_index}]"
+                    )
+                else:
+                    seen_output_paths[output_path] = (output_kind, index)
 
         if status == "current" and isinstance(game, str):
             if game in current_games:

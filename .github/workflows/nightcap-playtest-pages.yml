@@ -8,8 +8,10 @@ on:
       - 'playtests/nightcap-paper-test-02-v2.2/**'
       - 'scripts/build_playtest_site.py'
       - 'scripts/playtest_catalog.py'
+      - 'scripts/playtest_tool.py'
       - 'scripts/tests/test_build_playtest_site.py'
       - 'scripts/tests/test_playtest_catalog.py'
+      - 'scripts/tests/test_playtest_tool.py'
       - '.github/workflows/nightcap-playtest-pages.yml'
   workflow_dispatch:
 permissions:

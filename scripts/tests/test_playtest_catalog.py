@@ -156,3 +156,40 @@ def test_symlink_escaping_source_directory_is_reported(tmp_path):
     result = validate_catalog(catalog(entry()), tmp_path)
 
     assert any("unsafe source_dir" in error for error in result)
+
+
+def test_route_cannot_collide_with_legacy_alias_path(tmp_path):
+    source = tmp_path / "playtests" / "nightcap-paper-test-02-v2.2"
+    source.mkdir(parents=True)
+
+    result = validate_catalog(
+        catalog(
+            entry(
+                route="/nightcap-paper-test-02-v2.2/",
+                source_dir="playtests/nightcap-paper-test-02-v2.2",
+            )
+        ),
+        tmp_path,
+    )
+
+    assert any("overlaps" in error and "legacy alias" in error for error in result)
+
+
+def test_route_cannot_collide_with_another_entry_legacy_alias(tmp_path):
+    (tmp_path / "playtests" / "nightcap-paper-test-02-v2.2").mkdir(parents=True)
+    (tmp_path / "playtests" / "other-test").mkdir(parents=True)
+
+    result = validate_catalog(
+        catalog(
+            entry(),
+            entry(
+                id="other",
+                route="/nightcap-paper-test-02-v2.2/",
+                source_dir="playtests/other-test",
+                status="archived",
+            ),
+        ),
+        tmp_path,
+    )
+
+    assert any("overlaps" in error for error in result)
