@@ -1,6 +1,6 @@
 ---
 name: arcwright-playtest-publishing
-description: Thin launcher for the canonical Arcwright Playtest Publishing skill.
+description: Use when building, validating, publishing, archiving, or checking GitHub Pages routes for Arcwright Playtest Lab catalog and static playtest artifacts.
 ---
 
 # Arcwright Playtest Publishing Launcher
