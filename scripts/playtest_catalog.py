@@ -2,7 +2,7 @@
 
 import json
 import re
-from pathlib import Path, PurePosixPath
+from pathlib import Path, PurePosixPath, PureWindowsPath
 from typing import Any
 
 _ENTRY_FIELDS = (
@@ -66,7 +66,8 @@ def _safe_source(value: Any, repo_root: Path) -> bool:
     if value.startswith("//") or value.startswith("\\\\") or "\\" in value:
         return False
     path = Path(value)
-    if path.is_absolute() or path.drive or path.anchor:
+    windows_path = PureWindowsPath(value)
+    if path.is_absolute() or path.drive or path.anchor or windows_path.drive:
         return False
     if ".." in PurePosixPath(value).parts:
         return False

@@ -78,6 +78,12 @@ def test_drive_qualified_source_directory_is_reported(tmp_path):
     assert any("unsafe source_dir" in error for error in result)
 
 
+def test_drive_relative_source_directory_is_reported(tmp_path):
+    result = validate_catalog(catalog(entry(source_dir="C:Windows")), tmp_path)
+
+    assert any("unsafe source_dir" in error for error in result)
+
+
 def test_rooted_windows_source_directory_is_reported(tmp_path):
     result = validate_catalog(catalog(entry(source_dir="/C:/Windows")), tmp_path)
 

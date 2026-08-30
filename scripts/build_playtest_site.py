@@ -175,6 +175,7 @@ def build_site(
         entry for entry in enriched_catalog["entries"] if entry["game"] == "nightcap"
     ]
     current_nightcap = current_by_game["nightcap"]
+    legacy_alias_url = _public_url(str(_legacy_alias_path(current_nightcap)) + "/")
     catalog_json = json.dumps(enriched_catalog, indent=2, sort_keys=True)
     catalog_script = f'<script src="{PAGES_BASE_PATH}catalog.js"></script>'
 
@@ -197,6 +198,9 @@ def build_site(
                     current_nightcap["public_url"], quote=True
                 ),
                 "CURRENT_TEST_TITLE": html.escape(current_nightcap["title"]),
+                "LEGACY_REVEAL_LINK": html.escape(
+                    f"{legacy_alias_url}?reveal=1", quote=True
+                ),
                 "CATALOG_ITEMS": _catalog_items(current),
                 "GENERATED_AT": enriched_catalog["generated_at"],
             },

@@ -6,6 +6,11 @@
     <meta name="theme-color" content="#161412">
     <title>Arcwright Playtest Lab</title>
     <link rel="stylesheet" href="{{BASE_PATH}}styles.css">
+    <script>
+      if (new URLSearchParams(window.location.search).get("reveal") === "1") {
+        window.location.replace("{{LEGACY_REVEAL_LINK}}");
+      }
+    </script>
   </head>
   <body>
     <main class="page">

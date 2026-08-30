@@ -88,6 +88,8 @@ Public URL:
 `https://nickejanssen.github.io/arcwright/`
 
 The Pages root now hosts the Arcwright homepage and Playtests catalog, not the fixture itself.
+The historical root URL with `?reveal=1` redirects to the legacy fixture alias so completed
+Jotform sessions retain their existing reveal behavior.
 
 Current fixture URL:
 

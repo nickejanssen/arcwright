@@ -28,6 +28,7 @@ This spec defines the canonical contract for the Arcwright Playtest Lab: a minim
 - Nightcap catalog generation from `playtests/catalog.json`.
 - Immutable fixture publishing under `/nightcap/paper-test-02/v2.2/`.
 - Legacy alias preservation at `/nightcap-paper-test-02-v2.2/`.
+- Root `?reveal=1` compatibility redirect to the legacy fixture alias.
 - Safe catalog validation on Windows and safe static site generation.
 - Playtest Steward CLI behavior for `list`, `validate`, `new`, `archive`, and `build`.
 - HTML escaping for catalog-derived text and attribute values in generated pages.
@@ -80,6 +81,7 @@ This spec defines the canonical contract for the Arcwright Playtest Lab: a minim
 - [ ] Generated pages escape hostile catalog-derived title, summary, and route attribute data.
 - [ ] The Pages workflow runs the full scripts test suite, the Node harness tests, catalog validation, and the deterministic build with pinned pytest.
 - [ ] The fixture README states that `/` is now the homepage, `/nightcap/paper-test-02/v2.2/` is the stable fixture route, and `/nightcap-paper-test-02-v2.2/` is the legacy alias.
+- [ ] The generated homepage preserves the historical root `?reveal=1` reveal flow by redirecting to the legacy fixture alias.
 
 ---
 

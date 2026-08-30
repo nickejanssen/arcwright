@@ -75,7 +75,7 @@ def test_build_site_emits_pages_catalog_and_fixture_under_pages_base(tmp_path):
     write_template(
         template_dir / "index.html",
         '<html><head><link rel="stylesheet" href="{{BASE_PATH}}styles.css"></head>'
-        "<body>{{CURRENT_TEST_LINK}}{{CATALOG_SCRIPT}}</body></html>",
+        "<body>{{CURRENT_TEST_LINK}}{{LEGACY_REVEAL_LINK}}{{CATALOG_SCRIPT}}</body></html>",
     )
     write_template(
         template_dir / "nightcap" / "index.html",
@@ -121,6 +121,7 @@ def test_build_site_emits_pages_catalog_and_fixture_under_pages_base(tmp_path):
     catalog_js = (output_dir / "catalog.js").read_text(encoding="utf-8")
 
     assert "/arcwright/nightcap/paper-test-02/v2.2/" in home
+    assert "/arcwright/nightcap-paper-test-02-v2.2/?reveal=1" in home
     assert "/arcwright/nightcap/paper-test-02/v2.2/" in nightcap
     assert "/arcwright/styles.css" in home
     assert "/arcwright/catalog.js" in nightcap
