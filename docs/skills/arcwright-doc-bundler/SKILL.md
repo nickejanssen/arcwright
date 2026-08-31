@@ -17,8 +17,10 @@ Before generating any bundle:
 
 - Read `AGENTS.md`
 - Read `docs/README.md`
+- For any Nightcap-specific bundle, read `docs/gdd/nightcap/README.md` and follow its authority order before selecting older Nightcap sources
 - For mode-specific synthesis, read only the smallest canonical files needed
 - Do not read `docs/archive/notion-export/` unless the user explicitly asks for source recovery or canonical docs are silent
+- Do not treat the archived Nightcap Story Bible redirect files as current Nightcap content; the Master GDD owns current Nightcap game design
 
 ## Modes
 
@@ -28,7 +30,7 @@ Use these output paths:
 |---|---|---|
 | `product` | `docs-bundles/bundle-A-product-strategy.md` | PRD, product logs, roadmap, decisions, business and strategy |
 | `architecture` | `docs-bundles/bundle-B-architecture-specs.md` | Architecture, specs, ADRs, conventions, implementation contracts |
-| `narrative` | `docs-bundles/bundle-C-narrative.md` | Story bibles, Nightcap, Monster RPG, narrative rules |
+| `narrative` | `docs-bundles/bundle-C-narrative.md` | Master GDD, active story bibles for other experiences, Nightcap, Monster RPG, narrative rules |
 | `live-code` | `docs-bundles/live-code-state.md` | Current branch, code health, blockers, tests, CI, schema snapshot |
 | `persona` | `docs-bundles/persona-<persona-slug>.md` | Persona-targeted brief for an AI agent or real-world counterpart |
 | `all` | all four standard outputs | Full regenerated standard bundle set |
@@ -73,15 +75,25 @@ Always include `AGENTS.md` and `docs/README.md` in the source manifest because t
 
 Use these default canonical source sets:
 
-- Product: `docs/prd/`, `docs/product/`, `docs/roadmap/00-overview.md`, `docs/roadmap/index.json`, `docs/roadmap/milestones/`, `docs/decisions/`
-- Architecture: `docs/architecture/`, `docs/specs/`, `docs/decisions/`, `docs/conventions/`, `docs/skills/`
-- Narrative: `docs/story-bibles/`, `docs/prd/03-scope.md`, `docs/product/decisions-log.csv`, `docs/product/open-questions-log.csv`, `docs/decisions/0006-nightcap-continuity-v11.md`
-- Live-code: `git status`, current branch, current commit, relevant tests, current blockers, schema files, migration files, specs for active tasks, CI state when available
-- Persona: `docs/agents/expert-personas.md` plus the smallest canonical docs mapped to the requested persona
+- Product: `docs/prd/`, `docs/product/`, `docs/roadmap/00-overview.md`, `docs/roadmap/index.json`, `docs/roadmap/milestones/`, `docs/decisions/`, plus `docs/gdd/nightcap/README.md`, `docs/gdd/nightcap/00-governance/`, and `docs/gdd/nightcap/01-authoritative-gdd/` when Nightcap product scope is relevant
+- Architecture: `docs/architecture/`, `docs/specs/`, `docs/decisions/`, `docs/conventions/`, `docs/skills/`; add `docs/gdd/nightcap/11-arcwright-runtime-boundary.md` through the authoritative GDD path when reconciling Nightcap-specific runtime requirements
+- Narrative: `docs/gdd/nightcap/README.md`, `docs/gdd/nightcap/00-governance/`, `docs/gdd/nightcap/01-authoritative-gdd/`, `docs/story-bibles/` for other active experiences or historical routing only, `docs/prd/03-scope.md`, `docs/product/decisions-log.csv`, `docs/product/open-questions-log.csv`, `docs/decisions/0006-nightcap-continuity-v11.md`
+- Live-code: `git status`, current branch, current commit, relevant tests, current blockers, schema files, migration files, specs for active tasks, CI state when available; add the relevant GDD pages whenever current Nightcap behavior is part of the implementation question
+- Persona: `docs/agents/expert-personas.md` plus the smallest canonical docs mapped to the requested persona; Nightcap personas must include the GDD authority chain, not the archived Story Bible redirects
+
+For **Nightcap-specific custom tasks**, always start the source set with:
+
+- `docs/gdd/nightcap/README.md`
+- `docs/gdd/nightcap/00-governance/00-decision-ledger.md`
+- `docs/gdd/nightcap/00-governance/01-master-gdd-index.md`
+- only the authoritative GDD system pages relevant to the task
+
+Then add PRD, architecture, specs, roadmap, or historical ADRs only as needed for the requested seam. A historical spec can explain what exists today; it cannot override current GDD product intent.
 
 Never use these as bundle sources by default:
 
 - `docs/archive/notion-export/`
+- `docs/archive/nightcap-story-bibles/` unless the task explicitly asks for historical/source recovery
 - `docs-bundles/`
 - `.claude/`, `.codex/`, `.cursor/`, `.vscode/`, `.agents/`, or other local agent state
 - Binary files, images, generated caches, dependency folders
@@ -132,8 +144,10 @@ For a real-world counterpart, add their intended use in `--task-goal`; do not ad
 Run validation before completion. Confirm:
 
 - Bundle manifest does not reference old root Notion export paths
-- Bundle content does not reference stale story bible filenames such as old murder mystery or monster exports
+- Nightcap bundles contain the Master GDD authority chain and do not rely on archived Story Bible redirects for current game rules
+- Bundle content does not reference stale story bible filenames such as old murder mystery or monster exports as current authority
 - Manifest does not include `docs/archive/notion-export/`
+- Manifest does not include `docs/archive/nightcap-story-bibles/` unless historical recovery was explicitly requested
 - Manifest does not include local agent files or generated bundles
 - Bundle does not include secret-looking values or API key assignments
 - Bundle does not include concrete provider or model strings
@@ -144,6 +158,7 @@ Use `rg` for spot checks when not using the helper:
 
 ```bash
 rg "07-Story-Bible-Murder-Mystery|09-Story-Bible-Monster|docs[\\/]07-|docs[\\/]09-" docs-bundles
+rg "docs[\\/]story-bibles[\\/]nightcap-(couch-race|murder-mystery)\\.md" docs-bundles
 rg "(model|provider)\\s*[:=]\\s*['\\\"][^'\\\"]+['\\\"]" docs-bundles
 rg "(^|[^A-Za-z0-9])sk-[A-Za-z0-9_-]{16,}|api[_-]?key\\s*[:=]" docs-bundles
 ```
