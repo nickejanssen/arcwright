@@ -1,8 +1,10 @@
 # Status
 
-**Accepted** (founder direction, July 15, 2026)
+**Superseded as current Nightcap product-design authority by ADR-0023 (August 31, 2026).**
 
-Related: accepts and executes the pivots proposed in ADR-0010. Product log record: D-071 in `docs/product/decisions-log.csv`.
+**Historical status:** Accepted founder direction, July 15, 2026. Product log record: D-071 in `docs/product/decisions-log.csv`.
+
+> This ADR remains intact as historical evidence of the Couch Race pivot and the implementation work it authorized. Do not use its Story Bible path, fixed 2–8 range, or Couch Race V1 definition to override the current Master GDD at `docs/gdd/nightcap/`.
 
 ---
 
@@ -22,46 +24,29 @@ Market context: Netflix launched TV party games with phones-as-controllers inclu
 
 ---
 
-# Decision
+# Historical Decision
 
-1. **Nightcap Couch Race is the Nightcap v1 launch target.** Canonical experience definition: `docs/story-bibles/nightcap-couch-race.md`. Core shape: 2–8 players, 20–40 minutes, TV shared display plus phones as private surfaces, all players are investigators racing to solve a murder committed by an AI suspect.
-2. **The killer is never a player in v1.** Killer, victim, method, motive, clue web, and authorized suspect lies are resolved deterministically at session start from the authored arc. AI composes suspect dialogue from resolved knowledge state; it never decides or mutates case truth.
-3. **Interrogation becomes shared platform capability.** Structured player questioning of AI characters with knowledge-gated answers, claim/provenance ledger, and deterministic contradiction detection serves both Couch Race and Daily Case. Question intents are menu-driven in v1; free-text is deferred.
-4. **Competition structure is arc configuration** (solo race / teams / co-op dial). v1 ships the solo race.
-5. **The prior killer-among-players design is renamed the Imposter Variant** and remains approved future scope in `docs/story-bibles/nightcap-murder-mystery.md`. ADR-0010's status moves to Accepted (executed via this ADR).
-6. **Rehearsal 1 retargets to a Couch Race thin slice** (AW-286). D-065 (local tunnel) and D-066 (Tier 1 polish bar) apply unchanged. D-069 narrative tasks (AW-276–AW-280) carry over with beat-structure alignment to the six-beat arc. D-070 (animation + audio staging) applies with the cold open and suspect stage as its showcase moments.
+1. **Nightcap Couch Race was selected as the Nightcap v1 launch target at that time.** Its former canonical experience definition was `docs/story-bibles/nightcap-couch-race.md`.
+2. **The killer was never a player in that V1 model.** Killer, victim, method, motive, clue web, and authorized suspect lies were resolved deterministically at session start from the authored arc.
+3. **Interrogation became shared platform capability.** Structured player questioning of AI characters with knowledge-gated answers, claim/provenance ledger, and deterministic contradiction detection served both Couch Race and Daily Case.
+4. **Competition structure was treated as arc configuration.**
+5. **The prior killer-among-players design was renamed the Imposter Variant** and retained as future scope.
+6. **Rehearsal 1 was retargeted to a Couch Race thin slice.**
+
+These points are preserved to explain subsequent implementation history. Current Nightcap design is defined by ADR-0023 and `docs/gdd/nightcap/`.
 
 ---
 
 # Consequences
 
-## Positive consequences
-
-- Founder test loop shrinks from one long session per evening to several complete cases per evening.
-- Player floor drops from 4 to 2, widening the addressable audience to couples and small households.
-- Eliminates the old model's worst failure modes: bad role draws, acting burden, player elimination, killer-role privacy leaks between players.
-- One interrogation build feeds two products (Couch Race, Daily Case), strengthening the D-034 wedge.
-- Mini-games already promoted for Rehearsal 1 (D-062/D-064) slot into the new arc unchanged.
-
-## Negative consequences
-
-- The M4 rehearsal plan, D-069 narrative task framing, and several roadmap gates written against the eight-beat killer-among-players arc need realignment (tracked in epic M5-I).
-- Killer-assignment and killer-revelation engine work (AW-206 lineage) is not exercised by v1; it remains valid for the Imposter Variant.
-- Generated-case fairness becomes the central quality risk; the AW-272 continuity/coherence eval suite becomes a launch gate rather than a hardening nicety.
-
-## Trade-offs
-
-- **Gained:** faster proof loop, broader market, visible platform differentiation, lower per-session cost.
-- **Lost:** the social-deception experience at launch (deferred to the Imposter Variant), and some sunk design/engine work idles until that variant ships.
+The original Couch Race pivot reduced the test floor, emphasized interrogation, and drove substantial implementation/spec work. Later design work changed the current Nightcap product definition. Existing code/specs produced under this ADR therefore require explicit comparison with the current GDD rather than being presumed current or deleted as mistakes.
 
 ---
 
 # References
 
-- ADR-0010: `docs/decisions/0010-nightcap-gameplay-pivots-post-playtest.md` (proposals this ADR accepts and executes)
-- Story bibles: `docs/story-bibles/nightcap-couch-race.md`, `docs/story-bibles/nightcap-murder-mystery.md`, `docs/story-bibles/daily-case.md`
-- Design session record: `docs/superpowers/specs/2026-07-15-nightcap-couch-race-design.md`
-- Spec: `docs/specs/0072-nightcap-couch-race-v1.md`
-- Epic: `docs/roadmap/epics/M5-I-nightcap-couch-race-arc-and-interrogation.md`
-- Product log: D-071 in `docs/product/decisions-log.csv`
-- Related decisions: D-034 (wedge), D-053 (beat count is arc-level), D-062/D-064 (mini-games), D-065/D-066 (rehearsal posture), D-069/D-070 (narrative pipeline and audiovisual staging)
+- Current authority migration: `docs/decisions/0023-nightcap-master-gdd-authority.md`
+- Current GDD: `docs/gdd/nightcap/README.md`
+- Archived former Couch Race Bible: `docs/archive/nightcap-story-bibles/nightcap-couch-race.md`
+- Archived former Imposter Bible: `docs/archive/nightcap-story-bibles/nightcap-murder-mystery.md`
+- Product log historical record: D-071 in `docs/product/decisions-log.csv`
