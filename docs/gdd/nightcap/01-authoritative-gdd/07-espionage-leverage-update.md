@@ -9,6 +9,25 @@ Espionage manipulates the **information race around the murder**.
 
 It should change what players investigate, verify, conceal, reveal, bluff about, protect, or race toward rather than become a separate PvP damage economy.
 
+## Rival Presence
+
+Nightcap's competition should be legible throughout the investigation without exposing private theory state.
+
+Players should regularly understand that rival detectives are independently investigating and changing the competitive landscape. The game may reveal facts such as that another detective:
+
+- questioned a suspect;
+- pursued a location/object/lead;
+- reached an opportunity first;
+- earned or spent a competitive resource;
+- triggered a shared event; or
+- changed interaction order, access, or visibility.
+
+This should create urgency and rivalry without turning the experience into constant status spam.
+
+Rivals' private notebooks, private evidence where applicable, and final theories remain private unless deliberately shared.
+
+A solo authored rival used in a test fixture is **research scaffolding only**. It does not define canonical multiplayer behavior and should never be treated as evidence that real player rivalry is validated.
+
 ## Core Laws
 
 - Espionage-first Leverage fantasy.
@@ -31,10 +50,20 @@ Leverage is primarily **information + opportunity**.
 
 It may:
 
-- expose what another investigator pursued,
-- reveal limited competitive intelligence,
-- create a bounded opportunity to act on that intelligence,
-- affect access, protection, priority, exposure, or disclosure.
+- expose what another investigator pursued;
+- reveal limited competitive intelligence;
+- create a bounded opportunity to act on that intelligence;
+- affect access, protection, priority, exposure, or disclosure;
+- alter timing or interaction order.
+
+It may inconvenience, delay, or redirect a rival, but must not:
+
+- change canonical truth;
+- erase legitimately learned facts;
+- permanently delete required evidence;
+- create unfalsifiable evidence;
+- let a model decide whether sabotage succeeded; or
+- remove every legitimate route to an essential truth.
 
 Espionage should create another murder-facing decision rather than merely inflict damage.
 
@@ -58,14 +87,14 @@ At two players, obvious attribution is accepted where unavoidable. Uncertainty s
 
 Nightcap permits fair-play mystery deception, including:
 
-- red herrings,
-- lying or mistaken witnesses,
-- forged documents,
-- staged scenes,
-- planted objects,
-- manipulated recordings,
-- misleading context,
-- deliberate omissions,
+- red herrings;
+- lying or mistaken witnesses;
+- forged documents;
+- staged scenes;
+- planted objects;
+- manipulated recordings;
+- misleading context;
+- deliberate omissions;
 - other literary or cinematic devices.
 
 > **The fiction may lie. The game must play fair.**
@@ -88,9 +117,11 @@ It must not make the canonical mystery unfairly unsolvable. Essential truths ret
 
 ## TESTING
 
-- exact Leverage costs and frequency,
-- Heat behavior,
-- Counterintel strength,
-- repeated targeting,
-- **PARKED:** rare auctions; reopen only if a concrete case or gameplay problem gives them a clear purpose,
+- exact Leverage costs and frequency;
+- Heat behavior;
+- Counterintel strength;
+- repeated targeting;
+- how much rival activity should be surfaced without becoming noisy;
+- how rival visibility scales from two players to larger rooms;
+- **PARKED:** rare auctions; reopen only if a concrete case or gameplay problem gives them a clear purpose;
 - repeated-targeting balance and whether any chainable action can suppress investigation participation; do not add pity immunity or target-rotation rules without evidence.
