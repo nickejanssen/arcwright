@@ -1,7 +1,7 @@
 # Playtest Lab Agent Rules
 
-> Current version: v1.0
-> Last updated: 2026-08-30
+> Current version: v1.1
+> Last updated: 2026-08-31
 > Status: Current
 > Canonical path: playtests/AGENTS.md
 
@@ -64,9 +64,11 @@ Use the narrower skills for direct work:
 
 - Test fixtures under `playtests/` are non-canon unless a canonical doc says
   otherwise.
+- For Nightcap product/design implications, the current authority begins at
+  `docs/gdd/nightcap/README.md` and its decision ledger.
 - Do not treat a playtest fixture, survey response, or generated page as a
-  change to the Nightcap story bible, PRD, architecture, roadmap, or production
-  game rules.
+  change to the Nightcap GDD, PRD, architecture, roadmap, or production game
+  rules.
 - Production engine, API, SDK, dashboard, database, and routing behavior must
   not import or depend on Playtest Lab helpers.
 - Fixture content changes require founder approval before implementation.
