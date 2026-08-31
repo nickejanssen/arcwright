@@ -1,29 +1,35 @@
 # Nightcap Couch Race v1: Parent Spec
 
-**Status**: Approved
+**Status**: Approved historical implementation baseline — current Nightcap product/design authority superseded by ADR-0023 and `docs/gdd/nightcap/`
 
-**Author**: Claude (founder-directed design session) | **Date**: 2026-07-15
+**Author**: Claude (founder-directed design session) | **Date**: 2026-07-15 | **Authority reconciled**: 2026-08-31
+
+> This spec documents the Couch Race implementation baseline that was approved and built under ADR-0013. Preserve it as implementation history. It is **not** the current Nightcap game-design source of truth. When this spec conflicts with the Master GDD, use the GDD for desired product behavior and create explicit implementation reconciliation work rather than silently rewriting existing code/history.
 
 ---
 
 # References
 
-- Related ADRs: `docs/decisions/0013-nightcap-couch-race-v1-launch-target.md` (charter), `docs/decisions/0010-nightcap-gameplay-pivots-post-playtest.md` (origin), ADR-0003 (web runtime), ADR-0009 (mini-game boundary)
+- Current Nightcap game-design authority: `docs/gdd/nightcap/README.md` and `docs/gdd/nightcap/00-governance/00-decision-ledger.md`
+- Current authority migration: `docs/decisions/0023-nightcap-master-gdd-authority.md`
+- Historical related ADRs: `docs/decisions/0013-nightcap-couch-race-v1-launch-target.md` (original charter), `docs/decisions/0010-nightcap-gameplay-pivots-post-playtest.md` (origin), ADR-0003 (web runtime), ADR-0009 (mini-game boundary)
 - Architecture sections: `docs/architecture/03-arc-execution.md`, `04-knowledge-graph.md`, `07-character-behavior.md`, `08-event-system.md`
 - Related specs: 0071 `docs/specs/0071-live-loop-ai-character-dialogue.md` (live-loop AI character dialogue: direct dependency for AW-283; introduced by PR #225, not yet on main at time of writing: merge PR #225 before starting AW-283), 0066 (continuity evals), 0069 (visual design system), 0068 (quality bar)
-- PRD sections: `docs/prd/03-scope.md` (amended MVP definition)
-- Story bible: `docs/story-bibles/nightcap-couch-race.md` (canonical experience definition)
+- PRD sections: `docs/prd/03-scope.md` (amended MVP definition at the time of this spec)
+- Former Story Bible: `docs/archive/nightcap-story-bibles/nightcap-couch-race.md` (historical experience definition; old path is a redirect)
 - Design record: `docs/superpowers/specs/2026-07-15-nightcap-couch-race-design.md`
 
 ---
 
-# Overview
+# Historical Overview
 
-Defines the v1 Couch Race experience: a 2–8 player, 20–40 minute, six-beat competitive-investigator arc where all players race to solve a murder committed by an AI suspect, played on a TV shared display plus phones. Parent spec for epic M5-I; child tasks AW-281–AW-286 carry implementation detail.
+This spec defined the then-current v1 Couch Race experience: a 2–8 player, 20–40 minute, six-beat competitive-investigator arc where all players raced to solve a murder committed by an AI suspect, played on a TV shared display plus phones. It was the parent spec for epic M5-I; child tasks AW-281–AW-286 carried implementation detail.
+
+Those player-count, beat-structure, scoring/endgame, and other product assumptions are **historical implementation constraints**, not current Nightcap design requirements. The current GDD now requires first-class two-player support, leaves the V1 upper bound OPEN, uses WATCH → HUNT → THINK → PLAY → REACT, and uses deterministic Structured Reconstruction rather than numerical/subjective Case Strength winner selection.
 
 ---
 
-# In Scope
+# Historical In Scope
 
 - Couch Race ArcDefinition (six beats) and deterministic case generation (AW-281)
 - Interrogation platform capability: rounds, deterministic question-intent menus, token scarcity (AW-282)
@@ -32,7 +38,7 @@ Defines the v1 Couch Race experience: a 2–8 player, 20–40 minute, six-beat c
 - TV and phone rendering on the existing web runtime with extended privacy matrix (AW-285)
 - Rehearsal 1 retarget and narrative-task (AW-276–280) beat alignment (AW-286)
 
-# Out of Scope
+# Historical Out of Scope
 
 - Free-text or voice question input (open question)
 - Teams and co-op competition-dial positions (configurable structure only; implementations deferred)
@@ -67,7 +73,9 @@ named approval.
 Preserve discovery answers, artifacts and review instructions, checkpoint
 approvals, rehearsal evidence, debrief feedback, dates, and owner actions.
 
-# Acceptance Criteria
+# Historical Acceptance Criteria
+
+These criteria describe the Couch Race implementation baseline and should not be treated as the current GDD acceptance criteria.
 
 - [ ] Headless harness completes full six-beat sessions at player counts 2 and 8; deterministic replay reproduces case and scores under a fixed seed.
 - [ ] Suspect answers pass the AW-272 eval batch with zero knowledge leaks on clean seeds; seeded lies are catchable and false flags reject deterministically.
@@ -78,7 +86,7 @@ approvals, rehearsal evidence, debrief feedback, dates, and owner actions.
 
 ---
 
-# Case Resolution Architecture
+# Implemented Case Resolution Architecture
 
 Deterministic case resolution ships in `engine/case/` (arc-agnostic
 resolver interface, `ResolvedCase` domain models) with Nightcap-
@@ -108,9 +116,9 @@ beat (`engine/harness/runner.py`), branching on
 Imposter-Variant participant-killer assignment path is unchanged for
 `play_mode == PlayMode.imposter` arcs.
 
-Cast size scales with player count (`nightcap/case_resolution_config.json`):
+Cast size currently scales with player count (`nightcap/case_resolution_config.json`):
 2-4 players → 4 suspects, 5-6 → 5 suspects, 7-8 → 6 suspects. A
-skeleton may override via `cast_size_override`.
+skeleton may override via `cast_size_override`. This describes existing implementation; it does not decide the current GDD's OPEN V1 upper player-count bound.
 
 See:
 - Design memo: `docs/superpowers/specs/2026-07-17-aw-281-case-resolution-design.md`
@@ -121,7 +129,7 @@ See:
 
 ---
 
-# Test Plan
+# Historical Test Plan
 
 - Unit: arc transitions, case-resolution invariants (lie falsifiability, clue-chain sufficiency), token accounting, scoring paths, contradiction determinism.
 - Integration: full API session loop with interrogation rounds; SSE audience filtering for tells and private evidence.
@@ -130,19 +138,21 @@ See:
 
 ---
 
-# Risks and Unknowns
+# Migration Risks and Unknowns
 
-**Risks**:
+**Existing implementation risks retained from this spec**:
 - Generated-case fairness inconsistency: players lose trust if a case is unsolvable or a lie uncatchable. Mitigation: resolution-time validation invariants + AW-272 gate.
 - Suspect-answer latency breaks the TV moment. Mitigation: fast-tier routing, prompt-cached case context, measured p95 budget.
-- Intent menus feel constraining. Mitigation: evidence-unlocked intents widen the space; free-text logged as follow-on.
+- Intent menus feel constraining. Current GDD now treats autonomy vs. action clarity as an active validation seam rather than resolving it solely through evidence-unlocked menus.
 
-**Unknowns**:
-- Optimal question-token economy per beat (tune in rehearsal).
-- Whether contradiction-flagging needs a cooldown beyond the false-flag penalty.
+**Current reconciliation unknowns**:
+- Which Couch Race implementation pieces already satisfy the Master GDD unchanged.
+- Which arc/scoring/endgame/player-count assumptions require spec/code migration.
+- How the existing case resolver maps to the GDD's hidden case topology and Structured Reconstruction requirements.
+- Which interrogation mechanics should remain unchanged until representative feedback indicates a problem.
 
 ---
 
 # Open Questions
 
-Tracked in `docs/product/open-questions-log.csv`: product name; distribution channel; free-text interrogation timing; victim interrogatability.
+Current Nightcap design questions are tracked through `docs/gdd/nightcap/00-governance/00-decision-ledger.md` and the relevant GDD system pages. Historical product questions remain in `docs/product/open-questions-log.csv` for provenance.
