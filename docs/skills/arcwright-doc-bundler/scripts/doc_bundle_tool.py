@@ -28,6 +28,11 @@ SKIPPED_DIR_PARTS = {
 
 ALLOWED_SUFFIXES = {".csv", ".json", ".md", ".toml", ".txt", ".yaml", ".yml"}
 
+NIGHTCAP_REDIRECT_PATHS = {
+    "docs/story-bibles/nightcap-couch-race.md",
+    "docs/story-bibles/nightcap-murder-mystery.md",
+}
+
 STALE_PATH_PATTERNS = [
     r"07-Story-Bible-Murder-Mystery",
     r"09-Story-Bible-Monster",
@@ -58,6 +63,13 @@ class BundleMode:
     include_globs: tuple[str, ...]
 
 
+NIGHTCAP_GDD_GLOBS = (
+    "docs/gdd/nightcap/README.md",
+    "docs/gdd/nightcap/00-governance/*.md",
+    "docs/gdd/nightcap/01-authoritative-gdd/*.md",
+)
+
+
 MODES: dict[str, BundleMode] = {
     "product": BundleMode(
         name="product",
@@ -74,6 +86,7 @@ MODES: dict[str, BundleMode] = {
             "docs/roadmap/index.json",
             "docs/roadmap/milestones/*.md",
             "docs/decisions/*.md",
+            *NIGHTCAP_GDD_GLOBS,
         ),
     ),
     "architecture": BundleMode(
@@ -96,10 +109,11 @@ MODES: dict[str, BundleMode] = {
         name="narrative",
         output="bundle-C-narrative.md",
         title="Bundle C: Narrative",
-        purpose="Story bible, Nightcap, Monster RPG, and narrative scope context for AI agents.",
+        purpose="Current Nightcap GDD, active story bibles for other experiences, and narrative scope context for AI agents.",
         include_globs=(
             "AGENTS.md",
             "docs/README.md",
+            *NIGHTCAP_GDD_GLOBS,
             "docs/story-bibles/*.md",
             "docs/prd/03-scope.md",
             "docs/product/decisions-log.csv",
@@ -143,6 +157,7 @@ PERSONAS: dict[str, BundleMode] = {
             "docs/roadmap/index.json",
             "docs/roadmap/milestones/*.md",
             "docs/decisions/*.md",
+            *NIGHTCAP_GDD_GLOBS,
             "docs/story-bibles/README.md",
         ),
     ),
@@ -155,6 +170,7 @@ PERSONAS: dict[str, BundleMode] = {
             "AGENTS.md",
             "docs/README.md",
             "docs/agents/expert-personas.md",
+            *NIGHTCAP_GDD_GLOBS,
             "docs/story-bibles/*.md",
             "docs/prd/01-overview.md",
             "docs/prd/02-requirements.md",
@@ -226,6 +242,7 @@ PERSONAS: dict[str, BundleMode] = {
             "docs/roadmap/index.json",
             "docs/roadmap/milestones/*.md",
             "docs/decisions/*.md",
+            *NIGHTCAP_GDD_GLOBS,
             "docs/story-bibles/README.md",
         ),
     ),
@@ -284,10 +301,13 @@ def display_path(path: Path, root: Path) -> str:
 
 def is_allowed(path: Path, root: Path) -> bool:
     relative = path.resolve().relative_to(root.resolve())
+    relative_posix = relative.as_posix()
     parts = set(relative.parts)
     if parts & SKIPPED_DIR_PARTS:
         return False
     if "archive" in relative.parts and "notion-export" in relative.parts:
+        return False
+    if relative_posix in NIGHTCAP_REDIRECT_PATHS:
         return False
     return path.is_file() and path.suffix.lower() in ALLOWED_SUFFIXES
 
@@ -316,7 +336,7 @@ def custom_patterns(task_goal: str) -> tuple[str, ...]:
         "event": ["docs/architecture/08-event-system.md", "docs/specs/*event*.md"],
         "knowledge": ["docs/architecture/04-knowledge-graph.md", "docs/specs/*knowledge*.md"],
         "migration": ["docs/architecture/supplemental-schemas.md", "docs/specs/*migration*.md"],
-        "nightcap": ["docs/story-bibles/nightcap-murder-mystery.md", "docs/specs/*nightcap*.md"],
+        "nightcap": [*NIGHTCAP_GDD_GLOBS, "docs/specs/*nightcap*.md"],
         "routing": ["docs/architecture/06-model-routing.md", "docs/specs/*routing*.md"],
         "safety": ["docs/architecture/10-content-safety.md", "docs/specs/*safety*.md"],
         "schema": ["docs/architecture/supplemental-schemas.md", "docs/specs/*schema*.md"],
@@ -418,10 +438,12 @@ def write_bundle(root: Path, mode: BundleMode, files: list[Path], output_dir: Pa
             "- Review `docs/product/open-questions-log.csv` for product questions before treating any unresolved item as decided.",
             "- Regenerate this bundle after documentation or code changes. Stale bundles recreate stale context risk.",
             "- Product-scope commitments require durable evidence in `docs/product/decisions-log.csv` plus an ADR or approved spec when applicable.",
+            "- For current Nightcap design, follow `docs/gdd/nightcap/README.md` and its authority chain before using historical implementation records.",
             "",
             "## Explicit Exclusions",
             "",
             "- `docs/archive/notion-export/` skipped by default.",
+            "- Archived Nightcap Story Bibles and their compatibility redirect stubs are skipped by default for current Nightcap context.",
             "- `docs-bundles/` skipped because generated bundles are not source of truth.",
             "- Local agent state directories skipped, including `.claude/`, `.codex/`, `.cursor/`, `.vscode/`, and `.agents/`.",
             "- Binary files, images, caches, and dependency folders skipped.",
@@ -429,7 +451,8 @@ def write_bundle(root: Path, mode: BundleMode, files: list[Path], output_dir: Pa
             "## Validation",
             "",
             "- Confirm manifest paths are canonical current docs or required root instructions.",
-            "- Confirm no stale root Notion export paths or stale story bible filenames appear.",
+            "- Confirm Nightcap-specific bundles include the Master GDD authority chain rather than archived Story Bible redirects.",
+            "- Confirm no stale root Notion export paths or stale story bible filenames appear as current authority.",
             "- Confirm no concrete provider or model strings, secret values, or local agent files are included.",
             f"- {CANONICAL_REMINDER}",
             "",
@@ -524,6 +547,8 @@ def validate_file(path: Path) -> list[str]:
         lowered = manifest_path.lower()
         if "docs/archive/notion-export" in lowered:
             issues.append(f"archive path in manifest: {manifest_path}")
+        if lowered in NIGHTCAP_REDIRECT_PATHS:
+            issues.append(f"archived Nightcap redirect in manifest: {manifest_path}")
         if lowered.startswith("docs-bundles/") or lowered.startswith(".agents/"):
             issues.append(f"generated or local agent path in manifest: {manifest_path}")
         if any(lowered.startswith(f"{part}/") for part in [".claude", ".codex", ".cursor", ".vscode"]):
