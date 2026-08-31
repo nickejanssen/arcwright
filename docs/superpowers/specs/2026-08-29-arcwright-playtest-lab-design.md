@@ -1,8 +1,8 @@
 # Arcwright Playtest Lab Design
 
-> Current version: v1.0
-> Last updated: 2026-08-29
-> Status: Founder-approved design, pending implementation plan
+> Current version: v1.1
+> Last updated: 2026-08-31
+> Status: Founder-approved design; Nightcap authority reference reconciled after GDD migration
 > Canonical path: docs/superpowers/specs/2026-08-29-arcwright-playtest-lab-design.md
 
 ## Decision
@@ -28,9 +28,13 @@ branch. The canonical product and architecture boundaries are:
 - `docs/conventions/human-collaboration.md`: approval and phase-gate rules.
 - `docs/architecture/11-telemetry.md` sections 11.1 and 11.3: telemetry must
   be active before real-user sessions and must preserve structured signals.
-- `docs/story-bibles/nightcap-couch-race.md` sections 1 and 2: production
-  Nightcap v1 is Couch Race; this external harness remains non-canon fixture
-  tooling and does not change that scope.
+- `docs/gdd/nightcap/README.md` and its decision ledger: current Nightcap
+  game-design authority. The external harness remains non-canon fixture tooling
+  and does not change Nightcap product scope.
+
+The former `docs/story-bibles/nightcap-couch-race.md` authority referenced by
+v1.0 of this document was archived by ADR-0023. Its retained path is now a
+compatibility redirect and must not be used as current Nightcap canon.
 
 The current public harness is merged and deployed at the repository root. The
 current Jotform is enabled, but its fourteen legacy telemetry fields use

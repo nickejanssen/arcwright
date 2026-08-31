@@ -1,6 +1,6 @@
 # Arcwright Playtest Lab Implementation Plan
 
-> Execute this plan with the superpowers:subagent-driven-development skill when the founder selects that execution mode. The plan is implementation-ready for inline execution as well.
+> Historical implementation plan with its Nightcap authority reference reconciled on 2026-08-31. Execute this plan with the superpowers:subagent-driven-development skill when the founder selects that execution mode. The plan is implementation-ready for inline execution as well.
 
 ## Goal
 
@@ -21,7 +21,8 @@ The repository remains the source of truth for catalog metadata, playable artifa
 
 - Design document: docs/superpowers/specs/2026-08-29-arcwright-playtest-lab-design.md.
 - Harness spec: docs/specs/nightcap-external-playtest-harness.md.
-- Canonical docs: docs/README.md, relevant PRD and architecture sections, and docs/story-bibles/nightcap-couch-race.md.
+- Canonical docs: docs/README.md, relevant PRD and architecture sections, and the current Nightcap authority at docs/gdd/nightcap/README.md plus its decision ledger.
+- The former docs/story-bibles/nightcap-couch-race.md authority is archived under ADR-0023; its old path is a compatibility redirect only.
 - Never alter production engine behavior for this static test-lab task.
 - Never silently rewrite an archived test or its instrument mapping.
 - Keep provider and model names out of new files.
