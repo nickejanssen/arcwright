@@ -13,7 +13,7 @@ Use this as the one-stop shop for Playtest Lab requests when the user says or im
 
 ## Operating Contract
 
-Start with `docs/README.md`, then read the smallest relevant canonical spec, PRD, architecture, story bible, roadmap, and product decision files. Prefer `docs/specs/nightcap-external-playtest-harness.md`, `playtests/catalog.json`, and `playtests/AGENTS.md` for current Playtest Lab work.
+Start with `docs/README.md`, then read the smallest relevant canonical spec, PRD, architecture, current experience authority, roadmap, and product decision files. For Nightcap, the current experience authority begins at `docs/gdd/nightcap/README.md` and its decision ledger; the archived Story Bibles are not current canon. Prefer `docs/specs/nightcap-external-playtest-harness.md`, `playtests/catalog.json`, and `playtests/AGENTS.md` for current Playtest Lab work.
 
 Keep behavior platform-neutral. Do not assume a specific agent host, UI, device, or AI service. Do not change production engine, API, SDK, dashboard, arc, or story content unless the user's task and a canonical approval record explicitly require it.
 
