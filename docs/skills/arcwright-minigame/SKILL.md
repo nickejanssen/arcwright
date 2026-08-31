@@ -127,6 +127,11 @@ Keep design passes credit-conscious. Read the smallest canonical docs needed,
 say which files you read, and say plainly when a file could not be read. Do not
 silently infer engine contracts from memory.
 
+For current Nightcap design, the source-of-truth chain begins at
+`docs/gdd/nightcap/README.md`. The archived Story Bible redirect files are
+historical compatibility paths and must not be used for current mini-game fit,
+player-count, clue-economy, or game-loop decisions.
+
 ## Choosing the experience
 
 Packages are experience-scoped. Default to `nightcap/mini_games/` because that
@@ -144,10 +149,17 @@ Goal: turn a concept or sample game into a locked mini-game brief before files
 are created or changed. Do not start coding in this phase unless the user
 explicitly asks for implementation.
 
-First, read the relevant canonical docs: `docs/README.md`,
-`docs/prd/02-requirements.md`, `docs/decisions/0018-mini-game-orchestration-and-execution-adapters.md`,
-`docs/story-bibles/nightcap-murder-mystery.md`, and the relevant mini-game
-specs. If the game may touch surfaces, events, or arc execution, also read
+For Nightcap, first read the relevant canonical docs in this order:
+`docs/gdd/nightcap/README.md`,
+`docs/gdd/nightcap/00-governance/00-decision-ledger.md`,
+`docs/gdd/nightcap/01-authoritative-gdd/04-minigame-competitive-pulse.md`,
+`docs/gdd/nightcap/01-authoritative-gdd/07-espionage-leverage-update.md`, and
+`docs/gdd/nightcap/01-authoritative-gdd/09-player-count-scaling.md`. Add
+`docs/gdd/nightcap/01-authoritative-gdd/11-arcwright-runtime-boundary.md` when
+runtime/state behavior matters. Then read `docs/prd/02-requirements.md`,
+`docs/decisions/0018-mini-game-orchestration-and-execution-adapters.md`, and the
+relevant mini-game specs for platform and implementation constraints. If the
+game may touch surfaces, events, or arc execution, also read
 `docs/architecture/03-arc-execution.md` and
 `docs/architecture/08-event-system.md`.
 
@@ -157,13 +169,18 @@ order:
 
 - **Concept:** working title, logline, core verb, and why it belongs in a
   murder mystery party game.
-- **Nightcap role:** target beat range, clue-gate vs pure social opener,
-  investigative payload, and in-world justification.
+- **Nightcap role:** what the mini-game contributes to fun, rhythm, competition,
+  and the murder investigation; whether its consequence is information,
+  temporary access, Leverage/tempo, or another approved advantage; and its
+  in-world justification. Do not assume a required-clue gate.
 - **Player model:** individual, collaborative, group, competitive, or mixed;
-  player-count behavior for 4, 5, 6, 7, and 8 players.
-- **Scoring and outcomes:** what earns points, whether score is throwaway
-  per-game feedback or affects standing later, success, failure, tie, timeout,
-  and abort behavior.
+  prove the design at two players and the four-player reference configuration,
+  then inspect any higher counts the package claims to support. Do not infer a
+  fixed Nightcap V1 maximum; the upper bound remains OPEN.
+- **Scoring and outcomes:** what earns points inside the mini-game, whether that
+  score is local feedback or creates a permitted game-level consequence,
+  success, failure, tie, timeout, and abort behavior. Do not invent a global
+  Nightcap score or Case Strength system.
 - **Two-surface contract:** what appears on phone, shared display, and host
   view; which information must remain private; what the browser may render or
   submit.
@@ -172,10 +189,12 @@ order:
 - **Content strategy:** authored, generative, or hybrid content; provenance of
   any facts, clues, symbols, boards, prompts, or level seeds.
 - **Behavioral outputs:** neutral v1 metrics to log, with names and payload
-  shape; confirm they are not wired into killer assignment until approved v1.1
-  work.
+  shape; do not wire them into current Nightcap truth, solve resolution, or
+  cross-session behavior without explicit approval.
 - **Fallback:** delayed clue fallback, clue variant, host override, and how the
-  story remains solvable if every player fails or stalls.
+  story remains solvable if every player fails or stalls. The fallback is an
+  engine safety contract, not permission to make winning the mini-game the only
+  route to essential murder truth.
 - **Replay variance:** what changes between sessions without changing the
   authored contract.
 - **Assets and prototype intake:** source files, art, sound, interaction
@@ -183,17 +202,20 @@ order:
   behind the engine boundary.
 
 For competitive arcade-style games, be especially strict about score meaning.
-A high score can create table energy, but it should either gate a clue, create
-an investigative lead, or produce a neutral behavioral signal. If it is only a
-detached arcade score, recommend a stronger Nightcap framing before packaging.
+A high score can create table energy and may produce an approved temporary
+advantage, investigative acceleration, Leverage/tempo consequence, or neutral
+behavioral signal. Under the current GDD, mini-games must not become the sole
+gate to an essential clue or the primary gateway to controlling the entire
+investigation. If the score is only a detached arcade number, recommend a
+stronger Nightcap framing before packaging.
 
 End this phase with a compact locked brief:
 
 - game ID and title
 - package lifecycle target
 - participation mode, content mode, player count, and target duration
-- target beat or beat range
-- clue, fallback, and outcome contract
+- target moment or range in the current Nightcap experience
+- investigative/competitive consequence, fallback, and outcome contract
 - two-surface contract
 - authoritative engine responsibilities
 - allowed client responsibilities
@@ -203,9 +225,10 @@ End this phase with a compact locked brief:
 
 If the user asks for a handoff prompt instead of implementation, generate a
 copy-paste-ready build prompt from the locked brief. The handoff must require
-the next agent to read `AGENTS.md`, read canonical docs, inspect existing
-mini-games, create or update a spec before implementation when scope is new,
-respect ADR 0018, run validation, and avoid em dashes.
+the next agent to read `AGENTS.md`, the current Nightcap GDD authority chain,
+canonical platform docs, inspect existing mini-games, create or update a spec
+before implementation when scope is new, respect ADR 0018, run validation, and
+avoid em dashes.
 
 ## Phase 1: Scaffold or Import
 
@@ -317,21 +340,27 @@ architecture answers, invoke the `arcwright-sme` skill rather than guessing.
 
 Check and record evidence for each:
 
-- **Story fit:** consistent with `docs/story-bibles/nightcap-murder-mystery.md`
-  (tone, world, the clue/investigation loop). Note section references.
-- **Scope approval:** mini-games are protected Nightcap v1 scope under D-058
-  (`docs/product/decisions-log.csv`). A new mechanic that goes beyond that needs
+- **Nightcap fit:** consistent with the current Master GDD, especially
+  `04-minigame-competitive-pulse.md`, `07-espionage-leverage-update.md`, the
+  relevant investigation/reactivity page, and the current player-count page.
+  Note exact GDD section references. Do not use the archived Imposter or Couch
+  Race Story Bibles as current fit criteria.
+- **Scope approval:** mini-games remain a core Nightcap interaction layer, but
+  older D-058/D-071 implementation language is historical where it conflicts
+  with the current GDD. A new mechanic beyond current approved scope needs
   durable approval evidence (a decision-log entry plus an ADR or approved spec)
   before it is treated as build scope. If it is missing, flag it; do not invent
   approval.
 - **Boundary compliance:** delayed clue fallback present and sane; no
   canonical-state logic implied on the client; behavioral outputs neutral and
-  game-scoped; no killer-assignment or cross-session influence.
+  game-scoped; no unapproved influence on canonical truth, solve resolution, or
+  cross-session behavior.
 - **Diegetic fit:** the game has a structural in-world reason to happen at the
-  selected beat. The author can supply final voice, but the interaction cannot
+  selected moment. The author can supply final voice, but the interaction cannot
   feel like an unrelated arcade mode dropped into the room.
-- **Playability sanity:** player count and duration are realistic for a party
-  session; failure or timeout still advances the arc via the fallback.
+- **Playability sanity:** first-class two-player behavior and the four-player
+  reference configuration are credible; any higher-count claim is evaluated on
+  its own evidence. Failure or timeout still advances the arc via the fallback.
 
 **Pause and report** a fit verdict (fits / fits with changes / does not fit)
 with per-item evidence and the canonical doc paths.
@@ -392,8 +421,8 @@ an arc binding was added.
 ## Stop Conditions
 
 - A request that requires breaking the ADR 0018 boundary (client-side scoring,
-  AI deciding outcomes, no fallback, v1 behavioral wiring into killer
-  assignment).
+  AI deciding outcomes, no fallback, or unapproved behavioral wiring into
+  canonical Nightcap state).
 - A new mechanic or scope with no durable approval evidence.
 - A package that will not load through the engine loader.
 - A concept that cannot explain its Nightcap purpose beyond "fun on its own".
@@ -413,7 +442,7 @@ Codex, and ChatGPT. Codex and ChatGPT pick it up via
   for field rules; the script never re-encodes them.
 - Use the host's file and git tooling when present. If absent, ask the user to
   paste the package files and continue with the same workflow.
-- Treat this file as the procedure of record. Read canonical docs
-  (`docs/decisions/0018-mini-game-orchestration-and-execution-adapters.md`, the
-  story bible, the story-relevant specs `docs/specs/0046`–`0051`) when a phase
-  needs detail.
+- Treat this file as the procedure of record. For Nightcap, read the current
+  GDD authority chain first, then the relevant platform boundary ADRs and specs.
+  The archived Nightcap Story Bibles are provenance only and must not be used as
+  current mini-game design authority.
