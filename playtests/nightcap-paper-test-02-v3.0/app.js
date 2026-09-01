@@ -408,8 +408,9 @@ function renderLastCall() {
 function renderSurvey() {
   const playerAccused = caseData.suspects.find((s) => s.id === state.caseFile.culprit)?.name ?? "Unknown";
   const rivalAccused = caseData.suspects.find((s) => s.id === state.rival.accusation)?.name ?? "Unknown";
-  app.innerHTML = `<section class="card"><p class="eyebrow">The accusations are locked</p><h2>You accused ${esc(playerAccused)}.</h2><p class="story">${esc(caseData.rival.name)} accused ${esc(rivalAccused)}.</p><p class="story">Before the truth is shown, answer the short post-play survey. Your run ID and playtest telemetry will be prefilled into the existing research form.</p><div class="notice warning"><strong>Research note:</strong> this fixture can record the return to the reveal page locally in this tab, but external reveal-return proof is still not verified. This build is not ready to send until that research-instrument gap is closed.</div><div class="actions"><button class="primary" id="openSurvey" type="button">Open post-play survey</button><a class="secondary" href="?reveal=1">Preview reveal locally</a></div></section>`;
+  app.innerHTML = `<section class="card"><p class="eyebrow">The accusations are locked</p><h2>You accused ${esc(playerAccused)}.</h2><p class="story">${esc(caseData.rival.name)} accused ${esc(rivalAccused)}.</p><p class="story">Before the truth is shown, answer the short post-play survey. Your run ID and playtest telemetry will be prefilled into the existing research form.</p><div class="actions"><button class="primary" id="openSurvey" type="button">Open post-play survey</button></div></section>`;
   document.querySelector("#openSurvey").addEventListener("click", () => {
+    markComplete(state);
     markSurveyHandoff(state);
     save();
     window.location.assign(buildSurveyUrl(state));
