@@ -376,7 +376,7 @@ function renderLastCall() {
   const evidence = allEvidence();
   app.innerHTML = `
     ${meta()}
-    <section class="card"><p class="eyebrow">Last Call</p><h2>Lock your theory.</h2><p class="story">Choose the person you believe killed Gideon, then choose four facts that best reconstruct what happened. Your rival is locking a theory too. You will not see it first.</p>
+    <section class="card"><p class="eyebrow">Last Call</p><h2>Lock your theory.</h2><p class="story">Choose the person you believe killed Gideon, then choose four or five facts that best reconstruct what happened. Your rival is locking a theory too. You will not see it first.</p>
       <label for="culpritSelect"><strong>Culprit</strong></label><select id="culpritSelect" class="suspect-select"><option value="">Choose one</option>${caseData.suspects.map((s) => `<option value="${esc(s.id)}" ${state.caseFile.draftCulprit === s.id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select>
       <div class="evidence-grid">${evidence.map((item) => `<label class="evidence-option"><input type="checkbox" name="evidence" value="${esc(item.id)}" ${state.caseFile.draftPieces.includes(item.id) ? "checked" : ""}><span><strong>${esc(item.label)}</strong><br><span class="small">${esc(item.fact)}</span></span></label>`).join("")}</div>
       <div id="caseFileError" class="small" aria-live="polite"></div>
@@ -393,8 +393,8 @@ function renderLastCall() {
   document.querySelector("#commitTheory").addEventListener("click", () => {
     const culprit = document.querySelector("#culpritSelect").value;
     const pieces = [...document.querySelectorAll('input[name="evidence"]:checked')].map((input) => input.value);
-    if (!culprit || pieces.length !== 4) {
-      document.querySelector("#caseFileError").textContent = "Choose one culprit and exactly four facts.";
+    if (!culprit || pieces.length < 4 || pieces.length > 5) {
+      document.querySelector("#caseFileError").textContent = "Choose one culprit and four or five facts.";
       return;
     }
     if (commitCaseFile(state, caseData, culprit, pieces)) {
