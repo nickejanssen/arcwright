@@ -1,12 +1,13 @@
 # Nightcap Paper Test #2 v3.0 - A Knock at Midnight
 
-**Status:** Draft fixture. Not current. Not published. Not approved for external tester distribution yet.
+**Status:** Founder-approved release fixture. Current in the Playtest Lab catalog after publication. External tester distribution still requires live-route verification and the separately approved survey/reveal smoke check described below.
 
 **Fixture ID:** `nightcap-paper-test-02-v3.0`  
 **Fixture version:** `3.0`  
 **Case:** *A Knock at Midnight*  
 **Canon:** NON-CANON RESEARCH FIXTURE  
-**Authority base:** Nightcap GDD at reconciliation commit `d62f01c37194721c07db019e8d1431df582e4174` unless that branch is merged before integration.
+**Authority base:** Current Nightcap GDD, including the post-v2.2 reconciliation recorded in commit `d62f01c37194721c07db019e8d1431df582e4174`.  
+**Catalog publication date:** `2026-08-31`
 
 ## Purpose
 
@@ -69,13 +70,13 @@ Structured Reconstruction asks for one culprit plus **four or five facts**. Four
 
 The current form ID remains `262397917027062`. Read-only inspection on 2026-08-31 confirmed the enabled form still exposes the 31-question structure used by v2.2, including every telemetry field mapped by `JOTFORM_FIELD_MAP`. No survey-field or hidden-field mutation is required for the v3 fixture: additional v3 timings remain derivable from the canonical `event_sequence`.
 
-The v3 catalog records instrument version `3.0` because the fixture/event semantics and research contract changed, while the physical Jotform field layout remains compatible and unchanged.
+The v3 catalog records instrument version **`2.2`**, because the physical Jotform field layout, hidden telemetry names, response scales, and redirect configuration were not changed. Fixture and telemetry prototype version remain `3.0`.
 
 When the player opens the survey, the fixture first records gameplay completion and then records `survey_handoff`. That makes `completed_at`, `duration_seconds`, and `completion_status=completed` available in the same prefill submission while keeping reveal-return as a separate research event. The survey screen does not expose a local truth-preview bypass.
 
 The fixture preserves the same anonymous `run_id` in the prefill URL. If the form returns the player to this fixture in the same tab, `sessionStorage` can record `reveal_return` locally.
 
-**That does not constitute externally verified reveal-return evidence.** The available Jotform connector does not expose redirect/settings metadata, so redirect behavior has not been changed or claimed verified. Before this fixture is sent to external testers, Harness must verify the complete form-submit -> fixture-return path through an explicitly approved smoke submission or another approved externally observable mechanism tied to the same run ID.
+**That does not constitute externally verified reveal-return evidence.** The available Jotform inspection did not verify redirect behavior. Before this fixture is sent to external testers, Harness must verify the complete form-submit -> fixture-return path through a separately approved smoke submission or another approved externally observable mechanism tied to the same run ID. Smoke submissions must be labeled and excluded from research evidence.
 
 ## Refresh / re-entry
 
@@ -100,21 +101,31 @@ node --test \
   playtests/nightcap-paper-test-02-v3.0/tests/runtime.test.mjs \
   playtests/nightcap-paper-test-02-v3.0/tests/fixture.test.mjs \
   playtests/nightcap-paper-test-02-v3.0/tests/rusk-route.test.mjs \
+  playtests/nightcap-paper-test-02-v3.0/tests/security.test.mjs \
   playtests/nightcap-paper-test-02-v3.0/tests/survey-flow.test.mjs
 ```
 
-The Pages deployment workflow is configured to run the published v2.2 tests and all four v3 test files before any future deploy.
+The Pages deployment workflow is configured to run the published v2.2 tests and all five v3 test files before deploy.
 
-## Draft registration / build evidence
+## Pre-publication evidence already established on the staging branch
 
 The Steward CLI's `new --use-existing-source` path was added specifically to register already founder-approved fixture content without overwriting it. A metadata-only mirror using the actual branch CLI and catalog validator successfully registered this fixture as `draft` with `published: null`, while preserving `current_tests.nightcap = nightcap-paper-test-02-v2.2`.
 
-Using the actual branch catalog/build logic, a deterministic mirror build generated the immutable `/nightcap/paper-test-02/v3.0/` route and listed v3 as draft on the Nightcap index while the root/current link remained v2.2. This is build-logic evidence, not a live Pages deployment or real-browser check.
+Using the actual branch catalog/build logic, a deterministic mirror build generated the immutable `/nightcap/paper-test-02/v3.0/` route and listed v3 as draft on the Nightcap index while the root/current link remained v2.2. That was build-logic evidence before promotion, not live Pages deployment evidence.
 
 Static responsive/accessibility inspection confirms a one-column choice layout below 640 CSS pixels, minimum 44-pixel button height, full-width mobile action buttons, visible focus outlines, reduced-motion handling, text plus visual lock status, and high-contrast primary text/button combinations. This is source-level evidence only; real-browser and real-phone layout remain separate checks.
 
-## Required pre-send harness checks
+## Required release and pre-send checks
 
+Publication/promotion was founder-approved on 2026-08-31. v2.2 must remain immutable at `/nightcap/paper-test-02/v2.2/` and is archived only in catalog metadata.
+
+Before the fixture is treated as externally test-ready, verify:
+
+- catalog validation and deterministic site build after promotion;
+- all v2.2 and v3 fixture tests on the exact release commit;
+- repository CI/security checks on the release PR;
+- live `/nightcap/paper-test-02/v3.0/` route after deployment;
+- root/current Nightcap links resolve to v3 while v2.2 still resolves;
 - human lock win + Leverage save/use path;
 - rival lock win + Listen In spend/save;
 - break, timeout, and abort fallback;
@@ -126,10 +137,7 @@ Static responsive/accessibility inspection confirms a one-column choice layout b
 - refresh during partial Case File selection;
 - voluntary abandonment handling where observable;
 - real 360px/mobile browser rendering;
-- survey handoff with same run ID;
-- externally observable reveal-return proof;
-- live Pages route verification after publication approval.
+- survey handoff with same run ID; and
+- externally observable reveal-return proof through a separately approved smoke submission.
 
-## Publication boundary
-
-Do not overwrite v2.2. Do not promote this fixture to `current`, mutate Jotform, publish Pages, send a verification submission, or treat it as ready for external testing without the separate founder approvals required by `playtests/AGENTS.md`.
+Do not treat fixture results as product truth. Gate 1 remains open until representative playtest evidence is collected and reviewed.
