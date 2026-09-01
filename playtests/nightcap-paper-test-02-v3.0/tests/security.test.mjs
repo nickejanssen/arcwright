@@ -14,8 +14,13 @@ test("dynamic HTML passes through DOMPurify before reaching innerHTML", () => {
   assert.match(appSource, /const notebook = sanitizedHtmlTarget\(document\.querySelector\("#notebook"\)\)/);
 });
 
-test("DOMPurify is version-pinned and protected with subresource integrity", () => {
-  assert.match(indexSource, /dompurify@3\.4\.10\/dist\/purify\.min\.js/);
-  assert.match(indexSource, /integrity="sha512-[^"]+"/);
-  assert.match(indexSource, /crossorigin="anonymous"/);
+test("runtime sanitizer is same-origin and does not require a third-party CDN", () => {
+  assert.doesNotMatch(indexSource, /<script[^>]+src="https?:\/\//i);
+  assert.match(indexSource, /src="\/arcwright\/vendor\/dompurify-3\.4\.14\.min\.js"/);
+});
+
+test("boot failure rendering does not depend on DOMPurify", () => {
+  assert.match(appSource, /function renderFatalBootError\(/);
+  assert.match(appSource, /renderFatalBootError\(error\)/);
+  assert.match(appSource, /replaceChildren\(/);
 });
