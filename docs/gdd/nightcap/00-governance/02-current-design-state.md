@@ -35,7 +35,7 @@ Nightcap can be irreverent, strange, suspenseful, and darkly funny while taking 
 
 Player-facing prose should be specific, human, context-aware, and consistent. Internal system terminology does not automatically belong on screen.
 
-Arcwright should use high-confidence, high-quality, appropriately licensed open-source writing/editorial skills when useful, while keeping Arcwright's GDD, graph/state, fairness rules, and founder-approved intent authoritative. Current strong references include `danjdewhurst/story-skills`, `forjd/better-writing`, and `Calliope-Editor/writing-skills`.
+Arcwright may use high-confidence, appropriately licensed external writing/editorial methods when useful, while keeping the GDD, graph/state, fairness rules, and founder-approved intent authoritative. The exact tool or repository set is workflow-level and remains revisable rather than product canon.
 
 ## Investigation & Deduction
 
@@ -152,7 +152,9 @@ Strongest within-sample findings:
 
 The evidence strengthened rather than reversed the core GDD direction. It drove explicit revisions around bounded-open agency, rich raw observation, progressive contextual onboarding, factual notebook/living suspect cards, rival legibility, story-wrapped minigame context, and player-facing terminology.
 
-The next representative test should use a **brand-new non-canon case** built from this revised GDD. Do not patch or reuse *The Last Toast* as the next validation case.
+Paper Test #2 v3.0, *A Knock at Midnight*, is the founder-approved **next Gate 1 validation fixture**. It is a new non-canon case built from the revised GDD rather than a patch of *The Last Toast*. Its lock-picking race, authored rival, test-granted Leverage, and fixture-specific flow are research implementations, not automatically canonical production rules.
+
+**Gate 1 remains NOT PASSED until representative v3 player evidence is collected and reviewed.** Publication or successful automation does not itself validate the design.
 
 Formal Memory Support comparison remains a later validation question, but the factual notebook / living-suspect-card baseline is now DECIDED; future memory testing asks how much additional support helps before it starts doing the reasoning.
 
