@@ -39,6 +39,37 @@ export default tseslint.config(
         TextEncoder: "readonly",
         TextDecoder: "readonly",
         fetch: "readonly",
+        URL: "readonly",
+        URLSearchParams: "readonly",
+      },
+    },
+  },
+  {
+    files: ["playtests/**/app.js", "playtests/**/config.js"],
+    languageOptions: {
+      globals: {
+        window: "readonly",
+        document: "readonly",
+        navigator: "readonly",
+        sessionStorage: "readonly",
+        innerWidth: "readonly",
+        requestAnimationFrame: "readonly",
+        cancelAnimationFrame: "readonly",
+        setInterval: "readonly",
+        clearInterval: "readonly",
+        fetch: "readonly",
+        console: "readonly",
+        URL: "readonly",
+        URLSearchParams: "readonly",
+      },
+    },
+  },
+  {
+    files: ["playtests/**/runtime.js"],
+    languageOptions: {
+      globals: {
+        URL: "readonly",
+        URLSearchParams: "readonly",
       },
     },
   },
