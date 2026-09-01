@@ -61,6 +61,10 @@ Derived metrics include time to first investigation, first discovery, first infe
 
 Legacy v2.2 summary fields are derived only for compatibility with the existing form. They are not a second telemetry authority.
 
+## Case File
+
+Structured Reconstruction asks for one culprit plus **four or five facts**. Four facts support compact high-confidence routes; a fifth slot preserves equivalent Rusk-based and other redundant routes without making Beatrice's confrontation testimony a hidden interface bottleneck.
+
 ## Survey and reveal boundary
 
 The current form ID remains `262397917027062` for draft compatibility. This fixture does **not** mutate the form.
