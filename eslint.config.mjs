@@ -62,6 +62,7 @@ export default tseslint.config(
         console: "readonly",
         URL: "readonly",
         URLSearchParams: "readonly",
+        DOMPurify: "readonly",
       },
     },
   },

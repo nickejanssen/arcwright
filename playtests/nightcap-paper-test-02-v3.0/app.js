@@ -26,8 +26,25 @@ import {
   triggerRivalActivity
 } from "./runtime.js";
 
-const app = document.querySelector("#app");
-const notebook = document.querySelector("#notebook");
+function sanitizedHtmlTarget(element) {
+  return {
+    set innerHTML(value) {
+      element.innerHTML = DOMPurify.sanitize(String(value), { USE_PROFILES: { html: true } });
+    },
+    get hidden() {
+      return element.hidden;
+    },
+    set hidden(value) {
+      element.hidden = value;
+    },
+    querySelector(selector) {
+      return element.querySelector(selector);
+    }
+  };
+}
+
+const app = sanitizedHtmlTarget(document.querySelector("#app"));
+const notebook = sanitizedHtmlTarget(document.querySelector("#notebook"));
 const notebookButton = document.querySelector("#notebookButton");
 let caseData;
 let state;
