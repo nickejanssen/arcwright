@@ -19,7 +19,7 @@ Keep behavior platform-neutral. Do not assume a specific agent host, UI, device,
 
 Reuse existing architecture, docs, skills, agents, catalog entries, scripts, and role contracts before proposing anything new. Do not delete, replace, or fork an existing SME, skill, catalog structure, fixture route, or canonical document to simplify routing. If existing structures overlap or seem incomplete, summarize what exists, preserve important information, ask the user how to proceed, and provide clear options.
 
-The Steward may create a metadata-only scaffold, validate catalog state, or update catalog metadata only through reviewed commands such as `python scripts/playtest_tool.py --json list`, `python scripts/playtest_tool.py --json validate`, and `python scripts/playtest_tool.py --json new ...`. It does not invent fixture prose, research findings, or founder decisions.
+The Steward may create a metadata-only scaffold, register an already founder-approved existing fixture as a draft, validate catalog state, or update catalog metadata only through reviewed commands such as `python scripts/playtest_tool.py --json list`, `python scripts/playtest_tool.py --json validate`, and `python scripts/playtest_tool.py --json new ...`. Existing-fixture registration must use `new --use-existing-source`; it validates the candidate catalog and must not create, delete, or rewrite fixture files. Unpublished drafts may record `published: null`. The Steward does not invent fixture prose, research findings, or founder decisions.
 
 Get explicit approval before external writes, deploys, survey or form changes, issue or PR comments, publishing, archiving, or any owner-account operation. Do not request or store secrets.
 
@@ -27,13 +27,13 @@ Get explicit approval before external writes, deploys, survey or form changes, i
 
 Classify the request into one route:
 
-- Steward: intake, triage, task routing, metadata-only scaffold, or status package.
+- Steward: intake, triage, task routing, metadata-only scaffold, existing-fixture draft registration, or status package.
 - Harness: preflight, local playtest fixture verification, telemetry checks, or runtime QA.
 - Research: instrument versioning, run evidence, survey handoff, response export, or analysis.
 - Publishing: catalog validation, static site build, route verification, Pages handoff, or archive.
 - SME: product, GDD, architecture, roadmap, decision-log, or canon implications after evidence has been summarized.
 
-Before changing files, inspect the catalog and CLI state with `scripts/playtest_tool.py`. If the task needs a new test artifact, create only neutral metadata after the title, summary, version, route, source directory, instrument id, and published date are approved. Use the CLI's scaffold path rather than hand-editing catalog JSON when possible.
+Before changing files, inspect the catalog and CLI state with `scripts/playtest_tool.py`. If the task needs a new test artifact, create only neutral metadata after the title, summary, version, route, source directory, and instrument id/version are approved. Use the CLI's scaffold path for a not-yet-created source directory. If founder-approved fixture content already exists, use `new --use-existing-source` so registration cannot overwrite it. Do not invent a publication date for a draft that has not been published.
 
 Route creative or product choices to a founder approval gate. When enough information is available, hand off to the narrower skill with the canonical paths, commands already run, catalog entry ids, and unresolved approvals.
 
@@ -57,7 +57,7 @@ Use arcwright-playtest-steward to consolidate feedback for <catalog id>, route t
 ```
 
 ```text
-Use arcwright-playtest-steward to create a metadata-only draft for a new <game> playtest case after checking catalog validity and approval gates.
+Use arcwright-playtest-steward to create a metadata-only draft for a new <game> playtest case after checking catalog validity and approval gates. If the approved fixture source already exists, register it with `new --use-existing-source` instead of overwriting it.
 ```
 
 ## Evidence And Stop Conditions
