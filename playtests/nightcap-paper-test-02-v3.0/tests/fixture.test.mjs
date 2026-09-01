@@ -46,6 +46,7 @@ test("locked box is a research abstraction, not a production capability claim", 
 
 test("case file requires causal evidence, not culprit-only guessing", () => {
   assert.equal(caseData.case_file.required_truths.length, 4);
+  assert.match(caseData.case_file.instructions, /four or five facts/i);
   for (const truthId of caseData.case_file.required_truths) {
     assert.ok(caseData.case_file.proof_groups[truthId]?.length >= 2);
   }
