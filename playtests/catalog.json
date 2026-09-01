@@ -17,6 +17,19 @@
       "instrument_id": "262397917027062",
       "instrument_version": "2.2",
       "published": "2026-08-28"
+    },
+    {
+      "id": "nightcap-paper-test-02-v3.0",
+      "game": "nightcap",
+      "version": "3.0",
+      "title": "Nightcap Paper Test #2 v3.0",
+      "summary": "Non-canon research scaffold awaiting approved fixture content.",
+      "status": "draft",
+      "route": "/nightcap/paper-test-02/v3.0/",
+      "source_dir": "playtests/nightcap-paper-test-02-v3.0",
+      "instrument_id": "262397917027062",
+      "instrument_version": "3.0",
+      "published": null
     }
   ]
 }
