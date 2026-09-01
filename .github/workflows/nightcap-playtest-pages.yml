@@ -39,7 +39,15 @@ jobs:
       - name: Test playtest scripts
         run: python -m pytest scripts/tests -q --basetemp .pytest-tmp-pages
       - name: Test playtest runtime
-        run: node --test playtests/nightcap-paper-test-02-v2.2/tests/runtime.test.mjs playtests/nightcap-paper-test-02-v2.2/tests/fixture.test.mjs
+        run: >-
+          node --test
+          playtests/nightcap-paper-test-02-v2.2/tests/runtime.test.mjs
+          playtests/nightcap-paper-test-02-v2.2/tests/fixture.test.mjs
+          playtests/nightcap-paper-test-02-v3.0/tests/runtime.test.mjs
+          playtests/nightcap-paper-test-02-v3.0/tests/fixture.test.mjs
+          playtests/nightcap-paper-test-02-v3.0/tests/rusk-route.test.mjs
+          playtests/nightcap-paper-test-02-v3.0/tests/survey-flow.test.mjs
+          playtests/nightcap-paper-test-02-v3.0/tests/security.test.mjs
       - name: Build playtest site
         run: python scripts/build_playtest_site.py --output _site
       - uses: actions/upload-pages-artifact@v4

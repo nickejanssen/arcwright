@@ -42,4 +42,46 @@ export default tseslint.config(
       },
     },
   },
+  {
+    files: [
+      "playtests/nightcap-paper-test-02-v3.0/app.js",
+      "playtests/nightcap-paper-test-02-v3.0/config.js",
+    ],
+    languageOptions: {
+      globals: {
+        window: "readonly",
+        document: "readonly",
+        navigator: "readonly",
+        sessionStorage: "readonly",
+        innerWidth: "readonly",
+        requestAnimationFrame: "readonly",
+        cancelAnimationFrame: "readonly",
+        setInterval: "readonly",
+        clearInterval: "readonly",
+        fetch: "readonly",
+        console: "readonly",
+        URL: "readonly",
+        URLSearchParams: "readonly",
+        DOMPurify: "readonly",
+      },
+    },
+  },
+  {
+    files: ["playtests/nightcap-paper-test-02-v3.0/runtime.js"],
+    languageOptions: {
+      globals: {
+        URL: "readonly",
+        URLSearchParams: "readonly",
+      },
+    },
+  },
+  {
+    files: ["playtests/nightcap-paper-test-02-v3.0/tests/**/*.{js,mjs,cjs}"],
+    languageOptions: {
+      globals: {
+        URL: "readonly",
+        URLSearchParams: "readonly",
+      },
+    },
+  },
 );

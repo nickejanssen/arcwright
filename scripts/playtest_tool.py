@@ -112,8 +112,10 @@ def _safe_playtests_source(value: str) -> bool:
     )
 
 
-def _reject_secret_like_metadata(values: Sequence[str]) -> None:
+def _reject_secret_like_metadata(values: Sequence[str | None]) -> None:
     for value in values:
+        if value is None:
+            continue
         lowered = value.lower()
         if any(marker in lowered for marker in _SECRET_MARKERS):
             raise InvalidInputError("metadata contains a secret-like value")
@@ -274,18 +276,35 @@ def _command_new(args: argparse.Namespace) -> int:
 
     entry = _proposed_entry(args)
     source_path = args.repo_root / Path(args.source_dir)
-    if source_path.exists():
-        raise InvalidInputError(f"source directory already exists: {args.source_dir}")
-    if not source_path.parent.is_dir():
-        raise InvalidInputError(
-            f"source parent directory does not exist: {source_path.parent}"
-        )
+    source_exists = source_path.exists()
+    if args.use_existing_source:
+        if not source_exists or not source_path.is_dir():
+            raise InvalidInputError(
+                f"existing source directory does not exist: {args.source_dir}"
+            )
+    else:
+        if source_exists:
+            raise InvalidInputError(f"source directory already exists: {args.source_dir}")
+        if not source_path.parent.is_dir():
+            raise InvalidInputError(
+                f"source parent directory does not exist: {source_path.parent}"
+            )
 
     candidate = deepcopy(catalog)
     candidate_entries = candidate.setdefault("entries", [])
     if not isinstance(candidate_entries, list):
         raise InvalidInputError("catalog entries must be a list")
     candidate_entries.append(entry)
+
+    if args.use_existing_source:
+        _ensure_valid_catalog(candidate, args.repo_root)
+        _write_catalog(args, candidate)
+        _emit(
+            args,
+            {"ok": True, "entry": entry},
+            f"Registered existing fixture: {args.id}",
+        )
+        return SUCCESS
 
     source_path.mkdir()
     readme_path = source_path / "README.md"
@@ -394,7 +413,7 @@ def _build_parser() -> argparse.ArgumentParser:
     validate_parser.set_defaults(handler=_command_validate)
 
     new_parser = subparsers.add_parser(
-        "new", help="Create a metadata-only draft scaffold for a new playtest"
+        "new", help="Create or register a draft playtest"
     )
     for name in (
         "id",
@@ -406,9 +425,14 @@ def _build_parser() -> argparse.ArgumentParser:
         "source-dir",
         "instrument-id",
         "instrument-version",
-        "published",
     ):
         new_parser.add_argument(f"--{name}", required=True)
+    new_parser.add_argument("--published")
+    new_parser.add_argument(
+        "--use-existing-source",
+        action="store_true",
+        help="register an already-approved existing fixture without modifying its files",
+    )
     new_parser.set_defaults(handler=_command_new)
 
     archive_parser = subparsers.add_parser(
