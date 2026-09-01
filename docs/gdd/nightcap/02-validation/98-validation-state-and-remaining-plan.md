@@ -1,7 +1,7 @@
 # Nightcap — Validation State & Remaining Plan
 
 **Status:** PROCESS / CONTINUATION PLAN — not game canon  
-**Checkpoint:** Post Paper Test #2 v2.2 GDD reconciliation
+**Checkpoint:** Paper Test #2 v3.0 publication and Gate 1 rerun preparation
 
 ## Current Progress Estimates
 
@@ -40,7 +40,7 @@ The post-v2.2 revision also makes explicit:
 - visible rival-detective activity without exposing private theories;
 - story-wrapped minigame mental models;
 - stable, natural player-facing terminology;
-- high-confidence open-source writing/editorial skill use under Arcwright authority.
+- optional use of evaluated external writing/editorial methods under Arcwright authority, without making a temporary tool shortlist product canon.
 
 ## Paper Test #2 v2.2 — Completed Diagnostic Result
 
@@ -83,15 +83,46 @@ Do not overgeneralize from:
 
 The stronger evidence is that those systems were poorly contextualized or represented, not that the underlying Nightcap pillars should be removed.
 
+## Paper Test #2 v3.0 — Current Gate 1 Attempt
+
+The founder-approved successor fixture is:
+
+- fixture ID: `nightcap-paper-test-02-v3.0`;
+- fixture version: `3.0`;
+- non-canon case: *A Knock at Midnight*;
+- immutable route: `/nightcap/paper-test-02/v3.0/`;
+- Jotform instrument ID: `262397917027062`;
+- instrument version: `2.2`, because the survey fields, hidden telemetry names, response scales, and redirect configuration were not changed;
+- canonical telemetry authority: one ordered v3 event stream;
+- authored solo rival: research scaffolding only;
+- competitive pulse under test: *The Locked Box* lock-picking race;
+- Leverage in the fixture: test-granted research control, not a production sourcing rule.
+
+The v3 hypotheses are deliberately narrower than the full GDD:
+
+1. bounded-open investigation improves detective agency;
+2. contextual onboarding improves clarity without interpreting clues;
+3. scene-first discoveries produce more player-owned inference;
+4. visible rivalry + a murder-facing competitive pulse + bounded information warfare improve competitive cohesion;
+5. the revised flow improves fun, detective feeling, completion, and replay intent.
+
+V3 does **not** validate final multiplayer balance, exact 2-vs-4 scaling, final Leverage economy, final Case Board UX, production simultaneous lock-picking, final runtime, final Postmortem, or the final minigame pool.
+
 ## Gate 1 — Representative Time-to-Fun / Cohesion
 
 **STATUS: NOT PASSED.**
 
-Paper Test #2 v2.2 produced useful diagnostic evidence but did not demonstrate the desired detective feeling, replay pull, or representative cohesion.
+V2.2 failed the gate. V3.0 is the current rerun, but no amount of implementation completeness, CI success, publication, or fixture polish counts as a Gate 1 pass without representative player evidence.
 
-The next attempt should **not** be v2.3 of *The Last Toast*. Build a **brand-new non-canon case** from the revised GDD so the test measures the improved design rather than familiarity with or patching of the prior fixture.
+Before external distribution is treated as fully ready:
 
-Before publishing or sending that case, define the hypotheses, immutable fixture/instrument version, one canonical telemetry contract, survey-handoff proof, reveal-return proof, and approval boundary in the Playtest Lab workflow.
+1. publish/promote v3 without overwriting v2.2;
+2. verify the live Pages route and current-test routing;
+3. preserve v2.2 at its immutable route;
+4. verify survey handoff with the same anonymous `run_id`;
+5. use a separately approved, labeled smoke submission to prove the complete survey-submit → reveal-return path, or another approved externally observable mechanism;
+6. exclude smoke evidence from research results;
+7. run representative external playtests and analyze the five declared hypotheses.
 
 ## Gate 2 — Memory Support vs. Auto-Solving
 
@@ -125,12 +156,12 @@ Test whether accessibility filtering preserves enough variety, spectacle, and fa
 
 ## Remaining Validation Order
 
-1. Use the revised GDD as the authority for the next completely new case.
-2. Define a narrow next-test hypothesis set before authoring fixture content.
-3. Build a new immutable fixture/instrument version with one telemetry contract.
-4. Re-run **Gate 1: Representative Time-to-Fun / Cohesion**.
-5. Interpret that evidence before expanding further validation scope.
-6. Continue Gate 2 through Gate 6 as justified by evidence.
+1. Complete v3 publication and live-route verification.
+2. Complete the separately approved survey/reveal smoke proof.
+3. Run representative external Gate 1 sessions on immutable v3.0.
+4. Analyze H1–H5 using the canonical event stream plus survey responses.
+5. Decide whether Gate 1 passes, needs a narrowly scoped v3.x successor, or requires a larger design correction.
+6. Only after Gate 1 evidence is interpreted, continue Gate 2 through Gate 6 as justified.
 7. Harden player-count scaling before deciding the V1 upper bound.
 8. Run representative whole-session tests before calling the GDD hardened.
 
@@ -162,10 +193,10 @@ Test whether accessibility filtering preserves enough variety, spectacle, and fa
 - two-player same-challenge scaling;
 - group rescue;
 - accessibility-compatible minigame breadth;
-- survey handoff and reveal-return reliability in the next external test.
+- survey handoff and reveal-return reliability.
 
 ## Evidence Rule
 
 Repeated representative evidence has more authority than intuition.
 
-A DECIDED design may be reopened when evidence justifies it. One exploratory participant or one prototype convenience normally produces a **TEST FINDING**, not a permanent law. Paper Test #2 v2.2 justified several low-regret clarifications because they either reinforced already-decided principles or resolved founder-approved design gaps; it did not validate Nightcap's overall fun or cohesion.
+A DECIDED design may be reopened when evidence justifies it. One exploratory participant or one prototype convenience normally produces a **TEST FINDING**, not a permanent law. Paper Test #2 v2.2 justified several low-regret clarifications because they either reinforced already-decided principles or resolved founder-approved design gaps; it did not validate Nightcap's overall fun or cohesion. V3.0 is a research instrument for testing those revisions, not a source of new canon by itself.
