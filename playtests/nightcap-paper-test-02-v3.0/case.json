@@ -621,7 +621,7 @@
     ]
   },
   "case_file": {
-    "instructions": "Choose your culprit, then select four facts that best reconstruct what happened.",
+    "instructions": "Choose your culprit, then select four or five facts that best reconstruct what happened.",
     "required_truths": [
       "t1-false-voice",
       "t2-before-voice",
