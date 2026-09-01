@@ -287,7 +287,7 @@ function finishLock(outcome) {
 function renderLockResult() {
   const outcome = state.lock.outcome;
   let body;
-  let actions = "";
+  let actions;
   if (outcome === "human-win") {
     const cylinder = state.privateDiscoveries.find((item) => item.id === "e-cylinder-43");
     body = `<h2>You get the box open first.</h2><p class="story">Inside is Gideon March's missing cylinder 43.</p><div class="notice"><strong>Private first look:</strong> ${esc(cylinder?.fact ?? "You inspect cylinder 43 before anyone else.")}</div><p class="small">This is an information advantage, not a solution. The cylinder will enter normal investigation after your next move.</p>`;
