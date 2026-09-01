@@ -39,13 +39,14 @@ export default tseslint.config(
         TextEncoder: "readonly",
         TextDecoder: "readonly",
         fetch: "readonly",
-        URL: "readonly",
-        URLSearchParams: "readonly",
       },
     },
   },
   {
-    files: ["playtests/**/app.js", "playtests/**/config.js"],
+    files: [
+      "playtests/nightcap-paper-test-02-v3.0/app.js",
+      "playtests/nightcap-paper-test-02-v3.0/config.js",
+    ],
     languageOptions: {
       globals: {
         window: "readonly",
@@ -65,7 +66,16 @@ export default tseslint.config(
     },
   },
   {
-    files: ["playtests/**/runtime.js"],
+    files: ["playtests/nightcap-paper-test-02-v3.0/runtime.js"],
+    languageOptions: {
+      globals: {
+        URL: "readonly",
+        URLSearchParams: "readonly",
+      },
+    },
+  },
+  {
+    files: ["playtests/nightcap-paper-test-02-v3.0/tests/**/*.{js,mjs,cjs}"],
     languageOptions: {
       globals: {
         URL: "readonly",
