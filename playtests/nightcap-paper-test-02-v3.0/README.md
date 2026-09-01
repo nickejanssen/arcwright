@@ -67,11 +67,13 @@ Structured Reconstruction asks for one culprit plus **four or five facts**. Four
 
 ## Survey and reveal boundary
 
-The current form ID remains `262397917027062` for draft compatibility. This fixture does **not** mutate the form.
+The current form ID remains `262397917027062`. Read-only inspection on 2026-08-31 confirmed the enabled form still exposes the 31-question structure used by v2.2, including every telemetry field mapped by `JOTFORM_FIELD_MAP`. No survey-field or hidden-field mutation is required for the v3 fixture: additional v3 timings remain derivable from the canonical `event_sequence`.
+
+The v3 catalog records instrument version `3.0` because the fixture/event semantics and research contract changed, while the physical Jotform field layout remains compatible and unchanged.
 
 The fixture records `survey_handoff` before navigating to the form and preserves the same anonymous `run_id` in the prefill URL. If the form returns the player to this fixture in the same tab, `sessionStorage` can record `reveal_return` locally.
 
-**That does not constitute externally verified reveal-return evidence.** Before this fixture is sent to external testers, Research + Harness must choose and verify the smallest approved observation mechanism that can prove reveal return tied to the same run ID. A redirect configuration alone is insufficient.
+**That does not constitute externally verified reveal-return evidence.** The available Jotform connector does not expose redirect/settings metadata, so redirect behavior has not been changed or claimed verified. Before this fixture is sent to external testers, Harness must verify the complete form-submit -> fixture-return path through an explicitly approved smoke submission or another approved externally observable mechanism tied to the same run ID.
 
 ## Refresh / re-entry
 
@@ -91,8 +93,19 @@ The fixture stores exact session state in a v3-specific `sessionStorage` record.
 ## Test commands
 
 ```bash
-node --test playtests/nightcap-paper-test-02-v3.0/tests/runtime.test.mjs playtests/nightcap-paper-test-02-v3.0/tests/fixture.test.mjs
+node --test \
+  playtests/nightcap-paper-test-02-v3.0/tests/runtime.test.mjs \
+  playtests/nightcap-paper-test-02-v3.0/tests/fixture.test.mjs \
+  playtests/nightcap-paper-test-02-v3.0/tests/rusk-route.test.mjs
 ```
+
+The Pages deployment workflow is configured to run the published v2.2 tests and all three v3 test files before any future deploy.
+
+## Draft registration / build evidence
+
+The Steward CLI's `new --use-existing-source` path was added specifically to register already founder-approved fixture content without overwriting it. A metadata-only mirror using the actual branch CLI and catalog validator successfully registered this fixture as `draft` with `published: null`, while preserving `current_tests.nightcap = nightcap-paper-test-02-v2.2`.
+
+Using the actual branch catalog/build logic, a deterministic mirror build generated the immutable `/nightcap/paper-test-02/v3.0/` route and listed v3 as draft on the Nightcap index while the root/current link remained v2.2. This is build-logic evidence, not a live Pages deployment or real-browser check.
 
 ## Required pre-send harness checks
 
@@ -101,6 +114,7 @@ node --test playtests/nightcap-paper-test-02-v3.0/tests/runtime.test.mjs playtes
 - break, timeout, and abort fallback;
 - red-herring-first investigation;
 - a route reaching Case File without relying on winning the lock;
+- independent Rusk chronology/reconstruction route without Beatrice testimony;
 - refresh during lock;
 - refresh after lock result / first-look;
 - refresh during partial Case File selection;
@@ -112,4 +126,4 @@ node --test playtests/nightcap-paper-test-02-v3.0/tests/runtime.test.mjs playtes
 
 ## Publication boundary
 
-Do not overwrite v2.2. Do not hand-edit `playtests/catalog.json` from an environment that cannot run the Steward CLI. Do not promote this fixture to `current`, edit Jotform, publish Pages, or treat it as ready for external testing without the separate founder approvals required by `playtests/AGENTS.md`.
+Do not overwrite v2.2. Do not promote this fixture to `current`, mutate Jotform, publish Pages, send a verification submission, or treat it as ready for external testing without the separate founder approvals required by `playtests/AGENTS.md`.
