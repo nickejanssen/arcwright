@@ -16,6 +16,9 @@ test("dynamic HTML passes through DOMPurify before reaching innerHTML", () => {
 
 test("DOMPurify is version-pinned and protected with subresource integrity", () => {
   assert.match(indexSource, /dompurify@3\.4\.10\/dist\/purify\.min\.js/);
-  assert.match(indexSource, /integrity="sha512-[^"]+"/);
+  assert.match(
+    indexSource,
+    /integrity="sha512-zV0\+P1qGCdp57soPEGVEr6xoBBPouKeHMhr5IB979T6DExjQdHZBJcjItIyn\+BkeFU5xl\/8cCW5ZwBUHM0ThOQ=="/
+  );
   assert.match(indexSource, /crossorigin="anonymous"/);
 });
