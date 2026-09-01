@@ -15,9 +15,17 @@ Repeat until **LAST CALL → CASE FILE → THE TRUTH → THE VERDICT → THE POS
 
 ## Arcwright Runtime Contract
 
-Nightcap is an authored arc on Arcwright. Arcwright deterministically resolves authored state, character knowledge, and audience-targeted events; generative models express that resolved state rather than deciding the canonical murder.
+Nightcap is an authored arc on Arcwright. Arcwright deterministically resolves authored state, character knowledge, investigation opportunity topology, and audience-targeted events; generative models express that resolved state rather than deciding the canonical murder.
 
-A per-character knowledge graph supports interrogation, the unified character model allows human-controlled and AI-driven roles to use the same underlying object, and surface-agnostic events support public/private delivery without Nightcap inventing separate engine paths. The Nightcap GDD still owns what those primitives mean as investigation, competition, story, proof, and endgame play.
+A per-character knowledge graph supports interrogation and the factual notebook, the unified character model allows human-controlled and AI-driven roles to use the same underlying object, and surface-agnostic events support public/private delivery without Nightcap inventing separate engine paths. The Nightcap GDD owns what those primitives mean as investigation, competition, story, proof, and endgame play.
+
+The hidden case graph separates at least three concepts clearly enough for deterministic play and analysis:
+
+1. canonical case/solution relationships;
+2. investigation opportunities and routes; and
+3. per-character/player knowledge and proof state.
+
+The graph is not exposed to players as an answer map.
 
 ## World, Host & Content
 
@@ -25,13 +33,40 @@ Nightcap cases live inside a legible **social-gathering** frame even as era, occ
 
 Nightcap can be irreverent, strange, suspenseful, and darkly funny while taking the murder seriously. Graphic gore, sexual content, real-person targeting, identity-based hate/slurs, harmful content involving minors, and player-directed psychological horror remain outside the content territory. The old fully-generative-everything rule is superseded by the current hybrid-content, deterministic-state-first model.
 
+Player-facing prose should be specific, human, context-aware, and consistent. Internal system terminology does not automatically belong on screen.
+
+Arcwright may use high-confidence, appropriately licensed external writing/editorial methods when useful, while keeping the GDD, graph/state, fairness rules, and founder-approved intent authoritative. The exact tool or repository set is workflow-level and remains revisable rather than product canon.
+
 ## Investigation & Deduction
 
 V1 investigation is authored and bounded but **diegetic-first**. Players pursue concrete people, places, objects, claims, behaviors, and irregularities while the game keeps the rails mostly invisible.
 
+Within the investigative middle, players should ordinarily retain **multiple meaningful possibilities** rather than be forced down a single remaining lead. Last Call is the intentional convergence point.
+
 A meaningful action may simply reveal fair information. The game presents observations; **the player owns the implication**.
 
+Important evidence should normally be **scene first, fact second**: something the player actually saw, heard, found, compared, or uncovered, with structured facts recorded underneath for deterministic state.
+
 THINK is continuous rather than a recurring quiz. Player-generated hypotheses may feed bounded verification, comparison, confrontation, or challenge actions.
+
+## Onboarding Boundary
+
+Nightcap uses progressive contextual teaching.
+
+Explain:
+
+- what the player can do;
+- what a mechanic/resource represents;
+- what success/failure/spending changes;
+- who owns information when relevant; and
+- what state or opportunity changed.
+
+Do **not** explain:
+
+- why a clue matters;
+- which suspect is important;
+- which comparison should be made; or
+- what conclusion the player should reach.
 
 ## Evidence Economy
 
@@ -42,21 +77,29 @@ Fairness means viable routes to the truth, not identical information or equal ou
 - **Knowledge ≠ Proof.** Nightcap automatically tracks which proof each player legitimately owns; ownership visibility cannot become relevance guidance.
 - The fiction may lie; the game must play fair.
 
-## Case Board & Memory
+## Detective Notebook, Case Board & Memory
+
+The private detective notebook remembers objective player-specific state: suspects, claims, factual observations, objects/locations/times, evidence/proof state, and replayable case-critical information. Living suspect cards accumulate only what that player legitimately learns. Players may add short private notes.
 
 Memory retrieves what the player legitimately encountered. The optional Case Board supports the player's own model of the case.
 
-Objective factual organization is allowed; meaningful deductive relationships remain player-owned. Baseline transcript, attribution, and review are DECIDED. Advanced provenance/re-entry/search/filter remain TESTING.
+Objective factual organization is allowed; meaningful deductive relationships remain player-owned. Advanced provenance/re-entry/search/filter remain TESTING.
 
 ## Minigames
 
 Minigames are the competitive pulse. Major beats must reconnect to murder-facing state, are **opportunity-first**, and emerge through story-triggered competitive windows.
 
-They create big tactical swings with short half-lives and cannot substitute for legitimate murder proof. A temporary privilege may expire while information legitimately learned through it remains known; the short half-life applies to the advantage mechanism, not to player memory.
+A major minigame should feel like an investigative action occurring in the fiction rather than an unexplained generic mode. First-use framing should make clear what players are doing, what is contested, and what the result changes afterward without interpreting the clue.
 
-## Espionage
+They create big tactical swings with short half-lives and cannot substitute for legitimate murder proof. A temporary privilege may expire while information legitimately learned through it remains known.
 
-Leverage manipulates the information race through **information + opportunity**, not generic PvP damage. Players can also gain ordinary investigative leverage simply by finding or understanding useful information first; not every advantage needs to become a formal resource. Minigames may grant Leverage or temporary advantages, but they must not become the primary gateway to espionage or let repeated wins dominate the whole investigation. Exact Leverage sourcing remains **TESTING**, and player-facing bookkeeping should stay minimal. Bluffing, red herrings, lies, and fair deception are part of the mystery vocabulary.
+## Rivalry & Espionage
+
+Rival detectives should feel active throughout the case without exposing their private theories. Players may see that rivals investigated, reached opportunities, earned/spent resources, or changed shared state while private notebooks and final reasoning stay private.
+
+Leverage manipulates the information race through **information + opportunity**, not generic PvP damage. It may change access, priority, timing, ordering, or visibility, but cannot change truth, erase learned facts, delete every route to required proof, or let a model decide competitive resolution.
+
+Exact Leverage sourcing remains **TESTING**, and player-facing bookkeeping should stay minimal.
 
 ## Story Reactivity
 
@@ -78,7 +121,7 @@ The simpler **Culprit + Decisive Facts** interaction is PARKED as a fallback if 
 
 **The Truth** provides evidence-led narrative catharsis.  
 **The Verdict** confirms the deterministic result and surfaces only the decisive factual difference when explanation is needed.  
-**The Postmortem** turns actual, observable player behavior into truthful, exaggerated social comedy. It may use theories or changes in thinking only when the player externalized them through an interaction the game could actually observe.
+**The Postmortem** turns actual, observable player behavior into truthful, exaggerated social comedy.
 
 After every final theory locks, Nightcap first reveals **only each player's accused culprit** for the social commitment moment. It then runs **Truth → Verdict → Postmortem**. Players do not present speeches or argue their cases to the room.
 
@@ -88,29 +131,36 @@ Two-player support is mandatory and first-class. Two players receive the same co
 
 Four players remains the best-understood reference configuration. V1 upper bound remains OPEN.
 
-## Difficulty / Accessibility / Onboarding
+## Difficulty / Accessibility
 
 Nightcap separates Case Challenge, Investigation Pressure, and Accessibility.
 
 Accessibility is lean and mostly invisible: remove avoidable barriers while preserving the same mystery, reasoning ownership, proof requirements, competitive meaning, story quality, humor, and fun.
 
-## Arcwright Case Graph
-
-Nightcap cases are authored internally as traversable graph/state structures. Players begin from the same baseline state but may investigate along different connected routes. Arcwright tracks canonical truth, investigation opportunities, and each character's legitimately learned knowledge separately enough to support deterministic Structured Reconstruction and authoring analytics.
-
-The graph is hidden from players. It is an authoring, fairness, telemetry, and Arcwright-platform capability. Candidate diagnostics include path depth, branching, alternate solution routes, bottlenecks, dead ends, route overlap, and actual player traversal.
-
 ## Current Validation State
 
-Paper Test #2 has not yet passed the representative Time-to-Fun / Cohesion baseline.
+Paper Test #2 v2.2 is **complete as diagnostic evidence and did not pass the representative Time-to-Fun / Cohesion gate**.
 
-The external GitHub Pages harness, Jotform survey, and telemetry/handoff infrastructure are built separately from the GDD. v2.2 is the active test direction.
+Dataset: N=3 survey submissions, all Fun = 3/5, Detective Feeling = 2/5, 2/5, and 3/5; replay intent = one Yes and two Maybe, with one Maybe reading qualitatively like a soft No. Telemetry was inconsistent and cannot support robust pacing/path conclusions.
 
-Memory Support remains blocked until Gate 1 passes.
+Strongest within-sample findings:
+
+- detective agency was too low;
+- the fixture too often supplied conclusions instead of evidence;
+- system terminology/copy hurt comprehension and immersion;
+- replay pull was too weak.
+
+The evidence strengthened rather than reversed the core GDD direction. It drove explicit revisions around bounded-open agency, rich raw observation, progressive contextual onboarding, factual notebook/living suspect cards, rival legibility, story-wrapped minigame context, and player-facing terminology.
+
+Paper Test #2 v3.0, *A Knock at Midnight*, is the founder-approved **next Gate 1 validation fixture**. It is a new non-canon case built from the revised GDD rather than a patch of *The Last Toast*. Its lock-picking race, authored rival, test-granted Leverage, and fixture-specific flow are research implementations, not automatically canonical production rules.
+
+**Gate 1 remains NOT PASSED until representative v3 player evidence is collected and reviewed.** Publication or successful automation does not itself validate the design.
+
+Formal Memory Support comparison remains a later validation question, but the factual notebook / living-suspect-card baseline is now DECIDED; future memory testing asks how much additional support helps before it starts doing the reasoning.
 
 ## Approximate Status
 
-- Foundational GDD definition: **~90%**.
-- End-to-end design + validation plan: **~80%**.
+- Foundational GDD definition: **~93%**.
+- End-to-end design + validation plan: **~85%**.
 
-These planning estimates are intentionally unchanged. The integration architecture is materially clearer, but major empirical validation remains unfinished.
+These remain planning estimates, not development progress. Major empirical validation is still unfinished.

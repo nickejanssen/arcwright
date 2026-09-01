@@ -5,7 +5,7 @@
 
 ## Purpose
 
-This page preserves the parts of the former Nightcap Story Bibles that remain compatible with the current game after the gameplay redesign. It does **not** restore superseded Couch Race, Imposter, player-count, scoring, beat-count, accusation-token, or fully-generative-content rules.
+This page preserves the Nightcap experience, tone, world, content, and authoring-quality boundaries that remain compatible with the current game. It does **not** restore superseded Couch Race, Imposter, player-count, scoring, beat-count, accusation-token, or fully-generative-content rules.
 
 ## DECIDED — World Frame
 
@@ -52,6 +52,66 @@ The method of death may be discovered and reconstructed as evidence, but present
 - The former Story Bible rule that *every specific story element is generated* is **superseded**.
 - Current authority is the Decision Ledger's hybrid-content direction plus the Arcwright runtime boundary: deterministic authored truth/state first, generative expression only within that resolved state.
 - Nightcap may use authored libraries, generated dressing, generated character expression, and other hybrid techniques when they preserve authorial intent, case fairness, continuity, and premium quality.
+
+## DECIDED — Player-Facing Writing Quality
+
+Paper Test #2 v2.2 reinforced that copy quality and terminology are part of the game model, not cosmetic polish.
+
+Player-facing writing should:
+
+- use plain, stable, contextual language for mechanics and consequences;
+- favor specific human detail over generic exposition;
+- distinguish system state from fictional observation without sounding like database output;
+- give evidence enough texture to reason from without interpreting it for the player;
+- avoid abrupt labels, unexplained resource jargon, and inconsistent names for the same concept;
+- preserve character voice and scene rhythm while keeping actionable state legible.
+
+Internal implementation names do not automatically become player-facing vocabulary. A term is acceptable on screen only if a first-time player can understand what it represents from the fiction and immediate context.
+
+## DECIDED — External Authoring and Editorial Methods
+
+Arcwright may actively use high-confidence, high-quality, appropriately licensed external or open-source writing, continuity, editing, research, and authoring methods when they materially improve the work.
+
+This is an Arcwright-native orchestration policy. External methods are tools, not product authority, and the exact repository or skill set is **workflow-level and revisable rather than Nightcap canon**.
+
+### Selection standard
+
+Prefer methods with strong evidence such as:
+
+- compatible licensing;
+- transparent methodology and readable source;
+- concrete examples and documentation;
+- meaningful tests, evals, deterministic checks, or explicit review process;
+- active maintenance or recent validation;
+- clear boundaries around what the method does and does not decide.
+
+Popularity alone is not validation. Competing methods should be compared against actual Arcwright authoring and playtest needs before one is standardized.
+
+### Authority boundary
+
+External methods may help authors:
+
+- brainstorm;
+- structure;
+- draft;
+- revise;
+- critique;
+- continuity-check;
+- run quality gates;
+- identify generic writing or weak scene craft.
+
+They may **not** override:
+
+- the current Nightcap GDD;
+- founder-approved authorial intent;
+- Arcwright's deterministic case truth;
+- the knowledge graph;
+- fairness/solvability rules;
+- safety boundaries;
+- canonical solution validation;
+- founder approval gates.
+
+Where an external method has a useful deterministic validator, prefer integrating the principle or adapting it to Arcwright's own authored graph/state rather than creating a second competing truth model.
 
 ## Superseded Former-Bible Rules
 

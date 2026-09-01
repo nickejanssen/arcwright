@@ -1,6 +1,6 @@
 # Playtest Lab Agent Rules
 
-> Current version: v1.1
+> Current version: v1.2
 > Last updated: 2026-08-31
 > Status: Current
 > Canonical path: playtests/AGENTS.md
@@ -90,6 +90,8 @@ Use the narrower skills for direct work:
 - Each catalog entry must include `instrument_id` and `instrument_version`.
 - Changing survey fields, hidden telemetry names, redirect behavior, or answer
   scales requires a new instrument version.
+- A draft may use `published: null`; this means the artifact has a catalog
+  identity but has not been published or approved for distribution.
 - Jotform or other external form edits are external side effects. Inspect and
   document them, but do not submit or mutate them without action-time approval.
 - Verification submissions must be labeled as smoke tests and must not be
@@ -120,13 +122,19 @@ Use the narrower skills for direct work:
 Use `python scripts/playtest_tool.py` for deterministic local operations:
 
 - `list` and `validate` are read-only.
-- `new` creates a metadata-only draft scaffold after validating explicit
-  metadata and an unused ID. It accepts only neutral titles derived from game,
-  test type, and version:
+- `new` normally creates a metadata-only draft scaffold after validating
+  explicit metadata and an unused ID. It accepts only neutral titles derived
+  from game, test type, and version:
   - `<Game> Playtest v<version>`
   - `<Game> Test v<version>`
   - `<Game> Paper Test #<number> v<version>` when the ID contains
     `paper-test-<number>`
+- `new --use-existing-source` registers an already founder-approved fixture
+  directory as a draft without creating, deleting, or rewriting any source
+  file. The source directory must already exist and the complete candidate
+  catalog must validate before metadata is written.
+- `--published` is optional for draft registration. Omit it when the artifact
+  has not been published; the catalog records `published: null`.
 - `new` accepts only these neutral summaries:
   - `Metadata-only draft scaffold.`
   - `Research scaffold awaiting approved fixture content.`
@@ -137,5 +145,5 @@ Use `python scripts/playtest_tool.py` for deterministic local operations:
 - `archive` requires an exact ID and preserves artifact history.
 - `build` delegates to `scripts/build_playtest_site.py`.
 
-The CLI must remain standard-library Python and must reject overwrites,
-archived-entry mutation, secret-like metadata, and creative content.
+The CLI must remain standard-library Python and must reject accidental source
+overwrites, archived-entry mutation, secret-like metadata, and creative content.

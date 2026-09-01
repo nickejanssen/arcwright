@@ -1,143 +1,168 @@
 # Nightcap — Validation State & Remaining Plan
 
 **Status:** PROCESS / CONTINUATION PLAN — not game canon  
-**Checkpoint:** 05 / Session B
+**Checkpoint:** Paper Test #2 v3.0 publication and Gate 1 rerun preparation
 
 ## Current Progress Estimates
 
-Planning estimates only; intentionally unchanged:
+Planning estimates only:
 
-- **Foundational GDD definition:** approximately **90%**.
-- **End-to-end design + validation plan:** approximately **80%**.
+- **Foundational GDD definition:** approximately **93%**.
+- **End-to-end design + validation plan:** approximately **85%**.
 
-The cross-system architecture is materially clearer, but major empirical gates remain unresolved.
+The design is materially more coherent, but representative empirical validation remains unfinished.
 
-## What Has Just Been Completed
+## Completed Design / Cohesion Work
 
-### Cross-system cohesion pass
+The current GDD now has explicit, cross-system direction for:
 
-The Checkpoint 04 integration-map recommendation was adopted as a supporting design-control method and used to audit the full Nightcap loop.
+- WATCH → HUNT;
+- HUNT → THINK;
+- THINK → bounded action;
+- factual notebook / living suspect cards → memory support;
+- optional Case Board → player-owned theory work;
+- Minigames → finite consequence → REACT → murder-facing play;
+- Rival activity / Leverage → REACT / HUNT;
+- REACT → re-entry;
+- THINK → Last Call → Structured Reconstruction;
+- Structured Reconstruction → Truth → Verdict → Postmortem;
+- deterministic case/solution graph versus player-specific knowledge state;
+- two-player core-loop parity.
 
-Major formerly under-specified seams now have current architectural direction:
+The post-v2.2 revision also makes explicit:
 
-- WATCH → HUNT,
-- HUNT → THINK,
-- THINK → bounded action,
-- Case Board / memory → THINK,
-- Minigames → REACT → murder-facing play,
-- Espionage → REACT / HUNT,
-- REACT → re-entry,
-- THINK → Last Call → Case File / Structured Reconstruction,
-- Structured Reconstruction → Truth → Verdict → Postmortem,
-- player-count invariants at 2 vs. larger groups.
+- bounded-open agency before Last Call;
+- rich observation with minimal interpretation;
+- scene-first / fact-second evidence presentation;
+- progressive contextual onboarding that explains affordances and consequences, not deductions;
+- lightweight factual detective notebook + optional private notes;
+- living suspect cards;
+- visible rival-detective activity without exposing private theories;
+- story-wrapped minigame mental models;
+- stable, natural player-facing terminology;
+- optional use of evaluated external writing/editorial methods under Arcwright authority, without making a temporary tool shortlist product canon.
 
-`06-story-reactivity-reentry.md` now gives REACT an explicit system owner.
+## Paper Test #2 v2.2 — Completed Diagnostic Result
 
-The subsequent adversarial pass also clarified the Arcwright/Nightcap runtime boundary, endgame knowledge bookkeeping, culprit-reveal sequencing, Leverage sourcing risk, Group Rescue wording, Postmortem observability boundaries, deterministic Structured Reconstruction, Spotlight ownership, and hidden case-graph analytics.
+Catalog/instrument boundary remains external to this GDD package. The evidence package records:
 
-### Documentation consolidation
+- fixture version: 2.2;
+- instrument version: 2.2;
+- submissions: **3**;
+- submission range: **2026-08-28 21:49:44 → 2026-08-30 20:32:55**;
+- non-canon fixture: *The Last Toast*;
+- telemetry health: **inconsistent** across submissions;
+- survey handoff explicitly proven in only one telemetry stream;
+- reveal return after Jotform: **unverified for all three**.
 
-Checkpoint 05 adds/updates concise authoritative one-pagers so the cohesion decisions live in system documents rather than only in conversation or supporting rationale.
+### Experience results
 
-### External test infrastructure
+- Fun: **3/5, 3/5, 3/5**.
+- Detective feeling: **2/5, 2/5, 3/5**.
+- Replay: **1 Yes, 2 Maybe**, with one Maybe qualitatively reading as a soft No.
 
-The GitHub Pages paper-test harness, Jotform survey, and associated testing infrastructure have been built in a separate workflow.
+### High-confidence findings within N=3
 
-The GDD session should not re-engineer that infrastructure.
+These are high-confidence only inside this exploratory sample, not statistically generalizable population findings.
 
-## Time-to-Fun Evidence So Far
+1. **Detective agency is too low in the fixture.**
+2. **The fixture too often supplies conclusions instead of evidence.**
+3. **System terminology and copy hurt immersion and comprehension.**
+4. **Current replay pull is too weak.**
 
-Paper Test #2 still provides **negative/diagnostic evidence**, not validation.
+### Weak / unresolved signals
 
-1. **v1 — FAILED AS TEST INSTRUMENT**
-   - mid-play research/essay questions,
-   - too little real investigation,
-   - over-signposting,
-   - poor representation of Nightcap.
+Do not overgeneralize from:
 
-2. **v2 — REVISE AND RERUN**
-   - game-first structure improved,
-   - detective feeling and desire to continue remained weak.
+- exact memory-support need;
+- note-taking demand;
+- the Rhea authored-rival concept itself;
+- minigames themselves;
+- exact endgame complexity;
+- runtime.
 
-3. **v2.1 — REVISE AND RERUN**
-   - independent third-party tester,
-   - Fun = 2/5,
-   - Detective Feeling = 2/5,
-   - Wanted to Continue = Maybe,
-   - Action Clarity = Mostly Confusing,
-   - five investigation actions / more options were not sufficient.
+The stronger evidence is that those systems were poorly contextualized or represented, not that the underlying Nightcap pillars should be removed.
 
-4. **Additional early qualitative autonomy signal**
-   - creator reports that players liked autonomy and reaching their own conclusions rather than feeling hand-held,
-   - source details are limited in this checkpoint,
-   - treat as directional TESTING evidence only,
-   - do not use it to excuse confusing action design.
+## Paper Test #2 v3.0 — Current Gate 1 Attempt
 
-## Important Non-Conclusions
+The founder-approved successor fixture is:
 
-Current tests do **not** establish that Nightcap itself is unfun.
+- fixture ID: `nightcap-paper-test-02-v3.0`;
+- fixture version: `3.0`;
+- non-canon case: *A Knock at Midnight*;
+- immutable route: `/nightcap/paper-test-02/v3.0/`;
+- Jotform instrument ID: `262397917027062`;
+- instrument version: `2.2`, because the survey fields, hidden telemetry names, response scales, and redirect configuration were not changed;
+- canonical telemetry authority: one ordered v3 event stream;
+- authored solo rival: research scaffolding only;
+- competitive pulse under test: *The Locked Box* lock-picking race;
+- Leverage in the fixture: test-granted research control, not a production sourcing rule.
 
-Earlier prototypes omitted or weakly represented major pillars such as meaningful rivalry, information warfare, Leverage, social bluffing, strong story reactivity, and a representative competitive/minigame pulse.
+The v3 hypotheses are deliberately narrower than the full GDD:
 
-A failed prototype must first be diagnosed as:
+1. bounded-open investigation improves detective agency;
+2. contextual onboarding improves clarity without interpreting clues;
+3. scene-first discoveries produce more player-owned inference;
+4. visible rivalry + a murder-facing competitive pulse + bounded information warfare improve competitive cohesion;
+5. the revised flow improves fun, detective feeling, completion, and replay intent.
 
-1. a Nightcap design failure,
-2. an unrepresentative implementation,
-3. or an invalid test instrument.
-
-Do not rewrite canon until evidence distinguishes those possibilities credibly.
+V3 does **not** validate final multiplayer balance, exact 2-vs-4 scaling, final Leverage economy, final Case Board UX, production simultaneous lock-picking, final runtime, final Postmortem, or the final minigame pool.
 
 ## Gate 1 — Representative Time-to-Fun / Cohesion
 
-**ACTIVE:** Paper Test #2 v2.2.
+**STATUS: NOT PASSED.**
 
-The external harness should implement a fuller representative slice so the existing survey follows a meaningful play experience.
+V2.2 failed the gate. V3.0 is the current rerun, but no amount of implementation completeness, CI success, publication, or fixture polish counts as a Gate 1 pass without representative player evidence.
 
-Current test-specific requirements are maintained in `98b-paper-test-02-v2.2-handoff-requirements.md`.
+Before external distribution is treated as fully ready:
 
-## Remaining Validation Order
+1. publish/promote v3 without overwriting v2.2;
+2. verify the live Pages route and current-test routing;
+3. preserve v2.2 at its immutable route;
+4. verify survey handoff with the same anonymous `run_id`;
+5. use a separately approved, labeled smoke submission to prove the complete survey-submit → reveal-return path, or another approved externally observable mechanism;
+6. exclude smoke evidence from research results;
+7. run representative external playtests and analyze the five declared hypotheses.
 
-### Gate 1 — Representative Time-to-Fun / Cohesion
+## Gate 2 — Memory Support vs. Auto-Solving
 
-Active now.
+Still a later validation gate, but its question has narrowed.
 
-Goal: demonstrate that a small but representative slice containing multiple real Nightcap pillars can generate detective play, competitive energy, and desire to continue.
+The current factual notebook baseline is DECIDED:
 
-### Gate 2 — Memory Support vs. Auto-Solving
+- persistent claims/dialogue with attribution;
+- review of legitimately earned case-critical information;
+- objective factual organization;
+- living suspect cards;
+- optional short private notes.
 
-**BLOCKED until Gate 1 passes.**
+Gate 2 should test **how much additional retrieval/provenance/search/re-entry support helps before it begins to perform the deduction**, rather than testing a no-memory baseline against a memory baseline.
 
-Compare lean/basic history against approved baseline memory support without changing the underlying mystery challenge.
-
-### Gate 3 — Same Case Challenge at 2 vs. 4 Players
+## Gate 3 — Same Case Challenge at 2 vs. 4 Players
 
 Test whether the same intellectual Case Challenge works at both counts by scaling opportunity architecture rather than making the two-player mystery easier.
 
-### Gate 4 — Mixed-Skill Competition
+## Gate 4 — Mixed-Skill Competition
 
 Test broad investigator skill expression + volatile tactical state without hidden rubber-banding or loser bonuses.
 
-### Gate 5 — Group Rescue Exploitability
+## Gate 5 — Group Rescue Exploitability
 
 Test whether unanimous rescue stays rare/helpful instead of becoming routine optimal play or grief fuel.
 
-### Gate 6 — Room-Compatible Minigame Pool
+## Gate 6 — Room-Compatible Minigame Pool
 
 Test whether accessibility filtering preserves enough variety, spectacle, and fair skill expression.
 
-## Parallel GDD Continuation
+## Remaining Validation Order
 
-The integration pass is complete enough to stop adding cohesion laws merely for completeness.
-
-Recommended next GDD sequence:
-
-1. **Checkpoint 05 consolidation** — COMPLETED by this package.
-2. Run a **full-GDD adversarial/cohesion pass** across the authoritative pages, focusing on contradictions, duplicated responsibilities, hidden player-work burden, and unvalidated assumptions.
-3. Resolve only material issues surfaced by that pass; do not reopen settled decisions for novelty.
-4. Continue Gate 1 external testing in parallel.
-5. Interpret representative v2.2 evidence before opening Gate 2.
-6. Harden player-count scaling through Gate 3 before deciding the V1 upper bound.
-7. Continue remaining validation gates.
+1. Complete v3 publication and live-route verification.
+2. Complete the separately approved survey/reveal smoke proof.
+3. Run representative external Gate 1 sessions on immutable v3.0.
+4. Analyze H1–H5 using the canonical event stream plus survey responses.
+5. Decide whether Gate 1 passes, needs a narrowly scoped v3.x successor, or requires a larger design correction.
+6. Only after Gate 1 evidence is interpreted, continue Gate 2 through Gate 6 as justified.
+7. Harden player-count scaling before deciding the V1 upper bound.
 8. Run representative whole-session tests before calling the GDD hardened.
 
 ## Major OPEN Areas
@@ -149,28 +174,29 @@ Recommended next GDD sequence:
 
 ## High-Value TESTING Areas
 
-- representative Time-to-Fun / core-loop cohesion,
-- autonomy vs. action clarity,
-- exact Leverage costs/frequency,
-- repeated-targeting / Counterintel balance without automatic pity protection,
-- Case Board UX,
-- Structured Reconstruction interaction grammar and accepted-solution authoring,
-- exact minigame frequency/reward calibration,
-- investigation and Spotlight distribution/calibration,
-- Arcwright case-graph complexity/traversal analytics,
-- runtime,
-- quarterbacking countermeasures,
-- Postmortem generation,
-- endgame pacing,
-- difficulty-pressure calibration,
-- memory support,
-- mixed-skill competitiveness,
-- two-player same-challenge scaling,
-- group rescue,
-- accessibility-compatible minigame breadth.
+- representative Time-to-Fun / core-loop cohesion;
+- autonomy vs. action clarity;
+- exact Leverage costs/frequency and sourcing;
+- repeated-targeting / Counterintel balance without automatic pity protection;
+- Case Board UX;
+- Structured Reconstruction interaction grammar and accepted-solution authoring;
+- exact minigame frequency/reward calibration;
+- investigation and Spotlight distribution/calibration;
+- Arcwright case-graph complexity/traversal analytics;
+- runtime;
+- quarterbacking countermeasures;
+- Postmortem generation;
+- endgame pacing;
+- difficulty-pressure calibration;
+- additional memory/retrieval support;
+- mixed-skill competitiveness;
+- two-player same-challenge scaling;
+- group rescue;
+- accessibility-compatible minigame breadth;
+- survey handoff and reveal-return reliability.
 
 ## Evidence Rule
 
 Repeated representative evidence has more authority than intuition.
 
-A DECIDED design may be reopened when evidence justifies it. One exploratory participant or one prototype convenience normally produces a **TEST FINDING**, not a permanent law.
+A DECIDED design may be reopened when evidence justifies it. One exploratory participant or one prototype convenience normally produces a **TEST FINDING**, not a permanent law. Paper Test #2 v2.2 justified several low-regret clarifications because they either reinforced already-decided principles or resolved founder-approved design gaps; it did not validate Nightcap's overall fun or cohesion. V3.0 is a research instrument for testing those revisions, not a source of new canon by itself.
