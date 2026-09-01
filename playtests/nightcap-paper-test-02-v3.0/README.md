@@ -55,7 +55,7 @@ One ordered event stream is the source of truth. Every event uses:
 
 `sequence -> elapsed_ms -> phase -> event_type -> target -> choice -> outcome`
 
-The fixture records opening completion, investigation choices, discoveries, player-initiated inference actions, rival activity, competitive-window start, lock actions/result, Leverage spend/save, post-lock return, Last Call, Case File commitment, survey handoff, local reveal return, completion, and voluntary abandonment where observable.
+The fixture records opening completion, investigation choices, discoveries, player-initiated inference actions, rival activity, competitive-window start, lock actions/result, Leverage spend/save, post-lock return, Last Call, Case File commitment, gameplay completion, survey handoff, local reveal return, and voluntary abandonment where observable.
 
 Derived metrics include time to first investigation, first discovery, first inference action, route diversity, lock completion time, post-lock return time, Last Call timing, completion status, and abandonment point.
 
@@ -71,7 +71,9 @@ The current form ID remains `262397917027062`. Read-only inspection on 2026-08-3
 
 The v3 catalog records instrument version `3.0` because the fixture/event semantics and research contract changed, while the physical Jotform field layout remains compatible and unchanged.
 
-The fixture records `survey_handoff` before navigating to the form and preserves the same anonymous `run_id` in the prefill URL. If the form returns the player to this fixture in the same tab, `sessionStorage` can record `reveal_return` locally.
+When the player opens the survey, the fixture first records gameplay completion and then records `survey_handoff`. That makes `completed_at`, `duration_seconds`, and `completion_status=completed` available in the same prefill submission while keeping reveal-return as a separate research event. The survey screen does not expose a local truth-preview bypass.
+
+The fixture preserves the same anonymous `run_id` in the prefill URL. If the form returns the player to this fixture in the same tab, `sessionStorage` can record `reveal_return` locally.
 
 **That does not constitute externally verified reveal-return evidence.** The available Jotform connector does not expose redirect/settings metadata, so redirect behavior has not been changed or claimed verified. Before this fixture is sent to external testers, Harness must verify the complete form-submit -> fixture-return path through an explicitly approved smoke submission or another approved externally observable mechanism tied to the same run ID.
 
@@ -87,6 +89,7 @@ The fixture stores exact session state in a v3-specific `sessionStorage` record.
 - Leverage spend;
 - Last Call;
 - Case File commitment;
+- gameplay completion;
 - survey handoff;
 - local reveal return.
 
@@ -96,16 +99,19 @@ The fixture stores exact session state in a v3-specific `sessionStorage` record.
 node --test \
   playtests/nightcap-paper-test-02-v3.0/tests/runtime.test.mjs \
   playtests/nightcap-paper-test-02-v3.0/tests/fixture.test.mjs \
-  playtests/nightcap-paper-test-02-v3.0/tests/rusk-route.test.mjs
+  playtests/nightcap-paper-test-02-v3.0/tests/rusk-route.test.mjs \
+  playtests/nightcap-paper-test-02-v3.0/tests/survey-flow.test.mjs
 ```
 
-The Pages deployment workflow is configured to run the published v2.2 tests and all three v3 test files before any future deploy.
+The Pages deployment workflow is configured to run the published v2.2 tests and all four v3 test files before any future deploy.
 
 ## Draft registration / build evidence
 
 The Steward CLI's `new --use-existing-source` path was added specifically to register already founder-approved fixture content without overwriting it. A metadata-only mirror using the actual branch CLI and catalog validator successfully registered this fixture as `draft` with `published: null`, while preserving `current_tests.nightcap = nightcap-paper-test-02-v2.2`.
 
 Using the actual branch catalog/build logic, a deterministic mirror build generated the immutable `/nightcap/paper-test-02/v3.0/` route and listed v3 as draft on the Nightcap index while the root/current link remained v2.2. This is build-logic evidence, not a live Pages deployment or real-browser check.
+
+Static responsive/accessibility inspection confirms a one-column choice layout below 640 CSS pixels, minimum 44-pixel button height, full-width mobile action buttons, visible focus outlines, reduced-motion handling, text plus visual lock status, and high-contrast primary text/button combinations. This is source-level evidence only; real-browser and real-phone layout remain separate checks.
 
 ## Required pre-send harness checks
 
@@ -119,10 +125,10 @@ Using the actual branch catalog/build logic, a deterministic mirror build genera
 - refresh after lock result / first-look;
 - refresh during partial Case File selection;
 - voluntary abandonment handling where observable;
-- 360px mobile layout;
+- real 360px/mobile browser rendering;
 - survey handoff with same run ID;
 - externally observable reveal-return proof;
-- static site build after a draft catalog entry exists.
+- live Pages route verification after publication approval.
 
 ## Publication boundary
 
