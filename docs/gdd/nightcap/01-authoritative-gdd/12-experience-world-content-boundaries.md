@@ -68,36 +68,28 @@ Player-facing writing should:
 
 Internal implementation names do not automatically become player-facing vocabulary. A term is acceptable on screen only if a first-time player can understand what it represents from the fiction and immediate context.
 
-## DECIDED — Open-Source Skill Use for Authoring and Editorial Work
+## DECIDED — External Authoring and Editorial Methods
 
-Arcwright should **actively use high-confidence, high-quality, appropriately licensed open-source skills when they materially improve a writing, continuity, editing, research, or authoring problem**.
+Arcwright may actively use high-confidence, high-quality, appropriately licensed external or open-source writing, continuity, editing, research, and authoring methods when they materially improve the work.
 
-This is an Arcwright-native orchestration policy, not an external dependency becoming product authority.
+This is an Arcwright-native orchestration policy. External methods are tools, not product authority, and the exact repository or skill set is **workflow-level and revisable rather than Nightcap canon**.
 
 ### Selection standard
 
-Prefer upstream skills with strong evidence such as:
+Prefer methods with strong evidence such as:
 
-- compatible open licensing;
+- compatible licensing;
 - transparent methodology and readable source;
 - concrete examples and documentation;
 - meaningful tests, evals, deterministic checks, or explicit review process;
 - active maintenance or recent validation;
-- clear boundaries around what the skill does and does not decide.
+- clear boundaries around what the method does and does not decide.
 
-Popularity alone is not validation.
-
-### Current strong references
-
-- **`danjdewhurst/story-skills` (MIT):** strong reference for structured story planning, continuity state, promises/payoffs, timelines, and deterministic continuity-checking patterns.
-- **`forjd/better-writing` (MIT):** strong reference for voice calibration, specificity, anti-generic/anti-slop review, factual preservation, and final prose-quality passes.
-- **`Calliope-Editor/writing-skills` (MIT):** strong reference for augmentation-only developmental editing, continuity review, line editing, character analysis, scene architecture, and beta-reader-style critique; its reviewed-skill model is useful as a quality benchmark.
-
-These may be installed, adapted, forked, or used as references only when the concrete workflow benefits. Arcwright should avoid importing an upstream story schema wholesale when the Arcwright case graph/knowledge architecture already owns the underlying state more appropriately.
+Popularity alone is not validation. Competing methods should be compared against actual Arcwright authoring and playtest needs before one is standardized.
 
 ### Authority boundary
 
-Open-source skills may help authors:
+External methods may help authors:
 
 - brainstorm;
 - structure;
@@ -119,7 +111,7 @@ They may **not** override:
 - canonical solution validation;
 - founder approval gates.
 
-Where an upstream skill has a useful deterministic validator, prefer integrating the principle or adapting it to Arcwright's own authored graph/state rather than creating a second competing truth model.
+Where an external method has a useful deterministic validator, prefer integrating the principle or adapting it to Arcwright's own authored graph/state rather than creating a second competing truth model.
 
 ## Superseded Former-Bible Rules
 
