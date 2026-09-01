@@ -275,15 +275,9 @@ export function setCaseFileDraft(state, culpritId, pieceIds) {
 export function evaluateCaseFile(state, caseData, culpritId, pieceIds) {
   const owned = ownedEvidenceIds(state);
   const uniquePieces = [...new Set(pieceIds)];
-  if (uniquePieces.length !== 4) return { correct: false, reason: "choose-four" };
+  if (uniquePieces.length < 4 || uniquePieces.length > 5) return { correct: false, reason: "choose-four-or-five" };
   if (uniquePieces.some((id) => !owned.has(id))) return { correct: false, reason: "unowned-evidence" };
   if (culpritId !== caseData.culprit_id) return { correct: false, reason: "wrong-culprit" };
-
-  const allowedPieces = new Set(
-    Object.values(caseData.case_file.proof_groups)
-      .flat(2)
-  );
-  if (uniquePieces.some((id) => !allowedPieces.has(id))) return { correct: false, reason: "irrelevant-piece" };
 
   for (const truthId of caseData.case_file.required_truths) {
     const groups = caseData.case_file.proof_groups[truthId] ?? [];
