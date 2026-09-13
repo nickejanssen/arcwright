@@ -3,7 +3,7 @@ id: operating.product.nightcap-leverage-advantages-sabotages
 namespace: operating
 title: Nightcap Leverage Advantages And Sabotages
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2027-02-03"
 sensitivity: internal
 source: authored

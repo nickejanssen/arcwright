@@ -1,16 +1,3 @@
----
-id: patterns.design.line-libraries.detective-identities-orbital
-namespace: patterns
-title: Detective Identity Pool And Briefing Shapes — Orbital Gala 2087
-owner: Nico Janssen
-status: active
-review_by: "2027-01-22"
-sensitivity: internal
-source: authored
-tags: []
-supersedes: []
----
-
 # Detective Identity Pool And Briefing Shapes — Orbital Gala 2087
 
 > Current version: v0.1 DRAFT — not approved content
@@ -97,4 +84,3 @@ Reveal budget under 4 seconds, per AW-279.
   cross-wrapper continuity reads as canon you don't want.
 - br-4 gives the *station* mild agency ("it suspects it will need
   you") — same diegesis family as open question 1; one answer governs.
-

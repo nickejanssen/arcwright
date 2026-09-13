@@ -3,7 +3,7 @@ id: patterns.specs.0081-tell-me-something-true-game-ready
 namespace: patterns
 title: Tell Me Something True Game-ready Contract
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2027-02-01"
 sensitivity: internal
 source: authored

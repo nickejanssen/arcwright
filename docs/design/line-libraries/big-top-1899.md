@@ -1,16 +1,3 @@
----
-id: patterns.design.line-libraries.big-top-1899
-namespace: patterns
-title: Vesper Refrain Library — Big Top 1899
-owner: Nico Janssen
-status: active
-review_by: "2027-01-22"
-sensitivity: internal
-source: authored
-tags: []
-supersedes: []
----
-
 # Vesper Refrain Library — Big Top 1899
 
 > Current version: v0.1 DRAFT — not approved content
@@ -325,4 +312,3 @@ D-081 registers. Ringmaster-flavored; the roast plays to the bleachers.
   (Séance uses "detectives"). Intentional register separation —
   confirm you like per-wrapper addresses, or flatten to "detectives"
   everywhere.
-

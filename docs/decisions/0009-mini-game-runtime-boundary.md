@@ -3,7 +3,7 @@ id: decisions.decisions.0009-mini-game-runtime-boundary
 namespace: decisions
 title: 0009 - Mini-game Runtime Boundary
 owner: Nico Janssen
-status: active
+status: deprecated
 review_by: "2027-02-01"
 sensitivity: internal
 source: authored

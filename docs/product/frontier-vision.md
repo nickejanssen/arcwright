@@ -3,7 +3,7 @@ id: operating.product.frontier-vision
 namespace: operating
 title: Arcwright Across Every Horizon — The Frontier Vision
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2027-01-22"
 sensitivity: internal
 source: authored

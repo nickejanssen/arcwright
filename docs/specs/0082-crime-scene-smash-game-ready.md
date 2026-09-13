@@ -3,7 +3,7 @@ id: patterns.specs.0082-crime-scene-smash-game-ready
 namespace: patterns
 title: Crime Scene Smash Game-ready Contract
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2027-02-01"
 sensitivity: internal
 source: authored

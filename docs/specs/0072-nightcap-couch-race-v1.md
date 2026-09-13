@@ -3,7 +3,7 @@ id: patterns.specs.0072-nightcap-couch-race-v1
 namespace: patterns
 title: "Nightcap Couch Race v1: Parent Spec"
 owner: Nico Janssen
-status: active
+status: deprecated
 review_by: "2027-02-27"
 sensitivity: internal
 source: authored

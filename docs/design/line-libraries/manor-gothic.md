@@ -1,16 +1,3 @@
----
-id: patterns.design.line-libraries.manor-gothic
-namespace: patterns
-title: Vesper Refrain Library — Manor Gothic
-owner: Nico Janssen
-status: active
-review_by: "2027-01-22"
-sensitivity: internal
-source: authored
-tags: []
-supersedes: []
----
-
 # Vesper Refrain Library — Manor Gothic
 
 > Current version: v0.1 DRAFT — not approved content
@@ -338,4 +325,3 @@ D-081 registers at housekeeper temperature.
   where "lush" lives in the current set. If it reads as the *right*
   amount of gothic, Crimson Peak-adjacent instances are covered; if
   you want lusher still, say so and the next pass raises the velvet.
-

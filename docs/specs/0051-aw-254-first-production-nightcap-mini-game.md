@@ -3,7 +3,7 @@ id: patterns.specs.0051-aw-254-first-production-nightcap-mini-game
 namespace: patterns
 title: "AW-254: First Production Nightcap Mini-game And Rehearsal"
 owner: Nico Janssen
-status: active
+status: deprecated
 review_by: "2027-02-01"
 sensitivity: internal
 source: authored

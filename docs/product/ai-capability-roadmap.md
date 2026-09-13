@@ -3,7 +3,7 @@ id: operating.product.ai-capability-roadmap
 namespace: operating
 title: Arcwright AI Capability Roadmap
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2027-01-22"
 sensitivity: internal
 source: authored

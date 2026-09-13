@@ -3,7 +3,7 @@ id: patterns.specs.0084-the-grill-interrogation-minigame
 namespace: patterns
 title: The Grill Interrogation Mini-game
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2027-02-01"
 sensitivity: internal
 source: authored

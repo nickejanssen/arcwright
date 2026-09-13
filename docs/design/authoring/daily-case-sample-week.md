@@ -3,7 +3,7 @@ id: patterns.design.authoring.daily-case-sample-week
 namespace: patterns
 title: Daily Case — Sample Week (Creative Proof)
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2027-01-22"
 sensitivity: internal
 source: authored

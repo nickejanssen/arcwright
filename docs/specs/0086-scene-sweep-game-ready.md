@@ -3,7 +3,7 @@ id: patterns.specs.0086-scene-sweep-game-ready
 namespace: patterns
 title: Scene Sweep Game-ready Contract
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2027-02-01"
 sensitivity: internal
 source: authored

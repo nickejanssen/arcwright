@@ -1,16 +1,3 @@
----
-id: patterns.design.line-libraries.race-master-supplement
-namespace: patterns
-title: Vesper Race-Master Supplement — Launch Pair
-owner: Nico Janssen
-status: active
-review_by: "2027-01-22"
-sensitivity: internal
-source: authored
-tags: []
-supersedes: []
----
-
 # Vesper Race-Master Supplement — Launch Pair
 
 > Current version: v0.1 DRAFT — not approved content
@@ -206,4 +193,3 @@ future wrapper follows.
   on the TV (public address to a named detective). If that's too
   exposed for a nudge, the alternative is system-voiced phone nudges
   (Inter, not Vesper) — bible-clean but less fun. Founder call.
-

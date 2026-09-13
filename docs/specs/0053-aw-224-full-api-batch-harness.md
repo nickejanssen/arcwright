@@ -3,7 +3,7 @@ id: patterns.specs.0053-aw-224-full-api-batch-harness
 namespace: patterns
 title: "AW-224: Full API Batch Harness"
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2026-12-18"
 sensitivity: internal
 source: authored

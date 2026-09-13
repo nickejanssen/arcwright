@@ -3,7 +3,7 @@ id: patterns.specs.0085-the-unmasking-reveal-reconstruction
 namespace: patterns
 title: The Unmasking Reveal-reconstruction Mini-game
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2027-02-01"
 sensitivity: internal
 source: authored

@@ -3,7 +3,7 @@ id: patterns.design.authoring.story-to-arc-exemplar
 namespace: patterns
 title: From Story To Arc — A Worked Example
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2027-01-22"
 sensitivity: internal
 source: authored

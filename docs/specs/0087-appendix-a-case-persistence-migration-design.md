@@ -3,7 +3,7 @@ id: patterns.specs.0087-appendix-a-case-persistence-migration-design
 namespace: patterns
 title: Appendix A — Case Persistence Migration Design
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2027-02-03"
 sensitivity: internal
 source: authored

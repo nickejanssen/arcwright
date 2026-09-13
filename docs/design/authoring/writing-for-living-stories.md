@@ -3,7 +3,7 @@ id: patterns.design.authoring.writing-for-living-stories
 namespace: patterns
 title: Writing For Living Stories — The Author's Craft Guide
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2027-01-22"
 sensitivity: internal
 source: authored

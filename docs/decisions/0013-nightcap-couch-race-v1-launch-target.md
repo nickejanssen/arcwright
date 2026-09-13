@@ -3,7 +3,7 @@ id: decisions.decisions.0013-nightcap-couch-race-v1-launch-target
 namespace: decisions
 title: "ADR-0013: Nightcap Couch Race V1 Launch Target"
 owner: Nico Janssen
-status: active
+status: deprecated
 review_by: "2027-02-27"
 sensitivity: internal
 source: authored

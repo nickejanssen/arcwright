@@ -3,7 +3,7 @@ id: patterns.design.authoring.rehearsal-1-observation-guide
 namespace: patterns
 title: Rehearsal 1 — Founder Observation Guide
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2027-01-22"
 sensitivity: internal
 source: authored

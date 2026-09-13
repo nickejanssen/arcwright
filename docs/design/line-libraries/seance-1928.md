@@ -1,16 +1,3 @@
----
-id: patterns.design.line-libraries.seance-1928
-namespace: patterns
-title: Vesper Refrain Library — Séance 1928
-owner: Nico Janssen
-status: active
-review_by: "2027-01-22"
-sensitivity: internal
-source: authored
-tags: []
-supersedes: []
----
-
 # Vesper Refrain Library — Séance 1928
 
 > Current version: v0.1 DRAFT — not approved content
@@ -351,4 +338,3 @@ Once per session. Vesper notices the couch. Never tutorializes.
   (reveal section — resolved case truth, only ever filled at Beat 6).
   Both need adding to the runtime slot whitelist when this converts to
   `nightcap/content/host_lines/`.
-

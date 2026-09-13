@@ -3,7 +3,7 @@ id: playbooks.superpowers.specs.2026-08-01-couch-race-tv-and-phone-rendering-des
 namespace: playbooks
 title: Couch Race TV and Phone Rendering — Design
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2027-01-29"
 sensitivity: internal
 source: authored

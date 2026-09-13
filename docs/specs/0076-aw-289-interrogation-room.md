@@ -3,7 +3,7 @@ id: patterns.specs.0076-aw-289-interrogation-room
 namespace: patterns
 title: "AW-289: The Interrogation Room Last Call Pressure Capstone"
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2027-02-01"
 sensitivity: internal
 source: authored

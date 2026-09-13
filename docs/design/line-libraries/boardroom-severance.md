@@ -1,16 +1,3 @@
----
-id: patterns.design.line-libraries.boardroom-severance
-namespace: patterns
-title: Vesper Refrain Library — Boardroom Severance
-owner: Nico Janssen
-status: active
-review_by: "2027-01-22"
-sensitivity: internal
-source: authored
-tags: []
-supersedes: []
----
-
 # Vesper Refrain Library — Boardroom Severance
 
 > Current version: v0.1 DRAFT — not approved content
@@ -333,4 +320,3 @@ D-081 registers, procedural temperature.
   reviews", "I did the seating"). One founder answer governs all four
   libraries — now consolidated as the top open question in
   00-direction.md.
-

@@ -3,7 +3,7 @@ id: operating.product.vision-narrative
 namespace: operating
 title: The Arcwright Thesis
 owner: Nico Janssen
-status: active
+status: draft
 review_by: "2027-01-22"
 sensitivity: internal
 source: authored

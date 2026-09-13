@@ -1,16 +1,3 @@
----
-id: patterns.design.line-libraries.00-direction
-namespace: patterns
-title: Vesper Line Libraries — Authoring Direction and Queue
-owner: Nico Janssen
-status: active
-review_by: "2027-01-22"
-sensitivity: internal
-source: authored
-tags: []
-supersedes: []
----
-
 # Vesper Line Libraries — Authoring Direction and Queue
 
 > Current version: v1.0
@@ -158,4 +145,3 @@ Consolidated across all committed artifacts, highest-leverage first:
 9. **Per-wrapper slot whitelists** ({{stage_name}}, {{deck}}, {{floor}},
    {{title}}, {{suspect_2}}, {{killer}}) — spec when converting to
    runtime format at `nightcap/content/host_lines/`.
-

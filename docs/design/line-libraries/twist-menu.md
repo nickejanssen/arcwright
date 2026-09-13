@@ -1,16 +1,3 @@
----
-id: patterns.design.line-libraries.twist-menu
-namespace: patterns
-title: The Twist Menu — Beat 4 Authored Families
-owner: Nico Janssen
-status: active
-review_by: "2027-01-22"
-sensitivity: internal
-source: authored
-tags: []
-supersedes: []
----
-
 # The Twist Menu — Beat 4 Authored Families
 
 > Current version: v0.1 DRAFT — not approved content
@@ -161,4 +148,3 @@ to move" always points at something the room actually holds.
 - Each family should eventually carry per-wrapper dressing guidance
   (what a Collapsed Alibi looks like on a space station vs. in a
   manor) — renewable-model work once the founder approves the menu.
-

@@ -3,7 +3,7 @@ id: operating.roadmap.tasks.aw-254-first-production-nightcap-mini-game
 namespace: operating
 title: "AW-254: Verify Two Promoted Mini-games on Real Devices"
 owner: Nico Janssen
-status: active
+status: deprecated
 review_by: "2027-02-01"
 sensitivity: internal
 source: authored
