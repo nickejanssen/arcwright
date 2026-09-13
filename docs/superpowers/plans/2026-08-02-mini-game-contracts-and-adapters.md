@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-02-mini-game-contracts-and-adapters
+namespace: playbooks
+title: Mini-game Contracts and Execution Adapters Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Mini-game Contracts and Execution Adapters Implementation Plan
 
 > **Execution status:** Superseded by the founder-approved 2026-08-03
@@ -1158,3 +1171,4 @@ developer deployment.
 - [ ] **Step 5: Stop for founder contract approval**
 
 Nightcap integration does not begin until the founder approves this checkpoint.
+

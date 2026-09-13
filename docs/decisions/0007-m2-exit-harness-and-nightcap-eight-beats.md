@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0007-m2-exit-harness-and-nightcap-eight-beats
+namespace: decisions
+title: "ADR-0007: M2 Exit Harness And Nightcap Eight Beats"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-12"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Status
 
 **Accepted** (2026-06-14)
@@ -66,3 +79,4 @@ We gained an accurate eight-beat Nightcap arc, a working M2 exit harness, and a 
 - Roadmap [M2 milestone exit gate](../roadmap/milestones/M2-arc-engine-nightcap-arc-safety.md)
 - Story bible [Nightcap Murder Mystery Section 4](../story-bibles/nightcap-murder-mystery.md)
 - `docs/product/decisions-log.csv` records D-053 (Story Circle as platform-native 8-beat template) and the May 15, 2026 Nightcap eight-beat decision.
+

@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.operations.fun-observation-rubric
+namespace: operating
+title: Fun Observation Rubric
+owner: Nico Janssen
+status: active
+review_by: "2027-01-09"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Fun Observation Rubric
 
 > Current version: v1.0
@@ -77,3 +90,4 @@ callback). This is the PRD personalization-perception evidence.
 Commit the filled rubric next to the session's blocker log in this directory
 (e.g., `rehearsal-1-fun-rubric.md`) and triage findings together with the
 blocker log — content/presentation findings map to spec 0068 sections.
+

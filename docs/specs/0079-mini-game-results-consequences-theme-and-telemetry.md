@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0079-mini-game-results-consequences-theme-and-telemetry
+namespace: patterns
+title: Mini-game Results, Consequences, Theme, and Telemetry
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v0.2
 > Last updated: 2026-08-03
 > Status: Approved
@@ -302,3 +315,4 @@ public-safe context allowlist, destination design-system contract,
 permission-receipt contract, and two-attempt authored-fallback generation
 budget in this version on 2026-08-03. Implementation remains subject to a
 separate go-ahead.
+

@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-239-character-state-inspection
+namespace: operating
+title: "AW-239: Character State Inspection"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-239: Character State Inspection
 
 **Milestone / Epic:** M5 / M5-D  
@@ -85,3 +98,4 @@ dashboard, api, engine/characters
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

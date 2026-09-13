@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0006-nightcap-continuity-v11
+namespace: decisions
+title: "ADR-0006: Nightcap Continuity v1.1"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-10"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Status
 
 **Accepted**
@@ -66,3 +79,4 @@ Continuity may personalize future generated content, but it may not manage canon
 - `docs/architecture/05-session-persistence.md`
 - `docs/architecture/11-telemetry.md`
 - `docs/specs/0029-docs-organization.md`
+

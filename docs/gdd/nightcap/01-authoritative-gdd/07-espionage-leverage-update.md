@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.01-authoritative-gdd.07-espionage-leverage-update
+namespace: custom
+title: Nightcap — Espionage & Leverage
+owner: Nico Janssen
+status: active
+review_by: "2027-02-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Espionage & Leverage
 
 **Status:** Foundational direction DECIDED; implementation details TESTING  

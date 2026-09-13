@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-230-real-device-privacy-matrix
+namespace: operating
+title: "AW-230: Real-Device Privacy Matrix"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-230: Real-Device Privacy Matrix
 
 **Milestone / Epic:** M4 / M4-D  
@@ -63,3 +76,4 @@ test docs, Cloudflare Pages, Workers, Durable Objects or PartyKit files
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

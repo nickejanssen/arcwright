@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-243-five-outside-qualifying-sessions
+namespace: operating
+title: "AW-243: Five Outside Qualifying Sessions"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-243: Five Outside Qualifying Sessions
 
 **Milestone / Epic:** M6 / M6-B  
@@ -85,3 +98,4 @@ GitHub issue comments, docs/playtest notes if created
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

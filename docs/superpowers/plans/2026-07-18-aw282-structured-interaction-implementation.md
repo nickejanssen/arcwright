@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-07-18-aw282-structured-interaction-implementation
+namespace: playbooks
+title: AW-282 Structured Interaction Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-282 Structured Interaction Implementation Plan
 
 ## Goal
@@ -211,3 +224,4 @@ git commit -m "feat(interactions): implement structured interaction loop"
 ~~~
 
 Push codex/aw-282-leverage-catalog and open a PR targeting main. The PR description must mention the AW-282 issue, acceptance evidence, the approved spec, and that AW-283 is intentionally handed to Claude Code. Do not implement AW-283 in this branch.
+

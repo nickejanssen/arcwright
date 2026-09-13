@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-247-killer-tell-tier-selection-by-group-size
+namespace: operating
+title: "AW-247: Killer Tell Tier Selection By Group Size"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-247: Killer Tell Tier Selection By Group Size
 
 **Milestone / Epic:** M5 / M5-E
@@ -67,3 +80,4 @@ engine/characters, engine/tests
 ## Playtest Relevance
 
 This task hardens the killer experience across the 4 to 6 player range required for M6 qualifying sessions. State at completion which readiness gate it unlocks.
+

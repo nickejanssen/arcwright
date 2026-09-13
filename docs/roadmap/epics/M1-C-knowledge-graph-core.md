@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.epics.m1-c-knowledge-graph-core
+namespace: operating
+title: "M1-C: Knowledge Graph Core"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M1-C: Knowledge Graph Core
 
 **Milestone:** M1  
@@ -16,3 +29,4 @@ Implement the deterministic knowledge graph APIs and the pre-generation knowledg
 
 - Knowledge state APIs are fully unit tested
 - The generation knowledge hook is the single sanctioned context-assembly path
+

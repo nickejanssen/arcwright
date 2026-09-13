@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0011-single-cloudrun-service-at-mvp
+namespace: decisions
+title: "ADR-0011: Single Cloud Run Service At MVP"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-26"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Status
 
 **Accepted**
@@ -49,3 +62,4 @@ The `.github/workflows/deploy-api.yml` workflow provisions and deploys `arcwrigh
 - `docs/product/open-questions-log.csv` — inter-service comms open question
 - `docs/decisions/0006-nightcap-continuity-v11.md` — related scope boundary decision
 - AW-269 — Nightcap cloud deploy automation task
+

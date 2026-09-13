@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0021-operating-model-business-and-architect-roles
+namespace: patterns
+title: "Operating Model: Business Steward and System Architect Roles"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-05"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Operating Model: Business Steward and System Architect Roles
 
 **Status**: Approved
@@ -73,3 +86,4 @@ Spec 0019 established the operating model with Product, planning, authoring, imp
 # Open Questions
 
 - None. Direction approved by the founder (add Business plus a decision-making System Architect, ship as a follow-up spec plus PR).
+

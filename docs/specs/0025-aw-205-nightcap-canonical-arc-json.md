@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0025-aw-205-nightcap-canonical-arc-json
+namespace: patterns
+title: "AW-205: Nightcap Canonical Arc JSON"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-10"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-205: Nightcap Canonical Arc JSON
 
 **Status**: Approved
@@ -84,3 +97,4 @@ This spec defines the AW-205 canonical Nightcap arc JSON. The goal is to make `n
 # Open Questions
 
 - None for AW-205 implementation.
+

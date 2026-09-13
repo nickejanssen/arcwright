@@ -1,3 +1,16 @@
+---
+id: patterns.design.authoring.living-worlds-genre-studies
+namespace: patterns
+title: Living-Story Genre Studies — Creature Companion & Couch Co-op
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Living-Story Genre Studies — Creature Companion & Couch Co-op
 
 > Current version: v0.1 DRAFT — founder-directed discovery (D-083)
@@ -193,3 +206,4 @@ credible: authors pick a row's *meaning*, never rebuild its machinery.
   protect. The single decision with present-day teeth: **provenance
   chains stay append-only, forever.** That one rule is what keeps
   every horizon reachable.
+

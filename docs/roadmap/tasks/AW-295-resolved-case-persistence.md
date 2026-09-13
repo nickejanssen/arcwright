@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-295-resolved-case-persistence
+namespace: operating
+title: "AW-295: Resolved Case Persistence (Six Normalized Tables)"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-03"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-295: Resolved Case Persistence (Six Normalized Tables)
 
 **Milestone / Epic:** M5 / M5-I
@@ -121,3 +134,4 @@ unresolved.
 - Do not introduce a repository or DAO layer; this codebase has none.
 - Do not wire `start_session` here — separate cross-module review.
 - Do not claim CI verified the migration up/down path.
+

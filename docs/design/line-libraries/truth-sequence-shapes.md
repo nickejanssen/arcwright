@@ -1,3 +1,16 @@
+---
+id: patterns.design.line-libraries.truth-sequence-shapes
+namespace: patterns
+title: Truth Sequence Shapes — Discovery Packet (AW-278)
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Truth Sequence Shapes — Discovery Packet (AW-278)
 
 > Current version: v0.1 DRAFT — discovery material, NOT a locked direction
@@ -137,3 +150,4 @@ premium gating), not as the launch default.
 4. Unsolved-case tone: confirm "house win, voiced with relish."
 5. Ordinary-last-line authorship: shapes-with-slots (current seeds) or
    fully authored per case archetype?
+

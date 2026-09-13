@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0016-aw283-claim-ledger-schema
+namespace: decisions
+title: "ADR-0016: AW-283 claim ledger gets a dedicated database schema"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-16"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # ADR-0016: AW-283 claim ledger gets a dedicated database schema
 
 **Status**: Accepted
@@ -44,3 +57,4 @@ Telemetry *about* claims (recording that a claim was generated, that a flag reso
 - `docs/superpowers/plans/2026-07-19-aw283-suspect-answer-generation.md` (implementation plan, Task 2)
 - `docs/architecture/11-telemetry.md` (the `events` table's documented purpose)
 - `engine/telemetry/obligations.py`, `engine/telemetry/resources.py` (the telemetry pattern this ADR does NOT change)
+

@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.01-authoritative-gdd.10-difficulty-accessibility
+namespace: custom
+title: Nightcap — Difficulty + Accessibility
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Difficulty + Accessibility
 
 **Status:** Foundational direction DECIDED; implementation details TESTING  
@@ -135,3 +148,4 @@ V1 accessibility should be **lean and mostly invisible**:
 ## Validation Rule
 
 **Prototype before adding more accessibility machinery.** If a support makes Nightcap less fun, less cinematic, less competitive, or easier for selected players, redesign the mechanic rather than silently accepting the tradeoff.
+

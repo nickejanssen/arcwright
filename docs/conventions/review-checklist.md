@@ -1,3 +1,16 @@
+---
+id: patterns.conventions.review-checklist
+namespace: patterns
+title: Review Checklist
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Review Checklist
 
 Spend more time here than feels comfortable. This is the most leveraged work in the AI-assisted workflow.
@@ -37,3 +50,4 @@ Spend more time here than feels comfortable. This is the most leveraged work in 
 - [ ] No decision record infers founder approval from silence, PR activity, or
       a broader approval.
 - [ ] No live-operation phase advanced without its explicit go or no-go.
+

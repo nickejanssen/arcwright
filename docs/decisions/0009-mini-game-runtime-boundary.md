@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0009-mini-game-runtime-boundary
+namespace: decisions
+title: 0009 - Mini-game Runtime Boundary
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # 0009 - Mini-game Runtime Boundary
 
 **Date:** 2026-06-20
@@ -94,3 +107,4 @@ runtime, persistence, API, SDK, or browser rendering.
 - `docs/story-bibles/nightcap-murder-mystery.md` Sections 4 and 7
 - `docs/decisions/0003-nightcap-web-experience-runtime.md`
 - GitHub issues #142 through #148
+

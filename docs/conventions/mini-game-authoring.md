@@ -1,3 +1,16 @@
+---
+id: patterns.conventions.mini-game-authoring
+namespace: patterns
+title: Mini-game Authoring Guide
+owner: Nico Janssen
+status: active
+review_by: "2026-12-23"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Mini-game Authoring Guide
 
 This guide is for engine, Nightcap, and third-party developers building a
@@ -335,3 +348,4 @@ schema, asserts the bundle size budgets, and runs the mini-game tests.
 - `docs/specs/0050-aw-253-nightcap-web-mini-game-rendering.md`
 - `nightcap-web/src/mini-game-kit/` — the kit source
 - `nightcap/mini_games/_fixtures/` — three reference renderers
+

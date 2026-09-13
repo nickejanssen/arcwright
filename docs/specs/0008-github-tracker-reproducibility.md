@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0008-github-tracker-reproducibility
+namespace: patterns
+title: GitHub Tracker Reproducibility
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # GitHub Tracker Reproducibility
 
 **Status**: Done
@@ -50,3 +63,4 @@ Capture the current live GitHub tracker setup in repo-owned configuration so lab
 - Validate the new JSON config files as JSON
 - Read the rebuilt operations doc to confirm a maintainer could recreate the tracker from repo state
 - Verify roadmap manifest references the new tracker config paths
+

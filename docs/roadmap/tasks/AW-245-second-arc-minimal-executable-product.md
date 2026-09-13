@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-245-second-arc-minimal-executable-product
+namespace: operating
+title: "AW-245: Second Arc Minimal Executable Product"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-245: Second Arc Minimal Executable Product
 
 **Milestone / Epic:** Post-M6 / M5-C follow-through
@@ -84,3 +97,4 @@ TBD by the AW-235 schema and follow-up implementation spec.
 ## Playtest Relevance
 
 This task is post-proof platform validation. It is not required for Nightcap M6 qualifying sessions.
+

@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0042-aw-220-session-persistence-snapshots-and-resume
+namespace: patterns
+title: "AW-220: Session Persistence Snapshots And Resume"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-220: Session Persistence Snapshots And Resume
 
 **Status**: Done
@@ -79,3 +92,4 @@ API-layer coverage in `api/tests/test_sessions_api.py`: `test_pause_writes_snaps
 # Open Questions
 
 - None. All questions resolved during implementation. See follow-up issue for the `_DEFAULT_INITIAL_BEAT_ID` fix.
+

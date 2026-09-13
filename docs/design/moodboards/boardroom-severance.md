@@ -1,3 +1,16 @@
+---
+id: patterns.design.moodboards.boardroom-severance
+namespace: patterns
+title: Moodboard  -  Boardroom Severance
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Moodboard  -  Boardroom Severance
 
 > Wrapper: **Corporate** · Mood: **Uncanny, minimal, quietly wrong**
@@ -164,3 +177,4 @@ industrial-carpet black. The overhead light cuts. Cut to superlatives.
 - [ ] Narrator voice fragments authored per 0068 §3.3.
 - [ ] Contrast table per parent brief §5.
 - [ ] Reduced-motion parity screenshots per `seq-*`.
+

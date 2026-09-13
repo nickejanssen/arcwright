@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.operations.github-project-setup
+namespace: operating
+title: GitHub Tracker Alignment
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # GitHub Tracker Alignment
 
 This file is the operational companion to the roadmap. The GitHub Project, milestones, labels, and M1 Epic A issues already exist; this doc explains both how they stay aligned with the canonical roadmap in `docs/roadmap/` and how to rebuild them from the repo if needed.
@@ -66,3 +79,4 @@ This keeps the rebuild process deterministic without pretending that the live Gi
 ## Why The Links Live In The Manifest
 
 Issue numbers, milestone numbers, and project URLs are external execution details that can change independently of roadmap content. Keeping those cross-references in `index.json` makes them easy for agents to query without turning every roadmap file into a tracker mirror.
+

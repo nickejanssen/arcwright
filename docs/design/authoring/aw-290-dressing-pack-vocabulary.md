@@ -1,3 +1,16 @@
+---
+id: patterns.design.authoring.aw-290-dressing-pack-vocabulary
+namespace: patterns
+title: AW-293 Dressing Pack Vocabulary
+owner: Nico Janssen
+status: active
+review_by: "2027-02-05"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-293 Dressing Pack Vocabulary
 
 **Status:** Approved
@@ -52,3 +65,4 @@ relationships, or gameplay behavior.
 
 Only `seance_1928` and `big_top_1899` are authored. The other four declared
 wrappers remain unauthored and are not covered by this approval.
+

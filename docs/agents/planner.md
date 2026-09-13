@@ -1,3 +1,16 @@
+---
+id: operating.agents.planner
+namespace: operating
+title: "Role: Planner"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Role: Planner
 
 ## Purpose
@@ -40,3 +53,4 @@ fully constrain the work.
 ## Handoff
 
 Pass each planned task (and its AW-NNN, if any) to the **Spec Author** (`docs/agents/spec-author.md`).
+

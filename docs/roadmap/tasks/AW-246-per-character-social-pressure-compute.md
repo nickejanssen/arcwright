@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-246-per-character-social-pressure-compute
+namespace: operating
+title: "AW-246: Per-Character Social Pressure Compute"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-246: Per-Character Social Pressure Compute
 
 **Milestone / Epic:** M5 / M5-E
@@ -69,3 +82,4 @@ engine/characters, engine/arc, engine/tests
 ## Playtest Relevance
 
 This task hardens the killer-under-suspicion dynamic that the M6 personalization-perception proof signal depends on. State at completion which readiness gate it unlocks.
+

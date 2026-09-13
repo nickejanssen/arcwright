@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.00-governance.03-source-reconciliation-manifest
+namespace: custom
+title: Nightcap Master Source Reconciliation Manifest
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap Master Source Reconciliation Manifest
 
 **Generated:** 2026-08-30
@@ -63,3 +76,4 @@ The final Decisions 1–17 checkpoint was uploaded more than once in the convers
 ## Authority safeguard
 
 Where an archived page conflicts with the current ledger or authoritative current page, the current ledger/page wins. If an old idea appears potentially valuable but is absent from current authority, its status is **absent/under-owned**, not silently restored to DECIDED.
+

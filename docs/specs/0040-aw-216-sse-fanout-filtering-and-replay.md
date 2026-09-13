@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0040-aw-216-sse-fanout-filtering-and-replay
+namespace: patterns
+title: "AW-216: SSE Fanout Filtering And Replay"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-216: SSE Fanout Filtering And Replay
 
 **Status**: Approved
@@ -103,3 +116,4 @@ Per S8.4: `ALL` routes to `all_player_connections() + display_connections`. Host
 # Playtest Relevance
 
 This task completes Epic M3-A and unlocks the M3 milestone exit gate: "events routed by target audience with no leakage." Without audience filtering, private clues could leak to other players' SSE streams, which would be a session-breaking privacy failure for any Nightcap playtest.
+

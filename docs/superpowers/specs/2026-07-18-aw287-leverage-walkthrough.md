@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.specs.2026-07-18-aw287-leverage-walkthrough
+namespace: playbooks
+title: AW-287 Leverage Representative-Interaction Walkthrough
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-287 Leverage Representative-Interaction Walkthrough
 
 > Status: For founder review (AW-287 Human Collaboration Contract gate)
@@ -117,3 +130,4 @@ into the new beat (cross-beat persistence, D-075). No reset event fires.
 - Bank cap: not triggered (no balance approached the cap) — flagging that
   the cap's actual number is still undefined and belongs in the
   implementation plan (Task 15), not this walkthrough.
+

@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.epics.m5-i-nightcap-couch-race-arc-and-interrogation
+namespace: operating
+title: "M5-I: Nightcap Couch Race Arc And Interrogation Layer"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M5-I: Nightcap Couch Race Arc And Interrogation Layer
 
 **Milestone:** M5
@@ -92,3 +105,4 @@ Race experience by AW-286:
 - `docs/specs/0072-nightcap-couch-race-v1.md`
 - `docs/architecture/03-arc-execution.md`, `docs/architecture/07-character-behavior.md`
 - `docs/prd/03-scope.md` (amended MVP definition)
+

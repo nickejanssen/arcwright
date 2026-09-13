@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0060-aw-230-real-device-privacy-matrix
+namespace: patterns
+title: "AW-230: Real-Device Privacy Matrix"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-21"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-230: Real-Device Privacy Matrix
 
 **Status**: Approved
@@ -73,3 +86,4 @@ Validate the Nightcap web runtime's privacy boundary with the smallest useful ro
 # Open Questions
 
 - None
+

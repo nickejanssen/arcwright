@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0006-roadmap-organization
+namespace: patterns
+title: Roadmap Organization
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Roadmap Organization
 
 **Status**: Completed
@@ -69,3 +82,4 @@ Restructure the build roadmap into an agent-friendly documentation area that pre
 # Open Questions
 
 - None after approval of the split-plus-manifest approach
+

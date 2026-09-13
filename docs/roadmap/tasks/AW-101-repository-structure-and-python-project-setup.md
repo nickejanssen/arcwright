@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-101-repository-structure-and-python-project-setup
+namespace: operating
+title: "AW-101: Repository structure and Python project setup"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-101: Repository structure and Python project setup
 
 **Milestone / Epic:** M1 / A  
@@ -31,3 +44,4 @@ Test directories scaffolded per Arch S2.9 four locked test areas.
 ## Agent Notes
 
 First action before creating anything: inspect the current repo state and reconcile what already exists before creating or replacing files. Do not clobber existing work.
+

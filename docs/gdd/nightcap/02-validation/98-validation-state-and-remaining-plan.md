@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.02-validation.98-validation-state-and-remaining-plan
+namespace: custom
+title: Nightcap — Validation State & Remaining Plan
+owner: Nico Janssen
+status: active
+review_by: "2027-02-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Validation State & Remaining Plan
 
 **Status:** PROCESS / CONTINUATION PLAN — not game canon  
@@ -200,3 +213,4 @@ Test whether accessibility filtering preserves enough variety, spectacle, and fa
 Repeated representative evidence has more authority than intuition.
 
 A DECIDED design may be reopened when evidence justifies it. One exploratory participant or one prototype convenience normally produces a **TEST FINDING**, not a permanent law. Paper Test #2 v2.2 justified several low-regret clarifications because they either reinforced already-decided principles or resolved founder-approved design gaps; it did not validate Nightcap's overall fun or cohesion. V3.0 is a research instrument for testing those revisions, not a source of new canon by itself.
+

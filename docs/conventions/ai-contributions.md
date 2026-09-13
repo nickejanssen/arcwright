@@ -1,3 +1,16 @@
+---
+id: patterns.conventions.ai-contributions
+namespace: patterns
+title: AI Agent Contribution Policy
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AI Agent Contribution Policy
 
 ## Tool Allocation
@@ -39,4 +52,5 @@ Prompts, model selection, routing decisions, and eval cases are product surface 
 - One agent per feature branch at a time
 - If two agents must touch overlapping files, serialize them: first agent merges, second agent pulls main and continues
 - Avoid merge conflicts on shared files by coordinating with the human
+
 

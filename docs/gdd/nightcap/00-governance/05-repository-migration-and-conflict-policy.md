@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.00-governance.05-repository-migration-and-conflict-policy
+namespace: custom
+title: Nightcap — Repository Migration and Conflict Policy
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Repository Migration and Conflict Policy
 
 **Status:** DECIDED migration policy, 2026-08-31.
@@ -44,3 +57,4 @@ The old Story Bible paths remain as redirect stubs pointing to the archive and c
 ## Verification target
 
 Before merging this migration, repository searches should show no active Nightcap document treating either old Story Bible as current authority. Historical ADRs, product logs, and archive files may reference the old paths only when clearly historical or when the compatibility stub is intentionally used.
+

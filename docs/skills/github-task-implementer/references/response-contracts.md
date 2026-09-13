@@ -1,3 +1,16 @@
+---
+id: playbooks.skills.github-task-implementer.references.response-contracts
+namespace: playbooks
+title: Response Contracts
+owner: Nico Janssen
+status: active
+review_by: "2026-12-04"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Response Contracts
 
 Use these shapes when the host platform does not prescribe a stronger format.
@@ -64,3 +77,4 @@ When the PR gets review comments:
 - list each actionable comment
 - state what changed or why no code change was needed
 - rerun only the checks needed to prove the fix unless the repo requires a broader rerun
+

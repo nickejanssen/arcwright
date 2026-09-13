@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0056-aw-226-host-session-creation-and-shared-display-flow
+namespace: patterns
+title: "AW-226: Host Session Creation And Shared Display Flow"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-20"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-226: Host Session Creation And Shared Display Flow
 
 **Status**: Approved
@@ -78,3 +91,4 @@ Build the Nightcap web runtime host-control flow and shared-display event feed o
 
 - D-054 exact host seed questions and join prompts remain unresolved in canonical docs.
 - Whether the browser host surface should later exchange the returned host token for an ID token internally or rely on a separate auth surface.
+

@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-236-live-knowledge-graph-inspection
+namespace: operating
+title: "AW-236: Live Knowledge Graph Inspection"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-236: Live Knowledge Graph Inspection
 
 **Milestone / Epic:** M5 / M5-D  
@@ -82,3 +95,4 @@ dashboard, api, engine/knowledge
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

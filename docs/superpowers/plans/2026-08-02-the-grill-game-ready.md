@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-02-the-grill-game-ready
+namespace: playbooks
+title: The Grill Interrogation Game-ready Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # The Grill Interrogation Game-ready Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -312,3 +325,4 @@ git commit -m "test(nightcap): certify the grill interrogation"
 
 Do not promote to `active` here. The final integration plan owns exact
 registration, whole-session evidence, active promotion, and GitHub closure.
+

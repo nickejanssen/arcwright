@@ -1,3 +1,16 @@
+---
+id: patterns.design.line-libraries.detective-identities
+namespace: patterns
+title: Detective Identity Pools And Opening Briefing Shapes — Séance 1928
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Detective Identity Pools And Opening Briefing Shapes — Séance 1928
 
 > Current version: v0.1 DRAFT — not approved content
@@ -116,3 +129,4 @@ lines:
   for how gothic the identity pool may lean.
 - Names are surname-only and unisex by design: any player, any body,
   any age plays any card without friction.
+

@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0012-authorial-intent-obligations-continuity-evals
+namespace: decisions
+title: "ADR-0012: Authorial Intent Obligations Continuity Evals"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-07"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Status
 
 **Accepted** (founder approval, July 11, 2026)
@@ -62,3 +75,4 @@ We explicitly do not adopt: authoring-time approval workflows, AI creative roles
 - `docs/prd/04-non-goals.md` (authoring scope boundary).
 - Product log: D-068 in `docs/product/decisions-log.csv`; open questions for the continuity-classifier watchpoint and host-facing rollback in `docs/product/open-questions-log.csv`.
 - Follow-up: Planner to sequence roadmap epics/tasks and Spec Author to produce per-feature specs before implementation.
+

@@ -1,3 +1,16 @@
+---
+id: operating.agents.expert-personas
+namespace: operating
+title: Arcwright Expert Personas
+owner: Nico Janssen
+status: active
+review_by: "2026-12-10"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v1.0
 > Last updated: 2026-06-13
 > Status: Current
@@ -173,3 +186,4 @@ For custom bundles, specify persona, task goal, and token budget.
 **Skill hooks:** Use as an acting persona that consumes other persona digests, and as a bundling target for investor or advisor conversations.
 
 **Required guardrails:** Business advice cannot override product scope, architecture principles, or documented non-goals without founder approval recorded in canonical docs.
+

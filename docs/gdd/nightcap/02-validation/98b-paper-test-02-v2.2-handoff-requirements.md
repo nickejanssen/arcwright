@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.02-validation.98b-paper-test-02-v2-2-handoff-requirements
+namespace: custom
+title: "Nightcap — Paper Test #2 v2.2 Handoff Requirements"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Paper Test #2 v2.2 Handoff Requirements
 
 **Status:** COMPLETED DIAGNOSTIC TEST SPEC — historical validation record, not game canon  

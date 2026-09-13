@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0082-crime-scene-smash-game-ready
+namespace: patterns
+title: Crime Scene Smash Game-ready Contract
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v0.2
 > Last updated: 2026-08-03
 > Status: Draft
@@ -79,3 +92,4 @@ Client-authoritative board logic, permanent clue failure, cross-session ranking,
 ## Founder decisions required
 
 Approve or revise the 8-by-8 board, six tile roles, score formula, 50-point lead burst, 90-second duration, tie-break order, and audiovisual direction.
+

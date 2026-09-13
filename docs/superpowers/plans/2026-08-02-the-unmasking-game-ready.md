@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-02-the-unmasking-game-ready
+namespace: playbooks
+title: The Unmasking Reveal-reconstruction Game-ready Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # The Unmasking Reveal-reconstruction Game-ready Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -342,3 +355,4 @@ git commit -m "test(nightcap): certify the unmasking package"
 Do not promote to `active` here. The final integration plan registers the
 exact version and digest, proves Last Call lock through Truth and podium, then
 performs active promotion and GitHub closure.
+

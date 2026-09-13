@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-278-couch-race-truth-sequence-and-reveal-accounting
+namespace: operating
+title: "AW-278: Couch Race Truth Sequence And Reveal Accounting"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-278: Couch Race Truth Sequence And Reveal Accounting
 
 **Milestone / Epic:** M5 / M5-I
@@ -96,3 +109,4 @@ agreed implementation batches, and final sign-off.
 ## Playtest Relevance
 
 Makes reveal fairness and replay enthusiasm directly observable in rehearsal.
+

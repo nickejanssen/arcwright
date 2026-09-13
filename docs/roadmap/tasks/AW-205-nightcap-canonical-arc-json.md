@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-205-nightcap-canonical-arc-json
+namespace: operating
+title: "AW-205: Nightcap Canonical Arc JSON"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-205: Nightcap Canonical Arc JSON
 
 **Milestone / Epic:** M2 / M2-C  
@@ -60,3 +73,4 @@ nightcap/arc.json, engine/tests
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

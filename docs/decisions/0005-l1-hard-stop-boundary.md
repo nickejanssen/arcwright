@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0005-l1-hard-stop-boundary
+namespace: decisions
+title: 0005 - L1 Hard Stop Boundary
+owner: Nico Janssen
+status: active
+review_by: "2026-12-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # 0005 - L1 Hard Stop Boundary
 
 **Date:** 2026-06-10
@@ -84,3 +97,4 @@ AW-208 also adds a static test that fails if production code outside the approve
 - `docs/architecture/15-development-guide.md`
 - `docs/specs/0028-aw-208-l1-hard-stops.md`
 - `docs/roadmap/tasks/AW-208-l1-hard-stops.md`
+

@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-07-17-human-collaboration-contract
+namespace: playbooks
+title: Human Collaboration Contract Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Human Collaboration Contract Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -1212,3 +1225,4 @@ Do not begin the interview until the founder selects option 1.
   on merged canonical records.
 - Scope: no runtime, schema, API, dependency, prompt, eval, safety, routing, or
   product change is included.
+

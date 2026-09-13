@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0028-aw-208-l1-hard-stops
+namespace: patterns
+title: "AW-208: L1 Hard Stops"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-208: L1 Hard Stops
 
 **Status**: Approved
@@ -294,3 +307,4 @@ Run:
 # Open Questions
 
 None.
+

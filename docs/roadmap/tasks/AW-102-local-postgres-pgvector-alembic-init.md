@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-102-local-postgres-pgvector-alembic-init
+namespace: operating
+title: "AW-102: Local Postgres 15 + pgvector + Alembic init"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-102: Local Postgres 15 + pgvector + Alembic init
 
 **Milestone / Epic:** M1 / A  
@@ -31,3 +44,4 @@ Manual upgrade and downgrade cycle against the docker database.
 ## Agent Notes
 
 Cloud SQL provisioning is a founder action. Agent work here is local development parity only.
+

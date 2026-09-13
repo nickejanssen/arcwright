@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-272-continuity-coherence-eval-suite
+namespace: operating
+title: "AW-272: Continuity and Coherence Eval Suite"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-272: Continuity and Coherence Eval Suite
 
 **Milestone / Epic:** M5 / M5-H
@@ -102,3 +115,4 @@ threshold evidence, dates, and owner actions.
 
 Pre-M6. Runs against synthetic session batches before qualifying sessions
 so continuity regressions surface before real groups play.
+

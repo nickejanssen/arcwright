@@ -1,3 +1,16 @@
+---
+id: patterns.design.moodboards.influencer-retreat
+namespace: patterns
+title: Moodboard  -  Influencer Retreat
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Moodboard  -  Influencer Retreat
 
 > Wrapper: **Corporate** · Mood: **Goofy-shiny, tropical, over-produced**
@@ -166,3 +179,4 @@ against pool-tile black. Cut to superlatives.
 - [ ] Contrast table per parent brief §5 (extra care because glow is
       warm on cream  -  verify 7:1 narrator on stage).
 - [ ] Reduced-motion parity screenshots per `seq-*`.
+

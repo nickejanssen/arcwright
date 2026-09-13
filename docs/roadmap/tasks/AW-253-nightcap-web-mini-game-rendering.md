@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-253-nightcap-web-mini-game-rendering
+namespace: operating
+title: "AW-253: Nightcap Web Mini-game Rendering And Device Integration"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-253: Nightcap Web Mini-game Rendering And Device Integration
 
 **Milestone / Epic:** M4 / M4-E
@@ -35,3 +48,4 @@ remains authoritative.
 - `docs/specs/0050-aw-253-nightcap-web-mini-game-rendering.md`
 - `docs/decisions/0003-nightcap-web-experience-runtime.md`
 - `docs/decisions/0009-mini-game-runtime-boundary.md`
+

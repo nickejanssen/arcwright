@@ -1,3 +1,16 @@
+---
+id: patterns.design.authoring.couch-race-session-experience
+namespace: patterns
+title: Couch Race — Whole-Session Experience & Gameplay Integration
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Couch Race — Whole-Session Experience & Gameplay Integration
 
 > Current version: v0.1 DRAFT — the missing connective-tissue design
@@ -250,3 +263,4 @@ rehearsal that only proves interrogation works would be a false pass.
    audiovisual (D-090), knowledge-state suspects, real stakes/scoring.
    Worth an explicit differentiation statement (recommend it lands in
    the story bible's Strategic Role section on the next bible pass).
+

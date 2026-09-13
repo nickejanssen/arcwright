@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-02-mini-game-onboarding-and-certification
+namespace: playbooks
+title: Mini-game Onboarding, Preview, and Certification Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Mini-game Onboarding, Preview, and Certification Implementation Plan
 
 > **Execution status:** Superseded by the founder-approved 2026-08-03 browser
@@ -683,3 +696,4 @@ human-gate behavior.
 - [ ] **Step 4: Stop for founder checkpoint approval**
 
 Do not begin Nightcap foundation integration without explicit approval.
+

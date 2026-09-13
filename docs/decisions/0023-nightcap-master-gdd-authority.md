@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0023-nightcap-master-gdd-authority
+namespace: decisions
+title: "ADR-0023: Nightcap Master GDD Authority"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Status
 
 **Accepted** — founder-directed source-of-truth migration, August 31, 2026.
@@ -55,3 +68,4 @@ The migration prioritizes provenance and reversible history over pretending that
 - Historical bibles: `docs/archive/nightcap-story-bibles/`
 - Vesper: `docs/design/the-host.md`
 - Visual direction: `docs/design/nightcap-art-direction.md`
+

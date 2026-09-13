@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-288-couch-race-mini-game-beat-coverage-and-tmst-acceleration
+namespace: operating
+title: "AW-288: Tell Me Something True Couch Race Activation, Placement, And Pacing"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-288: Tell Me Something True Couch Race Activation, Placement, And Pacing
 
 **Milestone / Epic:** M5 / M5-I
@@ -100,3 +113,4 @@ placement, and pacing-estimate confirmation.
 ## Playtest Relevance
 
 Direct: this is what Rehearsal 1 will actually run.
+

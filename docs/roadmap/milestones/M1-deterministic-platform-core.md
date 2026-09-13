@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.milestones.m1-deterministic-platform-core
+namespace: operating
+title: "M1: Deterministic Platform Core"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M1: Deterministic Platform Core
 
 **Status:** Active  
@@ -21,3 +34,4 @@ This is Tier 1 deterministic infrastructure: minimal AI cost, no narrative-quali
 - AW-105 knowledge graph passes its full unit suite
 - AW-107 routing swaps with zero code change
 - AW-112 proves deterministic scripted sessions and 10-run headless batch support
+

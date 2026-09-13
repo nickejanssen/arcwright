@@ -1,3 +1,16 @@
+---
+id: operating.product.aw285-discovery-and-checkpoints
+namespace: operating
+title: AW-285 Discovery and Checkpoints — Couch Race TV and Phone Rendering
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-285 Discovery and Checkpoints — Couch Race TV and Phone Rendering
 
 > Current version: v0.2 (Phase 1 closed; integrated gates carried forward)
@@ -204,3 +217,4 @@ Whatever direction you settle on — layouts, hierarchy, the squirm/catch
 treatment, minigame framing. It becomes the input to the AW-285 spec, then the
 implementation plan, then TDD implementation and PR in Claude Code. Nothing gets
 built until you approve the spec.
+

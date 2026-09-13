@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.milestones.m0-wizard-of-oz-validation
+namespace: operating
+title: "M0: Wizard-of-Oz Validation"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M0: Wizard-of-Oz Validation
 
 **Status:** Overridden, May 2026  
@@ -12,3 +25,4 @@ Validation of the personalization thesis now happens through the real build and 
 ## Exit Gate
 
 No code gate. See the override note in [../00-overview.md](../00-overview.md).
+

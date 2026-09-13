@@ -1,3 +1,16 @@
+---
+id: patterns.design.line-libraries.liar-texture-samples
+namespace: patterns
+title: Suspect Liar-Texture Voice Samples — Discovery Material
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Suspect Liar-Texture Voice Samples — Discovery Material
 
 > Current version: v0.1 DRAFT — discovery material, NOT locked content
@@ -118,3 +131,4 @@ groups, it should be an arc-config rarity, never a standard draw.
    who cracks is gameplay.
 4. Does the private-tell-scales-with-texture idea (item 4 above) feel
    right, or should tells stay texture-independent?
+

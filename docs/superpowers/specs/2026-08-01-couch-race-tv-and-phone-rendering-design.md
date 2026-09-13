@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.specs.2026-08-01-couch-race-tv-and-phone-rendering-design
+namespace: playbooks
+title: Couch Race TV and Phone Rendering — Design
+owner: Nico Janssen
+status: active
+review_by: "2027-01-29"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Couch Race TV and Phone Rendering — Design
 
 > Status: Draft, awaiting founder spec review
@@ -211,3 +224,4 @@ Verification: `nightcap-web` tests + typecheck, `pytest engine/tests/`,
    fallback with a projection in this task or defer it. Not required by any
    acceptance criterion. Recommendation: defer, and revisit after Rehearsal 1
    shows whether raw payloads on the phone actually hurt play.
+

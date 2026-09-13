@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-275-design-system-follow-ups
+namespace: operating
+title: "AW-275: Design System Follow-Ups: Semantic Tokens And Focus Visible"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-275: Design System Follow-Ups: Semantic Tokens And Focus Visible
 
 **Milestone / Epic:** M5 / M5-G
@@ -79,3 +92,4 @@ direction or user-testing choice, reclassify before deciding.
 
 Improves basic accessibility and presentation coherence before real-device
 sessions.
+

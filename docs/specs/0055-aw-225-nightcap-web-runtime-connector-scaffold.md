@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0055-aw-225-nightcap-web-runtime-connector-scaffold
+namespace: patterns
+title: "0055 - AW-225: Nightcap Web Experience Runtime Connector Scaffold"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-19"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # 0055 - AW-225: Nightcap Web Experience Runtime Connector Scaffold
 
 **Status**: Done
@@ -83,3 +96,4 @@ GCP-only alternative (Cloud Run + Firebase Realtime Database) was considered and
 # Open Questions
 
 None blocking. The ADR 0003 revisit trigger is now closed for AW-225 scope.
+

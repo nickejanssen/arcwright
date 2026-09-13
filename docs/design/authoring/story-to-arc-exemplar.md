@@ -1,3 +1,16 @@
+---
+id: patterns.design.authoring.story-to-arc-exemplar
+namespace: patterns
+title: From Story To Arc — A Worked Example
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # From Story To Arc — A Worked Example
 
 > Current version: v0.1 DRAFT — founder-directed platform discovery
@@ -164,3 +177,4 @@ nights. That is the product.
   *story protection*, not just safety), and the alarm ladder as the
   genre-translation of deterministic case truth. If these feel right,
   the platform story generalizes; if they feel forced, tell me where.
+

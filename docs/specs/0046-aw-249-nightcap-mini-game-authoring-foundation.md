@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0046-aw-249-nightcap-mini-game-authoring-foundation
+namespace: patterns
+title: "AW-249: Nightcap Mini-game Authoring Foundation"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-249: Nightcap Mini-game Authoring Foundation
 
 **Status**: Approved
@@ -91,3 +104,4 @@ loader, template, and non-shipping fixtures for Nightcap mini-games.
 # Open Questions
 
 - None for AW-249.
+

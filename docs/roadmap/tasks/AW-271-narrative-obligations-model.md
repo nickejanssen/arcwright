@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-271-narrative-obligations-model
+namespace: operating
+title: "AW-271: Narrative Obligations Model and Reveal-Readiness Condition (post-M6)"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-271: Narrative Obligations Model and Reveal-Readiness Condition (post-M6)
 
 **Milestone / Epic:** M5 / M5-H
@@ -107,3 +120,4 @@ tests, review evidence, dates, and owner actions.
 
 Post-M6. Hardens coherence for the sessions that follow the first
 qualifying playtests.
+

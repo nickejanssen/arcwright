@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.epics.m4-e-nightcap-mini-game-interaction-layer
+namespace: operating
+title: "M4-E: Nightcap Mini-game Interaction Layer"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M4-E: Nightcap Mini-game Interaction Layer
 
 **Milestone:** M4
@@ -64,3 +77,4 @@ gate clues, create competition, and produce investigative leads across the arc.
 
 This epic adds the timed clue-cracking layer required for a representative
 Nightcap v1 real-device rehearsal.
+

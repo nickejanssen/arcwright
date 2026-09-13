@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-289-couch-race-trivia-mini-game
+namespace: operating
+title: "AW-289: The Interrogation Room Last Call Pressure Capstone"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-289: The Interrogation Room Last Call Pressure Capstone
 
 > Current version: v0.3
@@ -155,3 +168,4 @@ actions.
 
 Direct: a new mechanic type is exactly the kind of thing Rehearsal 1 exists
 to pressure-test.
+

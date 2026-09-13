@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-104-first-full-alembic-migration
+namespace: operating
+title: "AW-104: First full Alembic migration"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-104: First full Alembic migration
 
 **Milestone / Epic:** M1 / B  
@@ -27,3 +40,4 @@ Fresh-database upgrade and downgrade cycle in CI and locally.
 ## Agent Notes
 
 Autogenerate, then review by hand. Alembic autogenerate misses some pgvector and index details.
+

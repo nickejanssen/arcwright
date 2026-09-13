@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-249-nightcap-mini-game-authoring-foundation
+namespace: operating
+title: "AW-249: Nightcap Mini-game Authoring Foundation"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-249: Nightcap Mini-game Authoring Foundation
 
 **Milestone / Epic:** M4 / M4-E
@@ -47,3 +60,4 @@ and non-shipping fixtures for Nightcap mini-games.
 
 Provides the validated content intake required before any mini-game reaches a
 playtest session.
+

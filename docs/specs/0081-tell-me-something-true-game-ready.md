@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0081-tell-me-something-true-game-ready
+namespace: patterns
+title: Tell Me Something True Game-ready Contract
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v0.2
 > Last updated: 2026-08-03
 > Status: Draft
@@ -90,3 +103,4 @@ Required-clue gating, cross-session behavioral influence, direct killer-assignme
 ## Founder decisions required
 
 Approve or revise the low-player voting rules, score/tie-break contract, phase timing, audiovisual direction, and social-comfort bar.
+

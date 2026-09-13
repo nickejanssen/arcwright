@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-273-rehearsal-1-execution
+namespace: operating
+title: "AW-273: Rehearsal 1 Execution - First Real-Human Nightcap Session"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-273: Rehearsal 1 Execution - First Real-Human Nightcap Session
 
 **Milestone / Epic:** M5 (M4 exit-gate debt; no epic)
@@ -58,3 +71,4 @@ actions.
 
 - Supersedes-for-execution: AW-259 (#176), AW-231 (#84), AW-254 (#148)
 - Spec: docs/specs/0067-development-survey-and-path-to-first-playtest.md
+

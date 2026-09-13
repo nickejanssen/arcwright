@@ -1,3 +1,16 @@
+---
+id: patterns.conventions.human-collaboration
+namespace: patterns
+title: Human Collaboration Contract
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Human Collaboration Contract
 
 > Current version: v1.0
@@ -226,3 +239,4 @@ The Reviewer must block when:
 The smallest unblocking action is to reopen the missed phase, provide the
 required explanation or artifact, obtain the explicit decision, and update
 dependent records.
+

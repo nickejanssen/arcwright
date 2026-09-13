@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.04-supporting-design.92-player-count-stress-test-01
+namespace: custom
+title: Player Count Stress Test 01
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Player Count Stress Test 01
 
 **Status:** Conceptual evidence, not canon.
@@ -44,3 +57,4 @@ budget.
 
 An earlier assistant recommendation proposed 3--6 and parking two-player
 play. That was not approved and is superseded. Do not repeat it.
+

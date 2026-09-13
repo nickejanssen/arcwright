@@ -1,3 +1,16 @@
+---
+id: operating.product.mini-game-readiness.tmst-golden-path-report
+namespace: operating
+title: Tell Me Something True Browser Golden Path Report
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Tell Me Something True Browser Golden Path Report
 
 > Canonical path: docs/product/mini-game-readiness/tmst-golden-path-report.md
@@ -74,3 +87,4 @@ code.
   confidence.
 - Promote the gate to `GO` only if timing, comprehension, and local playtest
   evidence all pass.
+

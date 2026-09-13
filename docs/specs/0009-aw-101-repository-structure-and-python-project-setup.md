@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0009-aw-101-repository-structure-and-python-project-setup
+namespace: patterns
+title: Repository Structure and Python Project Setup
+owner: Nico Janssen
+status: active
+review_by: "2026-12-10"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Repository Structure and Python Project Setup
 
 **Status**: Done
@@ -74,3 +87,4 @@ Add the missing Python workspace scaffolding for AW-101 without replacing the ex
 # Open Questions
 
 - None for AW-101 after plan approval
+

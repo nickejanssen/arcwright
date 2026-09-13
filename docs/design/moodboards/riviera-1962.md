@@ -1,3 +1,16 @@
+---
+id: patterns.design.moodboards.riviera-1962
+namespace: patterns
+title: Moodboard  -  Riviera 1962
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Moodboard  -  Riviera 1962
 
 > Wrapper: **High Society** · Mood: **Sunlit, glossy, dangerous under the tan**
@@ -162,3 +175,4 @@ Cut to superlatives.
 - [ ] Contrast table per parent brief §5 (extra care because glow is
       warm on cream  -  verify 7:1 narrator on stage).
 - [ ] Reduced-motion parity screenshots per `seq-*`.
+

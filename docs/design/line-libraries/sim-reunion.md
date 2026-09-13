@@ -1,3 +1,16 @@
+---
+id: patterns.design.line-libraries.sim-reunion
+namespace: patterns
+title: Vesper Refrain Library — Sim Reunion
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Vesper Refrain Library — Sim Reunion
 
 > Current version: v0.1 DRAFT — not approved content
@@ -326,3 +339,4 @@ D-081 at maximum Caine — the roast section this register was born for.
   wrapper's premise (she IS the sim's host), which suggests the answer
   to open question 1 may legitimately vary by wrapper — worth
   considering before flattening it globally.
+

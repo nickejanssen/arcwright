@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0019-multi-agent-operating-model
+namespace: patterns
+title: Multi-Agent Operating Model and Cross-Client Wiring
+owner: Nico Janssen
+status: active
+review_by: "2026-12-05"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Multi-Agent Operating Model and Cross-Client Wiring
 
 **Status**: Draft
@@ -138,3 +151,4 @@ Phase F, Cross-client verification. Run the load checks and the acceptance crite
 
 1. Tracker placement. RESOLVED: ship as this numbered spec plus phased PRs, identified by the spec number. Do not create an AW roadmap task and do not add a `docs/roadmap/index.json` entry. Rationale: the AW and roadmap system is the execution layer for platform-build work tied to a milestone exit gate (M1 through M6); this is meta-tooling that belongs to no gate. The established pattern for infra and tooling work is a numbered spec plus PRs with no AW ID (specs 0001 through 0008 and 0018). This work is a sibling of 0018, so it matches that precedent. The Implementation Phases section is the tracking checklist; each phase PR references this spec file.
 2. Retire or keep `.cursorrules`. RESOLVED (2026-06-07): the founder confirmed only Claude Code, Codex, and Copilot are in use. `.cursorrules` is deleted in Phase A and the deletion is recorded in the migration diff; its rules are preserved in `AGENTS.md`.
+

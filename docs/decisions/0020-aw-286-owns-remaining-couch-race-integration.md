@@ -1,3 +1,17 @@
+---
+id: decisions.decisions.0020-aw-286-owns-remaining-couch-race-integration
+namespace: decisions
+title: 0020 - AW-286 Owns Remaining Couch Race Integration; the Mini-game
+  Program Is a Supplier
+owner: Nico Janssen
+status: active
+review_by: "2027-02-02"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # 0020 - AW-286 Owns Remaining Couch Race Integration; the Mini-game Program Is a Supplier
 
 **Date:** 2026-08-05
@@ -112,3 +126,4 @@ coverage at Rehearsal 1, and a clean single-profile AW-286.
   live operation. Routed to the Planner.
 - The `run_seed` cross-module change noted in ADR 0019 remains off-limits and
   unapproved.
+

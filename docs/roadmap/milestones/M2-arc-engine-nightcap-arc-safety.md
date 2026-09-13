@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.milestones.m2-arc-engine-nightcap-arc-safety
+namespace: operating
+title: "M2: Arc Engine + Nightcap Arc + Safety"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-12"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M2: Arc Engine + Nightcap Arc + Safety
 
 **Status:** Exit Gate Satisfied (2026-06-14)
@@ -26,3 +39,4 @@ This milestone is the first one that spends meaningful AI tokens. It builds the 
 ## Exit Evidence
 
 The M2 exit gate was proven offline by AW-214 (see [#67](https://github.com/nickejanssen/arcwright/issues/67)). The proof artifact is `engine/tests/test_m2_exit_harness.py`, which walks all eight Story Circle beats deterministically, asserts killer assignment in The Arrival and reveal recording in The Truth, asserts L1-then-L2-then-main routing ordering with negative tests for each gate, asserts that the knowledge graph is queried before dialogue generation and that unknown-fact leakage is caught, and asserts that every model key resolves through `config/routing_table.json` with `litellm.acompletion` patched to fail. The rationale for landing the eight-beat encoding inside AW-214 (closing the AW-205 deferral) is recorded in ADR [`0007-m2-exit-harness-and-nightcap-eight-beats.md`](../../decisions/0007-m2-exit-harness-and-nightcap-eight-beats.md). The implementation spec is [`docs/specs/0037-aw-214-m2-exit-harness.md`](../../specs/0037-aw-214-m2-exit-harness.md).
+

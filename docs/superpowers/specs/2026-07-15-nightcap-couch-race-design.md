@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.specs.2026-07-15-nightcap-couch-race-design
+namespace: playbooks
+title: Nightcap Couch Race — Design (Brainstorm Output)
+owner: Nico Janssen
+status: active
+review_by: "2027-01-11"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap Couch Race — Design (Brainstorm Output)
 
 **Status:** Approved direction (founder, July 15, 2026)
@@ -58,3 +71,4 @@ The current Nightcap v1 model (killer-among-players, 30–75 minutes, four-playe
 5. PRD `03-scope.md` amendment and roadmap `00-overview.md` gate updates.
 6. Epic M5-I with tasks AW-281–AW-286; spec 0072; GitHub issues.
 7. Staged launch path: retargeted Rehearsal 1 (founder-run, local tunnel per D-065) → Rehearsal 2 (outside group) → M6 qualifying sessions → pricing decision.
+

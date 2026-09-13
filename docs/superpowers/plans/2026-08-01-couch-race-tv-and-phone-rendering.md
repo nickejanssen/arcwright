@@ -1,3 +1,17 @@
+---
+id: playbooks.superpowers.plans.2026-08-01-couch-race-tv-and-phone-rendering
+namespace: playbooks
+title: "Couch Race TV and Phone Rendering — Implementation Plan (Phase 1:
+  Structural Layer)"
+owner: Nico Janssen
+status: draft
+review_by: "2027-01-29"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Couch Race TV and Phone Rendering — Implementation Plan (Phase 1: Structural Layer)
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:subagent-driven-development (recommended) or superpowers-extended-cc:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -965,3 +979,4 @@ Do not merge. The founder merges.
 ## Phase 2 (not in this plan)
 
 Begins after the Claude Design pass returns a direction. Covers layout and visual hierarchy for the Grill TV and phone screens, the D-090 catch/squirm audiovisual treatment, G5 suspect-state presentation, the minigame slot's visual framing, and the remaining beats. The `suspectState` field is already declared on the projection; Phase 2 populates it once the founder sets the vocabulary and thresholds.
+

@@ -1,3 +1,16 @@
+---
+id: operating.product.vision-narrative
+namespace: operating
+title: The Arcwright Thesis
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # The Arcwright Thesis
 
 > Current version: v0.1 DRAFT — for founder reaction, not publication
@@ -122,3 +135,4 @@ We're the thaw.
 - The four beliefs are written to survive being read alone (each is a
   potential site section / slide). Cut any that you wouldn't defend
   in an interview.
+

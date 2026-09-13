@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-260-founder-rehearsal-runbook-and-blocker-log
+namespace: operating
+title: "AW-260: Founder Rehearsal Runbook and Blocker Log"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-260: Founder Rehearsal Runbook and Blocker Log
 
 **Milestone / Epic:** M4 / M4-D
@@ -78,3 +91,4 @@ prioritized M5 / M5-G / M6 work items, instead of vague impressions.
 
 Unblocks AW-231. Becomes the seed document for AW-240 (M6 closed-playtest
 operations runbook).
+

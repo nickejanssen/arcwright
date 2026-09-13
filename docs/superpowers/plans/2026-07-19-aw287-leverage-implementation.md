@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-07-19-aw287-leverage-implementation
+namespace: playbooks
+title: AW-287 Leverage (Resource/Effect Capability) Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-287 Leverage (Resource/Effect Capability) Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:subagent-driven-development (recommended) or superpowers-extended-cc:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -750,3 +763,4 @@ git commit -m "feat(resources): thin-slice demo script for AW-287 founder review
 ```
 
 - [ ] **Step 5:** This is the implementation's stopping point. Task 18 in the completion roadmap (present thin slice, get explicit founder approval, then sign-off/PR) picks up from here — do not record sign-off or open the PR from this plan.
+

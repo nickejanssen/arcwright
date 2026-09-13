@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0010-aw-102-local-postgres-pgvector-alembic-init
+namespace: patterns
+title: Local Postgres 15 + pgvector + Alembic Init
+owner: Nico Janssen
+status: active
+review_by: "2026-11-26"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Local Postgres 15 + pgvector + Alembic Init
 
 **Status**: Done
@@ -75,3 +88,4 @@ Set up the local PostgreSQL development baseline for Arcwright with Postgres 15,
 # Open Questions
 
 - None within AW-102 scope after plan approval
+

@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.readme
+namespace: decisions
+title: Architecture Decision Records (ADRs)
+owner: Nico Janssen
+status: active
+review_by: "2027-02-02"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Architecture Decision Records (ADRs)
 
 This directory contains decisions that shape the technical platform. Each ADR captures a decision, the context that required it, and its consequences.
@@ -63,3 +76,4 @@ When proposing changes:
 - **Architecture patterns**: Event-driven, knowledge graph, content safety layers
 - **Scope decisions**: MVP vs. H2, schema-clean design, build paths
 - **Design choices**: Character model, session state, pacing engine
+

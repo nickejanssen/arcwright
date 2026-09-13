@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-265-tmst-web-rendering-four-phases
+namespace: operating
+title: "AW-265: TMST Web Rendering for Four Phases"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-265: TMST Web Rendering for Four Phases
 
 **Milestone / Epic:** M5 / M5-F
@@ -78,3 +91,4 @@ rendering contract under a more demanding flow than Rehearsal 1 games.
 ## Playtest Relevance
 
 Provides the rendering layer real humans interact with in Rehearsal 2.
+

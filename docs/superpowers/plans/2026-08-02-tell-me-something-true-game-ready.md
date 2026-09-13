@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-02-tell-me-something-true-game-ready
+namespace: playbooks
+title: Tell Me Something True Game-ready Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Tell Me Something True Game-ready Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -293,3 +306,4 @@ git diff --check
 git add nightcap/mini_games/tell-me-something-true/manifest.json docs/specs/0081-tell-me-something-true-game-ready.md docs/roadmap/operations/tmst-device-walkthrough.md docs/roadmap/operations/tmst-rehearsal.md docs/product/mini-game-readiness/tell-me-something-true-0.2.0.json
 git commit -m "test(nightcap): certify tell me something true"
 ```
+

@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-06-27-nightcap-rehearsal-lobby
+namespace: playbooks
+title: Nightcap Rehearsal Lobby Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2026-12-24"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap Rehearsal Lobby Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:subagent-driven-development (recommended) or superpowers-extended-cc:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -1378,3 +1391,4 @@
 **Join code casing:** `_generate_join_code()` produces uppercase. `lobby_join` endpoint calls `body.join_code.upper()` before lookup. `JoinScreen` calls `.toUpperCase()` on user input before sending. `joinLobby()` in the API client also calls `.toUpperCase()`. Four consistent checkpoints — case mismatch cannot cause a false 404.
 
 **FK constraint for Character:** `lobby_join` service method creates a `Character` row before creating the `SessionParticipant`, satisfying the FK constraint that `add_player` skips (using a raw `uuid4()` that would violate FK in Postgres). This is correct and intentional.
+

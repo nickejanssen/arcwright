@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0073-m5-canonical-reconciliation
+namespace: patterns
+title: M5 Canonical Reconciliation and Tracker Synchronization
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M5 Canonical Reconciliation and Tracker Synchronization
 
 **Status**: Draft
@@ -241,3 +254,4 @@ approval, source paths, conflict resolution evidence, dates, and owner actions.
 None block this reconciliation. Any future request to move AW-270 or AW-271
 into M5 requires a new durable product decision and an explicit roadmap
 re-sequencing update.
+

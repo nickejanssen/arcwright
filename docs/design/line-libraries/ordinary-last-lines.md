@@ -1,3 +1,16 @@
+---
+id: patterns.design.line-libraries.ordinary-last-lines
+namespace: patterns
+title: The Ordinary Last Lines — Seed Library
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # The Ordinary Last Lines — Seed Library
 
 > Current version: v0.1 DRAFT — not approved content
@@ -127,3 +140,4 @@ is the one moment Vesper drops the costume.
 - Probes: **oll-flaw-kindness** (the rain) and **oll-unsolved-almost**
   (the door will remember) lean poetic — the edge of "ordinary." If
   either is too much, the ceiling is **oll-motive-love** (two coats).
+

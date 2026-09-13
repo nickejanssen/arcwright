@@ -1,3 +1,16 @@
+---
+id: custom.story-bibles.nightcap-couch-race
+namespace: custom
+title: ARCHIVED — Nightcap Couch Race Story Bible
+owner: Nico Janssen
+status: deprecated
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # ARCHIVED — Nightcap Couch Race Story Bible
 
 This path is retained as a compatibility redirect for historical links.
@@ -16,3 +29,4 @@ Current Nightcap source of truth:
 4. Relevant pages under `docs/gdd/nightcap/01-authoritative-gdd/`
 
 ADR-0013 and D-071 remain historical decision records. ADR-0023 records the authority migration.
+

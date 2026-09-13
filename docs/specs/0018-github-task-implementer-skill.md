@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0018-github-task-implementer-skill
+namespace: patterns
+title: GitHub Task Implementer Skill
+owner: Nico Janssen
+status: active
+review_by: "2026-12-04"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # GitHub Task Implementer Skill
 
 **Status**: Draft
@@ -84,3 +97,4 @@ Add a repo-tracked, platform-agnostic skill that teaches an AI coding agent how 
 # Open Questions
 
 - None after user approval to create a tracked, cross-platform skill in the repo.
+

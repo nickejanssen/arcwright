@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.00-governance.00-decision-ledger
+namespace: custom
+title: Nightcap — Decision Ledger
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Decision Ledger
 
 ## Governance
@@ -266,3 +279,4 @@ The assistant may recommend and challenge. It may not silently decide.
 - 7–8-player viability.
 - Detailed player-count-specific case scaling.
 - Production/content budgets.
+

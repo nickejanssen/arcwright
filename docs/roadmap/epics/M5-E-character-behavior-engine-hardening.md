@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.epics.m5-e-character-behavior-engine-hardening
+namespace: operating
+title: "M5-E: Character Behavior Engine Hardening"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-11"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M5-E: Character Behavior Engine Hardening
 
 **Milestone:** M5
@@ -63,3 +76,4 @@ Two focused additions to `engine/characters`:
 ## Playtest Relevance
 
 This epic is on the direct path to M6 qualifying sessions. The §7.4 compute changes how the killer feels under pressure; the §7.5 tier selection changes how the killer experience scales across player counts. Both must be in code before outside groups sit down to play.
+

@@ -1,3 +1,16 @@
+---
+id: platform.architecture.readme
+namespace: platform
+title: Architecture Directory
+owner: Nico Janssen
+status: active
+review_by: "2026-12-10"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Architecture Directory
 
 This directory contains the Technical Architecture documentation split into focused sections for easier navigation and versioning.
@@ -39,3 +52,4 @@ This directory contains the Technical Architecture documentation split into focu
 - Raw full-document exports live in [../archive/notion-export/](../archive/notion-export/). Prefer these split files for active architecture work.
 - Architecture defines what specs implement → see `/docs/specs` for detailed requirements
 - Architecture is informed by product needs → see `/docs/prd` for product requirements
+

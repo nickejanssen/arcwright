@@ -1,3 +1,16 @@
+---
+id: operating.product.aw282-discovery-and-checkpoints
+namespace: operating
+title: AW-282 Discovery and Checkpoint Record
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-282 Discovery and Checkpoint Record
 
 **Date**: 2026-07-18
@@ -40,3 +53,4 @@ The review package explained the assumptions, player-facing implications, tradeo
 - Codex implements AW-282 through the pull request.
 - Claude Code owns AW-283 answer generation and contradiction metadata.
 - Leverage runtime behavior remains a later approved scope decision.
+

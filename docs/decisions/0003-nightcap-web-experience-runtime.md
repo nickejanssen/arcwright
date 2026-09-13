@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0003-nightcap-web-experience-runtime
+namespace: decisions
+title: 0003 - Nightcap Web Experience Runtime
+owner: Nico Janssen
+status: active
+review_by: "2026-12-24"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # 0003 - Nightcap Web Experience Runtime
 
 **Date:** 2026-06-08
@@ -204,3 +217,4 @@ per the original ADR-0003 decision. Cost, edge coordination via Workers +
 hibernatable Durable Objects, and free-tier suitability for MVP volume
 outweigh the cross-vendor auth bridging cost. The actual implementation
 lives in AW-269 (M5 follow-on).
+

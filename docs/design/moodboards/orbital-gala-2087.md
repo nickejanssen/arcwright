@@ -1,3 +1,16 @@
+---
+id: patterns.design.moodboards.orbital-gala-2087
+namespace: patterns
+title: Moodboard  -  Orbital Gala 2087
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Moodboard  -  Orbital Gala 2087
 
 > Wrapper: **Sci-Fi** · Mood: **Chrome opulence, weightless, spooky-elegant**
@@ -166,3 +179,4 @@ completes. Cut to superlatives.
 - [ ] Narrator voice fragments authored per 0068 §3.3.
 - [ ] Contrast table per parent brief §5.
 - [ ] Reduced-motion parity screenshots per `seq-*`.
+

@@ -1,3 +1,16 @@
+---
+id: patterns.specs.readme
+namespace: patterns
+title: Implementation Specifications
+owner: Nico Janssen
+status: active
+review_by: "2027-02-26"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Implementation Specifications
 
 This directory contains detailed specs for implementing features and systems. Each spec takes an architecture decision or product requirement and defines: what will be built, how to test it, and known risks.
@@ -49,3 +62,4 @@ This directory contains detailed specs for implementing features and systems. Ea
 - **Platform Agnosticism**: Generic role assignment, knowledge seeding, and session-outcome vocabulary (0070)
 - **Structured Interaction Loop**: AW-282 authored questioning, deterministic resolution, and public/private event boundary (0074)
 - **Playtest Lab Contract**: Homepage/catalog/immutable-route/legacy-alias contract for the Playtest Lab (0088)
+

@@ -1,3 +1,16 @@
+---
+id: operating.product.ai-capability-roadmap
+namespace: operating
+title: Arcwright AI Capability Roadmap
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Arcwright AI Capability Roadmap
 
 > Current version: v1.0
@@ -873,3 +886,4 @@ The capital-efficient move is managed providers plus proprietary orchestration a
 - [Towards LLM-Based Automatic Playtest](https://arxiv.org/abs/2507.09490)
 - [Systematic evaluation of multimodal player profiles](https://arxiv.org/abs/2509.05624)
 - [Evaluating quality of gaming narratives co-created with AI](https://arxiv.org/abs/2509.04239)
+

@@ -1,3 +1,16 @@
+---
+id: patterns.design.nightcap-art-direction
+namespace: patterns
+title: Nightcap Art Direction Brief
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap Art Direction Brief
 
 > Current version: v1.0
@@ -565,3 +578,4 @@ Design implications for AW-268 and downstream:
 - **2026-07-16**  -  v0.1 authored (AW-267). First draft covering all
   required sections; three wrapper-level moodboards written; D-073
   recorded in decisions-log.csv.
+

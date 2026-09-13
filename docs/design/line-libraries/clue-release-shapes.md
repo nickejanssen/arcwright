@@ -1,3 +1,16 @@
+---
+id: patterns.design.line-libraries.clue-release-shapes
+namespace: patterns
+title: Clue Release Content Shapes — Discovery Packet (AW-280)
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Clue Release Content Shapes — Discovery Packet (AW-280)
 
 > Current version: v0.1 DRAFT — discovery material, NOT a locked direction
@@ -148,3 +161,4 @@ surface register — that keeps the fairness without the third voice.
 3. Should private clues *ever* be duds (realism) or always matter
    (respect for scarce attention)? Recommendation: always matter.
 4. Sayability bar: one breath (current) or up to three sentences?
+

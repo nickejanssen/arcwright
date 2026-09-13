@@ -1,3 +1,16 @@
+---
+id: patterns.design.line-libraries.orbital-gala-2087
+namespace: patterns
+title: Vesper Refrain Library — Orbital Gala 2087
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Vesper Refrain Library — Orbital Gala 2087
 
 > Current version: v0.1 DRAFT — not approved content
@@ -322,3 +335,4 @@ D-081 registers at ship-log temperature.
 - Diegetic-presence question recurs a third time ("the log was the
   recording", "ten thousand recorded evenings"). One founder answer
   governs all three libraries.
+

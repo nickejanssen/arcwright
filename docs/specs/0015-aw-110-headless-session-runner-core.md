@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0015-aw-110-headless-session-runner-core
+namespace: patterns
+title: AW-110 Headless Session Runner Core
+owner: Nico Janssen
+status: active
+review_by: "2026-12-10"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-110 Headless Session Runner Core
 
 **Status**: Draft
@@ -175,3 +188,4 @@ Notes:
 # Open Questions
 
 - None within AW-110 scope after the Epic E split.
+

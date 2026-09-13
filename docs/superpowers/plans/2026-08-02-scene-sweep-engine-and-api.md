@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-02-scene-sweep-engine-and-api
+namespace: playbooks
+title: Scene Sweep — Package, Engine Plugin & API Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-01-30"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Scene Sweep — Package, Engine Plugin & API Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:subagent-driven-development (recommended) or superpowers-extended-cc:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -1884,3 +1897,4 @@ Additionally:
 - The double-claim SQLite query pattern in Task 4 mirrors what's already proven working in `test_mini_game_runtime.py` and `test_mini_games_api.py` (in-memory SQLite via `patch_metadata_for_sqlite`); no new query patterns were introduced.
 - This plan does not touch `engine/mini_games/runtime.py`, `models.py`, or `resolver.py` — if a task here seems to require changing one of those, stop and re-read Task 3's "Deterministic derivation helpers" section; the design deliberately avoids needing engine changes by keeping all Scene Sweep-specific state derivable from `snapshot` + `submissions` alone.
 - Web rendering (TypeScript, `nightcap-web/`) is out of scope for every task in this plan. Do not create a `client/renderer.ts` for Scene Sweep here — that's the next plan, written after this one's API shape is settled and stable.
+

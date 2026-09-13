@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-29-arcwright-playtest-lab
+namespace: playbooks
+title: Arcwright Playtest Lab Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Arcwright Playtest Lab Implementation Plan
 
 > Historical implementation plan with its Nightcap authority reference reconciled on 2026-08-31. Execute this plan with the superpowers:subagent-driven-development skill when the founder selects that execution mode. The plan is implementation-ready for inline execution as well.
@@ -197,3 +210,4 @@ Commit: docs(playtests): reconcile Playtest Lab evidence.
 - Archived artifacts remain immutable and URLs remain permanent.
 - Detached/stale worktree handling is explicit.
 - Final completion claims require verification evidence.
+

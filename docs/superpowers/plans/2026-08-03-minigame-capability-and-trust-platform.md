@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-03-minigame-capability-and-trust-platform
+namespace: playbooks
+title: Mini-game Capability and Trust Platform Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Mini-game Capability and Trust Platform Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -482,3 +495,4 @@ git commit -m "test(arc): prove minigame platform contracts"
 - Resume, timeout, retirement, replay, and rollback are deterministic and auditable.
 - API and SDK transport are mechanic-neutral, destination-neutral, audience-filtered, and exact-versioned.
 - A synthetic non-Nightcap game and future profile work without schema changes or Nightcap vocabulary.
+

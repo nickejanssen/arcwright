@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-251-mini-game-runtime-persistence-and-clue-gating
+namespace: operating
+title: "AW-251: Mini-game Runtime, Persistence, And Clue Gating"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-251: Mini-game Runtime, Persistence, And Clue Gating
 
 **Milestone / Epic:** M4 / M4-E
@@ -37,3 +50,4 @@ behavioral output, and pause/resume persistence.
 
 - `docs/specs/0048-aw-251-mini-game-runtime-persistence-and-clue-gating.md`
 - `docs/decisions/0009-mini-game-runtime-boundary.md`
+

@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0029-docs-organization
+namespace: patterns
+title: Docs Organization
+owner: Nico Janssen
+status: active
+review_by: "2026-12-10"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Docs Organization
 
 **Status**: Done
@@ -91,3 +104,4 @@ Included:
 
 - Should future Notion syncs write directly to `docs/archive/notion-export/`?
 - Should full monolithic PRD and architecture exports be regenerated periodically, or should the split canonical docs become the only maintained form?
+

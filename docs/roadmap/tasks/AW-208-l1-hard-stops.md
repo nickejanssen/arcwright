@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-208-l1-hard-stops
+namespace: operating
+title: "AW-208: L1 Hard Stops"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-208: L1 Hard Stops
 
 **Milestone / Epic:** M2 / M2-D  
@@ -60,3 +73,4 @@ engine/safety, engine/tests
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

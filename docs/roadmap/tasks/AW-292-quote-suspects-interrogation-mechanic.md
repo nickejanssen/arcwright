@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-292-quote-suspects-interrogation-mechanic
+namespace: operating
+title: "AW-292: Quote-Suspects Interrogation Mechanic"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-292: Quote-Suspects Interrogation Mechanic
 
 **Milestone / Epic:** M5 / M5-I
@@ -98,3 +111,4 @@ before build (the gate), and the reaction-staging samples during build.
 - Do not let AI decide whether a contradiction exists — that is
   deterministic ledger logic.
 - Do not name the mechanic or its schema after Nightcap (platform-clean).
+

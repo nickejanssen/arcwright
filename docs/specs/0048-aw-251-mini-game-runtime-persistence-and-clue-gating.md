@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0048-aw-251-mini-game-runtime-persistence-and-clue-gating
+namespace: patterns
+title: "AW-251: Mini-game Runtime, Persistence, And Clue Gating"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-251: Mini-game Runtime, Persistence, And Clue Gating
 
 **Status**: Accepted
@@ -82,3 +95,4 @@ requires the repository's explicit migration and design review.
 # Open Questions
 
 - None for the generic runtime contract.
+

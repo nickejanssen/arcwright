@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-240-closed-playtest-operations-runbook
+namespace: operating
+title: "AW-240: Closed Playtest Operations Runbook"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-240: Closed Playtest Operations Runbook
 
 **Milestone / Epic:** M6 / M6-A  
@@ -80,3 +93,4 @@ docs/roadmap/tasks, docs/playtest if created
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0002-pre-commit-hook-setup
+namespace: patterns
+title: Pre-Commit Hook Setup
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Pre-Commit Hook Setup
 
 **Status**: Done
@@ -73,3 +86,4 @@ Add a repo-wide pre-commit hook setup that fits Arcwright's mixed Python and Typ
 # Open Questions
 
 - None after approval to add the needed dev-only tooling for JS/TS checks
+

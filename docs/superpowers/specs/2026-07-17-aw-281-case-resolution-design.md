@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.specs.2026-07-17-aw-281-case-resolution-design
+namespace: playbooks
+title: AW-281, Case Resolution Design (Founder Round)
+owner: Nico Janssen
+status: active
+review_by: "2027-01-14"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-281, Case Resolution Design (Founder Round)
 
 **Status:** Approved direction (founder, 2026-07-17)
@@ -152,3 +165,4 @@ Explicitly out of scope for AW-281:
 
 Feeds the plan at
 `docs/superpowers/plans/2026-07-17-aw-281-couch-race-arc-and-case-generation.md`.
+

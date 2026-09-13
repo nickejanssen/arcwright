@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0053-aw-257-crime-scene-smash-package
+namespace: patterns
+title: "AW-257: Crime Scene Smash Mini-game Package"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-257: Crime Scene Smash Mini-game Package
 
 **Status**: Approved
@@ -80,3 +93,4 @@ boards and a shared leaderboard.
 # Open Questions
 
 - None for the approved package envelope.
+

@@ -1,3 +1,16 @@
+---
+id: operating.prd.readme
+namespace: operating
+title: PRD Directory
+owner: Nico Janssen
+status: active
+review_by: "2026-12-10"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # PRD Directory
 
 This directory contains the Product Requirements Document split into focused sections for easier navigation and versioning.
@@ -23,3 +36,4 @@ Related product logs live in [../product/](../product/). Raw full-document expor
 - Use H1 headings for main sections
 - Link between related files using relative markdown links
 - Keep metadata synced when upstream PRD is updated
+

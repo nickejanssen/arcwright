@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.epics.m3-d-telemetry-and-full-simulation-harness
+namespace: operating
+title: "M3-D: Telemetry And Full Simulation Harness"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-19"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M3-D: Telemetry And Full Simulation Harness
 
 **Milestone:** M3  
@@ -62,3 +75,4 @@ The technical scope is limited to the tasks listed below and the architecture re
 ## Playtest Relevance
 
 This epic contributes directly to the gated progression from backend validation to real-device rehearsal to first qualifying outside-group sessions.
+

@@ -1,3 +1,16 @@
+---
+id: patterns.design.moodboards.the-estate
+namespace: patterns
+title: Moodboard  -  The Estate
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Moodboard  -  The Estate
 
 > Wrapper: **Corporate** · Mood: **Glossy, contemporary, quietly menacing**
@@ -154,3 +167,4 @@ full weight against poured-concrete black. Cut to superlatives.
 - [ ] Narrator voice fragments authored per 0068 §3.3.
 - [ ] Contrast table per parent brief §5.
 - [ ] Reduced-motion parity screenshots per `seq-*`.
+

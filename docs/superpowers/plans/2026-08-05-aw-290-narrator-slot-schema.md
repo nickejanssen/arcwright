@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-05-aw-290-narrator-slot-schema
+namespace: playbooks
+title: AW-290 Narrator Slot Schema Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-05"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-290 Narrator Slot Schema Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:subagent-driven-development (recommended) or superpowers-extended-cc:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -1611,3 +1624,4 @@ git commit -m "feat(session): persist and reload resolved cases without loss"
 - Task 2 assumes `nightcap/case_taxonomy/` gains `location_pool` and `time_pool`. If the taxonomy shape resists that, Task 2 grows and should be re-scoped before starting.
 
 **Type consistency.** `CaseAnchor` fields (`anchor_id`, `location_ref`, `location_label`, `time_ordinal`, `time_label`) are used identically in Tasks 1, 2, 3, 9, and the appendix. ORM classes are suffixed `Row` (`CaseAnchorRow`, `CaseEvidenceRow`) to avoid colliding with the Pydantic `CaseAnchor` — checked in Tasks 12 and 14. `find_anchor_contradictions` has one signature throughout.
+

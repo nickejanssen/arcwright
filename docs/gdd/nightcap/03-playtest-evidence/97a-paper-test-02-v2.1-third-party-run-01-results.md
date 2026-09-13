@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.03-playtest-evidence.97a-paper-test-02-v2-1-third-party-run-01-results
+namespace: custom
+title: "Nightcap — Paper Test #2 v2.1 Third-Party Run 01 Results"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Paper Test #2 v2.1 Third-Party Run 01 Results
 
 **Status:** TEST FINDING / supporting evidence, not canon  
@@ -84,3 +97,4 @@ The v2.1 baseline fails its stated gate:
 - action clarity remained weak.
 
 No GDD decision is changed by this run.
+

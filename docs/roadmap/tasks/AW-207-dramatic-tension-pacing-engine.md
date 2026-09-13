@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-207-dramatic-tension-pacing-engine
+namespace: operating
+title: "AW-207: Dramatic Tension Pacing Engine"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-207: Dramatic Tension Pacing Engine
 
 **Milestone / Epic:** M2 / M2-B  
@@ -59,3 +72,4 @@ engine/arc, engine/telemetry, engine/tests
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

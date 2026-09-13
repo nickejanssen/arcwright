@@ -1,3 +1,16 @@
+---
+id: custom.story-bibles.daily-case
+namespace: custom
+title: Daily Case Story Bible
+owner: Nico Janssen
+status: draft
+review_by: "2026-12-12"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Daily Case Story Bible
 
 > Current version: v0.1
@@ -183,4 +196,5 @@ These may become later product work, but they are not required to prove the seco
 - AW-245 builds the minimal executable product only after AW-244 records the Nightcap H1 proof decision.
 
 Daily Case is not Nightcap v1 scope, not Nightcap v1.1 scope, and not a reason to pull cross-session features into current Nightcap tasks.
+
 

@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-277-couch-race-narrator-transition-lines
+namespace: operating
+title: "AW-277: Couch Race Narrator Transition Lines"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-277: Couch Race Narrator Transition Lines
 
 **Milestone / Epic:** M5 / M5-I
@@ -94,3 +107,4 @@ agreed implementation batches, and final sign-off.
 ## Playtest Relevance
 
 Provides the staged narrative spine observed during the Couch Race rehearsal.
+

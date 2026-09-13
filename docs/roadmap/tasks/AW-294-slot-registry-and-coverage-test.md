@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-294-slot-registry-and-coverage-test
+namespace: operating
+title: "AW-294: Machine-Readable Slot Registry And Coverage Test"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-03"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-294: Machine-Readable Slot Registry And Coverage Test
 
 **Milestone / Epic:** M5 / M5-I
@@ -99,3 +112,4 @@ commit.
 - Do not edit narrator refrain text. Correcting the master-plan registry
   section is a different file and is explicitly permitted.
 - Do not whitelist the sample-doc-only slots.
+

@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-106-pre-generation-knowledge-constraint-hook
+namespace: operating
+title: "AW-106: Pre-generation knowledge constraint hook"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-106: Pre-generation knowledge constraint hook
 
 **Milestone / Epic:** M1 / C  
@@ -26,3 +39,4 @@ Unit test that the hook never returns a fact outside the character's state.
 ## Agent Notes
 
 Design this as the chokepoint now so later milestones cannot accidentally route around it.
+

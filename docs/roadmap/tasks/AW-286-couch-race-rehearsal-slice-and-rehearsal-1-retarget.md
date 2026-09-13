@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget
+namespace: operating
+title: "AW-286: Couch Race Rehearsal Slice And Rehearsal 1 Retarget"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-02"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-286: Couch Race Rehearsal Slice And Rehearsal 1 Retarget
 
 **Milestone / Epic:** M5 / M5-I
@@ -136,3 +149,4 @@ actions.
 ## Playtest Relevance
 
 This task IS the playtest path.
+

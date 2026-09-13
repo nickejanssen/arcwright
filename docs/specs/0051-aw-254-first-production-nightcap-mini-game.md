@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0051-aw-254-first-production-nightcap-mini-game
+namespace: patterns
+title: "AW-254: First Production Nightcap Mini-game And Rehearsal"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-254: First Production Nightcap Mini-game And Rehearsal
 
 **Status**: Superseded by AW-285/AW-286 integrated device gates
@@ -94,3 +107,4 @@ unsolvable material.
 # Open Questions
 
 - Which authored game package will the founder select?
+

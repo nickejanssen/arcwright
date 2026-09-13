@@ -1,3 +1,16 @@
+---
+id: patterns.design.moodboards.sim-reunion
+namespace: patterns
+title: Moodboard  -  Sim Reunion
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Moodboard  -  Sim Reunion
 
 > Wrapper: **Sci-Fi** · Mood: **Absurd-melancholic, uncanny-cheerful, goofy**
@@ -175,3 +188,4 @@ resumes as if nothing happened. Cut to superlatives.
 - [ ] Contrast table per parent brief §5 (extra care  -  pastel base
       makes contrast harder; verify 7:1 narrator on stage).
 - [ ] Reduced-motion parity screenshots per `seq-*`.
+

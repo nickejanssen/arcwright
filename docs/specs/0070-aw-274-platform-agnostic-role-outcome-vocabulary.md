@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0070-aw-274-platform-agnostic-role-outcome-vocabulary
+namespace: patterns
+title: Platform-Agnostic Role, Knowledge-Seeding, and Session-Outcome Vocabulary
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Platform-Agnostic Role, Knowledge-Seeding, and Session-Outcome Vocabulary
 
 **Status**: Draft
@@ -108,3 +121,4 @@ actions.
 - Q2: Deprecation-window policy for `killer_identified`: dual-accept for how long, and who owns the SDK migration?
 - Q3: Should generative role assignment be a single `role_assignment: bool` plus arc-named roles, or a list of role-assignment configs supporting multiple hidden roles? (Second-arc requirements inform this.)
 - Q4: Sequencing relative to AW-273 (Rehearsal 1): before or after the first real-human session?
+

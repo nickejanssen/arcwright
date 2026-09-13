@@ -1,3 +1,16 @@
+---
+id: custom.story-bibles.nightcap-murder-mystery
+namespace: custom
+title: ARCHIVED — Nightcap Murder Mystery Story Bible (Imposter Variant)
+owner: Nico Janssen
+status: deprecated
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # ARCHIVED — Nightcap Murder Mystery Story Bible (Imposter Variant)
 
 This path is retained as a compatibility redirect for historical links.
@@ -16,3 +29,4 @@ Current Nightcap source of truth:
 4. Relevant pages under `docs/gdd/nightcap/01-authoritative-gdd/`
 
 Historical Imposter material remains available in the archive but is not current V1 canon unless the current GDD explicitly reopens it. ADR-0023 records the authority migration.
+

@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-262-tmst-package-authoring-and-schema-resolution
+namespace: operating
+title: "AW-262: TMST Package Authoring and Schema Resolution"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-262: TMST Package Authoring and Schema Resolution
 
 **Milestone / Epic:** M5 / M5-F
@@ -84,3 +97,4 @@ the founder-approved content that AW-266 will rehearse.
 ## Playtest Relevance
 
 Produces the authored package AW-266 will rehearse with real humans.
+

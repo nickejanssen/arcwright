@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-204-dynamic-arcstatechart-generation
+namespace: operating
+title: "AW-204: Dynamic ArcStateChart Generation"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-204: Dynamic ArcStateChart Generation
 
 **Milestone / Epic:** M2 / M2-B  
@@ -59,3 +72,4 @@ engine/arc, engine/tests
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

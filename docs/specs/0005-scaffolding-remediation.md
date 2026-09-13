@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0005-scaffolding-remediation
+namespace: patterns
+title: Scaffolding Remediation
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Scaffolding Remediation
 
 **Status**: Done
@@ -80,3 +93,4 @@ Align the current scaffold to the technical architecture by fixing the high-reve
 # Open Questions
 
 - None after user approval of the remediation order
+

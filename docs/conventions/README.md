@@ -1,3 +1,16 @@
+---
+id: patterns.conventions.readme
+namespace: patterns
+title: Conventions and Guidelines
+owner: Nico Janssen
+status: active
+review_by: "2026-11-17"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Conventions and Guidelines
 
 This directory contains team conventions for code, testing, and contributions. These documents establish shared standards and make it easier for multiple contributors (especially AI agents) to understand and maintain the codebase.
@@ -38,3 +51,4 @@ This directory contains team conventions for code, testing, and contributions. T
 ---
 
 See the individual files for details on each area.
+

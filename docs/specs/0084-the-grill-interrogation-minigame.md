@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0084-the-grill-interrogation-minigame
+namespace: patterns
+title: The Grill Interrogation Mini-game
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v0.2
 > Last updated: 2026-08-03
 > Status: Draft
@@ -118,3 +131,4 @@ Tests cover no-duplication delegation, exactly-once start, service and knowledge
 Approve or revise the automatic per-player loop, round timing envelope,
 competition semantics, D-090 audiovisual treatment, repeat ceiling, and the
 decision to reserve but not enable the any-beat currency request.
+

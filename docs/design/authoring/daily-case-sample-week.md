@@ -1,3 +1,16 @@
+---
+id: patterns.design.authoring.daily-case-sample-week
+namespace: patterns
+title: Daily Case — Sample Week (Creative Proof)
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Daily Case — Sample Week (Creative Proof)
 
 > Current version: v0.1 DRAFT — founder-directed platform discovery (D-082)
@@ -137,3 +150,4 @@ past. Handler close, either outcome, Vesper's costume fully off:
 - Next steps if direction approved (renewable-model work): M5-C
   schema-validation pass against this sample, then the week shape as
   a real ArcDefinition.
+

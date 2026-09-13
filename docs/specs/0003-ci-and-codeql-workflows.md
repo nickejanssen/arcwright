@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0003-ci-and-codeql-workflows
+namespace: patterns
+title: CI and CodeQL Workflows
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # CI and CodeQL Workflows
 
 **Status**: Done
@@ -71,3 +84,4 @@ Add GitHub Actions workflows for CI and CodeQL so Arcwright runs consistent auto
 # Open Questions
 
 - None after approval of the inferred runtime assumptions
+

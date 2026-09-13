@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0014-structured-interaction-resolution
+namespace: decisions
+title: "ADR-0014: Structured interaction resolution boundary"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # ADR-0014: Structured interaction resolution boundary
 
 **Status**: Accepted
@@ -25,3 +38,4 @@ We use an authored, deterministic InteractionDefinition and InteractionDirector 
 - `docs/specs/0074-aw282-structured-interaction-loop.md`
 - `docs/superpowers/specs/2026-07-18-aw282-structured-interaction-design.md`
 - `docs/architecture/08-event-system.md`
+

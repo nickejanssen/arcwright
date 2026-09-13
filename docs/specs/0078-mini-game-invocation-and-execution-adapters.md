@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0078-mini-game-invocation-and-execution-adapters
+namespace: patterns
+title: Mini-game Invocation, Capability Negotiation, and Result Authority
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v0.2
 > Last updated: 2026-08-03
 > Status: Approved
@@ -288,3 +301,4 @@ The founder approved the exact profile registry, invocation, transcript
 reducer, external principal, permanent authority invariants, and no-downgrade
 behavior in this version on 2026-08-03. Implementation remains subject to a
 separate go-ahead.
+

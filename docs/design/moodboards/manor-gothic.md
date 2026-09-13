@@ -1,3 +1,16 @@
+---
+id: patterns.design.moodboards.manor-gothic
+namespace: patterns
+title: Moodboard  -  Manor Gothic
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Moodboard  -  Manor Gothic
 
 > Wrapper: **High Society** · Mood: **Spooky, elegant, unsettled**
@@ -160,3 +173,4 @@ the display face at full weight against the wet-stone base. Curtain.
 - [ ] Narrator voice fragments authored per 0068 §3.3.
 - [ ] Contrast table per parent brief §5.
 - [ ] Reduced-motion parity screenshots per `seq-*`.
+

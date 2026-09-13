@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-223-cost-and-usage-summary
+namespace: operating
+title: "AW-223: Cost And Usage Summary"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-223: Cost And Usage Summary
 
 **Milestone / Epic:** M3 / M3-D  
@@ -61,3 +74,4 @@ engine/telemetry, engine/routing, api/routers
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

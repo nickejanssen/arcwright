@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0052-arcwright-minigame-skill
+namespace: patterns
+title: Arcwright Mini-game Integration Skill
+owner: Nico Janssen
+status: active
+review_by: "2026-12-19"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Arcwright Mini-game Integration Skill
 
 **Status**: Done
@@ -121,3 +134,4 @@ mini-game into `nightcap/arc.json`.
 
 - Should the skill grow an explicit promotion sub-command in the helper script
   once the lifecycle and arc-binding flow is exercised by a real production game?
+

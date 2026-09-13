@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0076-aw-289-interrogation-room
+namespace: patterns
+title: "AW-289: The Interrogation Room Last Call Pressure Capstone"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v0.5
 > Last updated: 2026-08-03
 > Status: Draft
@@ -604,3 +617,4 @@ worktree from updated `origin/main` on `codex/aw-289-interrogation-room`.
 Then scaffold `nightcap/mini_games/interrogation-room/` through the
 `arcwright-minigame` lifecycle. Do not use the AW-284 worktree or cherry-pick
 from its branch.
+

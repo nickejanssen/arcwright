@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.specs.2026-07-12-arcwright-strategic-blueprint-design
+namespace: playbooks
+title: Arcwright Strategic Blueprint
+owner: Nico Janssen
+status: active
+review_by: "2027-01-09"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Arcwright Strategic Blueprint
 
 > Current version: v1.1
@@ -528,3 +541,4 @@ Restated so the not-doing is as documented as the doing:
 - Visual design system: `docs/specs/0069-nightcap-visual-design-system.md`
 - Fun instrumentation: `docs/roadmap/operations/fun-observation-rubric.md`
 - Decisions cited: D-034 (wedge), D-046 (enterprise adaptation), D-051/ADR-0006 (Continuity v1.1), ADR-0010 (gameplay pivots), ADR-0012 (narrative fidelity)
+

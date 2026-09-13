@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.milestones.m5-hardening-proof-prerequisites
+namespace: operating
+title: "M5: Hardening + Proof Prerequisites"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-11"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M5: Hardening + Proof Prerequisites
 
 **Status:** Planned  
@@ -27,3 +40,4 @@ This milestone closes the gap between a technically working product and a produc
 - The live knowledge graph inspection surface is live; read-only arc structure, live event stream, and character state inspection may ship as logs or defer until after proof
 - The continuity and coherence eval suite (AW-272) runs against a synthetic session batch and reports knowledge-leak rate and contradiction count
 - A Couch Race thin slice is rehearsable on real devices per ADR-0013 (epic M5-I; AW-272 runs against a Couch Race batch as its gate input)
+

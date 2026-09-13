@@ -1,3 +1,16 @@
+---
+id: operating.agents.business-steward
+namespace: operating
+title: "Role: Business Steward"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Role: Business Steward
 
 ## Purpose
@@ -42,3 +55,4 @@ choice that was confirmed.
 ## Handoff
 
 Reach a shared go or no-go with the Product Steward and System Architect at the intent gate, then pass the commercially approved intent to the **Planner** (`docs/agents/planner.md`). Route business decisions worth recording to the **Scribe**.
+

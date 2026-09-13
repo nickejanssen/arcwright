@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-290-typed-case-anchors-and-evidence-short-form
+namespace: operating
+title: "AW-290: Typed Case Anchors And Evidence Short Form"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-03"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-290: Typed Case Anchors And Evidence Short Form
 
 **Milestone / Epic:** M5 / M5-I
@@ -127,3 +140,4 @@ free instead of approximate and metered.
   names.
 - Do not add an `engine/db` or `sqlalchemy` import to `engine/case/`.
 - Do not touch `run_seed`.
+

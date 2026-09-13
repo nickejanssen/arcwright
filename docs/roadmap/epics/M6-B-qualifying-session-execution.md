@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.epics.m6-b-qualifying-session-execution
+namespace: operating
+title: "M6-B: Qualifying Session Execution"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-05"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M6-B: Qualifying Session Execution
 
 **Milestone:** M6  
@@ -59,3 +72,4 @@ The technical scope is limited to the tasks listed below and the architecture re
 ## Playtest Relevance
 
 This epic contributes directly to the gated progression from backend validation to real-device rehearsal to first qualifying outside-group sessions.
+

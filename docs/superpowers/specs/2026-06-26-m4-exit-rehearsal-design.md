@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.specs.2026-06-26-m4-exit-rehearsal-design
+namespace: playbooks
+title: M4 Exit + First Real-Human Nightcap Rehearsal — Design
+owner: Nico Janssen
+status: active
+review_by: "2026-12-23"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M4 Exit + First Real-Human Nightcap Rehearsal — Design
 
 > Status: Approved (founder approved 2026-06-26 in brainstorming session)
@@ -391,3 +404,4 @@ The following are intentionally excluded; tracked elsewhere or deferred.
 - `docs/product/decisions-log.csv` (D-058, D-059, D-061, D-062, D-063)
 - `AGENTS.md`, `CLAUDE.md`
 - GitHub issues #148 (AW-254), #84 (AW-231)
+

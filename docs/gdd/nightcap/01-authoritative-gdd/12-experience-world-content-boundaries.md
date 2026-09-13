@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.01-authoritative-gdd.12-experience-world-content-boundaries
+namespace: custom
+title: Nightcap — Experience, World, and Content Boundaries
+owner: Nico Janssen
+status: active
+review_by: "2027-02-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Experience, World, and Content Boundaries
 
 **Status:** Current authoritative GDD page.  
@@ -128,3 +141,4 @@ The following former Story Bible concepts are retained only in archive/history u
 - the rule that all Nightcap story content must be fully generative.
 
 When an archived Story Bible, historical ADR, product decision, implementation spec, or roadmap item conflicts with the current GDD, preserve the historical record but use the current GDD for new Nightcap design decisions. Implementation differences must be reconciled explicitly rather than silently treating old behavior as current design.
+

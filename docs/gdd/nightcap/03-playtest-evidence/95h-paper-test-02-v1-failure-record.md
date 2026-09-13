@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.03-playtest-evidence.95h-paper-test-02-v1-failure-record
+namespace: custom
+title: "Nightcap — Paper Test #2 v1 Failure Record"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Paper Test #2 v1 Failure Record
 
 **Status:** TEST FINDING / supporting evidence, not canon  
@@ -73,3 +86,4 @@ Replace v1 with a **game-first observational microcase**:
 - short debrief only after the playable slice,
 - first validate that the slice feels like a game,
 - only then compare memory-support treatments.
+

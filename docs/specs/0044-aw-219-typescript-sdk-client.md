@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0044-aw-219-typescript-sdk-client
+namespace: patterns
+title: "AW-219: TypeScript SDK — Event and Input Client"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-16"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-219: TypeScript SDK — Event and Input Client
 
 **Status**: Approved
@@ -245,3 +258,4 @@ The PR description must include the full terminal output of `npm run typecheck` 
 # Open Questions
 
 - None. All questions resolved during codebase review and product sign-off.
+

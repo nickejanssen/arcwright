@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.04-supporting-design.98c-social-play-cohesion-view
+namespace: custom
+title: Nightcap — Social Play Cohesion View
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Social Play Cohesion View
 
 **Status:** SUPPORTING DESIGN-CONTROL VIEW — not game canon by itself
@@ -86,3 +99,4 @@ A loud/confident player must not be able to perform the reasoning for everyone s
 ## Use in Future Audits
 
 When changing any social-facing mechanic, check this view first, then edit the actual authoritative owner. Do not add a rule here only because it makes the table look complete.
+

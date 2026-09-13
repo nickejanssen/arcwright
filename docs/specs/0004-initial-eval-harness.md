@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0004-initial-eval-harness
+namespace: patterns
+title: Initial Eval Harness
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Initial Eval Harness
 
 **Status**: Done
@@ -70,3 +83,4 @@ Add a runnable eval harness for the LLM-dependent surface that exists today: rou
 # Open Questions
 
 - None after approval of the initial routing-focused scope
+

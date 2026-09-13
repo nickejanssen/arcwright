@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0075-aw287-nightcap-leverage-advantages-sabotages
+namespace: patterns
+title: AW-287 Nightcap Leverage Advantages And Sabotages
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-287 Nightcap Leverage Advantages And Sabotages
 
 **Status**: Approved
@@ -159,3 +172,4 @@ Any failed check rejects the activation deterministically with a typed reason; n
 
 - Q1: Should a future Leverage family (post-launch) introduce a private-catch or private-balance variant? Deliberately not built speculatively now (per the walkthrough's resolution) — revisit only if a specific future effect needs it.
 - Q2: Does Call Their Bluff (or an equivalent public-theory mechanic) get its own future spec once AW-284's accusation/theory state matures enough to support a bounded public-theory contract? Logged for a later product decision, not this spec's scope.
+

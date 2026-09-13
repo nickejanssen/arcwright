@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-279-detective-identity-and-opening-briefing
+namespace: operating
+title: "AW-279: Detective Identity And Opening Briefing"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-279: Detective Identity And Opening Briefing
 
 **Milestone / Epic:** M5 / M5-I
@@ -95,3 +108,4 @@ agreed implementation batches, and final sign-off.
 
 Tests whether personalized onboarding can remain clear and playable within one
 minute.
+

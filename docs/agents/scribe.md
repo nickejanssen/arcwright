@@ -1,3 +1,16 @@
+---
+id: operating.agents.scribe
+namespace: operating
+title: "Role: Scribe"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Role: Scribe
 
 ## Purpose
@@ -41,3 +54,4 @@ leave the record unapproved and surface the gap.
 ## Handoff
 
 Route newly discovered work or follow-ups back to the **Product Steward** or **Planner**, and keep the **SME** (`docs/skills/arcwright-sme`) able to rely on the records staying current.
+

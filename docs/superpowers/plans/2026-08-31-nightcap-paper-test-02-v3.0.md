@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-31-nightcap-paper-test-02-v3-0
+namespace: playbooks
+title: "Nightcap Paper Test #2 v3.0 Implementation Plan"
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap Paper Test #2 v3.0 Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -418,3 +431,4 @@ Do not edit Jotform, submit smoke data, promote current, publish Pages, or open 
 - Spec coverage: all approved case truth, investigation topology, rivalry, lock-picking pulse, Leverage, Case File, telemetry, refresh/re-entry, writing-skill audits, and harness blockers map to explicit tasks.
 - Placeholder scan: no implementation placeholder is authorized; remaining unverified external actions are explicit stop conditions rather than TODOs.
 - Type/name consistency: fixture/version IDs, final character names, lock game ID, run ID, event stream, and Leverage amount are consistent across tasks.
+

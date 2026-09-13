@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-263-tmst-runtime-social-truth-bluff-mechanic
+namespace: operating
+title: "AW-263: TMST Runtime - social-truth-bluff Mechanic"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-263: TMST Runtime - social-truth-bluff Mechanic
 
 **Milestone / Epic:** M5 / M5-F
@@ -81,3 +94,4 @@ review.
 ## Playtest Relevance
 
 Provides the deterministic runtime AW-266 will exercise with real humans.
+

@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0068-game-experience-quality-bar
+namespace: patterns
+title: "0068: Game Experience Quality Bar"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # 0068: Game Experience Quality Bar
 
 > Current version: v1.0
@@ -348,3 +361,4 @@ This spec is satisfied for Nightcap v1 when:
   the authored-intent metadata when ADR-0012 (M5-H) is implemented? (Natural
   fit; decide at M5-H planning.)
 - Q: Audio stinger set: post-M6 evidence decision (§6).
+

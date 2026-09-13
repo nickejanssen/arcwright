@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.01-authoritative-gdd.08-truth-verdict-postmortem
+namespace: custom
+title: Nightcap — The Truth, The Verdict & The Postmortem
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — The Truth, The Verdict & The Postmortem
 
 **Status:** Foundational direction DECIDED; presentation details TESTING  
@@ -113,3 +126,4 @@ Do not imitate any living creator's exact prose or signature voice.
 - Verdict presentation,
 - cinematic confrontation/proclamation as a possible augmentation,
 - endgame duration and pacing.
+

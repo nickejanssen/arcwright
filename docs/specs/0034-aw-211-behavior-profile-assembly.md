@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0034-aw-211-behavior-profile-assembly
+namespace: patterns
+title: AW-211 Behavior Profile Assembly
+owner: Nico Janssen
+status: active
+review_by: "2026-12-11"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-211 Behavior Profile Assembly
 
 **Status**: Approved
@@ -77,3 +90,4 @@ Define the runtime character context assembly needed for AW-211. The character b
 # Open Questions
 
 - None.
+

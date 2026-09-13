@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0011-aw-103-sqlalchemy-orm-models
+namespace: patterns
+title: SQLAlchemy ORM Models for All Platform Tables
+owner: Nico Janssen
+status: active
+review_by: "2026-11-26"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # SQLAlchemy ORM Models for All Platform Tables
 
 **Status**: Planned
@@ -379,3 +392,4 @@ The architecture references "all 16 tables" in §15.9 but §15.3 lists 15 in the
 
 1. **16 vs 15 tables:** Arch §15.9 references "all 16 tables" while §15.3 lists 15 in the migration order. No 16th table has been identified. Flag if found during implementation.
 2. **`characters` additional columns:** Only `character_id`, `behavior_profile`, `embedding` are confirmed. Are there additional columns (name, arc_id, session_id)?
+

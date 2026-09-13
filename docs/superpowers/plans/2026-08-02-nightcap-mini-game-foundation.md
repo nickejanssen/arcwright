@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-02-nightcap-mini-game-foundation
+namespace: playbooks
+title: Nightcap Mini-game Opportunity Foundation Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap Mini-game Opportunity Foundation Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -550,3 +563,4 @@ bootstrap, theme, and privacy. Do not mark any package game-ready.
 - [ ] **Step 4: Stop for founder checkpoint approval**
 
 The whole-session certification and closeout plan is next after approval.
+

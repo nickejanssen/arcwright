@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0022-resolved-case-persistence
+namespace: decisions
+title: 0022 - Resolved Case Is Persisted in Normalized Tables
+owner: Nico Janssen
+status: active
+review_by: "2027-02-02"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # 0022 - Resolved Case Is Persisted in Normalized Tables
 
 **Date:** 2026-08-05
@@ -131,3 +144,4 @@ migration at all, and some of the schedule margin ahead of Rehearsal 1.
 - Whether a persisted case carries a `session_id` foreign key or is standalone
   and referenced by the session.
 - AW-290 re-estimation and split, routed to the Planner.
+

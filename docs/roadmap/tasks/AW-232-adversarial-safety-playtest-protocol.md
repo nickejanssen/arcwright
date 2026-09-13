@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-232-adversarial-safety-playtest-protocol
+namespace: operating
+title: "AW-232: Adversarial Safety Playtest Protocol"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-232: Adversarial Safety Playtest Protocol
 
 **Milestone / Epic:** M5 / M5-A  
@@ -84,3 +97,4 @@ docs/roadmap/tasks, GitHub issues/comments, docs/specs if needed
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

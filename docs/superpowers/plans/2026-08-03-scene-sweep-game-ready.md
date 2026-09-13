@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-03-scene-sweep-game-ready
+namespace: playbooks
+title: Scene Sweep Game-ready Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Scene Sweep Game-ready Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -374,3 +387,4 @@ git diff --check
 - Browser claims cannot determine canonical finder, score, clue, or story consequences.
 - Real-device and real-player evidence gates gameplay tuning and production promotion.
 - Final promotion updates every related spec, plan, roadmap record, milestone, epic, issue, and readiness artifact from canonical evidence.
+

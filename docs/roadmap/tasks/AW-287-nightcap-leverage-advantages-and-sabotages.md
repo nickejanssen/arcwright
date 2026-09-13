@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-287-nightcap-leverage-advantages-and-sabotages
+namespace: operating
+title: "AW-287: Nightcap Leverage Advantages And Sabotages"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-287: Nightcap Leverage Advantages And Sabotages
 
 **Milestone / Epic:** M5 / M5-I
@@ -109,3 +122,4 @@ checkpoint approvals, dates, and owner actions.
 ## Playtest Relevance
 
 Direct: Leverage is a primary lever for whether the race feels alive and whether player-to-player interference lands as exciting rather than frustrating (fun-rubric observation).
+

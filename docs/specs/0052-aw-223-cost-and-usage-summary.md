@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0052-aw-223-cost-and-usage-summary
+namespace: patterns
+title: "AW-223: Cost and Usage Summary"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-18"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-223: Cost and Usage Summary
 
 **Status**: Approved
@@ -287,3 +300,4 @@ Numerical comparisons use `pytest.approx()`. All async tests use `@pytest.mark.a
 # Open Questions
 
 None — all decisions resolved from ORM + architecture docs before writing this spec.
+

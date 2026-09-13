@@ -1,3 +1,17 @@
+---
+id: decisions.decisions.0017-narrator-slot-resolution-and-wrapper-dressing
+namespace: decisions
+title: "ADR-0017: Narrator slot resolution — structured location/time plus a
+  wrapper dressing pack"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # ADR-0017: Narrator slot resolution — structured location/time plus a wrapper dressing pack
 
 **Status**: Accepted
@@ -135,3 +149,4 @@ structuring serves every wrapper and is done once.
 - `nightcap/couch-race.arc.json` (`aesthetic_config.selection_model`)
 - `docs/decisions/0013-nightcap-couch-race-v1-launch-target.md` (D-088 launch/rehearsal pair)
 - `docs/product/2026-07-19-creative-session-master-plan.md` (Step 2/Step 4)
+

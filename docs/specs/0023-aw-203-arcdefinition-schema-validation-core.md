@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0023-aw-203-arcdefinition-schema-validation-core
+namespace: patterns
+title: "AW-203: ArcDefinition Schema And Validation Core"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-06"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-203: ArcDefinition Schema And Validation Core
 
 **Status**: Approved
@@ -84,3 +97,4 @@ This spec defines the AW-203 implementation of the Pydantic arc definition schem
 # Open Questions
 
 - None for AW-203 implementation.
+

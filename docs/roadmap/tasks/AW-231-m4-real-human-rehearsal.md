@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-231-m4-real-human-rehearsal
+namespace: operating
+title: "AW-231: Execute Real-Human Nightcap Rehearsal 1"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-231: Execute Real-Human Nightcap Rehearsal 1
 
 **Milestone / Epic:** M4 / M4-D
@@ -85,3 +98,4 @@ that drive M5 hardening priorities.
 
 This rehearsal closes M4. Its blockers drive M5 hardening priorities and
 seed Rehearsal 2.
+

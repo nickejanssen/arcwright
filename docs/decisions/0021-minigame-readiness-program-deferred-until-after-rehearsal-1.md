@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0021-minigame-readiness-program-deferred-until-after-rehearsal-1
+namespace: decisions
+title: 0021 - Mini-game Readiness Program Deferred Until After Rehearsal 1
+owner: Nico Janssen
+status: active
+review_by: "2027-02-02"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # 0021 - Mini-game Readiness Program Deferred Until After Rehearsal 1
 
 **Date:** 2026-08-05
@@ -135,3 +148,4 @@ and elapsed calendar time on the platform track.
 - The `run_seed` cross-module change remains off-limits and unapproved. It is
   reached only through the Scene Sweep plan, which is deferred.
 - AW-286 re-estimation and a possible split, routed to the Planner by D-101.
+

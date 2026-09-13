@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-108-prompt-caching-and-generation-logging
+namespace: operating
+title: "AW-108: Prompt caching and generation logging"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-108: Prompt caching and generation logging
 
 **Milestone / Epic:** M1 / D  
@@ -26,3 +39,4 @@ Assert cacheable layers are flagged and that a `generation_logs` row is written 
 ## Agent Notes
 
 Document the cache invalidation rule when session state changes.
+

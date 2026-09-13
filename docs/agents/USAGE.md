@@ -1,3 +1,16 @@
+---
+id: operating.agents.usage
+namespace: operating
+title: Using the Arcwright Agents and Skills
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Using the Arcwright Agents and Skills
 
 A practical, click-by-click guide to the roles wired up by specs 0019 and 0021. It is written for the **client apps** (the Claude desktop app, the Codex app, and VS Code with GitHub Copilot). The command line is mentioned only where it is the only or the best option, and those spots are clearly marked **CLI**.
@@ -207,3 +220,4 @@ Day to day, the agents run all the git work (branching, committing, opening PRs)
 - **Copilot review seems to ignore the rules:** it reads `.github/copilot-instructions.md` (a copy of the rules), not `AGENTS.md`. The copy is kept in sync; if someone edits `AGENTS.md`, the copy must be updated too.
 - **Codex does not list a skill:** confirm the project is fully synced and start a new session. The rules still apply through `AGENTS.md` regardless.
 - **Golden rule:** to change how a role behaves, edit the canonical file in `docs/skills/` or `docs/agents/`, never the per-app launcher. One edit updates every app.
+

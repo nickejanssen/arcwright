@@ -1,3 +1,16 @@
+---
+id: operating.product.mini-game-readiness.artifact-closeout-matrix
+namespace: operating
+title: Mini-game Readiness Artifact Closeout Matrix
+owner: Nico Janssen
+status: active
+review_by: "2027-02-02"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Mini-game Readiness Artifact Closeout Matrix
 
 > Current version: v1.3
@@ -69,3 +82,4 @@ mistaken for a game-ready session.
   separate TMST rehearsal disposition.
 - Do not use any closed record in this matrix as proof that a full Couch Race
   session is device-ready, human-ready, or founder-signed-off.
+

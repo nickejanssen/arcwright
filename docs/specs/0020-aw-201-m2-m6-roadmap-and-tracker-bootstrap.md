@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0020-aw-201-m2-m6-roadmap-and-tracker-bootstrap
+namespace: patterns
+title: "AW-201: M2-M6 Roadmap And Tracker Bootstrap"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-10"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-201: M2-M6 Roadmap And Tracker Bootstrap
 
 **Status**: Approved
@@ -83,3 +96,4 @@ This spec defines the documentation and GitHub tracker bootstrap required to mov
 # Open Questions
 
 - None for AW-201 implementation. Later tasks carry their own open decisions where the repo docs mark them unresolved.
+

@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-07-16-m5-canonical-reconciliation
+namespace: playbooks
+title: M5 Canonical Reconciliation Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M5 Canonical Reconciliation Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox syntax for tracking.
@@ -275,3 +288,4 @@ Do not create an empty commit when verification finds no documentation delta.
 - Spec coverage: Task 1 checks freshness; Task 2 repairs the canonical graph and Couch Race retarget; Task 3 mirrors it to GitHub; Task 4 verifies every required relationship.
 - Placeholder scan: no incomplete marker, generic test instruction, or unspecified path remains.
 - Consistency: AW-275 is M5-G; AW-276 through AW-280 are M5-I supporting dependencies; AW-281 through AW-286 remain M5-I child tasks; AW-270 and AW-271 remain Post-M6.
+

@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.specs.2026-08-02-mini-game-platform-orchestration-design
+namespace: playbooks
+title: Mini-game Platform Orchestration Design
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Mini-game Platform Orchestration Design
 
 > Current version: v0.3
@@ -805,3 +818,4 @@ The architecture and work order are approved. Canonical specs, Nightcap
 placement, each game's creative artifact, the AW-266 disposition, and the
 selected implementation plan still require their named approvals. No
 implementation begins from this planning approval.
+
