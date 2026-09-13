@@ -287,7 +287,9 @@ Revisit past roughly 100k chunks (~20× current corpus).
 **Phase A**
 
 - [ ] Migration proposal lists every `id`/`namespace` change for founder approval before any write
-- [ ] After migration, `team-ai validate-kb` passes on all 459 docs with 13 namespaces
+- [ ] After migration, `team-ai validate-kb` passes on all 459 docs with 14 namespaces
+      (13 specialist domains plus `nightcap-couch-race`, which D2 made an
+      archived domain served by `title-sme` rather than its own specialist)
 - [ ] 17 agent definitions generated, each validating against `agent.schema.json`
 - [ ] Every specialist has `max_hops: 0` and exactly one `kb_namespace`
 - [ ] Router has `model_tier: none`

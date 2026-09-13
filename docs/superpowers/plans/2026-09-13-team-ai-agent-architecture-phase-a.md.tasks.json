@@ -1,0 +1,103 @@
+{
+  "planPath": "docs/superpowers/plans/2026-09-13-team-ai-agent-architecture-phase-a.md",
+  "specPath": "docs/specs/0089-team-ai-agent-architecture.md",
+  "repos": {
+    "team-ai": {
+      "path": "C:/Users/nicke/OneDrive/Desktop/team-ai",
+      "branch": "feat/agent-topology-phase-a",
+      "tasks": [1, 2, 3, 4, 5, 6]
+    },
+    "arcwright": {
+      "path": "fresh worktree off main",
+      "branch": "claude/team-ai-agent-topology",
+      "tasks": [7, 8, 9, 10, 11]
+    }
+  },
+  "tasks": [
+    {
+      "id": 1,
+      "subject": "Task 1: Extend the manifest schema for domains",
+      "status": "pending",
+      "description": "**Goal:** `manifest.schema.json` accepts `group`, `authority`, `not_owned`, and `depends_on` on a domain, and rejects an invalid `authority`.\n\n**Files:**\n- Modify: `schemas/manifest.schema.json`\n- Modify: `src/schema/types.ts:47-58` (`ManifestDomain`)\n- Test: `src/schema/validate.test.ts`\n\n**Acceptance Criteria:**\n- A domain with all four new fields validates\n- `authority` accepts only canonical|provisional|archived\n- A domain omitting all four still validates (optional, back-compatible)\n- `additionalProperties: false` still rejects an unknown key\n\n**Verify:** `npx vitest run src/schema/`\n\n**Steps:**\n1. Write failing tests in validate.test.ts\n2. Add the four properties to $defs.manifestDomain\n3. Mirror in ManifestDomain + add DomainAuthority type\n4. Run tests, commit\n\n```json:metadata\n{\"files\": [\"schemas/manifest.schema.json\", \"src/schema/types.ts\", \"src/schema/validate.test.ts\"], \"verifyCommand\": \"npx vitest run src/schema/\", \"acceptanceCriteria\": [\"domain with group/authority/not_owned/depends_on validates\", \"invalid authority rejected\", \"domain without new fields still validates\"], \"repo\": \"team-ai\", \"modelTier\": \"mechanical\"}\n```",
+      "activeForm": "Extending the manifest schema for domains"
+    },
+    {
+      "id": 2,
+      "subject": "Task 2: Add agents and skills manifest sections",
+      "status": "pending",
+      "blockedBy": [1],
+      "description": "**Goal:** The manifest carries the full agent roster and skill registry alongside domains, and `assembleManifest` round-trips both.\n\n**Files:**\n- Modify: `schemas/manifest.schema.json`, `src/schema/types.ts`, `src/manifest/assemble.ts`\n- Test: `src/manifest/assemble.test.ts`, `src/schema/validate.test.ts`\n\n**Acceptance Criteria:**\n- A manifest with `agents` and `skills` validates; one with neither also validates\n- A skill with `deterministic: true` and a `script` validates\n- `assembleManifest` passes both through and sorts agents by name, skills by id\n- `serializeManifest` emits domains, then agents, then skills\n\n**Verify:** `npx vitest run src/manifest/ src/schema/`\n\n**Steps:**\n1. Write failing tests for pass-through and serialization order\n2. Add manifestAgent/manifestSkill $defs and top-level arrays\n3. Add ManifestAgent/ManifestSkill types; widen Manifest\n4. Add readAgents/readSkills; extend DOMAIN_KEY_ORDER and serializeManifest\n5. Run tests, commit\n\n```json:metadata\n{\"files\": [\"schemas/manifest.schema.json\", \"src/schema/types.ts\", \"src/manifest/assemble.ts\", \"src/manifest/assemble.test.ts\"], \"verifyCommand\": \"npx vitest run src/manifest/ src/schema/\", \"acceptanceCriteria\": [\"agents and skills sections validate\", \"both optional\", \"agents sorted by name\", \"serialization order domains-agents-skills\"], \"repo\": \"team-ai\", \"modelTier\": \"standard\"}\n```",
+      "activeForm": "Adding agents and skills manifest sections"
+    },
+    {
+      "id": 3,
+      "subject": "Task 3: Give each domain SME its own namespace",
+      "status": "pending",
+      "description": "**Goal:** Fix the bug where every generated domain SME is scoped to `namespaces[0]`, which would make all thirteen specialists read the same namespace and defeat context bounding.\n\n**Files:**\n- Modify: `src/generator/context.ts` (domains mapping), `src/generator/entity-files.ts` (asDomains + render loop)\n- Test: `src/generator/instance-template.test.ts`\n\n**Acceptance Criteria:**\n- `buildContext` emits a `namespace` on every domain entry\n- A domain whose slug matches a namespace uses it; otherwise falls back to namespaces[0]\n- Two domains with different namespaces produce different `kb_namespaces`\n- Generated SMEs still validate against agent.schema.json\n\n**Verify:** `npx vitest run src/generator/`\n\n**Steps:**\n1. Write failing test asserting two SMEs get different kb_namespaces\n2. Add namespace to DomainBlock and the context mapping\n3. Carry namespace through asDomains; replace firstNamespace in the loop\n4. Run tests, commit\n\n```json:metadata\n{\"files\": [\"src/generator/context.ts\", \"src/generator/entity-files.ts\", \"src/generator/instance-template.test.ts\"], \"verifyCommand\": \"npx vitest run src/generator/\", \"acceptanceCriteria\": [\"each domain SME scoped to its own namespace\", \"fallback preserved for non-matching slugs\", \"existing generator tests still pass\"], \"repo\": \"team-ai\", \"modelTier\": \"standard\"}\n```",
+      "activeForm": "Fixing per-domain namespace scoping"
+    },
+    {
+      "id": 4,
+      "subject": "Task 4: Let an instance supply its own catalog",
+      "status": "pending",
+      "description": "**Goal:** `loadCatalog()` resolves an instance-level catalog directory, so a repo can define its own namespace preset without adding team-specific content to the framework. Required because `kb.namespaces` is a single_select that throws on unknown values — `custom` is the only selectable escape hatch, and it currently resolves to nothing.\n\n**Files:**\n- Modify: `src/interview/gates.ts` (loadCatalog), `src/generator/context.ts` (forward the dir)\n- Test: `src/catalog/resolve.test.ts`\n\n**Acceptance Criteria:**\n- `loadCatalog(dir)` finds a preset defined only in dir\n- Entries key by FILENAME STEM, not the `name:` field\n- `loadCatalog()` with no argument behaves exactly as before\n- A non-existent instance dir is ignored rather than throwing\n\n**Verify:** `npx vitest run src/catalog/ src/interview/ src/generator/`\n\n**Steps:**\n1. Write failing test writing custom.yaml with name: arcwright, asserting get('custom') hits and get('arcwright') misses\n2. Add optional instanceDir param to loadCatalog\n3. Forward extra.instanceCatalogDir from buildContext\n4. Run tests, commit\n\n```json:metadata\n{\"files\": [\"src/interview/gates.ts\", \"src/generator/context.ts\", \"src/catalog/resolve.test.ts\"], \"verifyCommand\": \"npx vitest run src/catalog/ src/interview/ src/generator/\", \"acceptanceCriteria\": [\"instance-only preset resolves\", \"keyed by filename stem\", \"no-arg behaviour unchanged\", \"missing dir ignored\"], \"repo\": \"team-ai\", \"modelTier\": \"standard\"}\n```",
+      "activeForm": "Wiring the instance catalog layer"
+    },
+    {
+      "id": 5,
+      "subject": "Task 5: team-ai remap-namespaces command",
+      "status": "pending",
+      "description": "**Goal:** A deterministic command that rewrites `namespace` and `id` front-matter values across a KB from a supplied mapping, producing a reviewable proposal first and only writing when explicitly applied.\n\n**Files:**\n- Create: `src/remap/plan.ts`, `src/remap/plan.test.ts`, `src/remap/apply.ts`, `src/remap/apply.test.ts`, `src/commands/remap-namespaces.ts`\n- Modify: `src/cli.ts`\n\n**Acceptance Criteria:**\n- Mapping platform->knowledge-graph rewrites namespace AND the id's first segment\n- A per-file override beats the namespace rule (this is how one-to-many splits work)\n- An unmapped namespace is reported unchanged, never rewritten\n- Without --apply nothing is written except the proposal\n- --apply rewrites only namespace and id; all other keys and the body are byte-identical\n- Applying twice is idempotent\n- Unparseable front matter is a conflict, not a crash\n\n**Verify:** `npx vitest run src/remap/`\n\n**Steps:**\n1. Write failing planner tests (rewrite, override, unchanged)\n2. Implement buildRemapPlan + rewriteId (read-only)\n3. Write failing apply tests (preserve-everything-else, idempotent)\n4. Implement applyRemapPlan using line-scoped regex on the front-matter block only\n5. Add the CLI wrapper and register in cli.ts\n6. npm run check, commit\n\n```json:metadata\n{\"files\": [\"src/remap/plan.ts\", \"src/remap/apply.ts\", \"src/commands/remap-namespaces.ts\", \"src/cli.ts\"], \"verifyCommand\": \"npx vitest run src/remap/\", \"acceptanceCriteria\": [\"namespace and id both rewritten\", \"per-file override wins\", \"unmapped reported unchanged\", \"proposal-only by default\", \"body byte-identical after apply\", \"idempotent\", \"bad front matter is a conflict not a crash\"], \"repo\": \"team-ai\", \"modelTier\": \"standard\"}\n```",
+      "activeForm": "Building the remap-namespaces command"
+    },
+    {
+      "id": 6,
+      "subject": "Task 6: Release team-ai 0.4.0",
+      "status": "pending",
+      "blockedBy": [1, 2, 3, 4, 5],
+      "description": "**Goal:** Tag and publish the framework changes so Arcwright can consume a fixed version.\n\n**Files:**\n- Modify: `package.json`, `package-lock.json`, `CHANGELOG.md`\n\n**Acceptance Criteria:**\n- `npm run check` green, `npm run build` succeeds, `check-agnostic` reports 0 denied tokens\n- Version 0.4.0 in package.json and package-lock.json\n- CHANGELOG 0.4.0 section covering Tasks 1-5\n- Tag v0.4.0 pushed, GitHub Release created, v0 branch fast-forwarded\n- PR nickejanssen/team-ai#1 (0.3.1) merged FIRST so 0.4.0 contains it\n\n**Verify:** `node dist/cli.js remap-namespaces --help`\n\n**Steps:**\n1. Confirm PR #1 merged\n2. Bump version, npm install --package-lock-only, write CHANGELOG\n3. npm run check && npm run build && check-agnostic\n4. Push branch, open PR, merge, tag, release, move v0\n\n```json:metadata\n{\"files\": [\"package.json\", \"package-lock.json\", \"CHANGELOG.md\"], \"verifyCommand\": \"npm run check && npm run build && node dist/cli.js check-agnostic\", \"acceptanceCriteria\": [\"check and build green\", \"version 0.4.0 in both files\", \"CHANGELOG section present\", \"v0.4.0 tag and release exist\", \"v0 branch includes the release commit\"], \"repo\": \"team-ai\", \"modelTier\": \"mechanical\"}\n```",
+      "activeForm": "Releasing team-ai 0.4.0"
+    },
+    {
+      "id": 7,
+      "subject": "Task 7: Author Arcwright's namespace preset and answers file",
+      "status": "pending",
+      "blockedBy": [6],
+      "description": "**Goal:** Arcwright declares its own fourteen namespaces and a deterministic answers file, so generation is reproducible and needs no interactive interview.\n\n**Files:**\n- Create: `catalog/namespaces/custom.yaml` (filename MUST be custom.yaml — see plan Task 4)\n- Create: `.team-ai/answers.yaml`, `.team-ai/namespace-remap.yaml`\n\n**Acceptance Criteria:**\n- `custom.yaml` validates against namespace-preset.schema.json (exactly 5 seed_docs, >=1 second_level)\n- `second_level` lists all fourteen namespaces\n- The remap mapping covers all five current namespaces\n- Every docs/architecture/*.md and docs/story-bibles/*.md file has an explicit per-file entry\n- The answers file replays with --answers --dry-run without 'answer file exhausted'\n\n**Verify:** `node <team-ai>/dist/cli.js remap-namespaces --root . --mapping .team-ai/namespace-remap.yaml --out .team-ai/remap-proposal.yaml` reports conflict 0\n\n**Steps:**\n1. Write catalog/namespaces/custom.yaml with the 14 namespaces\n2. Write .team-ai/namespace-remap.yaml — one-to-one in `namespaces`, every judgement call in `files`\n3. Capture interview order via init --dry-run, transcribe answers.yaml (kb.namespaces=custom, agents.domains=the 13, team.size=1-3, arch.index_driver=lexical, agents.seed=no)\n4. Replay to verify, then commit\n\n```json:metadata\n{\"files\": [\"catalog/namespaces/custom.yaml\", \".team-ai/answers.yaml\", \".team-ai/namespace-remap.yaml\"], \"verifyCommand\": \"node <team-ai>/dist/cli.js remap-namespaces --root . --mapping .team-ai/namespace-remap.yaml --out .team-ai/remap-proposal.yaml\", \"acceptanceCriteria\": [\"preset validates with exactly 5 seed_docs\", \"14 namespaces listed\", \"every architecture and story-bible file mapped\", \"answers file replays cleanly\"], \"repo\": \"arcwright\", \"modelTier\": \"standard\"}\n```",
+      "activeForm": "Authoring the namespace preset and answers file"
+    },
+    {
+      "id": 8,
+      "subject": "Task 8: Run the namespace migration",
+      "status": "pending",
+      "blockedBy": [7],
+      "description": "**Goal:** Rewrite `namespace` and `id` across the KB from five generic namespaces to fourteen Arcwright ones, after founder approval of the proposal.\n\n**USER-ORDERED GATE — NON-SKIPPABLE.** This task was requested by the user in the current conversation. It MUST NOT be closed by walking around it, by declaring it \"verified inline\", or by substituting a cheaper check. Close only after every item in `acceptanceCriteria` has been re-validated independently, with output captured.\n\n**Files:**\n- Create: `.team-ai/remap-proposal.yaml`\n- Modify: ~459 files under `docs/` — front matter only\n\n**Acceptance Criteria:**\n- The proposal is presented in plain language and EXPLICITLY approved by the founder BEFORE --apply runs\n- After apply, git diff shows changes only on namespace: and id: lines — zero body lines changed\n- validate-kb exits 0\n- validate-citations exits 0, proving no cross-reference broke\n- Re-running the remap reports remap 0 (idempotent)\n- No file outside docs/ is modified\n\n**Verify:** `git diff -U0 -- docs/ | grep '^[+-]' | grep -v '^[+-][+-]' | grep -vE '^[+-](namespace|id):'` prints nothing\n\n**Steps:**\n1. Generate the proposal\n2. Summarise for the founder in plain language — STOP and wait for explicit approval\n3. Apply only after approval\n4. Prove only two lines changed via the diff grep\n5. Run validate-kb and validate-citations\n6. Commit\n\n```json:metadata\n{\"userGate\": true, \"tags\": [\"user-gate\"], \"files\": [\".team-ai/remap-proposal.yaml\", \"docs/\"], \"verifyCommand\": \"git diff -U0 -- docs/ | grep '^[+-]' | grep -v '^[+-][+-]' | grep -vE '^[+-](namespace|id):'\", \"acceptanceCriteria\": [\"founder explicitly approved the proposal before apply\", \"git diff shows only namespace: and id: line changes\", \"validate-kb exits 0\", \"validate-citations exits 0\", \"re-running reports remap 0\", \"nothing outside docs/ modified\"], \"gateScope\": \"all\", \"failurePolicy\": \"stop\", \"repo\": \"arcwright\", \"modelTier\": \"standard\"}\n```",
+      "activeForm": "Running the namespace migration"
+    },
+    {
+      "id": 9,
+      "subject": "Task 9: Generate the agent topology",
+      "status": "pending",
+      "blockedBy": [8],
+      "description": "**Goal:** Produce one router, three group SMEs, and thirteen specialists, plus their instruction files and the four base skills — without touching any hand-authored file.\n\n**Files:**\n- Create: `agents/*.yaml`, `agents/*.md` (17 pairs), `skills/*/`, `personas/*.md`\n\n**Acceptance Criteria:**\n- 17 agent YAML files exist, each validating against agent.schema.json\n- The router has model_tier: none and kind: router\n- All 13 specialists have max_hops: 0 and exactly one kb_namespaces entry\n- No two specialists share a kb_namespace\n- Nothing under docs/agents/ or docs/skills/ is modified (D1)\n- Any collision produced a .team-ai-new sibling rather than an overwrite\n\n**Verify:** `node <team-ai>/dist/cli.js doctor --root .` exits 0\n\n**Steps:**\n1. init --dir . --answers .team-ai/answers.yaml --on-conflict siblings\n2. git status --porcelain docs/agents docs/skills must be empty\n3. Review any .team-ai-new siblings by hand — never blind-copy\n4. Assert max_hops 0 and unique namespaces across specialists\n5. Commit\n\n```json:metadata\n{\"files\": [\"agents/\", \"skills/\", \"personas/\", \"team-profile.yaml\", \"index.lock\"], \"verifyCommand\": \"node <team-ai>/dist/cli.js doctor --root .\", \"acceptanceCriteria\": [\"17 agents validate\", \"router model_tier none\", \"all specialists max_hops 0 with one namespace\", \"no duplicate kb_namespace\", \"docs/agents and docs/skills untouched\", \"collisions became siblings\"], \"repo\": \"arcwright\", \"modelTier\": \"standard\"}\n```",
+      "activeForm": "Generating the agent topology"
+    },
+    {
+      "id": 10,
+      "subject": "Task 10: Author the manifest fragment and assemble",
+      "status": "pending",
+      "blockedBy": [9],
+      "description": "**Goal:** The manifest describes all fourteen domains, all seventeen generated agents, the four generated skills, and the existing hand-authored agents and skills registered as source: authored.\n\n**Files:**\n- Modify: `agents/manifest.fragment.yaml`\n- Create: `manifest.yaml` (generated)\n\n**Acceptance Criteria:**\n- 14 domains, each with group, authority, not_owned, owner: Nico Janssen\n- nightcap = canonical; monster-rpg and daily-case = provisional; nightcap-couch-race = archived with subagent: title-sme\n- Every file in docs/agents/ and docs/skills/ appears with source: authored and a path\n- assemble-manifest exits 0 and manifest.yaml validates\n- Every domain's subagent names an agent present in the agents section\n\n**Verify:** `node <team-ai>/dist/cli.js assemble-manifest --root .` exits 0\n\n**Steps:**\n1. Write 14 domain entries in the fragment\n2. Register 17 generated agents plus the authored ones from docs/agents/\n3. Register the 4 generated skills plus every docs/skills/*/ as authored\n4. assemble-manifest\n5. Run the subagent-reference resolution check\n6. Commit\n\n```json:metadata\n{\"files\": [\"agents/manifest.fragment.yaml\", \"manifest.yaml\"], \"verifyCommand\": \"node <team-ai>/dist/cli.js assemble-manifest --root .\", \"acceptanceCriteria\": [\"14 domains with group/authority/not_owned\", \"authority values correct per D2\", \"authored agents and skills registered with paths\", \"manifest validates\", \"all subagent refs resolve\"], \"repo\": \"arcwright\", \"modelTier\": \"standard\"}\n```",
+      "activeForm": "Authoring the manifest fragment"
+    },
+    {
+      "id": 11,
+      "subject": "Task 11: Verify end to end and open the PR",
+      "status": "pending",
+      "blockedBy": [10],
+      "description": "**Goal:** Prove the whole Phase A result is coherent and non-destructive, then hand it to the founder as one reviewable PR.\n\n**Files:** none created — verification and PR only\n\n**Acceptance Criteria:**\n- validate-kb, validate-citations, and doctor all exit 0\n- No changes under engine/, api/, sdk/, or dashboard/\n- docs/agents/ and docs/skills/ contain no modified files\n- No .team-ai-new sibling remains unresolved\n- The PR body states the migration is included and that id values changed\n\n**Verify:** `git diff --stat origin/main -- engine api sdk dashboard` prints nothing\n\n**Steps:**\n1. Run validate-kb, validate-citations, doctor\n2. Prove runtime dirs untouched\n3. find for leftover .team-ai-new\n4. Push and open the PR against main\n\n```json:metadata\n{\"files\": [], \"verifyCommand\": \"git diff --stat origin/main -- engine api sdk dashboard\", \"acceptanceCriteria\": [\"validate-kb exits 0\", \"validate-citations exits 0\", \"doctor exits 0\", \"no runtime code changed\", \"docs/agents and docs/skills untouched\", \"no unresolved siblings\"], \"repo\": \"arcwright\", \"modelTier\": \"standard\"}\n```",
+      "activeForm": "Verifying end to end and opening the PR"
+    }
+  ],
+  "lastUpdated": "2026-09-13T00:00:00Z"
+}
