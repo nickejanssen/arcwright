@@ -1,3 +1,16 @@
+---
+id: operating.agents.spec-author
+namespace: operating
+title: "Role: Spec Author"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Role: Spec Author
 
 ## Purpose
@@ -41,3 +54,4 @@ when required founder input or a named phase approval remains unresolved.
 ## Handoff
 
 Pass the approved spec to the **Implementer** (`docs/skills/github-task-implementer`), which executes it from branch to PR. The **Reviewer** (`docs/skills/arcwright-reviewer`) will later gate the PR against this spec's acceptance criteria.
+

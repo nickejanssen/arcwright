@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0049-aw-252-mini-game-api-events-and-sdk
+namespace: patterns
+title: "AW-252: Mini-game API, Events, And TypeScript SDK"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-252: Mini-game API, Events, And TypeScript SDK
 
 **Status**: Approved
@@ -72,3 +85,4 @@ versioned payload interface.
 # Open Questions
 
 - None for the transport boundary.
+

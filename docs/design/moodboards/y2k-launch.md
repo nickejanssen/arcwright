@@ -1,3 +1,16 @@
+---
+id: patterns.design.moodboards.y2k-launch
+namespace: patterns
+title: Moodboard  -  Y2K Launch
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Moodboard  -  Y2K Launch
 
 > Wrapper: **Corporate** · Mood: **Nostalgic-neon, giddy, precarious**
@@ -164,3 +177,4 @@ single confetti frame. Cut to superlatives.
 - [ ] Contrast table per parent brief §5 (extra care because glow is
       sodium  -  verify against warm narrator tint).
 - [ ] Reduced-motion parity screenshots per `seq-*`.
+

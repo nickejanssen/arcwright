@@ -1,3 +1,16 @@
+---
+id: patterns.design.the-host
+namespace: patterns
+title: Vesper  -  The Host of Nightcap
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Vesper  -  The Host of Nightcap
 
 > Current version: v1.2
@@ -342,3 +355,4 @@ considerations logged here for coordination but out of AW-267 scope:
   authoring model = authored refrains + AI-filled specifics; Vesper
   is one character wearing wrapper roles; no v1 audio; no v1 phone
   presence.
+

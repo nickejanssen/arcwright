@@ -1,3 +1,16 @@
+---
+id: patterns.design.authoring.rehearsal-1-observation-guide
+namespace: patterns
+title: Rehearsal 1 — Founder Observation Guide
+owner: Nico Janssen
+status: draft
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Rehearsal 1 — Founder Observation Guide
 
 > Current version: v0.1 DRAFT — discovery material for AW-286's
@@ -178,3 +191,4 @@ on the couch.
   so the data isn't double-counted.
 - The twelve fit on one printed page in play order. Print it. Phones
   are for the game.
+

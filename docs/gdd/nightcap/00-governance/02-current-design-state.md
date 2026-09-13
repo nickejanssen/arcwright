@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.00-governance.02-current-design-state
+namespace: custom
+title: Nightcap — Current Design State
+owner: Nico Janssen
+status: active
+review_by: "2027-02-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Current Design State
 
 ## Promise
@@ -164,3 +177,4 @@ Formal Memory Support comparison remains a later validation question, but the fa
 - End-to-end design + validation plan: **~85%**.
 
 These remain planning estimates, not development progress. Major empirical validation is still unfinished.
+

@@ -1,3 +1,16 @@
+---
+id: patterns.specs.nightcap-external-playtest-harness
+namespace: patterns
+title: Nightcap External Playtest Harness
+owner: Nico Janssen
+status: active
+review_by: "2027-02-26"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap External Playtest Harness
 
 > Current version: v2.2
@@ -178,3 +191,4 @@ Memory Support A/B, advanced Case Board, Heat, full Counterintel, auctions, full
 - Voluntary early exit can be tracked, but silent tab closes cannot be reliably captured without a backend.
 - A fuller fixture improves representativeness but does not prove Nightcap is fun; it creates a better instrument for real testers to answer that question.
 - Static build checks, local browser-equivalent route inspection, and live Pages GET checks do not establish real-device readiness. Phone, TV, human tester, and post-submit survey evidence remain separate gates.
+

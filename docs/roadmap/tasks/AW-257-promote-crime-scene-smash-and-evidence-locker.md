@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-257-promote-crime-scene-smash-and-evidence-locker
+namespace: operating
+title: "AW-257: Promote Crime Scene Smash and Evidence Locker to active"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-257: Promote Crime Scene Smash and Evidence Locker to active
 
 **Milestone / Epic:** M4 / M4-E
@@ -86,3 +99,4 @@ game and surfaces more blockers per rehearsal session.
 
 Produces the two production packages AW-254 needs to verify on real devices
 before AW-231 runs the rehearsal.
+

@@ -1,3 +1,16 @@
+---
+id: operating.product.frontier-vision
+namespace: operating
+title: Arcwright Across Every Horizon — The Frontier Vision
+owner: Nico Janssen
+status: draft
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Arcwright Across Every Horizon — The Frontier Vision
 
 > Current version: v0.1 DRAFT — founder-directed discovery (D-083)
@@ -162,3 +175,4 @@ thawed. Someone has to keep the stories true while they move.
   the direction, the near items (diffusion pipeline, voice tiering,
   adaptive score) deserve real discovery passes on a renewable model,
   each with the cost-policy lens first.
+

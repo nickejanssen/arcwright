@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0065-aw-271-narrative-obligations-model
+namespace: patterns
+title: "AW-271: Narrative Obligations Model and Reveal-Readiness Condition"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-271: Narrative Obligations Model and Reveal-Readiness Condition
 
 **Status**: Approved
@@ -100,3 +113,4 @@ dates, and owner actions.
 # Open Questions
 
 - Expiration semantics for non-mandatory obligations at session end. Default: mark `expired` on session completion.
+

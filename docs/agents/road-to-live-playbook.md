@@ -1,3 +1,16 @@
+---
+id: operating.agents.road-to-live-playbook
+namespace: operating
+title: Road to Live — Execution Playbook
+owner: Nico Janssen
+status: active
+review_by: "2027-02-03"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v1.1
 > Last updated: 2026-08-07
 > Status: Active
@@ -419,3 +432,4 @@ is fun — not at Rehearsal 1.
 - `docs/conventions/human-collaboration.md` — interaction profiles and gates
 - `docs/agents/USAGE.md` — role contracts and operating model
 - `AGENTS.md` — always-on rules, Hard Rules requiring explicit approval
+

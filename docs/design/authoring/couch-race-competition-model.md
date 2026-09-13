@@ -1,3 +1,16 @@
+---
+id: patterns.design.authoring.couch-race-competition-model
+namespace: patterns
+title: Couch Race Competition Model — Design Examination
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Couch Race Competition Model — Design Examination
 
 > Current version: v0.1 DRAFT — examination, NO model locked
@@ -165,3 +178,4 @@ The competition model is cheap to test on paper (see
    with it.)
 3. Does the winner need to be *sole* (one winner) or ranked (everyone
    placed)? Ranked softens PvP toward the co-op end.
+

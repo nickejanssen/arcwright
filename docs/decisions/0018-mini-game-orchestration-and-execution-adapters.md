@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0018-mini-game-orchestration-and-execution-adapters
+namespace: decisions
+title: 0018 - Mini-game Orchestration, Adaptation, and Trust Profiles
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # 0018 - Mini-game Orchestration, Adaptation, and Trust Profiles
 
 **Date:** 2026-08-03
@@ -238,3 +251,4 @@ treats automated checks as device, playtest, or founder evidence.
 - docs/decisions/0009-mini-game-runtime-boundary.md
 - docs/product/decisions-log.csv D-093, D-094, D-095, and D-097
 - docs/story-bibles/nightcap-couch-race.md
+

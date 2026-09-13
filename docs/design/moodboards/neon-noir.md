@@ -1,3 +1,16 @@
+---
+id: patterns.design.moodboards.neon-noir
+namespace: patterns
+title: Moodboard  -  Neon Noir
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Moodboard  -  Neon Noir
 
 > Wrapper: **Sci-Fi** · Mood: **Cyberpunk, rain-lit, moody-crime**
@@ -170,3 +183,4 @@ black. The rain resumes. Cut to superlatives.
 - [ ] Contrast table per parent brief §5 (verify narrator ivory reads
       7:1 over cool-flood backgrounds).
 - [ ] Reduced-motion parity screenshots per `seq-*`.
+

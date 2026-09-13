@@ -1,3 +1,16 @@
+---
+id: operating.product.2026-07-19-creative-session-master-plan
+namespace: operating
+title: "Master Plan — 2026-07-19 Creative Session: Review, Integration, Roadmap"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-05"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Master Plan — 2026-07-19 Creative Session: Review, Integration, Roadmap
 
 > Current version: v1.0
@@ -316,3 +329,4 @@ list applied; (e) each fed task (AW-277/278/279/280) closes citing
 its artifact + founder sign-off. Everything else tonight produced —
 depth wrappers, platform docs, frontier map — is *ahead of need* by
 design and carries no deadline.
+

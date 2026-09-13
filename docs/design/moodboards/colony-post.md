@@ -1,3 +1,16 @@
+---
+id: patterns.design.moodboards.colony-post
+namespace: patterns
+title: Moodboard  -  Colony Post
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Moodboard  -  Colony Post
 
 > Wrapper: **Sci-Fi** · Mood: **Frontier, lived-in, tense-technical**
@@ -164,3 +177,4 @@ back up. Cut to superlatives.
 - [ ] Narrator voice fragments authored per 0068 §3.3.
 - [ ] Contrast table per parent brief §5.
 - [ ] Reduced-motion parity screenshots per `seq-*`.
+

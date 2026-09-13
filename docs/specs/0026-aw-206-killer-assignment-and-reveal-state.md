@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0026-aw-206-killer-assignment-and-reveal-state
+namespace: patterns
+title: "AW-206: Killer Assignment And Reveal State"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-10"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-206: Killer Assignment And Reveal State
 
 **Status**: Approved
@@ -96,3 +109,4 @@ Run:
 # Open Questions
 
 - None for AW-206 implementation.
+

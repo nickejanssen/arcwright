@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-07-12-cloud-rehearsal-2-implementation-plan
+namespace: playbooks
+title: Cloud Rehearsal 2 Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Cloud Rehearsal 2 Implementation Plan
 
 > Execution contract: use `superpowers:executing-plans` in a fresh Codex task. Do not provision cloud resources or edit application code until the preflight checkpoint passes.
@@ -145,4 +158,5 @@ After implementation, report:
 - Test commands and results.
 - Remaining risks and the exact teardown command or browser path.
 - Acceptance criteria satisfied.
+
 

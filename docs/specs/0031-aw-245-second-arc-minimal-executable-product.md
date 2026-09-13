@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0031-aw-245-second-arc-minimal-executable-product
+namespace: patterns
+title: "AW-245: Second Arc Minimal Executable Product"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-245: Second Arc Minimal Executable Product
 
 **Status**: Draft
@@ -93,3 +106,4 @@ and owner actions.
 - What exact implementation container carries cross-day case memory?
 - What memory retention and deletion rules apply to the suspect's prior-day memory?
 - What is the minimum executable loop that proves platform reuse without becoming a full second game?
+

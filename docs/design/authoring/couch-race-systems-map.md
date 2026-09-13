@@ -1,3 +1,16 @@
+---
+id: patterns.design.authoring.couch-race-systems-map
+namespace: patterns
+title: Couch Race — Grounded Systems Map
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Couch Race — Grounded Systems Map
 
 > Current version: v1.0
@@ -161,3 +174,4 @@ SCORING:  contradiction catches + accusation accuracy/speed ──▶ the race
    integration" while Leverage already answered it).
 3. If your idea is genuinely new, it needs its own decision/ADR and a
    new row here.
+

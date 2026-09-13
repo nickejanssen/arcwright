@@ -1,3 +1,16 @@
+---
+id: operating.product.mini-game-readiness.mainline-safety-report
+namespace: operating
+title: Mini-game Readiness Program Mainline Safety Report
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v1.2
 > Last updated: 2026-08-04
 > Status: Browser golden path merged; other program plans still require their own execution approval
@@ -153,3 +166,4 @@ the Task 1 report target.
 - Durable founder approval evidence identifies the approved plan artifact,
   planning commit `1e65dc5`, decision, date, and fresh-main condition.
 - Founder go decision recorded for Task 1 execution.
+

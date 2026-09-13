@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-225-external-platform-connector-scaffold
+namespace: operating
+title: "AW-225: Nightcap Web Experience Runtime Connector Scaffold"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-225: Nightcap Web Experience Runtime Connector Scaffold
 
 **Milestone / Epic:** M4 / M4-A  
@@ -66,3 +79,4 @@ Cloudflare Pages, Workers, Durable Objects or PartyKit files, SDK usage, api doc
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

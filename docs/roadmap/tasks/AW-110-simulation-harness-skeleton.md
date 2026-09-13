@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-110-simulation-harness-skeleton
+namespace: operating
+title: "AW-110: Headless session runner core"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-110: Headless session runner core
 
 **Milestone / Epic:** M1 / E  
@@ -35,3 +48,4 @@ The `ArcStateChart` uses python-statemachine v3 `StateChart`. `chart.current_sta
 Full happy-path transition sequence with resulting sorted configurations: see spec `docs/specs/0015-aw-110-headless-session-runner-core.md` Context section. The `investigation` parallel state produces a 6-entry configuration -- a single string cannot represent it.
 
 `Session` is ambiguous in this codebase. The runner state uses `session_id: UUID` directly on `HarnessRun` -- do not use the ORM `Session` from `engine.db.orm` in runner state. If generation is exercised in tests, use the SQLite in-memory patching pattern from `engine/tests/test_generation_logging.py`.
+

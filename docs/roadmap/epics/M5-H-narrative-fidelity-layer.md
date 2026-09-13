@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.epics.m5-h-narrative-fidelity-layer
+namespace: operating
+title: "M5-H: Narrative Fidelity Layer"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-07"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M5-H: Narrative Fidelity Layer
 
 **Milestone:** M5  
@@ -74,3 +87,4 @@ raises confidence going into qualifying sessions.
 
 AW-272 strengthens the measurement quality of the M6 qualifying sessions;
 the other two tasks harden the platform for the sessions after proof.
+

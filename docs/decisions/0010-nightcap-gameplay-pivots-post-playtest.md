@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0010-nightcap-gameplay-pivots-post-playtest
+namespace: decisions
+title: "ADR-0010: Nightcap Gameplay Pivots Post Playtest"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-11"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Status
 
 **Accepted** — executed via ADR-0013 (July 15, 2026). The founder pulled both pivots forward, combined, as the Nightcap v1 launch target before Rehearsal 1. See `docs/decisions/0013-nightcap-couch-race-v1-launch-target.md` and D-071.
@@ -57,3 +70,4 @@ These decisions will be logged and linked in relevant product and roadmap docume
 - **Related PRD:** `docs/prd/03-scope.md` (a note will be added to reference this ADR)
 - **Related Log:** `docs/product/decisions-log.csv`
 - **Future Work:** A post-playtest roadmap item will be created to review these pivots.
+

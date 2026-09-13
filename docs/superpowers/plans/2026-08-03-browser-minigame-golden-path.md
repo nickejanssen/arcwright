@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-03-browser-minigame-golden-path
+namespace: playbooks
+title: Browser Mini-game Golden Path Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Browser Mini-game Golden Path Implementation Plan
 
 > **Execution status:** Executed as PR #275 (merged `78166d4`, 2026-08-04).
@@ -383,3 +396,4 @@ git commit -m "test(config): record minigame onboarding proof"
 - Preview-only results cannot mutate production state.
 - The existing skill, helper, package loader, renderer kit, and discovery pipeline are extended rather than duplicated.
 - The canary produces a reusable contract and evidence for the capability and trust plan.
+

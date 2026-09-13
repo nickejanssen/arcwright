@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0057-aw-227-shared-display-narrator-group-event-rendering
+namespace: patterns
+title: "AW-227: Shared Display Narrator And Group Event Rendering"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-20"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-227: Shared Display Narrator And Group Event Rendering
 
 **Status**: Approved
@@ -78,3 +91,4 @@ Render narrator and group-visible `ContentEvent`s in the Nightcap shared-display
 # Open Questions
 
 - None blocking.
+

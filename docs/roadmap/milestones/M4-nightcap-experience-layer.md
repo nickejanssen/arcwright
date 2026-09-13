@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.milestones.m4-nightcap-experience-layer
+namespace: operating
+title: "M4: Nightcap Experience Layer"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-24"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M4: Nightcap Experience Layer
 
 **Status:** Planned  
@@ -36,3 +49,4 @@ M4 closes via the AW-259 parent task. The four M4 close items are:
 
 AW-254 and AW-231 retain their original issue numbers (#148, #84) but their
 scope is rewritten per `docs/superpowers/specs/2026-06-26-m4-exit-rehearsal-design.md`.
+

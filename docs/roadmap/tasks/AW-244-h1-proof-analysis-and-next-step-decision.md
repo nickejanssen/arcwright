@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-244-h1-proof-analysis-and-next-step-decision
+namespace: operating
+title: "AW-244: H1 Proof Analysis And Next-Step Decision"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-244: H1 Proof Analysis And Next-Step Decision
 
 **Milestone / Epic:** M6 / M6-C  
@@ -77,3 +90,4 @@ docs/decisions if needed, docs/roadmap, playtest report docs
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

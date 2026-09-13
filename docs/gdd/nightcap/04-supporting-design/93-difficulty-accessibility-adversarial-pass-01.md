@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.04-supporting-design.93-difficulty-accessibility-adversarial-pass-01
+namespace: custom
+title: "Nightcap — Difficulty + Accessibility Adversarial Pass #1"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Difficulty + Accessibility Adversarial Pass #1
 
 **Status:** TEST EVIDENCE / DESIGN REVIEW, not canon by itself
@@ -74,3 +87,4 @@ The Difficulty + Accessibility architecture is internally coherent, but implemen
 ## Evidence Rule
 
 Conceptual survival of this adversarial pass is not empirical proof. These questions require paper tests, Wizard-of-Oz testing, prototype testing, and accessibility review before implementation details are hardened.
+

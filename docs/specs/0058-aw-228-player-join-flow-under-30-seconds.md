@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0058-aw-228-player-join-flow-under-30-seconds
+namespace: patterns
+title: "AW-228: Player Join Flow Under 30 Seconds"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-20"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-228: Player Join Flow Under 30 Seconds
 
 **Status**: Approved
@@ -97,3 +110,4 @@ The QR path pre-fills session and token values, but the player must still answer
 **Unknowns**:
 
 - Whether later player-event and input work should exchange the custom player token in the worker or in the browser.
+

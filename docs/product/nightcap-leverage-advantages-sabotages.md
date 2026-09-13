@@ -1,3 +1,16 @@
+---
+id: operating.product.nightcap-leverage-advantages-sabotages
+namespace: operating
+title: Nightcap Leverage Advantages And Sabotages
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-03"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap Leverage Advantages And Sabotages
 
 > Current version: v0.1
@@ -483,3 +496,4 @@ Founder direction approves this recommendation for continued design:
 - Begin Nightcap playtesting with Deep Read, Follow the Thread, Sting Operation, Call Their Bluff, Rattle the Witness, and Listen In.
 
 This approval records design direction only. It does not authorize implementation or override the current Couch Race story bible until a durable product decision and implementation spec are approved.
+

@@ -1,3 +1,16 @@
+---
+id: patterns.design.authoring.interrogation-experience-review
+namespace: patterns
+title: Interrogation Experience — Founder Discovery Memo
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Interrogation Experience — Founder Discovery Memo
 
 > Current version: v0.2 — founder interview held 2026-07-21; partially
@@ -171,3 +184,4 @@ must earn its own, and the catch-moment is where it earns it.
 Nothing. No direction is locked, no scope is added, no shipped
 behaviour changes. G1–G5 are candidates for a founder-led AW-282 /
 AW-283 follow-up discovery cycle.
+

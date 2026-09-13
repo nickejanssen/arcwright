@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.milestones.m3-events-api-persistence-telemetry
+namespace: operating
+title: "M3: Events, API, Persistence, Telemetry"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-05"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M3: Events, API, Persistence, Telemetry
 
 **Status:** Planned  
@@ -20,3 +33,4 @@ This milestone exposes the platform over API boundaries, adds event delivery and
 - Event routing respects target audience boundaries
 - Interrupt and resume restores to the nearest beat
 - Telemetry signals log from real sessions
+

@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-111-scripted-synthetic-player-driver
+namespace: operating
+title: "AW-111: Scripted synthetic player driver"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-111: Scripted synthetic player driver
 
 **Milestone / Epic:** M1 / E  
@@ -29,3 +42,4 @@ Create a declarative scenario format and synthetic player driver that converts s
 ## Agent Notes
 
 Keep the scenario DSL engine-local and small. It should target the current scaffolded runtime, not a future network API.
+

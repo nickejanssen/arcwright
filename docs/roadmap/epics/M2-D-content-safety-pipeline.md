@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.epics.m2-d-content-safety-pipeline
+namespace: operating
+title: "M2-D: Content Safety Pipeline"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-05"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M2-D: Content Safety Pipeline
 
 **Milestone:** M2  
@@ -61,3 +74,4 @@ The technical scope is limited to the tasks listed below and the architecture re
 ## Playtest Relevance
 
 This epic contributes directly to the gated progression from backend validation to real-device rehearsal to first qualifying outside-group sessions.
+

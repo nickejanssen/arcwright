@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.01-authoritative-gdd.06-story-reactivity-reentry
+namespace: custom
+title: Nightcap — Story Reactivity & Re-entry
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Story Reactivity & Re-entry
 
 **Status:** Foundational direction DECIDED; implementation details TESTING  
@@ -104,3 +117,4 @@ Exact scaling remains TESTING.
 Then ask:
 
 > **Did the game expose state, or did it accidentally explain the mystery?**
+

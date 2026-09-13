@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0088-arcwright-playtest-lab-contract
+namespace: patterns
+title: Arcwright Playtest Lab Contract
+owner: Nico Janssen
+status: active
+review_by: "2027-02-26"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Arcwright Playtest Lab Contract
 
 **Status**: Approved
@@ -108,3 +121,4 @@ This spec defines the canonical contract for the Arcwright Playtest Lab: a minim
 # Open Questions
 
 - None.
+

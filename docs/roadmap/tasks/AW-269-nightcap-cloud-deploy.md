@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-269-nightcap-cloud-deploy
+namespace: operating
+title: "AW-269: Nightcap Cloud Deploy (Cloudflare + GCP backend)"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-269: Nightcap Cloud Deploy (Cloudflare + GCP backend)
 
 **Milestone / Epic:** M5 / TBD (epic assignment when M5 starts)
@@ -94,3 +107,4 @@ credentials or secret values.
 ## Playtest Relevance
 
 Hosts Rehearsal 2 and all M6 qualifying sessions.
+

@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-06-26-m4-exit-rehearsal-plan
+namespace: playbooks
+title: M4 Exit + First Real-Human Nightcap Rehearsal — Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-03"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M4 Exit + First Real-Human Nightcap Rehearsal — Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:subagent-driven-development (recommended) or superpowers-extended-cc:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -2056,3 +2069,4 @@ gh issue close <AW-259-number> --comment "M4 exit gate met. All sub-issues close
 ## User-Gate Tasks
 
 Tasks #4, #5, #6, #7 are tagged `userGate: true`. The user-gate hook is already registered in this environment, so close-time re-validation is automatic. Each of those tasks requires explicit founder action (sign-off comment, recorded demo, or rehearsal execution) before close; the hook enforces this.
+

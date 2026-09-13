@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-242-founder-run-final-rehearsal
+namespace: operating
+title: "AW-242: Founder-Run Final Rehearsal"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-242: Founder-Run Final Rehearsal
 
 **Milestone / Epic:** M6 / M6-A  
@@ -84,3 +97,4 @@ GitHub issue comments, docs/playtest notes if created
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

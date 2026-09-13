@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0015-nightcap-leverage-advantages-sabotages
+namespace: decisions
+title: "ADR-0015: Nightcap Leverage advantages and sabotages architecture boundary"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # ADR-0015: Nightcap Leverage advantages and sabotages architecture boundary
 
 **Status**: Accepted
@@ -46,3 +59,4 @@ We implement Leverage as a platform-neutral engine capability, following the sam
 - `docs/specs/0075-aw287-nightcap-leverage-advantages-sabotages.md` (implementation spec)
 - `docs/specs/0074-aw282-structured-interaction-loop.md`, `docs/decisions/0014-structured-interaction-resolution.md` (interaction-modifier seam this plugs into)
 - `docs/roadmap/tasks/AW-287-nightcap-leverage-advantages-and-sabotages.md`
+

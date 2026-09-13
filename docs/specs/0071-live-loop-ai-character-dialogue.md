@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0071-live-loop-ai-character-dialogue
+namespace: patterns
+title: "0071: AI Character Dialogue in the Live Session Loop"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # 0071: AI Character Dialogue in the Live Session Loop
 
 **Status**: Approved (founder decision D-072, July 14, 2026)
@@ -68,3 +81,4 @@ Deterministic-first ordering is preserved: `submit_input` records the input and 
 
 - **Latency**: one generation call on the input path adds response latency; acceptable for Rehearsal 1 (single response, standard tier). If it drags the room, move to background publish.
 - **Cost**: bounded at one call per dialogue input; sessions without AI seats cost nothing extra.
+

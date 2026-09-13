@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.01-authoritative-gdd.02-investigation-deduction
+namespace: custom
+title: Nightcap — Investigation & Deduction
+owner: Nico Janssen
+status: active
+review_by: "2027-02-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Investigation & Deduction
 
 **Status:** Foundational direction DECIDED; implementation details TESTING  

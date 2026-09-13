@@ -1,3 +1,16 @@
+---
+id: operating.agents.product-steward
+namespace: operating
+title: "Role: Product Steward"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Role: Product Steward
 
 ## Purpose
@@ -40,3 +53,4 @@ general approval, or lack of objection into product direction.
 ## Handoff
 
 Reach a shared go or no-go with the **Business Steward** (`docs/agents/business-steward.md`) and the **System Architect** (`docs/agents/system-architect.md`) at the intent gate, then pass the approved intent to the **Planner** (`docs/agents/planner.md`). For platform-build work, the Planner will mint the AW-NNN task ID that threads the rest of the pipeline.
+

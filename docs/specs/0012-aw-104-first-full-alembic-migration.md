@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0012-aw-104-first-full-alembic-migration
+namespace: patterns
+title: First Full Alembic Migration
+owner: Nico Janssen
+status: active
+review_by: "2026-11-26"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # First Full Alembic Migration
 
 **Status**: Planned
@@ -101,3 +114,4 @@ Autogenerate misses or mishandles these items — verify each by hand before com
 # Open Questions
 
 - None within AW-104 scope after plan approval.
+

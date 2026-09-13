@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.specs.2026-07-18-aw282-structured-interaction-design
+namespace: playbooks
+title: AW-282 Structured Interaction Design
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-282 Structured Interaction Design
 
 > Current version: v0.1
@@ -292,3 +305,4 @@ The future modifier must be able to target a legal interaction and resolve deter
 - Exact timeout fallback behavior for a disconnected player.
 - Exact event type names for public outcomes and private feedback.
 - Whether Leverage receives a modifier hook in AW-282 or in its follow-on task.
+

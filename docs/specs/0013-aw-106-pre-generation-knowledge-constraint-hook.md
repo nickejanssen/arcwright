@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0013-aw-106-pre-generation-knowledge-constraint-hook
+namespace: patterns
+title: AW-106 Pre-generation Knowledge Constraint Hook
+owner: Nico Janssen
+status: active
+review_by: "2026-11-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-106 Pre-generation Knowledge Constraint Hook
 
 **Status**: Draft
@@ -127,3 +140,4 @@ If implementation constraints require a different deterministic tie-breaker disc
 # Open Questions
 
 - None. Contract clarified with user before implementation.
+

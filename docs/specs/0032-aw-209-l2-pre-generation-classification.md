@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0032-aw-209-l2-pre-generation-classification
+namespace: patterns
+title: AW-209 L2 Pre-Generation Classification
+owner: Nico Janssen
+status: active
+review_by: "2026-12-11"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-209 L2 Pre-Generation Classification
 
 **Status**: Approved
@@ -110,3 +123,4 @@ The L2 classifier must not call a provider directly. It must not contain provide
 # Open Questions
 
 - None blocking AW-209 implementation.
+

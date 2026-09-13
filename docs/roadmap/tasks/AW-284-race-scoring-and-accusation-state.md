@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-284-race-scoring-and-accusation-state
+namespace: operating
+title: "AW-284: Race Scoring And Accusation State"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-284: Race Scoring And Accusation State
 
 **Milestone / Epic:** M5 / M5-I
@@ -86,3 +99,4 @@ checkpoint approvals, dates, and owner actions.
 ## Playtest Relevance
 
 Direct: whether the race feels alive is a primary fun-rubric observation.
+

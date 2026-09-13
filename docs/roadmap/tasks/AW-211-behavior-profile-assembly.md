@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-211-behavior-profile-assembly
+namespace: operating
+title: "AW-211: Behavior Profile Assembly"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-211: Behavior Profile Assembly
 
 **Milestone / Epic:** M2 / M2-E  
@@ -61,3 +74,4 @@ engine/characters, engine/tests
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

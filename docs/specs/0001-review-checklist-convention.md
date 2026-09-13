@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0001-review-checklist-convention
+namespace: patterns
+title: Reviewer Checklist Convention
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Reviewer Checklist Convention
 
 **Status**: Done
@@ -66,3 +79,4 @@ Define a maintainer-facing checklist for reviewing agent-authored PRs so review 
 # Open Questions
 
 - None for this scoped documentation addition
+

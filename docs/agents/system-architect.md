@@ -1,3 +1,16 @@
+---
+id: operating.agents.system-architect
+namespace: operating
+title: "Role: System Architect"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Role: System Architect
 
 ## Purpose
@@ -48,3 +61,4 @@ before recording it, and keep advisory analysis separate from founder approval.
 ## Handoff
 
 Feed the approved approach and its constraints into the **Planner** and **Spec Author**. The **Reviewer** consults the recorded decision and ADR when gating architecture-sensitive PRs. Route the decision record to the **Scribe**.
+

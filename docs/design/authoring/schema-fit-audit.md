@@ -1,3 +1,16 @@
+---
+id: patterns.design.authoring.schema-fit-audit
+namespace: patterns
+title: Schema-Fit Audit — Vesper Slots vs. Engine State
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Schema-Fit Audit — Vesper Slots vs. Engine State
 
 > Current version: v1.0
@@ -148,3 +161,4 @@ choose if Rehearsal 1 date pressure beats doing it right once.
 3. `{{evidence}}` short-form label (Q from Tier 1): add a
    `short_label` to `EvidenceEntry` at generation, or resolve the slot
    to a truncated `.text`? Recommend `short_label`.
+

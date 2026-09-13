@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0062-aw-256-remove-beat-id-hardcode
+namespace: patterns
+title: "AW-256: Remove Game-Specific Beat ID Hardcode from Arc Transition Gate"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-24"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-256: Remove Game-Specific Beat ID Hardcode from Arc Transition Gate
 
 **Status**: Done
@@ -58,3 +71,4 @@ Remove two hardcoded beat ID string literals (`"arrival"`) from the Arcwright en
 - Unit: `engine/tests/test_aw256_beat_hardcode.py` — 3 tests with `initial_beat_id="lobby"`.
 - Regression: full `pytest engine/tests/ -q` suite; no regressions from `test_session_lifecycle.py`, `test_harness_runner.py`, `test_harness_batch.py`, `test_harness_scenarios.py`, `test_m2_exit_harness.py`.
 - Lint: `python -m ruff check engine api && python -m ruff format --check engine api`.
+

@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-229-player-private-event-and-input-flow
+namespace: operating
+title: "AW-229: Player Private Event And Input Flow"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-229: Player Private Event And Input Flow
 
 **Milestone / Epic:** M4 / M4-C  
@@ -63,3 +76,4 @@ Cloudflare Pages, Workers, Durable Objects or PartyKit files, SDK usage if neede
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

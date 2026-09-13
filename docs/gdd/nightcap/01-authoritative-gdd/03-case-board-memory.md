@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.01-authoritative-gdd.03-case-board-memory
+namespace: custom
+title: Nightcap — Case Board & Memory
+owner: Nico Janssen
+status: active
+review_by: "2027-02-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Case Board & Memory
 
 **Status:** Foundational direction DECIDED; implementation details TESTING  

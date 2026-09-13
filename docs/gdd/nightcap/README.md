@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.readme
+namespace: custom
+title: Nightcap Master GDD
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap Master GDD
 
 > Current version: Master GDD / Checkpoint 05 Session B + Decisions 1–17 + source-of-truth migration
@@ -39,3 +52,4 @@ The original Nightcap bibles are archived under `docs/archive/nightcap-story-bib
 ## Scope boundary
 
 The GDD is authoritative for Nightcap design. Arcwright platform architecture remains governed by architecture docs and ADRs. Approved implementation specs remain implementation records, but they may be stale relative to newer GDD decisions; use `00-governance/05-repository-migration-and-conflict-policy.md` when reconciling those seams.
+

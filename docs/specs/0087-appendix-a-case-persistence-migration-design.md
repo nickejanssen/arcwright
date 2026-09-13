@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0087-appendix-a-case-persistence-migration-design
+namespace: patterns
+title: Appendix A — Case Persistence Migration Design
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-03"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v0.1
 > Last updated: 2026-08-05
 > Status: Awaiting founder approval (spec 0087 phase gate 2)
@@ -318,3 +331,4 @@ Approve, or send back with changes:
 8. Acknowledgement that no production caller writes these tables in this task,
    and that wiring `start_session` is a separate cross-module change needing its
    own review.
+

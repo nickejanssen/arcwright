@@ -1,3 +1,16 @@
+---
+id: operating.product.aw283-discovery-and-checkpoints
+namespace: operating
+title: AW-283 Discovery and Checkpoint Record
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-283 Discovery and Checkpoint Record
 
 **Date**: 2026-07-18
@@ -123,3 +136,4 @@ six further design forks the discovery record hadn't pinned down:
 - Planning for AW-283 (discovery through the implementation plan) is owned by
   this session; implementation is handed off to a separate execution session
   once the plan is written and approved.
+

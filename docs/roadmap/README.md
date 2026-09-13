@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.readme
+namespace: operating
+title: Build Roadmap
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Build Roadmap
 
 This directory is the canonical home for Arcwright's execution roadmap.
@@ -68,3 +81,4 @@ AW numbers are never reused. Historical exception: closed issue #190
 AW-270 was permanently assigned to "Authorial Intent Block" (#202, ADR-0012).
 Any reference to AW-270 dated before 2026-07-11 may mean the lobby work;
 verify against the issue number, not the AW label.
+

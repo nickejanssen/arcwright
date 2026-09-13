@@ -1,3 +1,16 @@
+---
+id: patterns.design.authoring.writing-for-living-stories
+namespace: patterns
+title: Writing For Living Stories — The Author's Craft Guide
+owner: Nico Janssen
+status: draft
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Writing For Living Stories — The Author's Craft Guide
 
 > Current version: v0.1 DRAFT — founder-directed platform discovery (D-082)
@@ -183,3 +196,4 @@ Before an arc goes to validation:
   charting). Those tool ideas are the "make it easy" pillar's
   product surface — worth their own discovery pass on a renewable
   model.
+

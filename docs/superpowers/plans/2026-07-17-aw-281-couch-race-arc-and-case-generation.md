@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-07-17-aw-281-couch-race-arc-and-case-generation
+namespace: playbooks
+title: AW-281, Couch Race Arc + Case Generation Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-01-14"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-281, Couch Race Arc + Case Generation Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:subagent-driven-development (recommended) or superpowers-extended-cc:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -2701,3 +2714,4 @@ EOF
 - Ruff clean.
 - Reviewer agent PASS.
 - PR opened; stops here for founder review before AW-282.
+

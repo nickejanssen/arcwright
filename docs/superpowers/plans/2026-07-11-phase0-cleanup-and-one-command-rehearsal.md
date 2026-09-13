@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-07-11-phase0-cleanup-and-one-command-rehearsal
+namespace: playbooks
+title: Phase 0 Cleanup + Phase 1 One-Command Rehearsal Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-03"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Phase 0 Cleanup + Phase 1 One-Command Rehearsal Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:subagent-driven-development (recommended) or superpowers-extended-cc:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -884,3 +897,4 @@ git commit -m "docs(operations): one-page rehearsal quickstart; deprecate five-t
 - Phases 2–4 of the spec (player-drop AI takeover #138, `"arrival"` fallback #137, cloud deploy AW-269, Rehearsal 2 AW-266, M6 chain) — planned after Rehearsal 1's blocker log exists.
 - Deprecation-warning cleanup (spec Phase 0 item 7, optional) — skipped as noise reduction with no functional payoff right now; revisit if warnings mask real failures.
 - Any change to `engine/` behavior, schemas, prompts, or dependencies (Hard Rules).
+

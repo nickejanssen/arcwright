@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-228-player-join-flow-under-30-seconds
+namespace: operating
+title: "AW-228: Player Join Flow Under 30 Seconds"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-228: Player Join Flow Under 30 Seconds
 
 **Milestone / Epic:** M4 / M4-C  
@@ -63,3 +76,4 @@ Cloudflare Pages, Workers, Durable Objects or PartyKit files, api join flow if n
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

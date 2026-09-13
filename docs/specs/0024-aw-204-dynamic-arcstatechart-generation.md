@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0024-aw-204-dynamic-arcstatechart-generation
+namespace: patterns
+title: "AW-204: Dynamic ArcStateChart Generation"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-07"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-204: Dynamic ArcStateChart Generation
 
 **Status**: Approved
@@ -83,3 +96,4 @@ This spec defines dynamic `ArcStateChart` generation from validated `ArcDefiniti
 # Open Questions
 
 - None for AW-204 implementation.
+

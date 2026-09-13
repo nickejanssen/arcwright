@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-252-mini-game-api-events-and-sdk
+namespace: operating
+title: "AW-252: Mini-game API, Events, And TypeScript SDK"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-252: Mini-game API, Events, And TypeScript SDK
 
 **Milestone / Epic:** M4 / M4-E
@@ -32,3 +45,4 @@ ContentEvents, and typed SDK methods.
 - `docs/specs/0049-aw-252-mini-game-api-events-and-sdk.md`
 - `docs/architecture/08-event-system.md`
 - `docs/architecture/09-developer-api.md`
+

@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-215-contentevent-model-and-in-memory-bus
+namespace: operating
+title: "AW-215: ContentEvent Model And In-Memory Bus"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-215: ContentEvent Model And In-Memory Bus
 
 **Milestone / Epic:** M3 / M3-A  
@@ -59,3 +72,4 @@ engine/events, engine/tests
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

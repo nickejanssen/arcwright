@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-291-narrator-refrain-resolver
+namespace: operating
+title: "AW-291: Narrator Refrain Resolver"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-291: Narrator Refrain Resolver
 
 **Milestone / Epic:** M5 / M5-I
@@ -102,3 +115,4 @@ with a founder checkpoint on the markdown-to-runtime conversion format
 - Do not put Vesper on the phone (§7); the nudge floor is UI-voice, not
   Vesper.
 - Do not expose case truth (killer, lie-status) ahead of its beat gate.
+

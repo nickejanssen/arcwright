@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0086-scene-sweep-game-ready
+namespace: patterns
+title: Scene Sweep Game-ready Contract
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v0.1
 > Last updated: 2026-08-03
 > Status: Draft
@@ -113,3 +126,4 @@ rollback.
 Approve one generated 2-to-3-player participation adaptation, destination
 presentation artifact, tuning evidence, and production promotion. The merged
 4-to-8-player mechanic direction is not reopened by this spec.
+

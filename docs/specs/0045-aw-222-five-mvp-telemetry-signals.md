@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0045-aw-222-five-mvp-telemetry-signals
+namespace: patterns
+title: "AW-222: Five MVP Telemetry Signals"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-17"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-222: Five MVP Telemetry Signals
 
 **Status**: Approved — all four decisions signed off. Implementation complete.
@@ -286,3 +299,4 @@ async def end_session(
 > Proposed: new `SessionService.write_replay_intent(db, session_id, intent, collection_method)` standalone method, NOT a parameter to `end_session()`. Host ends the session and then separately calls a dedicated endpoint backed by this method.
 > | Rationale: Decouples session termination from intent collection; AW-224 can collect intent at any point after session end.
 > | Downside: Requires a new API endpoint (a `/replay-intent` route) in AW-224's scope; it is not implicit in `end_session()`.
+

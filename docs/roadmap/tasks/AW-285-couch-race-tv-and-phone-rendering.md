@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-285-couch-race-tv-and-phone-rendering
+namespace: operating
+title: "AW-285: Couch Race TV And Phone Rendering"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-285: Couch Race TV And Phone Rendering
 
 **Milestone / Epic:** M5 / M5-I
@@ -104,3 +117,4 @@ approvals, dates, and owner actions.
 ## Playtest Relevance
 
 Direct: this is the surface Rehearsal 1 (retargeted) plays on.
+

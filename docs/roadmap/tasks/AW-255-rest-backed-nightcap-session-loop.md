@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-255-rest-backed-nightcap-session-loop
+namespace: operating
+title: "AW-255: REST-Backed Nightcap Session Loop"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-19"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-255: REST-Backed Nightcap Session Loop
 
 **Milestone / Epic:** M3 / M3-D
@@ -48,4 +61,5 @@ M3 only closes when a real session path proves the API can carry Nightcap from s
 - `docs/architecture/11-telemetry.md`
 - `docs/architecture/12-build-plan.md`
 - `docs/architecture/15-development-guide.md`
+
 

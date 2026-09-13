@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-103-sqlalchemy-models-for-all-platform-tables
+namespace: operating
+title: "AW-103: SQLAlchemy models for all platform tables"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-103: SQLAlchemy models for all platform tables
 
 **Milestone / Epic:** M1 / B  
@@ -29,3 +42,4 @@ Model import smoke tests and relationship integrity checks.
 ## Agent Notes
 
 If the data-model section is ambiguous on a table or column, stop and flag it rather than guessing.
+

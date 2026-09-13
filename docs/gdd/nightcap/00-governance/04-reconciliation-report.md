@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.00-governance.04-reconciliation-report
+namespace: custom
+title: Nightcap Master GDD Reconciliation Report
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap Master GDD Reconciliation Report
 
 **Status:** Process / provenance record — not game canon by itself  
@@ -52,3 +65,4 @@ As of ADR-0023, current Nightcap design authority lives at `docs/gdd/nightcap/`.
 ## Recommended Repository Use
 
 Use `00-governance`, `01-authoritative-gdd`, `02-validation`, `03-playtest-evidence`, `04-supporting-design`, and `05-continuation-process` for current Nightcap design work. Archived Story Bibles and historical implementation records are read for provenance/conflict investigation only.
+

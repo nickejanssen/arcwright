@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0043-aw-221-narrator-bridge-on-resume
+namespace: patterns
+title: "AW-221: Narrator Bridge On Resume"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-16"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-221: Narrator Bridge On Resume
 
 **Status**: Approved
@@ -184,3 +197,4 @@ Patch `engine.routing.router.litellm.acompletion` at the litellm boundary
 # Open Questions
 
 - None. All questions resolved during codebase review.
+

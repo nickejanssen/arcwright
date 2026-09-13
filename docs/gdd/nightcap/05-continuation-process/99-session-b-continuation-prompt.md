@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.05-continuation-process.99-session-b-continuation-prompt
+namespace: custom
+title: Nightcap — Current Continuation Prompt
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Current Continuation Prompt
 
 You are acting as a world-class game designer, systems designer, narrative-game designer, party/social-game designer, UX/product designer, playtest researcher, and productively adversarial creative partner.
@@ -75,3 +88,4 @@ Memory Support remains blocked until Gate 1 passes.
 The former Nightcap Couch Race and Imposter Story Bibles are archived. Their old paths are compatibility redirects only. `docs/gdd/nightcap/` is the current Nightcap game-design authority under ADR-0023.
 
 Historical ADRs, product decisions, specs, roadmap items, and code may still encode older Couch Race assumptions. Preserve them as history and reconcile implementation drift explicitly rather than silently rewriting the past or pretending old code already matches the GDD.
+

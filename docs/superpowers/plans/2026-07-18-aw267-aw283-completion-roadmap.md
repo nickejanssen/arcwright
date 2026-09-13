@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-07-18-aw267-aw283-completion-roadmap
+namespace: playbooks
+title: AW-267 + AW-287 + AW-283 Completion Roadmap
+owner: Nico Janssen
+status: draft
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-267 + AW-287 + AW-283 Completion Roadmap
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:subagent-driven-development (recommended) or superpowers-extended-cc:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -88,3 +101,4 @@ TDD implementation in an isolated worktree. All AW-283 acceptance criteria pass:
 **USER-ORDERED GATE — NON-SKIPPABLE.**
 
 Only after Task 12.5's explicit approval: record founder sign-off in `docs/product/decisions-log.csv` (mirroring D-074/D-075), `git status` check for agent-local files, commit, push, open the PR closing #237, and stop for founder review.
+

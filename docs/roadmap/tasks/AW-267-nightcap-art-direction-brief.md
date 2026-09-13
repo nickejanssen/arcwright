@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-267-nightcap-art-direction-brief
+namespace: operating
+title: "AW-267: Nightcap Art Direction Brief"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-267: Nightcap Art Direction Brief
 
 **Milestone / Epic:** M5 / M5-G
@@ -99,3 +112,4 @@ final approvals, dates, and owner actions.
 
 Enables AW-268, which brings Nightcap to demo-quality for M6 qualifying
 sessions.
+

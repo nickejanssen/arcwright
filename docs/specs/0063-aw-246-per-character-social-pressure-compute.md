@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0063-aw-246-per-character-social-pressure-compute
+namespace: patterns
+title: "AW-246: Per-Character Social Pressure Compute"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-24"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-246: Per-Character Social Pressure Compute
 
 **Status**: Done
@@ -68,3 +81,4 @@ Adds a per-character `social_pressure` score — distinct from the session-level
 
 **Unknowns**:
 - Caller-side computation of pressure signals from session event history is not yet implemented. The compute function is ready; callers will integrate it when the session coordinator is built.
+

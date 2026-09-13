@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0074-aw282-structured-interaction-loop
+namespace: patterns
+title: AW-282 Structured Interaction Loop
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-282 Structured Interaction Loop
 
 **Status**: Approved
@@ -106,3 +119,4 @@ The player-facing language is Questions and Ask. The engine does not accept free
 # Open Questions
 
 - AW-283 must define how authorized knowledge context references resolve to the canonical knowledge graph snapshot.
+

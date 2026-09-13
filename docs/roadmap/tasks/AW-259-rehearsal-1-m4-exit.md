@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-259-rehearsal-1-m4-exit
+namespace: operating
+title: "AW-259: Rehearsal 1 - M4 Exit, First Real-Human Nightcap Session"
+owner: Nico Janssen
+status: deprecated
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-259: Rehearsal 1 - M4 Exit, First Real-Human Nightcap Session
 
 **Milestone / Epic:** M4 (parent task; consolidates M4-D and M4-E close work)
@@ -95,3 +108,4 @@ Sub-issues:
 ## Playtest Relevance
 
 This task is the M4 exit gate. Its closure marks M4 complete and unblocks M5.
+

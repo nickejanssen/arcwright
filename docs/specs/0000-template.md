@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0000-template
+namespace: patterns
+title: Title
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Title
 
 **Status**: Draft | Approved | In Progress | Done
@@ -107,3 +120,4 @@ What needs clarification before implementation starts?
 
 - Q1: [question]
 - Q2: [question]
+

@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.01-authoritative-gdd.04-minigame-competitive-pulse
+namespace: custom
+title: Nightcap — Minigames & Competitive Pulse
+owner: Nico Janssen
+status: active
+review_by: "2027-02-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Minigames & Competitive Pulse
 
 **Status:** Foundational direction DECIDED; implementation details TESTING  

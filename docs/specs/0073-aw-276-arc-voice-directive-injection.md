@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0073-aw-276-arc-voice-directive-injection
+namespace: patterns
+title: "AW-276: Arc Voice Directive Injection ([VOICE] Block)"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-276: Arc Voice Directive Injection ([VOICE] Block)
 
 **Status**: Approved (implementation complete, PR #231)
@@ -144,3 +157,4 @@ unverified, which founder review (PR #231) and Codex review both caught.
 - Should `tone_config` gain a `generate()`-level chokepoint like
   `content_rails` (PR #232) to make this class of gap structurally
   impossible rather than convention-enforced? Deferred: see Out of Scope.
+

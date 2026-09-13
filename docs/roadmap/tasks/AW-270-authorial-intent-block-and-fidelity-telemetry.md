@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-270-authorial-intent-block-and-fidelity-telemetry
+namespace: operating
+title: "AW-270: Authorial Intent Block and Intent Fidelity Telemetry (post-M6)"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-270: Authorial Intent Block and Intent Fidelity Telemetry (post-M6)
 
 **Milestone / Epic:** M5 / M5-H
@@ -106,3 +119,4 @@ telemetry verification, dates, and owner actions.
 
 Post-M6. Provides the fidelity instrumentation used to tune arcs after the
 first qualifying sessions.
+

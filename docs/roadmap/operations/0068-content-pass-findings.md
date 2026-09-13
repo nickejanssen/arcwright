@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.operations.0068-content-pass-findings
+namespace: operating
+title: Content Pass Findings — 0068 §3 Standards vs. Current Generation Pipelines
+owner: Nico Janssen
+status: active
+review_by: "2027-01-11"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Content Pass Findings — 0068 §3 Standards vs. Current Generation Pipelines
 
 > Current version: v1.1
@@ -118,3 +131,4 @@ unbuilt in the live path, not merely unpolished.
 - `arc.json` was not modified; its content quality is not the bottleneck —
   the bottleneck is config-to-prompt plumbing (F1) and pipeline existence
   (F2–F4).
+

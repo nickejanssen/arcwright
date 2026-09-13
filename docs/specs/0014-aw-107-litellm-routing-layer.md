@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0014-aw-107-litellm-routing-layer
+namespace: patterns
+title: AW-107 LiteLLM Routing Layer
+owner: Nico Janssen
+status: active
+review_by: "2026-11-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-107 LiteLLM Routing Layer
 
 **Status**: Draft
@@ -139,3 +152,4 @@ Implementation must load this table once at module import and reuse the cached d
 # Open Questions
 
 - None. The issue body is being transcribed into this spec as directed.
+

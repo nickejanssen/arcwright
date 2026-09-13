@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.operations.rehearsal-1-blocker-log
+namespace: operating
+title: Couch Race Rehearsal 1 Blocker Log
+owner: Nico Janssen
+status: active
+review_by: "2027-01-29"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Couch Race Rehearsal 1 Blocker Log
 
 - Date: 2026-08-01
@@ -235,3 +248,4 @@
   GitHub issue #264 on 2026-08-01. Detailed device and session metadata was not
   supplied in the confirmation; future rehearsals should continue recording
   those details when available.
+

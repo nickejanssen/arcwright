@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.01-authoritative-gdd.11-arcwright-runtime-boundary
+namespace: custom
+title: Nightcap — Arcwright Runtime Boundary
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Arcwright Runtime Boundary
 
 **Status:** Foundational integration direction DECIDED; implementation details follow Arcwright architecture  
@@ -166,3 +179,4 @@ No generative expression may contradict fairness-critical resolved state. In par
 - already-resolved competitive consequences.
 
 If a generative surface cannot preserve those invariants reliably, use more constrained authored expression rather than weakening Nightcap's mystery contract.
+

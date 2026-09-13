@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-219-typescript-sdk-event-and-input-client
+namespace: operating
+title: "AW-219: TypeScript SDK Event And Input Client"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-219: TypeScript SDK Event And Input Client
 
 **Milestone / Epic:** M3 / M3-B  
@@ -62,3 +75,4 @@ sdk, api schemas if generation is needed
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

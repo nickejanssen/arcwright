@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-280-couch-race-clue-release-content
+namespace: operating
+title: "AW-280: Couch Race Clue Release Content"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-280: Couch Race Clue Release Content
 
 **Milestone / Epic:** M5 / M5-I
@@ -100,3 +113,4 @@ agreed implementation batches, and final sign-off.
 
 Makes clue fairness, asymmetry, and interrogation payoff observable in the
 Couch Race rehearsal.
+

@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.operations.rehearsal-1-runbook
+namespace: operating
+title: Rehearsal 1 - Founder Runbook
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Rehearsal 1 - Founder Runbook
 
 > **Superseded for day-of use (2026-07-11):** start with
@@ -418,3 +431,4 @@ Log any failure in the blocker log. Do not stop the session unless the failure i
 
 - [blocker-log-template.md](blocker-log-template.md)
 - [rehearsal-1-failure-cheat-sheet.md](rehearsal-1-failure-cheat-sheet.md)
+

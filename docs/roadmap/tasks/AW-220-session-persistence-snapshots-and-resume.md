@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-220-session-persistence-snapshots-and-resume
+namespace: operating
+title: "AW-220: Session Persistence Snapshots And Resume"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-220: Session Persistence Snapshots And Resume
 
 **Milestone / Epic:** M3 / M3-C  
@@ -60,3 +73,4 @@ engine/session, engine/arc, engine/knowledge, migrations, engine/tests
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-02-mini-game-platform-readiness-program
+namespace: playbooks
+title: Mini-game Platform and Nightcap Readiness Program Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Mini-game Platform and Nightcap Readiness Program Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -392,3 +405,4 @@ git commit -m "docs(nightcap): close minigame readiness program"
 The D-097 optional currency-funded Grill mechanic becomes eligible for a new
 design interview only after this program is explicitly signed off. It is not
 part of this implementation plan.
+

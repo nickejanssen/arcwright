@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.00-overview
+namespace: operating
+title: 12-Build-Roadmap-v1.1
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # 12-Build-Roadmap-v1.1
 
 **Version:** 1.1  
@@ -81,3 +94,4 @@ Architecture S15.9 lists the simulation harness as component #11, but the arc ex
 
 - [operations/github-project-setup.md](./operations/github-project-setup.md)
 - [operations/working-model.md](./operations/working-model.md)
+

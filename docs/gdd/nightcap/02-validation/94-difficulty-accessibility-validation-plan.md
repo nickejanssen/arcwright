@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.02-validation.94-difficulty-accessibility-validation-plan
+namespace: custom
+title: Nightcap — Difficulty + Accessibility Validation Plan
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Difficulty + Accessibility Validation Plan
 
 **Status:** TEST PLAN / supporting evidence, not canon  
@@ -177,3 +190,4 @@ Do not respond to failure by:
 - increasing tutorial burden,
 - replacing authored cinema with summaries,
 - or introducing rubber-banding without explicit design review.
+

@@ -1,3 +1,16 @@
+---
+id: operating.product.2026-08-08-docs-currency-findings
+namespace: operating
+title: Docs Currency Findings, 2026-08-08
+owner: Nico Janssen
+status: active
+review_by: "2027-02-05"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v1.0
 > Last updated: 2026-08-08
 > Status: Current
@@ -96,3 +109,4 @@ ADR-0021 redirecting capacity to the Couch Race content path.
 - `docs/decisions/0021-minigame-readiness-program-deferred-until-after-rehearsal-1.md`
 - `docs/product/road-to-live/status.md`
 - `docs/roadmap/README.md`, Task ID hygiene
+

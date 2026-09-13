@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.operations.blocker-log-template
+namespace: operating
+title: Blocker Log Template - Rehearsal 1
+owner: Nico Janssen
+status: active
+review_by: "2026-12-24"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Blocker Log Template - Rehearsal 1
 
 Copy this template into a new file at
@@ -63,3 +76,4 @@ After the session, for each entry:
 
 Do not close AW-231 until every entry's `New issue link` is filled
 (or the entry is documented `wontfix`).
+

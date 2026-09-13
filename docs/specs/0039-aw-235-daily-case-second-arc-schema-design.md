@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0039-aw-235-daily-case-second-arc-schema-design
+namespace: patterns
+title: "AW-235: Daily Case Second Arc Schema Design"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-235: Daily Case Second Arc Schema Design
 
 **Status**: Approved
@@ -98,3 +111,4 @@ evidence, dates, and owner actions.
 - What is the exact implementation container for cross-day case state: linked sessions, long-lived case instance, or another approved structure?
 - Does the first executable product need dedicated accusation-review UI beyond the standard interrogation surface?
 - Which privacy and deletion controls are mandatory if player question history is stored verbatim rather than normalized?
+

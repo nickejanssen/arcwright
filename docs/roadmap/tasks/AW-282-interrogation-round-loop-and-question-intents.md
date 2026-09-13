@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-282-interrogation-round-loop-and-question-intents
+namespace: operating
+title: "AW-282: Interrogation Round Loop And Question Menus"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-282: Interrogation Round Loop And Question Menus
 
 **Milestone / Epic:** M5 / M5-I
@@ -86,3 +99,4 @@ dates, and owner actions.
 ## Playtest Relevance
 
 Direct: the rehearsal thin slice centers on this loop.
+

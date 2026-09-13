@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-210-l3-policy-injection-and-neutral-bridge
+namespace: operating
+title: "AW-210: L3 Policy Injection And Neutral Bridge"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-210: L3 Policy Injection And Neutral Bridge
 
 **Milestone / Epic:** M2 / M2-D  
@@ -60,3 +73,4 @@ engine/safety, engine/characters, engine/events, engine/tests
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

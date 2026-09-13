@@ -1,3 +1,17 @@
+---
+id: patterns.specs.0087-aw-290-narrator-slot-schema-and-wrapper-dressing
+namespace: patterns
+title: "AW-290 Narrator Slot Schema: Structured Location and Time, Case
+  Persistence, and Wrapper Dressing Pack"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-03"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v0.2
 > Last updated: 2026-08-05
 > Status: Approved
@@ -359,3 +373,4 @@ vocabulary is written into engine code, so the engine stays game-agnostic;
 `engine/tests/test_case_resolver.py` is the existing precedent for an
 engine test that loads `nightcap/` data. `pytest engine/tests/` is already a
 blocking check, and AW-291 needs the machine-readable registry regardless.
+

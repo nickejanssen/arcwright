@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0022-aw-202-nightcap-web-experience-runtime-decision
+namespace: patterns
+title: "AW-202: Nightcap Web Experience Runtime Decision"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-06"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-202: Nightcap Web Experience Runtime Decision
 
 **Status**: Approved
@@ -84,3 +97,4 @@ This is not a decision to build Nightcap in a third-party app builder. It is als
 # Open Questions
 
 - None for AW-202. Implementation details are intentionally deferred to M4 tasks.
+

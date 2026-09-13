@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0080-mini-game-onboarding-preview-and-certification
+namespace: patterns
+title: Browser Mini-game Onboarding, Local Playtest, and Visual Readiness
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v0.2
 > Last updated: 2026-08-03
 > Status: Approved
@@ -309,3 +322,4 @@ The founder approved the exact intake types, golden-path stages, readiness
 resource, local lab, production lab, authoring API, timing evidence, and
 promotion contract in this version on 2026-08-03. Implementation remains
 subject to a separate go-ahead.
+

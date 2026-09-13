@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.03-playtest-evidence.97b-early-autonomy-feedback-note
+namespace: custom
+title: Nightcap — Early Autonomy Feedback Note
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Early Autonomy Feedback Note
 
 **Status:** TEST FINDING / supporting evidence — not canon  
@@ -20,3 +33,4 @@ It does **not** prove that maximum openness is better. Paper Test #2 v2.1 also p
 ## Evidence rule
 
 Treat this as supporting TESTING evidence, not as a permanent law. Representative gameplay feedback may strengthen, refine, or reverse the resulting design choices.
+

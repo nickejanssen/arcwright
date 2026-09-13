@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-293-wrapper-dressing-pack
+namespace: operating
+title: "AW-293: Wrapper Dressing Pack (Séance 1928 + Big Top 1899)"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-03"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-293: Wrapper Dressing Pack (Séance 1928 + Big Top 1899)
 
 **Milestone / Epic:** M5 / M5-I
@@ -111,3 +124,4 @@ tone reference, not transcription. Budget accordingly.
 - Do not author the four non-Rehearsal-1 wrappers; they are out of scope per
   spec 0087 and D-103.
 - Do not ship vocabulary before the founder content gate clears.
+

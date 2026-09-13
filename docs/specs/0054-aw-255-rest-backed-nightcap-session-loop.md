@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0054-aw-255-rest-backed-nightcap-session-loop
+namespace: patterns
+title: "AW-255: REST-Backed Nightcap Session Loop"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-19"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-255: REST-Backed Nightcap Session Loop
 
 **Current version:** v0.1
@@ -100,4 +113,5 @@ This is the missing follow-up to the M3 exit-gate audit. It closes the gap betwe
 # Open Questions
 
 None. The remaining work is a tracked implementation gap, not a design ambiguity.
+
 

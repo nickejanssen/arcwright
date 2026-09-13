@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.epics.m1-a-scaffolding-and-infrastructure
+namespace: operating
+title: "M1-A: Scaffolding and Infrastructure"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M1-A: Scaffolding and Infrastructure
 
 **Milestone:** M1  
@@ -18,3 +31,4 @@ Establish the Python package structure, tooling configuration, local development
 - Tooling runs clean
 - Local Postgres 15 + pgvector is available
 - Alembic can upgrade and downgrade cleanly
+

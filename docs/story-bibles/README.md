@@ -1,3 +1,16 @@
+---
+id: custom.story-bibles.readme
+namespace: custom
+title: Story Bibles
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Story Bibles
 
 This directory contains active story bibles for Arcwright experiences that still use that authority model, plus compatibility redirects for archived Nightcap bibles.
@@ -20,3 +33,4 @@ Archived Nightcap content never overrides the current GDD, even when an archived
 - For other experiences, use the current experience-specific authority identified by this README and the relevant PRD/ADR.
 - Implementation changes still require the relevant current specs, architecture constraints, and durable approval evidence; a GDD does not silently rewrite deployed behavior.
 - Preserve historical documents rather than deleting them when authority changes.
+

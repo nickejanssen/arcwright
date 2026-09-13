@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0001-scaffolding-audit
+namespace: decisions
+title: 0001 — Scaffolding Audit Against Technical Architecture v1.3
+owner: Nico Janssen
+status: active
+review_by: "2026-12-10"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # 0001 — Scaffolding Audit Against Technical Architecture v1.3
 
 **Date:** 2026-05-20
@@ -181,3 +194,4 @@ The scaffold did not create this file. Instead, the first file created was `engi
 | `nightcap/arc.json` absent | Unspecified | — |
 | No Alembic setup | Unspecified | — |
 | mypy/pylint referenced in CLAUDE.md but not in CI or requirements | Unspecified | — |
+

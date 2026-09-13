@@ -1,3 +1,16 @@
+---
+id: operating.product.road-to-live.status
+namespace: operating
+title: Road to Live Status
+owner: Nico Janssen
+status: active
+review_by: "2027-02-02"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v1.2
 > Last updated: 2026-08-05
 > Status: Current
@@ -100,3 +113,4 @@ Prime, Class 41 entertainment). Fallback committed: Revel. The log directs
 that Nightcap must not be used in public launch materials until cleared, and
 that resolution requires a separate counsel engagement before public launch
 of the game.
+

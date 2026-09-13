@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0047-aw-250-mini-game-content-resolution-and-safety
+namespace: patterns
+title: "AW-250: Mini-game Content Resolution And Safety"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-250: Mini-game Content Resolution And Safety
 
 **Status**: Approved
@@ -102,3 +115,4 @@ mechanics are approved.
 # Open Questions
 
 - None at the platform-envelope level.
+

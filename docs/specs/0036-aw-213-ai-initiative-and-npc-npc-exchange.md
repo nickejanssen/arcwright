@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0036-aw-213-ai-initiative-and-npc-npc-exchange
+namespace: patterns
+title: AW-213 AI Initiative And NPC-NPC Exchange
+owner: Nico Janssen
+status: active
+review_by: "2026-12-11"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-213 AI Initiative And NPC-NPC Exchange
 
 **Status**: Approved
@@ -222,3 +235,4 @@ For each action, creates an `asyncio.Task` that opens its own DB session through
 # Playtest Relevance
 
 AW-213 closes epic M2-E (Character Behavior Engine). With initiative and NPC-NPC exchange in place, the character behavior layer is complete enough for AW-214 (M2 Headless Nightcap Exit Harness) to run a full Nightcap arc end to end with realistic ensemble dynamics. This unlocks the M2 exit gate and protects the M6 readiness path by ensuring AI characters in qualifying sessions can act on their own and produce the emergent NPC-NPC moments that the architecture identifies as the most memorable parts of a session.
+

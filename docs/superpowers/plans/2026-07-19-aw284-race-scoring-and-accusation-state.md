@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-07-19-aw284-race-scoring-and-accusation-state
+namespace: playbooks
+title: AW-284 Race Scoring And Accusation State — Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-01-16"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-284 Race Scoring And Accusation State — Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:subagent-driven-development (recommended) or superpowers-extended-cc:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. This plan was written by a planning-only session with no execution access — it was not spot-checked against a live implementation run. Task 1 is a mandatory grounding step; if what it finds contradicts an assumption baked into a later task, stop and resolve that specific mismatch before proceeding, rather than forcing the rest of the plan to fit.
@@ -852,3 +865,4 @@ git commit -m "test(scoring): generic-naming enforcement for engine/scoring and 
 ```
 
 - [ ] **Step 5:** This is the implementation's stopping point. Per the completion pattern already established by AW-283/AW-287, do NOT record founder sign-off or open the PR from this task — that happens only after the founder reviews an implemented thin slice and explicitly approves it. Report final state (full suite output, naming-contract result) back to whoever is coordinating the handoff to that review step.
+

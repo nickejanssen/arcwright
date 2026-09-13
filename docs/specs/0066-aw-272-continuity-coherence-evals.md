@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0066-aw-272-continuity-coherence-evals
+namespace: patterns
+title: "AW-272: Continuity and Coherence Eval Suite"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-272: Continuity and Coherence Eval Suite
 
 **Status**: Approved
@@ -102,3 +115,4 @@ dates, and owner actions.
 # Open Questions
 
 - Whether eval batches run in CI on every PR or nightly. Default: nightly plus pre-playtest manual run.
+

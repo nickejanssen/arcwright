@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.operations.working-model
+namespace: operating
+title: Working Model
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Working Model
 
 ## Tracker
@@ -34,3 +47,4 @@ records are updated before their GitHub issue mirrors.
 - Nightcap trademark clearance remains a high-priority non-engineering item.
 - Enterprise buyer interviews should start once demo footage exists.
 - The biggest schedule risk is treating M6 proof and personalization diagnosis as a formality rather than a real product gate.
+

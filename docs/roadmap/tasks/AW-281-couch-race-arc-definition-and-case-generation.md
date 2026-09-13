@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-281-couch-race-arc-definition-and-case-generation
+namespace: operating
+title: "AW-281: Couch Race Arc Definition And Case Generation"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-281: Couch Race Arc Definition And Case Generation
 
 **Milestone / Epic:** M5 / M5-I
@@ -89,3 +102,4 @@ dates, and owner actions.
 ## Playtest Relevance
 
 Direct: this arc is what Rehearsal 1 (retargeted) runs.
+

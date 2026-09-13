@@ -1,3 +1,16 @@
+---
+id: platform.architecture.supplemental-schemas
+namespace: platform
+title: Supplemental Table Schemas
+owner: Nico Janssen
+status: active
+review_by: "2027-01-07"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Supplemental Table Schemas
 
 > **Source:** Founder decisions recorded 2026-05-30.
@@ -184,3 +197,4 @@ CREATE TABLE obligations (
 );
 CREATE INDEX ON obligations (session_id, status);
 ```
+

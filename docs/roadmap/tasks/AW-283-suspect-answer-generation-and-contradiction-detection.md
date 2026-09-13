@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-283-suspect-answer-generation-and-contradiction-detection
+namespace: operating
+title: "AW-283: Suspect Answer Generation And Contradiction Detection"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-283: Suspect Answer Generation And Contradiction Detection
 
 **Milestone / Epic:** M5 / M5-I
@@ -102,3 +115,4 @@ dates, and owner actions.
 ## Playtest Relevance
 
 Direct: answer quality and catch fairness are the rehearsal's central fun questions.
+

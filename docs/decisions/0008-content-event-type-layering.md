@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0008-content-event-type-layering
+namespace: decisions
+title: "ADR-0008: Content Event Type Layering"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-12"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Status
 
 **Accepted** (2026-06-14)
@@ -84,3 +97,4 @@ We chose plain-English platform vocabulary and game-owned subtypes over either a
 - GitHub issues: Epic [#40](https://github.com/nickejanssen/arcwright/issues/40), task [#68](https://github.com/nickejanssen/arcwright/issues/68)
 - Product principles in `AGENTS.md`: surface agnosticism, human arc primacy, configurable composition, provider-agnostic model routing
 - Product decisions log: D-32 (Jackbox-style multi-surface routing), D-45 (content events as structured semantic schema with presentation hints)
+

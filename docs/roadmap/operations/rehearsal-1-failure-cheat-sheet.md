@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.operations.rehearsal-1-failure-cheat-sheet
+namespace: operating
+title: Rehearsal 1 - Failure Cheat Sheet
+owner: Nico Janssen
+status: active
+review_by: "2026-12-24"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Rehearsal 1 - Failure Cheat Sheet
 
 When something breaks mid-session, find the closest match below and run
@@ -81,3 +94,4 @@ The shared display shows text that should have been private to one player
 This failure mode is non-negotiable - the AW-230 privacy contract was
 designed to make this impossible. If it happens, it is the highest-
 priority M5 blocker.
+

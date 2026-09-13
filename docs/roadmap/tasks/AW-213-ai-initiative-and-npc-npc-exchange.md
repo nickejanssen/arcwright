@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-213-ai-initiative-and-npc-npc-exchange
+namespace: operating
+title: "AW-213: AI Initiative And NPC-NPC Exchange"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-213: AI Initiative And NPC-NPC Exchange
 
 **Milestone / Epic:** M2 / M2-E  
@@ -60,3 +73,4 @@ engine/characters, engine/tests
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

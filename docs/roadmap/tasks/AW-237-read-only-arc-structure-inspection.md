@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-237-read-only-arc-structure-inspection
+namespace: operating
+title: "AW-237: Read-Only Arc Structure Inspection"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-237: Read-Only Arc Structure Inspection
 
 **Milestone / Epic:** M5 / M5-D  
@@ -81,3 +94,4 @@ dashboard, api, engine/arc
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

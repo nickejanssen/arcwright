@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.specs.2026-07-19-aw283-answer-generation-design
+namespace: playbooks
+title: AW-283 Answer/Lie/Contradiction Sample Review
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-283 Answer/Lie/Contradiction Sample Review
 
 > Status: For founder review (AW-283 Human Collaboration Contract gate)
@@ -158,3 +171,4 @@ on a real lie before its evidence is out rejects the same way a flag on a
 truth does (Sample I) — same failure mode, same player-facing message,
 different underlying reason (internal only, never exposed pre-reveal per
 Must Not Do).
+

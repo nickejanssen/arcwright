@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.00-governance.01-master-gdd-index
+namespace: custom
+title: Nightcap Master GDD Index
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap Master GDD Index
 
 **Master package date:** 2026-08-30  
@@ -67,3 +80,4 @@ Former Nightcap Story Bibles live under `docs/archive/nightcap-story-bibles/`. T
 ## Known Missing Source
 
 **Checkpoint 02 was not supplied during the checkpoint consolidation.** It was not reconstructed from conversation memory or generic design knowledge.
+

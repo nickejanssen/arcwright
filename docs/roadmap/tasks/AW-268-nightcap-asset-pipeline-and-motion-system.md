@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-268-nightcap-asset-pipeline-and-motion-system
+namespace: operating
+title: "AW-268: Nightcap Asset Pipeline and Motion System"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-268: Nightcap Asset Pipeline and Motion System
 
 **Milestone / Epic:** M5 / M5-G
@@ -101,3 +114,4 @@ approvals, dates, and owner actions.
 ## Playtest Relevance
 
 Closes the visual gap between rehearsal-quality and demo-quality for M6.
+

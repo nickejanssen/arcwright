@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0059-aw-229-player-private-event-and-input-flow
+namespace: patterns
+title: "AW-229: Player Private Event And Input Flow"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-21"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-229: Player Private Event And Input Flow
 
 **Status**: Approved
@@ -86,3 +99,4 @@ Extend the Cloudflare-hosted Nightcap player surface so private `specific_player
 # Open Questions
 
 - None. The implementation path is defined by the approved runtime contract and the existing auth model.
+

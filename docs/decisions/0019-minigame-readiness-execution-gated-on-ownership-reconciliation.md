@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0019-minigame-readiness-execution-gated-on-ownership-reconciliation
+namespace: decisions
+title: 0019 - Mini-game Readiness Execution Gated on AW-286 Ownership Reconciliation
+owner: Nico Janssen
+status: active
+review_by: "2027-02-02"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # 0019 - Mini-game Readiness Execution Gated on AW-286 Ownership Reconciliation
 
 **Date:** 2026-08-05
@@ -164,3 +177,4 @@ reconciliation.
   `engine/mini_games/plugins/_evidence_search_race.py` line 184, and
   `engine/mini_games/plugins/_social_truth_bluff.py` line 539. It is currently
   off-limits and needs its own approval.
+

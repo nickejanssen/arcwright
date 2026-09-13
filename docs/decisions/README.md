@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.readme
+namespace: decisions
+title: Architecture Decision Records (ADRs)
+owner: Nico Janssen
+status: active
+review_by: "2027-02-02"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Architecture Decision Records (ADRs)
 
 This directory contains decisions that shape the technical platform. Each ADR captures a decision, the context that required it, and its consequences.
@@ -56,6 +69,7 @@ When proposing changes:
 - `0020-aw-286-owns-remaining-couch-race-integration.md` - D-101 assigns the remaining AW-285 scope (six-beat mini-game integration, privacy and device checks, audiovisual polish) to AW-286 and reclassifies the mini-game readiness program as a supplier rather than a gate; breaks the AW-286 circular dependency and frees Rehearsal 1 from platform work
 - `0021-minigame-readiness-program-deferred-until-after-rehearsal-1.md` - D-102 defers the whole mini-game readiness program until after AW-286 Rehearsal 1 has run and been debriefed, keeping scope capped at the merged browser golden path and redirecting capacity to the Couch Race content path (AW-277 to AW-280, AW-290, AW-291)
 - `0022-resolved-case-persistence.md` - D-103 persists the resolved case in six normalized tables with real foreign keys, extending ADR-0017 which authorized only the anchor shape; follows the ADR-0016 dedicated-table precedent and makes the alibi contradiction an integrity-enforced join, at the cost of growing AW-290 well past its recorded size
+- `0024-kb-front-matter-backfill-via-team-ai-adopt.md` - Proposed: backfills machine-readable front matter (status, namespace, owner, review_by) onto the ~470 docs/ files that had none, via the external team-ai adopt tool under founder interactive review; awaiting founder approval
 
 ## Current Decision Categories
 
@@ -63,3 +77,4 @@ When proposing changes:
 - **Architecture patterns**: Event-driven, knowledge graph, content safety layers
 - **Scope decisions**: MVP vs. H2, schema-clean design, build paths
 - **Design choices**: Character model, session state, pacing engine
+

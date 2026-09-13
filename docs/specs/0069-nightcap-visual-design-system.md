@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0069-nightcap-visual-design-system
+namespace: patterns
+title: "0069: Nightcap Visual Design System (UI, Animation, Aesthetic)"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # 0069: Nightcap Visual Design System (UI, Animation, Aesthetic)
 
 > Current version: v1.1
@@ -429,3 +442,4 @@ owner actions.
 - Does the host need a distinct "director view" style pass, or does the
   display surface style cover host controls at MVP? (Current host controls
   are minimal; revisit after Rehearsal 1 blocker log.)
+

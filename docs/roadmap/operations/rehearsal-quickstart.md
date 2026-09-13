@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.operations.rehearsal-quickstart
+namespace: operating
+title: Rehearsal Quickstart
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Rehearsal Quickstart
 
 > Current version: v1.1
@@ -70,3 +83,4 @@ Expected: `SMOKE PASS`. If it fails, the failing step and response are printed.
 ```powershell
 make rehearsal-stop
 ```
+

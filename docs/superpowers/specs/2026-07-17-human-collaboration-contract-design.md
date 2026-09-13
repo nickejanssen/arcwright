@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.specs.2026-07-17-human-collaboration-contract-design
+namespace: playbooks
+title: Human Collaboration Contract Design
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Human Collaboration Contract Design
 
 > Current version: v0.1
@@ -443,3 +456,4 @@ Implementation verification must include:
 ## Open Questions
 
 None. The founder approved every design section on 2026-07-17.
+

@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0072-nightcap-couch-race-v1
+namespace: patterns
+title: "Nightcap Couch Race v1: Parent Spec"
+owner: Nico Janssen
+status: deprecated
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap Couch Race v1: Parent Spec
 
 **Status**: Approved historical implementation baseline — current Nightcap product/design authority superseded by ADR-0023 and `docs/gdd/nightcap/`
@@ -156,3 +169,4 @@ See:
 # Open Questions
 
 Current Nightcap design questions are tracked through `docs/gdd/nightcap/00-governance/00-decision-ledger.md` and the relevant GDD system pages. Historical product questions remain in `docs/product/open-questions-log.csv` for provenance.
+

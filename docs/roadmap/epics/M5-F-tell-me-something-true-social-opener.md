@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.epics.m5-f-tell-me-something-true-social-opener
+namespace: operating
+title: "M5-F: Tell Me Something True Social Opener Implementation"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M5-F: Tell Me Something True Social Opener Implementation
 
 **Milestone:** M5
@@ -86,3 +99,4 @@ architecture references named in those task files.
 
 Adds a second real-human rehearsal data point and validates a richer
 mini-game surface than Rehearsal 1.
+

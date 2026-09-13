@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-107-litellm-routing-layer
+namespace: operating
+title: "AW-107: LiteLLM routing layer"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-107: LiteLLM routing layer
 
 **Milestone / Epic:** M1 / D  
@@ -28,3 +41,4 @@ Model routing fallback is a locked unit-test area. Test table-swap behavior and 
 ## Agent Notes
 
 Use one real smoke test per provider if needed, then keep the ongoing suite offline or mocked to avoid token spend.
+

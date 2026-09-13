@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-209-l2-pre-generation-classification
+namespace: operating
+title: "AW-209: L2 Pre-Generation Classification"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-209: L2 Pre-Generation Classification
 
 **Milestone / Epic:** M2 / M2-D  
@@ -60,3 +73,4 @@ engine/safety, engine/routing, engine/tests
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-201-m2-m6-roadmap-and-tracker-bootstrap
+namespace: operating
+title: "AW-201: M2-M6 Roadmap and Tracker Bootstrap"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-05"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-201: M2-M6 Roadmap and Tracker Bootstrap
 
 **Milestone / Epic:** M2 / Roadmap bootstrap  
@@ -60,3 +73,4 @@ docs/roadmap/**, docs/specs/0020-aw-201-m2-m6-roadmap-and-tracker-bootstrap.md, 
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

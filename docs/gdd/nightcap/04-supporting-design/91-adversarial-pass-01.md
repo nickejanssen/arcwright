@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.04-supporting-design.91-adversarial-pass-01
+namespace: custom
+title: Adversarial Pass 01
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Adversarial Pass 01
 
 **Verdict:** PASS WITH CONSTRAINTS
@@ -29,3 +42,4 @@ minigame domination; always-spy strategy.
 No conceptual exploit required abandoning the architecture. Most fixes
 are constraints on existing systems rather than new systems. Real-player
 testing is still required.
+

@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0017-aw-112-deterministic-replay-and-batch-runner
+namespace: patterns
+title: AW-112 Deterministic Replay and Batch Runner
+owner: Nico Janssen
+status: active
+review_by: "2026-11-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-112 Deterministic Replay and Batch Runner
 
 **Status**: Draft
@@ -133,3 +146,4 @@ If a CLI is added, use stdlib `argparse`. Do not introduce a new dependency for 
 # Open Questions
 
 - None within AW-112 scope after the Epic E split.
+

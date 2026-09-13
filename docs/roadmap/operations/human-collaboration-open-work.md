@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.operations.human-collaboration-open-work
+namespace: operating
+title: Human Collaboration Open Work
+owner: Nico Janssen
+status: active
+review_by: "2027-02-02"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Human Collaboration Open Work
 
 > Current version: v1.1
@@ -107,3 +120,4 @@ approval.
   subjective, strategic, external-action, or live-validation choice.
 - GitHub issue synchronization is Wave 3 work and begins only after this
   inventory and the task/spec retrofits merge.
+

@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0038-aw-215-contentevent-model-and-in-memory-bus
+namespace: patterns
+title: "AW-215: ContentEvent Model And In-Memory Bus"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-12"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-215: ContentEvent Model And In-Memory Bus
 
 **Status**: Approved
@@ -89,3 +102,4 @@ The schema is implemented per ADR-0008's layered classification: a closed `Event
 # Playtest Relevance
 
 This task unlocks the M3 milestone exit gate ("events routed by target audience with no leakage") indirectly: AW-216 cannot land without it. By itself, AW-215 is invisible to playtesters; it is platform plumbing.
+

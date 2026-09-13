@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.epics.m1-d-model-routing-abstraction
+namespace: operating
+title: "M1-D: Model Routing Abstraction"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M1-D: Model Routing Abstraction
 
 **Milestone:** M1  
@@ -17,3 +30,4 @@ Implement the provider-agnostic model-routing layer, routing-table behavior, pro
 - Model calls route through the router abstraction only
 - Routing swaps require zero code changes
 - Generation logging and cache strategy are wired
+

@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0013-nightcap-couch-race-v1-launch-target
+namespace: decisions
+title: "ADR-0013: Nightcap Couch Race V1 Launch Target"
+owner: Nico Janssen
+status: deprecated
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Status
 
 **Superseded as current Nightcap product-design authority by ADR-0023 (August 31, 2026).**
@@ -50,3 +63,4 @@ The original Couch Race pivot reduced the test floor, emphasized interrogation, 
 - Archived former Couch Race Bible: `docs/archive/nightcap-story-bibles/nightcap-couch-race.md`
 - Archived former Imposter Bible: `docs/archive/nightcap-story-bibles/nightcap-murder-mystery.md`
 - Product log historical record: D-071 in `docs/product/decisions-log.csv`
+

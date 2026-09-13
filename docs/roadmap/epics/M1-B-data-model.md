@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.epics.m1-b-data-model
+namespace: operating
+title: "M1-B: Data Model"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-26"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M1-B: Data Model
 
 **Milestone:** M1  
@@ -17,3 +30,4 @@ Implement the platform data model and the first full migration, including all co
 
 - All architecture-defined tables have models
 - The first full migration upgrades and downgrades cleanly
+

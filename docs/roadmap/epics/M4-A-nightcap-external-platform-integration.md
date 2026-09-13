@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.epics.m4-a-nightcap-external-platform-integration
+namespace: operating
+title: "M4-A: Nightcap Web Experience Runtime Integration"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-10"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M4-A: Nightcap Web Experience Runtime Integration
 
 **Milestone:** M4  
@@ -60,3 +73,4 @@ The technical scope is limited to the tasks listed below and the architecture re
 ## Playtest Relevance
 
 This epic contributes directly to the gated progression from backend validation to real-device rehearsal to first qualifying outside-group sessions.
+

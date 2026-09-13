@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0004-pacing-telemetry-outcome-events
+namespace: decisions
+title: 0004 - Pacing Telemetry Outcome Events
+owner: Nico Janssen
+status: active
+review_by: "2026-12-07"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # 0004 - Pacing Telemetry Outcome Events
 
 **Date:** 2026-06-10
@@ -71,3 +84,4 @@ We use a two-event append-only telemetry model for player-facing pacing interven
 - `docs/architecture/11-telemetry.md`
 - `docs/specs/0027-aw-207-dramatic-tension-pacing-engine.md`
 - `docs/roadmap/tasks/AW-207-dramatic-tension-pacing-engine.md`
+

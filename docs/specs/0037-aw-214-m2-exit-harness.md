@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0037-aw-214-m2-exit-harness
+namespace: patterns
+title: "AW-214: M2 Headless Nightcap Exit Harness"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-12"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-214: M2 Headless Nightcap Exit Harness
 
 **Status**: Approved
@@ -95,3 +108,4 @@ The acceptance criteria mirror the M2 milestone exit gate in
 # Open Questions
 
 - None blocking. The eight-beat structure is locked by D-053 and the May 15, 2026 Nightcap decision; the linear traversal is sufficient for M2 exit and for everything M3 needs.
+

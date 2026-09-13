@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0033-aw-210-l3-policy-injection
+namespace: patterns
+title: AW-210 L3 Policy Injection And Neutral Bridge
+owner: Nico Janssen
+status: active
+review_by: "2026-12-11"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-210 L3 Policy Injection And Neutral Bridge
 
 **Status**: Approved
@@ -91,3 +104,4 @@ This spec defines Layer 3 in-generation policy injection for the Arcwright conte
 # Open Questions
 
 - None blocking implementation.
+

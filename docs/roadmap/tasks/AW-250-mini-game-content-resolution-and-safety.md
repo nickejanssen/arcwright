@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-250-mini-game-content-resolution-and-safety
+namespace: operating
+title: "AW-250: Mini-game Content Resolution And Safety"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-250: Mini-game Content Resolution And Safety
 
 **Milestone / Epic:** M4 / M4-E
@@ -30,3 +43,4 @@ runtime snapshot.
 
 - `docs/specs/0047-aw-250-mini-game-content-resolution-and-safety.md`
 - `docs/decisions/0009-mini-game-runtime-boundary.md`
+

@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0085-the-unmasking-reveal-reconstruction
+namespace: patterns
+title: The Unmasking Reveal-reconstruction Mini-game
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v0.2
 > Last updated: 2026-08-03
 > Status: Draft
@@ -116,3 +129,4 @@ Changing case truth, mutable guesses, model-selected suspects or winners, client
 ## Founder decisions required
 
 Approve or revise innocent-clear ordering, catch-credit display, the three Vesper movements, 3-to-5-minute pacing, solved and house-win treatment, score/rank/podium animation, superlatives, and ordinary last line direction.
+

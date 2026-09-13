@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0083-evidence-locker-402-game-ready
+namespace: patterns
+title: Evidence Locker 402 Game-ready Contract
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v0.2
 > Last updated: 2026-08-03
 > Status: Draft
@@ -79,3 +92,4 @@ Multiple simultaneous active pickers, client-authoritative targets, evidence loc
 ## Founder decisions required
 
 Approve or revise least-used selection, four pins, 45 seconds, tolerance 10, break conditions, spectator staging, and reduced-edge fallback.
+

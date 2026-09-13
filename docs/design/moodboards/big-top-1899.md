@@ -1,3 +1,16 @@
+---
+id: patterns.design.moodboards.big-top-1899
+namespace: patterns
+title: Moodboard  -  Big Top 1899
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Moodboard  -  Big Top 1899
 
 > Wrapper: **High Society** · Mood: **Macabre-carnival, ornate, off-kilter**
@@ -171,3 +184,4 @@ bulb burns out. Cut to superlatives.
       included in the prompt priming).
 - [ ] Contrast table per parent brief §5.
 - [ ] Reduced-motion parity screenshots per `seq-*`.
+

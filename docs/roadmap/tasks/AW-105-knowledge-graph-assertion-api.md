@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-105-knowledge-graph-assertion-api
+namespace: operating
+title: "AW-105: Knowledge graph assertion API"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-105: Knowledge graph assertion API
 
 **Milestone / Epic:** M1 / C  
@@ -28,3 +41,4 @@ Knowledge graph correctness is one of the locked unit-test areas. Write the full
 ## Agent Notes
 
 This is one of the most important correctness boundaries in the platform. Over-test it.
+

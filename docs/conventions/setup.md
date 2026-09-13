@@ -1,3 +1,16 @@
+---
+id: patterns.conventions.setup
+namespace: patterns
+title: Local Setup
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Local Setup
 
 ## Pre-Commit Hooks
@@ -29,3 +42,4 @@ pre-commit run --all-files
 ```
 
 The configured hooks are check-only. They fail loudly for formatting, lint, secrets, and temporary debug markers, but they do not rewrite files during commit. The JS/TS hooks use the repo-root `node_modules`, so rerun `npm install` if those tool dependencies are missing.
+

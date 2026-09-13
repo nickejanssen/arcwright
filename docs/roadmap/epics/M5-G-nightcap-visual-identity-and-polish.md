@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.epics.m5-g-nightcap-visual-identity-and-polish
+namespace: operating
+title: "M5-G: Nightcap Visual Identity and Polish"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M5-G: Nightcap Visual Identity and Polish
 
 **Milestone:** M5
@@ -66,3 +79,4 @@ The technical scope is limited to the tasks listed below.
 ## Playtest Relevance
 
 Brings the product to demo-quality for M6 qualifying sessions.
+

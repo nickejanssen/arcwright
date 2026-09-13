@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-07-11-adr-0012-docs-rollout
+namespace: playbooks
+title: ADR-0012 Documentation and Tracker Rollout Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-03"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # ADR-0012 Documentation and Tracker Rollout Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:subagent-driven-development (recommended) or superpowers-extended-cc:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -951,3 +964,4 @@ Run the `review-pr` skill against the open PR before merge.
 - Spec coverage: ADR-0012 item 1 → Tasks 1/4/5/6 (AW-270, spec 0064, section 3.8, 11.8, PRD); item 2 → Tasks 1/4/5/6 (AW-271, spec 0065, obligations DDL); item 4 → Tasks 1/4 (AW-272, spec 0066) plus M5 exit-gate line in Task 2. Deferred items 3/5 already live in the open-questions log (done pre-plan); no task needed.
 - Type consistency: `authorial_intent` field names (`theme`, `tone`, `emotional_targets`, `beat_id`, `target_tension`, `note`) and telemetry names (`target_score`, `intent_fidelity_summary`, `obligation_created`, `obligation_resolved`) are identical across Task 1, 4, 5, and 6 content. Obligations DDL in Task 4 and Task 5 is the same block.
 - Placeholder scan: all file content is fully drafted; the only substitutions at execution time are the four captured issue numbers in Task 7 Step 2, which cannot be known in advance.
+

@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0064-aw-270-authorial-intent-block
+namespace: patterns
+title: "AW-270: Authorial Intent Block and Intent Fidelity Telemetry"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-270: Authorial Intent Block and Intent Fidelity Telemetry
 
 **Status**: Approved
@@ -97,3 +110,4 @@ plan approval, tests, telemetry evidence, dates, and owner actions.
 # Open Questions
 
 - Per-beat tone overrides are deferred; not required for this spec's acceptance criteria.
+

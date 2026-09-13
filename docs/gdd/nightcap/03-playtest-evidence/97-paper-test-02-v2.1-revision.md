@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.03-playtest-evidence.97-paper-test-02-v2-1-revision
+namespace: custom
+title: "Nightcap — Paper Test #2 v2.1 Baseline Revision"
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Paper Test #2 v2.1 Baseline Revision
 
 **Status:** TEST PROTOCOL REVISION / supporting evidence, not canon  
@@ -50,3 +63,4 @@ Proceed to Memory Support comparison only when exploratory baseline runs show:
 - clear desire to take another investigative action,
 - at least one naturally generated theory/question/contradiction impulse,
 - no strong report that interface formatting told the player what mattered.
+

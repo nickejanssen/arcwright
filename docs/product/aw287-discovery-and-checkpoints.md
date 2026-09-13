@@ -1,3 +1,16 @@
+---
+id: operating.product.aw287-discovery-and-checkpoints
+namespace: operating
+title: AW-287 Discovery and Checkpoint Record
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-287 Discovery and Checkpoint Record
 
 **Date**: 2026-07-18
@@ -99,3 +112,4 @@ replaces it: a tempo effect needing no new state. Full reasoning:
 - Claude Code owns AW-287 implementation and the follow-on AW-283 work.
 - The remaining gate before this task can close is the implemented thin
   slice, per AW-287's Human Collaboration Contract gates.
+

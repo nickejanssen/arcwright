@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-276-arc-voice-block-injection
+namespace: operating
+title: "AW-276: Arc Voice Block Injection"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-276: Arc Voice Block Injection
 
 **Milestone / Epic:** M5 / M5-I
@@ -78,3 +91,4 @@ before any new subjective voice direction or prompt behavior is introduced.
 ## Playtest Relevance
 
 Supplies the consistent voice layer consumed by the Couch Race narrative tasks.
+

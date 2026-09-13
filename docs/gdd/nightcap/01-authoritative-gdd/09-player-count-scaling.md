@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.01-authoritative-gdd.09-player-count-scaling
+namespace: custom
+title: Nightcap — Player Count & Social Architecture
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Player Count & Social Architecture
 
 **Status:** DECIDED + TESTING + OPEN  
@@ -118,3 +131,4 @@ Not approved or rejected. Serious risks remain around content burden, collective
 - upper-count viability.
 
 Gate 3 must compare the same Case Challenge at 2 vs. 4 players using detective agency, solvability, asymmetry, social energy, downtime, minigame quality, espionage quality, Structured Reconstruction clarity, and content cost.
+

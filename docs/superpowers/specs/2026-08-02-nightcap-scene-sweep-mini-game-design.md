@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.specs.2026-08-02-nightcap-scene-sweep-mini-game-design
+namespace: playbooks
+title: Nightcap "Scene Sweep" Hidden-Object Mini-Game Design
+owner: Nico Janssen
+status: active
+review_by: "2027-01-30"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap "Scene Sweep" Hidden-Object Mini-Game Design
 
 > Current version: v0.1
@@ -140,3 +153,4 @@ Folded in directly as acceptance criteria (not left implicit) to answer "how do 
 - Because P4 is knowingly not enforced (Locked Decision #11), a session with a wide skill/reflex spread among players could make the round feel lopsided. Accepted risk per founder direction, not something this spec attempts to mitigate further.
 
 **Open questions**: none blocking implementation planning. Object-count tuning, exact archetype-pool trim size, and specific theme icon sets are implementation-time and playtest-time decisions, not open design questions.
+

@@ -1,3 +1,17 @@
+---
+id: operating.roadmap.tasks.aw-274-platform-agnostic-role-outcome-vocabulary
+namespace: operating
+title: "AW-274: Platform-Agnostic Role, Knowledge-Seeding, and Session-Outcome
+  Vocabulary"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-274: Platform-Agnostic Role, Knowledge-Seeding, and Session-Outcome Vocabulary
 
 **Milestone / Epic:** M5 / M5-C
@@ -119,3 +133,4 @@ approval date, compatibility commitments, and owner actions.
 Pre-M6 tech-debt/agnosticism refactor. Behavior-preserving for Nightcap;
 sequence consciously relative to Rehearsal 1 (AW-273) because it touches the
 live session-end path.
+

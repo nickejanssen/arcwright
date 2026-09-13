@@ -1,3 +1,16 @@
+---
+id: custom.story-bibles.monster-rpg
+namespace: custom
+title: Monster RPG Story Bible
+owner: Nico Janssen
+status: draft
+review_by: "2026-12-10"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Monster RPG Story Bible
 
 > Current version: v1.0
@@ -725,3 +738,4 @@ This Bible was drafted in Chat 8 (Monster RPG Story Bible) and finalized as v1.0
 **Schema renames applied to formal field references:** bonded_creatures became bonded_entities; home_base_location became player_anchor_location; career_path became player_role_arc; active_party became current_companion_entities; agency_vs_fate became event_authorship; witnessing_creature_ids became witness_entity_ids; pact_term became current_intent. Natural-English usage of these terms in narrative design discussion remains intentional and unchanged.
 
 **Monster RPG's strategic role (per D-034):** Monster RPG is the H2 internal proof that the Arcwright platform handles solo-player RPG narrative state, building credibility for H3 expansion to mid-size narrative studios. It is not the H2 external segment target.
+

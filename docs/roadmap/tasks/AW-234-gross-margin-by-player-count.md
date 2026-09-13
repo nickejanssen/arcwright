@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-234-gross-margin-by-player-count
+namespace: operating
+title: "AW-234: Gross Margin By Player Count"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-234: Gross Margin By Player Count
 
 **Milestone / Epic:** M5 / M5-B  
@@ -81,3 +94,4 @@ docs/roadmap/tasks, engine/telemetry or dashboard if implementation needed
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

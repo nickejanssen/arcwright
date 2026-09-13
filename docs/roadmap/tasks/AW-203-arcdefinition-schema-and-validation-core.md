@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-203-arcdefinition-schema-and-validation-core
+namespace: operating
+title: "AW-203: ArcDefinition Schema And Validation Core"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-203: ArcDefinition Schema And Validation Core
 
 **Milestone / Epic:** M2 / M2-B  
@@ -59,3 +72,4 @@ engine/arc/models.py, engine/tests, docs/specs
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

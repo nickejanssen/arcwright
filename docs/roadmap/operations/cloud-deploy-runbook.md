@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.operations.cloud-deploy-runbook
+namespace: operating
+title: Cloud Deploy Runbook
+owner: Nico Janssen
+status: active
+review_by: "2027-02-03"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v1.1
 > Last updated: 2026-06-29
 > Status: Current
@@ -464,3 +477,4 @@ curl -sf -X POST https://<CLOUD_RUN_SERVICE_URL>/v1/sessions \
 ```
 
 Expected: a non-empty session ID string is printed. A 4xx or 5xx response means the API is reachable but session creation is broken. Check database connectivity, Secret Manager bindings, Firebase setup, and the Cloud Run service configuration.
+

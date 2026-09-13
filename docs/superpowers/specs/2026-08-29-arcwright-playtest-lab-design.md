@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.specs.2026-08-29-arcwright-playtest-lab-design
+namespace: playbooks
+title: Arcwright Playtest Lab Design
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Arcwright Playtest Lab Design
 
 > Current version: v1.1
@@ -185,3 +198,4 @@ contract is verified, consistent with `docs/architecture/11-telemetry.md`.
 
 Each sequence produces a separately testable change and requires its own review
 checkpoint.
+

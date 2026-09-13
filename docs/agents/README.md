@@ -1,3 +1,16 @@
+---
+id: operating.agents.readme
+namespace: operating
+title: Arcwright Multi-Agent Operating Model
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Arcwright Multi-Agent Operating Model
 
 This directory defines the development roles Arcwright uses and how work flows between them. It is the human-facing companion to `AGENTS.md` (the always-on rules) and `docs/skills/` (the executable role skills).
@@ -85,3 +98,4 @@ Note on the Implementer: the user-level `arcwright-task-runner` skill describes 
 ## Relationship to the Rules
 
 These contracts describe roles and flow. They do not restate the always-on rules. Every role is bound by `AGENTS.md` (engine constraints, approval gates, workflow, agent-local-file policy) and by `docs/conventions/`. If a role contract and `AGENTS.md` ever disagree, `AGENTS.md` wins.
+

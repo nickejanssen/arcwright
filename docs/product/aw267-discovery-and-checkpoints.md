@@ -1,3 +1,16 @@
+---
+id: operating.product.aw267-discovery-and-checkpoints
+namespace: operating
+title: AW-267 Discovery and Checkpoint Record
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-267 Discovery and Checkpoint Record
 
 **Date**: 2026-07-18
@@ -90,3 +103,4 @@ host.md` and each moodboard file's own status header now reflect that.
   any other work treats it as direction.
 - No code, asset production, or engine change is authorized by this record
   (AW-267 Must Not Do: "Do not ship any code in this task").
+

@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.04-supporting-design.98d-full-gdd-adversarial-cohesion-pass-02
+namespace: custom
+title: Nightcap — Full-GDD Adversarial / Cohesion Pass 02
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Full-GDD Adversarial / Cohesion Pass 02
 
 **Status:** SUPPORTING DESIGN-CONTROL RECORD — not game canon by itself  
@@ -114,3 +127,4 @@ If one player solves the murder, that player wins. If several solve it, use the 
 ## Evidence Boundary
 
 None of the unresolved items above becomes a new Nightcap law from this audit alone. Creator decisions and representative gameplay evidence remain required where they would materially change player experience.
+

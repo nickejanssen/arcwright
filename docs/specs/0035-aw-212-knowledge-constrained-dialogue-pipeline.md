@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0035-aw-212-knowledge-constrained-dialogue-pipeline
+namespace: patterns
+title: AW-212 Knowledge-Constrained Dialogue Pipeline
+owner: Nico Janssen
+status: active
+review_by: "2026-12-11"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-212 Knowledge-Constrained Dialogue Pipeline
 
 **Status**: Approved
@@ -92,3 +105,4 @@ AW-212 defines the current-session dialogue pipeline for AI character speech in 
 # Open Questions
 
 - None blocking AW-212 after the scope guards above.
+

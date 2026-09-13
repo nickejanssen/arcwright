@@ -1,3 +1,16 @@
+---
+id: patterns.design.authoring.interrogation-paper-test
+namespace: patterns
+title: Interrogation Paper Test — Protocol
+owner: Nico Janssen
+status: active
+review_by: "2027-01-22"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Interrogation Paper Test — Protocol
 
 > Current version: v0.1 DRAFT — ready to run
@@ -156,3 +169,4 @@ the most expensive possible mistake.
 4. Run E1-E4, take notes against the measurements.
 5. Bring the notes back — they resolve the held questions and update
    this doc's decision outputs.
+

@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0007-roadmap-tracker-alignment
+namespace: patterns
+title: Roadmap Tracker Alignment
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Roadmap Tracker Alignment
 
 **Status**: Done
@@ -52,3 +65,4 @@ Refine the roadmap so it remains the canonical planning source in-repo while cle
 - Validate `docs/roadmap/index.json` as JSON
 - Manually verify the known GitHub links for M1 Epic A match the live public issue pages
 - Read the updated roadmap README and GitHub operations doc to confirm the ownership split is clear
+

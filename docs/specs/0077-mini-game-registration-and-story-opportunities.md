@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0077-mini-game-registration-and-story-opportunities
+namespace: patterns
+title: Reusable Mini-game Packages, Destination Adaptations, and Placement Policies
+owner: Nico Janssen
+status: active
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 > Current version: v0.2
 > Last updated: 2026-08-03
 > Status: Approved
@@ -301,3 +314,4 @@ synthetic non-Nightcap destination.
 The founder approved the exact package, adaptation, policy-expression,
 authority, selection, and migration contracts in this version on 2026-08-03.
 Implementation remains subject to a separate go-ahead.
+

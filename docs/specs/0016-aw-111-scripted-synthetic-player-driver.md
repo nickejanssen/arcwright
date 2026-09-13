@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0016-aw-111-scripted-synthetic-player-driver
+namespace: patterns
+title: AW-111 Scripted Synthetic Player Driver
+owner: Nico Janssen
+status: active
+review_by: "2026-11-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-111 Scripted Synthetic Player Driver
 
 **Status**: Draft
@@ -139,3 +152,4 @@ Participant IDs are assigned deterministically: `player_id` from `SyntheticPlaye
 # Open Questions
 
 - None within AW-111 scope after the Epic E split.
+

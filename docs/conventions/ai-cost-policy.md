@@ -1,3 +1,16 @@
+---
+id: patterns.conventions.ai-cost-policy
+namespace: patterns
+title: AI Cost Policy
+owner: Nico Janssen
+status: active
+review_by: "2026-11-25"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AI Cost Policy
 
 Use the lightest agent surface that matches the work.
@@ -25,3 +38,4 @@ Use that surface for strategy, planning, and spec writing.
 - One agent per feature branch.
 - If a task is unclear, escalate to spec writing in Project chat before spending agent credits on implementation attempts.
 - In the PR description, note which agents were used and roughly how much effort each contributed: `minimal`, `moderate`, or `primary`.
+

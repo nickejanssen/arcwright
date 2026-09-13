@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0067-development-survey-and-path-to-first-playtest
+namespace: patterns
+title: Development Survey and Path to First Playtest
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Development Survey and Path to First Playtest
 
 > Current version: v1.0
@@ -241,3 +254,4 @@ session; review the PR each produces.
 - Issues #137, #138, #176 (AW-259), #183 (AW-266), #188 (AW-269)
 - ADR-0003 / D-067 (Cloudflare runtime), D-065 (local-tunnel Rehearsal 1),
   ADR-0012 (narrative fidelity), D-051 (Continuity v1.1 boundary)
+

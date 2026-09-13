@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.epics.m5-c-second-arc-schema-validation
+namespace: operating
+title: "M5-C: Second Arc Schema And Executable Follow-Through"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-19"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M5-C: Second Arc Schema And Executable Follow-Through
 
 **Milestone:** M5  
@@ -62,3 +75,4 @@ The technical scope is limited to the tasks listed below and the architecture re
 ## Playtest Relevance
 
 This epic contributes directly to the gated progression from backend validation to real-device rehearsal to first qualifying outside-group sessions.
+

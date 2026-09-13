@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.specs.2026-07-12-cloud-rehearsal-2-cost-isolation-design
+namespace: playbooks
+title: Cloud Rehearsal 2 Cost Isolation Design
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Cloud Rehearsal 2 Cost Isolation Design
 
 Status: Proposed
@@ -88,3 +101,4 @@ The runtime project uses a dedicated service account. No service account key fil
 - https://cloud.google.com/run/pricing
 - https://developers.cloudflare.com/workers/platform/pricing/
 - https://firebase.google.com/pricing
+

@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0050-aw-253-nightcap-web-mini-game-rendering
+namespace: patterns
+title: "AW-253: Nightcap Web Mini-game Rendering And Device Integration"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-23"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-253: Nightcap Web Mini-game Rendering And Device Integration
 
 **Status**: Approved
@@ -181,3 +194,4 @@ later task. The current approved default remains Cloudflare.
 - Which room abstraction is selected after the revisit gate?
 - When does the renderer kit hoist from `nightcap-web/src/mini-game-kit/` to a
   shared `@arcwright/mini-game-kit` package? (Likely at the second game.)
+

@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.04-supporting-design.98a-cross-system-integration-map-framework
+namespace: custom
+title: Nightcap — Cross-System Integration Map
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Cross-System Integration Map
 
 **Status:** ADOPTED supporting design-control artifact — not game canon  
@@ -69,3 +82,4 @@ These are now primarily execution / validation risks rather than ownerless archi
 ## Next Use
 
 Use this map during future adversarial passes and prototype interpretation. Do not add new cohesion laws merely to make the matrix more complete; reopen architecture only when a real contradiction, missing owner, or evidence-supported problem appears.
+

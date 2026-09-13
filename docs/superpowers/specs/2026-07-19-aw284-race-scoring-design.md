@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.specs.2026-07-19-aw284-race-scoring-design
+namespace: playbooks
+title: AW-284 Race Scoring And Accusation State — Design
+owner: Nico Janssen
+status: active
+review_by: "2027-01-16"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-284 Race Scoring And Accusation State — Design
 
 > Status: Founder-approved 2026-07-19 ("Lets go with this!")
@@ -321,3 +334,4 @@ tie-break rule (Section 7), the exact state-machine mechanism (Section 8),
 implementation plan should treat this document the way the AW-283
 implementation plan treated its own sample-review doc — as settled input,
 not a place to re-litigate open forks.
+

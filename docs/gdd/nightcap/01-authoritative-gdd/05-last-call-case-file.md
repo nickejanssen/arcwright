@@ -1,3 +1,16 @@
+---
+id: custom.gdd.nightcap.01-authoritative-gdd.05-last-call-case-file
+namespace: custom
+title: Nightcap — Last Call & Case File — Structured Reconstruction
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap — Last Call & Case File — Structured Reconstruction
 
 **Status:** V1 endgame direction DECIDED; interface details TESTING  
@@ -141,3 +154,4 @@ The confrontation does **not** decide correctness. The player already did the de
 > **Can multiple reasonable investigation routes reach the essential truths without one required designer-favorite clue becoming a hidden single point of failure?**
 
 > **When a player loses, can they understand what part of their reconstruction was factually wrong without Nightcap having to defend a subjective score?**
+

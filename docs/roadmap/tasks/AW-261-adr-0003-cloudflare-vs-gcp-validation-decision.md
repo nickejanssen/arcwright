@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-261-adr-0003-cloudflare-vs-gcp-validation-decision
+namespace: operating
+title: "AW-261: ADR-0003 Cloudflare vs GCP Validation Decision"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-261: ADR-0003 Cloudflare vs GCP Validation Decision
 
 **Milestone / Epic:** M4 / M4-A (closes AW-225 validation gate)
@@ -76,3 +89,4 @@ future deploy task is unambiguous.
 
 Unblocks AW-254 (verification can start without ambiguity about the future
 cloud path) and seeds the M5 cloud deploy work that hosts Rehearsal 2.
+

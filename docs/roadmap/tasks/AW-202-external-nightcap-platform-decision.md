@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-202-external-nightcap-platform-decision
+namespace: operating
+title: "AW-202: Nightcap Web Experience Runtime Decision"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-202: Nightcap Web Experience Runtime Decision
 
 **Milestone / Epic:** M2 / M2-A  
@@ -61,3 +74,4 @@ docs/specs, docs/decisions, docs/roadmap/tasks/AW-225-through-AW-231
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

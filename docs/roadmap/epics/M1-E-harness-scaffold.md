@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.epics.m1-e-harness-scaffold
+namespace: operating
+title: "M1-E: Harness Scaffold"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # M1-E: Harness Scaffold
 
 **Milestone:** M1  
@@ -19,3 +32,4 @@ Provide the first headless simulation harness that can instantiate, step, script
 - Synthetic player scenarios are scriptable
 - Seeded runs are repeatable
 - Batch runner can execute 10 headless sessions without UI
+

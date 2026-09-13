@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-264-tmst-api-events-and-sdk
+namespace: operating
+title: "AW-264: TMST API, Events, and SDK"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-264: TMST API, Events, and SDK
 
 **Milestone / Epic:** M5 / M5-F
@@ -75,3 +88,4 @@ richer four-phase flow than Rehearsal 1 mini-games exercise.
 
 Powers the events the AW-265 web layer renders and the actions players
 submit during Rehearsal 2.
+

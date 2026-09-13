@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0061-aw-258-tell-me-something-true
+namespace: patterns
+title: "AW-258: Tell Me Something True"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-24"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-258: Tell Me Something True
 
 > Current version: v0.1
@@ -509,3 +522,4 @@ Fallback contract:
   or should non-clue games keep a neutral schema-valid `clue_fallback` record?
 - Should structured behavioral outputs become first-class authoring schema in
   AW-251, or should map-shaped signals remain event-payload-only in v1?
+

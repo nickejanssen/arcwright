@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-03-minigame-creator-and-readiness-labs
+namespace: playbooks
+title: Mini-game Creator and Readiness Labs Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Mini-game Creator and Readiness Labs Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -404,3 +417,4 @@ git commit -m "test(config): prove minigame creator readiness"
 - Dashboard, CLI, SDK, skill, and future no-code Studio share the same APIs and artifacts.
 - Promotion and rollback use exact immutable package and adaptation versions.
 - The workflow is proven by a developer and game unrelated to Nightcap.
+

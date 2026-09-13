@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-02-interrogation-room-trivia-game-ready
+namespace: playbooks
+title: Interrogation Room Trivia Game-ready Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Interrogation Room Trivia Game-ready Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -322,3 +335,4 @@ git commit -m "test(nightcap): certify last call trivia package"
 Do not promote to `active` here. The final integration plan registers the
 exact version and digest, proves the Last Call handoff and whole-session path,
 then performs active promotion and GitHub closure.
+

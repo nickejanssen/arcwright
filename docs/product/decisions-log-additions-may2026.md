@@ -1,3 +1,22 @@
+---
+id: operating.product.decisions-log-additions-may2026
+namespace: operating
+title: Decisions Log Additions, May 2026
+owner: Nico Janssen
+status: active
+review_by: "2026-12-10"
+sensitivity: internal
+source: authored
+tags:
+  - m0
+  - validation
+  - wizard-of-oz
+  - mvp
+  - override
+  - personalization
+supersedes: []
+---
+
 # Decisions Log Additions, May 2026
 
 **Merge target:** `docs/product/decisions-log.csv` (append-only; add these entries at the end)
@@ -42,3 +61,4 @@
 ---
 
 *End of additions. Do not edit earlier entries. Append only.*
+

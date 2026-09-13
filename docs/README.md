@@ -1,3 +1,16 @@
+---
+id: unmapped.readme
+namespace: unmapped
+title: Arcwright Documentation
+owner: Nico Janssen
+status: active
+review_by: "2027-02-27"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Arcwright Documentation
 
 This directory is the canonical documentation workspace for Arcwright. It separates active source-of-truth docs from raw exports and historical context.
@@ -76,3 +89,4 @@ Canonical repo docs win over archived exports. For Nightcap game design, the cur
 A GDD migration does not silently change architecture or deployed code. If current implementation/spec behavior differs from the current GDD, reconcile it explicitly through the appropriate spec/ADR/roadmap workflow.
 
 Product-scope commitments need durable approval evidence before they become build scope. Use product decision records and add an ADR or approved spec when a decision affects roadmap, architecture, privacy, APIs, or implementation sequencing.
+

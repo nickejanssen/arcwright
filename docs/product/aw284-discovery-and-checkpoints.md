@@ -1,3 +1,16 @@
+---
+id: operating.product.aw284-discovery-and-checkpoints
+namespace: operating
+title: AW-284 Discovery and Checkpoint Record
+owner: Nico Janssen
+status: active
+review_by: "2027-01-16"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-284 Discovery and Checkpoint Record
 
 **Date**: 2026-07-19
@@ -158,3 +171,4 @@ Founder approved as presented, no changes requested ("Let's go with this!").
   events) which is discovery-complete and plan-ready but not yet executed —
   the implementation plan must sequence against AW-283's real shipped event
   shape once it lands, not just this plan's assumptions about it.
+

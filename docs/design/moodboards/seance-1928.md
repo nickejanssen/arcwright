@@ -1,3 +1,16 @@
+---
+id: patterns.design.moodboards.seance-1928
+namespace: patterns
+title: Moodboard  -  Séance 1928
+owner: Nico Janssen
+status: active
+review_by: "2027-01-15"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Moodboard  -  Séance 1928
 
 > Wrapper: **High Society** · Mood: **Moody, glamorous, dangerous**
@@ -162,3 +175,4 @@ Cut to superlatives.
       minimum for prompt priming).
 - [ ] Contrast table per parent brief §5.
 - [ ] Reduced-motion parity screenshots per `seq-*`.
+

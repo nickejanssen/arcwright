@@ -1,3 +1,16 @@
+---
+id: playbooks.superpowers.plans.2026-08-02-nightcap-existing-minigames-game-ready
+namespace: playbooks
+title: Nightcap Mini-game Whole-session Certification and Closeout Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-02-02"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Nightcap Mini-game Whole-session Certification and Closeout Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
@@ -455,3 +468,4 @@ git commit -m "docs(nightcap): reconcile minigame readiness"
 Request review with `superpowers:requesting-code-review`, address accepted
 findings, rerun verification with `superpowers:verification-before-completion`,
 and present the branch for founder merge approval. Do not merge automatically.
+

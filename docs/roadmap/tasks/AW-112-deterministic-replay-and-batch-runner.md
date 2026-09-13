@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-112-deterministic-replay-and-batch-runner
+namespace: operating
+title: "AW-112: Deterministic replay and batch runner"
+owner: Nico Janssen
+status: active
+review_by: "2026-11-28"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-112: Deterministic replay and batch runner
 
 **Milestone / Epic:** M1 / E  
@@ -29,3 +42,4 @@ Add deterministic trace comparison and a headless batch runner that can execute 
 ## Agent Notes
 
 Mock at the `engine.routing.logging.generate` boundary if any generation path is exercised. Do not reintroduce provider or model string literals into harness tests.
+

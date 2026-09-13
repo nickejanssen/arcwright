@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0030-arcwright-doc-bundler-skill
+namespace: patterns
+title: Arcwright Doc Bundler Skill
+owner: Nico Janssen
+status: active
+review_by: "2026-12-10"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # Arcwright Doc Bundler Skill
 
 **Status**: Done
@@ -88,3 +101,4 @@ Add a repo-tracked, platform-neutral skill for generating compact, task-specific
 # Open Questions
 
 - Should `docs-bundles/` be gitignored once the generated-output policy is finalized?
+

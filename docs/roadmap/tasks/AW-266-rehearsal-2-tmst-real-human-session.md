@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-266-rehearsal-2-tmst-real-human-session
+namespace: operating
+title: "AW-266: Rehearsal 2 - TMST Real-Human Session"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-13"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-266: Rehearsal 2 - TMST Real-Human Session
 
 **Milestone / Epic:** M5 / M5-F
@@ -103,3 +116,4 @@ actions.
 ## Playtest Relevance
 
 Second real-human rehearsal data point and the M5-F epic exit gate.
+

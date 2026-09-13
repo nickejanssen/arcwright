@@ -1,3 +1,16 @@
+---
+id: decisions.decisions.0002-harness-scenario-execution-contract
+namespace: decisions
+title: 0002 — Harness Scenario Execution Contract
+owner: Nico Janssen
+status: active
+review_by: "2027-02-03"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # 0002 — Harness Scenario Execution Contract
 
 **Date:** 2026-06-01
@@ -67,3 +80,4 @@ We use the following harness scenario execution contract for AW-111:
 - [docs/specs/0016-aw-111-scripted-synthetic-player-driver.md](../specs/0016-aw-111-scripted-synthetic-player-driver.md)
 - [docs/roadmap/tasks/AW-111-scripted-synthetic-player-driver.md](../roadmap/tasks/AW-111-scripted-synthetic-player-driver.md)
 - Future follow-up: pre-existing `make type` failures in `engine/arc/arc_state.py` and `engine/harness/runner.py` should be resolved before M1 is marked complete.
+

@@ -1,3 +1,16 @@
+---
+id: patterns.specs.0027-aw-207-dramatic-tension-pacing-engine
+namespace: patterns
+title: "AW-207: Dramatic Tension Pacing Engine"
+owner: Nico Janssen
+status: active
+review_by: "2026-12-07"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-207: Dramatic Tension Pacing Engine
 
 **Status**: Approved
@@ -310,3 +323,4 @@ Run:
 # Open Questions
 
 None.
+

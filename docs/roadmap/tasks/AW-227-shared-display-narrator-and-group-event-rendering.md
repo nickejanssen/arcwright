@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-227-shared-display-narrator-and-group-event-rendering
+namespace: operating
+title: "AW-227: Shared Display Narrator And Group Event Rendering"
+owner: Nico Janssen
+status: active
+review_by: "2027-01-08"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-227: Shared Display Narrator And Group Event Rendering
 
 **Milestone / Epic:** M4 / M4-B  
@@ -61,3 +74,4 @@ Cloudflare Pages, Workers, Durable Objects or PartyKit files
 ## Playtest Relevance
 
 This task contributes to the gated progression toward M6. The implementer must state which readiness gate it unlocks or protects when completing the task.
+

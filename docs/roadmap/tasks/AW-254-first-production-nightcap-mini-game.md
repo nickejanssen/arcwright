@@ -1,3 +1,16 @@
+---
+id: operating.roadmap.tasks.aw-254-first-production-nightcap-mini-game
+namespace: operating
+title: "AW-254: Verify Two Promoted Mini-games on Real Devices"
+owner: Nico Janssen
+status: deprecated
+review_by: "2027-02-01"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # AW-254: Verify Two Promoted Mini-games on Real Devices
 
 **Milestone / Epic:** M4 / M4-E
@@ -102,3 +115,4 @@ Catches device-specific bugs before they become rehearsal blockers.
 
 Last verification gate before AW-231 puts the games in front of real
 humans.
+
