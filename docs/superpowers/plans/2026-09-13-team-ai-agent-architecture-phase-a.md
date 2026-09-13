@@ -21,6 +21,8 @@
 
 **Spec:** [`docs/specs/0089-team-ai-agent-architecture.md`](../../specs/0089-team-ai-agent-architecture.md) (Approved 2026-09-13)
 
+**Framework design note (read before Tasks 1–6):** [team-ai `docs/design/2026-09-13-agent-topology-design.md`](https://github.com/nickejanssen/team-ai/blob/main/docs/design/2026-09-13-agent-topology-design.md) is the design of record for the team-ai half of this plan. The spec above is Arcwright-specific. The design note is the generic version that belongs in the framework. Code in team-ai must match the note, and nothing Arcwright-specific may enter team-ai. `node dist/cli.js check-agnostic` enforces that for shipped source.
+
 ---
 
 ## Repos
