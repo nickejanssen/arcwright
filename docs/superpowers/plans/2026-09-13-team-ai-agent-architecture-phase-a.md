@@ -1,23 +1,36 @@
+---
+id: playbooks.superpowers.plans.2026-09-13-team-ai-agent-architecture-phase-a
+namespace: playbooks
+title: team-ai Agent Architecture — Phase A Implementation Plan
+owner: Nico Janssen
+status: draft
+review_by: "2027-03-12"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
 # team-ai Agent Architecture — Phase A Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers-extended-cc:subagent-driven-development (recommended) or superpowers-extended-cc:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Generate the three-tier agent topology into Arcwright — one deterministic router, three group SMEs, thirteen terminal specialists — and migrate the KB from five generic namespaces to fourteen real Arcwright ones.
+**Goal:** Generate the three-tier agent topology into Arcwright — one deterministic router, three group SMEs, thirteen terminal specialists — and migrate the KB from its seven current namespace values to fourteen real Arcwright ones.
 
 **Architecture:** Four framework changes land in `team-ai` first (manifest schema extension, per-domain namespace fix, instance-catalog wiring, a namespace remap command), released as 0.4.0. Arcwright then supplies its own namespace preset and answers file, runs the gated migration, and generates the topology. Generation is non-destructive throughout: existing hand-authored agents and skills are registered in the manifest, never overwritten.
 
 **Tech Stack:** TypeScript / Node 22 / ESM, Vitest, Ajv (JSON Schema 2020-12), Handlebars templates, `yaml`.
 
-**User decisions (already made):**
+**User decisions (already made), plus three proposals awaiting confirmation:**
 - "Design all 3, build in order" — this plan is Phase A only; B and C get their own plans.
 - Domain shape: "It is 1, 2, and 3" — keep 12+ narrow domains, group them under tier-2 leads, and split titles per game. Resolved as 3 tiers / 13 specialists / 14 namespaces.
 - "Topology approved — remap before merge" — superseded by events: PR #308 merged during design, so the remap is now a migration (Task 8), not a pre-merge fix.
 - "Approved as designed" for the two-file manifest split (declared vs observed).
 - "Everything" — enforcement skills, hooks, workflows, and golden questions are all in scope, but land in **Phase B**, not here.
 - "Add semantic retrieval to this build" with local embeddings — **Phase C**, not here.
-- Spec D1: existing agents/skills are registered, never regenerated.
-- Spec D2: `nightcap-couch-race` is an `authority: archived` domain served by `title-sme`, not a specialist.
-- Spec D3: the founder is `owner` on every domain.
+- Proposed D1 (written by Claude after spec approval, **not yet confirmed by the founder**): existing agents/skills are registered, never regenerated.
+- Proposed D2 (same status): `nightcap-couch-race` is an `authority: archived` domain served by `title-sme`, not a specialist.
+- Proposed D3 (same status): the founder is `owner` on every domain.
+- Confirm D1–D3 with the founder during Task 8's approval review, before Task 9 generates anything. Spec approval was given against version 1.0 and does not cover them.
 
 **Spec:** [`docs/specs/0089-team-ai-agent-architecture.md`](../../specs/0089-team-ai-agent-architecture.md) (Approved 2026-09-13)
 
@@ -1243,7 +1256,7 @@ git push origin main:v0
 **Acceptance Criteria:**
 - [ ] `catalog/namespaces/custom.yaml` validates against `namespace-preset.schema.json` (exactly 5 `seed_docs`, ≥1 `second_level`)
 - [ ] `second_level` lists all fourteen namespaces
-- [ ] `.team-ai/namespace-remap.yaml` maps every one of the five current namespaces
+- [ ] `.team-ai/namespace-remap.yaml` maps every one of the seven current namespace values (`operating`, `patterns`, `playbooks`, `custom`, `decisions`, `platform`, `unmapped`), each with a default rule so none can be left behind
 - [ ] Every `docs/architecture/*.md` file has an explicit per-file entry (the one-to-many split)
 
 **Verify:** `node <team-ai>/dist/cli.js remap-namespaces --root . --mapping .team-ai/namespace-remap.yaml --out /tmp/proposal.yaml` → `conflict 0`
@@ -1300,9 +1313,13 @@ Create `.team-ai/namespace-remap.yaml`. The `namespaces` block holds the one-to-
 ```yaml
 # One-to-one: these old namespaces map wholesale.
 namespaces:
-  operating: product-roadmap
-  patterns: engineering-practice
-  custom: nightcap
+  operating: product-roadmap       # prd, product, roadmap, agents
+  patterns: engineering-practice    # conventions, design, specs
+  custom: nightcap                  # gdd; story bibles overridden per file below
+  decisions: product-roadmap        # the ADRs in docs/decisions/
+  unmapped: engineering-practice    # docs/README.md: doc access and versioning rules
+  platform: arc-execution           # safety net; every architecture file is listed below
+  playbooks: engineering-practice   # superpowers + skills; playtest files overridden below
 
 # One-to-many: every file that must not follow its namespace rule.
 # docs/architecture/* splits across the seven engine domains.
@@ -1366,7 +1383,7 @@ These answers are load-bearing for this design and must be exactly these values:
 | `team.name` | `Arcwright` | Becomes the doc-id prefix; must stay one lowercase token after slugging. |
 | `team.size` | `1-3` | Suppresses generated role subagents, which is correct — D1 keeps the existing hand-authored roles instead. |
 | `arch.index_driver` | `lexical` | Semantic retrieval is Phase C. Choosing a vector driver now would generate an index.lock the code cannot serve. |
-| `agents.seed` | no | Arcwright already has 459 docs; seeding would write starter content over a real KB. |
+| `agents.seed` | no | Arcwright already has 445 docs with front matter; seeding would write starter content over a real KB. |
 
 The exact `agents.domains` string:
 
@@ -1390,7 +1407,7 @@ Expected: completes with no `answer file exhausted` error and reports a generati
 node <team-ai>/dist/cli.js remap-namespaces --root . --mapping .team-ai/namespace-remap.yaml --out .team-ai/remap-proposal.yaml
 ```
 
-Expected: `conflict 0`, and `remap` roughly equal to the number of docs (459 minus any already-correct).
+Expected: `conflict 0`, and `remap` roughly equal to the number of docs (445 on `main` on 2026-09-13, minus any already-correct — count the live tree with `git grep -l '^namespace:' -- docs | wc -l` rather than trusting this number).
 
 - [ ] **Step 5: Commit**
 
@@ -1405,13 +1422,13 @@ Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>"
 
 ## Task 8: Run the namespace migration
 
-**Goal:** Rewrite `namespace` and `id` across the KB from five generic namespaces to fourteen Arcwright ones, after founder approval of the proposal.
+**Goal:** Rewrite `namespace` and `id` across the KB from seven current namespace values to fourteen Arcwright ones, after founder approval of the proposal.
 
 > **USER-ORDERED GATE — NON-SKIPPABLE.** This task was requested by the user in the current conversation. It MUST NOT be closed by walking around it, by declaring it "verified inline", or by substituting a cheaper check. Close only after every item in `acceptanceCriteria` has been re-validated independently, with output captured.
 
 **Files:**
 - Create: `.team-ai/remap-proposal.yaml` (the reviewed artifact)
-- Modify: ~459 files under `docs/` — front matter only
+- Modify: every doc with front matter under `docs/` (445 at time of writing) — front matter only
 
 **Acceptance Criteria:**
 - [ ] The proposal is presented to the founder in plain language and explicitly approved **before** `--apply` runs
@@ -1433,7 +1450,7 @@ node <team-ai>/dist/cli.js remap-namespaces --root . --mapping .team-ai/namespac
 
 - [ ] **Step 2: Summarise it for the founder — STOP HERE**
 
-Produce a plain-language summary: how many files move to each new namespace, and the full list of any file whose destination was a judgement call. Present it and **wait for explicit approval**. Do not proceed on silence.
+Produce a plain-language summary: how many files move to each new namespace, and the full list of any file whose destination was a judgement call. Present it and **wait for explicit approval**. Do not proceed on silence. In the same review, ask the founder to confirm proposed decisions D1–D3 from the spec — they were written after spec approval and are not covered by it.
 
 - [ ] **Step 3: Apply only after approval**
 
@@ -1772,7 +1789,7 @@ gh pr create --repo nickejanssen/arcwright --base main \
   --body "Implements Phase A of docs/specs/0089-team-ai-agent-architecture.md.
 
 ## What changed
-- **Namespace migration**: KB moves from 5 generic namespaces to 14 Arcwright domains. Rewrites \`namespace\` and \`id\` front matter on ~459 docs. No body content changed.
+- **Namespace migration**: KB moves from 7 namespace values to 14 Arcwright namespaces. Rewrites \`namespace\` and \`id\` front matter on every doc that has it. No body content changed.
 - **Agent topology**: 1 deterministic router (\`model_tier: none\`), 3 group SMEs, 13 terminal specialists (\`max_hops: 0\`, one namespace each).
 - **Manifest**: 14 domains with group/authority/not_owned/depends_on, 17 agents, and existing hand-authored agents and skills registered as \`source: authored\`.
 
