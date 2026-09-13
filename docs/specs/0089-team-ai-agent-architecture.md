@@ -1,8 +1,13 @@
 # team-ai Agent Architecture for Arcwright
 
-**Status**: Draft
+**Status**: Approved
 
 **Author**: Claude (with founder) | **Date**: 2026-09-13
+
+**Approved**: 2026-09-13 by founder. Design decisions (topology, manifest
+split, derive-don't-store graph, local-embedding retrieval) were recorded
+through the design interview; the three questions previously open are resolved
+below.
 
 ---
 
@@ -357,13 +362,31 @@ Revisit past roughly 100k chunks (~20× current corpus).
 
 ---
 
-# Open Questions
+# Resolved Decisions
 
-- Q1: Should the existing hand-authored agents in `docs/agents/` and skills in
-  `docs/skills/` be registered in the manifest as tier-2 personas, or stay
-  outside the generated topology and be referenced only?
-- Q2: Should `nightcap-couch-race` get an `authority: archived` domain so
-  questions about it route somewhere that explains it is archived, or should it
-  be absent so such questions refuse?
-- Q3: Who is `owner` for each domain in a solo-founder context — is
-  `unassigned` honest, or should everything be the founder until the team grows?
+**D1 — Existing agents and skills are registered, never regenerated.**
+The hand-authored contracts in `docs/agents/` and skills in `docs/skills/` are
+entered into the manifest as `source: authored` entries and referenced by the
+topology. Generation never writes to their paths. Rationale: the standing
+requirement is that an existing SME is reused without loss of information rather
+than replaced, and team-ai's renderer already treats a hand-authored file as a
+collision it must not clobber. Registering them makes them routable; leaving
+them unregistered would mean the router cannot reach work that already exists.
+
+**D2 — `nightcap-couch-race` gets an `authority: archived` domain.**
+A question about Couch Race routes somewhere that answers "this is archived,
+superseded by X" rather than refusing. Rationale: the file already self-declares
+archived status, so the information exists and is useful; a bare refusal would
+be strictly less helpful and would register as a coverage gap in the eval set.
+Cost is one manifest entry and no new agent — archived domains route to
+`title-sme` rather than to a dedicated specialist.
+
+**D3 — The founder is `owner` on every domain until the team grows.**
+Rationale: `unassigned` propagates into generated front matter and makes
+ownership and freshness reporting meaningless, and PR #308 already wrote
+`owner: Nico Janssen` across the corpus — so this is consistency with what is
+already on `main`, not a new choice. Revisit when there are other named owners.
+
+All three are low-cost to reverse: D1 and D2 are manifest entries, D3 is a
+single generation parameter. Any can change during Phase A plan review without
+rework.
