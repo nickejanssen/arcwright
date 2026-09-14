@@ -17,7 +17,7 @@ supersedes: []
 
 **Goal:** Generate the three-tier agent topology into Arcwright — one router, three hand-authored group SMEs, thirteen generated specialists — emit them as usable Claude Code subagents, and migrate the KB from seven namespace values to fourteen Arcwright namespaces.
 
-**Architecture:** Eleven framework tasks land in team-ai first and ship as 0.4.0. Arcwright then records the approved `.claude` exception, gets founder confirmation of the proposed decisions, runs a conflict-safe migration, generates into `team-ai/`, and emits committed subagents that reach the KB through a local MCP server that never uses `npx`.
+**Architecture:** Eleven framework tasks land in team-ai first and ship as 0.4.0. Arcwright then records the approved `.claude` exception, verifies the recorded decisions, runs a conflict-safe migration, generates into `team-ai/`, and emits committed subagents that search the KB with Claude Code's built-in file tools.
 
 **Tech Stack:** TypeScript / Node 22 / ESM, Vitest, Ajv (JSON Schema 2020-12), Handlebars templates, `yaml`, GitHub Actions.
 
@@ -29,7 +29,10 @@ supersedes: []
 - Layout: "Approve, with .claude exception" — tracked source in `team-ai/`, gitignored state in `.team-ai/`, emitted subagents in `.claude/agents/team-ai-*.md` only.
 - "Add semantic retrieval to this build" — Phase C, not here.
 
-**Proposals awaiting founder confirmation (Task 13 is the gate):** D1 register-don't-regenerate, D2 archived Couch Race domain, D3 founder as owner, D6 root `.mcp.json` plus the MCP server's `package.json` dependency.
+- D1 (2026-09-13): register, never regenerate, existing agents and skills.
+- D2 (2026-09-13): archived Couch Race domain served by `title-sme`.
+- D3 (2026-09-13): the founder is owner on every domain.
+- D6 (2026-09-13): agents search the KB with Claude Code's built-in `Read`, `Grep`, `Glob` — no MCP server, no `.mcp.json`, no new dependency.
 
 **Spec:** [`docs/specs/0089-team-ai-agent-architecture.md`](../../specs/0089-team-ai-agent-architecture.md) version 1.2. Its *Review Resolution* table maps every adversarial-review finding to the task below that resolves it.
 
@@ -74,7 +77,7 @@ Both must print `MERGED`. If not, stop and ask the founder.
 | `src/interview/gates.ts`, `src/generator/init.ts`, `resume.ts`, `upgrade.ts`, `src/cli.ts` | Instance catalog option |
 | `src/generator/init-answers.ts`, `src/interview/cli-runtime.ts` | Answers keyed by question id |
 | `src/retrieval/index-lock.ts`, `src/kb/loader.ts`, `src/retrieval/factory.ts`, `src/retrieval/lexical.ts`, `src/commands/validate-kb.ts`, `src/commands/freshness-audit.ts` | KB root and exclusions; per-file parse failures |
-| `src/emit/claude-code.ts`, `src/commands/emit.ts` | File prefix, plugin-manifest toggle, MCP tool names, tracked output |
+| `src/emit/claude-code.ts`, `src/commands/emit.ts` | File prefix, plugin-manifest toggle, built-in search mode, tracked output |
 | `templates/mcp-server/server.mjs.hbs`, `templates/instance/agents/_domain-sme.yaml.hbs` | No `npx`; Windows-safe root; only real tools |
 | `.github/workflows/*.reusable.yml`, `templates/instance/.github/workflows/*.yml.hbs`, `src/ci-config.test.ts` | No `npx` in CI |
 
@@ -97,7 +100,6 @@ Both must print `MERGED`. If not, stop and ask the founder.
 | `team-ai/agents/*` | 14 generated and 3 hand-authored agents, manifest fragment |
 | `team-ai/manifest.yaml` | Assembled manifest |
 | `.claude/agents/team-ai-*.md` | 17 emitted subagents |
-| `.mcp.json` | Knowledge MCP server registration (only if D6 is confirmed) |
 | `.github/workflows/team-ai.yml` | Validation, drift, and migration checks in CI |
 | `.gitignore` | `.team-ai/` |
 | `docs/**` | `namespace:` and `id:` lines only |
@@ -1622,7 +1624,7 @@ git commit -m "feat(remap): conflict-safe remap-namespaces command"
 
 ## Task 8: Emit committed Claude Code subagents
 
-**Goal:** `team-ai emit --target claude-code` can write prefixed subagent files that are meant to be tracked, without a plugin manifest, with tool names Claude Code resolves.
+**Goal:** `team-ai emit --target claude-code` can write prefixed subagent files that are meant to be tracked, without a plugin manifest, searching the KB with Claude Code's built-in tools.
 
 **Files:**
 - Modify: `src/emit/claude-code.ts`, `src/commands/emit.ts`, `src/cli.ts`
@@ -1631,7 +1633,7 @@ git commit -m "feat(remap): conflict-safe remap-namespaces command"
 **Acceptance Criteria:**
 - [ ] `--file-prefix team-ai-` writes `.claude/agents/team-ai-<name>.md`; the front-matter `name` stays unprefixed so delegation references resolve
 - [ ] `--no-plugin-manifest` writes no `.claude-plugin/plugin.json`
-- [ ] `--mcp-server team-ai-kb` rewrites each tool to `mcp__team-ai-kb__<tool>`
+- [ ] `--builtin-search` sets `tools` to `Read, Grep, Glob` and appends a *Finding your documents* section naming each of the agent's namespaces
 - [ ] `tools` is written as a comma-separated string; no `model` key is written
 - [ ] `--allow-tracked` suppresses the "not gitignored" warning
 - [ ] Defaults are unchanged: no prefix, plugin manifest written, raw tool names
@@ -1644,13 +1646,13 @@ git commit -m "feat(remap): conflict-safe remap-namespaces command"
 
 ```typescript
 describe("emitClaudeCode — committed layout options", () => {
-  it("prefixes file names, skips the plugin manifest, and rewrites MCP tool names", async () => {
+  it("prefixes file names, skips the plugin manifest, and uses built-in search", async () => {
     const input = await loadEmitInput(FIXTURE);
     const out = mkdtempSync(join(tmpdir(), "team-ai-emit-cc-opts-"));
     const written = emitClaudeCode(input, out, {
       filePrefix: "team-ai-",
       pluginManifest: false,
-      mcpServer: "team-ai-kb",
+      builtinSearch: true,
     });
     expect(written.some((p) => p.endsWith("plugin.json"))).toBe(false);
     const agent = input.agents[0]!;
@@ -1662,7 +1664,8 @@ describe("emitClaudeCode — committed layout options", () => {
     };
     expect(front.name).toBe(agent.def.name);
     expect(front.model).toBeUndefined();
-    for (const tool of agent.def.tools) expect(front.tools).toContain(`mcp__team-ai-kb__${tool}`);
+    expect(front.tools).toBe("Read, Grep, Glob");
+    for (const ns of agent.def.kb_namespaces) expect(raw).toContain(`^namespace: ${ns}`);
   });
 });
 ```
@@ -1675,15 +1678,33 @@ describe("emitClaudeCode — committed layout options", () => {
 export interface EmitClaudeCodeOptions {
   filePrefix?: string;
   pluginManifest?: boolean;
-  mcpServer?: string;
+  builtinSearch?: boolean;
 }
 ```
 
 Change `frontMatter` to take the options and build `tools` as a string:
 
 ```typescript
+const BUILTIN_SEARCH_TOOLS = ["Read", "Grep", "Glob"];
+
+function searchSection(namespaces: string[]): string {
+  const lines = namespaces.map(
+    (ns) => `- \`${ns}\`: search the KB root for \`^namespace: ${ns}\` to list your documents, then read only those.`,
+  );
+  return [
+    "",
+    "## Finding your documents",
+    "",
+    "Your knowledge is the Markdown under the KB root declared in `team-ai/index.lock`. Each document has a `namespace:` front-matter line.",
+    "",
+    ...lines,
+    "",
+    "Cite each document by path. If nothing in your namespaces answers the question, say so and name the owner instead of answering from general knowledge.",
+  ].join("\n");
+}
+
 function frontMatter(input: EmitInput["agents"][number], opts: EmitClaudeCodeOptions): string {
-  const tools = input.def.tools.map((t) => (opts.mcpServer ? `mcp__${opts.mcpServer}__${t}` : t));
+  const tools = opts.builtinSearch === true ? BUILTIN_SEARCH_TOOLS : input.def.tools;
   const meta = {
     name: input.def.name,
     description: input.def.description,
@@ -1693,19 +1714,20 @@ function frontMatter(input: EmitInput["agents"][number], opts: EmitClaudeCodeOpt
     kb_namespaces: input.def.kb_namespaces,
     max_hops: input.def.max_hops,
   };
-  const body = input.instructions.trim();
+  const extra = opts.builtinSearch === true ? searchSection(input.def.kb_namespaces) : "";
+  const body = `${input.instructions.trim()}${extra}`.trim();
   return `---\n${stringifyYaml(meta)}---\n\n${body}${body.length > 0 ? "\n" : ""}`;
 }
 ```
 
 Change the signature to `emitClaudeCode(input: EmitInput, outDir: string, opts: EmitClaudeCodeOptions = {})`, write each agent to `` `.claude/agents/${opts.filePrefix ?? ""}${agent.name}.md` ``, and wrap the plugin block in `if (opts.pluginManifest !== false) { ... }`, using the prefixed paths in `plugin.agents`.
 
-In `src/commands/emit.ts`, add `filePrefix?: string; pluginManifest?: boolean; mcpServer?: string; allowTracked?: boolean;` to `EmitCommandOptions`, skip the gitignore warning when `opts.allowTracked === true`, and pass the three emitter options for the `claude-code` target. In `src/cli.ts`, add to `emit`'s `configure`:
+In `src/commands/emit.ts`, add `filePrefix?: string; pluginManifest?: boolean; builtinSearch?: boolean; allowTracked?: boolean;` to `EmitCommandOptions`, skip the gitignore warning when `opts.allowTracked === true`, and pass the three emitter options for the `claude-code` target. In `src/cli.ts`, add to `emit`'s `configure`:
 
 ```typescript
         .option("--file-prefix <prefix>", "prefix for emitted Claude Code agent file names", "")
         .option("--no-plugin-manifest", "do not write .claude-plugin/plugin.json")
-        .option("--mcp-server <name>", "rewrite tool names to mcp__<name>__<tool>")
+        .option("--builtin-search", "give agents Read, Grep, Glob and a namespace lookup section", false)
         .option("--allow-tracked", "emitted output is intentionally committed; skip the gitignore warning", false)
 ```
 
@@ -2012,35 +2034,22 @@ git commit -m "docs(agents): allow tracked team-ai subagents under .claude/agent
 
 ---
 
-## Task 13: Confirm proposed decisions with the founder
+## Task 13: Verify recorded decisions
 
-**Goal:** D1, D2, D3, and D6 are explicitly confirmed or changed by the founder before any migration or generation.
-
-> **USER-ORDERED GATE — NON-SKIPPABLE.** This task was requested by the user in the current conversation. It MUST NOT be closed by walking around it, by declaring it "verified inline", or by substituting a cheaper check. Close only after every item in `acceptanceCriteria` has been re-validated independently, with output captured.
+**Goal:** Confirm the spec records every founder decision this plan depends on before the KB is touched.
 
 **Files:**
-- Modify: `docs/specs/0089-team-ai-agent-architecture.md` (move confirmed decisions to *Approved Decisions*)
+- Read: `docs/specs/0089-team-ai-agent-architecture.md`
 
 **Acceptance Criteria:**
-- [ ] Each of D1, D2, D3, D6 was presented in plain language with its trade-off, and the founder gave an explicit answer for each
-- [ ] The spec records each answer with the date
-- [ ] If D6 is declined, Tasks 17–18 are revised to the file-list alternative before continuing
+- [ ] *Approved Decisions* contains D1, D2, D3, D5, D6, and the layout approval, each dated 2026-09-13
+- [ ] No decision this plan depends on is still listed as proposed
 
-**Verify:** `git grep -n "^\*\*D[1236]" -- docs/specs/0089-team-ai-agent-architecture.md` → each appears under *Approved Decisions* or is marked changed
+**Verify:** `git grep -n -E "^\*\*D[12356] " -- docs/specs/0089-team-ai-agent-architecture.md` → five lines, all after the line number reported by `git grep -n "^# Approved Decisions" -- docs/specs/0089-team-ai-agent-architecture.md`
 
 **Steps:**
 
-- [ ] **Step 1:** Present D1, D2, D3, D6 exactly as written in the spec, one at a time, using an interactive multiple-choice question per decision with the recommendation first. **Stop and wait.**
-- [ ] **Step 2:** Move each confirmed decision into *Approved Decisions* with the date; rewrite any changed one.
-
-```bash
-git add docs/specs/0089-team-ai-agent-architecture.md
-git commit -m "docs(specs): record founder confirmation of 0089 decisions"
-```
-
-```json:metadata
-{"userGate": true, "tags": ["user-gate"], "files": ["docs/specs/0089-team-ai-agent-architecture.md"], "verifyCommand": "git grep -n '^\\*\\*D[1236]' -- docs/specs/0089-team-ai-agent-architecture.md", "acceptanceCriteria": ["founder gave an explicit answer for each of D1 D2 D3 D6", "spec records each answer with the date", "D6 decline triggers revision of Tasks 17-18"], "gateScope": "all", "failurePolicy": "stop", "modelTier": "standard"}
-```
+- [ ] **Step 1:** Run both commands in Verify and compare line numbers. If any decision is missing or not under *Approved Decisions*, stop and ask the founder instead of continuing.
 
 ---
 
@@ -2165,7 +2174,7 @@ team.size: "1-3"
 kb.namespaces: custom
 kb.catalog_override: use-preset
 arch.index_driver: lexical
-arch.hosting: local-stdio
+arch.hosting: no-server
 agents.domains: arc-execution, knowledge-graph, character-behavior, model-routing, session-runtime, safety, developer-api, nightcap, monster-rpg, daily-case, product-roadmap, engineering-practice, playtest-ops
 gate.1: confirm
 gate.2: confirm
@@ -2252,7 +2261,7 @@ git commit -m "refactor(kb): migrate to 14 Arcwright namespaces"
 **Goal:** team-ai renders the instance into `team-ai/` and nothing outside it.
 
 **Files:**
-- Create: `team-ai/**` generated files, including `team-ai/agents/sme.*`, 13 `team-ai/agents/*-sme.*`, `team-ai/mcp-server/`
+- Create: `team-ai/**` generated files, including `team-ai/agents/sme.*`, 13 `team-ai/agents/*-sme.*`
 
 **Acceptance Criteria:**
 - [ ] `git status --porcelain` shows new or changed paths only under `team-ai/`
@@ -2372,17 +2381,16 @@ git commit -m "feat(team-ai): group SMEs, manifest, and registered authored agen
 
 ---
 
-## Task 18: Emit subagents, register the server, add CI
+## Task 18: Emit subagents and add CI
 
-**Goal:** The agents are loadable in Claude Code, reach the KB through the local server, and CI keeps everything consistent.
+**Goal:** The agents load in Claude Code, search the KB with built-in tools, and CI keeps everything consistent.
 
 **Files:**
-- Create: `.claude/agents/team-ai-*.md`, `.mcp.json` (D6), `team-ai/mcp-server/package-lock.json`, `.github/workflows/team-ai.yml`
+- Create: `.claude/agents/team-ai-*.md`, `.github/workflows/team-ai.yml`
 
 **Acceptance Criteria:**
-- [ ] One `.claude/agents/team-ai-<name>.md` per agent definition, with `mcp__team-ai-kb__` tool names and no `model` key
-- [ ] No other file under `.claude/` changes
-- [ ] `.mcp.json` registers `team-ai-kb` with `TEAM_AI_CLI` taken from the environment
+- [ ] One `.claude/agents/team-ai-<name>.md` per agent definition, with `tools: Read, Grep, Glob`, a *Finding your documents* section, and no `model` key
+- [ ] No other file under `.claude/` changes, and no `.mcp.json` is created
 - [ ] CI builds team-ai `v0.4.0` from source and fails on invalid KB, broken invariants, emitted-agent drift, or a surviving prior-namespace id
 
 **Verify:** `git status --porcelain .claude | grep -v 'agents/team-ai-'` → prints nothing
@@ -2392,31 +2400,11 @@ git commit -m "feat(team-ai): group SMEs, manifest, and registered authored agen
 - [ ] **Step 1: Emit.**
 
 ```bash
-node $CLI emit --target claude-code --dir team-ai --out . --file-prefix team-ai- --no-plugin-manifest --mcp-server team-ai-kb --allow-tracked
+node $CLI emit --target claude-code --dir team-ai --out . --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
 git status --porcelain .claude | grep -v 'agents/team-ai-'
 ```
 
-- [ ] **Step 2: Install the server dependency** (approved via D6):
-
-```bash
-npm install --prefix team-ai/mcp-server
-```
-
-- [ ] **Step 3: Register the server.** Create `.mcp.json`:
-
-```json
-{
-  "mcpServers": {
-    "team-ai-kb": {
-      "command": "node",
-      "args": ["team-ai/mcp-server/server.mjs"],
-      "env": { "TEAM_AI_CLI": "${TEAM_AI_CLI}" }
-    }
-  }
-}
-```
-
-- [ ] **Step 4: Add CI.** Create `.github/workflows/team-ai.yml`:
+- [ ] **Step 2: Add CI.** Create `.github/workflows/team-ai.yml`:
 
 ```yaml
 name: team-ai
@@ -2445,18 +2433,18 @@ jobs:
       - run: node .team-ai-cli/dist/cli.js validate-manifest --root team-ai
       - name: emitted subagents match regeneration
         run: |
-          node .team-ai-cli/dist/cli.js emit --target claude-code --dir team-ai --out . --file-prefix team-ai- --no-plugin-manifest --mcp-server team-ai-kb --allow-tracked
+          node .team-ai-cli/dist/cli.js emit --target claude-code --dir team-ai --out . --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
           git diff --exit-code -- .claude/agents
       - name: no prior-namespace ids survive
         run: |
           ! git grep -n -E "\b(operating|patterns|playbooks|custom|decisions|platform|unmapped)\.[a-z0-9-]+\.[a-z0-9._-]+" -- . ':!docs/archive' ':!adoption-plan.yaml' ':!docs/adoption-plan.md' ':!team-ai/remap-proposal.yaml' ':!team-ai/inventory.txt' ':!.team-ai-cli'
 ```
 
-- [ ] **Step 5: Commit.**
+- [ ] **Step 3: Commit.**
 
 ```bash
-git add .claude/agents/team-ai-*.md .mcp.json team-ai/mcp-server .github/workflows/team-ai.yml
-git commit -m "feat(team-ai): emit subagents, register knowledge server, add CI"
+git add .claude/agents/team-ai-*.md .github/workflows/team-ai.yml
+git commit -m "feat(team-ai): emit subagents and add CI"
 ```
 
 ---
@@ -2474,14 +2462,14 @@ git commit -m "feat(team-ai): emit subagents, register knowledge server, add CI"
 - [ ] No unresolved `*.team-ai-new` file
 - [ ] The PR body states the migration is included and that `id` values changed
 
-**Verify:** `git diff --name-only origin/main | grep -vE '^(team-ai/|\.claude/agents/team-ai-|docs/|AGENTS\.md$|\.github/copilot-instructions\.md$|\.github/workflows/team-ai\.yml$|\.mcp\.json$|\.gitignore$)'` → prints nothing
+**Verify:** `git diff --name-only origin/main | grep -vE '^(team-ai/|\.claude/agents/team-ai-|docs/|AGENTS\.md$|\.github/copilot-instructions\.md$|\.github/workflows/team-ai\.yml$|\.gitignore$)'` → prints nothing
 
 **Steps:**
 
 - [ ] **Step 1: Run the checks.**
 
 ```bash
-git diff --name-only origin/main | grep -vE '^(team-ai/|\.claude/agents/team-ai-|docs/|AGENTS\.md$|\.github/copilot-instructions\.md$|\.github/workflows/team-ai\.yml$|\.mcp\.json$|\.gitignore$)'
+git diff --name-only origin/main | grep -vE '^(team-ai/|\.claude/agents/team-ai-|docs/|AGENTS\.md$|\.github/copilot-instructions\.md$|\.github/workflows/team-ai\.yml$|\.gitignore$)'
 git diff --stat origin/main -- docs/agents docs/skills engine api sdk dashboard
 find . -name '*.team-ai-new' -not -path './node_modules/*' -not -path './.team-ai-cli/*'
 node $CLI validate-kb --instance team-ai
@@ -2498,7 +2486,7 @@ gh pr create --repo nickejanssen/arcwright --base main --title "feat(agents): th
 
 - Namespace migration: seven prior values to 14 Arcwright namespaces; rewrites namespace and id front matter on every KB document. No body content changed.
 - 17 agents: router and 13 specialists generated into team-ai/, three group SMEs hand-authored; validate-manifest passes.
-- Emitted as .claude/agents/team-ai-*.md under the founder-approved exception; knowledge tools served by a local MCP server that never uses npx.
+- Emitted as .claude/agents/team-ai-*.md under the founder-approved exception; agents search the KB with built-in Read, Grep, and Glob.
 - CI builds team-ai v0.4.0 from source and checks KB validity, invariants, emitted-agent drift, and surviving old ids.
 
 Not included: Phase B (enforcement skills, hooks, workflows, golden questions) and Phase C (temporal graph, semantic retrieval)."

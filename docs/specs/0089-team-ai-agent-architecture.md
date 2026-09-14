@@ -15,7 +15,7 @@ supersedes: []
 
 **Status**: Approved (design) — revisions since approval pending founder confirmation
 
-**Version**: 1.2 | **Last updated**: 2026-09-13 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
+**Version**: 1.3 | **Last updated**: 2026-09-13 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
 
 **Author**: Claude (with founder) | **Date**: 2026-09-13
 
@@ -117,15 +117,13 @@ other artifacts reference the new ids.
 **Required founder inputs:**
 
 - Confirmation of the domain split and each domain's `authority` value
-- Confirmation of proposed decisions D1–D3 and D6
 - Approval of the per-file namespace migration proposal before it runs
 - Golden question set review — the questions define what "correct routing" means
 
 **Phase gates:**
 
 - Phase A: team-ai PRs #4 and #5 merged and team-ai 0.4.0 released before any
-  generation; D1–D3 and D6 confirmed and the migration proposal approved before
-  any `id` rewrite; generated agents reviewed before merge
+  generation; the migration proposal approved before any `id` rewrite; generated agents reviewed before merge
 - Phase B: golden questions approved before the eval gate is made blocking
 - Phase C: decay parameters reviewed against real observed data before pruning
   is enabled; placement of the embedding model identifier decided before any
@@ -146,8 +144,10 @@ deprecated items surface through an interactive approval form, not raw YAML.
   exception to the agent-local files rule ("Approve, with .claude exception").
 - *Group SME approval.* On 2026-09-13 the founder chose to hand-author and
   register the three tier-2 group SMEs (D5) rather than generate them.
-- *Not covered by any approval yet.* D1–D3, D6, and the remaining version 1.1
-  and 1.2 revisions. They are proposals pending founder confirmation.
+- *Decision approvals.* On 2026-09-13 the founder confirmed D1, D2, D3, and D6
+  (built-in search, no MCP server).
+- *Not covered by any approval yet.* The remaining version 1.1–1.3 revisions,
+  which are under review in PR #309.
 - *Not an implementation authorization.* Design approval authorizes planning
   only. The per-file migration proposal requires its own explicit founder
   approval, recorded in the Phase A PR, before `--apply` runs.
@@ -208,7 +208,6 @@ Approved by the founder on 2026-09-13.
 | `team-ai/` | `manifest.yaml`, `agents/manifest.fragment.yaml`, generated and hand-authored agent definitions, skills, personas, `catalog/`, `team-profile.yaml`, `answers.yaml`, `index.lock`, `namespace-remap.yaml`, `inventory.txt`, remap proposal | yes |
 | `.team-ai/` | search index, caches | no — gitignored |
 | `.claude/agents/team-ai-*.md` | emitted Claude Code subagents, one per agent | yes, generated; CI fails if they drift from regeneration |
-| `.mcp.json` | registration of the local knowledge MCP server | yes — **proposed, D6** |
 | `docs/**` | front-matter `namespace` and `id` lines only, during migration | yes |
 | `AGENTS.md`, `.github/copilot-instructions.md` | the scoped exception below, kept in sync | yes |
 
@@ -228,22 +227,27 @@ The existing `.claude/agents/implementer.md`, `reviewer.md`, and
 
 ## How agents reach the knowledge base
 
-Generated agents list team-ai knowledge tools (`kb_search`, `kb_get`,
-`kb_manifest`, `kb_coverage_gap`, `kb_freshness`). Those tools exist only
-through team-ai's local stdio MCP server. Version 1.1 did not account for this:
-emitted agents would have named tools that do not exist.
+The knowledge base is the Markdown already committed under `docs/`, in its
+existing directories. Every developer who clones the repository has it.
+Namespaces are front-matter metadata over those files, so nothing moves.
+Agents read the local clone the same way a developer does.
 
-- The server is generated from team-ai's `mcp-server` template into
-  `team-ai/mcp-server/`.
-- It must invoke a pinned local team-ai build, never `npx team-ai` — the
-  `team-ai` name on npm belongs to an unrelated package, and the template
-  currently runs `npx --yes team-ai`. Fixed in the framework before Phase A.
-- The Claude Code emitter rewrites each tool name to Claude Code's MCP form,
-  `mcp__<server>__<tool>`.
-- Namespace scoping in search is passed by the agent (`--namespace`), not
-  enforced per caller by the server: an MCP server does not know which subagent
-  is calling. The one-namespace-per-specialist bound is therefore a validated
-  configuration plus an instruction, measured by the Phase B golden set.
+**D6 (approved 2026-09-13): built-in search, no server.** Emitted subagents get
+Claude Code's `Read`, `Grep`, and `Glob` tools plus a generated *Finding your
+documents* section naming their namespaces. A specialist lists its documents by
+searching the KB root for its `namespace:` front-matter line, then reads and
+searches only those.
+
+- No MCP server, no root `.mcp.json`, no new dependency, no per-machine setup.
+- No derived index is committed or has to be kept in sync.
+- Trade-off accepted: no ranked search and no retrieval-level "nothing found"
+  signal. Refusal comes from the agent instructions, and the Phase B golden set
+  measures whether this lookup misses relevant documents.
+
+Revisit team-ai's local MCP server only if the golden set shows this lookup
+missing documents that ranked search would find, or a second coding client
+needs the same tools. team-ai still removes `npx` from its MCP server template,
+because that template ships to other teams.
 
 ## Namespace migration
 
@@ -434,14 +438,13 @@ rank fusion.
 
 - [ ] team-ai PRs #4 and #5 merged; team-ai 0.4.0 tagged and released
 - [ ] No `npx team-ai` invocation remains in team-ai's MCP server template, instance workflow templates, or reusable workflows
-- [ ] Founder has confirmed D1–D3 and D6 before any agent is generated
 - [ ] `team-ai/inventory.txt` is committed and lists every KB document with its current and target namespace
 - [ ] The migration proposal has zero conflicts and is explicitly approved by the founder before any write
 - [ ] After migration, `validate-kb` passes against the configured KB root, `git grep -h '^namespace:' -- docs ':!docs/archive'` reports only the 14 target namespaces, and a repository grep outside `docs/archive/` finds no id beginning with any of the seven prior values
 - [ ] 14 agents generated and 3 hand-authored; `team-ai validate-manifest` passes
-- [ ] 17 files exist at `.claude/agents/team-ai-*.md`, and regenerating them produces no diff
+- [ ] 17 files exist at `.claude/agents/team-ai-*.md`, each with `tools: Read, Grep, Glob`, and regenerating them produces no diff
 - [ ] `nightcap` is `authority: canonical`; `monster-rpg` and `daily-case` are `provisional`; `nightcap-couch-race` is `archived`
-- [ ] Every changed path is inside the approved layout: `team-ai/`, `.claude/agents/team-ai-*.md`, `.mcp.json` (if D6 is confirmed), `docs/**` front-matter `namespace`/`id` lines, `AGENTS.md`, `.github/copilot-instructions.md`, `.gitignore`, and the CI workflow file
+- [ ] Every changed path is inside the approved layout: `team-ai/`, `.claude/agents/team-ai-*.md`, `docs/**` front-matter `namespace`/`id` lines, `AGENTS.md`, `.github/copilot-instructions.md`, `.gitignore`, and the CI workflow file
 - [ ] `docs/agents/`, `docs/skills/`, and every other file under `.claude/` are unchanged
 
 **Phase B**
@@ -473,8 +476,8 @@ rank fusion.
 - **Unit**: manifest invariants; namespace migration mapping including an
   unmapped-namespace failure and quoted/commented-line conflicts; `--apply`
   refusing on conflict; KB exclusions and per-file parse failures; answers keyed
-  by question id including unknown and missing ids; emitter tool-name rewriting
-  and prefixing; MCP server CLI resolution without `npx`
+  by question id including unknown and missing ids; emitter built-in search mode
+  and prefixing; MCP server template CLI resolution without `npx`
 - **Integration**: generate the full instance into a temp copy of Arcwright and
   assert every changed path is inside the approved layout; regenerate emitted
   agents and assert no diff; merge two branches that both recorded observations
@@ -526,38 +529,22 @@ rank fusion.
 
 ---
 
-# Proposed Decisions (pending founder confirmation)
-
-Written by Claude after the founder approved version 1.0. Not yet individually
-confirmed; confirmation is a Phase A gate.
-
-**D1 — Existing agents and skills are registered, never regenerated.**
-The hand-authored contracts in `docs/agents/` and skills in `docs/skills/` are
-registered in the manifest as `source: authored` and referenced by the
-topology. Generation never writes to their paths; team-ai PR #5 makes that a
-checked property rather than a convention.
-
-**D2 — `nightcap-couch-race` gets an `authority: archived` domain.**
-A question about Couch Race routes to `title-sme`, which answers that it is
-archived and superseded, rather than refusing. One manifest entry, no new agent.
-
-**D3 — The founder is `owner` on every domain until the team grows.**
-Consistent with the `owner` value PR #308 already wrote across the corpus.
-
-**D6 — Register the knowledge MCP server in a root `.mcp.json`.**
-Claude Code reads project MCP servers from `.mcp.json` at the repository root,
-which sits outside the approved `team-ai/` folder. Without it, emitted agents
-cannot call the knowledge tools. D6 also adds `team-ai/mcp-server/package.json`,
-which declares the MCP SDK dependency the server needs; `AGENTS.md` lists any
-new `package.json` as a hard rule requiring explicit approval, so confirming D6
-is that approval. The server locates the team-ai CLI through a `TEAM_AI_CLI`
-environment variable pointing at a local build, so `.mcp.json` holds no
-machine-specific path. Alternative: give specialists only built-in file-reading
-tools plus a generated list of their namespace's files — no server, no root
-file, and no new dependency, but no ranked search and no refusal signal from
-retrieval.
-
 # Approved Decisions
+
+**D1 — Existing agents and skills are registered, never regenerated.** Approved
+2026-09-13. The hand-authored contracts in `docs/agents/` and skills in
+`docs/skills/` are registered in the manifest as `source: authored`. Generation
+never writes to their paths; team-ai PR #5 makes that a checked property.
+
+**D2 — `nightcap-couch-race` gets an `authority: archived` domain.** Approved
+2026-09-13. Questions about Couch Race route to `title-sme`, which answers that
+it is archived and superseded. One manifest entry, no new agent.
+
+**D3 — The founder is `owner` on every domain until the team grows.** Approved
+2026-09-13. Consistent with the `owner` value PR #308 wrote across the corpus.
+
+**D6 — Agents search the KB with built-in tools; no MCP server.** Approved
+2026-09-13. See *How agents reach the knowledge base*.
 
 **D5 — Tier-2 group SMEs are hand-authored and registered.** Approved
 2026-09-13. `engine-sme`, `title-sme`, and `practice-sme` are written by hand
