@@ -15,7 +15,7 @@ supersedes: []
 
 **Status**: Approved (design) — revisions since approval pending founder confirmation
 
-**Version**: 1.1 | **Last updated**: 2026-09-13 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
+**Version**: 1.2 | **Last updated**: 2026-09-13 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
 
 **Author**: Claude (with founder) | **Date**: 2026-09-13
 
@@ -23,10 +23,12 @@ supersedes: []
 
 # References
 
-- Canonical agent rules: [`AGENTS.md`](../../AGENTS.md) — architecture principles 5 (knowledge graph), 6 (cost-aware), 8 (provider-agnostic routing)
+- Canonical agent rules: [`AGENTS.md`](../../AGENTS.md) — architecture principles 5 (knowledge graph), 6 (cost-aware), 8 (provider-agnostic routing); agent-local files section
+- Documentation rules: [`docs/README.md`](../README.md) — no model names or provider strings in docs
 - Architecture sections: [`docs/architecture/01`–`15`](../architecture/) — the source of the engine domain split
-- Framework: [github.com/nickejanssen/team-ai](https://github.com/nickejanssen/team-ai) v0.3.1; framework design note `docs/design/2026-09-13-agent-topology-design.md`
+- Framework: [github.com/nickejanssen/team-ai](https://github.com/nickejanssen/team-ai); framework design note `docs/design/2026-09-13-agent-topology-design.md`
 - Prior work merged: PR #308 — `docs: backfill KB front matter via team-ai adopt`
+- Framework prerequisites: team-ai PR #4 (install without `npx`) and PR #5 (generator path containment)
 - Related specs: [`0019-multi-agent-operating-model.md`](0019-multi-agent-operating-model.md), [`0021-operating-model-business-and-architect-roles.md`](0021-operating-model-business-and-architect-roles.md)
 - Collaboration rules: [`docs/conventions/human-collaboration.md`](../conventions/human-collaboration.md)
 
@@ -42,6 +44,10 @@ graph derived from git and front matter, and hybrid lexical+semantic retrieval.
 `team-ai adopt` (PR #308) measured the repo and backfilled front matter. It does
 not generate agents — that is this spec.
 
+Version 1.2 incorporates an adversarial review of version 1.1 whose verdict was
+"redesign needed". Every finding is resolved in this version or explicitly
+pushed back on with evidence; see *Review Resolution*.
+
 ---
 
 # In Scope
@@ -50,13 +56,17 @@ Delivered in three phases, each independently reviewable.
 
 **Phase A — Agent layer and namespace migration**
 
-- Extend `manifest.schema.json` with the fields the topology requires:
-  `group`, `authority`, `not_owned`, `depends_on`, and the `agents` and
-  `skills` sections. The schema must land before anything emits against it.
+- Framework prerequisites in team-ai: manifest schema extension, a manifest
+  invariant validator, per-domain namespace scoping, instance catalogs wired
+  through `init`/`resume`/`upgrade`, answers keyed by question id, a
+  configurable KB root with exclusions, a conflict-safe namespace remapper,
+  emitter options for committed Claude Code agents, and removal of every `npx
+  team-ai` invocation from generated servers and workflows
 - Migrate all seven namespace values written by PR #308 to 14 Arcwright
   namespaces: 13 specialist domains plus the archived `nightcap-couch-race`
-- Generate the three-tier agent topology (1 router, 3 group SMEs, 13 specialists)
-- Generate per-agent instruction files and the four base skills
+- Generate the router and 13 specialists into `team-ai/`; hand-author and
+  register the three tier-2 group SMEs
+- Emit the 17 agents as Claude Code subagents under `.claude/agents/team-ai-*.md`
 - Emit the `domains`, `agents`, and `skills` manifest sections
 
 **Phase B — Enforcement skills, hooks, workflows, measurement**
@@ -88,8 +98,9 @@ Delivered in three phases, each independently reviewable.
   brute-force cosine over ~5,000 chunks is faster than a network hop to a
   vector service.
 - Replacing the existing hand-authored role contracts in `docs/agents/` or the
-  skills in `docs/skills/`. Those are mapped into the manifest, not rewritten.
-- Retroactive rewriting of `docs/archive/notion-export/`.
+  skills in `docs/skills/`. Those are registered in the manifest, not rewritten.
+- Retroactive rewriting of `docs/archive/`, which stays outside the KB.
+- A repository-wide, id-aware citation validator (see *Review Resolution*, R14).
 
 ---
 
@@ -100,21 +111,21 @@ Delivered in three phases, each independently reviewable.
 **Classification rationale:** Domain boundaries and authority levels encode
 founder judgement about how expertise actually divides and which sources are
 canonical — neither is derivable from the repo. The namespace migration
-rewrites `id` on every document with front matter (445 on `main` on
-2026-09-13), which is irreversible in practice once other artifacts reference
-the new ids.
+rewrites `id` on every KB document, which is irreversible in practice once
+other artifacts reference the new ids.
 
 **Required founder inputs:**
 
 - Confirmation of the domain split and each domain's `authority` value
-- Confirmation of proposed decisions D1–D3 (see below)
+- Confirmation of proposed decisions D1–D3 and D6
 - Approval of the per-file namespace migration proposal before it runs
 - Golden question set review — the questions define what "correct routing" means
 
 **Phase gates:**
 
-- Phase A: D1–D3 confirmed and the migration proposal approved before any `id`
-  rewrite; generated agents reviewed before merge
+- Phase A: team-ai PRs #4 and #5 merged and team-ai 0.4.0 released before any
+  generation; D1–D3 and D6 confirmed and the migration proposal approved before
+  any `id` rewrite; generated agents reviewed before merge
 - Phase B: golden questions approved before the eval gate is made blocking
 - Phase C: decay parameters reviewed against real observed data before pruning
   is enabled; placement of the embedding model identifier decided before any
@@ -130,13 +141,16 @@ deprecated items surface through an interactive approval form, not raw YAML.
   message "Approve spec", given against commit `f11398e` (version 1.0). That
   approval covers the design recorded at that commit: topology, manifest split,
   graph model, and retrieval approach.
-- *Not covered by that approval.* Decisions D1–D3 (added in `2a606a5`) and the
-  review revisions in version 1.1 were made after it. They are proposals pending
-  founder confirmation.
+- *Layout approval.* On 2026-09-13 the founder approved the generated-file layout
+  in *Generated file layout*, including the narrow `.claude/agents/team-ai-*.md`
+  exception to the agent-local files rule ("Approve, with .claude exception").
+- *Group SME approval.* On 2026-09-13 the founder chose to hand-author and
+  register the three tier-2 group SMEs (D5) rather than generate them.
+- *Not covered by any approval yet.* D1–D3, D6, and the remaining version 1.1
+  and 1.2 revisions. They are proposals pending founder confirmation.
 - *Not an implementation authorization.* Design approval authorizes planning
-  only. It does not authorize the namespace migration: the per-file migration
-  proposal requires its own explicit founder approval, recorded in the Phase A
-  PR, before `--apply` runs.
+  only. The per-file migration proposal requires its own explicit founder
+  approval, recorded in the Phase A PR, before `--apply` runs.
 
 **Owner actions:** None external.
 
@@ -147,36 +161,95 @@ deprecated items surface through an interactive approval form, not raw YAML.
 ## Three-tier topology
 
 ```
-TIER 1  sme (router)          model_tier: none   max_hops: 2
-        Deterministic keyword→domain match against manifest.yaml.
-        Zero model calls. Refuses when no domain owns the question.
+TIER 1  sme (router)          model_tier: none   max_hops: 2    generated
+        Keyword→domain match against manifest.yaml. Refuses when no
+        domain owns the question.
 
-TIER 2  engine-sme            model_tier: small  max_hops: 1
+TIER 2  engine-sme            model_tier: small  max_hops: 1    hand-authored (D5)
         title-sme             Cross-cutting questions spanning >1 specialist.
         practice-sme
 
-TIER 3  Specialists           model_tier: small  max_hops: 0  (terminal)
+TIER 3  Specialists           model_tier: small  max_hops: 0    generated
         engine:   arc-execution · knowledge-graph · character-behavior
                   model-routing · session-runtime · safety · developer-api
         title:    nightcap (canonical) · monster-rpg · daily-case (provisional)
         practice: product-roadmap · engineering-practice · playtest-ops
 ```
 
-Cost, context, and hallucination control are structural, not prompted:
+17 agents: 14 generated from team-ai templates and 3 hand-authored. The
+generator produces the router from `agents/sme.yaml.hbs` and one specialist per
+`agents.domains` entry from `agents/_domain-sme.yaml.hbs`. team-ai has no
+group-SME template, and `team.size: 1-3` suppresses generated role subagents,
+so tier 2 is authored by hand and registered with `source: authored`.
 
-| Mechanism | Guarantee |
+**These are validated invariants, not runtime guarantees.** team-ai has no
+agent runtime of its own; delegation happens in the host (Claude Code). What
+team-ai can and does do is refuse to ship a configuration that breaks the
+invariants:
+
+| Invariant | Enforced by |
 |---|---|
-| Router `model_tier: none` | Routing is free and cannot hallucinate a destination |
-| Specialist `max_hops: 0` | No recursive fan-out — the main cost blowup in agent systems |
-| One `kb_namespace` per specialist | Context bounded by construction |
-| Router refuses on no match | No confident wrong answer when nothing owns it |
-| `authority` field | A provisional source can never be cited as canon |
+| Router has `kind: router` and `model_tier: none` | `team-ai validate-manifest`, run in CI |
+| Every tier-3 agent has `max_hops: 0` and exactly one `kb_namespaces` entry | `validate-manifest` |
+| No two tier-3 agents share a namespace | `validate-manifest` |
+| Every domain's `subagent` names an agent in the manifest | `validate-manifest` |
+| `authority` is one of `canonical`, `provisional`, `archived` | manifest JSON Schema |
+| A provisional source is cited as provisional | agent instructions only — **not** enforced; measured by the Phase B golden set |
+
+Routing refusal and hop limits at runtime depend on the host honouring the
+emitted definitions. That limitation is stated rather than hidden.
+
+## Generated file layout
+
+Approved by the founder on 2026-09-13.
+
+| Path | Contents | Tracked |
+|---|---|---|
+| `team-ai/` | `manifest.yaml`, `agents/manifest.fragment.yaml`, generated and hand-authored agent definitions, skills, personas, `catalog/`, `team-profile.yaml`, `answers.yaml`, `index.lock`, `namespace-remap.yaml`, `inventory.txt`, remap proposal | yes |
+| `.team-ai/` | search index, caches | no — gitignored |
+| `.claude/agents/team-ai-*.md` | emitted Claude Code subagents, one per agent | yes, generated; CI fails if they drift from regeneration |
+| `.mcp.json` | registration of the local knowledge MCP server | yes — **proposed, D6** |
+| `docs/**` | front-matter `namespace` and `id` lines only, during migration | yes |
+| `AGENTS.md`, `.github/copilot-instructions.md` | the scoped exception below, kept in sync | yes |
+
+`team-ai/` is team-ai's built-in `subdir` reconcile strategy, which renders an
+instance into `<repo>/team-ai/`, so no new path code is needed.
+
+**The `.claude` exception**, added to the agent-local files section of
+`AGENTS.md` and mirrored in `.github/copilot-instructions.md`:
+
+> Exception: files matching `.claude/agents/team-ai-*.md` are generated from
+> `team-ai/` by `team-ai emit` and are intentionally tracked. Do not edit them
+> by hand; regenerate them. This exception covers no other path under `.claude/`.
+
+Nothing else under `.claude/`, `.codex/`, or `.cursor/` is created or modified.
+The existing `.claude/agents/implementer.md`, `reviewer.md`, and
+`.claude/commands/` are untouched.
+
+## How agents reach the knowledge base
+
+Generated agents list team-ai knowledge tools (`kb_search`, `kb_get`,
+`kb_manifest`, `kb_coverage_gap`, `kb_freshness`). Those tools exist only
+through team-ai's local stdio MCP server. Version 1.1 did not account for this:
+emitted agents would have named tools that do not exist.
+
+- The server is generated from team-ai's `mcp-server` template into
+  `team-ai/mcp-server/`.
+- It must invoke a pinned local team-ai build, never `npx team-ai` — the
+  `team-ai` name on npm belongs to an unrelated package, and the template
+  currently runs `npx --yes team-ai`. Fixed in the framework before Phase A.
+- The Claude Code emitter rewrites each tool name to Claude Code's MCP form,
+  `mcp__<server>__<tool>`.
+- Namespace scoping in search is passed by the agent (`--namespace`), not
+  enforced per caller by the server: an MCP server does not know which subagent
+  is calling. The one-namespace-per-specialist bound is therefore a validated
+  configuration plus an instruction, measured by the Phase B golden set.
 
 ## Namespace migration
 
 PR #308 wrote **seven** namespace values. Both `namespace` and `id` carry the
 value (`id: platform.architecture.04-knowledge-graph`), so migration rewrites
-both. Counts are from `main` on 2026-09-13:
+both. Counts from `main` on 2026-09-13:
 
 | Current value | Docs | Found in | Migrates to |
 |---|---|---|---|
@@ -186,18 +259,49 @@ both. Counts are from `main` on 2026-09-13:
 | `custom` | 38 | `gdd/` (33), `story-bibles/` (5) | `nightcap`; story bibles per file → `monster-rpg`, `daily-case`, `nightcap-couch-race` |
 | `decisions` | 25 | `decisions/` | `product-roadmap`, which owns ADRs |
 | `platform` | 17 | `architecture/` | per file across the seven engine domains, by section |
-| `unmapped` | 1 | `docs/README.md` | `engineering-practice` — it holds documentation access, versioning, and AI-cost rules |
+| `unmapped` | 1 | `docs/README.md` | `engineering-practice` — documentation access, versioning, and AI-cost rules |
 
-**Every current value has a default rule**, so no document can be left on an
-old namespace. The one-to-many cases (`platform`, `playbooks`, and the story
-bibles under `custom`) are expressed as per-file overrides. The complete
-per-file proposal is generated and approved by the founder before anything is
-written. Because the counts drift as docs are added, the migration verifies
-against the live tree rather than these numbers.
+**Scope.** The remapper operates only on files under the configured KB root
+that carry KB front matter. On `main`, 706 Markdown files live under `docs/` and
+445 carry KB front matter. The rest are skipped and listed, never counted as
+conflicts:
+
+| Excluded from the KB root | Files | Why |
+|---|---|---|
+| `docs/archive/` | 234 | historical exports; canonical docs win |
+| `docs/design/line-libraries/` | 15 | draft line libraries without KB front matter |
+| `docs/skills/*/SKILL.md` | 8 | skill manifests with their own front matter, not KB docs |
+
+**Rules:**
+
+1. A committed inventory (`team-ai/inventory.txt`) lists every KB document,
+   its current namespace, and its target, generated by a deterministic command.
+   Counts in this spec are never trusted over the inventory.
+2. The remapper fails if any KB document's namespace has no mapping rule.
+3. A file whose front matter does not parse, or whose `id`/`namespace` line is
+   quoted or carries a trailing comment, is a **conflict**. On `main` there are
+   zero quoted or commented lines; the rule exists so the rewrite never silently
+   drops quoting it did not expect.
+4. `--apply` refuses to write anything while the proposal contains any conflict.
+   Exclusions go in the mapping file, where they are reviewed.
+5. The founder approves the per-file proposal before `--apply`.
+
+## Validation that actually covers Arcwright
+
+- `index.lock` gains an optional `kb` block — `root: ../docs` and the exclusions
+  above — read by `validate-kb`, `reindex`, `search`, `freshness-audit`, and the
+  MCP server when no flag overrides it.
+- `validate-kb` reports each unparseable file as its own failure instead of
+  aborting the whole run (the same class of crash fixed in `team-ai adopt` 0.3.1,
+  triggered by the same `arcwright-minigame` SKILL.md).
+- After migration, the check that ids did not break is a grep for any token
+  starting with one of the seven prior namespace values across the repository
+  outside `docs/archive/`. It must return zero.
 
 ## Manifest
 
-`manifest.yaml` is generated by `assemble-manifest` from fragments. Four sections:
+`team-ai/manifest.yaml` is generated by `assemble-manifest` from fragments. Four
+sections:
 
 ```yaml
 domains:
@@ -222,6 +326,7 @@ agents:
     max_hops: 0
     kb_namespaces: [knowledge-graph]
     skills: [kb-answer, kb-contribute]
+    source: generated
 
 skills:
   - id: provider-leak-check
@@ -247,7 +352,7 @@ Each enforces a rule `AGENTS.md` already declares, with zero model calls:
 
 | Skill | Enforces | Scope |
 |---|---|---|
-| `provider-leak-check` | No provider or model name outside `config/routing_table.json` and `engine/routing/router.py` | Runtime code and config: `engine/`, `api/`, `sdk/`, `dashboard/`, `config/`. Documentation is excluded — 44 docs on `main` legitimately describe providers and models, so a repo-wide scan could never pass on the clean tree |
+| `provider-leak-check` | No provider or model name outside `config/routing_table.json` and `engine/routing/router.py` | Runtime code and config: `engine/`, `api/`, `sdk/`, `dashboard/`, `config/`. Documentation is governed separately by `docs/README.md`, which forbids model names and provider strings in docs; 44 docs on `main` currently contain such strings and are candidates for a separate cleanup, not an exemption |
 | `scope-evidence-check` | Claimed product scope has durable approval in `docs/product/decisions-log.csv`, an ADR, or a spec | Specs and roadmap entries |
 | `knowledge-query-guard` | Knowledge-state query precedes every AI character generation call | `engine/` |
 
@@ -257,7 +362,7 @@ Each enforces a rule `AGENTS.md` already declares, with zero model calls:
 |---|---|
 | `SessionStart` | Inject domain map + currently-stale docs — session-to-session carryover |
 | `PreToolUse` (Write/Edit) | Block edits to generated files and agent-local dirs |
-| `PostToolUse` (Write) | Record the session's observations in that session's own file under `graph/observations/` |
+| `PostToolUse` (Write) | Record the session's observations in that session's own file under `team-ai/graph/observations/` |
 | `Stop` | Run `validate-graph`; report freshness delta |
 
 ## Temporal graph
@@ -273,12 +378,11 @@ edges duplicates git, which already is that graph.
 | `co_cited`, `co_retrieved` | agent answers, retrieval results | one new file per session |
 
 **Observations are sharded per session**, at
-`graph/observations/<YYYY-MM>/<session-id>.jsonl`. They are never appended to a
-shared file: two branches that each append to the end of one shared file
-produce an ordinary git conflict, which would recreate the problem this design
-exists to avoid. A per-session file is only ever added, never edited, so two
-branches can't conflict on it. `decay-sweep` reads every file. Any compaction it
-does produces a derived cache that isn't committed.
+`team-ai/graph/observations/<YYYY-MM>/<session-id>.jsonl`. They are never
+appended to a shared file: two branches that each append to the end of one
+shared file produce an ordinary git conflict. A per-session file is only ever
+added, never edited, so two branches cannot conflict on it. `decay-sweep` reads
+every file; any compaction it performs produces a derived, uncommitted cache.
 
 Each edge carries `weight`, `first_observed`, `last_observed`, `confidence`,
 `source`. Four deterministic rules: confidence decays exponentially with time
@@ -296,8 +400,7 @@ edges below a confidence floor are pruned; authored edges never decay.
    should take the question rather than one specialist.
 
 The graph cannot cause hallucinations — every edge is observed or declared,
-never model-inferred. It also does not eliminate them; that is the job of the
-four structural constraints in the topology table.
+never model-inferred. It also does not eliminate them.
 
 ## Retrieval
 
@@ -305,36 +408,23 @@ Hybrid: existing FTS5 lexical plus local semantic vectors, merged by reciprocal
 rank fusion.
 
 - **Model:** a small local sentence-embedding model — CPU only, on the order of
-  384 dimensions and ~100MB on disk. The concrete model is chosen in the
-  Phase C design. Where its identifier lives is an open decision, because
-  `AGENTS.md` forbids model strings outside the two routing files (see Open
-  Questions). This spec deliberately names no model.
+  384 dimensions and ~100MB on disk. The concrete model is chosen in the Phase C
+  design; this spec deliberately names none. Where its identifier lives is an
+  open question (Q1).
 - **Storage:** vectors as BLOBs in the existing SQLite index — ~7.7MB for a
   ~5,000-chunk corpus at 384 dimensions.
-- **Search:** brute-force cosine. ~2M FLOPs per query, sub-millisecond in JS,
-  and faster than a network hop to a vector service at this scale.
+- **Search:** brute-force cosine. ~2M FLOPs per query, sub-millisecond in JS.
 - No vector database, no service to run, no API key, no per-query spend.
-- Behind the existing `RetrievalAdapter` interface, so a hosted driver can be
-  added later without touching callers.
+- Behind the existing `RetrievalAdapter` interface.
 
-**The model runs at two points, not one.** Every chunk is embedded at index
-time. **Every search query must also be embedded, at query time**, into the
-same vector space before cosine similarity can run. Precomputed document vectors
-alone cannot serve a query nobody has seen before. The query path is specified
-as:
+**The model runs at two points.** Every chunk is embedded at index time, and
+**every search query is embedded at query time** into the same vector space:
 
-1. **Load lazily, keep warm.** The model loads on the first semantic query in a
-   process and stays loaded; it is never reloaded per query.
-2. **Embed the query.** A single short input. Expected latency is low tens of
-   milliseconds on CPU; this is an estimate to be measured, not a guarantee.
-3. **Cache.** Query vectors are cached keyed by normalized query text plus model
-   version, so repeated questions skip inference.
-4. **Fall back, don't fail.** If the model fails to load or exceeds a timeout,
-   the search returns lexical-only results and reports that it fell back.
-
-Semantic retrieval is the only place team-ai calls a model — at index time and
-at query time, both locally. Revisit past roughly 100k chunks (~20× current
-corpus).
+1. **Load lazily, keep warm** — loaded on the first semantic query in a process.
+2. **Embed the query** — expected low tens of milliseconds on CPU; to be measured.
+3. **Cache** — query vectors keyed by normalized query text plus model version.
+4. **Fall back, don't fail** — on load failure or timeout, return lexical-only
+   results and report the fallback.
 
 ---
 
@@ -342,14 +432,17 @@ corpus).
 
 **Phase A**
 
-- [ ] Founder has confirmed D1–D3 before any agent is generated
-- [ ] Migration proposal lists every `id`/`namespace` change and is explicitly approved by the founder before any write
-- [ ] After migration, `team-ai validate-kb` passes and `git grep -h '^namespace:' -- docs` reports only the 14 target namespaces — none of the seven prior values (`operating`, `patterns`, `playbooks`, `custom`, `decisions`, `platform`, `unmapped`) survives
-- [ ] 17 agent definitions generated, each validating against `agent.schema.json`
-- [ ] Every specialist has `max_hops: 0` and exactly one `kb_namespace`
-- [ ] Router has `model_tier: none`
-- [ ] `nightcap` domain is `authority: canonical`; `monster-rpg` and `daily-case` are `authority: provisional`; `nightcap-couch-race` is `authority: archived`
-- [ ] No file outside `docs/` and `.claude/` is modified
+- [ ] team-ai PRs #4 and #5 merged; team-ai 0.4.0 tagged and released
+- [ ] No `npx team-ai` invocation remains in team-ai's MCP server template, instance workflow templates, or reusable workflows
+- [ ] Founder has confirmed D1–D3 and D6 before any agent is generated
+- [ ] `team-ai/inventory.txt` is committed and lists every KB document with its current and target namespace
+- [ ] The migration proposal has zero conflicts and is explicitly approved by the founder before any write
+- [ ] After migration, `validate-kb` passes against the configured KB root, `git grep -h '^namespace:' -- docs ':!docs/archive'` reports only the 14 target namespaces, and a repository grep outside `docs/archive/` finds no id beginning with any of the seven prior values
+- [ ] 14 agents generated and 3 hand-authored; `team-ai validate-manifest` passes
+- [ ] 17 files exist at `.claude/agents/team-ai-*.md`, and regenerating them produces no diff
+- [ ] `nightcap` is `authority: canonical`; `monster-rpg` and `daily-case` are `provisional`; `nightcap-couch-race` is `archived`
+- [ ] Every changed path is inside the approved layout: `team-ai/`, `.claude/agents/team-ai-*.md`, `.mcp.json` (if D6 is confirmed), `docs/**` front-matter `namespace`/`id` lines, `AGENTS.md`, `.github/copilot-instructions.md`, `.gitignore`, and the CI workflow file
+- [ ] `docs/agents/`, `docs/skills/`, and every other file under `.claude/` are unchanged
 
 **Phase B**
 
@@ -377,19 +470,18 @@ corpus).
 
 # Test Plan
 
-- **Unit**: namespace migration mapping, including a default rule for each of
-  the seven prior values; manifest schema validation; each enforcement skill
-  against planted violations and clean trees; decay, reinforcement, and pruning
-  arithmetic; RRF fusion ordering; query-vector cache keying
+- **Unit**: manifest invariants; namespace migration mapping including an
+  unmapped-namespace failure and quoted/commented-line conflicts; `--apply`
+  refusing on conflict; KB exclusions and per-file parse failures; answers keyed
+  by question id including unknown and missing ids; emitter tool-name rewriting
+  and prefixing; MCP server CLI resolution without `npx`
 - **Integration**: generate the full instance into a temp copy of Arcwright and
-  assert the repo is otherwise untouched (extends team-ai's existing dogfood
-  test); run each workflow end to end including gate pause; merge two branches
-  that both recorded observations
+  assert every changed path is inside the approved layout; regenerate emitted
+  agents and assert no diff; merge two branches that both recorded observations
 - **Eval**: golden question set through the router — routing accuracy, refusal
-  rate, citation validity; hybrid vs lexical-only compared on identical inputs;
-  query embedding latency and the lexical fallback path
-- **Manual**: founder reviews the migration proposal and the generated agent
-  instructions before either is applied
+  rate, citation validity; hybrid vs lexical-only compared on identical inputs
+- **Manual**: founder reviews the inventory, the migration proposal, and the
+  generated agent instructions before any is applied
 
 ---
 
@@ -397,82 +489,111 @@ corpus).
 
 **Risks**
 
-- **`id` rewrite is effectively irreversible.** `id` embeds the namespace, so
-  migration changes the id of every document with front matter. Anything
-  referencing an old id breaks. Mitigation: `validate-citations` runs before and
-  after; migration is one reviewed commit.
-- **Refusal rate may frustrate.** Keyword routing refuses unusual phrasings.
-  Mitigation: golden set measures it; `not_owned` and keyword tuning are cheap
-  to iterate; semantic retrieval in Phase C reduces it.
-- **17 agents is real maintenance surface** for a solo founder. Mitigation:
-  generated from templates, so a domain change is a fragment edit plus a
-  re-render, not hand editing 17 files.
-- **Local embedding model adds a sizeable dependency** with native build
-  implications on some platforms, and adds per-query CPU work. Mitigation:
-  queries fall back to lexical retrieval automatically when the model is
-  unavailable or slow.
-- **Breaks team-ai's zero-model-call rule.** Narrowed to a local model at index
-  and query time, but the invariant is genuinely weakened and must be recorded
-  as an explicit decision in team-ai's design of record rather than quietly
-  dropped.
+- **`id` rewrite is effectively irreversible.** Mitigation: nothing in the
+  repository references KB ids today (zero references outside front matter and
+  adopt's own inventory files on 2026-09-13), the proposal is approved before
+  apply, and the post-migration grep proves no old id survives.
+- **Runtime behaviour depends on the host.** Hop limits and refusal are honoured
+  by Claude Code reading the emitted definitions; team-ai validates them but
+  cannot enforce them at runtime.
+- **Refusal rate may frustrate.** Mitigation: the golden set measures it;
+  `not_owned` and keyword tuning are cheap to iterate.
+- **17 agents is real maintenance surface** for a solo founder. Mitigation: 14
+  are generated; each agent's description stays to one line because Claude Code
+  keeps subagent descriptions in context for delegation.
+- **Local embedding model adds a dependency and per-query CPU work.** Mitigation:
+  automatic lexical fallback.
+- **Breaks team-ai's zero-model-call rule** in Phase C. Must be recorded as an
+  explicit decision in team-ai's design of record.
 
 **Unknowns**
 
-- Whether 13 domains is the right granularity in daily use, or whether some
-  specialists are too thin to justify their own agent. The golden set will show
-  which domains never get routed to.
-- Real decay half-life. Parameters are guesses until there is observed data;
-  pruning stays disabled until they are reviewed.
-- Whether `docs/playtests/` (currently empty) warrants its own domain or folds
-  into `playtest-ops` backed by the existing skills.
-- Which `design/` and `specs/` documents describe a single title or playtest
-  operations closely enough to warrant per-file overrides away from the
-  `engineering-practice` default. Settled during review of the migration
-  proposal.
+- Whether 13 specialists is the right granularity in daily use. The golden set
+  will show which domains never get routed to.
+- Real decay half-life; pruning stays disabled until parameters are reviewed.
+- Which `design/` and `specs/` documents warrant per-file overrides away from
+  `engineering-practice`. Settled during review of the migration proposal.
+- Whether `docs/design/line-libraries/` should become KB documents later.
 
 ---
 
 # Open Questions
 
-- **Q1 — Where does the embedding model identifier live?** `AGENTS.md` states
-  that no provider name or model string may appear outside
-  `config/routing_table.json` and `engine/routing/router.py`. Retrieval is
-  development-time tooling rather than an engine operation, but a model id in a
-  generated `index.lock` would still sit in this repository. Options: add an
-  embedding task type to `config/routing_table.json`, or record an explicit,
-  narrow exemption for retrieval index configuration in an ADR. Must be decided
-  before Phase C pins a model.
+- **Q1 — Where does the embedding model identifier live?** `AGENTS.md` and
+  `docs/README.md` forbid model strings outside the two routing files. Options:
+  add an embedding task type to `config/routing_table.json`, or record a narrow
+  ADR exemption for retrieval index configuration. Decide before Phase C.
 
 ---
 
 # Proposed Decisions (pending founder confirmation)
 
-These were written by Claude after the founder approved version 1.0. They have
-not been individually confirmed and do not carry that approval. Confirmation is
-a Phase A gate.
+Written by Claude after the founder approved version 1.0. Not yet individually
+confirmed; confirmation is a Phase A gate.
 
 **D1 — Existing agents and skills are registered, never regenerated.**
 The hand-authored contracts in `docs/agents/` and skills in `docs/skills/` are
-entered into the manifest as `source: authored` entries and referenced by the
-topology. Generation never writes to their paths. Rationale: the standing
-requirement is that an existing SME is reused without loss of information rather
-than replaced, and team-ai's renderer already treats a hand-authored file as a
-collision it must not clobber. Registering them makes them routable; leaving
-them unregistered would mean the router cannot reach work that already exists.
+registered in the manifest as `source: authored` and referenced by the
+topology. Generation never writes to their paths; team-ai PR #5 makes that a
+checked property rather than a convention.
 
 **D2 — `nightcap-couch-race` gets an `authority: archived` domain.**
-A question about Couch Race routes somewhere that answers "this is archived,
-superseded by X" rather than refusing. Rationale: the file already self-declares
-archived status, so the information exists and is useful; a bare refusal would
-be strictly less helpful and would register as a coverage gap in the eval set.
-Cost is one manifest entry and no new agent — archived domains route to
-`title-sme` rather than to a dedicated specialist.
+A question about Couch Race routes to `title-sme`, which answers that it is
+archived and superseded, rather than refusing. One manifest entry, no new agent.
 
 **D3 — The founder is `owner` on every domain until the team grows.**
-Rationale: `unassigned` propagates into generated front matter and makes
-ownership and freshness reporting meaningless, and PR #308 already wrote
-`owner: Nico Janssen` across the corpus — so this is consistency with what is
-already on `main`. Revisit when there are other named owners.
+Consistent with the `owner` value PR #308 already wrote across the corpus.
 
-All three are low-cost to reverse: D1 and D2 are manifest entries, D3 is a
-single generation parameter.
+**D6 — Register the knowledge MCP server in a root `.mcp.json`.**
+Claude Code reads project MCP servers from `.mcp.json` at the repository root,
+which sits outside the approved `team-ai/` folder. Without it, emitted agents
+cannot call the knowledge tools. D6 also adds `team-ai/mcp-server/package.json`,
+which declares the MCP SDK dependency the server needs; `AGENTS.md` lists any
+new `package.json` as a hard rule requiring explicit approval, so confirming D6
+is that approval. The server locates the team-ai CLI through a `TEAM_AI_CLI`
+environment variable pointing at a local build, so `.mcp.json` holds no
+machine-specific path. Alternative: give specialists only built-in file-reading
+tools plus a generated list of their namespace's files — no server, no root
+file, and no new dependency, but no ranked search and no refusal signal from
+retrieval.
+
+# Approved Decisions
+
+**D5 — Tier-2 group SMEs are hand-authored and registered.** Approved
+2026-09-13. `engine-sme`, `title-sme`, and `practice-sme` are written by hand
+under `team-ai/agents/` and registered with `source: authored`. No group-SME
+generation is added to team-ai.
+
+**Layout — approved 2026-09-13**, as specified in *Generated file layout*.
+
+---
+
+# Review Resolution
+
+Resolution of the 14 findings from the adversarial review of version 1.1.
+
+| # | Finding | Resolution |
+|---|---|---|
+| R1 | Instance catalog unwired in `init` | Accepted. Confirmed `buildContext(engine)` at `init.ts:137`, `resume.ts:148`, `upgrade.ts:88`. Catalog directory threaded through all three with a CLI option |
+| R2 | Remap strips quotes and comments | Accepted as a false claim; zero affected lines on `main`. Quoted or commented lines become conflicts. CRLF concern refuted by the review itself |
+| R3 | Model/provider strings in docs | Accepted. Model name removed in 1.1; commit-attribution trailers containing model names removed from the plan in 1.2 |
+| R4 | Neutrality scan narrower than implied | Partly accepted. The plan's wording is corrected. **Pushback:** excluding docs, tests, and fixtures is by design — the denylist protects shipped source. `check-agnostic` has no options to ignore; it scans the working directory |
+| R5 | Generator cannot produce 17 agents | Accepted. 14 generated, 3 hand-authored (D5) |
+| R6 | Remapper cannot reach zero conflicts; partial apply | Accepted, and larger than reported: 261 of 706 Markdown files lack KB front matter. Scoped to KB documents; `--apply` refuses on any conflict |
+| R7 | Topology guarantees are declarative | Accepted. `validate-manifest` enforces the checkable invariants in CI; wording changed to "validated invariants". **Pushback:** runtime enforcement belongs to the host, not team-ai |
+| R8 | Namespace map omits live namespaces | Resolved in 1.1; 1.2 adds a hard failure on any unmapped namespace and a committed inventory |
+| R9 | 459-file count unsupported | Resolved in 1.1; 1.2 replaces all counts with the committed inventory |
+| R10 | Positional answers not replayable | Accepted. Answers file keyed by question id |
+| R11 | Acceptance criteria contradict `AGENTS.md` | Accepted. Exact path allowlist; `.claude` limited to the founder-approved `team-ai-*.md` exception |
+| R12 | Verdict: redesign needed | Accepted; this version is the redesign |
+| R13 | Path traversal bypasses D1 | Accepted and reproduced. Fixed in team-ai PR #5 |
+| R14 | Validation commands do not validate Arcwright | Accepted for `validate-kb` (configurable KB root, per-file parse failures). **Pushback on a repository-wide id-aware citation validator:** nothing in the repository references KB ids today, and migration changes ids, not file paths, so link validation proves nothing about it. A grep for surviving prior-namespace ids is the check that matches the risk |
+
+Additional defects found while resolving the review, not raised by it:
+
+- team-ai's MCP server template runs `npx --yes team-ai`, which fetches an
+  unrelated npm package; its `ROOT` is computed from `URL.pathname`, which is
+  wrong on Windows; and its freshness tools hard-code `kb/`.
+- team-ai's reusable validation workflows run `npx team-ai@latest`.
+- Emitted Claude Code agents named tools that do not exist without the MCP
+  server, and in a form Claude Code does not resolve.
