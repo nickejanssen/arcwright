@@ -1,0 +1,216 @@
+{
+  "planPath": "docs/superpowers/plans/2026-09-13-team-ai-agent-architecture-phase-a.md",
+  "specPath": "docs/specs/0089-team-ai-agent-architecture.md",
+  "specVersion": "1.3",
+  "repos": {
+    "team-ai": {
+      "path": "C:/Users/nicke/OneDrive/Desktop/team-ai",
+      "branch": "feat/agent-topology-phase-a",
+      "tasks": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10,
+        11
+      ]
+    },
+    "arcwright": {
+      "path": "fresh worktree off main",
+      "branch": "claude/team-ai-agent-topology",
+      "tasks": [
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19
+      ]
+    }
+  },
+  "tasks": [
+    {
+      "id": 1,
+      "subject": "Task 1: Manifest schema — domain fields, agents, skills",
+      "status": "pending",
+      "description": "**Goal:** The manifest accepts `group`, `authority`, `not_owned`, `depends_on` on domains and optional `agents` and `skills` sections, and `assembleManifest` round-trips them.\n\n**Files:**\n- Modify: `schemas/manifest.schema.json`, `src/schema/types.ts`, `src/manifest/assemble.ts`\n- Test: `src/schema/validate.test.ts`, `src/manifest/assemble.test.ts`\n\n**Acceptance Criteria:**\n- [ ] A domain with all four new fields validates; one with none still validates\n- [ ] `authority` outside `canonical|provisional|archived` is rejected\n- [ ] A manifest with `agents` and `skills` validates; one without them still validates\n- [ ] `assembleManifest` passes both sections through, sorting agents by `name` and skills by `id`\n- [ ] `serializeManifest` emits `domains`, then `agents`, then `skills`\n\n**Verify:** `npx vitest run src/schema/ src/manifest/` → all pass\n\n```json:metadata\n{\"files\":[\"schemas/manifest.schema.json\",\"src/schema/types.ts\",\"src/manifest/assemble.ts\",\"src/schema/validate.test.ts\",\"src/manifest/assemble.test.ts\"],\"verifyCommand\":\"npx vitest run src/schema/ src/manifest/\",\"acceptanceCriteria\":[\"A domain with all four new fields validates; one with none still validates\",\"`authority` outside `canonical|provisional|archived` is rejected\",\"A manifest with `agents` and `skills` validates; one without them still validates\",\"`assembleManifest` passes both sections through, sorting agents by `name` and skills by `id`\",\"`serializeManifest` emits `domains`, then `agents`, then `skills`\"],\"repo\":\"team-ai\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "Manifest schema — domain fields, agents, skills"
+    },
+    {
+      "id": 2,
+      "subject": "Task 2: `team-ai validate-manifest` — enforce topology invariants",
+      "status": "pending",
+      "description": "**Goal:** A deterministic command that fails when the router, specialist, namespace, or reference invariants are broken, so the topology's properties are checked in CI rather than merely declared.\n\n**Files:**\n- Create: `src/manifest/invariants.ts`, `src/manifest/invariants.test.ts`, `src/commands/validate-manifest.ts`\n- Modify: `src/cli.ts`\n\n**Acceptance Criteria:**\n- [ ] Fails unless exactly one agent has `kind: router`, and that agent's definition has `model_tier: none`\n- [ ] Fails when a tier-3 agent has `max_hops` ≠ 0 or `kb_namespaces` length ≠ 1\n- [ ] Fails when two tier-3 agents share a namespace\n- [ ] Fails when a domain's `subagent` or any `escalate_to` (other than `unassigned`) names no manifest agent\n- [ ] Fails when a manifest agent has no definition file, or its definition's `max_hops`/`kb_namespaces` disagree with the manifest\n- [ ] Passes a consistent manifest; a manifest without `agents` passes with a note\n\n**Verify:** `npx vitest run src/manifest/invariants.test.ts` → all pass\n\n```json:metadata\n{\"files\":[\"src/manifest/invariants.ts\",\"src/manifest/invariants.test.ts\",\"src/commands/validate-manifest.ts\",\"src/cli.ts\"],\"verifyCommand\":\"npx vitest run src/manifest/invariants.test.ts\",\"acceptanceCriteria\":[\"Fails unless exactly one agent has `kind: router`, and that agent's definition has `model_tier: none`\",\"Fails when a tier-3 agent has `max_hops` ≠ 0 or `kb_namespaces` length ≠ 1\",\"Fails when two tier-3 agents share a namespace\",\"Fails when a domain's `subagent` or any `escalate_to` (other than `unassigned`) names no manifest agent\",\"Fails when a manifest agent has no definition file, or its definition's `max_hops`/`kb_namespaces` disagree with the manifest\",\"Passes a consistent manifest; a manifest without `agents` passes with a note\"],\"repo\":\"team-ai\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "`team-ai validate-manifest` — enforce topology invariants",
+      "blockedBy": [
+        1
+      ]
+    },
+    {
+      "id": 3,
+      "subject": "Task 3: Give each domain SME its own namespace",
+      "status": "pending",
+      "description": "**Goal:** Stop scoping every generated domain SME to `namespaces[0]`, which would make all specialists read one namespace.\n\n**Files:**\n- Modify: `src/generator/context.ts` (domains mapping), `src/generator/entity-files.ts` (`asDomains`, domain loop)\n- Test: `src/generator/entity-files.test.ts`\n\n**Acceptance Criteria:**\n- [ ] `buildContext` emits `namespace` on every domain; a slug matching a namespace owns it, otherwise it falls back to `namespaces[0]`\n- [ ] Two domains with different namespaces produce SME YAMLs with different `kb_namespaces`\n- [ ] Existing generator tests still pass\n\n**Verify:** `npx vitest run src/generator/` → all pass\n\n```json:metadata\n{\"files\":[\"src/generator/context.ts\",\"src/generator/entity-files.ts\",\"src/generator/entity-files.test.ts\"],\"verifyCommand\":\"npx vitest run src/generator/\",\"acceptanceCriteria\":[\"`buildContext` emits `namespace` on every domain; a slug matching a namespace owns it, otherwise it falls back to `namespaces[0]`\",\"Two domains with different namespaces produce SME YAMLs with different `kb_namespaces`\",\"Existing generator tests still pass\"],\"repo\":\"team-ai\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "Give each domain SME its own namespace"
+    },
+    {
+      "id": 4,
+      "subject": "Task 4: Instance catalog through `init`, `resume`, `upgrade`",
+      "status": "pending",
+      "description": "**Goal:** A repo-supplied catalog directory is layered over the framework catalog on every generation path, so an instance preset named `custom.yaml` actually resolves.\n\n**Why required:** `kb.namespaces` is a `single_select`; the engine throws on any value outside its options, so `custom` is the only answer that can name a repo preset. Today `loadCatalog()` wires only the toolkit layer, and `init.ts:137`, `resume.ts:148`, and `upgrade.ts:88` all call `buildContext(engine)` with no catalog directory, so `custom` silently falls back to the five default namespaces.\n\n**Files:**\n- Modify: `src/interview/gates.ts`, `src/generator/context.ts`, `src/generator/init.ts`, `src/generator/resume.ts`, `src/generator/upgrade.ts`, `src/cli.ts`\n- Test: `src/catalog/resolve.test.ts`, `src/generator/init.test.ts`\n\n**Acceptance Criteria:**\n- [ ] `loadCatalog(dir)` finds a preset defined only in `dir`, keyed by filename stem\n- [ ] `loadCatalog()` with no argument is unchanged; a missing directory is ignored\n- [ ] `init`, `resume`, and `upgrade` accept `--catalog <dir>` and pass it to `buildContext`\n- [ ] Running `init` with `kb.namespaces: custom` and a catalog holding `namespaces/custom.yaml` generates domain SMEs scoped to that preset's namespaces\n\n**Verify:** `npx vitest run src/catalog/ src/generator/` → all pass\n\n```json:metadata\n{\"files\":[\"custom.yaml\",\"kb.namespaces\",\"init.ts:137\",\"resume.ts:148\",\"upgrade.ts:88\",\"src/interview/gates.ts\",\"src/generator/context.ts\",\"src/generator/init.ts\",\"src/generator/resume.ts\",\"src/generator/upgrade.ts\",\"src/cli.ts\",\"src/catalog/resolve.test.ts\",\"src/generator/init.test.ts\"],\"verifyCommand\":\"npx vitest run src/catalog/ src/generator/\",\"acceptanceCriteria\":[\"`loadCatalog(dir)` finds a preset defined only in `dir`, keyed by filename stem\",\"`loadCatalog()` with no argument is unchanged; a missing directory is ignored\",\"`init`, `resume`, and `upgrade` accept `--catalog <dir>` and pass it to `buildContext`\",\"Running `init` with `kb.namespaces: custom` and a catalog holding `namespaces/custom.yaml` generates domain SMEs scoped to that preset's namespaces\"],\"repo\":\"team-ai\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "Instance catalog through `init`, `resume`, `upgrade`"
+    },
+    {
+      "id": 5,
+      "subject": "Task 5: Answers keyed by question id",
+      "status": "pending",
+      "description": "**Goal:** Replace fragile positional replay with an answers file keyed by question id, so a changed question bank produces a loud error rather than a silently misconfigured setting.\n\n**Files:**\n- Modify: `src/generator/init-answers.ts`, `src/interview/cli-runtime.ts`, `src/generator/init.ts`, `src/generator/resume.ts`\n- Test: `src/generator/init-answers.test.ts`\n\n**Acceptance Criteria:**\n- [ ] A YAML mapping is read as keyed answers; a YAML list still works positionally\n- [ ] Keys are question ids, plus `gate.1`, `gate.2`, `gate.3` for the confirmation gates\n- [ ] Requesting a key with no entry rejects with an error naming the key\n- [ ] Requesting the same key twice in a row rejects — an answer the engine refused cannot loop forever\n- [ ] Array values are joined with `,` for multi-select questions\n- [ ] Control words `why`, `back`, `save` are rejected when the file is loaded\n- [ ] After the run, entries never requested are reported as a warning, not an error, because pre-filled and `ask_if`-skipped questions are legitimately not asked\n\n**Verify:** `npx vitest run src/generator/init-answers.test.ts src/interview/` → all pass\n\n```json:metadata\n{\"files\":[\"src/generator/init-answers.ts\",\"src/interview/cli-runtime.ts\",\"src/generator/init.ts\",\"src/generator/resume.ts\",\"src/generator/init-answers.test.ts\"],\"verifyCommand\":\"npx vitest run src/generator/init-answers.test.ts src/interview/\",\"acceptanceCriteria\":[\"A YAML mapping is read as keyed answers; a YAML list still works positionally\",\"Keys are question ids, plus `gate.1`, `gate.2`, `gate.3` for the confirmation gates\",\"Requesting a key with no entry rejects with an error naming the key\",\"Requesting the same key twice in a row rejects — an answer the engine refused cannot loop forever\",\"Array values are joined with `,` for multi-select questions\",\"Control words `why`, `back`, `save` are rejected when the file is loaded\",\"After the run, entries never requested are reported as a warning, not an error, because pre-filled and `ask_if`-skipped questions are legitimately not asked\"],\"repo\":\"team-ai\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "Answers keyed by question id"
+    },
+    {
+      "id": 6,
+      "subject": "Task 6: KB root and exclusions",
+      "status": "pending",
+      "description": "**Goal:** An instance can declare that its KB lives outside `kb/` and which paths are not KB documents, and KB loading reports each broken file instead of aborting.\n\n**Files:**\n- Modify: `src/retrieval/index-lock.ts`, `src/kb/loader.ts`, `src/retrieval/factory.ts`, `src/retrieval/lexical.ts`, `src/commands/validate-kb.ts`, `src/commands/freshness-audit.ts`, `src/cli.ts`\n- Test: `src/kb/loader.test.ts`, `src/retrieval/index-lock.test.ts`\n\n**Acceptance Criteria:**\n- [ ] `index.lock` accepts an optional `kb: { root, exclude }`; a lock without it parses exactly as before\n- [ ] `resolveKbScope(instanceDir)` returns `root` resolved against the instance directory (default `<instance>/kb`) and `exclude` (default `[]`)\n- [ ] Exclusion entries: a trailing `/` excludes a subtree; a leading `**/` matches that path at any depth; anything else is an exact relative path\n- [ ] `loadKb` skips excluded files, and a file whose front matter does not parse becomes one failure entry instead of throwing\n- [ ] `validate-kb --instance <dir>`, `freshness-audit --instance <dir>`, `reindex`, and `search` all use the declared scope\n\n**Verify:** `npx vitest run src/kb/ src/retrieval/ src/commands/` → all pass\n\n```json:metadata\n{\"files\":[\"kb/\",\"src/retrieval/index-lock.ts\",\"src/kb/loader.ts\",\"src/retrieval/factory.ts\",\"src/retrieval/lexical.ts\",\"src/commands/validate-kb.ts\",\"src/commands/freshness-audit.ts\",\"src/cli.ts\",\"src/kb/loader.test.ts\",\"src/retrieval/index-lock.test.ts\"],\"verifyCommand\":\"npx vitest run src/kb/ src/retrieval/ src/commands/\",\"acceptanceCriteria\":[\"`index.lock` accepts an optional `kb: { root, exclude }`; a lock without it parses exactly as before\",\"`resolveKbScope(instanceDir)` returns `root` resolved against the instance directory (default `<instance>/kb`) and `exclude` (default `[]`)\",\"Exclusion entries: a trailing `/` excludes a subtree; a leading `**/` matches that path at any depth; anything else is an exact relative path\",\"`loadKb` skips excluded files, and a file whose front matter does not parse becomes one failure entry instead of throwing\",\"`validate-kb --instance <dir>`, `freshness-audit --instance <dir>`, `reindex`, and `search` all use the declared scope\"],\"repo\":\"team-ai\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "KB root and exclusions"
+    },
+    {
+      "id": 7,
+      "subject": "Task 7: `team-ai remap-namespaces` — conflict-safe migration",
+      "status": "pending",
+      "description": "**Goal:** Rewrite `namespace` and the first segment of `id` across an instance's KB from a mapping file, refusing to write anything unless every KB document is mapped and nothing is in conflict.\n\n**Files:**\n- Create: `src/remap/plan.ts`, `src/remap/plan.test.ts`, `src/remap/apply.ts`, `src/remap/apply.test.ts`, `src/commands/remap-namespaces.ts`\n- Modify: `src/cli.ts`\n\n**Acceptance Criteria:**\n- [ ] Scope is the instance's KB root minus its exclusions (Task 6)\n- [ ] A file with no front matter, or front matter with neither `id` nor `namespace`, is `skipped` and listed\n- [ ] Unparseable front matter, a missing `namespace`, a namespace with no mapping rule, or a quoted/commented `id`/`namespace` line is a `conflict`\n- [ ] A per-file override beats the namespace rule\n- [ ] `applyRemapPlan` throws before writing anything if the plan has any conflict\n- [ ] Apply rewrites only the two scalar values; other keys, the body, and CRLF line endings are byte-identical; applying twice is a no-op\n- [ ] `--inventory <file>` writes one tab-separated line per item: `path`, `status`, `from`, `to`\n\n**Verify:** `npx vitest run src/remap/` → all pass\n\n```json:metadata\n{\"files\":[\"src/remap/plan.ts\",\"src/remap/plan.test.ts\",\"src/remap/apply.ts\",\"src/remap/apply.test.ts\",\"src/commands/remap-namespaces.ts\",\"src/cli.ts\"],\"verifyCommand\":\"npx vitest run src/remap/\",\"acceptanceCriteria\":[\"Scope is the instance's KB root minus its exclusions (Task 6)\",\"A file with no front matter, or front matter with neither `id` nor `namespace`, is `skipped` and listed\",\"Unparseable front matter, a missing `namespace`, a namespace with no mapping rule, or a quoted/commented `id`/`namespace` line is a `conflict`\",\"A per-file override beats the namespace rule\",\"`applyRemapPlan` throws before writing anything if the plan has any conflict\",\"Apply rewrites only the two scalar values; other keys, the body, and CRLF line endings are byte-identical; applying twice is a no-op\",\"`--inventory <file>` writes one tab-separated line per item: `path`, `status`, `from`, `to`\"],\"repo\":\"team-ai\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "`team-ai remap-namespaces` — conflict-safe migration",
+      "blockedBy": [
+        6
+      ]
+    },
+    {
+      "id": 8,
+      "subject": "Task 8: Emit committed Claude Code subagents",
+      "status": "pending",
+      "description": "**Goal:** `team-ai emit --target claude-code` can write prefixed subagent files that are meant to be tracked, without a plugin manifest, searching the KB with Claude Code's built-in tools.\n\n**Files:**\n- Modify: `src/emit/claude-code.ts`, `src/commands/emit.ts`, `src/cli.ts`\n- Test: `src/emit/claude-code.test.ts`\n\n**Acceptance Criteria:**\n- [ ] `--file-prefix team-ai-` writes `.claude/agents/team-ai-<name>.md`; the front-matter `name` stays unprefixed so delegation references resolve\n- [ ] `--no-plugin-manifest` writes no `.claude-plugin/plugin.json`\n- [ ] `--builtin-search` sets `tools` to `Read, Grep, Glob` and appends a *Finding your documents* section naming each of the agent's namespaces\n- [ ] `tools` is written as a comma-separated string; no `model` key is written\n- [ ] `--allow-tracked` suppresses the \"not gitignored\" warning\n- [ ] Defaults are unchanged: no prefix, plugin manifest written, raw tool names\n\n**Verify:** `npx vitest run src/emit/` → all pass\n\n```json:metadata\n{\"files\":[\"src/emit/claude-code.ts\",\"src/commands/emit.ts\",\"src/cli.ts\",\"src/emit/claude-code.test.ts\"],\"verifyCommand\":\"npx vitest run src/emit/\",\"acceptanceCriteria\":[\"`--file-prefix team-ai-` writes `.claude/agents/team-ai-<name>.md`; the front-matter `name` stays unprefixed so delegation references resolve\",\"`--no-plugin-manifest` writes no `.claude-plugin/plugin.json`\",\"`--builtin-search` sets `tools` to `Read, Grep, Glob` and appends a *Finding your documents* section naming each of the agent's namespaces\",\"`tools` is written as a comma-separated string; no `model` key is written\",\"`--allow-tracked` suppresses the \\\"not gitignored\\\" warning\",\"Defaults are unchanged: no prefix, plugin manifest written, raw tool names\"],\"repo\":\"team-ai\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "Emit committed Claude Code subagents"
+    },
+    {
+      "id": 9,
+      "subject": "Task 9: MCP server template without `npx`; real tools only",
+      "status": "pending",
+      "description": "**Goal:** The generated knowledge server runs a pinned local team-ai build, computes its root correctly on Windows, reads the declared KB scope, and agent templates name only tools the server implements.\n\n**Files:**\n- Modify: `templates/mcp-server/server.mjs.hbs`, `templates/instance/agents/_domain-sme.yaml.hbs`\n- Test: `src/generator/mcp-server-template.test.ts`, `src/generator/agent-templates.test.ts`\n\n**Acceptance Criteria:**\n- [ ] The rendered server contains no `npx`\n- [ ] It runs `process.execPath` with the path in `TEAM_AI_CLI`, and returns a clear error when `TEAM_AI_CLI` is unset\n- [ ] `ROOT` is computed with `fileURLToPath`, not `URL.pathname`\n- [ ] Freshness tools call `freshness-audit --instance ROOT`\n- [ ] Every tool named in any `templates/instance/agents/*.yaml.hbs` exists in the server's `TOOLS` (so `kb_list` is removed from the domain SME template)\n- [ ] The rendered server still passes `node --check`\n\n**Verify:** `npx vitest run src/generator/mcp-server-template.test.ts src/generator/agent-templates.test.ts` → all pass\n\n```json:metadata\n{\"files\":[\"templates/mcp-server/server.mjs.hbs\",\"templates/instance/agents/_domain-sme.yaml.hbs\",\"src/generator/mcp-server-template.test.ts\",\"src/generator/agent-templates.test.ts\"],\"verifyCommand\":\"npx vitest run src/generator/mcp-server-template.test.ts src/generator/agent-templates.test.ts\",\"acceptanceCriteria\":[\"The rendered server contains no `npx`\",\"It runs `process.execPath` with the path in `TEAM_AI_CLI`, and returns a clear error when `TEAM_AI_CLI` is unset\",\"`ROOT` is computed with `fileURLToPath`, not `URL.pathname`\",\"Freshness tools call `freshness-audit --instance ROOT`\",\"Every tool named in any `templates/instance/agents/*.yaml.hbs` exists in the server's `TOOLS` (so `kb_list` is removed from the domain SME template)\",\"The rendered server still passes `node --check`\"],\"repo\":\"team-ai\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "MCP server template without `npx`; real tools only"
+    },
+    {
+      "id": 10,
+      "subject": "Task 10: CI workflows without `npx`",
+      "status": "pending",
+      "description": "**Goal:** No workflow shipped or generated by team-ai downloads the unrelated `team-ai` npm package.\n\n**Files:**\n- Modify: `.github/workflows/validate-kb.reusable.yml`, `.github/workflows/validate-spoke.reusable.yml`, `.github/workflows/evals.reusable.yml`, `templates/instance/.github/workflows/freshness.yml.hbs`, `templates/instance/.github/workflows/reindex.yml.hbs`, `src/ci-config.test.ts`\n\n**Acceptance Criteria:**\n- [ ] The reusable workflows take a `team-ai-ref` input (default `v0`) instead of `team-ai-version`\n- [ ] Each checks out `nickejanssen/team-ai` at that ref into `.team-ai-cli`, runs `npm ci` and `npm run build` there, and invokes `node .team-ai-cli/dist/cli.js`\n- [ ] A test fails if any file under `.github/workflows/` or `templates/` contains `npx team-ai`\n\n**Verify:** `npx vitest run src/ci-config.test.ts` → all pass\n\n```json:metadata\n{\"files\":[\".github/workflows/validate-kb.reusable.yml\",\".github/workflows/validate-spoke.reusable.yml\",\".github/workflows/evals.reusable.yml\",\"templates/instance/.github/workflows/freshness.yml.hbs\",\"templates/instance/.github/workflows/reindex.yml.hbs\",\"src/ci-config.test.ts\"],\"verifyCommand\":\"npx vitest run src/ci-config.test.ts\",\"acceptanceCriteria\":[\"The reusable workflows take a `team-ai-ref` input (default `v0`) instead of `team-ai-version`\",\"Each checks out `nickejanssen/team-ai` at that ref into `.team-ai-cli`, runs `npm ci` and `npm run build` there, and invokes `node .team-ai-cli/dist/cli.js`\",\"A test fails if any file under `.github/workflows/` or `templates/` contains `npx team-ai`\"],\"repo\":\"team-ai\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "CI workflows without `npx`"
+    },
+    {
+      "id": 11,
+      "subject": "Task 11: Release team-ai 0.4.0",
+      "status": "pending",
+      "description": "**Goal:** Tag and publish Tasks 1–10 so Arcwright consumes a fixed version.\n\n**Files:**\n- Modify: `package.json`, `package-lock.json`, `CHANGELOG.md`\n\n**Acceptance Criteria:**\n- [ ] `npm run check`, `npm run build`, and `node dist/cli.js check-agnostic` all pass\n- [ ] Version `0.4.0` in `package.json` and `package-lock.json`; CHANGELOG `0.4.0` section with the PR #5 Security entry moved into it\n- [ ] Tag `v0.4.0` pushed; GitHub Release created; `v0` branch fast-forwarded\n\n**Verify:** `node dist/cli.js validate-manifest --help && node dist/cli.js remap-namespaces --help` → both print options\n\n```json:metadata\n{\"files\":[\"package.json\",\"package-lock.json\",\"CHANGELOG.md\"],\"verifyCommand\":\"node dist/cli.js validate-manifest --help && node dist/cli.js remap-namespaces --help\",\"acceptanceCriteria\":[\"`npm run check`, `npm run build`, and `node dist/cli.js check-agnostic` all pass\",\"Version `0.4.0` in `package.json` and `package-lock.json`; CHANGELOG `0.4.0` section with the PR #5 Security entry moved into it\",\"Tag `v0.4.0` pushed; GitHub Release created; `v0` branch fast-forwarded\"],\"repo\":\"team-ai\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "Release team-ai 0.4.0",
+      "blockedBy": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ]
+    },
+    {
+      "id": 12,
+      "subject": "Task 12: Record the `.claude` exception in Arcwright",
+      "status": "pending",
+      "description": "**Goal:** `AGENTS.md` and its Copilot mirror permit exactly the founder-approved generated subagent files and nothing else under `.claude/`.\n\n**Files:**\n- Modify: `AGENTS.md`, `.github/copilot-instructions.md`\n\n**Acceptance Criteria:**\n- [ ] Both files contain the exception paragraph, verbatim, directly after the rule \"Do not create, modify, stage, commit, or delete files inside `.claude/`…\"\n- [ ] No other line in either file changes\n\n**Verify:** `git diff --stat` → exactly two files, one paragraph added to each\n\n```json:metadata\n{\"files\":[\"AGENTS.md\",\".claude/\",\"AGENTS.md\",\".github/copilot-instructions.md\"],\"verifyCommand\":\"git diff --stat\",\"acceptanceCriteria\":[\"Both files contain the exception paragraph, verbatim, directly after the rule \\\"Do not create, modify, stage, commit, or delete files inside `.claude/`…\\\"\",\"No other line in either file changes\"],\"repo\":\"arcwright\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "Record the `.claude` exception in Arcwright",
+      "blockedBy": [
+        11
+      ]
+    },
+    {
+      "id": 13,
+      "subject": "Task 13: Verify recorded decisions",
+      "status": "pending",
+      "description": "**Goal:** Confirm the spec records every founder decision this plan depends on before the KB is touched.\n\n**Files:**\n- Read: `docs/specs/0089-team-ai-agent-architecture.md`\n\n**Acceptance Criteria:**\n- [ ] *Approved Decisions* contains D1, D2, D3, D5, D6, and the layout approval, each dated 2026-09-13\n- [ ] No decision this plan depends on is still listed as proposed\n\n**Verify:** `git grep -n -E \"^\\*\\*D[12356] \" -- docs/specs/0089-team-ai-agent-architecture.md` → five lines, all after the line number reported by `git grep -n \"^# Approved Decisions\" -- docs/specs/0089-team-ai-agent-architecture.md`\n\n```json:metadata\n{\"files\":[\"docs/specs/0089-team-ai-agent-architecture.md\"],\"verifyCommand\":\"git grep -n -E \\\"^\\\\*\\\\*D[12356] \\\" -- docs/specs/0089-team-ai-agent-architecture.md\",\"acceptanceCriteria\":[\"*Approved Decisions* contains D1, D2, D3, D5, D6, and the layout approval, each dated 2026-09-13\",\"No decision this plan depends on is still listed as proposed\"],\"repo\":\"arcwright\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "Verify recorded decisions",
+      "blockedBy": [
+        12
+      ]
+    },
+    {
+      "id": 14,
+      "subject": "Task 14: Instance inputs",
+      "status": "pending",
+      "description": "**Goal:** Arcwright declares its namespaces, KB scope, interview answers, and migration mapping inside `team-ai/`.\n\n**Files:**\n- Create: `team-ai/catalog/namespaces/custom.yaml`, `team-ai/index.lock`, `team-ai/answers.yaml`, `team-ai/namespace-remap.yaml`\n- Modify: `.gitignore`\n\n**Acceptance Criteria:**\n- [ ] `custom.yaml` lists the 14 namespaces with exactly 5 `seed_docs`\n- [ ] `team-ai/index.lock` declares `kb.root: ../docs` and the exclusions from the spec\n- [ ] The mapping has a rule for every one of the seven current namespace values\n- [ ] `init --dry-run` with the answers file completes with no missing-key error\n- [ ] `.gitignore` ignores `.team-ai/`\n\n**Verify:** `node $CLI init --dir . --answers team-ai/answers.yaml --catalog team-ai/catalog --on-conflict subdir --dry-run` → exits 0 and prints `Nothing was written.`\n\n```json:metadata\n{\"files\":[\"team-ai/\",\"team-ai/catalog/namespaces/custom.yaml\",\"team-ai/index.lock\",\"team-ai/answers.yaml\",\"team-ai/namespace-remap.yaml\",\".gitignore\"],\"verifyCommand\":\"node $CLI init --dir . --answers team-ai/answers.yaml --catalog team-ai/catalog --on-conflict subdir --dry-run\",\"acceptanceCriteria\":[\"`custom.yaml` lists the 14 namespaces with exactly 5 `seed_docs`\",\"`team-ai/index.lock` declares `kb.root: ../docs` and the exclusions from the spec\",\"The mapping has a rule for every one of the seven current namespace values\",\"`init --dry-run` with the answers file completes with no missing-key error\",\"`.gitignore` ignores `.team-ai/`\"],\"repo\":\"arcwright\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "Instance inputs",
+      "blockedBy": [
+        13
+      ]
+    },
+    {
+      "id": 15,
+      "subject": "Task 15: Run the namespace migration",
+      "status": "pending",
+      "description": "**Goal:** Rewrite `namespace` and `id` across the KB from seven values to fourteen namespaces, after founder approval of a zero-conflict proposal.\n\n> **USER-ORDERED GATE — NON-SKIPPABLE.** This task was requested by the user in the current conversation. It MUST NOT be closed by walking around it, by declaring it \"verified inline\", or by substituting a cheaper check. Close only after every item in `acceptanceCriteria` has been re-validated independently, with output captured.\n\n**Files:**\n- Create: `team-ai/remap-proposal.yaml`, `team-ai/inventory.txt`\n- Modify: `docs/**` — `namespace:` and `id:` lines only\n\n**Acceptance Criteria:**\n- [ ] The proposal reports `conflict 0`; every `skipped` file is listed to the founder and accepted as not-KB\n- [ ] The founder explicitly approves the plain-language summary before `--apply`\n- [ ] The diff changes only `namespace:` and `id:` lines\n- [ ] `validate-kb --instance team-ai` exits 0\n- [ ] `git grep -h '^namespace:' -- docs ':!docs/archive'` shows only the 14 target namespaces\n- [ ] No token beginning with a prior namespace value survives outside `docs/archive/`\n- [ ] Re-running the proposal reports `remap 0`\n\n**Verify:** `git diff -U0 -- docs | grep '^[+-]' | grep -v '^[+-][+-]' | grep -vE '^[+-](namespace|id):'` → prints nothing\n\n```json:metadata\n{\"files\":[\"team-ai/remap-proposal.yaml\",\"team-ai/inventory.txt\",\"docs/**\"],\"verifyCommand\":\"git diff -U0 -- docs | grep '^[+-]' | grep -v '^[+-][+-]' | grep -vE '^[+-](namespace|id):'\",\"acceptanceCriteria\":[\"The proposal reports `conflict 0`; every `skipped` file is listed to the founder and accepted as not-KB\",\"The founder explicitly approves the plain-language summary before `--apply`\",\"The diff changes only `namespace:` and `id:` lines\",\"`validate-kb --instance team-ai` exits 0\",\"`git grep -h '^namespace:' -- docs ':!docs/archive'` shows only the 14 target namespaces\",\"No token beginning with a prior namespace value survives outside `docs/archive/`\",\"Re-running the proposal reports `remap 0`\"],\"repo\":\"arcwright\",\"modelTier\":\"standard\",\"userGate\":true,\"tags\":[\"user-gate\"],\"gateScope\":\"all\",\"failurePolicy\":\"stop\"}\n```",
+      "activeForm": "Run the namespace migration",
+      "blockedBy": [
+        14
+      ]
+    },
+    {
+      "id": 16,
+      "subject": "Task 16: Generate the router and 13 specialists",
+      "status": "pending",
+      "description": "**Goal:** team-ai renders the instance into `team-ai/` and nothing outside it.\n\n**Files:**\n- Create: `team-ai/**` generated files, including `team-ai/agents/sme.*`, 13 `team-ai/agents/*-sme.*`\n\n**Acceptance Criteria:**\n- [ ] `git status --porcelain` shows new or changed paths only under `team-ai/`\n- [ ] 14 agent YAMLs exist; each specialist has `max_hops: 0` and a single, unique `kb_namespaces` entry\n- [ ] `team-ai/index.lock` still contains the `kb` block (the authored file was kept, not overwritten)\n\n**Verify:** `git status --porcelain | grep -v ' team-ai/'` → prints nothing\n\n```json:metadata\n{\"files\":[\"team-ai/\",\"team-ai/**\",\"team-ai/agents/sme.*\",\"team-ai/agents/*-sme.*\"],\"verifyCommand\":\"git status --porcelain | grep -v ' team-ai/'\",\"acceptanceCriteria\":[\"`git status --porcelain` shows new or changed paths only under `team-ai/`\",\"14 agent YAMLs exist; each specialist has `max_hops: 0` and a single, unique `kb_namespaces` entry\",\"`team-ai/index.lock` still contains the `kb` block (the authored file was kept, not overwritten)\"],\"repo\":\"arcwright\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "Generate the router and 13 specialists",
+      "blockedBy": [
+        15
+      ]
+    },
+    {
+      "id": 17,
+      "subject": "Task 17: Group SMEs, manifest, invariants",
+      "status": "pending",
+      "description": "**Goal:** The three group SMEs exist, the manifest describes all domains, agents, and skills, and `validate-manifest` passes.\n\n**Files:**\n- Create: `team-ai/agents/engine-sme.yaml`, `engine-sme.md`, `title-sme.yaml`, `title-sme.md`, `practice-sme.yaml`, `practice-sme.md`\n- Modify: `team-ai/agents/manifest.fragment.yaml`\n- Create: `team-ai/manifest.yaml`\n\n**Acceptance Criteria:**\n- [ ] Three group SMEs with `max_hops: 1`, their group's specialist namespaces, and one-line descriptions\n- [ ] 14 domains with `group`, `authority`, `not_owned`, `owner`; `nightcap` canonical, `monster-rpg` and `daily-case` provisional, `nightcap-couch-race` archived with `subagent: title-sme`\n- [ ] 17 generated/authored agents plus each file in `docs/agents/` registered as `kind: persona`, `source: authored`, with `path`\n- [ ] Each directory in `docs/skills/` registered as a skill with `source: authored` and `path`\n- [ ] `assemble-manifest --root team-ai` and `validate-manifest --root team-ai` exit 0\n\n**Verify:** `node $CLI validate-manifest --root team-ai` → `validate-manifest: OK`\n\n```json:metadata\n{\"files\":[\"team-ai/agents/engine-sme.yaml\",\"engine-sme.md\",\"title-sme.yaml\",\"title-sme.md\",\"practice-sme.yaml\",\"practice-sme.md\",\"team-ai/agents/manifest.fragment.yaml\",\"team-ai/manifest.yaml\"],\"verifyCommand\":\"node $CLI validate-manifest --root team-ai\",\"acceptanceCriteria\":[\"Three group SMEs with `max_hops: 1`, their group's specialist namespaces, and one-line descriptions\",\"14 domains with `group`, `authority`, `not_owned`, `owner`; `nightcap` canonical, `monster-rpg` and `daily-case` provisional, `nightcap-couch-race` archived with `subagent: title-sme`\",\"17 generated/authored agents plus each file in `docs/agents/` registered as `kind: persona`, `source: authored`, with `path`\",\"Each directory in `docs/skills/` registered as a skill with `source: authored` and `path`\",\"`assemble-manifest --root team-ai` and `validate-manifest --root team-ai` exit 0\"],\"repo\":\"arcwright\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "Group SMEs, manifest, invariants",
+      "blockedBy": [
+        16
+      ]
+    },
+    {
+      "id": 18,
+      "subject": "Task 18: Emit subagents and add CI",
+      "status": "pending",
+      "description": "**Goal:** The agents load in Claude Code, search the KB with built-in tools, and CI keeps everything consistent.\n\n**Files:**\n- Create: `.claude/agents/team-ai-*.md`, `.github/workflows/team-ai.yml`\n\n**Acceptance Criteria:**\n- [ ] One `.claude/agents/team-ai-<name>.md` per agent definition, with `tools: Read, Grep, Glob`, a *Finding your documents* section, and no `model` key\n- [ ] No other file under `.claude/` changes, and no `.mcp.json` is created\n- [ ] CI builds team-ai `v0.4.0` from source and fails on invalid KB, broken invariants, emitted-agent drift, or a surviving prior-namespace id\n\n**Verify:** `git status --porcelain .claude | grep -v 'agents/team-ai-'` → prints nothing\n\n```json:metadata\n{\"files\":[\".claude/agents/team-ai-*.md\",\".github/workflows/team-ai.yml\"],\"verifyCommand\":\"git status --porcelain .claude | grep -v 'agents/team-ai-'\",\"acceptanceCriteria\":[\"One `.claude/agents/team-ai-<name>.md` per agent definition, with `tools: Read, Grep, Glob`, a *Finding your documents* section, and no `model` key\",\"No other file under `.claude/` changes, and no `.mcp.json` is created\",\"CI builds team-ai `v0.4.0` from source and fails on invalid KB, broken invariants, emitted-agent drift, or a surviving prior-namespace id\"],\"repo\":\"arcwright\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "Emit subagents and add CI",
+      "blockedBy": [
+        17
+      ]
+    },
+    {
+      "id": 19,
+      "subject": "Task 19: Verify end to end and open the PR",
+      "status": "pending",
+      "description": "**Goal:** Prove the result stays inside the approved layout and hand it over as one reviewable PR.\n\n**Files:** none created\n\n**Acceptance Criteria:**\n- [ ] Every path in `git diff --name-only origin/main` is in the spec's allowlist\n- [ ] `docs/agents/`, `docs/skills/`, and every non-`team-ai-*` file under `.claude/` are unchanged\n- [ ] No `engine/`, `api/`, `sdk/`, `dashboard/` changes\n- [ ] No unresolved `*.team-ai-new` file\n- [ ] The PR body states the migration is included and that `id` values changed\n\n**Verify:** `git diff --name-only origin/main | grep -vE '^(team-ai/|\\.claude/agents/team-ai-|docs/|AGENTS\\.md$|\\.github/copilot-instructions\\.md$|\\.github/workflows/team-ai\\.yml$|\\.gitignore$)'` → prints nothing\n\n```json:metadata\n{\"files\":[],\"verifyCommand\":\"git diff --name-only origin/main | grep -vE '^(team-ai/|\\\\.claude/agents/team-ai-|docs/|AGENTS\\\\.md$|\\\\.github/copilot-instructions\\\\.md$|\\\\.github/workflows/team-ai\\\\.yml$|\\\\.gitignore$)'\",\"acceptanceCriteria\":[\"Every path in `git diff --name-only origin/main` is in the spec's allowlist\",\"`docs/agents/`, `docs/skills/`, and every non-`team-ai-*` file under `.claude/` are unchanged\",\"No `engine/`, `api/`, `sdk/`, `dashboard/` changes\",\"No unresolved `*.team-ai-new` file\",\"The PR body states the migration is included and that `id` values changed\"],\"repo\":\"arcwright\",\"modelTier\":\"standard\"}\n```",
+      "activeForm": "Verify end to end and open the PR",
+      "blockedBy": [
+        18
+      ]
+    }
+  ],
+  "lastUpdated": "2026-09-14T01:04:40.717Z"
+}
