@@ -15,7 +15,7 @@ supersedes: []
 
 **Status**: Approved (design) — revisions since approval pending founder confirmation
 
-**Version**: 1.3 | **Last updated**: 2026-09-13 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
+**Version**: 1.4 | **Last updated**: 2026-09-13 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
 
 **Author**: Claude (with founder) | **Date**: 2026-09-13
 
@@ -146,8 +146,9 @@ deprecated items surface through an interactive approval form, not raw YAML.
   register the three tier-2 group SMEs (D5) rather than generate them.
 - *Decision approvals.* On 2026-09-13 the founder confirmed D1, D2, D3, and D6
   (built-in search, no MCP server).
-- *Not covered by any approval yet.* The remaining version 1.1–1.3 revisions,
-  which are under review in PR #309.
+- *Not covered by any approval yet.* The version 1.1–1.4 revisions. Versions
+  through 1.3 merged in PR #309; 1.4 corrects defects found while preparing
+  implementation, including the D1 clarification above.
 - *Not an implementation authorization.* Design approval authorizes planning
   only. The per-file migration proposal requires its own explicit founder
   approval, recorded in the Phase A PR, before `--apply` runs.
@@ -233,8 +234,8 @@ Namespaces are front-matter metadata over those files, so nothing moves.
 Agents read the local clone the same way a developer does.
 
 **D6 (approved 2026-09-13): built-in search, no server.** Emitted subagents get
-Claude Code's `Read`, `Grep`, and `Glob` tools plus a generated *Finding your
-documents* section naming their namespaces. A specialist lists its documents by
+Claude Code's `Read`, `Grep`, and `Glob` tools plus a generated *Search
+procedure* that comes before, and overrides, the templates' tool-specific steps. A specialist lists its documents by
 searching the KB root for its `namespace:` front-matter line, then reads and
 searches only those.
 
@@ -274,7 +275,10 @@ conflicts:
 |---|---|---|
 | `docs/archive/` | 234 | historical exports; canonical docs win |
 | `docs/design/line-libraries/` | 15 | draft line libraries without KB front matter |
-| `docs/skills/*/SKILL.md` | 8 | skill manifests with their own front matter, not KB docs |
+| `docs/skills/*/SKILL.md` | 9 | skill manifests with their own front matter, not KB docs |
+| `docs/adoption-plan.md` | 1 | the `team-ai adopt` report, not a KB document |
+| `docs/decisions/0000-template.md` | 1 | the ADR template |
+| `docs/specs/0041-aw-217-session-lifecycle-api-and-auth.md` | 1 | carries its own non-KB front matter (`spec_id`, `issue`, `milestone`); reconciled separately rather than rewritten during migration |
 
 **Rules:**
 
@@ -298,6 +302,10 @@ conflicts:
 - `validate-kb` reports each unparseable file as its own failure instead of
   aborting the whole run (the same class of crash fixed in `team-ai adopt` 0.3.1,
   triggered by the same `arcwright-minigame` SKILL.md).
+- Front-matter parsing normalizes line endings first. Windows checkouts with
+  `core.autocrlf=true` (Arcwright has no `.gitattributes`) put CRLF on every
+  line, and the parser otherwise throws on `tags: []` or keeps a trailing
+  carriage return on every value, so no id or namespace would ever match.
 - After migration, the check that ids did not break is a grep for any token
   starting with one of the seven prior namespace values across the repository
   outside `docs/archive/`. It must return zero.
@@ -535,6 +543,10 @@ rank fusion.
 2026-09-13. The hand-authored contracts in `docs/agents/` and skills in
 `docs/skills/` are registered in the manifest as `source: authored`. Generation
 never writes to their paths; team-ai PR #5 makes that a checked property.
+Only the six role contracts in `docs/agents/` are registered; its `README.md`,
+`USAGE.md`, `expert-personas.md`, and `road-to-live-playbook.md` are not agents.
+Registered contracts have no team-ai agent definition, so they are never
+emitted as subagents (clarified in version 1.4).
 
 **D2 — `nightcap-couch-race` gets an `authority: archived` domain.** Approved
 2026-09-13. Questions about Couch Race route to `title-sme`, which answers that

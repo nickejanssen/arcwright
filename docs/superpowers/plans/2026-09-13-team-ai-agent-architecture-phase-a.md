@@ -393,6 +393,7 @@ git commit -m "feat(manifest): add topology fields and agents/skills sections"
 - [ ] Fails when two tier-3 agents share a namespace
 - [ ] Fails when a domain's `subagent` or any `escalate_to` (other than `unassigned`) names no manifest agent
 - [ ] Fails when a manifest agent has no definition file, or its definition's `max_hops`/`kb_namespaces` disagree with the manifest
+- [ ] Accepts an agent with `source: authored` and a `path` but no definition file: a registered contract is routable metadata, not an emitted subagent
 - [ ] Passes a consistent manifest; a manifest without `agents` passes with a note
 
 **Verify:** `npx vitest run src/manifest/invariants.test.ts` → all pass
@@ -489,6 +490,17 @@ describe("checkManifestInvariants", () => {
     expect(rules(m)).toEqual(expect.arrayContaining(["domain-subagent", "escalate-to"]));
   });
 
+  it("accepts a registered authored contract that has no definition file", () => {
+    const m: Manifest = {
+      ...base,
+      agents: [
+        ...base.agents!,
+        { name: "planner", tier: 2, kind: "persona", max_hops: 0, kb_namespaces: [], source: "authored", path: "docs/agents/planner.md" },
+      ],
+    };
+    expect(rules(m)).toEqual([]);
+  });
+
   it("rejects a manifest agent whose definition disagrees", () => {
     const d = new Map(defs);
     d.set("safety-sme", def("safety-sme", { kb_namespaces: ["other"] }));
@@ -576,6 +588,9 @@ export function checkManifestInvariants(
     }
     const definition = definitions.get(agent.name);
     if (definition === undefined) {
+      // A registered authored contract (source: authored + path) is routable
+      // metadata only; it has no definition and is never emitted.
+      if (agent.source === "authored" && agent.path !== undefined) continue;
       push("definition-missing", agent.name, "no agents/<name>.yaml definition");
       continue;
     }
@@ -1066,14 +1081,15 @@ git commit -m "feat(init): answers keyed by question id"
 **Goal:** An instance can declare that its KB lives outside `kb/` and which paths are not KB documents, and KB loading reports each broken file instead of aborting.
 
 **Files:**
-- Modify: `src/retrieval/index-lock.ts`, `src/kb/loader.ts`, `src/retrieval/factory.ts`, `src/retrieval/lexical.ts`, `src/commands/validate-kb.ts`, `src/commands/freshness-audit.ts`, `src/cli.ts`
-- Test: `src/kb/loader.test.ts`, `src/retrieval/index-lock.test.ts`
+- Modify: `src/kb/frontmatter.ts`, `src/retrieval/index-lock.ts`, `src/kb/loader.ts`, `src/retrieval/factory.ts`, `src/retrieval/lexical.ts`, `src/commands/validate-kb.ts`, `src/commands/freshness-audit.ts`, `src/cli.ts`
+- Test: `src/kb/frontmatter.test.ts`, `src/kb/loader.test.ts`, `src/retrieval/index-lock.test.ts`
 
 **Acceptance Criteria:**
 - [ ] `index.lock` accepts an optional `kb: { root, exclude }`; a lock without it parses exactly as before
 - [ ] `resolveKbScope(instanceDir)` returns `root` resolved against the instance directory (default `<instance>/kb`) and `exclude` (default `[]`)
 - [ ] Exclusion entries: a trailing `/` excludes a subtree; a leading `**/` matches that path at any depth; anything else is an exact relative path
 - [ ] `loadKb` skips excluded files, and a file whose front matter does not parse becomes one failure entry instead of throwing
+- [ ] `parseFrontmatter` normalizes CRLF and lone-CR line endings before parsing: on a Windows checkout (`core.autocrlf=true`) `tags: []` parses without throwing and no parsed value carries a trailing carriage return
 - [ ] `validate-kb --instance <dir>`, `freshness-audit --instance <dir>`, `reindex`, and `search` all use the declared scope
 
 **Verify:** `npx vitest run src/kb/ src/retrieval/ src/commands/` → all pass
@@ -1216,6 +1232,36 @@ Change the signature to `export async function loadKb(root: string, opts: LoadKb
 ```typescript
         .option("--instance <dir>", "instance directory; KB root and exclusions come from its index.lock")
 ```
+
+- [ ] **Step 5b: Normalize line endings when parsing front matter.** Windows checkouts with `core.autocrlf=true` have CRLF on every line. The `yaml` parser throws `Unexpected scalar at node end` on `tags: []` followed by a carriage return, and without a flow sequence it silently keeps a trailing carriage return on every value, so ids and namespaces would never match any mapping. Append to `src/kb/frontmatter.test.ts`:
+
+```typescript
+describe("parseFrontmatter — CRLF line endings", () => {
+  it("parses flow sequences and leaves no carriage returns", () => {
+    const { data, body } = parseFrontmatter(
+      "---\r\nid: operating.docs.x\r\ntitle: X\r\ntags: []\r\n---\r\n\r\n# Body\r\n",
+    );
+    expect(data).toEqual({ id: "operating.docs.x", title: "X", tags: [] });
+    expect(body).not.toContain("\r");
+  });
+
+  it("handles lone CR line endings", () => {
+    expect(parseFrontmatter("---\rtitle: X\rtags: []\r---\r\rBody\r").data).toEqual({
+      title: "X",
+      tags: [],
+    });
+  });
+});
+```
+
+In `src/kb/frontmatter.ts`, normalize before `gray-matter` sees the text:
+
+```typescript
+export function parseFrontmatter(raw: string): ParsedDoc {
+  const parsed = matter(raw.replace(/\r\n?/g, "\n"), { engines });
+```
+
+Do not change writers: `applyRemapPlan` (Task 7) edits the raw file text and must keep CRLF, and `applyFrontmatter` serializes from the raw body.
 
 - [ ] **Step 6: Run and commit.** `npx vitest run src/kb/ src/retrieval/ src/commands/` → PASS.
 
@@ -1633,7 +1679,7 @@ git commit -m "feat(remap): conflict-safe remap-namespaces command"
 **Acceptance Criteria:**
 - [ ] `--file-prefix team-ai-` writes `.claude/agents/team-ai-<name>.md`; the front-matter `name` stays unprefixed so delegation references resolve
 - [ ] `--no-plugin-manifest` writes no `.claude-plugin/plugin.json`
-- [ ] `--builtin-search` sets `tools` to `Read, Grep, Glob` and appends a *Finding your documents* section naming each of the agent's namespaces
+- [ ] `--builtin-search` sets `tools` to `Read, Grep, Glob` and writes a *Search procedure* section (router or subagent variant, naming the agent's namespaces) **before** the original instructions, under a heading that marks their tool names as unavailable
 - [ ] `tools` is written as a comma-separated string; no `model` key is written
 - [ ] `--allow-tracked` suppresses the "not gitignored" warning
 - [ ] Defaults are unchanged: no prefix, plugin manifest written, raw tool names
@@ -1666,6 +1712,8 @@ describe("emitClaudeCode — committed layout options", () => {
     expect(front.model).toBeUndefined();
     expect(front.tools).toBe("Read, Grep, Glob");
     for (const ns of agent.def.kb_namespaces) expect(raw).toContain(`^namespace: ${ns}`);
+    expect(raw.indexOf("## Search procedure")).toBeGreaterThan(-1);
+    expect(raw.indexOf("## Search procedure")).toBeLessThan(raw.indexOf("## Original instructions"));
   });
 });
 ```
@@ -1682,24 +1730,41 @@ export interface EmitClaudeCodeOptions {
 }
 ```
 
-Change `frontMatter` to take the options and build `tools` as a string:
+Import `type AgentDef` from `../schema/types.js`. Change `frontMatter` to take the options, build `tools` as a string, and in built-in search mode put the search procedure before the original instructions:
 
 ```typescript
 const BUILTIN_SEARCH_TOOLS = ["Read", "Grep", "Glob"];
 
-function searchSection(namespaces: string[]): string {
-  const lines = namespaces.map(
-    (ns) => `- \`${ns}\`: search the KB root for \`^namespace: ${ns}\` to list your documents, then read only those.`,
+// team-ai's agent templates describe team-ai MCP tools (kb_search and others).
+// Built-in search mode puts a procedure for Claude Code's own tools first and
+// marks the template text as secondary, so an agent never receives two
+// conflicting procedures with equal weight.
+function builtinProcedure(def: AgentDef): string {
+  const lookup = def.kb_namespaces.map(
+    (ns) => `- \`${ns}\`: search the KB root for \`^namespace: ${ns}\` to list your documents.`,
   );
+  const steps =
+    def.kind === "router"
+      ? [
+          "1. Read `team-ai/manifest.yaml` for the domain table.",
+          "2. Match the question against each domain's `keywords` and `description`; rule out any domain whose `not_owned` covers it.",
+          "3. If exactly one domain fits, hand off to its `subagent` and stop.",
+          "4. If none fits, search the KB root once for the question's key terms. If the matching documents' namespace belongs to a domain, hand off to that domain's subagent.",
+          "5. Otherwise say you do not know and name the most likely owner. Take at most one routing hop.",
+        ]
+      : [
+          ...lookup,
+          "",
+          "1. Search only those documents for the question.",
+          "2. Answer strictly from what they say, and cite every claim with the document path.",
+          "3. If nothing in your namespaces answers it, say you do not know and name who owns the question. Do not answer from general knowledge.",
+        ];
   return [
+    "## Search procedure",
     "",
-    "## Finding your documents",
+    "The knowledge base is the Markdown under the KB root declared in `team-ai/index.lock`. Use the Read, Grep, and Glob tools. Tool names under *Original instructions* are not available here; follow this procedure instead.",
     "",
-    "Your knowledge is the Markdown under the KB root declared in `team-ai/index.lock`. Each document has a `namespace:` front-matter line.",
-    "",
-    ...lines,
-    "",
-    "Cite each document by path. If nothing in your namespaces answers the question, say so and name the owner instead of answering from general knowledge.",
+    ...steps,
   ].join("\n");
 }
 
@@ -1714,8 +1779,11 @@ function frontMatter(input: EmitInput["agents"][number], opts: EmitClaudeCodeOpt
     kb_namespaces: input.def.kb_namespaces,
     max_hops: input.def.max_hops,
   };
-  const extra = opts.builtinSearch === true ? searchSection(input.def.kb_namespaces) : "";
-  const body = `${input.instructions.trim()}${extra}`.trim();
+  const original = input.instructions.trim();
+  const body =
+    opts.builtinSearch === true
+      ? `${builtinProcedure(input.def)}\n\n## Original instructions\n\n${original}`.trim()
+      : original;
   return `---\n${stringifyYaml(meta)}---\n\n${body}${body.length > 0 ? "\n" : ""}`;
 }
 ```
@@ -1790,15 +1858,22 @@ Rename `serverSource` to whatever the existing test calls the rendered server te
 
 - [ ] **Step 2: Run to confirm failure.** Both new tests FAIL (`npx` present; `kb_list` not implemented).
 
-- [ ] **Step 3: Fix the server.** In `templates/mcp-server/server.mjs.hbs`, add `import { dirname, resolve } from "node:path";` and `import { fileURLToPath } from "node:url";`, then replace the `ROOT` line, the comment above `TOOLS`, both freshness `argv` lines, and `callCli`:
+- [ ] **Step 3: Fix the server.** In `templates/mcp-server/server.mjs.hbs`, add `import { dirname, resolve } from "node:path";` and `import { fileURLToPath } from "node:url";`, then replace the `ROOT` line, both freshness `argv` lines, and `callCli`, and replace the comment above `const TOOLS = {` with exactly:
+
+```javascript
+// tool name -> argv builder. Every command is read-only and emits JSON or text
+// on stdout.
+```
+
+The template must not contain the token `npx` anywhere, including comments; the Step 1 test enforces this. Confirm with `grep -n npx templates/mcp-server/server.mjs.hbs`, which must print nothing. The replacements:
 
 ```javascript
 // The instance directory this server was generated into.
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 
 // Absolute path to a local team-ai build's dist/cli.js. team-ai is not published
-// to npm, and the `team-ai` name there belongs to an unrelated package, so this
-// server never uses npx.
+// to npm, and the package with that name there is unrelated, so this server
+// only ever runs the local build.
 const CLI = process.env.TEAM_AI_CLI;
 ```
 
@@ -2064,6 +2139,7 @@ git commit -m "docs(agents): allow tracked team-ai subagents under .claude/agent
 **Acceptance Criteria:**
 - [ ] `custom.yaml` lists the 14 namespaces with exactly 5 `seed_docs`
 - [ ] `team-ai/index.lock` declares `kb.root: ../docs` and the exclusions from the spec
+- [ ] The exclusions cover every non-archive Markdown file under `docs/` that lacks KB front matter: on `main` on 2026-09-14 that is the 15 line libraries, 9 `SKILL.md` files, `adoption-plan.md` (the adopt report), `decisions/0000-template.md` (the ADR template), and `specs/0041-aw-217-session-lifecycle-api-and-auth.md`, which carries its own non-KB front matter and is reconciled separately
 - [ ] The mapping has a rule for every one of the seven current namespace values
 - [ ] `init --dry-run` with the answers file completes with no missing-key error
 - [ ] `.gitignore` ignores `.team-ai/`
@@ -2127,6 +2203,9 @@ kb:
     - archive/
     - design/line-libraries/
     - "**/SKILL.md"
+    - adoption-plan.md
+    - decisions/0000-template.md
+    - specs/0041-aw-217-session-lifecycle-api-and-auth.md
 ```
 
 - [ ] **Step 3: Mapping.** Create `team-ai/namespace-remap.yaml`. Enumerate every per-file override from the live tree first:
@@ -2222,7 +2301,15 @@ git commit -m "feat(team-ai): add Arcwright instance inputs"
 node $CLI remap-namespaces --instance team-ai --mapping team-ai/namespace-remap.yaml --out team-ai/remap-proposal.yaml --inventory team-ai/inventory.txt
 ```
 
-Resolve every conflict by adding a mapping rule, an exclusion in `team-ai/index.lock`, or front matter, then re-run until `conflict 0`.
+Resolve every conflict by adding a mapping rule or an exclusion in `team-ai/index.lock`, then re-run until `conflict 0`. Do not edit any document's front matter in this task: Step 4 allows only `namespace:` and `id:` changes.
+
+Every `skipped` item must also be excluded, because `validate-kb` fails on any file under the KB root without KB front matter. Before Step 2, run:
+
+```bash
+node $CLI validate-kb --instance team-ai
+```
+
+It must exit 0 on the pre-migration tree (it validates front-matter shape, not namespace values). If it fails, stop and report instead of summarizing for the founder.
 
 - [ ] **Step 2: Summarize and STOP.** Present counts per target namespace, every judgement-call file, and every `skipped` file. Wait for explicit approval.
 
@@ -2309,7 +2396,8 @@ git commit -m "feat(team-ai): generate router and 13 specialists"
 **Acceptance Criteria:**
 - [ ] Three group SMEs with `max_hops: 1`, their group's specialist namespaces, and one-line descriptions
 - [ ] 14 domains with `group`, `authority`, `not_owned`, `owner`; `nightcap` canonical, `monster-rpg` and `daily-case` provisional, `nightcap-couch-race` archived with `subagent: title-sme`
-- [ ] 17 generated/authored agents plus each file in `docs/agents/` registered as `kind: persona`, `source: authored`, with `path`
+- [ ] 17 generated or hand-authored agents with definition files
+- [ ] Exactly the six role contracts in `docs/agents/` (`business-steward`, `planner`, `product-steward`, `scribe`, `spec-author`, `system-architect`) registered as `kind: persona`, `source: authored`, with `path` and **no** definition file; `README.md`, `USAGE.md`, `expert-personas.md`, and `road-to-live-playbook.md` are not registered
 - [ ] Each directory in `docs/skills/` registered as a skill with `source: authored` and `path`
 - [ ] `assemble-manifest --root team-ai` and `validate-manifest --root team-ai` exit 0
 
@@ -2331,7 +2419,7 @@ escalate_to: unassigned
 instructions_file: agents/engine-sme.md
 ```
 
-`title-sme.yaml` uses `kb_namespaces: [nightcap, monster-rpg, daily-case, nightcap-couch-race]` and a description noting that provisional and archived sources must be labelled as such. `practice-sme.yaml` uses `kb_namespaces: [product-roadmap, engineering-practice, playtest-ops]`. Each `.md` states: answer only from cited KB results; delegate a single-domain question to that domain's specialist; refuse and name the owner when nothing in the group's namespaces answers it.
+`title-sme.yaml` uses `kb_namespaces: [nightcap, monster-rpg, daily-case, nightcap-couch-race]` and a description noting that provisional and archived sources must be labelled as such. `practice-sme.yaml` uses `kb_namespaces: [product-roadmap, engineering-practice, playtest-ops]`. Each `.md` states: answer only from cited KB documents; delegate a single-domain question to that domain's specialist; refuse and name the owner when nothing in the group's namespaces answers it. Do not name `kb_*` tools; the emitter adds the search procedure.
 
 - [ ] **Step 2: Write the fragment.** In `team-ai/agents/manifest.fragment.yaml`, replace the generated `TODO` entries with 14 domains in this shape:
 
@@ -2361,9 +2449,9 @@ domains:
     owner: Nico Janssen
 ```
 
-Add `agents:` with the router (`tier: 1, kind: router, max_hops: 2, kb_namespaces: []`), the three group SMEs (`tier: 2`, `source: authored`), the 13 specialists (`tier: 3`, `source: generated`), and one `kind: persona, tier: 2, max_hops: 1, kb_namespaces: [product-roadmap], source: authored, path: docs/agents/<file>` entry per file from `ls docs/agents/*.md`. Add `skills:` with `kb-answer`, `kb-contribute`, `sme-route`, `audit-summary` (`source: generated`) and one `source: authored, path: docs/skills/<dir>/SKILL.md` entry per directory from `ls -d docs/skills/*/`.
+Add `agents:` with the router (`tier: 1, kind: router, max_hops: 2, kb_namespaces: []`), the three group SMEs (`tier: 2`, `source: authored`), the 13 specialists (`tier: 3`, `source: generated`), and one `kind: persona, tier: 2, max_hops: 0, kb_namespaces: [], source: authored, path: docs/agents/<file>` entry for each of the six role contracts: `business-steward.md`, `planner.md`, `product-steward.md`, `scribe.md`, `spec-author.md`, `system-architect.md`. The other four files in `docs/agents/` are not agents and are not registered. Add `skills:` with `kb-answer`, `kb-contribute`, `sme-route`, `audit-summary` (`source: generated`) and one `source: authored, path: docs/skills/<dir>/SKILL.md` entry per directory from `ls -d docs/skills/*/`.
 
-Persona entries have no `agents/<name>.yaml`, so `validate-manifest` reports `definition-missing` for them. Give each persona entry its own `team-ai/agents/<name>.yaml` with `kind: persona`, the same `max_hops` and `kb_namespaces`, `tools: []`, and `instructions_file` pointing at the `docs/agents/` file.
+Do **not** create `team-ai/agents/<name>.yaml` files for the registered contracts. `validate-manifest` accepts `source: authored` entries that have a `path` (Task 2), and without a definition file the emitter never turns them into subagents, which is what D1 requires.
 
 - [ ] **Step 3: Assemble and validate.**
 
@@ -2389,7 +2477,7 @@ git commit -m "feat(team-ai): group SMEs, manifest, and registered authored agen
 - Create: `.claude/agents/team-ai-*.md`, `.github/workflows/team-ai.yml`
 
 **Acceptance Criteria:**
-- [ ] One `.claude/agents/team-ai-<name>.md` per agent definition, with `tools: Read, Grep, Glob`, a *Finding your documents* section, and no `model` key
+- [ ] Exactly 17 files at `.claude/agents/team-ai-*.md` (router, 13 specialists, 3 group SMEs), each with `tools: Read, Grep, Glob`, a *Search procedure* section before the original instructions, and no `model` key
 - [ ] No other file under `.claude/` changes, and no `.mcp.json` is created
 - [ ] CI builds team-ai `v0.4.0` from source and fails on invalid KB, broken invariants, emitted-agent drift, or a surviving prior-namespace id
 
