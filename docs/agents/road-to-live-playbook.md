@@ -1,6 +1,6 @@
 ---
-id: productroadmap.agents.road-to-live-playbook
-namespace: product-roadmap
+id: operating.agents.road-to-live-playbook
+namespace: operating
 title: Road to Live — Execution Playbook
 owner: Nico Janssen
 status: active

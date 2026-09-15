@@ -1,6 +1,6 @@
 ---
-id: productroadmap.agents.usage
-namespace: product-roadmap
+id: operating.agents.usage
+namespace: operating
 title: Using the Arcwright Agents and Skills
 owner: Nico Janssen
 status: active

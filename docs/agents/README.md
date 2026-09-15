@@ -1,6 +1,6 @@
 ---
-id: productroadmap.agents.readme
-namespace: product-roadmap
+id: operating.agents.readme
+namespace: operating
 title: Arcwright Multi-Agent Operating Model
 owner: Nico Janssen
 status: active

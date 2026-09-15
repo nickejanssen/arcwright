@@ -1,6 +1,6 @@
 ---
-id: productroadmap.agents.scribe
-namespace: product-roadmap
+id: operating.agents.scribe
+namespace: operating
 title: "Role: Scribe"
 owner: Nico Janssen
 status: active

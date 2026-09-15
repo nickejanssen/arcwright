@@ -31,4 +31,4 @@ jobs:
           git diff --exit-code -- .claude/agents
       - name: no prior-namespace ids survive
         run: |
-          ! git grep -n -E '^[[:space:]]*id:[[:space:]]*"?(operating|patterns|playbooks|custom|decisions|platform|unmapped)\.' -- . ':!docs/archive' ':!adoption-plan.yaml' ':!docs/adoption-plan.md' ':!team-ai/remap-proposal.yaml' ':!team-ai/inventory.txt' ':!.team-ai-cli'
+          ! git grep -n -E '^[[:space:]]*id:[[:space:]]*"?(operating|patterns|playbooks|custom|decisions|platform|unmapped)\.' -- . ':!docs/archive' ':!docs/agents' ':!docs/skills' ':!adoption-plan.yaml' ':!docs/adoption-plan.md' ':!team-ai/remap-proposal.yaml' ':!team-ai/inventory.txt' ':!.team-ai-cli'

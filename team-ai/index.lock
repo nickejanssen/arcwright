@@ -10,6 +10,8 @@ kb:
   exclude:
     - archive/
     - design/line-libraries/
+    - agents/
+    - skills/
     - "**/SKILL.md"
     - adoption-plan.md
     - decisions/0000-template.md
