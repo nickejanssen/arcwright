@@ -1,0 +1,23 @@
+name: reindex
+on:
+  schedule:
+    - cron: "17 4 * * 1"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reindex:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - uses: actions/checkout@v4
+        with:
+          repository: nickejanssen/team-ai
+          ref: v0
+          path: .team-ai-cli
+      - run: npm ci && npm run build
+        working-directory: .team-ai-cli
+      - run: node .team-ai-cli/dist/cli.js reindex

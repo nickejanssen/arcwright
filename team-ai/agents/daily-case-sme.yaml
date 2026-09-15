@@ -1,0 +1,9 @@
+name: daily-case-sme
+kind: subagent
+description: "Answers daily-case questions strictly from the daily-case namespace, with citations."
+model_tier: small
+kb_namespaces: [daily-case]
+tools: [kb_search, kb_get, kb_coverage_gap]
+max_hops: 0
+escalate_to: unassigned
+instructions_file: agents/daily-case-sme.md

@@ -1,0 +1,9 @@
+name: engine-sme
+kind: subagent
+description: "Answers engine questions that span specialists, delegating one hop to the owner."
+model_tier: small
+kb_namespaces: [arc-execution, knowledge-graph, character-behavior, model-routing, session-runtime, safety, developer-api]
+tools: [kb_search, kb_get, kb_coverage_gap]
+max_hops: 1
+escalate_to: sme
+instructions_file: agents/engine-sme.md

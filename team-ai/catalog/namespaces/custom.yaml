@@ -1,5 +1,5 @@
 name: custom
-description: Arcwright's expertise domains: engine, titles, and practice.
+description: "Arcwright's expertise domains: engine, titles, and practice."
 second_level:
   - arc-execution
   - knowledge-graph

@@ -1,0 +1,9 @@
+name: developer-api-sme
+kind: subagent
+description: "Answers developer-api questions strictly from the developer-api namespace, with citations."
+model_tier: small
+kb_namespaces: [developer-api]
+tools: [kb_search, kb_get, kb_coverage_gap]
+max_hops: 0
+escalate_to: unassigned
+instructions_file: agents/developer-api-sme.md

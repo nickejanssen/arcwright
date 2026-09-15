@@ -1,0 +1,9 @@
+name: monster-rpg-sme
+kind: subagent
+description: "Answers monster-rpg questions strictly from the monster-rpg namespace, with citations."
+model_tier: small
+kb_namespaces: [monster-rpg]
+tools: [kb_search, kb_get, kb_coverage_gap]
+max_hops: 0
+escalate_to: unassigned
+instructions_file: agents/monster-rpg-sme.md

@@ -1,0 +1,390 @@
+# This instance's domains. `team-ai assemble-manifest` merges this file into manifest.yaml.
+domains:
+  - id: arc-execution
+    description: "Deterministic resolution of authored arcs and session transitions."
+    keywords: [arc execution, authored arc, transition, runtime]
+    not_owned: [knowledge state, character personality]
+    kb_namespace: arc-execution
+    subagent: arc-execution-sme
+    group: engine
+    authority: canonical
+    model_tier: small
+    owner: Nico Janssen
+    escalate_to: engine-sme
+  - id: knowledge-graph
+    description: "Who knows what, when they learned it, and from whom."
+    keywords: [knowledge state, knows, learned, epistemic, knowledge graph]
+    not_owned: [character personality, arc transitions]
+    kb_namespace: knowledge-graph
+    subagent: knowledge-graph-sme
+    group: engine
+    authority: canonical
+    depends_on: [arc-execution, character-behavior]
+    model_tier: small
+    owner: Nico Janssen
+    escalate_to: engine-sme
+  - id: character-behavior
+    description: "Unified character identity, behavior, goals, and relationships."
+    keywords: [character, behavior, personality, goals, relationships]
+    not_owned: [knowledge graph, arc transitions]
+    kb_namespace: character-behavior
+    subagent: character-behavior-sme
+    group: engine
+    authority: canonical
+    depends_on: [knowledge-graph]
+    model_tier: small
+    owner: Nico Janssen
+    escalate_to: engine-sme
+  - id: model-routing
+    description: "Provider-agnostic, cost-aware routing by task and quality tier."
+    keywords: [model routing, provider agnostic, quality tier, cost]
+    not_owned: [session state, content safety]
+    kb_namespace: model-routing
+    subagent: model-routing-sme
+    group: engine
+    authority: canonical
+    model_tier: small
+    owner: Nico Janssen
+    escalate_to: engine-sme
+  - id: session-runtime
+    description: "Session lifecycle, persistence, and structured runtime events."
+    keywords: [session, persistence, lifecycle, events, runtime]
+    not_owned: [arc authoring, model selection]
+    kb_namespace: session-runtime
+    subagent: session-runtime-sme
+    group: engine
+    authority: canonical
+    depends_on: [arc-execution]
+    model_tier: small
+    owner: Nico Janssen
+    escalate_to: engine-sme
+  - id: safety
+    description: "Engine-layer content safety constraints and enforcement boundaries."
+    keywords: [safety, moderation, constraint, policy]
+    not_owned: [creative direction, model routing]
+    kb_namespace: safety
+    subagent: safety-sme
+    group: engine
+    authority: canonical
+    model_tier: small
+    owner: Nico Janssen
+    escalate_to: engine-sme
+  - id: developer-api
+    description: "Public API contracts, SDK boundaries, and developer integration."
+    keywords: [api, sdk, developer, integration, contract]
+    not_owned: [engine state transitions, dashboard rendering]
+    kb_namespace: developer-api
+    subagent: developer-api-sme
+    group: engine
+    authority: canonical
+    model_tier: small
+    owner: Nico Janssen
+    escalate_to: engine-sme
+  - id: nightcap
+    description: "Canonical Nightcap murder-mystery experience and story content."
+    keywords: [nightcap, murder mystery, story bible, canon]
+    not_owned: [engine architecture, archived couch race]
+    kb_namespace: nightcap
+    subagent: nightcap-sme
+    group: title
+    authority: canonical
+    model_tier: small
+    owner: Nico Janssen
+    escalate_to: title-sme
+  - id: monster-rpg
+    description: "Monster RPG title material, labelled as provisional until canonized."
+    keywords: [monster rpg, monster, roleplaying]
+    not_owned: [Nightcap canon, engine architecture]
+    kb_namespace: monster-rpg
+    subagent: monster-rpg-sme
+    group: title
+    authority: provisional
+    model_tier: small
+    owner: Nico Janssen
+    escalate_to: title-sme
+  - id: daily-case
+    description: "Daily Case title material, labelled as provisional until canonized."
+    keywords: [daily case, case of the day]
+    not_owned: [Nightcap canon, engine architecture]
+    kb_namespace: daily-case
+    subagent: daily-case-sme
+    group: title
+    authority: provisional
+    model_tier: small
+    owner: Nico Janssen
+    escalate_to: title-sme
+  - id: nightcap-couch-race
+    description: "Archived Couch Race variant; answers explain it is superseded."
+    keywords: [couch race]
+    not_owned: [Nightcap murder mystery]
+    kb_namespace: nightcap-couch-race
+    subagent: title-sme
+    group: title
+    authority: archived
+    model_tier: small
+    owner: Nico Janssen
+    escalate_to: title-sme
+  - id: product-roadmap
+    description: "Product scope, roadmap decisions, and approved sequencing."
+    keywords: [roadmap, product, scope, milestone, decision]
+    not_owned: [implementation details, playtest operations]
+    kb_namespace: product-roadmap
+    subagent: product-roadmap-sme
+    group: practice
+    authority: canonical
+    model_tier: small
+    owner: Nico Janssen
+    escalate_to: practice-sme
+  - id: engineering-practice
+    description: "Engineering conventions, architecture practice, and delivery playbooks."
+    keywords: [engineering practice, architecture, convention, playbook]
+    not_owned: [product prioritization, title canon]
+    kb_namespace: engineering-practice
+    subagent: engineering-practice-sme
+    group: practice
+    authority: canonical
+    model_tier: small
+    owner: Nico Janssen
+    escalate_to: practice-sme
+  - id: playtest-ops
+    description: "Playtest preparation, harness operation, research, and publishing."
+    keywords: [playtest, tester, harness, research, publishing]
+    not_owned: [product approval, engine architecture]
+    kb_namespace: playtest-ops
+    subagent: playtest-ops-sme
+    group: practice
+    authority: canonical
+    model_tier: small
+    owner: Nico Janssen
+    escalate_to: practice-sme
+
+agents:
+  - name: sme
+    tier: 1
+    kind: router
+    max_hops: 2
+    kb_namespaces: []
+    source: generated
+  - name: engine-sme
+    tier: 2
+    kind: subagent
+    group: engine
+    max_hops: 1
+    kb_namespaces: [arc-execution, knowledge-graph, character-behavior, model-routing, session-runtime, safety, developer-api]
+    escalate_to: sme
+    source: authored
+    path: agents/engine-sme.yaml
+  - name: title-sme
+    tier: 2
+    kind: subagent
+    group: title
+    max_hops: 1
+    kb_namespaces: [nightcap, monster-rpg, daily-case, nightcap-couch-race]
+    escalate_to: sme
+    source: authored
+    path: agents/title-sme.yaml
+  - name: practice-sme
+    tier: 2
+    kind: subagent
+    group: practice
+    max_hops: 1
+    kb_namespaces: [product-roadmap, engineering-practice, playtest-ops]
+    escalate_to: sme
+    source: authored
+    path: agents/practice-sme.yaml
+  - name: arc-execution-sme
+    tier: 3
+    kind: subagent
+    group: engine
+    max_hops: 0
+    kb_namespaces: [arc-execution]
+    escalate_to: engine-sme
+    source: generated
+  - name: knowledge-graph-sme
+    tier: 3
+    kind: subagent
+    group: engine
+    max_hops: 0
+    kb_namespaces: [knowledge-graph]
+    escalate_to: engine-sme
+    source: generated
+  - name: character-behavior-sme
+    tier: 3
+    kind: subagent
+    group: engine
+    max_hops: 0
+    kb_namespaces: [character-behavior]
+    escalate_to: engine-sme
+    source: generated
+  - name: model-routing-sme
+    tier: 3
+    kind: subagent
+    group: engine
+    max_hops: 0
+    kb_namespaces: [model-routing]
+    escalate_to: engine-sme
+    source: generated
+  - name: session-runtime-sme
+    tier: 3
+    kind: subagent
+    group: engine
+    max_hops: 0
+    kb_namespaces: [session-runtime]
+    escalate_to: engine-sme
+    source: generated
+  - name: safety-sme
+    tier: 3
+    kind: subagent
+    group: engine
+    max_hops: 0
+    kb_namespaces: [safety]
+    escalate_to: engine-sme
+    source: generated
+  - name: developer-api-sme
+    tier: 3
+    kind: subagent
+    group: engine
+    max_hops: 0
+    kb_namespaces: [developer-api]
+    escalate_to: engine-sme
+    source: generated
+  - name: nightcap-sme
+    tier: 3
+    kind: subagent
+    group: title
+    max_hops: 0
+    kb_namespaces: [nightcap]
+    escalate_to: title-sme
+    source: generated
+  - name: monster-rpg-sme
+    tier: 3
+    kind: subagent
+    group: title
+    max_hops: 0
+    kb_namespaces: [monster-rpg]
+    escalate_to: title-sme
+    source: generated
+  - name: daily-case-sme
+    tier: 3
+    kind: subagent
+    group: title
+    max_hops: 0
+    kb_namespaces: [daily-case]
+    escalate_to: title-sme
+    source: generated
+  - name: product-roadmap-sme
+    tier: 3
+    kind: subagent
+    group: practice
+    max_hops: 0
+    kb_namespaces: [product-roadmap]
+    escalate_to: practice-sme
+    source: generated
+  - name: engineering-practice-sme
+    tier: 3
+    kind: subagent
+    group: practice
+    max_hops: 0
+    kb_namespaces: [engineering-practice]
+    escalate_to: practice-sme
+    source: generated
+  - name: playtest-ops-sme
+    tier: 3
+    kind: subagent
+    group: practice
+    max_hops: 0
+    kb_namespaces: [playtest-ops]
+    escalate_to: practice-sme
+    source: generated
+  - name: business-steward
+    tier: 2
+    kind: persona
+    max_hops: 0
+    kb_namespaces: []
+    source: authored
+    path: docs/agents/business-steward.md
+  - name: planner
+    tier: 2
+    kind: persona
+    max_hops: 0
+    kb_namespaces: []
+    source: authored
+    path: docs/agents/planner.md
+  - name: product-steward
+    tier: 2
+    kind: persona
+    max_hops: 0
+    kb_namespaces: []
+    source: authored
+    path: docs/agents/product-steward.md
+  - name: scribe
+    tier: 2
+    kind: persona
+    max_hops: 0
+    kb_namespaces: []
+    source: authored
+    path: docs/agents/scribe.md
+  - name: spec-author
+    tier: 2
+    kind: persona
+    max_hops: 0
+    kb_namespaces: []
+    source: authored
+    path: docs/agents/spec-author.md
+  - name: system-architect
+    tier: 2
+    kind: persona
+    max_hops: 0
+    kb_namespaces: []
+    source: authored
+    path: docs/agents/system-architect.md
+
+skills:
+  - id: kb-answer
+    deterministic: false
+    source: generated
+  - id: kb-contribute
+    deterministic: false
+    source: generated
+  - id: sme-route
+    deterministic: false
+    source: generated
+  - id: audit-summary
+    deterministic: false
+    source: generated
+  - id: arcwright-doc-bundler
+    deterministic: false
+    source: authored
+    path: docs/skills/arcwright-doc-bundler/SKILL.md
+  - id: arcwright-minigame
+    deterministic: false
+    source: authored
+    path: docs/skills/arcwright-minigame/SKILL.md
+  - id: arcwright-playtest-harness
+    deterministic: false
+    source: authored
+    path: docs/skills/arcwright-playtest-harness/SKILL.md
+  - id: arcwright-playtest-publishing
+    deterministic: false
+    source: authored
+    path: docs/skills/arcwright-playtest-publishing/SKILL.md
+  - id: arcwright-playtest-research
+    deterministic: false
+    source: authored
+    path: docs/skills/arcwright-playtest-research/SKILL.md
+  - id: arcwright-playtest-steward
+    deterministic: false
+    source: authored
+    path: docs/skills/arcwright-playtest-steward/SKILL.md
+  - id: arcwright-reviewer
+    deterministic: false
+    source: authored
+    path: docs/skills/arcwright-reviewer/SKILL.md
+  - id: arcwright-sme
+    deterministic: false
+    source: authored
+    path: docs/skills/arcwright-sme/SKILL.md
+  - id: github-task-implementer
+    deterministic: false
+    source: authored
+    path: docs/skills/github-task-implementer/SKILL.md

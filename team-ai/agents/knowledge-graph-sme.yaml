@@ -1,0 +1,9 @@
+name: knowledge-graph-sme
+kind: subagent
+description: "Answers knowledge-graph questions strictly from the knowledge-graph namespace, with citations."
+model_tier: small
+kb_namespaces: [knowledge-graph]
+tools: [kb_search, kb_get, kb_coverage_gap]
+max_hops: 0
+escalate_to: unassigned
+instructions_file: agents/knowledge-graph-sme.md

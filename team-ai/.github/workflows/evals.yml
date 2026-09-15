@@ -1,0 +1,9 @@
+name: evals
+on:
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evals:
+    uses: nickejanssen/team-ai/.github/workflows/evals.reusable.yml@v0

@@ -1,0 +1,134 @@
+team_ai_version: 0.4.0
+created: 2026-09-15T01:23:47.420Z
+answers:
+  pre.assessment: extend
+  pre.overlap: decide-later
+  pre.probe_result: continue
+  mode: instance
+  ctx.org_path: arcwright
+  team.name: Arcwright
+  team.mission: Human-authored narrative runtime middleware with deterministic
+    session facilitation.
+  team.size: 1-3
+  team.surfaces:
+    - coding-agent
+  team.sources:
+    - github
+  team.consumers:
+    - engineers
+  kb.substrate: md-git
+  kb.namespaces: custom
+  kb.catalog_override: use-preset
+  kb.sources_strategy: link-only
+  kb.sensitivity: three-tiers
+  kb.write_back: pr-only
+  arch.index_driver: lexical
+  arch.hosting: no-server
+  arch.language: typescript
+  arch.ci: github-actions
+  arch.topology: single-repo
+  arch.model_tiers: strict
+  arch.cache: yes
+  agents.domains: arc-execution, knowledge-graph, character-behavior,
+    model-routing, session-runtime, safety, developer-api, nightcap,
+    monster-rpg, daily-case, nightcap-couch-race, product-roadmap,
+    engineering-practice, playtest-ops
+  agents.personas:
+    - internal-technical
+  agents.skills:
+    - kb-answer
+    - kb-contribute
+    - sme-route
+    - audit-summary
+  agents.strictness: refuse-log-gap
+  agents.seed: no
+deferred: []
+generated_paths:
+  - path: .github/workflows/evals.yml
+    sha256: 27e621690b54737353f98e969f79c28a5618db0818665225fab5f65bcb79a320
+  - path: .github/workflows/freshness.yml
+    sha256: 4ba603dd5a5b27e1436a03d0ca3a303781f6e394a7b22985915954d84abd3d24
+  - path: .github/workflows/reindex.yml
+    sha256: 1c7778beb9fb9bf8654d09ce3687a89ef28172b524908a7cee281ad2d781c06e
+  - path: .github/workflows/validate.yml
+    sha256: 33b82d8ae884700f35d744edbc16c0d2a5db702289bc00fe8c02cdad7a546ea0
+  - path: .gitignore
+    sha256: 116e7bf7cd72d998e7259fdd924fdc829b708cb681aae69d903d282a3aa864fd
+  - path: .mcp.json
+    sha256: d8e397af03b5b032f21d0aa967086f0c78b33c87b76f2e9898ae0a144df7de02
+  - path: README.md
+    sha256: 04ee9b10f198758c60268638da9194d2da52b0d99932b9c5b7a3b11aeebfe091
+  - path: SETUP.md
+    sha256: c4130fb8852cdcaa999b50e80ff897b38a222fb04defba8ca591e7c19d8cad1e
+  - path: agents/arc-execution-sme.md
+    sha256: 54cf2b4a37bc387b95f1f151df52aa9c6aa767f41cfc8e2aef65e68d01a998fd
+  - path: agents/arc-execution-sme.yaml
+    sha256: 440d07fe0f2125fbcb0eca140c7b34c70c5729ddd4834e28033d830ff1881780
+  - path: agents/character-behavior-sme.md
+    sha256: b9bbefd7a64f81e4fd73463b1659b89e8162b918b7d67e99802ade860bc888c1
+  - path: agents/character-behavior-sme.yaml
+    sha256: 3a771c6cd598faf452fe1a81d92249cdbffd9fc541d14526ff75739d66e84174
+  - path: agents/daily-case-sme.md
+    sha256: 2c5deb8c398b5d767de75a1b039bb14075802c2c7d27e102a0b9d470bd850023
+  - path: agents/daily-case-sme.yaml
+    sha256: 07c667cb77d809217fc5216219b0f42f096767fc08476b594b00f5018b43b1dc
+  - path: agents/developer-api-sme.md
+    sha256: fbbd8c1425a00b82804d7fd00be19fb14e6b86fddf5e03de456b5976add3f651
+  - path: agents/developer-api-sme.yaml
+    sha256: 820cc4bfcb0eaee5093dcf7357c8e6d9c02f3929e1ad22c85a542a0bd10d8f9e
+  - path: agents/engineering-practice-sme.md
+    sha256: ba74bb2889140b9a9c27a25ed300345c7977775e3782d6cf6864d3dfe51473d8
+  - path: agents/engineering-practice-sme.yaml
+    sha256: a04a0e5950ecab161b125c5a0c27234bef2fb5c05fd575c8b23b91f499282329
+  - path: agents/knowledge-graph-sme.md
+    sha256: 66758a46b6d90aca06ff8d8be50a0f7b50adbc0cd08a1e747d2f18ae4bdd942d
+  - path: agents/knowledge-graph-sme.yaml
+    sha256: c19b8d55dafd37c7e18e40630ab5ebc152375af461e544b90e7ce352d4d62499
+  - path: agents/manifest.fragment.yaml
+    sha256: 0d7c7f1b1dee7be8cef3542ab1bb9e21ed35ca4e7c6bff1eede38400b5798807
+  - path: agents/model-routing-sme.md
+    sha256: 72aa5dc985ecd9fc5609fcb3e7c588debda45686b4a1d06d416b2de4c99d70bb
+  - path: agents/model-routing-sme.yaml
+    sha256: 90b8b4822bbafce5fe812906a5e930f821bc462a90ea592f2c4d2ec9525cb63f
+  - path: agents/monster-rpg-sme.md
+    sha256: 985ef45fd355665eaebfe709e17f6b9ed4830ac741c3a14979f024dd95e949ca
+  - path: agents/monster-rpg-sme.yaml
+    sha256: de593cd70f0a3413611a15fcf27935423e5f983a8440e14876814db612172b27
+  - path: agents/nightcap-couch-race-sme.md
+    sha256: 06674a63c4aad17888119a5b793e4c395f15abaab79b6ab40c04409f6f4dcdd4
+  - path: agents/nightcap-couch-race-sme.yaml
+    sha256: 062e1373b47e79a452c90edab9a8e02b52a1df741f6bd884078df5bbf94671e3
+  - path: agents/nightcap-sme.md
+    sha256: 1cb1d4ce4f0d0f87a4a0b655e046a5b4f3258db493f6a12cf75b98345a433dc7
+  - path: agents/nightcap-sme.yaml
+    sha256: 1f4fed3b4dc2379ad956374cf7fb681ed36385eaca10e97016dc3bd555a1acb3
+  - path: agents/playtest-ops-sme.md
+    sha256: 4ee360e549ffef17ade8974d514c17e56bead2aadddcda8f6639935cc2b9354d
+  - path: agents/playtest-ops-sme.yaml
+    sha256: e5d29b0b27cdb5e5ac925aa5a52a85e998b105e17eb421eda69d689861dc12f2
+  - path: agents/product-roadmap-sme.md
+    sha256: 4caf12a01594714ebe8b61ec194b10d8c551531b016895ca48c4b0b43fab9590
+  - path: agents/product-roadmap-sme.yaml
+    sha256: 23ed9a4a2031e9492d9ce4c70dd34f3cf30b8efcf2d7f71b2d9d6e2463738339
+  - path: agents/safety-sme.md
+    sha256: eb79397f833936a1bebfaabc6213b569c6df976b085f39be4206d9689e5d4392
+  - path: agents/safety-sme.yaml
+    sha256: f587e5454e92e9eef964e8ff75ebc39cf286e482b637d05e770908bf022b1698
+  - path: agents/session-runtime-sme.md
+    sha256: 7486e13e7a1c05b78a19a1ed10c7eaaaaad4492768e7438973d3b23715571654
+  - path: agents/session-runtime-sme.yaml
+    sha256: 936637e66c384bacfd92819b6a176ce580c606f4f2a37e651fd6cd94e57cb141
+  - path: agents/sme.md
+    sha256: 16238b99c6a74537ad7278abfd4a28a6460f2226ead282b0b38e62e7cf8073f9
+  - path: agents/sme.yaml
+    sha256: ceefcc7fc19f9ec5a61a557f252cff1cb132395d1252e32ea17b74c314702a2c
+  - path: evals/gates.yaml
+    sha256: 0b03410795e64feb8a7801a9956b3cd7226df95834b1865d61a3deedf1c7550b
+  - path: manifest.yaml
+    sha256: 72f31c35db04215f93e731cea45f9895d3506e4eb4247e632e7c9d0fd952bbec
+  - path: personas/executive-brief.md
+    sha256: f574c0ad5be85327c94d99298cf08731477583e60953289314bd5013b64a96ac
+  - path: personas/internal-technical.md
+    sha256: 69ad6d52a3bfa3f15c49908fd5fe14988dca62a3ebc650e81eb0ff9f42f52e41
+  - path: personas/partner-facing.md
+    sha256: 865a198d952f0d0df2f7fe7d9389f8554cc57a231b5ceae3acd1496277490ebe

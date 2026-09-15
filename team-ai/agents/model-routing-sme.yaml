@@ -1,0 +1,9 @@
+name: model-routing-sme
+kind: subagent
+description: "Answers model-routing questions strictly from the model-routing namespace, with citations."
+model_tier: small
+kb_namespaces: [model-routing]
+tools: [kb_search, kb_get, kb_coverage_gap]
+max_hops: 0
+escalate_to: unassigned
+instructions_file: agents/model-routing-sme.md

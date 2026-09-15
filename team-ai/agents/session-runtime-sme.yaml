@@ -1,0 +1,9 @@
+name: session-runtime-sme
+kind: subagent
+description: "Answers session-runtime questions strictly from the session-runtime namespace, with citations."
+model_tier: small
+kb_namespaces: [session-runtime]
+tools: [kb_search, kb_get, kb_coverage_gap]
+max_hops: 0
+escalate_to: unassigned
+instructions_file: agents/session-runtime-sme.md
