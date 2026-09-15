@@ -1,0 +1,34 @@
+name: team-ai
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  team-ai:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: nickejanssen/team-ai
+          ref: v0.4.0
+          path: .team-ai-cli
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm ci && npm run build
+        working-directory: .team-ai-cli
+      - run: node .team-ai-cli/dist/cli.js validate-kb --instance team-ai
+      - run: node .team-ai-cli/dist/cli.js validate-manifest --root team-ai
+      - name: emitted subagents match regeneration
+        run: |
+          node .team-ai-cli/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
+          git diff --exit-code -- .claude/agents
+      - name: no prior-namespace ids survive
+        run: |
+          ! git grep -n -E '^[[:space:]]*id:[[:space:]]*"?(operating|patterns|playbooks|custom|decisions|platform|unmapped)\.' -- . ':!docs/archive' ':!adoption-plan.yaml' ':!docs/adoption-plan.md' ':!team-ai/remap-proposal.yaml' ':!team-ai/inventory.txt' ':!.team-ai-cli'
