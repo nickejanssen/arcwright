@@ -202,6 +202,7 @@ Directories like `.claude/`, `.codex/`, `.cursor/`, and similar tool metadata di
 
 Rules for every agent working in this repo:
 - Do not create, modify, stage, commit, or delete files inside `.claude/`, `.codex/`, `.cursor/`, or any similar tool-local directory unless explicitly asked.
+- Exception: files matching `.claude/agents/team-ai-*.md` are generated from `team-ai/` by `team-ai emit` and are intentionally tracked. Do not edit them by hand; regenerate them. This exception covers no other path under `.claude/`.
 - Treat those directories as local workspace state, not product code.
 - Before every commit, run `git status` and verify that no agent-local files appear in the staged list.
 - If `git status` shows untracked or modified files in these directories, leave them untracked and call them out to the human; do not clean them up automatically.
