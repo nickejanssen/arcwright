@@ -32,3 +32,6 @@ evals/reports/*
 
 # Brainstorming visual-companion session state
 .superpowers/
+
+# team-ai machine state
+.team-ai/
