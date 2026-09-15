@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.supplemental-schemas
-namespace: platform
+id: arcexecution.architecture.supplemental-schemas
+namespace: arc-execution
 title: Supplemental Table Schemas
 owner: Nico Janssen
 status: active

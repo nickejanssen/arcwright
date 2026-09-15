@@ -1,6 +1,6 @@
 ---
-id: operating.prd.02-requirements
-namespace: operating
+id: productroadmap.prd.02-requirements
+namespace: product-roadmap
 title: Requirements
 owner: Nico Janssen
 status: active

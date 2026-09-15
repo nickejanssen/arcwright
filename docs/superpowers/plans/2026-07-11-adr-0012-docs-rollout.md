@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-07-11-adr-0012-docs-rollout
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-07-11-adr-0012-docs-rollout
+namespace: engineering-practice
 title: ADR-0012 Documentation and Tracker Rollout Implementation Plan
 owner: Nico Janssen
 status: draft

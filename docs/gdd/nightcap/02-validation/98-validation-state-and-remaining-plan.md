@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.02-validation.98-validation-state-and-remaining-plan
-namespace: custom
+id: nightcap.gdd.nightcap.02-validation.98-validation-state-and-remaining-plan
+namespace: nightcap
 title: Nightcap — Validation State & Remaining Plan
 owner: Nico Janssen
 status: active

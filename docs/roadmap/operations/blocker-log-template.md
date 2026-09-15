@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.operations.blocker-log-template
-namespace: operating
+id: productroadmap.roadmap.operations.blocker-log-template
+namespace: product-roadmap
 title: Blocker Log Template - Rehearsal 1
 owner: Nico Janssen
 status: active

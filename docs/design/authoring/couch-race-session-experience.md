@@ -1,6 +1,6 @@
 ---
-id: patterns.design.authoring.couch-race-session-experience
-namespace: patterns
+id: engineeringpractice.design.authoring.couch-race-session-experience
+namespace: engineering-practice
 title: Couch Race — Whole-Session Experience & Gameplay Integration
 owner: Nico Janssen
 status: active

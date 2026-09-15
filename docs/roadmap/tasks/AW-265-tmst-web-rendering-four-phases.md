@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-265-tmst-web-rendering-four-phases
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-265-tmst-web-rendering-four-phases
+namespace: product-roadmap
 title: "AW-265: TMST Web Rendering for Four Phases"
 owner: Nico Janssen
 status: active

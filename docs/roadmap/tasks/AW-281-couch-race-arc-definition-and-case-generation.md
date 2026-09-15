@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-281-couch-race-arc-definition-and-case-generation
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-281-couch-race-arc-definition-and-case-generation
+namespace: product-roadmap
 title: "AW-281: Couch Race Arc Definition And Case Generation"
 owner: Nico Janssen
 status: active

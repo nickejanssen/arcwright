@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0067-development-survey-and-path-to-first-playtest
-namespace: patterns
+id: engineeringpractice.specs.0067-development-survey-and-path-to-first-playtest
+namespace: engineering-practice
 title: Development Survey and Path to First Playtest
 owner: Nico Janssen
 status: active

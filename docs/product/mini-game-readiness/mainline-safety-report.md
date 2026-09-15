@@ -1,6 +1,6 @@
 ---
-id: operating.product.mini-game-readiness.mainline-safety-report
-namespace: operating
+id: productroadmap.product.mini-game-readiness.mainline-safety-report
+namespace: product-roadmap
 title: Mini-game Readiness Program Mainline Safety Report
 owner: Nico Janssen
 status: active

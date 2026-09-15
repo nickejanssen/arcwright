@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-230-real-device-privacy-matrix
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-230-real-device-privacy-matrix
+namespace: product-roadmap
 title: "AW-230: Real-Device Privacy Matrix"
 owner: Nico Janssen
 status: active

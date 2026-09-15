@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.operations.rehearsal-1-blocker-log
-namespace: operating
+id: productroadmap.roadmap.operations.rehearsal-1-blocker-log
+namespace: product-roadmap
 title: Couch Race Rehearsal 1 Blocker Log
 owner: Nico Janssen
 status: active

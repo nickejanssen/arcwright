@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.specs.2026-07-19-aw284-race-scoring-design
-namespace: playbooks
+id: engineeringpractice.superpowers.specs.2026-07-19-aw284-race-scoring-design
+namespace: engineering-practice
 title: AW-284 Race Scoring And Accusation State — Design
 owner: Nico Janssen
 status: active

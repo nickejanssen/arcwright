@@ -1,6 +1,6 @@
 ---
-id: patterns.conventions.mini-game-authoring
-namespace: patterns
+id: engineeringpractice.conventions.mini-game-authoring
+namespace: engineering-practice
 title: Mini-game Authoring Guide
 owner: Nico Janssen
 status: active

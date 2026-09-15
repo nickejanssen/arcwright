@@ -1,6 +1,6 @@
 ---
-id: patterns.design.moodboards.the-estate
-namespace: patterns
+id: engineeringpractice.design.moodboards.the-estate
+namespace: engineering-practice
 title: Moodboard  -  The Estate
 owner: Nico Janssen
 status: active

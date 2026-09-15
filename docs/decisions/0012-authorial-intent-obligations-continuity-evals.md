@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0012-authorial-intent-obligations-continuity-evals
-namespace: decisions
+id: productroadmap.decisions.0012-authorial-intent-obligations-continuity-evals
+namespace: product-roadmap
 title: "ADR-0012: Authorial Intent Obligations Continuity Evals"
 owner: Nico Janssen
 status: active

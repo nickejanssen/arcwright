@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-101-repository-structure-and-python-project-setup
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-101-repository-structure-and-python-project-setup
+namespace: product-roadmap
 title: "AW-101: Repository structure and Python project setup"
 owner: Nico Janssen
 status: active

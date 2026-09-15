@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0025-aw-205-nightcap-canonical-arc-json
-namespace: patterns
+id: engineeringpractice.specs.0025-aw-205-nightcap-canonical-arc-json
+namespace: engineering-practice
 title: "AW-205: Nightcap Canonical Arc JSON"
 owner: Nico Janssen
 status: active

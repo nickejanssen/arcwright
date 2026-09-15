@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-106-pre-generation-knowledge-constraint-hook
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-106-pre-generation-knowledge-constraint-hook
+namespace: product-roadmap
 title: "AW-106: Pre-generation knowledge constraint hook"
 owner: Nico Janssen
 status: active

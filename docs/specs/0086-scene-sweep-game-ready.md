@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0086-scene-sweep-game-ready
-namespace: patterns
+id: engineeringpractice.specs.0086-scene-sweep-game-ready
+namespace: engineering-practice
 title: Scene Sweep Game-ready Contract
 owner: Nico Janssen
 status: draft

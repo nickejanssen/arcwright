@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m1-d-model-routing-abstraction
-namespace: operating
+id: productroadmap.roadmap.epics.m1-d-model-routing-abstraction
+namespace: product-roadmap
 title: "M1-D: Model Routing Abstraction"
 owner: Nico Janssen
 status: active

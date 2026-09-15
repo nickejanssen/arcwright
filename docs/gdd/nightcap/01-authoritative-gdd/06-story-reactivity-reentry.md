@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.01-authoritative-gdd.06-story-reactivity-reentry
-namespace: custom
+id: nightcap.gdd.nightcap.01-authoritative-gdd.06-story-reactivity-reentry
+namespace: nightcap
 title: Nightcap — Story Reactivity & Re-entry
 owner: Nico Janssen
 status: active

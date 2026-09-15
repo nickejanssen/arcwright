@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0014-structured-interaction-resolution
-namespace: decisions
+id: productroadmap.decisions.0014-structured-interaction-resolution
+namespace: product-roadmap
 title: "ADR-0014: Structured interaction resolution boundary"
 owner: Nico Janssen
 status: active

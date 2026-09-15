@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-02-the-grill-game-ready
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-08-02-the-grill-game-ready
+namespace: engineering-practice
 title: The Grill Interrogation Game-ready Implementation Plan
 owner: Nico Janssen
 status: draft

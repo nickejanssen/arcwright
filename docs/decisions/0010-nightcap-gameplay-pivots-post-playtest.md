@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0010-nightcap-gameplay-pivots-post-playtest
-namespace: decisions
+id: productroadmap.decisions.0010-nightcap-gameplay-pivots-post-playtest
+namespace: product-roadmap
 title: "ADR-0010: Nightcap Gameplay Pivots Post Playtest"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0028-aw-208-l1-hard-stops
-namespace: patterns
+id: engineeringpractice.specs.0028-aw-208-l1-hard-stops
+namespace: engineering-practice
 title: "AW-208: L1 Hard Stops"
 owner: Nico Janssen
 status: active

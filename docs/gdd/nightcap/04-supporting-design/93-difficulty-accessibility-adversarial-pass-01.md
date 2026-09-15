@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.04-supporting-design.93-difficulty-accessibility-adversarial-pass-01
-namespace: custom
+id: nightcap.gdd.nightcap.04-supporting-design.93-difficulty-accessibility-adversarial-pass-01
+namespace: nightcap
 title: "Nightcap — Difficulty + Accessibility Adversarial Pass #1"
 owner: Nico Janssen
 status: active

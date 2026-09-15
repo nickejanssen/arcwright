@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m5-e-character-behavior-engine-hardening
-namespace: operating
+id: productroadmap.roadmap.epics.m5-e-character-behavior-engine-hardening
+namespace: product-roadmap
 title: "M5-E: Character Behavior Engine Hardening"
 owner: Nico Janssen
 status: active

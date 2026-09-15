@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-279-detective-identity-and-opening-briefing
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-279-detective-identity-and-opening-briefing
+namespace: product-roadmap
 title: "AW-279: Detective Identity And Opening Briefing"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-215-contentevent-model-and-in-memory-bus
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-215-contentevent-model-and-in-memory-bus
+namespace: product-roadmap
 title: "AW-215: ContentEvent Model And In-Memory Bus"
 owner: Nico Janssen
 status: active

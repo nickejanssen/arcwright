@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-272-continuity-coherence-eval-suite
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-272-continuity-coherence-eval-suite
+namespace: product-roadmap
 title: "AW-272: Continuity and Coherence Eval Suite"
 owner: Nico Janssen
 status: active

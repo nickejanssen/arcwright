@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-288-couch-race-mini-game-beat-coverage-and-tmst-acceleration
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-288-couch-race-mini-game-beat-coverage-and-tmst-acceleration
+namespace: product-roadmap
 title: "AW-288: Tell Me Something True Couch Race Activation, Placement, And Pacing"
 owner: Nico Janssen
 status: active

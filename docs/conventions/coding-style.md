@@ -1,6 +1,6 @@
 ---
-id: patterns.conventions.coding-style
-namespace: patterns
+id: engineeringpractice.conventions.coding-style
+namespace: engineering-practice
 title: Coding Style
 owner: Nico Janssen
 status: active

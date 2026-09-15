@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0045-aw-222-five-mvp-telemetry-signals
-namespace: patterns
+id: engineeringpractice.specs.0045-aw-222-five-mvp-telemetry-signals
+namespace: engineering-practice
 title: "AW-222: Five MVP Telemetry Signals"
 owner: Nico Janssen
 status: active

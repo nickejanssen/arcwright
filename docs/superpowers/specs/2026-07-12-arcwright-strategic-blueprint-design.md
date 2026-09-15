@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.specs.2026-07-12-arcwright-strategic-blueprint-design
-namespace: playbooks
+id: engineeringpractice.superpowers.specs.2026-07-12-arcwright-strategic-blueprint-design
+namespace: engineering-practice
 title: Arcwright Strategic Blueprint
 owner: Nico Janssen
 status: active

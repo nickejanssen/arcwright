@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-205-nightcap-canonical-arc-json
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-205-nightcap-canonical-arc-json
+namespace: product-roadmap
 title: "AW-205: Nightcap Canonical Arc JSON"
 owner: Nico Janssen
 status: active

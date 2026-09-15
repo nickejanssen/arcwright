@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-270-authorial-intent-block-and-fidelity-telemetry
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-270-authorial-intent-block-and-fidelity-telemetry
+namespace: product-roadmap
 title: "AW-270: Authorial Intent Block and Intent Fidelity Telemetry (post-M6)"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-264-tmst-api-events-and-sdk
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-264-tmst-api-events-and-sdk
+namespace: product-roadmap
 title: "AW-264: TMST API, Events, and SDK"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m3-b-api-auth-and-typescript-sdk
-namespace: operating
+id: productroadmap.roadmap.epics.m3-b-api-auth-and-typescript-sdk
+namespace: product-roadmap
 title: "M3-B: API, Auth, And TypeScript SDK"
 owner: Nico Janssen
 status: active

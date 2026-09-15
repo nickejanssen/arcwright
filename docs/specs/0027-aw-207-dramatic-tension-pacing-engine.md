@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0027-aw-207-dramatic-tension-pacing-engine
-namespace: patterns
+id: engineeringpractice.specs.0027-aw-207-dramatic-tension-pacing-engine
+namespace: engineering-practice
 title: "AW-207: Dramatic Tension Pacing Engine"
 owner: Nico Janssen
 status: active

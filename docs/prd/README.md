@@ -1,6 +1,6 @@
 ---
-id: operating.prd.readme
-namespace: operating
+id: productroadmap.prd.readme
+namespace: product-roadmap
 title: PRD Directory
 owner: Nico Janssen
 status: active

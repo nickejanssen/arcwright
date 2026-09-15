@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-255-rest-backed-nightcap-session-loop
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-255-rest-backed-nightcap-session-loop
+namespace: product-roadmap
 title: "AW-255: REST-Backed Nightcap Session Loop"
 owner: Nico Janssen
 status: active

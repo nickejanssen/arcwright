@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0009-aw-101-repository-structure-and-python-project-setup
-namespace: patterns
+id: engineeringpractice.specs.0009-aw-101-repository-structure-and-python-project-setup
+namespace: engineering-practice
 title: Repository Structure and Python Project Setup
 owner: Nico Janssen
 status: active

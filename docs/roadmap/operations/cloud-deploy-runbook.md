@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.operations.cloud-deploy-runbook
-namespace: operating
+id: productroadmap.roadmap.operations.cloud-deploy-runbook
+namespace: product-roadmap
 title: Cloud Deploy Runbook
 owner: Nico Janssen
 status: active

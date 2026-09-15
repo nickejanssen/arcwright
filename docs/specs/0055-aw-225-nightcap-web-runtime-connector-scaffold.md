@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0055-aw-225-nightcap-web-runtime-connector-scaffold
-namespace: patterns
+id: engineeringpractice.specs.0055-aw-225-nightcap-web-runtime-connector-scaffold
+namespace: engineering-practice
 title: "0055 - AW-225: Nightcap Web Experience Runtime Connector Scaffold"
 owner: Nico Janssen
 status: active

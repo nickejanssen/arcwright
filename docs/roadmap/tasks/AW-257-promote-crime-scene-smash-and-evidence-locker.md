@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-257-promote-crime-scene-smash-and-evidence-locker
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-257-promote-crime-scene-smash-and-evidence-locker
+namespace: product-roadmap
 title: "AW-257: Promote Crime Scene Smash and Evidence Locker to active"
 owner: Nico Janssen
 status: active

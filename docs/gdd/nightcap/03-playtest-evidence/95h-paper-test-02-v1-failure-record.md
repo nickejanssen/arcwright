@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.03-playtest-evidence.95h-paper-test-02-v1-failure-record
-namespace: custom
+id: nightcap.gdd.nightcap.03-playtest-evidence.95h-paper-test-02-v1-failure-record
+namespace: nightcap
 title: "Nightcap — Paper Test #2 v1 Failure Record"
 owner: Nico Janssen
 status: active

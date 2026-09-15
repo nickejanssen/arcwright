@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-280-couch-race-clue-release-content
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-280-couch-race-clue-release-content
+namespace: product-roadmap
 title: "AW-280: Couch Race Clue Release Content"
 owner: Nico Janssen
 status: active

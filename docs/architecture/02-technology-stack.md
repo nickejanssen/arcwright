@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.02-technology-stack
-namespace: platform
+id: arcexecution.architecture.02-technology-stack
+namespace: arc-execution
 title: Technology Stack
 owner: Nico Janssen
 status: active

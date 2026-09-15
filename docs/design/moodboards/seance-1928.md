@@ -1,6 +1,6 @@
 ---
-id: patterns.design.moodboards.seance-1928
-namespace: patterns
+id: engineeringpractice.design.moodboards.seance-1928
+namespace: engineering-practice
 title: Moodboard  -  Séance 1928
 owner: Nico Janssen
 status: active

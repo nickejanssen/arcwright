@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-02-mini-game-contracts-and-adapters
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-08-02-mini-game-contracts-and-adapters
+namespace: engineering-practice
 title: Mini-game Contracts and Execution Adapters Implementation Plan
 owner: Nico Janssen
 status: draft

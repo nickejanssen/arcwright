@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0004-pacing-telemetry-outcome-events
-namespace: decisions
+id: productroadmap.decisions.0004-pacing-telemetry-outcome-events
+namespace: product-roadmap
 title: 0004 - Pacing Telemetry Outcome Events
 owner: Nico Janssen
 status: active

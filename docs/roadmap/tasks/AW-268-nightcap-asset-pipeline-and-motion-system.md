@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-268-nightcap-asset-pipeline-and-motion-system
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-268-nightcap-asset-pipeline-and-motion-system
+namespace: product-roadmap
 title: "AW-268: Nightcap Asset Pipeline and Motion System"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-112-deterministic-replay-and-batch-runner
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-112-deterministic-replay-and-batch-runner
+namespace: product-roadmap
 title: "AW-112: Deterministic replay and batch runner"
 owner: Nico Janssen
 status: active

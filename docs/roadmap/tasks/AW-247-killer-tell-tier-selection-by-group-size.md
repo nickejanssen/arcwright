@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-247-killer-tell-tier-selection-by-group-size
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-247-killer-tell-tier-selection-by-group-size
+namespace: product-roadmap
 title: "AW-247: Killer Tell Tier Selection By Group Size"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0087-aw-290-narrator-slot-schema-and-wrapper-dressing
-namespace: patterns
+id: engineeringpractice.specs.0087-aw-290-narrator-slot-schema-and-wrapper-dressing
+namespace: engineering-practice
 title: "AW-290 Narrator Slot Schema: Structured Location and Time, Case
   Persistence, and Wrapper Dressing Pack"
 owner: Nico Janssen

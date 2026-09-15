@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.readme
-namespace: operating
+id: productroadmap.roadmap.readme
+namespace: product-roadmap
 title: Build Roadmap
 owner: Nico Janssen
 status: active

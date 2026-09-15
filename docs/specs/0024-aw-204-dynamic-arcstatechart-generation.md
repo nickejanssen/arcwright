@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0024-aw-204-dynamic-arcstatechart-generation
-namespace: patterns
+id: engineeringpractice.specs.0024-aw-204-dynamic-arcstatechart-generation
+namespace: engineering-practice
 title: "AW-204: Dynamic ArcStateChart Generation"
 owner: Nico Janssen
 status: active

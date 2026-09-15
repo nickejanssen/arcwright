@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.04-knowledge-graph
-namespace: platform
+id: knowledgegraph.architecture.04-knowledge-graph
+namespace: knowledge-graph
 title: Knowledge Graph
 owner: Nico Janssen
 status: active

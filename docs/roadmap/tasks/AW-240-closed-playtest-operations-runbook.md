@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-240-closed-playtest-operations-runbook
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-240-closed-playtest-operations-runbook
+namespace: product-roadmap
 title: "AW-240: Closed Playtest Operations Runbook"
 owner: Nico Janssen
 status: active

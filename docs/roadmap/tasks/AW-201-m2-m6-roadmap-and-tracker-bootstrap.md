@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-201-m2-m6-roadmap-and-tracker-bootstrap
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-201-m2-m6-roadmap-and-tracker-bootstrap
+namespace: product-roadmap
 title: "AW-201: M2-M6 Roadmap and Tracker Bootstrap"
 owner: Nico Janssen
 status: active

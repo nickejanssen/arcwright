@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-07-17-aw-281-couch-race-arc-and-case-generation
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-07-17-aw-281-couch-race-arc-and-case-generation
+namespace: engineering-practice
 title: AW-281, Couch Race Arc + Case Generation Implementation Plan
 owner: Nico Janssen
 status: draft

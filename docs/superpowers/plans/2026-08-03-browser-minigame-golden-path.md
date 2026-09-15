@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-03-browser-minigame-golden-path
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-08-03-browser-minigame-golden-path
+namespace: engineering-practice
 title: Browser Mini-game Golden Path Implementation Plan
 owner: Nico Janssen
 status: draft

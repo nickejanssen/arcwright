@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.01-authoritative-gdd.10-difficulty-accessibility
-namespace: custom
+id: nightcap.gdd.nightcap.01-authoritative-gdd.10-difficulty-accessibility
+namespace: nightcap
 title: Nightcap — Difficulty + Accessibility
 owner: Nico Janssen
 status: active

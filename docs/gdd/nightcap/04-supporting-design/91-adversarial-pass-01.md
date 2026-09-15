@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.04-supporting-design.91-adversarial-pass-01
-namespace: custom
+id: nightcap.gdd.nightcap.04-supporting-design.91-adversarial-pass-01
+namespace: nightcap
 title: Adversarial Pass 01
 owner: Nico Janssen
 status: active

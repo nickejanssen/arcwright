@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-06-26-m4-exit-rehearsal-plan
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-06-26-m4-exit-rehearsal-plan
+namespace: engineering-practice
 title: M4 Exit + First Real-Human Nightcap Rehearsal — Implementation Plan
 owner: Nico Janssen
 status: draft

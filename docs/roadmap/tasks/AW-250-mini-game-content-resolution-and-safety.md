@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-250-mini-game-content-resolution-and-safety
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-250-mini-game-content-resolution-and-safety
+namespace: product-roadmap
 title: "AW-250: Mini-game Content Resolution And Safety"
 owner: Nico Janssen
 status: active

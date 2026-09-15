@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0047-aw-250-mini-game-content-resolution-and-safety
-namespace: patterns
+id: engineeringpractice.specs.0047-aw-250-mini-game-content-resolution-and-safety
+namespace: engineering-practice
 title: "AW-250: Mini-game Content Resolution And Safety"
 owner: Nico Janssen
 status: active

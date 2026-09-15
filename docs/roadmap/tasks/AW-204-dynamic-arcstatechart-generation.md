@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-204-dynamic-arcstatechart-generation
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-204-dynamic-arcstatechart-generation
+namespace: product-roadmap
 title: "AW-204: Dynamic ArcStateChart Generation"
 owner: Nico Janssen
 status: active

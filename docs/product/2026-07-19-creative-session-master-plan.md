@@ -1,6 +1,6 @@
 ---
-id: operating.product.2026-07-19-creative-session-master-plan
-namespace: operating
+id: productroadmap.product.2026-07-19-creative-session-master-plan
+namespace: product-roadmap
 title: "Master Plan — 2026-07-19 Creative Session: Review, Integration, Roadmap"
 owner: Nico Janssen
 status: active

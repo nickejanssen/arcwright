@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0035-aw-212-knowledge-constrained-dialogue-pipeline
-namespace: patterns
+id: engineeringpractice.specs.0035-aw-212-knowledge-constrained-dialogue-pipeline
+namespace: engineering-practice
 title: AW-212 Knowledge-Constrained Dialogue Pipeline
 owner: Nico Janssen
 status: active

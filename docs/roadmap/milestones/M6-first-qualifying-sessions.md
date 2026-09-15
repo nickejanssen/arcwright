@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.milestones.m6-first-qualifying-sessions
-namespace: operating
+id: productroadmap.roadmap.milestones.m6-first-qualifying-sessions
+namespace: product-roadmap
 title: "M6: First Qualifying Sessions"
 owner: Nico Janssen
 status: active

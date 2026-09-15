@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.operations.human-collaboration-open-work
-namespace: operating
+id: productroadmap.roadmap.operations.human-collaboration-open-work
+namespace: product-roadmap
 title: Human Collaboration Open Work
 owner: Nico Janssen
 status: active

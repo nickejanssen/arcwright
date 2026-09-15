@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.03-playtest-evidence.97-paper-test-02-v2-1-revision
-namespace: custom
+id: nightcap.gdd.nightcap.03-playtest-evidence.97-paper-test-02-v2-1-revision
+namespace: nightcap
 title: "Nightcap — Paper Test #2 v2.1 Baseline Revision"
 owner: Nico Janssen
 status: active

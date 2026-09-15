@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.specs.2026-07-15-nightcap-couch-race-design
-namespace: playbooks
+id: engineeringpractice.superpowers.specs.2026-07-15-nightcap-couch-race-design
+namespace: engineering-practice
 title: Nightcap Couch Race — Design (Brainstorm Output)
 owner: Nico Janssen
 status: active

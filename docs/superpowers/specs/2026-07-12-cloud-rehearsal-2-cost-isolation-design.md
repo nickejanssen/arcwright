@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.specs.2026-07-12-cloud-rehearsal-2-cost-isolation-design
-namespace: playbooks
+id: engineeringpractice.superpowers.specs.2026-07-12-cloud-rehearsal-2-cost-isolation-design
+namespace: engineering-practice
 title: Cloud Rehearsal 2 Cost Isolation Design
 owner: Nico Janssen
 status: active

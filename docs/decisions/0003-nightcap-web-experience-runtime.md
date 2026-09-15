@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0003-nightcap-web-experience-runtime
-namespace: decisions
+id: productroadmap.decisions.0003-nightcap-web-experience-runtime
+namespace: product-roadmap
 title: 0003 - Nightcap Web Experience Runtime
 owner: Nico Janssen
 status: active

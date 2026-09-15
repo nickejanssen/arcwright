@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.specs.2026-08-29-arcwright-playtest-lab-design
-namespace: playbooks
+id: playtestops.superpowers.specs.2026-08-29-arcwright-playtest-lab-design
+namespace: playtest-ops
 title: Arcwright Playtest Lab Design
 owner: Nico Janssen
 status: active

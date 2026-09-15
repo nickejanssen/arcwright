@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0089-team-ai-agent-architecture
-namespace: patterns
+id: engineeringpractice.specs.0089-team-ai-agent-architecture
+namespace: engineering-practice
 title: team-ai Agent Architecture for Arcwright
 owner: Nico Janssen
 status: active

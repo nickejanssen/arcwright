@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.03-playtest-evidence.97b-early-autonomy-feedback-note
-namespace: custom
+id: nightcap.gdd.nightcap.03-playtest-evidence.97b-early-autonomy-feedback-note
+namespace: nightcap
 title: Nightcap — Early Autonomy Feedback Note
 owner: Nico Janssen
 status: active

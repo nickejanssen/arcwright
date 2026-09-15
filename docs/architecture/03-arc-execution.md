@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.03-arc-execution
-namespace: platform
+id: arcexecution.architecture.03-arc-execution
+namespace: arc-execution
 title: Arc Execution Engine
 owner: Nico Janssen
 status: active

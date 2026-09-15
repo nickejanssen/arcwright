@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-216-sse-fanout-filtering-and-replay
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-216-sse-fanout-filtering-and-replay
+namespace: product-roadmap
 title: "AW-216: SSE Fanout Filtering And Replay"
 owner: Nico Janssen
 status: active

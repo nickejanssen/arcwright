@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0088-arcwright-playtest-lab-contract
-namespace: patterns
+id: engineeringpractice.specs.0088-arcwright-playtest-lab-contract
+namespace: engineering-practice
 title: Arcwright Playtest Lab Contract
 owner: Nico Janssen
 status: active

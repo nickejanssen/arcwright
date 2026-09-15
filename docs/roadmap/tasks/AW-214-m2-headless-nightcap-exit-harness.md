@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-214-m2-headless-nightcap-exit-harness
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-214-m2-headless-nightcap-exit-harness
+namespace: product-roadmap
 title: "AW-214: M2 Headless Nightcap Exit Harness"
 owner: Nico Janssen
 status: active

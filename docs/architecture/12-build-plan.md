@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.12-build-plan
-namespace: platform
+id: productroadmap.architecture.12-build-plan
+namespace: product-roadmap
 title: Incremental Build Plan
 owner: Nico Janssen
 status: active

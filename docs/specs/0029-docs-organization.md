@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0029-docs-organization
-namespace: patterns
+id: engineeringpractice.specs.0029-docs-organization
+namespace: engineering-practice
 title: Docs Organization
 owner: Nico Janssen
 status: active

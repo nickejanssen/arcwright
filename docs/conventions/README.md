@@ -1,6 +1,6 @@
 ---
-id: patterns.conventions.readme
-namespace: patterns
+id: engineeringpractice.conventions.readme
+namespace: engineering-practice
 title: Conventions and Guidelines
 owner: Nico Janssen
 status: active

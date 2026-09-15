@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0002-harness-scenario-execution-contract
-namespace: decisions
+id: productroadmap.decisions.0002-harness-scenario-execution-contract
+namespace: product-roadmap
 title: 0002 — Harness Scenario Execution Contract
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.10-content-safety
-namespace: platform
+id: safety.architecture.10-content-safety
+namespace: safety
 title: Content Safety Architecture
 owner: Nico Janssen
 status: active

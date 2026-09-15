@@ -1,6 +1,6 @@
 ---
-id: custom.story-bibles.daily-case
-namespace: custom
+id: dailycase.story-bibles.daily-case
+namespace: daily-case
 title: Daily Case Story Bible
 owner: Nico Janssen
 status: draft

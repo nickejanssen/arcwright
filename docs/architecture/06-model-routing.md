@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.06-model-routing
-namespace: platform
+id: modelrouting.architecture.06-model-routing
+namespace: model-routing
 title: AI Model Routing Layer
 owner: Nico Janssen
 status: active

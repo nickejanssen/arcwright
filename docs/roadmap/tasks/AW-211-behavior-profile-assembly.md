@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-211-behavior-profile-assembly
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-211-behavior-profile-assembly
+namespace: product-roadmap
 title: "AW-211: Behavior Profile Assembly"
 owner: Nico Janssen
 status: active

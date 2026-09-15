@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0063-aw-246-per-character-social-pressure-compute
-namespace: patterns
+id: engineeringpractice.specs.0063-aw-246-per-character-social-pressure-compute
+namespace: engineering-practice
 title: "AW-246: Per-Character Social Pressure Compute"
 owner: Nico Janssen
 status: active

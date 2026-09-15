@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.04-supporting-design.92-player-count-stress-test-01
-namespace: custom
+id: nightcap.gdd.nightcap.04-supporting-design.92-player-count-stress-test-01
+namespace: nightcap
 title: Player Count Stress Test 01
 owner: Nico Janssen
 status: active

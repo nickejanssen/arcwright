@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.operations.rehearsal-quickstart
-namespace: operating
+id: productroadmap.roadmap.operations.rehearsal-quickstart
+namespace: product-roadmap
 title: Rehearsal Quickstart
 owner: Nico Janssen
 status: active

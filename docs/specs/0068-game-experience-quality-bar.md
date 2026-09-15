@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0068-game-experience-quality-bar
-namespace: patterns
+id: engineeringpractice.specs.0068-game-experience-quality-bar
+namespace: engineering-practice
 title: "0068: Game Experience Quality Bar"
 owner: Nico Janssen
 status: active

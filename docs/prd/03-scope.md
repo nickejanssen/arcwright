@@ -1,6 +1,6 @@
 ---
-id: operating.prd.03-scope
-namespace: operating
+id: productroadmap.prd.03-scope
+namespace: product-roadmap
 title: Scope
 owner: Nico Janssen
 status: active

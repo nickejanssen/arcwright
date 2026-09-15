@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0011-aw-103-sqlalchemy-orm-models
-namespace: patterns
+id: engineeringpractice.specs.0011-aw-103-sqlalchemy-orm-models
+namespace: engineering-practice
 title: SQLAlchemy ORM Models for All Platform Tables
 owner: Nico Janssen
 status: active

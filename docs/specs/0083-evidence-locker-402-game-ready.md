@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0083-evidence-locker-402-game-ready
-namespace: patterns
+id: engineeringpractice.specs.0083-evidence-locker-402-game-ready
+namespace: engineering-practice
 title: Evidence Locker 402 Game-ready Contract
 owner: Nico Janssen
 status: draft

@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-07-18-aw282-structured-interaction-implementation
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-07-18-aw282-structured-interaction-implementation
+namespace: engineering-practice
 title: AW-282 Structured Interaction Implementation Plan
 owner: Nico Janssen
 status: draft

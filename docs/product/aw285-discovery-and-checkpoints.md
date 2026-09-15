@@ -1,6 +1,6 @@
 ---
-id: operating.product.aw285-discovery-and-checkpoints
-namespace: operating
+id: productroadmap.product.aw285-discovery-and-checkpoints
+namespace: product-roadmap
 title: AW-285 Discovery and Checkpoints — Couch Race TV and Phone Rendering
 owner: Nico Janssen
 status: active

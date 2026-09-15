@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-266-rehearsal-2-tmst-real-human-session
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-266-rehearsal-2-tmst-real-human-session
+namespace: product-roadmap
 title: "AW-266: Rehearsal 2 - TMST Real-Human Session"
 owner: Nico Janssen
 status: active

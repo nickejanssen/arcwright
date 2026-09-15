@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0020-aw-286-owns-remaining-couch-race-integration
-namespace: decisions
+id: productroadmap.decisions.0020-aw-286-owns-remaining-couch-race-integration
+namespace: product-roadmap
 title: 0020 - AW-286 Owns Remaining Couch Race Integration; the Mini-game
   Program Is a Supplier
 owner: Nico Janssen

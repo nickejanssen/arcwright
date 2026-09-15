@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0013-aw-106-pre-generation-knowledge-constraint-hook
-namespace: patterns
+id: engineeringpractice.specs.0013-aw-106-pre-generation-knowledge-constraint-hook
+namespace: engineering-practice
 title: AW-106 Pre-generation Knowledge Constraint Hook
 owner: Nico Janssen
 status: active

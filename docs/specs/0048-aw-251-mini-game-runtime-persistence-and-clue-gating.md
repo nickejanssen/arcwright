@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0048-aw-251-mini-game-runtime-persistence-and-clue-gating
-namespace: patterns
+id: engineeringpractice.specs.0048-aw-251-mini-game-runtime-persistence-and-clue-gating
+namespace: engineering-practice
 title: "AW-251: Mini-game Runtime, Persistence, And Clue Gating"
 owner: Nico Janssen
 status: active

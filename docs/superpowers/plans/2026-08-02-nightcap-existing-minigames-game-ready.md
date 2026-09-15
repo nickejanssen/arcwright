@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-02-nightcap-existing-minigames-game-ready
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-08-02-nightcap-existing-minigames-game-ready
+namespace: engineering-practice
 title: Nightcap Mini-game Whole-session Certification and Closeout Plan
 owner: Nico Janssen
 status: draft

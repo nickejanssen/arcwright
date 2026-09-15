@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0076-aw-289-interrogation-room
-namespace: patterns
+id: engineeringpractice.specs.0076-aw-289-interrogation-room
+namespace: engineering-practice
 title: "AW-289: The Interrogation Room Last Call Pressure Capstone"
 owner: Nico Janssen
 status: draft

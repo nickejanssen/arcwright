@@ -1,6 +1,6 @@
 ---
-id: operating.agents.planner
-namespace: operating
+id: productroadmap.agents.planner
+namespace: product-roadmap
 title: "Role: Planner"
 owner: Nico Janssen
 status: active

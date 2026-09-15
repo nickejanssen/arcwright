@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.specs.2026-08-01-couch-race-tv-and-phone-rendering-design
-namespace: playbooks
+id: engineeringpractice.superpowers.specs.2026-08-01-couch-race-tv-and-phone-rendering-design
+namespace: engineering-practice
 title: Couch Race TV and Phone Rendering — Design
 owner: Nico Janssen
 status: draft

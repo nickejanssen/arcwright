@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0008-content-event-type-layering
-namespace: decisions
+id: productroadmap.decisions.0008-content-event-type-layering
+namespace: product-roadmap
 title: "ADR-0008: Content Event Type Layering"
 owner: Nico Janssen
 status: active

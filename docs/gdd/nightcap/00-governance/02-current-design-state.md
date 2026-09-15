@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.00-governance.02-current-design-state
-namespace: custom
+id: nightcap.gdd.nightcap.00-governance.02-current-design-state
+namespace: nightcap
 title: Nightcap — Current Design State
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: patterns.design.authoring.daily-case-sample-week
-namespace: patterns
+id: engineeringpractice.design.authoring.daily-case-sample-week
+namespace: engineering-practice
 title: Daily Case — Sample Week (Creative Proof)
 owner: Nico Janssen
 status: draft

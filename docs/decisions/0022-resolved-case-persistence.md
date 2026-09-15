@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0022-resolved-case-persistence
-namespace: decisions
+id: productroadmap.decisions.0022-resolved-case-persistence
+namespace: product-roadmap
 title: 0022 - Resolved Case Is Persisted in Normalized Tables
 owner: Nico Janssen
 status: active

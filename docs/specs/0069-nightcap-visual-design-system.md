@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0069-nightcap-visual-design-system
-namespace: patterns
+id: engineeringpractice.specs.0069-nightcap-visual-design-system
+namespace: engineering-practice
 title: "0069: Nightcap Visual Design System (UI, Animation, Aesthetic)"
 owner: Nico Janssen
 status: active

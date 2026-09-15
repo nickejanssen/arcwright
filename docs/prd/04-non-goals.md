@@ -1,6 +1,6 @@
 ---
-id: operating.prd.04-non-goals
-namespace: operating
+id: productroadmap.prd.04-non-goals
+namespace: product-roadmap
 title: Non-Goals
 owner: Nico Janssen
 status: active

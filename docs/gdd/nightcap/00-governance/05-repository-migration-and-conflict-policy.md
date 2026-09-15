@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.00-governance.05-repository-migration-and-conflict-policy
-namespace: custom
+id: nightcap.gdd.nightcap.00-governance.05-repository-migration-and-conflict-policy
+namespace: nightcap
 title: Nightcap — Repository Migration and Conflict Policy
 owner: Nico Janssen
 status: active

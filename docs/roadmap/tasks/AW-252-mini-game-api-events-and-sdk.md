@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-252-mini-game-api-events-and-sdk
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-252-mini-game-api-events-and-sdk
+namespace: product-roadmap
 title: "AW-252: Mini-game API, Events, And TypeScript SDK"
 owner: Nico Janssen
 status: active

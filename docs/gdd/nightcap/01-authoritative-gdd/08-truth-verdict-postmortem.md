@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.01-authoritative-gdd.08-truth-verdict-postmortem
-namespace: custom
+id: nightcap.gdd.nightcap.01-authoritative-gdd.08-truth-verdict-postmortem
+namespace: nightcap
 title: Nightcap — The Truth, The Verdict & The Postmortem
 owner: Nico Janssen
 status: active

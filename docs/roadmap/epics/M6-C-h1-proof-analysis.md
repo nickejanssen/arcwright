@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m6-c-h1-proof-analysis
-namespace: operating
+id: productroadmap.roadmap.epics.m6-c-h1-proof-analysis
+namespace: product-roadmap
 title: "M6-C: H1 Proof Analysis"
 owner: Nico Janssen
 status: active

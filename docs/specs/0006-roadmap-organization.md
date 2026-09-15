@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0006-roadmap-organization
-namespace: patterns
+id: engineeringpractice.specs.0006-roadmap-organization
+namespace: engineering-practice
 title: Roadmap Organization
 owner: Nico Janssen
 status: active

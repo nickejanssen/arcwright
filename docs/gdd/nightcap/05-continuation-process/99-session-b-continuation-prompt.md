@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.05-continuation-process.99-session-b-continuation-prompt
-namespace: custom
+id: nightcap.gdd.nightcap.05-continuation-process.99-session-b-continuation-prompt
+namespace: nightcap
 title: Nightcap — Current Continuation Prompt
 owner: Nico Janssen
 status: active

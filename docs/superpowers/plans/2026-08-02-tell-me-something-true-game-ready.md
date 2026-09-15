@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-02-tell-me-something-true-game-ready
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-08-02-tell-me-something-true-game-ready
+namespace: engineering-practice
 title: Tell Me Something True Game-ready Implementation Plan
 owner: Nico Janssen
 status: draft

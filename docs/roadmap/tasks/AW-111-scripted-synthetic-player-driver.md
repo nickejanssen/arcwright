@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-111-scripted-synthetic-player-driver
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-111-scripted-synthetic-player-driver
+namespace: product-roadmap
 title: "AW-111: Scripted synthetic player driver"
 owner: Nico Janssen
 status: active

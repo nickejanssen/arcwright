@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-104-first-full-alembic-migration
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-104-first-full-alembic-migration
+namespace: product-roadmap
 title: "AW-104: First full Alembic migration"
 owner: Nico Janssen
 status: active

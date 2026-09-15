@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0032-aw-209-l2-pre-generation-classification
-namespace: patterns
+id: engineeringpractice.specs.0032-aw-209-l2-pre-generation-classification
+namespace: engineering-practice
 title: AW-209 L2 Pre-Generation Classification
 owner: Nico Janssen
 status: active

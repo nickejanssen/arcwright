@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-234-gross-margin-by-player-count
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-234-gross-margin-by-player-count
+namespace: product-roadmap
 title: "AW-234: Gross Margin By Player Count"
 owner: Nico Janssen
 status: active

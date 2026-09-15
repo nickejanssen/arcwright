@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-229-player-private-event-and-input-flow
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-229-player-private-event-and-input-flow
+namespace: product-roadmap
 title: "AW-229: Player Private Event And Input Flow"
 owner: Nico Janssen
 status: active

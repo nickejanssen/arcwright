@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.01-authoritative-gdd.07-espionage-leverage-update
-namespace: custom
+id: nightcap.gdd.nightcap.01-authoritative-gdd.07-espionage-leverage-update
+namespace: nightcap
 title: Nightcap — Espionage & Leverage
 owner: Nico Janssen
 status: active

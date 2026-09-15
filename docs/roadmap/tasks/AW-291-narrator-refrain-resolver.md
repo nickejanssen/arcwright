@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-291-narrator-refrain-resolver
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-291-narrator-refrain-resolver
+namespace: product-roadmap
 title: "AW-291: Narrator Refrain Resolver"
 owner: Nico Janssen
 status: active

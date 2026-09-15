@@ -1,6 +1,6 @@
 ---
-id: patterns.design.the-host
-namespace: patterns
+id: engineeringpractice.design.the-host
+namespace: engineering-practice
 title: Vesper  -  The Host of Nightcap
 owner: Nico Janssen
 status: active

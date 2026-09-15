@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0019-minigame-readiness-execution-gated-on-ownership-reconciliation
-namespace: decisions
+id: productroadmap.decisions.0019-minigame-readiness-execution-gated-on-ownership-reconciliation
+namespace: product-roadmap
 title: 0019 - Mini-game Readiness Execution Gated on AW-286 Ownership Reconciliation
 owner: Nico Janssen
 status: active

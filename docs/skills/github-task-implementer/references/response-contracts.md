@@ -1,6 +1,6 @@
 ---
-id: playbooks.skills.github-task-implementer.references.response-contracts
-namespace: playbooks
+id: engineeringpractice.skills.github-task-implementer.references.response-contracts
+namespace: engineering-practice
 title: Response Contracts
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-207-dramatic-tension-pacing-engine
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-207-dramatic-tension-pacing-engine
+namespace: product-roadmap
 title: "AW-207: Dramatic Tension Pacing Engine"
 owner: Nico Janssen
 status: active

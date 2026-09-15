@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.07-character-behavior
-namespace: platform
+id: characterbehavior.architecture.07-character-behavior
+namespace: character-behavior
 title: Character Behavior Engine
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-285-couch-race-tv-and-phone-rendering
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-285-couch-race-tv-and-phone-rendering
+namespace: product-roadmap
 title: "AW-285: Couch Race TV And Phone Rendering"
 owner: Nico Janssen
 status: active

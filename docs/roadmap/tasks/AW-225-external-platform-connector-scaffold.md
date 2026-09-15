@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-225-external-platform-connector-scaffold
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-225-external-platform-connector-scaffold
+namespace: product-roadmap
 title: "AW-225: Nightcap Web Experience Runtime Connector Scaffold"
 owner: Nico Janssen
 status: active

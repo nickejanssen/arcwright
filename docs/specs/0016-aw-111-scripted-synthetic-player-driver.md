@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0016-aw-111-scripted-synthetic-player-driver
-namespace: patterns
+id: engineeringpractice.specs.0016-aw-111-scripted-synthetic-player-driver
+namespace: engineering-practice
 title: AW-111 Scripted Synthetic Player Driver
 owner: Nico Janssen
 status: active

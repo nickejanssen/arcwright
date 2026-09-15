@@ -1,6 +1,6 @@
 ---
-id: operating.agents.product-steward
-namespace: operating
+id: productroadmap.agents.product-steward
+namespace: product-roadmap
 title: "Role: Product Steward"
 owner: Nico Janssen
 status: active

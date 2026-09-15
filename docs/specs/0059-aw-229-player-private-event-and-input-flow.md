@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0059-aw-229-player-private-event-and-input-flow
-namespace: patterns
+id: engineeringpractice.specs.0059-aw-229-player-private-event-and-input-flow
+namespace: engineering-practice
 title: "AW-229: Player Private Event And Input Flow"
 owner: Nico Janssen
 status: active

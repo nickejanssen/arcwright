@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0081-tell-me-something-true-game-ready
-namespace: patterns
+id: engineeringpractice.specs.0081-tell-me-something-true-game-ready
+namespace: engineering-practice
 title: Tell Me Something True Game-ready Contract
 owner: Nico Janssen
 status: draft

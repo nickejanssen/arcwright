@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.operations.github-project-setup
-namespace: operating
+id: productroadmap.roadmap.operations.github-project-setup
+namespace: product-roadmap
 title: GitHub Tracker Alignment
 owner: Nico Janssen
 status: active

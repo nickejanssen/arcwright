@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0039-aw-235-daily-case-second-arc-schema-design
-namespace: patterns
+id: engineeringpractice.specs.0039-aw-235-daily-case-second-arc-schema-design
+namespace: engineering-practice
 title: "AW-235: Daily Case Second Arc Schema Design"
 owner: Nico Janssen
 status: active

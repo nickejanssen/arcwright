@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-251-mini-game-runtime-persistence-and-clue-gating
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-251-mini-game-runtime-persistence-and-clue-gating
+namespace: product-roadmap
 title: "AW-251: Mini-game Runtime, Persistence, And Clue Gating"
 owner: Nico Janssen
 status: active

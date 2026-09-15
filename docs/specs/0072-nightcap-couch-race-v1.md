@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0072-nightcap-couch-race-v1
-namespace: patterns
+id: engineeringpractice.specs.0072-nightcap-couch-race-v1
+namespace: engineering-practice
 title: "Nightcap Couch Race v1: Parent Spec"
 owner: Nico Janssen
 status: deprecated

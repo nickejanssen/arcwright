@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0080-mini-game-onboarding-preview-and-certification
-namespace: patterns
+id: engineeringpractice.specs.0080-mini-game-onboarding-preview-and-certification
+namespace: engineering-practice
 title: Browser Mini-game Onboarding, Local Playtest, and Visual Readiness
 owner: Nico Janssen
 status: active

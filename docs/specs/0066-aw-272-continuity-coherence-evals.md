@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0066-aw-272-continuity-coherence-evals
-namespace: patterns
+id: engineeringpractice.specs.0066-aw-272-continuity-coherence-evals
+namespace: engineering-practice
 title: "AW-272: Continuity and Coherence Eval Suite"
 owner: Nico Janssen
 status: active

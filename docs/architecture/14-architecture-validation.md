@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.14-architecture-validation
-namespace: platform
+id: engineeringpractice.architecture.14-architecture-validation
+namespace: engineering-practice
 title: "Architecture Validation: Monster RPG and Couch Co-op"
 owner: Nico Janssen
 status: active

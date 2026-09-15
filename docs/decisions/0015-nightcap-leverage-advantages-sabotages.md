@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0015-nightcap-leverage-advantages-sabotages
-namespace: decisions
+id: productroadmap.decisions.0015-nightcap-leverage-advantages-sabotages
+namespace: product-roadmap
 title: "ADR-0015: Nightcap Leverage advantages and sabotages architecture boundary"
 owner: Nico Janssen
 status: active

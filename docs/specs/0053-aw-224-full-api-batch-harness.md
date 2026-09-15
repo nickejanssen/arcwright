@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0053-aw-224-full-api-batch-harness
-namespace: patterns
+id: engineeringpractice.specs.0053-aw-224-full-api-batch-harness
+namespace: engineering-practice
 title: "AW-224: Full API Batch Harness"
 owner: Nico Janssen
 status: draft

@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-07-18-aw267-aw283-completion-roadmap
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-07-18-aw267-aw283-completion-roadmap
+namespace: engineering-practice
 title: AW-267 + AW-287 + AW-283 Completion Roadmap
 owner: Nico Janssen
 status: draft

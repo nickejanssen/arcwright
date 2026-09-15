@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0018-github-task-implementer-skill
-namespace: patterns
+id: engineeringpractice.specs.0018-github-task-implementer-skill
+namespace: engineering-practice
 title: GitHub Task Implementer Skill
 owner: Nico Janssen
 status: active

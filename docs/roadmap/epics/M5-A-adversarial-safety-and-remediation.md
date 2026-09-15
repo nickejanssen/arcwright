@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m5-a-adversarial-safety-and-remediation
-namespace: operating
+id: productroadmap.roadmap.epics.m5-a-adversarial-safety-and-remediation
+namespace: product-roadmap
 title: "M5-A: Adversarial Safety And Remediation"
 owner: Nico Janssen
 status: active

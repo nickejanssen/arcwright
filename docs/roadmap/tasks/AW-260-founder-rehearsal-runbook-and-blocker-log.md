@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-260-founder-rehearsal-runbook-and-blocker-log
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-260-founder-rehearsal-runbook-and-blocker-log
+namespace: product-roadmap
 title: "AW-260: Founder Rehearsal Runbook and Blocker Log"
 owner: Nico Janssen
 status: active

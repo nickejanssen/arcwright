@@ -1,6 +1,6 @@
 ---
-id: custom.story-bibles.monster-rpg
-namespace: custom
+id: monsterrpg.story-bibles.monster-rpg
+namespace: monster-rpg
 title: Monster RPG Story Bible
 owner: Nico Janssen
 status: draft

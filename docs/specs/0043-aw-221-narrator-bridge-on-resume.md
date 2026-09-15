@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0043-aw-221-narrator-bridge-on-resume
-namespace: patterns
+id: engineeringpractice.specs.0043-aw-221-narrator-bridge-on-resume
+namespace: engineering-practice
 title: "AW-221: Narrator Bridge On Resume"
 owner: Nico Janssen
 status: active

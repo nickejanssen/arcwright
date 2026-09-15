@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.02-validation.94-difficulty-accessibility-validation-plan
-namespace: custom
+id: nightcap.gdd.nightcap.02-validation.94-difficulty-accessibility-validation-plan
+namespace: nightcap
 title: Nightcap — Difficulty + Accessibility Validation Plan
 owner: Nico Janssen
 status: active

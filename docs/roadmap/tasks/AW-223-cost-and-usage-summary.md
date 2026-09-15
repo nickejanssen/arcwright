@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-223-cost-and-usage-summary
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-223-cost-and-usage-summary
+namespace: product-roadmap
 title: "AW-223: Cost And Usage Summary"
 owner: Nico Janssen
 status: active

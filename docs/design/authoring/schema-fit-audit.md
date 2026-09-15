@@ -1,6 +1,6 @@
 ---
-id: patterns.design.authoring.schema-fit-audit
-namespace: patterns
+id: engineeringpractice.design.authoring.schema-fit-audit
+namespace: engineering-practice
 title: Schema-Fit Audit — Vesper Slots vs. Engine State
 owner: Nico Janssen
 status: active

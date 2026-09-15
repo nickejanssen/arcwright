@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m5-b-cost-usage-and-gross-margin
-namespace: operating
+id: productroadmap.roadmap.epics.m5-b-cost-usage-and-gross-margin
+namespace: product-roadmap
 title: "M5-B: Cost, Usage, And Gross Margin"
 owner: Nico Janssen
 status: active

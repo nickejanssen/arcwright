@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-282-interrogation-round-loop-and-question-intents
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-282-interrogation-round-loop-and-question-intents
+namespace: product-roadmap
 title: "AW-282: Interrogation Round Loop And Question Menus"
 owner: Nico Janssen
 status: active

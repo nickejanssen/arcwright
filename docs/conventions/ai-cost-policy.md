@@ -1,6 +1,6 @@
 ---
-id: patterns.conventions.ai-cost-policy
-namespace: patterns
+id: engineeringpractice.conventions.ai-cost-policy
+namespace: engineering-practice
 title: AI Cost Policy
 owner: Nico Janssen
 status: active

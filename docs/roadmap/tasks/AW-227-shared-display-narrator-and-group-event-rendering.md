@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-227-shared-display-narrator-and-group-event-rendering
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-227-shared-display-narrator-and-group-event-rendering
+namespace: product-roadmap
 title: "AW-227: Shared Display Narrator And Group Event Rendering"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0050-aw-253-nightcap-web-mini-game-rendering
-namespace: patterns
+id: engineeringpractice.specs.0050-aw-253-nightcap-web-mini-game-rendering
+namespace: engineering-practice
 title: "AW-253: Nightcap Web Mini-game Rendering And Device Integration"
 owner: Nico Janssen
 status: active

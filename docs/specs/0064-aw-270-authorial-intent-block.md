@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0064-aw-270-authorial-intent-block
-namespace: patterns
+id: engineeringpractice.specs.0064-aw-270-authorial-intent-block
+namespace: engineering-practice
 title: "AW-270: Authorial Intent Block and Intent Fidelity Telemetry"
 owner: Nico Janssen
 status: active

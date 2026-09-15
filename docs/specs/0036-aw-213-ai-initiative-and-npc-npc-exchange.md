@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0036-aw-213-ai-initiative-and-npc-npc-exchange
-namespace: patterns
+id: engineeringpractice.specs.0036-aw-213-ai-initiative-and-npc-npc-exchange
+namespace: engineering-practice
 title: AW-213 AI Initiative And NPC-NPC Exchange
 owner: Nico Janssen
 status: active

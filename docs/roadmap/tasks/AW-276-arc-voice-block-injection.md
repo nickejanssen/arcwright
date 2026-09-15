@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-276-arc-voice-block-injection
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-276-arc-voice-block-injection
+namespace: product-roadmap
 title: "AW-276: Arc Voice Block Injection"
 owner: Nico Janssen
 status: active

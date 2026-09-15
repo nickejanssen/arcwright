@@ -1,6 +1,6 @@
 ---
-id: patterns.conventions.testing
-namespace: patterns
+id: engineeringpractice.conventions.testing
+namespace: engineering-practice
 title: Testing
 owner: Nico Janssen
 status: active

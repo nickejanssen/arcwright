@@ -1,6 +1,6 @@
 ---
-id: operating.product.nightcap-leverage-advantages-sabotages
-namespace: operating
+id: productroadmap.product.nightcap-leverage-advantages-sabotages
+namespace: product-roadmap
 title: Nightcap Leverage Advantages And Sabotages
 owner: Nico Janssen
 status: draft

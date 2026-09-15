@@ -1,6 +1,6 @@
 ---
-id: patterns.design.moodboards.big-top-1899
-namespace: patterns
+id: engineeringpractice.design.moodboards.big-top-1899
+namespace: engineering-practice
 title: Moodboard  -  Big Top 1899
 owner: Nico Janssen
 status: active

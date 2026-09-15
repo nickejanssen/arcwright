@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0073-m5-canonical-reconciliation
-namespace: patterns
+id: engineeringpractice.specs.0073-m5-canonical-reconciliation
+namespace: engineering-practice
 title: M5 Canonical Reconciliation and Tracker Synchronization
 owner: Nico Janssen
 status: active

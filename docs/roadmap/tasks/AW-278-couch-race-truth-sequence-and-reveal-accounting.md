@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-278-couch-race-truth-sequence-and-reveal-accounting
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-278-couch-race-truth-sequence-and-reveal-accounting
+namespace: product-roadmap
 title: "AW-278: Couch Race Truth Sequence And Reveal Accounting"
 owner: Nico Janssen
 status: active

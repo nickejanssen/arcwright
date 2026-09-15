@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-226-host-session-creation-and-shared-display-flow
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-226-host-session-creation-and-shared-display-flow
+namespace: product-roadmap
 title: "AW-226: Host Session Creation And Shared Display Flow"
 owner: Nico Janssen
 status: active

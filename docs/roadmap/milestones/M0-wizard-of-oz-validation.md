@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.milestones.m0-wizard-of-oz-validation
-namespace: operating
+id: productroadmap.roadmap.milestones.m0-wizard-of-oz-validation
+namespace: product-roadmap
 title: "M0: Wizard-of-Oz Validation"
 owner: Nico Janssen
 status: active

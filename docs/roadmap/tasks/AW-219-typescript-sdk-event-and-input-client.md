@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-219-typescript-sdk-event-and-input-client
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-219-typescript-sdk-event-and-input-client
+namespace: product-roadmap
 title: "AW-219: TypeScript SDK Event And Input Client"
 owner: Nico Janssen
 status: active

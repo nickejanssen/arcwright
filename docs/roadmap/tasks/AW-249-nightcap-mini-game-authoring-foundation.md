@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-249-nightcap-mini-game-authoring-foundation
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-249-nightcap-mini-game-authoring-foundation
+namespace: product-roadmap
 title: "AW-249: Nightcap Mini-game Authoring Foundation"
 owner: Nico Janssen
 status: active

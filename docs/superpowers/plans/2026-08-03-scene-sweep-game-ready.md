@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-03-scene-sweep-game-ready
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-08-03-scene-sweep-game-ready
+namespace: engineering-practice
 title: Scene Sweep Game-ready Implementation Plan
 owner: Nico Janssen
 status: draft

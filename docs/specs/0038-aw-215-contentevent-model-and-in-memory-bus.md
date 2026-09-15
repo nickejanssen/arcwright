@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0038-aw-215-contentevent-model-and-in-memory-bus
-namespace: patterns
+id: engineeringpractice.specs.0038-aw-215-contentevent-model-and-in-memory-bus
+namespace: engineering-practice
 title: "AW-215: ContentEvent Model And In-Memory Bus"
 owner: Nico Janssen
 status: active

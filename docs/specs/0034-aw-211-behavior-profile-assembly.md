@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0034-aw-211-behavior-profile-assembly
-namespace: patterns
+id: engineeringpractice.specs.0034-aw-211-behavior-profile-assembly
+namespace: engineering-practice
 title: AW-211 Behavior Profile Assembly
 owner: Nico Janssen
 status: active

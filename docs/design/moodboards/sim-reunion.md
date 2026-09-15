@@ -1,6 +1,6 @@
 ---
-id: patterns.design.moodboards.sim-reunion
-namespace: patterns
+id: engineeringpractice.design.moodboards.sim-reunion
+namespace: engineering-practice
 title: Moodboard  -  Sim Reunion
 owner: Nico Janssen
 status: active

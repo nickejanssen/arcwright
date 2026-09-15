@@ -1,6 +1,6 @@
 ---
-id: patterns.design.nightcap-art-direction
-namespace: patterns
+id: engineeringpractice.design.nightcap-art-direction
+namespace: engineering-practice
 title: Nightcap Art Direction Brief
 owner: Nico Janssen
 status: active

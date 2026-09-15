@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-29-arcwright-playtest-lab
-namespace: playbooks
+id: playtestops.superpowers.plans.2026-08-29-arcwright-playtest-lab
+namespace: playtest-ops
 title: Arcwright Playtest Lab Implementation Plan
 owner: Nico Janssen
 status: draft

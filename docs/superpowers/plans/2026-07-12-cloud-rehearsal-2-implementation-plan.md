@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-07-12-cloud-rehearsal-2-implementation-plan
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-07-12-cloud-rehearsal-2-implementation-plan
+namespace: engineering-practice
 title: Cloud Rehearsal 2 Implementation Plan
 owner: Nico Janssen
 status: draft

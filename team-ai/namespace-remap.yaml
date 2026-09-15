@@ -6,6 +6,20 @@ namespaces:
   unmapped: engineering-practice
   platform: arc-execution
   playbooks: engineering-practice
+  arc-execution: arc-execution
+  knowledge-graph: knowledge-graph
+  character-behavior: character-behavior
+  model-routing: model-routing
+  session-runtime: session-runtime
+  safety: safety
+  developer-api: developer-api
+  nightcap: nightcap
+  monster-rpg: monster-rpg
+  daily-case: daily-case
+  nightcap-couch-race: nightcap-couch-race
+  product-roadmap: product-roadmap
+  engineering-practice: engineering-practice
+  playtest-ops: playtest-ops
 files:
   architecture/01-overview.md: arc-execution
   architecture/02-technology-stack.md: arc-execution

@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0021-minigame-readiness-program-deferred-until-after-rehearsal-1
-namespace: decisions
+id: productroadmap.decisions.0021-minigame-readiness-program-deferred-until-after-rehearsal-1
+namespace: product-roadmap
 title: 0021 - Mini-game Readiness Program Deferred Until After Rehearsal 1
 owner: Nico Janssen
 status: active

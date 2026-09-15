@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-07-19-aw283-suspect-answer-generation
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-07-19-aw283-suspect-answer-generation
+namespace: engineering-practice
 title: AW-283 Suspect Answer Generation And Contradiction Detection —
   Implementation Plan
 owner: Nico Janssen

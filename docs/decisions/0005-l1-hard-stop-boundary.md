@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0005-l1-hard-stop-boundary
-namespace: decisions
+id: productroadmap.decisions.0005-l1-hard-stop-boundary
+namespace: product-roadmap
 title: 0005 - L1 Hard Stop Boundary
 owner: Nico Janssen
 status: active

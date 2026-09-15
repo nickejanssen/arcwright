@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.00-governance.00-decision-ledger
-namespace: custom
+id: nightcap.gdd.nightcap.00-governance.00-decision-ledger
+namespace: nightcap
 title: Nightcap — Decision Ledger
 owner: Nico Janssen
 status: active

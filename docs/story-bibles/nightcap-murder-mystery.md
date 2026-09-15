@@ -1,6 +1,6 @@
 ---
-id: custom.story-bibles.nightcap-murder-mystery
-namespace: custom
+id: nightcap.story-bibles.nightcap-murder-mystery
+namespace: nightcap
 title: ARCHIVED — Nightcap Murder Mystery Story Bible (Imposter Variant)
 owner: Nico Janssen
 status: deprecated

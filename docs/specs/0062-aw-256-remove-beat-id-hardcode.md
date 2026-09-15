@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0062-aw-256-remove-beat-id-hardcode
-namespace: patterns
+id: engineeringpractice.specs.0062-aw-256-remove-beat-id-hardcode
+namespace: engineering-practice
 title: "AW-256: Remove Game-Specific Beat ID Hardcode from Arc Transition Gate"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: operating.agents.spec-author
-namespace: operating
+id: productroadmap.agents.spec-author
+namespace: product-roadmap
 title: "Role: Spec Author"
 owner: Nico Janssen
 status: active

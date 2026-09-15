@@ -1,6 +1,6 @@
 ---
-id: patterns.design.moodboards.colony-post
-namespace: patterns
+id: engineeringpractice.design.moodboards.colony-post
+namespace: engineering-practice
 title: Moodboard  -  Colony Post
 owner: Nico Janssen
 status: active

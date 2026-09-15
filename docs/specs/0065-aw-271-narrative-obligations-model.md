@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0065-aw-271-narrative-obligations-model
-namespace: patterns
+id: engineeringpractice.specs.0065-aw-271-narrative-obligations-model
+namespace: engineering-practice
 title: "AW-271: Narrative Obligations Model and Reveal-Readiness Condition"
 owner: Nico Janssen
 status: active

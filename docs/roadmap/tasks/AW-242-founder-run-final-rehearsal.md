@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-242-founder-run-final-rehearsal
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-242-founder-run-final-rehearsal
+namespace: product-roadmap
 title: "AW-242: Founder-Run Final Rehearsal"
 owner: Nico Janssen
 status: active

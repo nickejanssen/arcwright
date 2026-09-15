@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0078-mini-game-invocation-and-execution-adapters
-namespace: patterns
+id: engineeringpractice.specs.0078-mini-game-invocation-and-execution-adapters
+namespace: engineering-practice
 title: Mini-game Invocation, Capability Negotiation, and Result Authority
 owner: Nico Janssen
 status: active

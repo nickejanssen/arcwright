@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-07-17-human-collaboration-contract
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-07-17-human-collaboration-contract
+namespace: engineering-practice
 title: Human Collaboration Contract Implementation Plan
 owner: Nico Janssen
 status: draft

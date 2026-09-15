@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-107-litellm-routing-layer
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-107-litellm-routing-layer
+namespace: product-roadmap
 title: "AW-107: LiteLLM routing layer"
 owner: Nico Janssen
 status: active

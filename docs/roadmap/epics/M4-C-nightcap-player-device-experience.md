@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m4-c-nightcap-player-device-experience
-namespace: operating
+id: productroadmap.roadmap.epics.m4-c-nightcap-player-device-experience
+namespace: product-roadmap
 title: "M4-C: Nightcap Player Device Experience"
 owner: Nico Janssen
 status: active

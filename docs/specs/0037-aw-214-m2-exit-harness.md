@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0037-aw-214-m2-exit-harness
-namespace: patterns
+id: engineeringpractice.specs.0037-aw-214-m2-exit-harness
+namespace: engineering-practice
 title: "AW-214: M2 Headless Nightcap Exit Harness"
 owner: Nico Janssen
 status: active

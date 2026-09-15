@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0018-mini-game-orchestration-and-execution-adapters
-namespace: decisions
+id: productroadmap.decisions.0018-mini-game-orchestration-and-execution-adapters
+namespace: product-roadmap
 title: 0018 - Mini-game Orchestration, Adaptation, and Trust Profiles
 owner: Nico Janssen
 status: active

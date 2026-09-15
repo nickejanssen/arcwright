@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-261-adr-0003-cloudflare-vs-gcp-validation-decision
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-261-adr-0003-cloudflare-vs-gcp-validation-decision
+namespace: product-roadmap
 title: "AW-261: ADR-0003 Cloudflare vs GCP Validation Decision"
 owner: Nico Janssen
 status: active

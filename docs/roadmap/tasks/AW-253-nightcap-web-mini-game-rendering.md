@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-253-nightcap-web-mini-game-rendering
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-253-nightcap-web-mini-game-rendering
+namespace: product-roadmap
 title: "AW-253: Nightcap Web Mini-game Rendering And Device Integration"
 owner: Nico Janssen
 status: active

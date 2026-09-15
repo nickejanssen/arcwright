@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-245-second-arc-minimal-executable-product
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-245-second-arc-minimal-executable-product
+namespace: product-roadmap
 title: "AW-245: Second Arc Minimal Executable Product"
 owner: Nico Janssen
 status: active

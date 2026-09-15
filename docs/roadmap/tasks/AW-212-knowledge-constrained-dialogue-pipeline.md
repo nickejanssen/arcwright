@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-212-knowledge-constrained-dialogue-pipeline
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-212-knowledge-constrained-dialogue-pipeline
+namespace: product-roadmap
 title: "AW-212: Knowledge-Constrained Dialogue Pipeline"
 owner: Nico Janssen
 status: active

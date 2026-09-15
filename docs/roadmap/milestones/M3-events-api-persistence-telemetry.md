@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.milestones.m3-events-api-persistence-telemetry
-namespace: operating
+id: productroadmap.roadmap.milestones.m3-events-api-persistence-telemetry
+namespace: product-roadmap
 title: "M3: Events, API, Persistence, Telemetry"
 owner: Nico Janssen
 status: active

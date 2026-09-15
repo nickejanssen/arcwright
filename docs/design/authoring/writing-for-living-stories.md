@@ -1,6 +1,6 @@
 ---
-id: patterns.design.authoring.writing-for-living-stories
-namespace: patterns
+id: engineeringpractice.design.authoring.writing-for-living-stories
+namespace: engineering-practice
 title: Writing For Living Stories — The Author's Craft Guide
 owner: Nico Janssen
 status: draft

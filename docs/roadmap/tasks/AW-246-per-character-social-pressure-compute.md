@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-246-per-character-social-pressure-compute
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-246-per-character-social-pressure-compute
+namespace: product-roadmap
 title: "AW-246: Per-Character Social Pressure Compute"
 owner: Nico Janssen
 status: active

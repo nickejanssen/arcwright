@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0085-the-unmasking-reveal-reconstruction
-namespace: patterns
+id: engineeringpractice.specs.0085-the-unmasking-reveal-reconstruction
+namespace: engineering-practice
 title: The Unmasking Reveal-reconstruction Mini-game
 owner: Nico Janssen
 status: draft

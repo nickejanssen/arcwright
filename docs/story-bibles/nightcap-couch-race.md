@@ -1,6 +1,6 @@
 ---
-id: custom.story-bibles.nightcap-couch-race
-namespace: custom
+id: nightcapcouchrace.story-bibles.nightcap-couch-race
+namespace: nightcap-couch-race
 title: ARCHIVED — Nightcap Couch Race Story Bible
 owner: Nico Janssen
 status: deprecated

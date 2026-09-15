@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-01-couch-race-tv-and-phone-rendering
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-08-01-couch-race-tv-and-phone-rendering
+namespace: engineering-practice
 title: "Couch Race TV and Phone Rendering — Implementation Plan (Phase 1:
   Structural Layer)"
 owner: Nico Janssen

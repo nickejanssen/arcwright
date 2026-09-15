@@ -1,6 +1,6 @@
 ---
-id: patterns.design.authoring.story-to-arc-exemplar
-namespace: patterns
+id: engineeringpractice.design.authoring.story-to-arc-exemplar
+namespace: engineering-practice
 title: From Story To Arc — A Worked Example
 owner: Nico Janssen
 status: draft

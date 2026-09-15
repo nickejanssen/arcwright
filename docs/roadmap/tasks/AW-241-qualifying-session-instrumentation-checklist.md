@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-241-qualifying-session-instrumentation-checklist
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-241-qualifying-session-instrumentation-checklist
+namespace: product-roadmap
 title: "AW-241: Qualifying Session Instrumentation Checklist"
 owner: Nico Janssen
 status: active

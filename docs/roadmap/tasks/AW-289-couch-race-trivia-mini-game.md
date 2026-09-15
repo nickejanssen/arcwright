@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-289-couch-race-trivia-mini-game
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-289-couch-race-trivia-mini-game
+namespace: product-roadmap
 title: "AW-289: The Interrogation Room Last Call Pressure Capstone"
 owner: Nico Janssen
 status: draft

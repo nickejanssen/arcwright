@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-239-character-state-inspection
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-239-character-state-inspection
+namespace: product-roadmap
 title: "AW-239: Character State Inspection"
 owner: Nico Janssen
 status: active

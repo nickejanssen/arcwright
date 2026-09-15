@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-06-27-nightcap-rehearsal-lobby
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-06-27-nightcap-rehearsal-lobby
+namespace: engineering-practice
 title: Nightcap Rehearsal Lobby Implementation Plan
 owner: Nico Janssen
 status: draft

@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0056-aw-226-host-session-creation-and-shared-display-flow
-namespace: patterns
+id: engineeringpractice.specs.0056-aw-226-host-session-creation-and-shared-display-flow
+namespace: engineering-practice
 title: "AW-226: Host Session Creation And Shared Display Flow"
 owner: Nico Janssen
 status: active
