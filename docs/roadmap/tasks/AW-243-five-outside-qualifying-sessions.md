@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-243-five-outside-qualifying-sessions
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-243-five-outside-qualifying-sessions
+namespace: product-roadmap
 title: "AW-243: Five Outside Qualifying Sessions"
 owner: Nico Janssen
 status: active

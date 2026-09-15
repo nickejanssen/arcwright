@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.specs.2026-07-18-aw287-leverage-walkthrough
-namespace: playbooks
+id: engineeringpractice.superpowers.specs.2026-07-18-aw287-leverage-walkthrough
+namespace: engineering-practice
 title: AW-287 Leverage Representative-Interaction Walkthrough
 owner: Nico Janssen
 status: active

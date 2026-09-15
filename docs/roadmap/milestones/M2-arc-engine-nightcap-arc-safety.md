@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.milestones.m2-arc-engine-nightcap-arc-safety
-namespace: operating
+id: productroadmap.roadmap.milestones.m2-arc-engine-nightcap-arc-safety
+namespace: product-roadmap
 title: "M2: Arc Engine + Nightcap Arc + Safety"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0077-mini-game-registration-and-story-opportunities
-namespace: patterns
+id: engineeringpractice.specs.0077-mini-game-registration-and-story-opportunities
+namespace: engineering-practice
 title: Reusable Mini-game Packages, Destination Adaptations, and Placement Policies
 owner: Nico Janssen
 status: active

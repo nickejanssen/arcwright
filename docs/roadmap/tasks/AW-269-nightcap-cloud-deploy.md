@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-269-nightcap-cloud-deploy
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-269-nightcap-cloud-deploy
+namespace: product-roadmap
 title: "AW-269: Nightcap Cloud Deploy (Cloudflare + GCP backend)"
 owner: Nico Janssen
 status: active

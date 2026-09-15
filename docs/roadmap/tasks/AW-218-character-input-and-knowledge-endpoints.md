@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-218-character-input-and-knowledge-endpoints
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-218-character-input-and-knowledge-endpoints
+namespace: product-roadmap
 title: "AW-218: Character Input And Knowledge Endpoints"
 owner: Nico Janssen
 status: active

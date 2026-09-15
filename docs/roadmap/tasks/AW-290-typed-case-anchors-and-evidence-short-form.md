@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-290-typed-case-anchors-and-evidence-short-form
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-290-typed-case-anchors-and-evidence-short-form
+namespace: product-roadmap
 title: "AW-290: Typed Case Anchors And Evidence Short Form"
 owner: Nico Janssen
 status: active

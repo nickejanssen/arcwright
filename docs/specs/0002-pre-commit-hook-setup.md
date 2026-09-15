@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0002-pre-commit-hook-setup
-namespace: patterns
+id: engineeringpractice.specs.0002-pre-commit-hook-setup
+namespace: engineering-practice
 title: Pre-Commit Hook Setup
 owner: Nico Janssen
 status: active

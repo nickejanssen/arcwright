@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.01-authoritative-gdd.05-last-call-case-file
-namespace: custom
+id: nightcap.gdd.nightcap.01-authoritative-gdd.05-last-call-case-file
+namespace: nightcap
 title: Nightcap — Last Call & Case File — Structured Reconstruction
 owner: Nico Janssen
 status: active

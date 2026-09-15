@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.specs.2026-06-26-m4-exit-rehearsal-design
-namespace: playbooks
+id: engineeringpractice.superpowers.specs.2026-06-26-m4-exit-rehearsal-design
+namespace: engineering-practice
 title: M4 Exit + First Real-Human Nightcap Rehearsal — Design
 owner: Nico Janssen
 status: active

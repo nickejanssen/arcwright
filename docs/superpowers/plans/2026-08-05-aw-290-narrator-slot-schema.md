@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-05-aw-290-narrator-slot-schema
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-08-05-aw-290-narrator-slot-schema
+namespace: engineering-practice
 title: AW-290 Narrator Slot Schema Implementation Plan
 owner: Nico Janssen
 status: draft

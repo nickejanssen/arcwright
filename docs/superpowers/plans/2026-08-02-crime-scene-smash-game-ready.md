@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-02-crime-scene-smash-game-ready
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-08-02-crime-scene-smash-game-ready
+namespace: engineering-practice
 title: Crime Scene Smash Game-ready Implementation Plan
 owner: Nico Janssen
 status: draft

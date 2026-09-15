@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0070-aw-274-platform-agnostic-role-outcome-vocabulary
-namespace: patterns
+id: engineeringpractice.specs.0070-aw-274-platform-agnostic-role-outcome-vocabulary
+namespace: engineering-practice
 title: Platform-Agnostic Role, Knowledge-Seeding, and Session-Outcome Vocabulary
 owner: Nico Janssen
 status: active

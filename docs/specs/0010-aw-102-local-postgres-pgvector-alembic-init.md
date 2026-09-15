@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0010-aw-102-local-postgres-pgvector-alembic-init
-namespace: patterns
+id: engineeringpractice.specs.0010-aw-102-local-postgres-pgvector-alembic-init
+namespace: engineering-practice
 title: Local Postgres 15 + pgvector + Alembic Init
 owner: Nico Janssen
 status: active

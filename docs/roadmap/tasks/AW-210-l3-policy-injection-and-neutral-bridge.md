@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-210-l3-policy-injection-and-neutral-bridge
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-210-l3-policy-injection-and-neutral-bridge
+namespace: product-roadmap
 title: "AW-210: L3 Policy Injection And Neutral Bridge"
 owner: Nico Janssen
 status: active

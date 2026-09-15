@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.00-governance.04-reconciliation-report
-namespace: custom
+id: nightcap.gdd.nightcap.00-governance.04-reconciliation-report
+namespace: nightcap
 title: Nightcap Master GDD Reconciliation Report
 owner: Nico Janssen
 status: active

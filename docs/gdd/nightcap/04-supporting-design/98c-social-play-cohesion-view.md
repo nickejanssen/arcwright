@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.04-supporting-design.98c-social-play-cohesion-view
-namespace: custom
+id: nightcap.gdd.nightcap.04-supporting-design.98c-social-play-cohesion-view
+namespace: nightcap
 title: Nightcap — Social Play Cohesion View
 owner: Nico Janssen
 status: active

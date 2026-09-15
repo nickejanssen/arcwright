@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-238-live-event-stream-inspection
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-238-live-event-stream-inspection
+namespace: product-roadmap
 title: "AW-238: Live Event Stream Inspection"
 owner: Nico Janssen
 status: active

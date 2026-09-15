@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0071-live-loop-ai-character-dialogue
-namespace: patterns
+id: engineeringpractice.specs.0071-live-loop-ai-character-dialogue
+namespace: engineering-practice
 title: "0071: AI Character Dialogue in the Live Session Loop"
 owner: Nico Janssen
 status: active

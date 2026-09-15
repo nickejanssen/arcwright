@@ -1,6 +1,6 @@
 ---
-id: operating.product.aw284-discovery-and-checkpoints
-namespace: operating
+id: productroadmap.product.aw284-discovery-and-checkpoints
+namespace: product-roadmap
 title: AW-284 Discovery and Checkpoint Record
 owner: Nico Janssen
 status: active

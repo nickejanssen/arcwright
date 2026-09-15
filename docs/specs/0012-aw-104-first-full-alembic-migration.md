@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0012-aw-104-first-full-alembic-migration
-namespace: patterns
+id: engineeringpractice.specs.0012-aw-104-first-full-alembic-migration
+namespace: engineering-practice
 title: First Full Alembic Migration
 owner: Nico Janssen
 status: active

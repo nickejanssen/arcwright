@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-221-narrator-bridge-on-resume
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-221-narrator-bridge-on-resume
+namespace: product-roadmap
 title: "AW-221: Narrator Bridge On Resume"
 owner: Nico Janssen
 status: active

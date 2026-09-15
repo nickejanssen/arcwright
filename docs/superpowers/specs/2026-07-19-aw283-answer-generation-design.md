@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.specs.2026-07-19-aw283-answer-generation-design
-namespace: playbooks
+id: engineeringpractice.superpowers.specs.2026-07-19-aw283-answer-generation-design
+namespace: engineering-practice
 title: AW-283 Answer/Lie/Contradiction Sample Review
 owner: Nico Janssen
 status: active

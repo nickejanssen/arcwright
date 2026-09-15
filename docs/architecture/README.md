@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.readme
-namespace: platform
+id: arcexecution.architecture.readme
+namespace: arc-execution
 title: Architecture Directory
 owner: Nico Janssen
 status: active

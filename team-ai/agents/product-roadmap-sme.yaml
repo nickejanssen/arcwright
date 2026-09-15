@@ -1,0 +1,9 @@
+name: product-roadmap-sme
+kind: subagent
+description: "Answers product-roadmap questions strictly from the product-roadmap namespace, with citations."
+model_tier: small
+kb_namespaces: [product-roadmap]
+tools: [kb_search, kb_get, kb_coverage_gap]
+max_hops: 0
+escalate_to: unassigned
+instructions_file: agents/product-roadmap-sme.md

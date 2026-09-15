@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.readme
-namespace: patterns
+id: engineeringpractice.specs.readme
+namespace: engineering-practice
 title: Implementation Specifications
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0016-aw283-claim-ledger-schema
-namespace: decisions
+id: productroadmap.decisions.0016-aw283-claim-ledger-schema
+namespace: product-roadmap
 title: "ADR-0016: AW-283 claim ledger gets a dedicated database schema"
 owner: Nico Janssen
 status: active

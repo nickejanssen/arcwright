@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-267-nightcap-art-direction-brief
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-267-nightcap-art-direction-brief
+namespace: product-roadmap
 title: "AW-267: Nightcap Art Direction Brief"
 owner: Nico Janssen
 status: active

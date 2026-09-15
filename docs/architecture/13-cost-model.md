@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.13-cost-model
-namespace: platform
+id: modelrouting.architecture.13-cost-model
+namespace: model-routing
 title: Cost Model
 owner: Nico Janssen
 status: active

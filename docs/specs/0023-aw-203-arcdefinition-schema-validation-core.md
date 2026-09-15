@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0023-aw-203-arcdefinition-schema-validation-core
-namespace: patterns
+id: engineeringpractice.specs.0023-aw-203-arcdefinition-schema-validation-core
+namespace: engineering-practice
 title: "AW-203: ArcDefinition Schema And Validation Core"
 owner: Nico Janssen
 status: active

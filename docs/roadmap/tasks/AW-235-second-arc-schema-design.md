@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-235-second-arc-schema-design
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-235-second-arc-schema-design
+namespace: product-roadmap
 title: "AW-235: Second Arc Schema Design"
 owner: Nico Janssen
 status: active

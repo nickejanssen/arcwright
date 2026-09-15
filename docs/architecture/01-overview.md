@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.01-overview
-namespace: platform
+id: arcexecution.architecture.01-overview
+namespace: arc-execution
 title: System Architecture Overview
 owner: Nico Janssen
 status: active

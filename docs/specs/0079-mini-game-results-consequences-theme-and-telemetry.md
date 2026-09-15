@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0079-mini-game-results-consequences-theme-and-telemetry
-namespace: patterns
+id: engineeringpractice.specs.0079-mini-game-results-consequences-theme-and-telemetry
+namespace: engineering-practice
 title: Mini-game Results, Consequences, Theme, and Telemetry
 owner: Nico Janssen
 status: active

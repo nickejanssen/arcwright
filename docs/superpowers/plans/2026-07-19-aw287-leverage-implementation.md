@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-07-19-aw287-leverage-implementation
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-07-19-aw287-leverage-implementation
+namespace: engineering-practice
 title: AW-287 Leverage (Resource/Effect Capability) Implementation Plan
 owner: Nico Janssen
 status: draft

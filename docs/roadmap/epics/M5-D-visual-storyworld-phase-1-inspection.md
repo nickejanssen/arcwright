@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m5-d-visual-storyworld-phase-1-inspection
-namespace: operating
+id: productroadmap.roadmap.epics.m5-d-visual-storyworld-phase-1-inspection
+namespace: product-roadmap
 title: "M5-D: Visual Storyworld Knowledge Graph Inspection"
 owner: Nico Janssen
 status: active

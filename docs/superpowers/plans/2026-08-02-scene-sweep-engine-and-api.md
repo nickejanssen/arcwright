@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-02-scene-sweep-engine-and-api
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-08-02-scene-sweep-engine-and-api
+namespace: engineering-practice
 title: Scene Sweep — Package, Engine Plugin & API Implementation Plan
 owner: Nico Janssen
 status: draft

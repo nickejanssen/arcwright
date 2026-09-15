@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m2-c-nightcap-arc-runtime
-namespace: operating
+id: productroadmap.roadmap.epics.m2-c-nightcap-arc-runtime
+namespace: product-roadmap
 title: "M2-C: Nightcap Arc Runtime"
 owner: Nico Janssen
 status: active

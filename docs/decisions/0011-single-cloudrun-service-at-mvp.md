@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0011-single-cloudrun-service-at-mvp
-namespace: decisions
+id: productroadmap.decisions.0011-single-cloudrun-service-at-mvp
+namespace: product-roadmap
 title: "ADR-0011: Single Cloud Run Service At MVP"
 owner: Nico Janssen
 status: active

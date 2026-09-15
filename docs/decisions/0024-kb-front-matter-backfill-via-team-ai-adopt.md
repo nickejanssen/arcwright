@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0024-kb-front-matter-backfill-via-team-ai-adopt
-namespace: decisions
+id: productroadmap.decisions.0024-kb-front-matter-backfill-via-team-ai-adopt
+namespace: product-roadmap
 title: "ADR-0024: KB Front-Matter Backfill via team-ai adopt"
 owner: Nico Janssen
 status: draft

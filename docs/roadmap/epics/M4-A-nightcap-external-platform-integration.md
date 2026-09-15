@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m4-a-nightcap-external-platform-integration
-namespace: operating
+id: productroadmap.roadmap.epics.m4-a-nightcap-external-platform-integration
+namespace: product-roadmap
 title: "M4-A: Nightcap Web Experience Runtime Integration"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.00-governance.01-master-gdd-index
-namespace: custom
+id: nightcap.gdd.nightcap.00-governance.01-master-gdd-index
+namespace: nightcap
 title: Nightcap Master GDD Index
 owner: Nico Janssen
 status: active

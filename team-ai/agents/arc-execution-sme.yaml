@@ -1,0 +1,9 @@
+name: arc-execution-sme
+kind: subagent
+description: "Answers arc-execution questions strictly from the arc-execution namespace, with citations."
+model_tier: small
+kb_namespaces: [arc-execution]
+tools: [kb_search, kb_get, kb_coverage_gap]
+max_hops: 0
+escalate_to: unassigned
+instructions_file: agents/arc-execution-sme.md

@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.01-authoritative-gdd.02-investigation-deduction
-namespace: custom
+id: nightcap.gdd.nightcap.01-authoritative-gdd.02-investigation-deduction
+namespace: nightcap
 title: Nightcap — Investigation & Deduction
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.00-governance.03-source-reconciliation-manifest
-namespace: custom
+id: nightcap.gdd.nightcap.00-governance.03-source-reconciliation-manifest
+namespace: nightcap
 title: Nightcap Master Source Reconciliation Manifest
 owner: Nico Janssen
 status: active

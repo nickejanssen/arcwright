@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-03-minigame-capability-and-trust-platform
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-08-03-minigame-capability-and-trust-platform
+namespace: engineering-practice
 title: Mini-game Capability and Trust Platform Implementation Plan
 owner: Nico Janssen
 status: draft

@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-295-resolved-case-persistence
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-295-resolved-case-persistence
+namespace: product-roadmap
 title: "AW-295: Resolved Case Persistence (Six Normalized Tables)"
 owner: Nico Janssen
 status: active

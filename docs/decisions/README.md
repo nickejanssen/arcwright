@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.readme
-namespace: decisions
+id: productroadmap.decisions.readme
+namespace: product-roadmap
 title: Architecture Decision Records (ADRs)
 owner: Nico Janssen
 status: active

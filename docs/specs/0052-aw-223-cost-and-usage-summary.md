@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0052-aw-223-cost-and-usage-summary
-namespace: patterns
+id: engineeringpractice.specs.0052-aw-223-cost-and-usage-summary
+namespace: engineering-practice
 title: "AW-223: Cost and Usage Summary"
 owner: Nico Janssen
 status: active

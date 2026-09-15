@@ -1,6 +1,6 @@
 ---
-id: operating.product.mini-game-readiness.tmst-golden-path-report
-namespace: operating
+id: productroadmap.product.mini-game-readiness.tmst-golden-path-report
+namespace: product-roadmap
 title: Tell Me Something True Browser Golden Path Report
 owner: Nico Janssen
 status: active

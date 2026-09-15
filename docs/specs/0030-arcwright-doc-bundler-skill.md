@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0030-arcwright-doc-bundler-skill
-namespace: patterns
+id: engineeringpractice.specs.0030-arcwright-doc-bundler-skill
+namespace: engineering-practice
 title: Arcwright Doc Bundler Skill
 owner: Nico Janssen
 status: active

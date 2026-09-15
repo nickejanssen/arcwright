@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0003-ci-and-codeql-workflows
-namespace: patterns
+id: engineeringpractice.specs.0003-ci-and-codeql-workflows
+namespace: engineering-practice
 title: CI and CodeQL Workflows
 owner: Nico Janssen
 status: active

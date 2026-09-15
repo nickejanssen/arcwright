@@ -1,6 +1,6 @@
 ---
-id: patterns.design.moodboards.influencer-retreat
-namespace: patterns
+id: engineeringpractice.design.moodboards.influencer-retreat
+namespace: engineering-practice
 title: Moodboard  -  Influencer Retreat
 owner: Nico Janssen
 status: active

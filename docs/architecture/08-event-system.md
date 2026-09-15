@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.08-event-system
-namespace: platform
+id: sessionruntime.architecture.08-event-system
+namespace: session-runtime
 title: Multi-Surface Event System
 owner: Nico Janssen
 status: active

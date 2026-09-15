@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-228-player-join-flow-under-30-seconds
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-228-player-join-flow-under-30-seconds
+namespace: product-roadmap
 title: "AW-228: Player Join Flow Under 30 Seconds"
 owner: Nico Janssen
 status: active

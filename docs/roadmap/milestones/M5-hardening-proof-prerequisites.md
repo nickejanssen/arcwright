@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.milestones.m5-hardening-proof-prerequisites
-namespace: operating
+id: productroadmap.roadmap.milestones.m5-hardening-proof-prerequisites
+namespace: product-roadmap
 title: "M5: Hardening + Proof Prerequisites"
 owner: Nico Janssen
 status: active

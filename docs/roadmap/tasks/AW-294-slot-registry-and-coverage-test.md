@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-294-slot-registry-and-coverage-test
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-294-slot-registry-and-coverage-test
+namespace: product-roadmap
 title: "AW-294: Machine-Readable Slot Registry And Coverage Test"
 owner: Nico Janssen
 status: active

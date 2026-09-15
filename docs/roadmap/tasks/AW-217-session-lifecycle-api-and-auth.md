@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-217-session-lifecycle-api-and-auth
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-217-session-lifecycle-api-and-auth
+namespace: product-roadmap
 title: "AW-217: Session Lifecycle API And Auth"
 owner: Nico Janssen
 status: active

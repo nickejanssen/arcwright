@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-274-platform-agnostic-role-outcome-vocabulary
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-274-platform-agnostic-role-outcome-vocabulary
+namespace: product-roadmap
 title: "AW-274: Platform-Agnostic Role, Knowledge-Seeding, and Session-Outcome
   Vocabulary"
 owner: Nico Janssen

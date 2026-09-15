@@ -1,6 +1,6 @@
 ---
-id: patterns.design.authoring.rehearsal-1-observation-guide
-namespace: patterns
+id: engineeringpractice.design.authoring.rehearsal-1-observation-guide
+namespace: engineering-practice
 title: Rehearsal 1 — Founder Observation Guide
 owner: Nico Janssen
 status: draft

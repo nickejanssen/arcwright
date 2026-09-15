@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0000-template
-namespace: patterns
+id: engineeringpractice.specs.0000-template
+namespace: engineering-practice
 title: Title
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0074-aw282-structured-interaction-loop
-namespace: patterns
+id: engineeringpractice.specs.0074-aw282-structured-interaction-loop
+namespace: engineering-practice
 title: AW-282 Structured Interaction Loop
 owner: Nico Janssen
 status: active

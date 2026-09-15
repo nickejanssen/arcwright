@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m2-e-character-behavior-engine
-namespace: operating
+id: productroadmap.roadmap.epics.m2-e-character-behavior-engine
+namespace: product-roadmap
 title: "M2-E: Character Behavior Engine"
 owner: Nico Janssen
 status: active

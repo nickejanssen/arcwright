@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.nightcap-external-playtest-harness
-namespace: patterns
+id: engineeringpractice.specs.nightcap-external-playtest-harness
+namespace: engineering-practice
 title: Nightcap External Playtest Harness
 owner: Nico Janssen
 status: active

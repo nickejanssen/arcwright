@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-236-live-knowledge-graph-inspection
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-236-live-knowledge-graph-inspection
+namespace: product-roadmap
 title: "AW-236: Live Knowledge Graph Inspection"
 owner: Nico Janssen
 status: active

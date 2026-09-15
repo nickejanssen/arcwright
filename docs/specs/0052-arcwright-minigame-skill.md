@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0052-arcwright-minigame-skill
-namespace: patterns
+id: engineeringpractice.specs.0052-arcwright-minigame-skill
+namespace: engineering-practice
 title: Arcwright Mini-game Integration Skill
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-07-11-phase0-cleanup-and-one-command-rehearsal
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-07-11-phase0-cleanup-and-one-command-rehearsal
+namespace: engineering-practice
 title: Phase 0 Cleanup + Phase 1 One-Command Rehearsal Implementation Plan
 owner: Nico Janssen
 status: draft

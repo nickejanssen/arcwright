@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m6-b-qualifying-session-execution
-namespace: operating
+id: productroadmap.roadmap.epics.m6-b-qualifying-session-execution
+namespace: product-roadmap
 title: "M6-B: Qualifying Session Execution"
 owner: Nico Janssen
 status: active

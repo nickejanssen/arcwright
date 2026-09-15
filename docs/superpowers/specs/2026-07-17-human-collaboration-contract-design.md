@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.specs.2026-07-17-human-collaboration-contract-design
-namespace: playbooks
+id: engineeringpractice.superpowers.specs.2026-07-17-human-collaboration-contract-design
+namespace: engineering-practice
 title: Human Collaboration Contract Design
 owner: Nico Janssen
 status: active

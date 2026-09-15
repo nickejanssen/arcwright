@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m1-b-data-model
-namespace: operating
+id: productroadmap.roadmap.epics.m1-b-data-model
+namespace: product-roadmap
 title: "M1-B: Data Model"
 owner: Nico Janssen
 status: active

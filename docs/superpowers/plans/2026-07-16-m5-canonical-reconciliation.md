@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-07-16-m5-canonical-reconciliation
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-07-16-m5-canonical-reconciliation
+namespace: engineering-practice
 title: M5 Canonical Reconciliation Implementation Plan
 owner: Nico Janssen
 status: draft

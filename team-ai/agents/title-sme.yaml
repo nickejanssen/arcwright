@@ -1,0 +1,9 @@
+name: title-sme
+kind: subagent
+description: "Answers title questions across canonical, provisional, and archived sources, labelling authority."
+model_tier: small
+kb_namespaces: [nightcap, monster-rpg, daily-case, nightcap-couch-race]
+tools: [kb_search, kb_get, kb_coverage_gap]
+max_hops: 1
+escalate_to: sme
+instructions_file: agents/title-sme.md

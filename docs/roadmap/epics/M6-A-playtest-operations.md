@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m6-a-playtest-operations
-namespace: operating
+id: productroadmap.roadmap.epics.m6-a-playtest-operations
+namespace: product-roadmap
 title: "M6-A: Playtest Operations"
 owner: Nico Janssen
 status: active

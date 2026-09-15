@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-293-wrapper-dressing-pack
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-293-wrapper-dressing-pack
+namespace: product-roadmap
 title: "AW-293: Wrapper Dressing Pack (Séance 1928 + Big Top 1899)"
 owner: Nico Janssen
 status: active

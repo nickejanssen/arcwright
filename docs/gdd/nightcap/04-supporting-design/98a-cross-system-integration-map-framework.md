@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.04-supporting-design.98a-cross-system-integration-map-framework
-namespace: custom
+id: nightcap.gdd.nightcap.04-supporting-design.98a-cross-system-integration-map-framework
+namespace: nightcap
 title: Nightcap — Cross-System Integration Map
 owner: Nico Janssen
 status: active

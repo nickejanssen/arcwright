@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m2-a-external-platform-decision-gate
-namespace: operating
+id: productroadmap.roadmap.epics.m2-a-external-platform-decision-gate
+namespace: product-roadmap
 title: "M2-A: Nightcap Web Experience Runtime Decision Gate"
 owner: Nico Janssen
 status: active

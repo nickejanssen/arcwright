@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-283-suspect-answer-generation-and-contradiction-detection
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-283-suspect-answer-generation-and-contradiction-detection
+namespace: product-roadmap
 title: "AW-283: Suspect Answer Generation And Contradiction Detection"
 owner: Nico Janssen
 status: active

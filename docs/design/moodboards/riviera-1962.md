@@ -1,6 +1,6 @@
 ---
-id: patterns.design.moodboards.riviera-1962
-namespace: patterns
+id: engineeringpractice.design.moodboards.riviera-1962
+namespace: engineering-practice
 title: Moodboard  -  Riviera 1962
 owner: Nico Janssen
 status: active

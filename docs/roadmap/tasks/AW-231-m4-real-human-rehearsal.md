@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-231-m4-real-human-rehearsal
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-231-m4-real-human-rehearsal
+namespace: product-roadmap
 title: "AW-231: Execute Real-Human Nightcap Rehearsal 1"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m1-c-knowledge-graph-core
-namespace: operating
+id: productroadmap.roadmap.epics.m1-c-knowledge-graph-core
+namespace: product-roadmap
 title: "M1-C: Knowledge Graph Core"
 owner: Nico Janssen
 status: active

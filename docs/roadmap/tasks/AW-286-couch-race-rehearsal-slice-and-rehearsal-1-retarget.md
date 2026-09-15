@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget
+namespace: product-roadmap
 title: "AW-286: Couch Race Rehearsal Slice And Rehearsal 1 Retarget"
 owner: Nico Janssen
 status: active

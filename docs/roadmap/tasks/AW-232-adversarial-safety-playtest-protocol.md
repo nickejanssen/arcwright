@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-232-adversarial-safety-playtest-protocol
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-232-adversarial-safety-playtest-protocol
+namespace: product-roadmap
 title: "AW-232: Adversarial Safety Playtest Protocol"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.09-developer-api
-namespace: platform
+id: developerapi.architecture.09-developer-api
+namespace: developer-api
 title: Developer API and Authoring Experience
 owner: Nico Janssen
 status: active

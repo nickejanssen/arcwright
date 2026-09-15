@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m5-i-nightcap-couch-race-arc-and-interrogation
-namespace: operating
+id: productroadmap.roadmap.epics.m5-i-nightcap-couch-race-arc-and-interrogation
+namespace: product-roadmap
 title: "M5-I: Nightcap Couch Race Arc And Interrogation Layer"
 owner: Nico Janssen
 status: active

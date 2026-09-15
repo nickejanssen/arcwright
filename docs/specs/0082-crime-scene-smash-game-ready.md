@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0082-crime-scene-smash-game-ready
-namespace: patterns
+id: engineeringpractice.specs.0082-crime-scene-smash-game-ready
+namespace: engineering-practice
 title: Crime Scene Smash Game-ready Contract
 owner: Nico Janssen
 status: draft

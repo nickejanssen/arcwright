@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.01-authoritative-gdd.09-player-count-scaling
-namespace: custom
+id: nightcap.gdd.nightcap.01-authoritative-gdd.09-player-count-scaling
+namespace: nightcap
 title: Nightcap — Player Count & Social Architecture
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.00-overview
-namespace: operating
+id: productroadmap.roadmap.00-overview
+namespace: product-roadmap
 title: 12-Build-Roadmap-v1.1
 owner: Nico Janssen
 status: active

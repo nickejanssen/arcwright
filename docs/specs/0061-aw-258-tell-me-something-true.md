@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0061-aw-258-tell-me-something-true
-namespace: patterns
+id: engineeringpractice.specs.0061-aw-258-tell-me-something-true
+namespace: engineering-practice
 title: "AW-258: Tell Me Something True"
 owner: Nico Janssen
 status: active

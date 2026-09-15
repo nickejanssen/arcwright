@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0026-aw-206-killer-assignment-and-reveal-state
-namespace: patterns
+id: engineeringpractice.specs.0026-aw-206-killer-assignment-and-reveal-state
+namespace: engineering-practice
 title: "AW-206: Killer Assignment And Reveal State"
 owner: Nico Janssen
 status: active

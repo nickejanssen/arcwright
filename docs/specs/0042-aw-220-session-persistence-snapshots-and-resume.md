@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0042-aw-220-session-persistence-snapshots-and-resume
-namespace: patterns
+id: engineeringpractice.specs.0042-aw-220-session-persistence-snapshots-and-resume
+namespace: engineering-practice
 title: "AW-220: Session Persistence Snapshots And Resume"
 owner: Nico Janssen
 status: active

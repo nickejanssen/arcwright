@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0017-aw-112-deterministic-replay-and-batch-runner
-namespace: patterns
+id: engineeringpractice.specs.0017-aw-112-deterministic-replay-and-batch-runner
+namespace: engineering-practice
 title: AW-112 Deterministic Replay and Batch Runner
 owner: Nico Janssen
 status: active

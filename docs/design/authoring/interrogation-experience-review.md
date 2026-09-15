@@ -1,6 +1,6 @@
 ---
-id: patterns.design.authoring.interrogation-experience-review
-namespace: patterns
+id: engineeringpractice.design.authoring.interrogation-experience-review
+namespace: engineering-practice
 title: Interrogation Experience — Founder Discovery Memo
 owner: Nico Janssen
 status: active

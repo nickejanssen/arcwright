@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-02-evidence-locker-402-game-ready
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-08-02-evidence-locker-402-game-ready
+namespace: engineering-practice
 title: Evidence Locker 402 Game-ready Implementation Plan
 owner: Nico Janssen
 status: draft

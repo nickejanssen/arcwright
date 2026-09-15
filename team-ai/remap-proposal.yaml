@@ -1,0 +1,2684 @@
+kbRoot: C:\Users\nicke\.codex\worktrees\b24b\arcwright\docs
+items:
+  - path: README.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.readme
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.readme
+  - path: agents/README.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.readme
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.readme
+  - path: agents/USAGE.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.usage
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.usage
+  - path: agents/business-steward.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.business-steward
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.business-steward
+  - path: agents/expert-personas.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.expert-personas
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.expert-personas
+  - path: agents/planner.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.planner
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.planner
+  - path: agents/product-steward.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.product-steward
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.product-steward
+  - path: agents/road-to-live-playbook.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.road-to-live-playbook
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.road-to-live-playbook
+  - path: agents/scribe.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.scribe
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.scribe
+  - path: agents/spec-author.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.spec-author
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.spec-author
+  - path: agents/system-architect.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.system-architect
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.system-architect
+  - path: architecture/01-overview.md
+    from_namespace: arc-execution
+    from_id: arcexecution.architecture.01-overview
+    status: unchanged
+    to_namespace: arc-execution
+    to_id: arcexecution.architecture.01-overview
+  - path: architecture/02-technology-stack.md
+    from_namespace: arc-execution
+    from_id: arcexecution.architecture.02-technology-stack
+    status: unchanged
+    to_namespace: arc-execution
+    to_id: arcexecution.architecture.02-technology-stack
+  - path: architecture/03-arc-execution.md
+    from_namespace: arc-execution
+    from_id: arcexecution.architecture.03-arc-execution
+    status: unchanged
+    to_namespace: arc-execution
+    to_id: arcexecution.architecture.03-arc-execution
+  - path: architecture/04-knowledge-graph.md
+    from_namespace: knowledge-graph
+    from_id: knowledgegraph.architecture.04-knowledge-graph
+    status: unchanged
+    to_namespace: knowledge-graph
+    to_id: knowledgegraph.architecture.04-knowledge-graph
+  - path: architecture/05-session-persistence.md
+    from_namespace: session-runtime
+    from_id: sessionruntime.architecture.05-session-persistence
+    status: unchanged
+    to_namespace: session-runtime
+    to_id: sessionruntime.architecture.05-session-persistence
+  - path: architecture/06-model-routing.md
+    from_namespace: model-routing
+    from_id: modelrouting.architecture.06-model-routing
+    status: unchanged
+    to_namespace: model-routing
+    to_id: modelrouting.architecture.06-model-routing
+  - path: architecture/07-character-behavior.md
+    from_namespace: character-behavior
+    from_id: characterbehavior.architecture.07-character-behavior
+    status: unchanged
+    to_namespace: character-behavior
+    to_id: characterbehavior.architecture.07-character-behavior
+  - path: architecture/08-event-system.md
+    from_namespace: session-runtime
+    from_id: sessionruntime.architecture.08-event-system
+    status: unchanged
+    to_namespace: session-runtime
+    to_id: sessionruntime.architecture.08-event-system
+  - path: architecture/09-developer-api.md
+    from_namespace: developer-api
+    from_id: developerapi.architecture.09-developer-api
+    status: unchanged
+    to_namespace: developer-api
+    to_id: developerapi.architecture.09-developer-api
+  - path: architecture/10-content-safety.md
+    from_namespace: safety
+    from_id: safety.architecture.10-content-safety
+    status: unchanged
+    to_namespace: safety
+    to_id: safety.architecture.10-content-safety
+  - path: architecture/11-telemetry.md
+    from_namespace: playtest-ops
+    from_id: playtestops.architecture.11-telemetry
+    status: unchanged
+    to_namespace: playtest-ops
+    to_id: playtestops.architecture.11-telemetry
+  - path: architecture/12-build-plan.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.architecture.12-build-plan
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.architecture.12-build-plan
+  - path: architecture/13-cost-model.md
+    from_namespace: model-routing
+    from_id: modelrouting.architecture.13-cost-model
+    status: unchanged
+    to_namespace: model-routing
+    to_id: modelrouting.architecture.13-cost-model
+  - path: architecture/14-architecture-validation.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.architecture.14-architecture-validation
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.architecture.14-architecture-validation
+  - path: architecture/15-development-guide.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.architecture.15-development-guide
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.architecture.15-development-guide
+  - path: architecture/README.md
+    from_namespace: arc-execution
+    from_id: arcexecution.architecture.readme
+    status: unchanged
+    to_namespace: arc-execution
+    to_id: arcexecution.architecture.readme
+  - path: architecture/supplemental-schemas.md
+    from_namespace: arc-execution
+    from_id: arcexecution.architecture.supplemental-schemas
+    status: unchanged
+    to_namespace: arc-execution
+    to_id: arcexecution.architecture.supplemental-schemas
+  - path: conventions/README.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.conventions.readme
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.conventions.readme
+  - path: conventions/ai-contributions.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.conventions.ai-contributions
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.conventions.ai-contributions
+  - path: conventions/ai-cost-policy.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.conventions.ai-cost-policy
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.conventions.ai-cost-policy
+  - path: conventions/coding-style.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.conventions.coding-style
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.conventions.coding-style
+  - path: conventions/human-collaboration.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.conventions.human-collaboration
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.conventions.human-collaboration
+  - path: conventions/mini-game-authoring.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.conventions.mini-game-authoring
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.conventions.mini-game-authoring
+  - path: conventions/review-checklist.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.conventions.review-checklist
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.conventions.review-checklist
+  - path: conventions/setup.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.conventions.setup
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.conventions.setup
+  - path: conventions/testing.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.conventions.testing
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.conventions.testing
+  - path: decisions/0001-scaffolding-audit.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0001-scaffolding-audit
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0001-scaffolding-audit
+  - path: decisions/0002-harness-scenario-execution-contract.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0002-harness-scenario-execution-contract
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0002-harness-scenario-execution-contract
+  - path: decisions/0003-nightcap-web-experience-runtime.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0003-nightcap-web-experience-runtime
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0003-nightcap-web-experience-runtime
+  - path: decisions/0004-pacing-telemetry-outcome-events.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0004-pacing-telemetry-outcome-events
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0004-pacing-telemetry-outcome-events
+  - path: decisions/0005-l1-hard-stop-boundary.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0005-l1-hard-stop-boundary
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0005-l1-hard-stop-boundary
+  - path: decisions/0006-nightcap-continuity-v11.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0006-nightcap-continuity-v11
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0006-nightcap-continuity-v11
+  - path: decisions/0007-m2-exit-harness-and-nightcap-eight-beats.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0007-m2-exit-harness-and-nightcap-eight-beats
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0007-m2-exit-harness-and-nightcap-eight-beats
+  - path: decisions/0008-content-event-type-layering.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0008-content-event-type-layering
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0008-content-event-type-layering
+  - path: decisions/0009-mini-game-runtime-boundary.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0009-mini-game-runtime-boundary
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0009-mini-game-runtime-boundary
+  - path: decisions/0010-nightcap-gameplay-pivots-post-playtest.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0010-nightcap-gameplay-pivots-post-playtest
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0010-nightcap-gameplay-pivots-post-playtest
+  - path: decisions/0011-single-cloudrun-service-at-mvp.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0011-single-cloudrun-service-at-mvp
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0011-single-cloudrun-service-at-mvp
+  - path: decisions/0012-authorial-intent-obligations-continuity-evals.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0012-authorial-intent-obligations-continuity-evals
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0012-authorial-intent-obligations-continuity-evals
+  - path: decisions/0013-nightcap-couch-race-v1-launch-target.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0013-nightcap-couch-race-v1-launch-target
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0013-nightcap-couch-race-v1-launch-target
+  - path: decisions/0014-structured-interaction-resolution.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0014-structured-interaction-resolution
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0014-structured-interaction-resolution
+  - path: decisions/0015-nightcap-leverage-advantages-sabotages.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0015-nightcap-leverage-advantages-sabotages
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0015-nightcap-leverage-advantages-sabotages
+  - path: decisions/0016-aw283-claim-ledger-schema.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0016-aw283-claim-ledger-schema
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0016-aw283-claim-ledger-schema
+  - path: decisions/0017-narrator-slot-resolution-and-wrapper-dressing.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0017-narrator-slot-resolution-and-wrapper-dressing
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0017-narrator-slot-resolution-and-wrapper-dressing
+  - path: decisions/0018-mini-game-orchestration-and-execution-adapters.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0018-mini-game-orchestration-and-execution-adapters
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0018-mini-game-orchestration-and-execution-adapters
+  - path: decisions/0019-minigame-readiness-execution-gated-on-ownership-reconciliation.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0019-minigame-readiness-execution-gated-on-ownership-reconciliation
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0019-minigame-readiness-execution-gated-on-ownership-reconciliation
+  - path: decisions/0020-aw-286-owns-remaining-couch-race-integration.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0020-aw-286-owns-remaining-couch-race-integration
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0020-aw-286-owns-remaining-couch-race-integration
+  - path: decisions/0021-minigame-readiness-program-deferred-until-after-rehearsal-1.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0021-minigame-readiness-program-deferred-until-after-rehearsal-1
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0021-minigame-readiness-program-deferred-until-after-rehearsal-1
+  - path: decisions/0022-resolved-case-persistence.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0022-resolved-case-persistence
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0022-resolved-case-persistence
+  - path: decisions/0023-nightcap-master-gdd-authority.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0023-nightcap-master-gdd-authority
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0023-nightcap-master-gdd-authority
+  - path: decisions/0024-kb-front-matter-backfill-via-team-ai-adopt.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.0024-kb-front-matter-backfill-via-team-ai-adopt
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.0024-kb-front-matter-backfill-via-team-ai-adopt
+  - path: decisions/README.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.decisions.readme
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.decisions.readme
+  - path: design/authoring/aw-290-dressing-pack-vocabulary.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.authoring.aw-290-dressing-pack-vocabulary
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.authoring.aw-290-dressing-pack-vocabulary
+  - path: design/authoring/couch-race-competition-model.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.authoring.couch-race-competition-model
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.authoring.couch-race-competition-model
+  - path: design/authoring/couch-race-session-experience.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.authoring.couch-race-session-experience
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.authoring.couch-race-session-experience
+  - path: design/authoring/couch-race-systems-map.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.authoring.couch-race-systems-map
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.authoring.couch-race-systems-map
+  - path: design/authoring/daily-case-sample-week.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.authoring.daily-case-sample-week
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.authoring.daily-case-sample-week
+  - path: design/authoring/interrogation-experience-review.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.authoring.interrogation-experience-review
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.authoring.interrogation-experience-review
+  - path: design/authoring/interrogation-paper-test.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.authoring.interrogation-paper-test
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.authoring.interrogation-paper-test
+  - path: design/authoring/living-worlds-genre-studies.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.authoring.living-worlds-genre-studies
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.authoring.living-worlds-genre-studies
+  - path: design/authoring/rehearsal-1-observation-guide.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.authoring.rehearsal-1-observation-guide
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.authoring.rehearsal-1-observation-guide
+  - path: design/authoring/schema-fit-audit.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.authoring.schema-fit-audit
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.authoring.schema-fit-audit
+  - path: design/authoring/story-to-arc-exemplar.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.authoring.story-to-arc-exemplar
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.authoring.story-to-arc-exemplar
+  - path: design/authoring/writing-for-living-stories.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.authoring.writing-for-living-stories
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.authoring.writing-for-living-stories
+  - path: design/moodboards/big-top-1899.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.moodboards.big-top-1899
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.moodboards.big-top-1899
+  - path: design/moodboards/boardroom-severance.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.moodboards.boardroom-severance
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.moodboards.boardroom-severance
+  - path: design/moodboards/colony-post.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.moodboards.colony-post
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.moodboards.colony-post
+  - path: design/moodboards/influencer-retreat.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.moodboards.influencer-retreat
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.moodboards.influencer-retreat
+  - path: design/moodboards/manor-gothic.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.moodboards.manor-gothic
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.moodboards.manor-gothic
+  - path: design/moodboards/neon-noir.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.moodboards.neon-noir
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.moodboards.neon-noir
+  - path: design/moodboards/orbital-gala-2087.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.moodboards.orbital-gala-2087
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.moodboards.orbital-gala-2087
+  - path: design/moodboards/riviera-1962.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.moodboards.riviera-1962
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.moodboards.riviera-1962
+  - path: design/moodboards/seance-1928.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.moodboards.seance-1928
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.moodboards.seance-1928
+  - path: design/moodboards/sim-reunion.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.moodboards.sim-reunion
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.moodboards.sim-reunion
+  - path: design/moodboards/the-estate.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.moodboards.the-estate
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.moodboards.the-estate
+  - path: design/moodboards/y2k-launch.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.moodboards.y2k-launch
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.moodboards.y2k-launch
+  - path: design/nightcap-art-direction.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.nightcap-art-direction
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.nightcap-art-direction
+  - path: design/the-host.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.design.the-host
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.design.the-host
+  - path: gdd/nightcap/00-governance/00-decision-ledger.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.00-governance.00-decision-ledger
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.00-governance.00-decision-ledger
+  - path: gdd/nightcap/00-governance/01-master-gdd-index.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.00-governance.01-master-gdd-index
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.00-governance.01-master-gdd-index
+  - path: gdd/nightcap/00-governance/02-current-design-state.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.00-governance.02-current-design-state
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.00-governance.02-current-design-state
+  - path: gdd/nightcap/00-governance/03-source-reconciliation-manifest.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.00-governance.03-source-reconciliation-manifest
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.00-governance.03-source-reconciliation-manifest
+  - path: gdd/nightcap/00-governance/04-reconciliation-report.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.00-governance.04-reconciliation-report
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.00-governance.04-reconciliation-report
+  - path: gdd/nightcap/00-governance/05-repository-migration-and-conflict-policy.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.00-governance.05-repository-migration-and-conflict-policy
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.00-governance.05-repository-migration-and-conflict-policy
+  - path: gdd/nightcap/01-authoritative-gdd/02-investigation-deduction.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.01-authoritative-gdd.02-investigation-deduction
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.01-authoritative-gdd.02-investigation-deduction
+  - path: gdd/nightcap/01-authoritative-gdd/03-case-board-memory.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.01-authoritative-gdd.03-case-board-memory
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.01-authoritative-gdd.03-case-board-memory
+  - path: gdd/nightcap/01-authoritative-gdd/04-minigame-competitive-pulse.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.01-authoritative-gdd.04-minigame-competitive-pulse
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.01-authoritative-gdd.04-minigame-competitive-pulse
+  - path: gdd/nightcap/01-authoritative-gdd/05-last-call-case-file.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.01-authoritative-gdd.05-last-call-case-file
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.01-authoritative-gdd.05-last-call-case-file
+  - path: gdd/nightcap/01-authoritative-gdd/06-story-reactivity-reentry.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.01-authoritative-gdd.06-story-reactivity-reentry
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.01-authoritative-gdd.06-story-reactivity-reentry
+  - path: gdd/nightcap/01-authoritative-gdd/07-espionage-leverage-update.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.01-authoritative-gdd.07-espionage-leverage-update
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.01-authoritative-gdd.07-espionage-leverage-update
+  - path: gdd/nightcap/01-authoritative-gdd/08-truth-verdict-postmortem.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.01-authoritative-gdd.08-truth-verdict-postmortem
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.01-authoritative-gdd.08-truth-verdict-postmortem
+  - path: gdd/nightcap/01-authoritative-gdd/09-player-count-scaling.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.01-authoritative-gdd.09-player-count-scaling
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.01-authoritative-gdd.09-player-count-scaling
+  - path: gdd/nightcap/01-authoritative-gdd/10-difficulty-accessibility.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.01-authoritative-gdd.10-difficulty-accessibility
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.01-authoritative-gdd.10-difficulty-accessibility
+  - path: gdd/nightcap/01-authoritative-gdd/11-arcwright-runtime-boundary.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.01-authoritative-gdd.11-arcwright-runtime-boundary
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.01-authoritative-gdd.11-arcwright-runtime-boundary
+  - path: gdd/nightcap/01-authoritative-gdd/12-experience-world-content-boundaries.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.01-authoritative-gdd.12-experience-world-content-boundaries
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.01-authoritative-gdd.12-experience-world-content-boundaries
+  - path: gdd/nightcap/02-validation/94-difficulty-accessibility-validation-plan.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.02-validation.94-difficulty-accessibility-validation-plan
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.02-validation.94-difficulty-accessibility-validation-plan
+  - path: gdd/nightcap/02-validation/98-validation-state-and-remaining-plan.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.02-validation.98-validation-state-and-remaining-plan
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.02-validation.98-validation-state-and-remaining-plan
+  - path: gdd/nightcap/02-validation/98b-paper-test-02-v2.2-handoff-requirements.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.02-validation.98b-paper-test-02-v2-2-handoff-requirements
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.02-validation.98b-paper-test-02-v2-2-handoff-requirements
+  - path: gdd/nightcap/03-playtest-evidence/95h-paper-test-02-v1-failure-record.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.03-playtest-evidence.95h-paper-test-02-v1-failure-record
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.03-playtest-evidence.95h-paper-test-02-v1-failure-record
+  - path: gdd/nightcap/03-playtest-evidence/96c-paper-test-02-v2-run-01-results.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.03-playtest-evidence.96c-paper-test-02-v2-run-01-results
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.03-playtest-evidence.96c-paper-test-02-v2-run-01-results
+  - path: gdd/nightcap/03-playtest-evidence/97-paper-test-02-v2.1-revision.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.03-playtest-evidence.97-paper-test-02-v2-1-revision
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.03-playtest-evidence.97-paper-test-02-v2-1-revision
+  - path: gdd/nightcap/03-playtest-evidence/97a-paper-test-02-v2.1-third-party-run-01-results.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.03-playtest-evidence.97a-paper-test-02-v2-1-third-party-run-01-results
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.03-playtest-evidence.97a-paper-test-02-v2-1-third-party-run-01-results
+  - path: gdd/nightcap/03-playtest-evidence/97b-early-autonomy-feedback-note.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.03-playtest-evidence.97b-early-autonomy-feedback-note
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.03-playtest-evidence.97b-early-autonomy-feedback-note
+  - path: gdd/nightcap/04-supporting-design/91-adversarial-pass-01.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.04-supporting-design.91-adversarial-pass-01
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.04-supporting-design.91-adversarial-pass-01
+  - path: gdd/nightcap/04-supporting-design/92-player-count-stress-test-01.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.04-supporting-design.92-player-count-stress-test-01
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.04-supporting-design.92-player-count-stress-test-01
+  - path: gdd/nightcap/04-supporting-design/93-difficulty-accessibility-adversarial-pass-01.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.04-supporting-design.93-difficulty-accessibility-adversarial-pass-01
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.04-supporting-design.93-difficulty-accessibility-adversarial-pass-01
+  - path: gdd/nightcap/04-supporting-design/98a-cross-system-integration-map-framework.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.04-supporting-design.98a-cross-system-integration-map-framework
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.04-supporting-design.98a-cross-system-integration-map-framework
+  - path: gdd/nightcap/04-supporting-design/98c-social-play-cohesion-view.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.04-supporting-design.98c-social-play-cohesion-view
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.04-supporting-design.98c-social-play-cohesion-view
+  - path: gdd/nightcap/04-supporting-design/98d-full-gdd-adversarial-cohesion-pass-02.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.04-supporting-design.98d-full-gdd-adversarial-cohesion-pass-02
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.04-supporting-design.98d-full-gdd-adversarial-cohesion-pass-02
+  - path: gdd/nightcap/05-continuation-process/99-session-b-continuation-prompt.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.05-continuation-process.99-session-b-continuation-prompt
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.05-continuation-process.99-session-b-continuation-prompt
+  - path: gdd/nightcap/README.md
+    from_namespace: nightcap
+    from_id: nightcap.gdd.nightcap.readme
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.gdd.nightcap.readme
+  - path: prd/01-overview.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.prd.01-overview
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.prd.01-overview
+  - path: prd/02-requirements.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.prd.02-requirements
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.prd.02-requirements
+  - path: prd/03-scope.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.prd.03-scope
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.prd.03-scope
+  - path: prd/04-non-goals.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.prd.04-non-goals
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.prd.04-non-goals
+  - path: prd/README.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.prd.readme
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.prd.readme
+  - path: product/2026-07-19-creative-session-master-plan.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.2026-07-19-creative-session-master-plan
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.2026-07-19-creative-session-master-plan
+  - path: product/2026-08-08-docs-currency-findings.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.2026-08-08-docs-currency-findings
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.2026-08-08-docs-currency-findings
+  - path: product/README.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.readme
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.readme
+  - path: product/ai-capability-roadmap.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.ai-capability-roadmap
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.ai-capability-roadmap
+  - path: product/aw267-discovery-and-checkpoints.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.aw267-discovery-and-checkpoints
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.aw267-discovery-and-checkpoints
+  - path: product/aw282-discovery-and-checkpoints.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.aw282-discovery-and-checkpoints
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.aw282-discovery-and-checkpoints
+  - path: product/aw283-discovery-and-checkpoints.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.aw283-discovery-and-checkpoints
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.aw283-discovery-and-checkpoints
+  - path: product/aw284-discovery-and-checkpoints.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.aw284-discovery-and-checkpoints
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.aw284-discovery-and-checkpoints
+  - path: product/aw285-discovery-and-checkpoints.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.aw285-discovery-and-checkpoints
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.aw285-discovery-and-checkpoints
+  - path: product/aw287-discovery-and-checkpoints.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.aw287-discovery-and-checkpoints
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.aw287-discovery-and-checkpoints
+  - path: product/decisions-log-additions-may2026.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.decisions-log-additions-may2026
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.decisions-log-additions-may2026
+  - path: product/frontier-vision.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.frontier-vision
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.frontier-vision
+  - path: product/mini-game-readiness/artifact-closeout-matrix.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.mini-game-readiness.artifact-closeout-matrix
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.mini-game-readiness.artifact-closeout-matrix
+  - path: product/mini-game-readiness/mainline-safety-report.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.mini-game-readiness.mainline-safety-report
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.mini-game-readiness.mainline-safety-report
+  - path: product/mini-game-readiness/tmst-golden-path-report.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.mini-game-readiness.tmst-golden-path-report
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.mini-game-readiness.tmst-golden-path-report
+  - path: product/nightcap-leverage-advantages-sabotages.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.nightcap-leverage-advantages-sabotages
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.nightcap-leverage-advantages-sabotages
+  - path: product/road-to-live/status.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.road-to-live.status
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.road-to-live.status
+  - path: product/vision-narrative.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.product.vision-narrative
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.product.vision-narrative
+  - path: roadmap/00-overview.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.00-overview
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.00-overview
+  - path: roadmap/README.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.readme
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.readme
+  - path: roadmap/epics/M1-A-scaffolding-and-infrastructure.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m1-a-scaffolding-and-infrastructure
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m1-a-scaffolding-and-infrastructure
+  - path: roadmap/epics/M1-B-data-model.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m1-b-data-model
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m1-b-data-model
+  - path: roadmap/epics/M1-C-knowledge-graph-core.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m1-c-knowledge-graph-core
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m1-c-knowledge-graph-core
+  - path: roadmap/epics/M1-D-model-routing-abstraction.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m1-d-model-routing-abstraction
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m1-d-model-routing-abstraction
+  - path: roadmap/epics/M1-E-harness-scaffold.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m1-e-harness-scaffold
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m1-e-harness-scaffold
+  - path: roadmap/epics/M2-A-external-platform-decision-gate.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m2-a-external-platform-decision-gate
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m2-a-external-platform-decision-gate
+  - path: roadmap/epics/M2-B-arc-execution-engine.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m2-b-arc-execution-engine
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m2-b-arc-execution-engine
+  - path: roadmap/epics/M2-C-nightcap-arc-runtime.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m2-c-nightcap-arc-runtime
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m2-c-nightcap-arc-runtime
+  - path: roadmap/epics/M2-D-content-safety-pipeline.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m2-d-content-safety-pipeline
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m2-d-content-safety-pipeline
+  - path: roadmap/epics/M2-E-character-behavior-engine.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m2-e-character-behavior-engine
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m2-e-character-behavior-engine
+  - path: roadmap/epics/M3-A-content-event-system.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m3-a-content-event-system
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m3-a-content-event-system
+  - path: roadmap/epics/M3-B-api-auth-and-typescript-sdk.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m3-b-api-auth-and-typescript-sdk
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m3-b-api-auth-and-typescript-sdk
+  - path: roadmap/epics/M3-C-session-persistence-and-resume.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m3-c-session-persistence-and-resume
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m3-c-session-persistence-and-resume
+  - path: roadmap/epics/M3-D-telemetry-and-full-simulation-harness.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m3-d-telemetry-and-full-simulation-harness
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m3-d-telemetry-and-full-simulation-harness
+  - path: roadmap/epics/M4-A-nightcap-external-platform-integration.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m4-a-nightcap-external-platform-integration
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m4-a-nightcap-external-platform-integration
+  - path: roadmap/epics/M4-B-nightcap-host-and-shared-display-experience.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m4-b-nightcap-host-and-shared-display-experience
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m4-b-nightcap-host-and-shared-display-experience
+  - path: roadmap/epics/M4-C-nightcap-player-device-experience.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m4-c-nightcap-player-device-experience
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m4-c-nightcap-player-device-experience
+  - path: roadmap/epics/M4-D-real-device-privacy-and-join-validation.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m4-d-real-device-privacy-and-join-validation
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m4-d-real-device-privacy-and-join-validation
+  - path: roadmap/epics/M4-E-nightcap-mini-game-interaction-layer.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m4-e-nightcap-mini-game-interaction-layer
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m4-e-nightcap-mini-game-interaction-layer
+  - path: roadmap/epics/M5-A-adversarial-safety-and-remediation.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m5-a-adversarial-safety-and-remediation
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m5-a-adversarial-safety-and-remediation
+  - path: roadmap/epics/M5-B-cost-usage-and-gross-margin.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m5-b-cost-usage-and-gross-margin
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m5-b-cost-usage-and-gross-margin
+  - path: roadmap/epics/M5-C-second-arc-schema-validation.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m5-c-second-arc-schema-validation
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m5-c-second-arc-schema-validation
+  - path: roadmap/epics/M5-D-visual-storyworld-phase-1-inspection.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m5-d-visual-storyworld-phase-1-inspection
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m5-d-visual-storyworld-phase-1-inspection
+  - path: roadmap/epics/M5-E-character-behavior-engine-hardening.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m5-e-character-behavior-engine-hardening
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m5-e-character-behavior-engine-hardening
+  - path: roadmap/epics/M5-F-tell-me-something-true-social-opener.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m5-f-tell-me-something-true-social-opener
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m5-f-tell-me-something-true-social-opener
+  - path: roadmap/epics/M5-G-nightcap-visual-identity-and-polish.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m5-g-nightcap-visual-identity-and-polish
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m5-g-nightcap-visual-identity-and-polish
+  - path: roadmap/epics/M5-H-narrative-fidelity-layer.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m5-h-narrative-fidelity-layer
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m5-h-narrative-fidelity-layer
+  - path: roadmap/epics/M5-I-nightcap-couch-race-arc-and-interrogation.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m5-i-nightcap-couch-race-arc-and-interrogation
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m5-i-nightcap-couch-race-arc-and-interrogation
+  - path: roadmap/epics/M6-A-playtest-operations.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m6-a-playtest-operations
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m6-a-playtest-operations
+  - path: roadmap/epics/M6-B-qualifying-session-execution.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m6-b-qualifying-session-execution
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m6-b-qualifying-session-execution
+  - path: roadmap/epics/M6-C-h1-proof-analysis.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.epics.m6-c-h1-proof-analysis
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.epics.m6-c-h1-proof-analysis
+  - path: roadmap/milestones/M0-wizard-of-oz-validation.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.milestones.m0-wizard-of-oz-validation
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.milestones.m0-wizard-of-oz-validation
+  - path: roadmap/milestones/M1-deterministic-platform-core.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.milestones.m1-deterministic-platform-core
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.milestones.m1-deterministic-platform-core
+  - path: roadmap/milestones/M2-arc-engine-nightcap-arc-safety.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.milestones.m2-arc-engine-nightcap-arc-safety
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.milestones.m2-arc-engine-nightcap-arc-safety
+  - path: roadmap/milestones/M3-events-api-persistence-telemetry.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.milestones.m3-events-api-persistence-telemetry
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.milestones.m3-events-api-persistence-telemetry
+  - path: roadmap/milestones/M4-nightcap-experience-layer.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.milestones.m4-nightcap-experience-layer
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.milestones.m4-nightcap-experience-layer
+  - path: roadmap/milestones/M5-hardening-proof-prerequisites.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.milestones.m5-hardening-proof-prerequisites
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.milestones.m5-hardening-proof-prerequisites
+  - path: roadmap/milestones/M6-first-qualifying-sessions.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.milestones.m6-first-qualifying-sessions
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.milestones.m6-first-qualifying-sessions
+  - path: roadmap/operations/0068-content-pass-findings.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.operations.0068-content-pass-findings
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.operations.0068-content-pass-findings
+  - path: roadmap/operations/blocker-log-template.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.operations.blocker-log-template
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.operations.blocker-log-template
+  - path: roadmap/operations/cloud-deploy-runbook.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.operations.cloud-deploy-runbook
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.operations.cloud-deploy-runbook
+  - path: roadmap/operations/fun-observation-rubric.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.operations.fun-observation-rubric
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.operations.fun-observation-rubric
+  - path: roadmap/operations/github-project-setup.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.operations.github-project-setup
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.operations.github-project-setup
+  - path: roadmap/operations/human-collaboration-open-work.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.operations.human-collaboration-open-work
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.operations.human-collaboration-open-work
+  - path: roadmap/operations/rehearsal-1-blocker-log.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.operations.rehearsal-1-blocker-log
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.operations.rehearsal-1-blocker-log
+  - path: roadmap/operations/rehearsal-1-failure-cheat-sheet.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.operations.rehearsal-1-failure-cheat-sheet
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.operations.rehearsal-1-failure-cheat-sheet
+  - path: roadmap/operations/rehearsal-1-runbook.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.operations.rehearsal-1-runbook
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.operations.rehearsal-1-runbook
+  - path: roadmap/operations/rehearsal-quickstart.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.operations.rehearsal-quickstart
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.operations.rehearsal-quickstart
+  - path: roadmap/operations/working-model.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.operations.working-model
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.operations.working-model
+  - path: roadmap/tasks/AW-101-repository-structure-and-python-project-setup.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-101-repository-structure-and-python-project-setup
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-101-repository-structure-and-python-project-setup
+  - path: roadmap/tasks/AW-102-local-postgres-pgvector-alembic-init.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-102-local-postgres-pgvector-alembic-init
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-102-local-postgres-pgvector-alembic-init
+  - path: roadmap/tasks/AW-103-sqlalchemy-models-for-all-platform-tables.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-103-sqlalchemy-models-for-all-platform-tables
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-103-sqlalchemy-models-for-all-platform-tables
+  - path: roadmap/tasks/AW-104-first-full-alembic-migration.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-104-first-full-alembic-migration
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-104-first-full-alembic-migration
+  - path: roadmap/tasks/AW-105-knowledge-graph-assertion-api.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-105-knowledge-graph-assertion-api
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-105-knowledge-graph-assertion-api
+  - path: roadmap/tasks/AW-106-pre-generation-knowledge-constraint-hook.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-106-pre-generation-knowledge-constraint-hook
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-106-pre-generation-knowledge-constraint-hook
+  - path: roadmap/tasks/AW-107-litellm-routing-layer.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-107-litellm-routing-layer
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-107-litellm-routing-layer
+  - path: roadmap/tasks/AW-108-prompt-caching-and-generation-logging.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-108-prompt-caching-and-generation-logging
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-108-prompt-caching-and-generation-logging
+  - path: roadmap/tasks/AW-110-simulation-harness-skeleton.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-110-simulation-harness-skeleton
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-110-simulation-harness-skeleton
+  - path: roadmap/tasks/AW-111-scripted-synthetic-player-driver.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-111-scripted-synthetic-player-driver
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-111-scripted-synthetic-player-driver
+  - path: roadmap/tasks/AW-112-deterministic-replay-and-batch-runner.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-112-deterministic-replay-and-batch-runner
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-112-deterministic-replay-and-batch-runner
+  - path: roadmap/tasks/AW-201-m2-m6-roadmap-and-tracker-bootstrap.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-201-m2-m6-roadmap-and-tracker-bootstrap
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-201-m2-m6-roadmap-and-tracker-bootstrap
+  - path: roadmap/tasks/AW-202-external-nightcap-platform-decision.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-202-external-nightcap-platform-decision
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-202-external-nightcap-platform-decision
+  - path: roadmap/tasks/AW-203-arcdefinition-schema-and-validation-core.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-203-arcdefinition-schema-and-validation-core
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-203-arcdefinition-schema-and-validation-core
+  - path: roadmap/tasks/AW-204-dynamic-arcstatechart-generation.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-204-dynamic-arcstatechart-generation
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-204-dynamic-arcstatechart-generation
+  - path: roadmap/tasks/AW-205-nightcap-canonical-arc-json.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-205-nightcap-canonical-arc-json
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-205-nightcap-canonical-arc-json
+  - path: roadmap/tasks/AW-206-killer-assignment-and-reveal-state.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-206-killer-assignment-and-reveal-state
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-206-killer-assignment-and-reveal-state
+  - path: roadmap/tasks/AW-207-dramatic-tension-pacing-engine.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-207-dramatic-tension-pacing-engine
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-207-dramatic-tension-pacing-engine
+  - path: roadmap/tasks/AW-208-l1-hard-stops.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-208-l1-hard-stops
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-208-l1-hard-stops
+  - path: roadmap/tasks/AW-209-l2-pre-generation-classification.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-209-l2-pre-generation-classification
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-209-l2-pre-generation-classification
+  - path: roadmap/tasks/AW-210-l3-policy-injection-and-neutral-bridge.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-210-l3-policy-injection-and-neutral-bridge
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-210-l3-policy-injection-and-neutral-bridge
+  - path: roadmap/tasks/AW-211-behavior-profile-assembly.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-211-behavior-profile-assembly
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-211-behavior-profile-assembly
+  - path: roadmap/tasks/AW-212-knowledge-constrained-dialogue-pipeline.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-212-knowledge-constrained-dialogue-pipeline
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-212-knowledge-constrained-dialogue-pipeline
+  - path: roadmap/tasks/AW-213-ai-initiative-and-npc-npc-exchange.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-213-ai-initiative-and-npc-npc-exchange
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-213-ai-initiative-and-npc-npc-exchange
+  - path: roadmap/tasks/AW-214-m2-headless-nightcap-exit-harness.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-214-m2-headless-nightcap-exit-harness
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-214-m2-headless-nightcap-exit-harness
+  - path: roadmap/tasks/AW-215-contentevent-model-and-in-memory-bus.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-215-contentevent-model-and-in-memory-bus
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-215-contentevent-model-and-in-memory-bus
+  - path: roadmap/tasks/AW-216-sse-fanout-filtering-and-replay.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-216-sse-fanout-filtering-and-replay
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-216-sse-fanout-filtering-and-replay
+  - path: roadmap/tasks/AW-217-session-lifecycle-api-and-auth.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-217-session-lifecycle-api-and-auth
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-217-session-lifecycle-api-and-auth
+  - path: roadmap/tasks/AW-218-character-input-and-knowledge-endpoints.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-218-character-input-and-knowledge-endpoints
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-218-character-input-and-knowledge-endpoints
+  - path: roadmap/tasks/AW-219-typescript-sdk-event-and-input-client.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-219-typescript-sdk-event-and-input-client
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-219-typescript-sdk-event-and-input-client
+  - path: roadmap/tasks/AW-220-session-persistence-snapshots-and-resume.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-220-session-persistence-snapshots-and-resume
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-220-session-persistence-snapshots-and-resume
+  - path: roadmap/tasks/AW-221-narrator-bridge-on-resume.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-221-narrator-bridge-on-resume
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-221-narrator-bridge-on-resume
+  - path: roadmap/tasks/AW-222-five-mvp-telemetry-signals.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-222-five-mvp-telemetry-signals
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-222-five-mvp-telemetry-signals
+  - path: roadmap/tasks/AW-223-cost-and-usage-summary.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-223-cost-and-usage-summary
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-223-cost-and-usage-summary
+  - path: roadmap/tasks/AW-224-full-api-batch-harness.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-224-full-api-batch-harness
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-224-full-api-batch-harness
+  - path: roadmap/tasks/AW-225-external-platform-connector-scaffold.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-225-external-platform-connector-scaffold
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-225-external-platform-connector-scaffold
+  - path: roadmap/tasks/AW-226-host-session-creation-and-shared-display-flow.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-226-host-session-creation-and-shared-display-flow
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-226-host-session-creation-and-shared-display-flow
+  - path: roadmap/tasks/AW-227-shared-display-narrator-and-group-event-rendering.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-227-shared-display-narrator-and-group-event-rendering
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-227-shared-display-narrator-and-group-event-rendering
+  - path: roadmap/tasks/AW-228-player-join-flow-under-30-seconds.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-228-player-join-flow-under-30-seconds
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-228-player-join-flow-under-30-seconds
+  - path: roadmap/tasks/AW-229-player-private-event-and-input-flow.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-229-player-private-event-and-input-flow
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-229-player-private-event-and-input-flow
+  - path: roadmap/tasks/AW-230-real-device-privacy-matrix.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-230-real-device-privacy-matrix
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-230-real-device-privacy-matrix
+  - path: roadmap/tasks/AW-231-m4-real-human-rehearsal.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-231-m4-real-human-rehearsal
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-231-m4-real-human-rehearsal
+  - path: roadmap/tasks/AW-232-adversarial-safety-playtest-protocol.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-232-adversarial-safety-playtest-protocol
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-232-adversarial-safety-playtest-protocol
+  - path: roadmap/tasks/AW-233-safety-findings-remediation.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-233-safety-findings-remediation
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-233-safety-findings-remediation
+  - path: roadmap/tasks/AW-234-gross-margin-by-player-count.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-234-gross-margin-by-player-count
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-234-gross-margin-by-player-count
+  - path: roadmap/tasks/AW-235-second-arc-schema-design.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-235-second-arc-schema-design
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-235-second-arc-schema-design
+  - path: roadmap/tasks/AW-236-live-knowledge-graph-inspection.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-236-live-knowledge-graph-inspection
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-236-live-knowledge-graph-inspection
+  - path: roadmap/tasks/AW-237-read-only-arc-structure-inspection.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-237-read-only-arc-structure-inspection
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-237-read-only-arc-structure-inspection
+  - path: roadmap/tasks/AW-238-live-event-stream-inspection.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-238-live-event-stream-inspection
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-238-live-event-stream-inspection
+  - path: roadmap/tasks/AW-239-character-state-inspection.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-239-character-state-inspection
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-239-character-state-inspection
+  - path: roadmap/tasks/AW-240-closed-playtest-operations-runbook.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-240-closed-playtest-operations-runbook
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-240-closed-playtest-operations-runbook
+  - path: roadmap/tasks/AW-241-qualifying-session-instrumentation-checklist.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-241-qualifying-session-instrumentation-checklist
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-241-qualifying-session-instrumentation-checklist
+  - path: roadmap/tasks/AW-242-founder-run-final-rehearsal.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-242-founder-run-final-rehearsal
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-242-founder-run-final-rehearsal
+  - path: roadmap/tasks/AW-243-five-outside-qualifying-sessions.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-243-five-outside-qualifying-sessions
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-243-five-outside-qualifying-sessions
+  - path: roadmap/tasks/AW-244-h1-proof-analysis-and-next-step-decision.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-244-h1-proof-analysis-and-next-step-decision
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-244-h1-proof-analysis-and-next-step-decision
+  - path: roadmap/tasks/AW-245-second-arc-minimal-executable-product.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-245-second-arc-minimal-executable-product
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-245-second-arc-minimal-executable-product
+  - path: roadmap/tasks/AW-246-per-character-social-pressure-compute.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-246-per-character-social-pressure-compute
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-246-per-character-social-pressure-compute
+  - path: roadmap/tasks/AW-247-killer-tell-tier-selection-by-group-size.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-247-killer-tell-tier-selection-by-group-size
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-247-killer-tell-tier-selection-by-group-size
+  - path: roadmap/tasks/AW-249-nightcap-mini-game-authoring-foundation.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-249-nightcap-mini-game-authoring-foundation
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-249-nightcap-mini-game-authoring-foundation
+  - path: roadmap/tasks/AW-250-mini-game-content-resolution-and-safety.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-250-mini-game-content-resolution-and-safety
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-250-mini-game-content-resolution-and-safety
+  - path: roadmap/tasks/AW-251-mini-game-runtime-persistence-and-clue-gating.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-251-mini-game-runtime-persistence-and-clue-gating
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-251-mini-game-runtime-persistence-and-clue-gating
+  - path: roadmap/tasks/AW-252-mini-game-api-events-and-sdk.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-252-mini-game-api-events-and-sdk
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-252-mini-game-api-events-and-sdk
+  - path: roadmap/tasks/AW-253-nightcap-web-mini-game-rendering.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-253-nightcap-web-mini-game-rendering
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-253-nightcap-web-mini-game-rendering
+  - path: roadmap/tasks/AW-254-first-production-nightcap-mini-game.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-254-first-production-nightcap-mini-game
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-254-first-production-nightcap-mini-game
+  - path: roadmap/tasks/AW-255-rest-backed-nightcap-session-loop.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-255-rest-backed-nightcap-session-loop
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-255-rest-backed-nightcap-session-loop
+  - path: roadmap/tasks/AW-257-promote-crime-scene-smash-and-evidence-locker.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-257-promote-crime-scene-smash-and-evidence-locker
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-257-promote-crime-scene-smash-and-evidence-locker
+  - path: roadmap/tasks/AW-259-rehearsal-1-m4-exit.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-259-rehearsal-1-m4-exit
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-259-rehearsal-1-m4-exit
+  - path: roadmap/tasks/AW-260-founder-rehearsal-runbook-and-blocker-log.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-260-founder-rehearsal-runbook-and-blocker-log
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-260-founder-rehearsal-runbook-and-blocker-log
+  - path: roadmap/tasks/AW-261-adr-0003-cloudflare-vs-gcp-validation-decision.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-261-adr-0003-cloudflare-vs-gcp-validation-decision
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-261-adr-0003-cloudflare-vs-gcp-validation-decision
+  - path: roadmap/tasks/AW-262-tmst-package-authoring-and-schema-resolution.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-262-tmst-package-authoring-and-schema-resolution
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-262-tmst-package-authoring-and-schema-resolution
+  - path: roadmap/tasks/AW-263-tmst-runtime-social-truth-bluff-mechanic.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-263-tmst-runtime-social-truth-bluff-mechanic
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-263-tmst-runtime-social-truth-bluff-mechanic
+  - path: roadmap/tasks/AW-264-tmst-api-events-and-sdk.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-264-tmst-api-events-and-sdk
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-264-tmst-api-events-and-sdk
+  - path: roadmap/tasks/AW-265-tmst-web-rendering-four-phases.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-265-tmst-web-rendering-four-phases
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-265-tmst-web-rendering-four-phases
+  - path: roadmap/tasks/AW-266-rehearsal-2-tmst-real-human-session.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-266-rehearsal-2-tmst-real-human-session
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-266-rehearsal-2-tmst-real-human-session
+  - path: roadmap/tasks/AW-267-nightcap-art-direction-brief.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-267-nightcap-art-direction-brief
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-267-nightcap-art-direction-brief
+  - path: roadmap/tasks/AW-268-nightcap-asset-pipeline-and-motion-system.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-268-nightcap-asset-pipeline-and-motion-system
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-268-nightcap-asset-pipeline-and-motion-system
+  - path: roadmap/tasks/AW-269-nightcap-cloud-deploy.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-269-nightcap-cloud-deploy
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-269-nightcap-cloud-deploy
+  - path: roadmap/tasks/AW-270-authorial-intent-block-and-fidelity-telemetry.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-270-authorial-intent-block-and-fidelity-telemetry
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-270-authorial-intent-block-and-fidelity-telemetry
+  - path: roadmap/tasks/AW-271-narrative-obligations-model.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-271-narrative-obligations-model
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-271-narrative-obligations-model
+  - path: roadmap/tasks/AW-272-continuity-coherence-eval-suite.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-272-continuity-coherence-eval-suite
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-272-continuity-coherence-eval-suite
+  - path: roadmap/tasks/AW-273-rehearsal-1-execution.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-273-rehearsal-1-execution
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-273-rehearsal-1-execution
+  - path: roadmap/tasks/AW-274-platform-agnostic-role-outcome-vocabulary.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-274-platform-agnostic-role-outcome-vocabulary
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-274-platform-agnostic-role-outcome-vocabulary
+  - path: roadmap/tasks/AW-275-design-system-follow-ups.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-275-design-system-follow-ups
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-275-design-system-follow-ups
+  - path: roadmap/tasks/AW-276-arc-voice-block-injection.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-276-arc-voice-block-injection
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-276-arc-voice-block-injection
+  - path: roadmap/tasks/AW-277-couch-race-narrator-transition-lines.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-277-couch-race-narrator-transition-lines
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-277-couch-race-narrator-transition-lines
+  - path: roadmap/tasks/AW-278-couch-race-truth-sequence-and-reveal-accounting.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-278-couch-race-truth-sequence-and-reveal-accounting
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-278-couch-race-truth-sequence-and-reveal-accounting
+  - path: roadmap/tasks/AW-279-detective-identity-and-opening-briefing.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-279-detective-identity-and-opening-briefing
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-279-detective-identity-and-opening-briefing
+  - path: roadmap/tasks/AW-280-couch-race-clue-release-content.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-280-couch-race-clue-release-content
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-280-couch-race-clue-release-content
+  - path: roadmap/tasks/AW-281-couch-race-arc-definition-and-case-generation.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-281-couch-race-arc-definition-and-case-generation
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-281-couch-race-arc-definition-and-case-generation
+  - path: roadmap/tasks/AW-282-interrogation-round-loop-and-question-intents.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-282-interrogation-round-loop-and-question-intents
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-282-interrogation-round-loop-and-question-intents
+  - path: roadmap/tasks/AW-283-suspect-answer-generation-and-contradiction-detection.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-283-suspect-answer-generation-and-contradiction-detection
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-283-suspect-answer-generation-and-contradiction-detection
+  - path: roadmap/tasks/AW-284-race-scoring-and-accusation-state.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-284-race-scoring-and-accusation-state
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-284-race-scoring-and-accusation-state
+  - path: roadmap/tasks/AW-285-couch-race-tv-and-phone-rendering.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-285-couch-race-tv-and-phone-rendering
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-285-couch-race-tv-and-phone-rendering
+  - path: roadmap/tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget
+  - path: roadmap/tasks/AW-287-nightcap-leverage-advantages-and-sabotages.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-287-nightcap-leverage-advantages-and-sabotages
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-287-nightcap-leverage-advantages-and-sabotages
+  - path: roadmap/tasks/AW-288-couch-race-mini-game-beat-coverage-and-tmst-acceleration.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-288-couch-race-mini-game-beat-coverage-and-tmst-acceleration
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-288-couch-race-mini-game-beat-coverage-and-tmst-acceleration
+  - path: roadmap/tasks/AW-289-couch-race-trivia-mini-game.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-289-couch-race-trivia-mini-game
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-289-couch-race-trivia-mini-game
+  - path: roadmap/tasks/AW-290-typed-case-anchors-and-evidence-short-form.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-290-typed-case-anchors-and-evidence-short-form
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-290-typed-case-anchors-and-evidence-short-form
+  - path: roadmap/tasks/AW-291-narrator-refrain-resolver.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-291-narrator-refrain-resolver
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-291-narrator-refrain-resolver
+  - path: roadmap/tasks/AW-292-quote-suspects-interrogation-mechanic.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-292-quote-suspects-interrogation-mechanic
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-292-quote-suspects-interrogation-mechanic
+  - path: roadmap/tasks/AW-293-wrapper-dressing-pack.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-293-wrapper-dressing-pack
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-293-wrapper-dressing-pack
+  - path: roadmap/tasks/AW-294-slot-registry-and-coverage-test.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-294-slot-registry-and-coverage-test
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-294-slot-registry-and-coverage-test
+  - path: roadmap/tasks/AW-295-resolved-case-persistence.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.roadmap.tasks.aw-295-resolved-case-persistence
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.roadmap.tasks.aw-295-resolved-case-persistence
+  - path: skills/github-task-implementer/references/response-contracts.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.skills.github-task-implementer.references.response-contracts
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.skills.github-task-implementer.references.response-contracts
+  - path: specs/0000-template.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0000-template
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0000-template
+  - path: specs/0001-review-checklist-convention.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0001-review-checklist-convention
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0001-review-checklist-convention
+  - path: specs/0002-pre-commit-hook-setup.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0002-pre-commit-hook-setup
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0002-pre-commit-hook-setup
+  - path: specs/0003-ci-and-codeql-workflows.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0003-ci-and-codeql-workflows
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0003-ci-and-codeql-workflows
+  - path: specs/0004-initial-eval-harness.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0004-initial-eval-harness
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0004-initial-eval-harness
+  - path: specs/0005-scaffolding-remediation.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0005-scaffolding-remediation
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0005-scaffolding-remediation
+  - path: specs/0006-roadmap-organization.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0006-roadmap-organization
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0006-roadmap-organization
+  - path: specs/0007-roadmap-tracker-alignment.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0007-roadmap-tracker-alignment
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0007-roadmap-tracker-alignment
+  - path: specs/0008-github-tracker-reproducibility.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0008-github-tracker-reproducibility
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0008-github-tracker-reproducibility
+  - path: specs/0009-aw-101-repository-structure-and-python-project-setup.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0009-aw-101-repository-structure-and-python-project-setup
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0009-aw-101-repository-structure-and-python-project-setup
+  - path: specs/0010-aw-102-local-postgres-pgvector-alembic-init.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0010-aw-102-local-postgres-pgvector-alembic-init
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0010-aw-102-local-postgres-pgvector-alembic-init
+  - path: specs/0011-aw-103-sqlalchemy-orm-models.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0011-aw-103-sqlalchemy-orm-models
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0011-aw-103-sqlalchemy-orm-models
+  - path: specs/0012-aw-104-first-full-alembic-migration.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0012-aw-104-first-full-alembic-migration
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0012-aw-104-first-full-alembic-migration
+  - path: specs/0013-aw-106-pre-generation-knowledge-constraint-hook.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0013-aw-106-pre-generation-knowledge-constraint-hook
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0013-aw-106-pre-generation-knowledge-constraint-hook
+  - path: specs/0014-aw-107-litellm-routing-layer.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0014-aw-107-litellm-routing-layer
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0014-aw-107-litellm-routing-layer
+  - path: specs/0015-aw-110-headless-session-runner-core.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0015-aw-110-headless-session-runner-core
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0015-aw-110-headless-session-runner-core
+  - path: specs/0016-aw-111-scripted-synthetic-player-driver.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0016-aw-111-scripted-synthetic-player-driver
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0016-aw-111-scripted-synthetic-player-driver
+  - path: specs/0017-aw-112-deterministic-replay-and-batch-runner.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0017-aw-112-deterministic-replay-and-batch-runner
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0017-aw-112-deterministic-replay-and-batch-runner
+  - path: specs/0018-github-task-implementer-skill.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0018-github-task-implementer-skill
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0018-github-task-implementer-skill
+  - path: specs/0019-multi-agent-operating-model.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0019-multi-agent-operating-model
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0019-multi-agent-operating-model
+  - path: specs/0020-aw-201-m2-m6-roadmap-and-tracker-bootstrap.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0020-aw-201-m2-m6-roadmap-and-tracker-bootstrap
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0020-aw-201-m2-m6-roadmap-and-tracker-bootstrap
+  - path: specs/0021-operating-model-business-and-architect-roles.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0021-operating-model-business-and-architect-roles
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0021-operating-model-business-and-architect-roles
+  - path: specs/0022-aw-202-nightcap-web-experience-runtime-decision.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0022-aw-202-nightcap-web-experience-runtime-decision
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0022-aw-202-nightcap-web-experience-runtime-decision
+  - path: specs/0023-aw-203-arcdefinition-schema-validation-core.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0023-aw-203-arcdefinition-schema-validation-core
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0023-aw-203-arcdefinition-schema-validation-core
+  - path: specs/0024-aw-204-dynamic-arcstatechart-generation.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0024-aw-204-dynamic-arcstatechart-generation
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0024-aw-204-dynamic-arcstatechart-generation
+  - path: specs/0025-aw-205-nightcap-canonical-arc-json.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0025-aw-205-nightcap-canonical-arc-json
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0025-aw-205-nightcap-canonical-arc-json
+  - path: specs/0026-aw-206-killer-assignment-and-reveal-state.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0026-aw-206-killer-assignment-and-reveal-state
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0026-aw-206-killer-assignment-and-reveal-state
+  - path: specs/0027-aw-207-dramatic-tension-pacing-engine.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0027-aw-207-dramatic-tension-pacing-engine
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0027-aw-207-dramatic-tension-pacing-engine
+  - path: specs/0028-aw-208-l1-hard-stops.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0028-aw-208-l1-hard-stops
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0028-aw-208-l1-hard-stops
+  - path: specs/0029-docs-organization.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0029-docs-organization
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0029-docs-organization
+  - path: specs/0030-arcwright-doc-bundler-skill.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0030-arcwright-doc-bundler-skill
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0030-arcwright-doc-bundler-skill
+  - path: specs/0031-aw-245-second-arc-minimal-executable-product.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0031-aw-245-second-arc-minimal-executable-product
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0031-aw-245-second-arc-minimal-executable-product
+  - path: specs/0032-aw-209-l2-pre-generation-classification.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0032-aw-209-l2-pre-generation-classification
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0032-aw-209-l2-pre-generation-classification
+  - path: specs/0033-aw-210-l3-policy-injection.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0033-aw-210-l3-policy-injection
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0033-aw-210-l3-policy-injection
+  - path: specs/0034-aw-211-behavior-profile-assembly.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0034-aw-211-behavior-profile-assembly
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0034-aw-211-behavior-profile-assembly
+  - path: specs/0035-aw-212-knowledge-constrained-dialogue-pipeline.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0035-aw-212-knowledge-constrained-dialogue-pipeline
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0035-aw-212-knowledge-constrained-dialogue-pipeline
+  - path: specs/0036-aw-213-ai-initiative-and-npc-npc-exchange.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0036-aw-213-ai-initiative-and-npc-npc-exchange
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0036-aw-213-ai-initiative-and-npc-npc-exchange
+  - path: specs/0037-aw-214-m2-exit-harness.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0037-aw-214-m2-exit-harness
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0037-aw-214-m2-exit-harness
+  - path: specs/0038-aw-215-contentevent-model-and-in-memory-bus.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0038-aw-215-contentevent-model-and-in-memory-bus
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0038-aw-215-contentevent-model-and-in-memory-bus
+  - path: specs/0039-aw-235-daily-case-second-arc-schema-design.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0039-aw-235-daily-case-second-arc-schema-design
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0039-aw-235-daily-case-second-arc-schema-design
+  - path: specs/0040-aw-216-sse-fanout-filtering-and-replay.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0040-aw-216-sse-fanout-filtering-and-replay
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0040-aw-216-sse-fanout-filtering-and-replay
+  - path: specs/0042-aw-220-session-persistence-snapshots-and-resume.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0042-aw-220-session-persistence-snapshots-and-resume
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0042-aw-220-session-persistence-snapshots-and-resume
+  - path: specs/0043-aw-221-narrator-bridge-on-resume.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0043-aw-221-narrator-bridge-on-resume
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0043-aw-221-narrator-bridge-on-resume
+  - path: specs/0044-aw-219-typescript-sdk-client.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0044-aw-219-typescript-sdk-client
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0044-aw-219-typescript-sdk-client
+  - path: specs/0045-aw-222-five-mvp-telemetry-signals.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0045-aw-222-five-mvp-telemetry-signals
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0045-aw-222-five-mvp-telemetry-signals
+  - path: specs/0046-aw-249-nightcap-mini-game-authoring-foundation.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0046-aw-249-nightcap-mini-game-authoring-foundation
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0046-aw-249-nightcap-mini-game-authoring-foundation
+  - path: specs/0047-aw-250-mini-game-content-resolution-and-safety.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0047-aw-250-mini-game-content-resolution-and-safety
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0047-aw-250-mini-game-content-resolution-and-safety
+  - path: specs/0048-aw-251-mini-game-runtime-persistence-and-clue-gating.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0048-aw-251-mini-game-runtime-persistence-and-clue-gating
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0048-aw-251-mini-game-runtime-persistence-and-clue-gating
+  - path: specs/0049-aw-252-mini-game-api-events-and-sdk.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0049-aw-252-mini-game-api-events-and-sdk
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0049-aw-252-mini-game-api-events-and-sdk
+  - path: specs/0050-aw-253-nightcap-web-mini-game-rendering.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0050-aw-253-nightcap-web-mini-game-rendering
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0050-aw-253-nightcap-web-mini-game-rendering
+  - path: specs/0051-aw-254-first-production-nightcap-mini-game.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0051-aw-254-first-production-nightcap-mini-game
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0051-aw-254-first-production-nightcap-mini-game
+  - path: specs/0052-arcwright-minigame-skill.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0052-arcwright-minigame-skill
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0052-arcwright-minigame-skill
+  - path: specs/0052-aw-223-cost-and-usage-summary.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0052-aw-223-cost-and-usage-summary
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0052-aw-223-cost-and-usage-summary
+  - path: specs/0053-aw-224-full-api-batch-harness.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0053-aw-224-full-api-batch-harness
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0053-aw-224-full-api-batch-harness
+  - path: specs/0053-aw-257-crime-scene-smash-package.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0053-aw-257-crime-scene-smash-package
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0053-aw-257-crime-scene-smash-package
+  - path: specs/0054-aw-255-rest-backed-nightcap-session-loop.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0054-aw-255-rest-backed-nightcap-session-loop
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0054-aw-255-rest-backed-nightcap-session-loop
+  - path: specs/0055-aw-225-nightcap-web-runtime-connector-scaffold.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0055-aw-225-nightcap-web-runtime-connector-scaffold
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0055-aw-225-nightcap-web-runtime-connector-scaffold
+  - path: specs/0056-aw-226-host-session-creation-and-shared-display-flow.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0056-aw-226-host-session-creation-and-shared-display-flow
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0056-aw-226-host-session-creation-and-shared-display-flow
+  - path: specs/0057-aw-227-shared-display-narrator-group-event-rendering.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0057-aw-227-shared-display-narrator-group-event-rendering
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0057-aw-227-shared-display-narrator-group-event-rendering
+  - path: specs/0058-aw-228-player-join-flow-under-30-seconds.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0058-aw-228-player-join-flow-under-30-seconds
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0058-aw-228-player-join-flow-under-30-seconds
+  - path: specs/0059-aw-229-player-private-event-and-input-flow.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0059-aw-229-player-private-event-and-input-flow
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0059-aw-229-player-private-event-and-input-flow
+  - path: specs/0060-aw-230-real-device-privacy-matrix.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0060-aw-230-real-device-privacy-matrix
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0060-aw-230-real-device-privacy-matrix
+  - path: specs/0061-aw-258-tell-me-something-true.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0061-aw-258-tell-me-something-true
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0061-aw-258-tell-me-something-true
+  - path: specs/0062-aw-256-remove-beat-id-hardcode.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0062-aw-256-remove-beat-id-hardcode
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0062-aw-256-remove-beat-id-hardcode
+  - path: specs/0063-aw-246-per-character-social-pressure-compute.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0063-aw-246-per-character-social-pressure-compute
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0063-aw-246-per-character-social-pressure-compute
+  - path: specs/0064-aw-270-authorial-intent-block.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0064-aw-270-authorial-intent-block
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0064-aw-270-authorial-intent-block
+  - path: specs/0065-aw-271-narrative-obligations-model.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0065-aw-271-narrative-obligations-model
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0065-aw-271-narrative-obligations-model
+  - path: specs/0066-aw-272-continuity-coherence-evals.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0066-aw-272-continuity-coherence-evals
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0066-aw-272-continuity-coherence-evals
+  - path: specs/0067-development-survey-and-path-to-first-playtest.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0067-development-survey-and-path-to-first-playtest
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0067-development-survey-and-path-to-first-playtest
+  - path: specs/0068-game-experience-quality-bar.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0068-game-experience-quality-bar
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0068-game-experience-quality-bar
+  - path: specs/0069-nightcap-visual-design-system.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0069-nightcap-visual-design-system
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0069-nightcap-visual-design-system
+  - path: specs/0070-aw-274-platform-agnostic-role-outcome-vocabulary.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0070-aw-274-platform-agnostic-role-outcome-vocabulary
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0070-aw-274-platform-agnostic-role-outcome-vocabulary
+  - path: specs/0071-live-loop-ai-character-dialogue.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0071-live-loop-ai-character-dialogue
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0071-live-loop-ai-character-dialogue
+  - path: specs/0072-nightcap-couch-race-v1.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0072-nightcap-couch-race-v1
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0072-nightcap-couch-race-v1
+  - path: specs/0073-aw-276-arc-voice-directive-injection.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0073-aw-276-arc-voice-directive-injection
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0073-aw-276-arc-voice-directive-injection
+  - path: specs/0073-m5-canonical-reconciliation.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0073-m5-canonical-reconciliation
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0073-m5-canonical-reconciliation
+  - path: specs/0074-aw282-structured-interaction-loop.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0074-aw282-structured-interaction-loop
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0074-aw282-structured-interaction-loop
+  - path: specs/0075-aw287-nightcap-leverage-advantages-sabotages.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0075-aw287-nightcap-leverage-advantages-sabotages
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0075-aw287-nightcap-leverage-advantages-sabotages
+  - path: specs/0076-aw-289-interrogation-room.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0076-aw-289-interrogation-room
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0076-aw-289-interrogation-room
+  - path: specs/0077-mini-game-registration-and-story-opportunities.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0077-mini-game-registration-and-story-opportunities
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0077-mini-game-registration-and-story-opportunities
+  - path: specs/0078-mini-game-invocation-and-execution-adapters.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0078-mini-game-invocation-and-execution-adapters
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0078-mini-game-invocation-and-execution-adapters
+  - path: specs/0079-mini-game-results-consequences-theme-and-telemetry.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0079-mini-game-results-consequences-theme-and-telemetry
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0079-mini-game-results-consequences-theme-and-telemetry
+  - path: specs/0080-mini-game-onboarding-preview-and-certification.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0080-mini-game-onboarding-preview-and-certification
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0080-mini-game-onboarding-preview-and-certification
+  - path: specs/0081-tell-me-something-true-game-ready.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0081-tell-me-something-true-game-ready
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0081-tell-me-something-true-game-ready
+  - path: specs/0082-crime-scene-smash-game-ready.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0082-crime-scene-smash-game-ready
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0082-crime-scene-smash-game-ready
+  - path: specs/0083-evidence-locker-402-game-ready.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0083-evidence-locker-402-game-ready
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0083-evidence-locker-402-game-ready
+  - path: specs/0084-the-grill-interrogation-minigame.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0084-the-grill-interrogation-minigame
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0084-the-grill-interrogation-minigame
+  - path: specs/0085-the-unmasking-reveal-reconstruction.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0085-the-unmasking-reveal-reconstruction
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0085-the-unmasking-reveal-reconstruction
+  - path: specs/0086-scene-sweep-game-ready.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0086-scene-sweep-game-ready
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0086-scene-sweep-game-ready
+  - path: specs/0087-appendix-a-case-persistence-migration-design.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0087-appendix-a-case-persistence-migration-design
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0087-appendix-a-case-persistence-migration-design
+  - path: specs/0087-aw-290-narrator-slot-schema-and-wrapper-dressing.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0087-aw-290-narrator-slot-schema-and-wrapper-dressing
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0087-aw-290-narrator-slot-schema-and-wrapper-dressing
+  - path: specs/0088-arcwright-playtest-lab-contract.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0088-arcwright-playtest-lab-contract
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0088-arcwright-playtest-lab-contract
+  - path: specs/0089-team-ai-agent-architecture.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.0089-team-ai-agent-architecture
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.0089-team-ai-agent-architecture
+  - path: specs/README.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.readme
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.readme
+  - path: specs/nightcap-external-playtest-harness.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.specs.nightcap-external-playtest-harness
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.specs.nightcap-external-playtest-harness
+  - path: story-bibles/README.md
+    from_namespace: nightcap
+    from_id: nightcap.story-bibles.readme
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.story-bibles.readme
+  - path: story-bibles/daily-case.md
+    from_namespace: daily-case
+    from_id: dailycase.story-bibles.daily-case
+    status: unchanged
+    to_namespace: daily-case
+    to_id: dailycase.story-bibles.daily-case
+  - path: story-bibles/monster-rpg.md
+    from_namespace: monster-rpg
+    from_id: monsterrpg.story-bibles.monster-rpg
+    status: unchanged
+    to_namespace: monster-rpg
+    to_id: monsterrpg.story-bibles.monster-rpg
+  - path: story-bibles/nightcap-couch-race.md
+    from_namespace: nightcap-couch-race
+    from_id: nightcapcouchrace.story-bibles.nightcap-couch-race
+    status: unchanged
+    to_namespace: nightcap-couch-race
+    to_id: nightcapcouchrace.story-bibles.nightcap-couch-race
+  - path: story-bibles/nightcap-murder-mystery.md
+    from_namespace: nightcap
+    from_id: nightcap.story-bibles.nightcap-murder-mystery
+    status: unchanged
+    to_namespace: nightcap
+    to_id: nightcap.story-bibles.nightcap-murder-mystery
+  - path: superpowers/plans/2026-06-26-m4-exit-rehearsal-plan.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-06-26-m4-exit-rehearsal-plan
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-06-26-m4-exit-rehearsal-plan
+  - path: superpowers/plans/2026-06-27-nightcap-rehearsal-lobby.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-06-27-nightcap-rehearsal-lobby
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-06-27-nightcap-rehearsal-lobby
+  - path: superpowers/plans/2026-07-11-adr-0012-docs-rollout.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-07-11-adr-0012-docs-rollout
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-07-11-adr-0012-docs-rollout
+  - path: superpowers/plans/2026-07-11-phase0-cleanup-and-one-command-rehearsal.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-07-11-phase0-cleanup-and-one-command-rehearsal
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-07-11-phase0-cleanup-and-one-command-rehearsal
+  - path: superpowers/plans/2026-07-12-cloud-rehearsal-2-implementation-plan.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-07-12-cloud-rehearsal-2-implementation-plan
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-07-12-cloud-rehearsal-2-implementation-plan
+  - path: superpowers/plans/2026-07-16-m5-canonical-reconciliation.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-07-16-m5-canonical-reconciliation
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-07-16-m5-canonical-reconciliation
+  - path: superpowers/plans/2026-07-17-aw-281-couch-race-arc-and-case-generation.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-07-17-aw-281-couch-race-arc-and-case-generation
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-07-17-aw-281-couch-race-arc-and-case-generation
+  - path: superpowers/plans/2026-07-17-human-collaboration-contract.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-07-17-human-collaboration-contract
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-07-17-human-collaboration-contract
+  - path: superpowers/plans/2026-07-18-aw267-aw283-completion-roadmap.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-07-18-aw267-aw283-completion-roadmap
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-07-18-aw267-aw283-completion-roadmap
+  - path: superpowers/plans/2026-07-18-aw282-structured-interaction-implementation.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-07-18-aw282-structured-interaction-implementation
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-07-18-aw282-structured-interaction-implementation
+  - path: superpowers/plans/2026-07-19-aw283-suspect-answer-generation.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-07-19-aw283-suspect-answer-generation
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-07-19-aw283-suspect-answer-generation
+  - path: superpowers/plans/2026-07-19-aw284-race-scoring-and-accusation-state.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-07-19-aw284-race-scoring-and-accusation-state
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-07-19-aw284-race-scoring-and-accusation-state
+  - path: superpowers/plans/2026-07-19-aw287-leverage-implementation.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-07-19-aw287-leverage-implementation
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-07-19-aw287-leverage-implementation
+  - path: superpowers/plans/2026-08-01-couch-race-tv-and-phone-rendering.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-01-couch-race-tv-and-phone-rendering
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-01-couch-race-tv-and-phone-rendering
+  - path: superpowers/plans/2026-08-02-crime-scene-smash-game-ready.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-02-crime-scene-smash-game-ready
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-02-crime-scene-smash-game-ready
+  - path: superpowers/plans/2026-08-02-evidence-locker-402-game-ready.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-02-evidence-locker-402-game-ready
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-02-evidence-locker-402-game-ready
+  - path: superpowers/plans/2026-08-02-interrogation-room-trivia-game-ready.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-02-interrogation-room-trivia-game-ready
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-02-interrogation-room-trivia-game-ready
+  - path: superpowers/plans/2026-08-02-mini-game-contracts-and-adapters.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-02-mini-game-contracts-and-adapters
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-02-mini-game-contracts-and-adapters
+  - path: superpowers/plans/2026-08-02-mini-game-onboarding-and-certification.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-02-mini-game-onboarding-and-certification
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-02-mini-game-onboarding-and-certification
+  - path: superpowers/plans/2026-08-02-mini-game-platform-readiness-program.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-02-mini-game-platform-readiness-program
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-02-mini-game-platform-readiness-program
+  - path: superpowers/plans/2026-08-02-nightcap-existing-minigames-game-ready.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-02-nightcap-existing-minigames-game-ready
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-02-nightcap-existing-minigames-game-ready
+  - path: superpowers/plans/2026-08-02-nightcap-mini-game-foundation.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-02-nightcap-mini-game-foundation
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-02-nightcap-mini-game-foundation
+  - path: superpowers/plans/2026-08-02-scene-sweep-engine-and-api.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-02-scene-sweep-engine-and-api
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-02-scene-sweep-engine-and-api
+  - path: superpowers/plans/2026-08-02-tell-me-something-true-game-ready.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-02-tell-me-something-true-game-ready
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-02-tell-me-something-true-game-ready
+  - path: superpowers/plans/2026-08-02-the-grill-game-ready.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-02-the-grill-game-ready
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-02-the-grill-game-ready
+  - path: superpowers/plans/2026-08-02-the-unmasking-game-ready.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-02-the-unmasking-game-ready
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-02-the-unmasking-game-ready
+  - path: superpowers/plans/2026-08-03-browser-minigame-golden-path.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-03-browser-minigame-golden-path
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-03-browser-minigame-golden-path
+  - path: superpowers/plans/2026-08-03-minigame-capability-and-trust-platform.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-03-minigame-capability-and-trust-platform
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-03-minigame-capability-and-trust-platform
+  - path: superpowers/plans/2026-08-03-minigame-creator-and-readiness-labs.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-03-minigame-creator-and-readiness-labs
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-03-minigame-creator-and-readiness-labs
+  - path: superpowers/plans/2026-08-03-scene-sweep-game-ready.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-03-scene-sweep-game-ready
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-03-scene-sweep-game-ready
+  - path: superpowers/plans/2026-08-05-aw-290-narrator-slot-schema.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-05-aw-290-narrator-slot-schema
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-05-aw-290-narrator-slot-schema
+  - path: superpowers/plans/2026-08-29-arcwright-playtest-lab.md
+    from_namespace: playtest-ops
+    from_id: playtestops.superpowers.plans.2026-08-29-arcwright-playtest-lab
+    status: unchanged
+    to_namespace: playtest-ops
+    to_id: playtestops.superpowers.plans.2026-08-29-arcwright-playtest-lab
+  - path: superpowers/plans/2026-08-31-nightcap-paper-test-02-v3.0.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-08-31-nightcap-paper-test-02-v3-0
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-08-31-nightcap-paper-test-02-v3-0
+  - path: superpowers/plans/2026-09-13-team-ai-agent-architecture-phase-a.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.plans.2026-09-13-team-ai-agent-architecture-phase-a
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.plans.2026-09-13-team-ai-agent-architecture-phase-a
+  - path: superpowers/specs/2026-06-26-m4-exit-rehearsal-design.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.specs.2026-06-26-m4-exit-rehearsal-design
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.specs.2026-06-26-m4-exit-rehearsal-design
+  - path: superpowers/specs/2026-07-12-arcwright-strategic-blueprint-design.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.specs.2026-07-12-arcwright-strategic-blueprint-design
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.specs.2026-07-12-arcwright-strategic-blueprint-design
+  - path: superpowers/specs/2026-07-12-cloud-rehearsal-2-cost-isolation-design.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.specs.2026-07-12-cloud-rehearsal-2-cost-isolation-design
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.specs.2026-07-12-cloud-rehearsal-2-cost-isolation-design
+  - path: superpowers/specs/2026-07-15-nightcap-couch-race-design.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.specs.2026-07-15-nightcap-couch-race-design
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.specs.2026-07-15-nightcap-couch-race-design
+  - path: superpowers/specs/2026-07-17-aw-281-case-resolution-design.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.specs.2026-07-17-aw-281-case-resolution-design
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.specs.2026-07-17-aw-281-case-resolution-design
+  - path: superpowers/specs/2026-07-17-human-collaboration-contract-design.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.specs.2026-07-17-human-collaboration-contract-design
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.specs.2026-07-17-human-collaboration-contract-design
+  - path: superpowers/specs/2026-07-18-aw282-structured-interaction-design.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.specs.2026-07-18-aw282-structured-interaction-design
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.specs.2026-07-18-aw282-structured-interaction-design
+  - path: superpowers/specs/2026-07-18-aw287-leverage-walkthrough.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.specs.2026-07-18-aw287-leverage-walkthrough
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.specs.2026-07-18-aw287-leverage-walkthrough
+  - path: superpowers/specs/2026-07-19-aw283-answer-generation-design.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.specs.2026-07-19-aw283-answer-generation-design
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.specs.2026-07-19-aw283-answer-generation-design
+  - path: superpowers/specs/2026-07-19-aw284-race-scoring-design.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.specs.2026-07-19-aw284-race-scoring-design
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.specs.2026-07-19-aw284-race-scoring-design
+  - path: superpowers/specs/2026-08-01-couch-race-tv-and-phone-rendering-design.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.specs.2026-08-01-couch-race-tv-and-phone-rendering-design
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.specs.2026-08-01-couch-race-tv-and-phone-rendering-design
+  - path: superpowers/specs/2026-08-02-mini-game-platform-orchestration-design.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.specs.2026-08-02-mini-game-platform-orchestration-design
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.specs.2026-08-02-mini-game-platform-orchestration-design
+  - path: superpowers/specs/2026-08-02-nightcap-scene-sweep-mini-game-design.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.superpowers.specs.2026-08-02-nightcap-scene-sweep-mini-game-design
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.superpowers.specs.2026-08-02-nightcap-scene-sweep-mini-game-design
+  - path: superpowers/specs/2026-08-29-arcwright-playtest-lab-design.md
+    from_namespace: playtest-ops
+    from_id: playtestops.superpowers.specs.2026-08-29-arcwright-playtest-lab-design
+    status: unchanged
+    to_namespace: playtest-ops
+    to_id: playtestops.superpowers.specs.2026-08-29-arcwright-playtest-lab-design

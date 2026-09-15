@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0017-narrator-slot-resolution-and-wrapper-dressing
-namespace: decisions
+id: productroadmap.decisions.0017-narrator-slot-resolution-and-wrapper-dressing
+namespace: product-roadmap
 title: "ADR-0017: Narrator slot resolution — structured location/time plus a
   wrapper dressing pack"
 owner: Nico Janssen

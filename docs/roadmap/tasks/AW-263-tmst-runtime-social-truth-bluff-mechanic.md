@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-263-tmst-runtime-social-truth-bluff-mechanic
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-263-tmst-runtime-social-truth-bluff-mechanic
+namespace: product-roadmap
 title: "AW-263: TMST Runtime - social-truth-bluff Mechanic"
 owner: Nico Janssen
 status: active

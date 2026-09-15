@@ -1,6 +1,6 @@
 ---
-id: patterns.design.moodboards.boardroom-severance
-namespace: patterns
+id: engineeringpractice.design.moodboards.boardroom-severance
+namespace: engineering-practice
 title: Moodboard  -  Boardroom Severance
 owner: Nico Janssen
 status: active

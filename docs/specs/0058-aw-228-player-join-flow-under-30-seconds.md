@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0058-aw-228-player-join-flow-under-30-seconds
-namespace: patterns
+id: engineeringpractice.specs.0058-aw-228-player-join-flow-under-30-seconds
+namespace: engineering-practice
 title: "AW-228: Player Join Flow Under 30 Seconds"
 owner: Nico Janssen
 status: active

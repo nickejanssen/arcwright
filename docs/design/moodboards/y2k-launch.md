@@ -1,6 +1,6 @@
 ---
-id: patterns.design.moodboards.y2k-launch
-namespace: patterns
+id: engineeringpractice.design.moodboards.y2k-launch
+namespace: engineering-practice
 title: Moodboard  -  Y2K Launch
 owner: Nico Janssen
 status: active

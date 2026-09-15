@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0075-aw287-nightcap-leverage-advantages-sabotages
-namespace: patterns
+id: engineeringpractice.specs.0075-aw287-nightcap-leverage-advantages-sabotages
+namespace: engineering-practice
 title: AW-287 Nightcap Leverage Advantages And Sabotages
 owner: Nico Janssen
 status: active

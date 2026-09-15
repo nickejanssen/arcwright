@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.milestones.m1-deterministic-platform-core
-namespace: operating
+id: productroadmap.roadmap.milestones.m1-deterministic-platform-core
+namespace: product-roadmap
 title: "M1: Deterministic Platform Core"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-110-simulation-harness-skeleton
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-110-simulation-harness-skeleton
+namespace: product-roadmap
 title: "AW-110: Headless session runner core"
 owner: Nico Janssen
 status: active

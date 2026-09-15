@@ -1,6 +1,6 @@
 ---
-id: operating.product.2026-08-08-docs-currency-findings
-namespace: operating
+id: productroadmap.product.2026-08-08-docs-currency-findings
+namespace: product-roadmap
 title: Docs Currency Findings, 2026-08-08
 owner: Nico Janssen
 status: active

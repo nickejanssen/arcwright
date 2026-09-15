@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m4-d-real-device-privacy-and-join-validation
-namespace: operating
+id: productroadmap.roadmap.epics.m4-d-real-device-privacy-and-join-validation
+namespace: product-roadmap
 title: "M4-D: Real-Device Privacy And Join Validation"
 owner: Nico Janssen
 status: active

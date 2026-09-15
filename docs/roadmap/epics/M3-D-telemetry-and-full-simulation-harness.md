@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m3-d-telemetry-and-full-simulation-harness
-namespace: operating
+id: productroadmap.roadmap.epics.m3-d-telemetry-and-full-simulation-harness
+namespace: product-roadmap
 title: "M3-D: Telemetry And Full Simulation Harness"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0044-aw-219-typescript-sdk-client
-namespace: patterns
+id: engineeringpractice.specs.0044-aw-219-typescript-sdk-client
+namespace: engineering-practice
 title: "AW-219: TypeScript SDK — Event and Input Client"
 owner: Nico Janssen
 status: active

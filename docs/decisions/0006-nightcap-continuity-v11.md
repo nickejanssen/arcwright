@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0006-nightcap-continuity-v11
-namespace: decisions
+id: productroadmap.decisions.0006-nightcap-continuity-v11
+namespace: product-roadmap
 title: "ADR-0006: Nightcap Continuity v1.1"
 owner: Nico Janssen
 status: active

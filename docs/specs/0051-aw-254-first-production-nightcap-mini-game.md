@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0051-aw-254-first-production-nightcap-mini-game
-namespace: patterns
+id: engineeringpractice.specs.0051-aw-254-first-production-nightcap-mini-game
+namespace: engineering-practice
 title: "AW-254: First Production Nightcap Mini-game And Rehearsal"
 owner: Nico Janssen
 status: deprecated

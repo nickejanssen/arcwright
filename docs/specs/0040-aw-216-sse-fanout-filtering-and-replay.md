@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0040-aw-216-sse-fanout-filtering-and-replay
-namespace: patterns
+id: engineeringpractice.specs.0040-aw-216-sse-fanout-filtering-and-replay
+namespace: engineering-practice
 title: "AW-216: SSE Fanout Filtering And Replay"
 owner: Nico Janssen
 status: active

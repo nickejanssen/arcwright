@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.operations.0068-content-pass-findings
-namespace: operating
+id: productroadmap.roadmap.operations.0068-content-pass-findings
+namespace: product-roadmap
 title: Content Pass Findings — 0068 §3 Standards vs. Current Generation Pipelines
 owner: Nico Janssen
 status: active

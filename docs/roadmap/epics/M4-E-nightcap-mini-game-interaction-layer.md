@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m4-e-nightcap-mini-game-interaction-layer
-namespace: operating
+id: productroadmap.roadmap.epics.m4-e-nightcap-mini-game-interaction-layer
+namespace: product-roadmap
 title: "M4-E: Nightcap Mini-game Interaction Layer"
 owner: Nico Janssen
 status: active

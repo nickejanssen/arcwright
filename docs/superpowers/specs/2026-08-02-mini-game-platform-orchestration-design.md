@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.specs.2026-08-02-mini-game-platform-orchestration-design
-namespace: playbooks
+id: engineeringpractice.superpowers.specs.2026-08-02-mini-game-platform-orchestration-design
+namespace: engineering-practice
 title: Mini-game Platform Orchestration Design
 owner: Nico Janssen
 status: active

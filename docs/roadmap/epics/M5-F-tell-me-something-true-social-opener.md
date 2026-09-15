@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m5-f-tell-me-something-true-social-opener
-namespace: operating
+id: productroadmap.roadmap.epics.m5-f-tell-me-something-true-social-opener
+namespace: product-roadmap
 title: "M5-F: Tell Me Something True Social Opener Implementation"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: patterns.conventions.setup
-namespace: patterns
+id: engineeringpractice.conventions.setup
+namespace: engineering-practice
 title: Local Setup
 owner: Nico Janssen
 status: active

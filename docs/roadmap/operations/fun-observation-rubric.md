@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.operations.fun-observation-rubric
-namespace: operating
+id: productroadmap.roadmap.operations.fun-observation-rubric
+namespace: product-roadmap
 title: Fun Observation Rubric
 owner: Nico Janssen
 status: active

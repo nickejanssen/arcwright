@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.01-authoritative-gdd.11-arcwright-runtime-boundary
-namespace: custom
+id: nightcap.gdd.nightcap.01-authoritative-gdd.11-arcwright-runtime-boundary
+namespace: nightcap
 title: Nightcap — Arcwright Runtime Boundary
 owner: Nico Janssen
 status: active

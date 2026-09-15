@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-284-race-scoring-and-accusation-state
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-284-race-scoring-and-accusation-state
+namespace: product-roadmap
 title: "AW-284: Race Scoring And Accusation State"
 owner: Nico Janssen
 status: active

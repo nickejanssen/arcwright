@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.05-session-persistence
-namespace: platform
+id: sessionruntime.architecture.05-session-persistence
+namespace: session-runtime
 title: Session State and Persistence
 owner: Nico Janssen
 status: active

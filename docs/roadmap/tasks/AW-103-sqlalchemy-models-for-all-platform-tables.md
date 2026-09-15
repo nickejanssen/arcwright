@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-103-sqlalchemy-models-for-all-platform-tables
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-103-sqlalchemy-models-for-all-platform-tables
+namespace: product-roadmap
 title: "AW-103: SQLAlchemy models for all platform tables"
 owner: Nico Janssen
 status: active

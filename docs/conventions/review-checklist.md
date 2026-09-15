@@ -1,6 +1,6 @@
 ---
-id: patterns.conventions.review-checklist
-namespace: patterns
+id: engineeringpractice.conventions.review-checklist
+namespace: engineering-practice
 title: Review Checklist
 owner: Nico Janssen
 status: active

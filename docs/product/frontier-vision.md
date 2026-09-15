@@ -1,6 +1,6 @@
 ---
-id: operating.product.frontier-vision
-namespace: operating
+id: productroadmap.product.frontier-vision
+namespace: product-roadmap
 title: Arcwright Across Every Horizon — The Frontier Vision
 owner: Nico Janssen
 status: draft

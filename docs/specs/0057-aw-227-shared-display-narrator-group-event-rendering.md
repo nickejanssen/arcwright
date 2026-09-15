@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0057-aw-227-shared-display-narrator-group-event-rendering
-namespace: patterns
+id: engineeringpractice.specs.0057-aw-227-shared-display-narrator-group-event-rendering
+namespace: engineering-practice
 title: "AW-227: Shared Display Narrator And Group Event Rendering"
 owner: Nico Janssen
 status: active

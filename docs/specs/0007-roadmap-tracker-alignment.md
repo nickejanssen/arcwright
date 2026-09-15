@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0007-roadmap-tracker-alignment
-namespace: patterns
+id: engineeringpractice.specs.0007-roadmap-tracker-alignment
+namespace: engineering-practice
 title: Roadmap Tracker Alignment
 owner: Nico Janssen
 status: active

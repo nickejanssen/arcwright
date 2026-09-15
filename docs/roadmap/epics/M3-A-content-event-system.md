@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m3-a-content-event-system
-namespace: operating
+id: productroadmap.roadmap.epics.m3-a-content-event-system
+namespace: product-roadmap
 title: "M3-A: Content Event System"
 owner: Nico Janssen
 status: active

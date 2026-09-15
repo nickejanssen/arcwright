@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m1-a-scaffolding-and-infrastructure
-namespace: operating
+id: productroadmap.roadmap.epics.m1-a-scaffolding-and-infrastructure
+namespace: product-roadmap
 title: "M1-A: Scaffolding and Infrastructure"
 owner: Nico Janssen
 status: active

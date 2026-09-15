@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m4-b-nightcap-host-and-shared-display-experience
-namespace: operating
+id: productroadmap.roadmap.epics.m4-b-nightcap-host-and-shared-display-experience
+namespace: product-roadmap
 title: "M4-B: Nightcap Host And Shared Display Experience"
 owner: Nico Janssen
 status: active

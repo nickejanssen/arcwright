@@ -1,6 +1,6 @@
 ---
-id: patterns.design.authoring.living-worlds-genre-studies
-namespace: patterns
+id: engineeringpractice.design.authoring.living-worlds-genre-studies
+namespace: engineering-practice
 title: Living-Story Genre Studies — Creature Companion & Couch Co-op
 owner: Nico Janssen
 status: draft

@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-206-killer-assignment-and-reveal-state
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-206-killer-assignment-and-reveal-state
+namespace: product-roadmap
 title: "AW-206: Killer Assignment And Reveal State"
 owner: Nico Janssen
 status: active

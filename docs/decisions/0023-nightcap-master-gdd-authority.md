@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0023-nightcap-master-gdd-authority
-namespace: decisions
+id: productroadmap.decisions.0023-nightcap-master-gdd-authority
+namespace: product-roadmap
 title: "ADR-0023: Nightcap Master GDD Authority"
 owner: Nico Janssen
 status: active

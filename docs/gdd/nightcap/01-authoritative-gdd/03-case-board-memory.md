@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.01-authoritative-gdd.03-case-board-memory
-namespace: custom
+id: nightcap.gdd.nightcap.01-authoritative-gdd.03-case-board-memory
+namespace: nightcap
 title: Nightcap — Case Board & Memory
 owner: Nico Janssen
 status: active

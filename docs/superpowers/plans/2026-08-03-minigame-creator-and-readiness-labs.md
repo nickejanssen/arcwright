@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-03-minigame-creator-and-readiness-labs
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-08-03-minigame-creator-and-readiness-labs
+namespace: engineering-practice
 title: Mini-game Creator and Readiness Labs Implementation Plan
 owner: Nico Janssen
 status: draft

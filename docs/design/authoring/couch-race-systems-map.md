@@ -1,6 +1,6 @@
 ---
-id: patterns.design.authoring.couch-race-systems-map
-namespace: patterns
+id: engineeringpractice.design.authoring.couch-race-systems-map
+namespace: engineering-practice
 title: Couch Race — Grounded Systems Map
 owner: Nico Janssen
 status: active

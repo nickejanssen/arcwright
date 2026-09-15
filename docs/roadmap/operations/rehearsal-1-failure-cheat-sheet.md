@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.operations.rehearsal-1-failure-cheat-sheet
-namespace: operating
+id: productroadmap.roadmap.operations.rehearsal-1-failure-cheat-sheet
+namespace: product-roadmap
 title: Rehearsal 1 - Failure Cheat Sheet
 owner: Nico Janssen
 status: active

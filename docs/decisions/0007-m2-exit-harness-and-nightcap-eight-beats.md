@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0007-m2-exit-harness-and-nightcap-eight-beats
-namespace: decisions
+id: productroadmap.decisions.0007-m2-exit-harness-and-nightcap-eight-beats
+namespace: product-roadmap
 title: "ADR-0007: M2 Exit Harness And Nightcap Eight Beats"
 owner: Nico Janssen
 status: active

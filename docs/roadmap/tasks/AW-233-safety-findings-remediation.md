@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-233-safety-findings-remediation
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-233-safety-findings-remediation
+namespace: product-roadmap
 title: "AW-233: Safety Findings Remediation"
 owner: Nico Janssen
 status: active

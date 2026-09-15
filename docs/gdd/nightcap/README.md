@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.readme
-namespace: custom
+id: nightcap.gdd.nightcap.readme
+namespace: nightcap
 title: Nightcap Master GDD
 owner: Nico Janssen
 status: active

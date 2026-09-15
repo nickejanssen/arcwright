@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-02-mini-game-platform-readiness-program
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-08-02-mini-game-platform-readiness-program
+namespace: engineering-practice
 title: Mini-game Platform and Nightcap Readiness Program Implementation Plan
 owner: Nico Janssen
 status: draft

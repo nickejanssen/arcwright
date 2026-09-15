@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0019-multi-agent-operating-model
-namespace: patterns
+id: engineeringpractice.specs.0019-multi-agent-operating-model
+namespace: engineering-practice
 title: Multi-Agent Operating Model and Cross-Client Wiring
 owner: Nico Janssen
 status: active

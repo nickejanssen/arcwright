@@ -1,6 +1,6 @@
 ---
-id: operating.product.mini-game-readiness.artifact-closeout-matrix
-namespace: operating
+id: productroadmap.product.mini-game-readiness.artifact-closeout-matrix
+namespace: product-roadmap
 title: Mini-game Readiness Artifact Closeout Matrix
 owner: Nico Janssen
 status: active

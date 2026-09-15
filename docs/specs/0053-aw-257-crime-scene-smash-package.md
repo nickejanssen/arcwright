@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0053-aw-257-crime-scene-smash-package
-namespace: patterns
+id: engineeringpractice.specs.0053-aw-257-crime-scene-smash-package
+namespace: engineering-practice
 title: "AW-257: Crime Scene Smash Mini-game Package"
 owner: Nico Janssen
 status: active

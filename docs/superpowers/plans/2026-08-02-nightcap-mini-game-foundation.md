@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-02-nightcap-mini-game-foundation
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-08-02-nightcap-mini-game-foundation
+namespace: engineering-practice
 title: Nightcap Mini-game Opportunity Foundation Implementation Plan
 owner: Nico Janssen
 status: draft

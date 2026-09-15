@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-102-local-postgres-pgvector-alembic-init
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-102-local-postgres-pgvector-alembic-init
+namespace: product-roadmap
 title: "AW-102: Local Postgres 15 + pgvector + Alembic init"
 owner: Nico Janssen
 status: active

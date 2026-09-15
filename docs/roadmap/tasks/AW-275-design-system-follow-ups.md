@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-275-design-system-follow-ups
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-275-design-system-follow-ups
+namespace: product-roadmap
 title: "AW-275: Design System Follow-Ups: Semantic Tokens And Focus Visible"
 owner: Nico Janssen
 status: active

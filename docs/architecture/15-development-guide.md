@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.15-development-guide
-namespace: platform
+id: engineeringpractice.architecture.15-development-guide
+namespace: engineering-practice
 title: Agentic Development Guide
 owner: Nico Janssen
 status: active

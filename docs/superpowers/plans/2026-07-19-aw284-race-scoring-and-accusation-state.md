@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-07-19-aw284-race-scoring-and-accusation-state
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-07-19-aw284-race-scoring-and-accusation-state
+namespace: engineering-practice
 title: AW-284 Race Scoring And Accusation State — Implementation Plan
 owner: Nico Janssen
 status: draft

@@ -1,6 +1,6 @@
 ---
-id: patterns.design.authoring.aw-290-dressing-pack-vocabulary
-namespace: patterns
+id: engineeringpractice.design.authoring.aw-290-dressing-pack-vocabulary
+namespace: engineering-practice
 title: AW-293 Dressing Pack Vocabulary
 owner: Nico Janssen
 status: active

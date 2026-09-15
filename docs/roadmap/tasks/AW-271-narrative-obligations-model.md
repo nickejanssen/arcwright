@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-271-narrative-obligations-model
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-271-narrative-obligations-model
+namespace: product-roadmap
 title: "AW-271: Narrative Obligations Model and Reveal-Readiness Condition (post-M6)"
 owner: Nico Janssen
 status: active

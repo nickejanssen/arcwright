@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-105-knowledge-graph-assertion-api
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-105-knowledge-graph-assertion-api
+namespace: product-roadmap
 title: "AW-105: Knowledge graph assertion API"
 owner: Nico Janssen
 status: active

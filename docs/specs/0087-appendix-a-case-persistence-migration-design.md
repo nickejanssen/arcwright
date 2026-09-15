@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0087-appendix-a-case-persistence-migration-design
-namespace: patterns
+id: engineeringpractice.specs.0087-appendix-a-case-persistence-migration-design
+namespace: engineering-practice
 title: Appendix A — Case Persistence Migration Design
 owner: Nico Janssen
 status: draft

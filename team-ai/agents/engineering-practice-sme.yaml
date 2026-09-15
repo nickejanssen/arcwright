@@ -1,0 +1,9 @@
+name: engineering-practice-sme
+kind: subagent
+description: "Answers engineering-practice questions strictly from the engineering-practice namespace, with citations."
+model_tier: small
+kb_namespaces: [engineering-practice]
+tools: [kb_search, kb_get, kb_coverage_gap]
+max_hops: 0
+escalate_to: unassigned
+instructions_file: agents/engineering-practice-sme.md

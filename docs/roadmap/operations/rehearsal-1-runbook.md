@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.operations.rehearsal-1-runbook
-namespace: operating
+id: productroadmap.roadmap.operations.rehearsal-1-runbook
+namespace: product-roadmap
 title: Rehearsal 1 - Founder Runbook
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: operating.prd.01-overview
-namespace: operating
+id: productroadmap.prd.01-overview
+namespace: product-roadmap
 title: Overview
 owner: Nico Janssen
 status: active

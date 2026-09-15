@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m1-e-harness-scaffold
-namespace: operating
+id: productroadmap.roadmap.epics.m1-e-harness-scaffold
+namespace: product-roadmap
 title: "M1-E: Harness Scaffold"
 owner: Nico Janssen
 status: active

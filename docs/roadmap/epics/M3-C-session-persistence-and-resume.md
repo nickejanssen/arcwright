@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m3-c-session-persistence-and-resume
-namespace: operating
+id: productroadmap.roadmap.epics.m3-c-session-persistence-and-resume
+namespace: product-roadmap
 title: "M3-C: Session Persistence And Resume"
 owner: Nico Janssen
 status: active

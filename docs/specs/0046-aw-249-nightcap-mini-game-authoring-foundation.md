@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0046-aw-249-nightcap-mini-game-authoring-foundation
-namespace: patterns
+id: engineeringpractice.specs.0046-aw-249-nightcap-mini-game-authoring-foundation
+namespace: engineering-practice
 title: "AW-249: Nightcap Mini-game Authoring Foundation"
 owner: Nico Janssen
 status: active

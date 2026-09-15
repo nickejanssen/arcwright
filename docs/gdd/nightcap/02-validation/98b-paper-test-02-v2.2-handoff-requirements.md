@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.02-validation.98b-paper-test-02-v2-2-handoff-requirements
-namespace: custom
+id: nightcap.gdd.nightcap.02-validation.98b-paper-test-02-v2-2-handoff-requirements
+namespace: nightcap
 title: "Nightcap — Paper Test #2 v2.2 Handoff Requirements"
 owner: Nico Janssen
 status: active

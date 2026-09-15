@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-222-five-mvp-telemetry-signals
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-222-five-mvp-telemetry-signals
+namespace: product-roadmap
 title: "AW-222: Five MVP Telemetry Signals"
 owner: Nico Janssen
 status: active

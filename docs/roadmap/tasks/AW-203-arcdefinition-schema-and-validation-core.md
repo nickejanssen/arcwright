@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-203-arcdefinition-schema-and-validation-core
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-203-arcdefinition-schema-and-validation-core
+namespace: product-roadmap
 title: "AW-203: ArcDefinition Schema And Validation Core"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: custom.story-bibles.readme
-namespace: custom
+id: nightcap.story-bibles.readme
+namespace: nightcap
 title: Story Bibles
 owner: Nico Janssen
 status: active

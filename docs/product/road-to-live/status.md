@@ -1,6 +1,6 @@
 ---
-id: operating.product.road-to-live.status
-namespace: operating
+id: productroadmap.product.road-to-live.status
+namespace: product-roadmap
 title: Road to Live Status
 owner: Nico Janssen
 status: active

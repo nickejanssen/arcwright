@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0031-aw-245-second-arc-minimal-executable-product
-namespace: patterns
+id: engineeringpractice.specs.0031-aw-245-second-arc-minimal-executable-product
+namespace: engineering-practice
 title: "AW-245: Second Arc Minimal Executable Product"
 owner: Nico Janssen
 status: active

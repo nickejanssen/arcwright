@@ -1,6 +1,6 @@
 ---
-id: patterns.design.moodboards.neon-noir
-namespace: patterns
+id: engineeringpractice.design.moodboards.neon-noir
+namespace: engineering-practice
 title: Moodboard  -  Neon Noir
 owner: Nico Janssen
 status: active

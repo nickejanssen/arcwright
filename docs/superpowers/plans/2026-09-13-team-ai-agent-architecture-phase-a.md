@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-09-13-team-ai-agent-architecture-phase-a
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-09-13-team-ai-agent-architecture-phase-a
+namespace: engineering-practice
 title: team-ai Agent Architecture — Phase A Implementation Plan
 owner: Nico Janssen
 status: draft

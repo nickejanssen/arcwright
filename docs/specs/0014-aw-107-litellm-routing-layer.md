@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0014-aw-107-litellm-routing-layer
-namespace: patterns
+id: engineeringpractice.specs.0014-aw-107-litellm-routing-layer
+namespace: engineering-practice
 title: AW-107 LiteLLM Routing Layer
 owner: Nico Janssen
 status: active

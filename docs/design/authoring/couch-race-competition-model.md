@@ -1,6 +1,6 @@
 ---
-id: patterns.design.authoring.couch-race-competition-model
-namespace: patterns
+id: engineeringpractice.design.authoring.couch-race-competition-model
+namespace: engineering-practice
 title: Couch Race Competition Model — Design Examination
 owner: Nico Janssen
 status: active

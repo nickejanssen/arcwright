@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.01-authoritative-gdd.12-experience-world-content-boundaries
-namespace: custom
+id: nightcap.gdd.nightcap.01-authoritative-gdd.12-experience-world-content-boundaries
+namespace: nightcap
 title: Nightcap — Experience, World, and Content Boundaries
 owner: Nico Janssen
 status: active

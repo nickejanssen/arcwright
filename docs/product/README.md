@@ -1,6 +1,6 @@
 ---
-id: operating.product.readme
-namespace: operating
+id: productroadmap.product.readme
+namespace: product-roadmap
 title: Product Records
 owner: Nico Janssen
 status: active

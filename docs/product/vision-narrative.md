@@ -1,6 +1,6 @@
 ---
-id: operating.product.vision-narrative
-namespace: operating
+id: productroadmap.product.vision-narrative
+namespace: product-roadmap
 title: The Arcwright Thesis
 owner: Nico Janssen
 status: draft

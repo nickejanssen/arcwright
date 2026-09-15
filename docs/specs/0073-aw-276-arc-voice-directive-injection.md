@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0073-aw-276-arc-voice-directive-injection
-namespace: patterns
+id: engineeringpractice.specs.0073-aw-276-arc-voice-directive-injection
+namespace: engineering-practice
 title: "AW-276: Arc Voice Directive Injection ([VOICE] Block)"
 owner: Nico Janssen
 status: active

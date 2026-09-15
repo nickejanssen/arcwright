@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m5-g-nightcap-visual-identity-and-polish
-namespace: operating
+id: productroadmap.roadmap.epics.m5-g-nightcap-visual-identity-and-polish
+namespace: product-roadmap
 title: "M5-G: Nightcap Visual Identity and Polish"
 owner: Nico Janssen
 status: active

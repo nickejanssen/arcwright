@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0054-aw-255-rest-backed-nightcap-session-loop
-namespace: patterns
+id: engineeringpractice.specs.0054-aw-255-rest-backed-nightcap-session-loop
+namespace: engineering-practice
 title: "AW-255: REST-Backed Nightcap Session Loop"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0004-initial-eval-harness
-namespace: patterns
+id: engineeringpractice.specs.0004-initial-eval-harness
+namespace: engineering-practice
 title: Initial Eval Harness
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0021-operating-model-business-and-architect-roles
-namespace: patterns
+id: engineeringpractice.specs.0021-operating-model-business-and-architect-roles
+namespace: engineering-practice
 title: "Operating Model: Business Steward and System Architect Roles"
 owner: Nico Janssen
 status: active

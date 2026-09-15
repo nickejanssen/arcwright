@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-108-prompt-caching-and-generation-logging
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-108-prompt-caching-and-generation-logging
+namespace: product-roadmap
 title: "AW-108: Prompt caching and generation logging"
 owner: Nico Janssen
 status: active

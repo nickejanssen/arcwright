@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0001-scaffolding-audit
-namespace: decisions
+id: productroadmap.decisions.0001-scaffolding-audit
+namespace: product-roadmap
 title: 0001 — Scaffolding Audit Against Technical Architecture v1.3
 owner: Nico Janssen
 status: active

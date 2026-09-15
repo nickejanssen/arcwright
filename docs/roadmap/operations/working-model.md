@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.operations.working-model
-namespace: operating
+id: productroadmap.roadmap.operations.working-model
+namespace: product-roadmap
 title: Working Model
 owner: Nico Janssen
 status: active

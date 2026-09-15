@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-213-ai-initiative-and-npc-npc-exchange
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-213-ai-initiative-and-npc-npc-exchange
+namespace: product-roadmap
 title: "AW-213: AI Initiative And NPC-NPC Exchange"
 owner: Nico Janssen
 status: active

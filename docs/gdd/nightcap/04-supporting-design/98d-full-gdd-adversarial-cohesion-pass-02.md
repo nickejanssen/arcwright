@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.04-supporting-design.98d-full-gdd-adversarial-cohesion-pass-02
-namespace: custom
+id: nightcap.gdd.nightcap.04-supporting-design.98d-full-gdd-adversarial-cohesion-pass-02
+namespace: nightcap
 title: Nightcap — Full-GDD Adversarial / Cohesion Pass 02
 owner: Nico Janssen
 status: active

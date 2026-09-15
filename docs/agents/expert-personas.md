@@ -1,6 +1,6 @@
 ---
-id: operating.agents.expert-personas
-namespace: operating
+id: productroadmap.agents.expert-personas
+namespace: product-roadmap
 title: Arcwright Expert Personas
 owner: Nico Janssen
 status: active

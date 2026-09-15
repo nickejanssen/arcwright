@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-262-tmst-package-authoring-and-schema-resolution
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-262-tmst-package-authoring-and-schema-resolution
+namespace: product-roadmap
 title: "AW-262: TMST Package Authoring and Schema Resolution"
 owner: Nico Janssen
 status: active

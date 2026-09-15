@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m2-d-content-safety-pipeline
-namespace: operating
+id: productroadmap.roadmap.epics.m2-d-content-safety-pipeline
+namespace: product-roadmap
 title: "M2-D: Content Safety Pipeline"
 owner: Nico Janssen
 status: active

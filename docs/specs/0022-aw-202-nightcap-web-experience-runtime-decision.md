@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0022-aw-202-nightcap-web-experience-runtime-decision
-namespace: patterns
+id: engineeringpractice.specs.0022-aw-202-nightcap-web-experience-runtime-decision
+namespace: engineering-practice
 title: "AW-202: Nightcap Web Experience Runtime Decision"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.specs.2026-08-02-nightcap-scene-sweep-mini-game-design
-namespace: playbooks
+id: engineeringpractice.superpowers.specs.2026-08-02-nightcap-scene-sweep-mini-game-design
+namespace: engineering-practice
 title: Nightcap "Scene Sweep" Hidden-Object Mini-Game Design
 owner: Nico Janssen
 status: active

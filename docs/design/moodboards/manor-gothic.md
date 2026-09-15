@@ -1,6 +1,6 @@
 ---
-id: patterns.design.moodboards.manor-gothic
-namespace: patterns
+id: engineeringpractice.design.moodboards.manor-gothic
+namespace: engineering-practice
 title: Moodboard  -  Manor Gothic
 owner: Nico Janssen
 status: active

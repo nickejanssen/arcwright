@@ -1,6 +1,6 @@
 ---
-id: decisions.decisions.0009-mini-game-runtime-boundary
-namespace: decisions
+id: productroadmap.decisions.0009-mini-game-runtime-boundary
+namespace: product-roadmap
 title: 0009 - Mini-game Runtime Boundary
 owner: Nico Janssen
 status: deprecated

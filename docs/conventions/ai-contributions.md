@@ -1,6 +1,6 @@
 ---
-id: patterns.conventions.ai-contributions
-namespace: patterns
+id: engineeringpractice.conventions.ai-contributions
+namespace: engineering-practice
 title: AI Agent Contribution Policy
 owner: Nico Janssen
 status: active

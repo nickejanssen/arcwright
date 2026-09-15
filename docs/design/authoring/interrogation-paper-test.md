@@ -1,6 +1,6 @@
 ---
-id: patterns.design.authoring.interrogation-paper-test
-namespace: patterns
+id: engineeringpractice.design.authoring.interrogation-paper-test
+namespace: engineering-practice
 title: Interrogation Paper Test — Protocol
 owner: Nico Janssen
 status: active

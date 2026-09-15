@@ -1,0 +1,40 @@
+pre.assessment: extend
+pre.overlap: decide-later
+pre.probe_result: continue
+mode: instance
+ctx.org_path: arcwright
+team.name: Arcwright
+team.mission: Human-authored narrative runtime middleware with deterministic session facilitation.
+team.size: "1-3"
+team.surfaces:
+  - coding-agent
+team.sources:
+  - github
+team.consumers:
+  - engineers
+kb.substrate: md-git
+kb.namespaces: custom
+kb.catalog_override: use-preset
+kb.sources_strategy: link-only
+kb.sensitivity: three-tiers
+kb.write_back: pr-only
+arch.index_driver: lexical
+arch.hosting: no-server
+arch.language: typescript
+arch.ci: github-actions
+arch.topology: single-repo
+arch.model_tiers: strict
+arch.cache: "yes"
+agents.domains: arc-execution, knowledge-graph, character-behavior, model-routing, session-runtime, safety, developer-api, nightcap, monster-rpg, daily-case, nightcap-couch-race, product-roadmap, engineering-practice, playtest-ops
+agents.personas:
+  - internal-technical
+agents.skills:
+  - kb-answer
+  - kb-contribute
+  - sme-route
+  - audit-summary
+agents.strictness: refuse-log-gap
+agents.seed: "no"
+gate.1: confirm
+gate.2: confirm
+gate.3: confirm

@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-209-l2-pre-generation-classification
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-209-l2-pre-generation-classification
+namespace: product-roadmap
 title: "AW-209: L2 Pre-Generation Classification"
 owner: Nico Janssen
 status: active

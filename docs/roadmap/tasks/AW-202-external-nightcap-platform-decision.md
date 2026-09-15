@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-202-external-nightcap-platform-decision
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-202-external-nightcap-platform-decision
+namespace: product-roadmap
 title: "AW-202: Nightcap Web Experience Runtime Decision"
 owner: Nico Janssen
 status: active

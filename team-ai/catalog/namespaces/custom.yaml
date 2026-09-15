@@ -1,0 +1,34 @@
+name: custom
+description: "Arcwright's expertise domains: engine, titles, and practice."
+second_level:
+  - arc-execution
+  - knowledge-graph
+  - character-behavior
+  - model-routing
+  - session-runtime
+  - safety
+  - developer-api
+  - nightcap
+  - monster-rpg
+  - daily-case
+  - nightcap-couch-race
+  - product-roadmap
+  - engineering-practice
+  - playtest-ops
+domain_dir: null
+seed_docs:
+  - path: product-roadmap/charter.md
+    title: What Arcwright is responsible for
+    purpose: States the platform's scope and what it deliberately does not do.
+  - path: engineering-practice/roles.md
+    title: Who does what
+    purpose: Maps each role to the decisions and systems it owns.
+  - path: arc-execution/overview.md
+    title: The arc execution layer
+    purpose: Explains how authored arcs resolve deterministically at runtime.
+  - path: playtest-ops/onboarding.md
+    title: Running a playtest
+    purpose: Walks a new operator through preparing and running a session.
+  - path: product-roadmap/adr-0001-why-team-ai.md
+    title: Why Arcwright stood up team-ai
+    purpose: Records the reasoning for adopting team-ai.

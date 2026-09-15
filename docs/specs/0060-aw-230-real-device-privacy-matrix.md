@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0060-aw-230-real-device-privacy-matrix
-namespace: patterns
+id: engineeringpractice.specs.0060-aw-230-real-device-privacy-matrix
+namespace: engineering-practice
 title: "AW-230: Real-Device Privacy Matrix"
 owner: Nico Janssen
 status: active

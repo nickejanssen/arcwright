@@ -1,6 +1,6 @@
 ---
-id: patterns.design.moodboards.orbital-gala-2087
-namespace: patterns
+id: engineeringpractice.design.moodboards.orbital-gala-2087
+namespace: engineering-practice
 title: Moodboard  -  Orbital Gala 2087
 owner: Nico Janssen
 status: active

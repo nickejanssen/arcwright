@@ -1,6 +1,6 @@
 ---
-id: platform.architecture.11-telemetry
-namespace: platform
+id: playtestops.architecture.11-telemetry
+namespace: playtest-ops
 title: Telemetry Schema
 owner: Nico Janssen
 status: active

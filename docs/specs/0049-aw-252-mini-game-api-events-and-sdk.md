@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0049-aw-252-mini-game-api-events-and-sdk
-namespace: patterns
+id: engineeringpractice.specs.0049-aw-252-mini-game-api-events-and-sdk
+namespace: engineering-practice
 title: "AW-252: Mini-game API, Events, And TypeScript SDK"
 owner: Nico Janssen
 status: active

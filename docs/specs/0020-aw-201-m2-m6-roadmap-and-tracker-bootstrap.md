@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0020-aw-201-m2-m6-roadmap-and-tracker-bootstrap
-namespace: patterns
+id: engineeringpractice.specs.0020-aw-201-m2-m6-roadmap-and-tracker-bootstrap
+namespace: engineering-practice
 title: "AW-201: M2-M6 Roadmap And Tracker Bootstrap"
 owner: Nico Janssen
 status: active

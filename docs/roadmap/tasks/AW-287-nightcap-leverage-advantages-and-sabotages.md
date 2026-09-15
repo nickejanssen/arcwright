@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-287-nightcap-leverage-advantages-and-sabotages
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-287-nightcap-leverage-advantages-and-sabotages
+namespace: product-roadmap
 title: "AW-287: Nightcap Leverage Advantages And Sabotages"
 owner: Nico Janssen
 status: active

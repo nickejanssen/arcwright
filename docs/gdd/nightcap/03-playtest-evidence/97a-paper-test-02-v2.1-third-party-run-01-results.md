@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.03-playtest-evidence.97a-paper-test-02-v2-1-third-party-run-01-results
-namespace: custom
+id: nightcap.gdd.nightcap.03-playtest-evidence.97a-paper-test-02-v2-1-third-party-run-01-results
+namespace: nightcap
 title: "Nightcap — Paper Test #2 v2.1 Third-Party Run 01 Results"
 owner: Nico Janssen
 status: active

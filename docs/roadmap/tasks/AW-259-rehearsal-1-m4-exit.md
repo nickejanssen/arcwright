@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-259-rehearsal-1-m4-exit
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-259-rehearsal-1-m4-exit
+namespace: product-roadmap
 title: "AW-259: Rehearsal 1 - M4 Exit, First Real-Human Nightcap Session"
 owner: Nico Janssen
 status: deprecated

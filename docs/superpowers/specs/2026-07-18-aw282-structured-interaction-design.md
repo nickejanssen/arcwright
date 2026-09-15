@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.specs.2026-07-18-aw282-structured-interaction-design
-namespace: playbooks
+id: engineeringpractice.superpowers.specs.2026-07-18-aw282-structured-interaction-design
+namespace: engineering-practice
 title: AW-282 Structured Interaction Design
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-273-rehearsal-1-execution
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-273-rehearsal-1-execution
+namespace: product-roadmap
 title: "AW-273: Rehearsal 1 Execution - First Real-Human Nightcap Session"
 owner: Nico Janssen
 status: active

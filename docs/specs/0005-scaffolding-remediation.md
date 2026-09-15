@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0005-scaffolding-remediation
-namespace: patterns
+id: engineeringpractice.specs.0005-scaffolding-remediation
+namespace: engineering-practice
 title: Scaffolding Remediation
 owner: Nico Janssen
 status: active

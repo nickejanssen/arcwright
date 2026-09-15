@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-220-session-persistence-snapshots-and-resume
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-220-session-persistence-snapshots-and-resume
+namespace: product-roadmap
 title: "AW-220: Session Persistence Snapshots And Resume"
 owner: Nico Janssen
 status: active

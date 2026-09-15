@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0008-github-tracker-reproducibility
-namespace: patterns
+id: engineeringpractice.specs.0008-github-tracker-reproducibility
+namespace: engineering-practice
 title: GitHub Tracker Reproducibility
 owner: Nico Janssen
 status: active

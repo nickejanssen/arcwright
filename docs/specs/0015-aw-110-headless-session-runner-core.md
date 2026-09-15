@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0015-aw-110-headless-session-runner-core
-namespace: patterns
+id: engineeringpractice.specs.0015-aw-110-headless-session-runner-core
+namespace: engineering-practice
 title: AW-110 Headless Session Runner Core
 owner: Nico Janssen
 status: active

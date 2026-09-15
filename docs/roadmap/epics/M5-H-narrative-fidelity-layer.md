@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m5-h-narrative-fidelity-layer
-namespace: operating
+id: productroadmap.roadmap.epics.m5-h-narrative-fidelity-layer
+namespace: product-roadmap
 title: "M5-H: Narrative Fidelity Layer"
 owner: Nico Janssen
 status: active

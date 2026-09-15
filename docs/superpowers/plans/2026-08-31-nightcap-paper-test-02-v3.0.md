@@ -1,6 +1,6 @@
 ---
-id: playbooks.superpowers.plans.2026-08-31-nightcap-paper-test-02-v3-0
-namespace: playbooks
+id: engineeringpractice.superpowers.plans.2026-08-31-nightcap-paper-test-02-v3-0
+namespace: engineering-practice
 title: "Nightcap Paper Test #2 v3.0 Implementation Plan"
 owner: Nico Janssen
 status: draft

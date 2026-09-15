@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.epics.m5-c-second-arc-schema-validation
-namespace: operating
+id: productroadmap.roadmap.epics.m5-c-second-arc-schema-validation
+namespace: product-roadmap
 title: "M5-C: Second Arc Schema And Executable Follow-Through"
 owner: Nico Janssen
 status: active

@@ -1,6 +1,6 @@
 ---
-id: operating.product.decisions-log-additions-may2026
-namespace: operating
+id: productroadmap.product.decisions-log-additions-may2026
+namespace: product-roadmap
 title: Decisions Log Additions, May 2026
 owner: Nico Janssen
 status: active

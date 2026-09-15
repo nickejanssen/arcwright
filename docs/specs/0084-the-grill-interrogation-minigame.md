@@ -1,6 +1,6 @@
 ---
-id: patterns.specs.0084-the-grill-interrogation-minigame
-namespace: patterns
+id: engineeringpractice.specs.0084-the-grill-interrogation-minigame
+namespace: engineering-practice
 title: The Grill Interrogation Mini-game
 owner: Nico Janssen
 status: draft

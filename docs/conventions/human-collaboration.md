@@ -1,6 +1,6 @@
 ---
-id: patterns.conventions.human-collaboration
-namespace: patterns
+id: engineeringpractice.conventions.human-collaboration
+namespace: engineering-practice
 title: Human Collaboration Contract
 owner: Nico Janssen
 status: active

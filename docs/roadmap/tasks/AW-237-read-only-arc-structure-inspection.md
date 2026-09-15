@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-237-read-only-arc-structure-inspection
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-237-read-only-arc-structure-inspection
+namespace: product-roadmap
 title: "AW-237: Read-Only Arc Structure Inspection"
 owner: Nico Janssen
 status: active

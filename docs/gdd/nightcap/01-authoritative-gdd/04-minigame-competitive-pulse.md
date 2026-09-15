@@ -1,6 +1,6 @@
 ---
-id: custom.gdd.nightcap.01-authoritative-gdd.04-minigame-competitive-pulse
-namespace: custom
+id: nightcap.gdd.nightcap.01-authoritative-gdd.04-minigame-competitive-pulse
+namespace: nightcap
 title: Nightcap — Minigames & Competitive Pulse
 owner: Nico Janssen
 status: active

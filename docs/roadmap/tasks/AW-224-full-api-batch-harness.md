@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-224-full-api-batch-harness
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-224-full-api-batch-harness
+namespace: product-roadmap
 title: "AW-224: Full API Batch Harness"
 owner: Nico Janssen
 status: active

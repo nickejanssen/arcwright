@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-277-couch-race-narrator-transition-lines
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-277-couch-race-narrator-transition-lines
+namespace: product-roadmap
 title: "AW-277: Couch Race Narrator Transition Lines"
 owner: Nico Janssen
 status: active

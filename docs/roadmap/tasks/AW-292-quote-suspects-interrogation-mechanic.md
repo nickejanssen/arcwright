@@ -1,6 +1,6 @@
 ---
-id: operating.roadmap.tasks.aw-292-quote-suspects-interrogation-mechanic
-namespace: operating
+id: productroadmap.roadmap.tasks.aw-292-quote-suspects-interrogation-mechanic
+namespace: product-roadmap
 title: "AW-292: Quote-Suspects Interrogation Mechanic"
 owner: Nico Janssen
 status: active
