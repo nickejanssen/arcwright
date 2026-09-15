@@ -1,6 +1,6 @@
 ---
-id: operating.agents.system-architect
-namespace: operating
+id: productroadmap.agents.system-architect
+namespace: product-roadmap
 title: "Role: System Architect"
 owner: Nico Janssen
 status: active

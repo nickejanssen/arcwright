@@ -6,6 +6,66 @@ items:
     status: unchanged
     to_namespace: engineering-practice
     to_id: engineeringpractice.readme
+  - path: agents/README.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.readme
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.readme
+  - path: agents/USAGE.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.usage
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.usage
+  - path: agents/business-steward.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.business-steward
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.business-steward
+  - path: agents/expert-personas.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.expert-personas
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.expert-personas
+  - path: agents/planner.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.planner
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.planner
+  - path: agents/product-steward.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.product-steward
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.product-steward
+  - path: agents/road-to-live-playbook.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.road-to-live-playbook
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.road-to-live-playbook
+  - path: agents/scribe.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.scribe
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.scribe
+  - path: agents/spec-author.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.spec-author
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.spec-author
+  - path: agents/system-architect.md
+    from_namespace: product-roadmap
+    from_id: productroadmap.agents.system-architect
+    status: unchanged
+    to_namespace: product-roadmap
+    to_id: productroadmap.agents.system-architect
   - path: architecture/01-overview.md
     from_namespace: arc-execution
     from_id: arcexecution.architecture.01-overview
@@ -1728,6 +1788,12 @@ items:
     status: unchanged
     to_namespace: product-roadmap
     to_id: productroadmap.roadmap.tasks.aw-295-resolved-case-persistence
+  - path: skills/github-task-implementer/references/response-contracts.md
+    from_namespace: engineering-practice
+    from_id: engineeringpractice.skills.github-task-implementer.references.response-contracts
+    status: unchanged
+    to_namespace: engineering-practice
+    to_id: engineeringpractice.skills.github-task-implementer.references.response-contracts
   - path: specs/0000-template.md
     from_namespace: engineering-practice
     from_id: engineeringpractice.specs.0000-template
