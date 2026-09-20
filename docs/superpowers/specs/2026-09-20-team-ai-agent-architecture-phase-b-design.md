@@ -259,6 +259,67 @@ reworded.** No exception list.
 
 **D-B11 — The dead `## Original instructions` block is no longer emitted.**
 
+**D-B13 — Emit the declared cost tier as a host `model`. Approved
+2026-09-20.** Every domain declares `model_tier: small` and the
+router declares `none`, but that field is team-ai's own vocabulary and the host
+does not read it. No emitted agent sets `model`, so all 17 run on the session
+default — the most expensive option — while the architecture marks every
+one of them cheap-tier work. Principle 6 forbids exactly that.
+
+The founder approved adding the task on 2026-09-20. **What is not settled is
+the rule question it raises**, and an automated review of the plan flagged it:
+setting `model` puts a model alias into all 17 `.claude/agents/team-ai-*.md`
+files, and `AGENTS.md` states that no model string may appear *anywhere*
+outside `config/routing_table.json` and `engine/routing/router.py`, treating any
+violation as a bug.
+
+**Resolved as an interpretation of the existing rule, not an amendment to it.**
+Principle 8's enforcement clause — "No provider name or model string may
+appear anywhere outside..." — is the third bullet of a principle whose first
+two bullets scope it explicitly to *platform operations* and *model calls*, and
+the parallel statement sits under a heading reading **Key Engine Constraints**.
+A Claude Code subagent definition is neither: it is development tooling that
+makes no model call through the abstraction layer.
+
+The strongest evidence is the repository's own behaviour. `provider-leak-check`,
+approved under B-S1, scans `engine/`, `api/`, `sdk/`, `dashboard/` and `config/`
+and deliberately not `.claude/`. The working interpretation has been "product
+code" since before this question was asked.
+
+So the rule reaches the product's runtime inference, which is what it exists to
+protect: a hardcoded model in shipped code costs commercial flexibility. It does
+not reach development tooling, which costs nothing to change.
+
+**This also closes Q1.** The embedding model identifier indexes internal
+documentation at development time — the same category — so it lives in
+`team-ai/index.lock` and needs no exemption either.
+
+**The alternative, had this gone the other way,** was a narrow exemption naming
+`.claude/agents/`. Rejected under Occam: it starts an exemption list, and every
+future development tool needing a model name lengthens it until nobody reads it.
+
+**Reversal cost is low.** If the founder later prefers the absolute reading, the
+mapping is one constant in team-ai's emitter and the agents regenerate.
+
+**Still requiring founder approval, separately:** adding a sentence to
+`AGENTS.md` making this scope explicit, so the question does not recur. That
+text is a non-negotiable constraint and is not edited on the strength of this
+decision.
+
+Either way the tier-to-alias mapping lives in team-ai's Claude Code emitter, so
+no model string enters Arcwright's own source or docs. A host-specific value
+belongs in the host-specific emitter.
+
+**Rejected as part of this:** unifying the mapping with
+`config/routing_table.json`. That file routes the *product's* task types —
+character dialogue, safety classification — to models at runtime. Which model
+answers a documentation question during development is a different concern, and
+merging them would couple the product's routing to a development tool.
+
+Reviewers also noted this is plan-only build scope until recorded. That is the
+gap this entry closes: Task 14b is blocked until this decision is marked
+approved.
+
 **D-B12 — The 17-to-8 topology question is deferred** to the coverage and
 usage evidence Phase B produces.
 

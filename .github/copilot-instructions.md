@@ -52,6 +52,7 @@ All work in this repository must comply with the Arcwright PRD and technical arc
 - No platform operation may hardcode a dependency on any specific AI provider, model name, or model version.
 - Every model call must route through the internal abstraction layer that maps task type and quality tier to the active model.
 - No provider name or model string may appear anywhere outside `config/routing_table.json` and `engine/routing/router.py`. Treat any violation as a bug.
+- **Scope of the two rules above:** they govern product code — `engine/`, `api/`, `sdk/`, `dashboard/`, `config/` — which is what `scripts/checks/provider_leak_check.py` scans. Development tooling that makes no platform model call is outside them: Claude Code agent definitions under `.claude/`, and the documentation-index configuration in `team-ai/`. A hardcoded model in shipped code costs commercial flexibility; one in a development tool costs a line to change. Recorded as D-B13; see `docs/specs/0089-team-ai-agent-architecture.md`.
 
 ## Implementation Guardrails
 

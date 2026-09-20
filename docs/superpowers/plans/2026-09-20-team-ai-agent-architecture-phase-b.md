@@ -60,7 +60,7 @@ Build team-ai once before starting: `cd ../team-ai && npm ci && npm run build`
 | `src/evals/metrics.ts` | Adds the coverage metric |
 | `src/evals/run.ts` | Computes coverage per question |
 | `src/emit/index.ts` | Adds per-namespace corpus sizes to the emit input |
-| `src/emit/claude-code.ts` | Per-domain search strategy; stops emitting the dead block |
+| `src/emit/claude-code.ts` | Per-domain search strategy; tier-to-model mapping; stops emitting the dead block |
 
 **Arcwright (instance):**
 
@@ -1471,6 +1471,7 @@ Tag team-ai `v0.6.0` and update `.github/workflows/team-ai.yml`:
 - [ ] **Step 5: Confirm regeneration is stable and commit**
 
 ```bash
+git add .claude/agents          # snapshot the first emit; HEAD is not the baseline yet
 node ../team-ai/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
 git diff --exit-code -- .claude/agents && echo "stable"
 git add .claude/agents .claude/settings.json .github/workflows/team-ai.yml
@@ -2181,6 +2182,154 @@ Expected: `knowledge-query-guard: OK`, tests pass.
 ```bash
 git add scripts/checks/knowledge_query_guard.py scripts/checks/tests/test_knowledge_query_guard.py
 git commit -m "feat(checks): knowledge-query-guard for character generation"
+```
+
+---
+
+### Task 14b: Make the cost tier real instead of declared
+
+**Repository:** team-ai, then Arcwright
+
+**Goal:** Emitted agents carry a `model` the host actually reads, so the
+`model_tier` every domain already declares stops being inert.
+
+**Why this is not cosmetic.** All 14 domains declare `model_tier: small` and the
+router declares `none`. The emitter writes `model_tier` into agent front
+matter, but that is team-ai's own vocabulary — Claude Code reads `name`,
+`description`, `tools` and `model`. Nothing sets `model`, so all 17 agents run
+on the session default, which is the most expensive option available, while the
+architecture marks every one of them as cheap-tier work. `AGENTS.md` principle 6
+says the opposite in as many words: *"Do not default to the best available
+frontier model when a cheaper model meets the quality bar."*
+
+These agents grep a namespace, read documents, and answer with citations. That
+is the task a small fast model is for. One mapping fixes all 17, and it saves
+on every invocation from then on rather than once.
+
+**This must land before Task 15 cuts the tag.** It is a framework change, so a
+tag cut before it gives CI an emitter that does not set `model`.
+
+> **Unblocked: D-B13 approved 2026-09-20.** Setting `model` puts a model alias
+> into every `.claude/agents/team-ai-*.md`. That is within the rule, not an
+> exemption to it: principle 8 scopes itself to platform operations and model
+> calls, and `provider-leak-check` already scans product code only, never
+> `.claude/`. Development tooling is outside the rule; the product's runtime
+> inference is not. See D-B13 in the design document.
+
+**Files:**
+- Modify (team-ai): `src/emit/claude-code.ts` (the `meta` object, around line 132)
+- Test (team-ai): `src/emit/claude-code.test.ts`
+- Modify: `.claude/agents/team-ai-*.md` (regenerated, 17 files)
+
+**Acceptance Criteria:**
+- [ ] The emitter maps `model_tier` to the host's `model` field
+- [ ] The mapping lives in team-ai, so no model name enters Arcwright's docs,
+      which `docs/README.md` forbids
+- [ ] Every emitted agent carries a `model` line
+- [ ] The values are ones Claude Code documents as valid — confirmed from its
+      documentation, not assumed from this plan
+- [ ] `model_tier` is still emitted, so the generated file stays traceable to
+      its source definition
+- [ ] Regenerating produces no diff
+- [ ] Agents still load and answer — invoke one and confirm it returns a cited
+      answer rather than erroring on unknown front matter
+
+**Verify:** `grep -L "^model:" .claude/agents/team-ai-*.md | wc -l` → `0`
+
+**Steps:**
+
+- [ ] **Step 1: Confirm the accepted values before writing any**
+
+This plan deliberately does not name them. Check Claude Code's own subagent
+documentation for what `model` accepts — tier aliases and any inherit-style
+value — and use those exact strings. If a value is wrong the host may ignore
+the field silently, which would leave the tier just as inert as it is now while
+looking fixed.
+
+Record what you confirmed, and where, in the commit message.
+
+- [ ] **Step 2: Write the failing test**
+
+In `src/emit/claude-code.test.ts`:
+
+```ts
+it("maps the model tier onto the host's model field", () => {
+  const out = emitClaudeCode(inputWithTier("small"), tmpDir, { builtinSearch: true });
+  expect(readFileSync(out[0], "utf8")).toMatch(/^model: \S+$/m);
+});
+
+it("gives a large-tier agent a different model from a small-tier one", () => {
+  const small = readFileSync(
+    emitClaudeCode(inputWithTier("small"), tmpDir, { builtinSearch: true })[0], "utf8");
+  const large = readFileSync(
+    emitClaudeCode(inputWithTier("large"), tmpDir2, { builtinSearch: true })[0], "utf8");
+  const pick = (s: string) => /^model: (\S+)$/m.exec(s)?.[1];
+  expect(pick(small)).not.toBe(pick(large));
+});
+```
+
+- [ ] **Step 3: Run to confirm failure**
+
+Run: `cd ../team-ai && npx vitest run src/emit/claude-code.test.ts`
+Expected: FAIL — no `model` line is emitted.
+
+- [ ] **Step 4: Add the mapping**
+
+In `src/emit/claude-code.ts`, above `frontMatter`, using the values confirmed in
+Step 1:
+
+```ts
+// Claude Code reads `model`; `model_tier` is team-ai's own vocabulary and is
+// inert to the host. Mapping one onto the other is what makes a declared cost
+// tier real. `none` means the work needs no model judgement at all, so it takes
+// the cheapest tier rather than being omitted — an absent `model` inherits the
+// session default, which is the expensive outcome this mapping exists to avoid.
+const MODEL_FOR_TIER: Record<ModelTier, string> = {
+  none: "<cheapest alias>",
+  small: "<cheapest alias>",
+  large: "<capable alias>",
+};
+```
+
+and add it to the `meta` object beside `model_tier`:
+
+```ts
+    model: MODEL_FOR_TIER[input.def.model_tier],
+```
+
+- [ ] **Step 5: Run to confirm all pass**
+
+Run: `cd ../team-ai && npx vitest run src/emit/ && node dist/cli.js check-agnostic`
+Expected: PASS, and `check-agnostic: OK`.
+
+- [ ] **Step 6: Regenerate Arcwright's agents**
+
+```bash
+cd ../team-ai && npm run build && cd -
+node ../team-ai/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
+grep -L "^model:" .claude/agents/team-ai-*.md | wc -l      # expect 0
+git diff --stat -- .claude/agents                           # expect 17 files, one line each
+```
+
+Then confirm regeneration is stable:
+
+```bash
+git add .claude/agents          # snapshot the first emit; HEAD is not the baseline yet
+node ../team-ai/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
+git diff --exit-code -- .claude/agents && echo stable
+```
+
+- [ ] **Step 7: Confirm an agent still works**
+
+Invoke one specialist and check it returns a cited answer. An unknown or
+malformed front-matter value can make the host skip the agent, and a silently
+skipped agent looks exactly like a working one until someone needs it.
+
+- [ ] **Step 8: Commit**
+
+```bash
+cd ../team-ai && git add src/emit && git commit -m "feat(emit): map model tier onto the host's model field"
+cd - && git add .claude/agents && git commit -m "feat(agents): emit the declared cost tier as a model"
 ```
 
 ---

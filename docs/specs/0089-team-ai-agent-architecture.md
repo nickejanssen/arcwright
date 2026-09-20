@@ -14,10 +14,10 @@ supersedes: []
 # team-ai Agent Architecture for Arcwright
 
 **Status**: Approved (design). Phase A implemented. Phase B designed, planned
-and approved 2026-09-20, including four boundary sign-offs; implementation not
-started.
+and approved 2026-09-20 with four boundary sign-offs; implementation in
+progress — 14 of 21 tasks committed, the framework not yet published.
 
-**Version**: 1.5 | **Last updated**: 2026-09-20 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
+**Version**: 1.6 | **Last updated**: 2026-09-20 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
 
 **Author**: Claude (with founder) | **Date**: 2026-09-13
 
@@ -75,7 +75,7 @@ Delivered in three phases, each independently reviewable.
 
 Redesigned 2026-09-20 after measurement. The design of record is
 [`docs/superpowers/specs/2026-09-20-team-ai-agent-architecture-phase-b-design.md`](../superpowers/specs/2026-09-20-team-ai-agent-architecture-phase-b-design.md)
-(v2.0); the plan is
+(v2.1); the plan is
 [`docs/superpowers/plans/2026-09-20-team-ai-agent-architecture-phase-b.md`](../superpowers/plans/2026-09-20-team-ai-agent-architecture-phase-b.md).
 Where this section and that design differ, the design wins.
 
@@ -576,7 +576,14 @@ section and an engine to execute it, which Phase B does not build.
 
 # Open Questions
 
-- **Q1 — Where does the embedding model identifier live?** `AGENTS.md` and
+- **Q1 — RESOLVED 2026-09-20 by D-B13.** The identifier lives in
+  `team-ai/index.lock`. The provider-and-model rule scopes itself to platform
+  operations and model calls — principle 8's own first two bullets — and
+  `provider-leak-check` already scans product code only. A model indexing
+  internal documentation at development time is outside it, and needs no
+  exemption. Original question retained below for the record.
+
+- **Q1 (original) — Where does the embedding model identifier live?** `AGENTS.md` and
   `docs/README.md` forbid model strings outside the two routing files.
   **Still open, and now conditional.** Phase B makes semantic retrieval
   contingent on measurement (D-B2), so this may never need answering. If it
@@ -615,6 +622,16 @@ authorised. The other fourteen agents keep `Read, Grep, Glob`.
 `## Original instructions` block rewrites all 17 files under
 `.claude/agents/team-ai-*.md`, cutting roughly 43% from each. Those files are
 generated; the diff is the expected consequence of the emitter fix.
+
+**B-S5 — `AGENTS.md` states the scope of the provider-and-model rule.**
+Approved 2026-09-20. One bullet added under principle 8 recording that the rule
+governs product code — `engine/`, `api/`, `sdk/`, `dashboard/`, `config/`,
+which is exactly what `provider_leak_check.py` scans — and not development
+tooling that makes no platform model call. This is a clarification, not a
+relaxation: it writes down the interpretation already in force when
+`provider-leak-check`'s scope was approved under B-S1, so the question stops
+recurring. The prohibition is unchanged wherever it earns its keep. Mirrored to
+`.github/copilot-instructions.md`. See D-B13.
 
 **B-S4 — The `AGENTS.md` `.claude/` rule is corrected.** The rule states the
 `team-ai-*.md` exception "covers no other path under `.claude/`", which is
