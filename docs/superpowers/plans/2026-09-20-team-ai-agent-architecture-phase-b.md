@@ -2187,6 +2187,10 @@ git commit -m "feat(checks): knowledge-query-guard for character generation"
 - [ ] `scope-evidence-check` receives the pull request's base branch
 - [ ] `run-evals` runs and its exit code blocks merge
 - [ ] Checker unit tests run
+- [ ] The pinned team-ai tag exists on GitHub and contains every framework
+      change this phase made — *Verify:* `git ls-remote --tags origin v0.6.0`
+      from the team-ai clone returns a sha, and that sha's
+      `schemas/frontmatter.schema.json` contains `patternProperties`
 
 **Verify:** Push the branch and confirm the `team-ai` workflow passes
 
@@ -2218,6 +2222,42 @@ The checkout needs history for the base comparison, so add to the first `actions
         with:
           fetch-depth: 0
 ```
+
+- [ ] **Step 1b: Publish team-ai, or CI cannot see any of this work**
+
+Everything Phase B changed in team-ai lives in a local clone. Arcwright's CI
+checks the framework out **from GitHub by tag**:
+
+```yaml
+      - uses: actions/checkout@v4
+        with:
+          repository: nickejanssen/team-ai
+          ref: v0.6.0
+```
+
+so an unpushed commit or tag does not exist as far as CI is concerned, and the
+job fails at checkout rather than at a test. Local green proves nothing here.
+
+The tag must also contain every framework change this phase made — including
+the front-matter extension from Task 13. Tagging before that commit gives CI a
+schema that rejects `x-scope-evidence` while the local build accepts it.
+
+`v0.6.0` has never been published, so it can simply be moved:
+
+```bash
+cd ../team-ai
+git log --oneline origin/main..HEAD          # every commit CI still cannot see
+git tag -f v0.6.0                            # re-point at the finished work
+git push origin main
+git push -f origin v0.6.0                    # safe only because it was never published
+git ls-remote --tags origin v0.6.0           # confirm it is actually there
+```
+
+**Founder approval required before this push.** It is the first publish to the
+framework repository in this phase, and everything after it depends on that tag
+being correct. If any framework change lands later, the tag moves again — or
+cut `v0.6.1` and bump the workflow, which is the safer habit once a tag has
+been published even once.
 
 - [ ] **Step 2: Verify locally first**
 
