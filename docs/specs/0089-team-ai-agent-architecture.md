@@ -623,6 +623,16 @@ authorised. The other fourteen agents keep `Read, Grep, Glob`.
 `.claude/agents/team-ai-*.md`, cutting roughly 43% from each. Those files are
 generated; the diff is the expected consequence of the emitter fix.
 
+**B-S5 — `AGENTS.md` states the scope of the provider-and-model rule.**
+Approved 2026-09-20. One bullet added under principle 8 recording that the rule
+governs product code — `engine/`, `api/`, `sdk/`, `dashboard/`, `config/`,
+which is exactly what `provider_leak_check.py` scans — and not development
+tooling that makes no platform model call. This is a clarification, not a
+relaxation: it writes down the interpretation already in force when
+`provider-leak-check`'s scope was approved under B-S1, so the question stops
+recurring. The prohibition is unchanged wherever it earns its keep. Mirrored to
+`.github/copilot-instructions.md`. See D-B13.
+
 **B-S4 — The `AGENTS.md` `.claude/` rule is corrected.** The rule states the
 `team-ai-*.md` exception "covers no other path under `.claude/`", which is
 inaccurate: `.claude/settings.json`, `.claude/commands/`,
