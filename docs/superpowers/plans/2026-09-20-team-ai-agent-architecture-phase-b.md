@@ -80,6 +80,16 @@ Build team-ai once before starting: `cd ../team-ai && npm ci && npm run build`
 
 ## Part 1 — Retrieval correctness
 
+> **Framework code names no instance.** `team-ai` ships to any team, and
+> `check-agnostic` fails the build when a team's proper noun appears in shipped
+> source — `src/` (non-test, non-fixture), `schemas/`, `catalog/`, `templates/`,
+> `bin/`. That includes comments. When pasting a measurement into a framework
+> comment, describe the corpus ("a 37-question golden set over a ~966,000-token
+> corpus"), never whose it is. Instance-specific findings belong in this repo's
+> design document. *Verify before every team-ai commit:*
+> `cd ../team-ai && node dist/cli.js check-agnostic`
+
+
 ### Task 1: Extend the golden question schema
 
 **Repository:** team-ai
@@ -434,9 +444,9 @@ Replace `sanitizeQuery` in `src/retrieval/lexical.ts` with:
 // retrieve nothing. The list below is used as a GATE for that purpose — it is
 // deliberately NOT used to filter terms out of the match expression.
 //
-// Measured 2026-09-20 on the 37-question Arcwright set: filtering stopwords out
-// of the match cost 6.1 points of hit rate (48.5% -> 42.4%) and 8.1 points of
-// routing accuracy (24.3% -> 16.2%). BM25 already discounts common terms by
+// Measured on a 37-question golden set over a ~966,000-token corpus: filtering
+// stopwords out of the match cost 6.1 points of hit rate (48.5% -> 42.4%) and
+// 8.1 points of routing accuracy (24.3% -> 16.2%). BM25 already discounts common terms by
 // inverse document frequency, so removing them discards disambiguating context
 // and buys nothing. Gating on them preserves the "no content words retrieves
 // nothing" property at zero cost.
@@ -638,6 +648,7 @@ deterministic harness, which the design establishes is not what ships.
 - Modify: `src/commands/run-evals.ts` (print it under diagnostics)
 - Modify: `evals/gates.yaml` (team-ai's own reference copy of the defaults)
 - Test: `src/evals/metrics.test.ts`
+- Test: `src/commands/search.test.ts` — one absolute-score assertion
 - Test: `src/evals/run.test.ts` — five tests here depend on what this task
   changes. Updating them is part of this change, not a widening of it.
 
@@ -697,15 +708,15 @@ from `loadGates`. What remains gated is `hitRate`, `citationValidity` and
 Replace the `REFUSE_THRESHOLD` comment with the measured finding:
 
 ```ts
-// Measured against the 37-question Arcwright set on 2026-09-20: no threshold
-// over term statistics separates answerable from unanswerable questions on a
-// ~966,000-token corpus. Out-of-scope top scores ran 0.547-0.773 against
+// Measured against a 37-question golden set on a ~966,000-token corpus: no
+// threshold over term statistics separates answerable from unanswerable
+// questions at that scale. Out-of-scope top scores ran 0.547-0.773 against
 // in-scope 0.525-0.686; peakedness and content-word coverage overlap likewise.
-// A corpus this large contains nearly every common English word, so an
+// A corpus that large contains nearly every common English word, so an
 // unrelated question still finds real matches. Refusal is a judgement over
-// retrieved content, made by the agent in the delivery path and measured by
-// the Arcwright-side delegation eval, not by this harness. The threshold below
-// only suppresses genuinely empty result sets.
+// retrieved content, made by the agent in the delivery path and measured
+// instance-side, not by this harness. The threshold below only suppresses
+// genuinely empty result sets.
 const REFUSE_THRESHOLD = 0.2;
 ```
 
@@ -760,6 +771,7 @@ depend on the old threshold and need judgement:
 | `loadGates > keeps the reference evals/gates.yaml in sync with DEFAULT_GATES` | remove all three demoted metrics from `evals/gates.yaml` at the team-ai repo root, so the file and the defaults agree again. **Stage that file in Step 8** — the test reads the working tree, so an unstaged fix passes locally and fails in CI |
 | `routeQuestion > matches keywords on word boundaries, not as interior substrings` | **leave the expectation alone.** It asserts `platform-sme`, and after Step 5 it gets it. Its purpose is to prove a keyword does not fire as an interior substring; changing it to expect `__refuse__` would record a regression as intended behaviour |
 | `routeQuestion > refuses when the stub search top hit is below the 0.2 threshold` | rewrite. "Below 0.2" is no longer a behaviour this code has. Change the stub's score to `0` and rename it to `refuses when the top hit is a non-match`, which is the behaviour that survives |
+| `src/commands/search.test.ts > search > prints ranked lines for a relevant query` | asserts a top score above `0.5`; Task 4's rescaling makes it 0.46. The ranking assertion still passes, so only the absolute floor is stale. Do not simply lower the number — replace the floor with a relative assertion: a relevant query's top score must exceed the top score for a nonsense query. That survives the next rescaling too |
 
 **The rule for every one of these:** a test may be changed when it encodes a
 contract this task deliberately replaced. A test may never be changed to make a
