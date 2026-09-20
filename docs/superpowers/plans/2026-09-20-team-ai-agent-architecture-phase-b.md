@@ -2231,8 +2231,9 @@ tag cut before it gives CI an emitter that does not set `model`.
 - [ ] `model_tier` is still emitted, so the generated file stays traceable to
       its source definition
 - [ ] Regenerating produces no diff
-- [ ] Agents still load and answer — invoke one and confirm it returns a cited
-      answer rather than erroring on unknown front matter
+- [ ] One agent dispatches after the merge — *Verify:* in a Claude Code
+      session, ask a specialist to reply "OK" without reading files; a reply
+      proves the front matter parsed. No knowledge-base content is involved
 
 **Verify:** `grep -L "^model:" .claude/agents/team-ai-*.md | wc -l` → `0`
 
@@ -2319,11 +2320,27 @@ node ../team-ai/dist/cli.js emit --target claude-code --dir team-ai --out .. --f
 git diff --exit-code -- .claude/agents && echo stable
 ```
 
-- [ ] **Step 7: Confirm an agent still works**
+- [ ] **Step 7: Confirm an agent still dispatches — run this in Claude Code, not here**
 
-Invoke one specialist and check it returns a cited answer. An unknown or
-malformed front-matter value can make the host skip the agent, and a silently
-skipped agent looks exactly like a working one until someone needs it.
+The risk is narrow: an unknown or malformed front-matter value can make the host
+skip an agent, and a silently skipped agent looks exactly like a working one
+until someone needs it.
+
+Proving that needs **no knowledge-base content**. Dispatch one specialist with a
+prompt that requires reading nothing:
+
+> Reply with the single word OK. Do not read any files.
+
+A reply proves the front matter parsed and the agent is dispatchable. Whether
+it answers *correctly* from the corpus is a different question, already measured
+by the coverage metric (Task 6) and the delegation eval (Task 19) — do not
+re-test it here.
+
+**This step is not the implementer's.** It exercises a Claude Code feature, so
+it belongs in a Claude Code session, and the regenerated agents have to be
+committed and merged before one can load them. Commit Step 6's output, hand
+over, and let the founder's Claude Code session run the dispatch check after
+the merge.
 
 - [ ] **Step 8: Commit**
 
