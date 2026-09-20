@@ -193,7 +193,7 @@ def _inject_policy_into_messages(
     complete system prompt (character identity + knowledge state + L3 policy)
     stays in a single message.  The generation router passes messages to
     `mark_stable_context_cacheable()`, which wraps `messages[0]` with
-    Anthropic's `cache_control`.  Merging the policy into that message means
+    the provider's `cache_control`.  Merging the policy into that message means
     the stable character/knowledge context stays in the cached region rather
     than being displaced by the policy block.
 
