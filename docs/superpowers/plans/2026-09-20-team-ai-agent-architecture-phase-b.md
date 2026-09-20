@@ -1086,8 +1086,10 @@ git commit -m "test(evals): chunk size chosen by measurement"
       emits keep working on an instance that has none
 - [ ] A missing or unreadable knowledge base fails loudly on the path that needs
       it, and never silently reports zero tokens
-- [ ] An agent whose namespaces total under the threshold is told to read every document
-- [ ] An agent above it is told to run the ranked search command, scoped to its namespaces
+- [ ] A tier-2 group SME (`max_hops > 0`) is told to delegate, and is given
+      neither ranked search nor a read-everything instruction over its aggregate
+- [ ] A specialist whose namespaces total under the threshold reads every document
+- [ ] A specialist above it runs the ranked search command, scoped to its namespaces
 - [ ] The threshold is a named constant with the rationale in a comment
 - [ ] The router agent's section is unchanged
 
@@ -1217,6 +1219,14 @@ In `src/emit/claude-code.ts`, replace the subagent branch of `searchSection`:
 // searching. Above this size the corpus cannot be read and ranked search is the
 // only option. 25,000 tokens sits comfortably inside a subagent's context
 // alongside its task.
+//
+// The threshold applies only to agents that OWN content. A tier-2 group SME
+// (max_hops > 0) delegates: its hand-authored instructions say "delegate a
+// single-domain question to that domain's specialist", and every specialist
+// beneath it already carries the right strategy for its own corpus. Summing a
+// group's namespaces and handing it ranked search would give practice-sme an
+// 873,000-token search it never needs, because the content is always one hop
+// away.
 const READ_ALL_TOKEN_LIMIT = 25_000;
 
 function searchSection(agent: EmitAgent, corpusTokens: Record<string, number>): string {
@@ -1231,6 +1241,22 @@ function searchSection(agent: EmitAgent, corpusTokens: Record<string, number>): 
   }
 
   const namespaces = agent.def.kb_namespaces;
+
+  // Tier-2 group SME: delegate rather than search or read an aggregate corpus.
+  if (agent.def.max_hops > 0) {
+    return [
+      ...common,
+      "You delegate. You do not search your group's corpus yourself.",
+      "",
+      "- Read `team-ai/manifest.yaml` and find which of your domains owns the question.",
+      `- Your domains: ${namespaces.join(", ")}.`,
+      "- Hand off to that domain's subagent and stop.",
+      "- Only when a question genuinely spans two of your domains, delegate to",
+      "  both and reconcile their cited answers. Never answer from memory.",
+      "- If none of your domains owns it, say so and name the likely owner.",
+    ].join("
+");
+  }
   const total = namespaces.reduce((sum, ns) => sum + (corpusTokens[ns] ?? 0), 0);
   const listing = namespaces
     .map((ns) => `- Grep the KB root for \`^namespace: ${ns}\` to list your documents.`)
@@ -1371,7 +1397,7 @@ git add src/emit && git commit -m "fix(emit): stop emitting instructions for too
 
 **Repository:** Arcwright
 
-**Goal:** The 17 emitted agents carry the new per-domain strategy and no dead block, and the three large-corpus agents can run the search command and nothing else.
+**Goal:** The 17 emitted agents carry the right strategy for their role and no dead block, and exactly the three agents named in sign-off B-S2 can run the search command and nothing else.
 
 **Files:**
 - Modify: `.claude/agents/team-ai-*.md` (regenerated, 17 files)
@@ -1380,9 +1406,16 @@ git add src/emit && git commit -m "fix(emit): stop emitting instructions for too
 
 **Acceptance Criteria:**
 - [ ] No emitted agent mentions `kb_manifest`, `kb_search` or `kb_coverage_gap`
-- [ ] The eleven small-corpus agents are told to read their documents
+- [ ] The split is exactly 3 specialists searching, 10 specialists reading,
+      3 group SMEs delegating and 1 router routing — 17 emitted agents
+      — *Verify:* `grep -l "cli.js search" .claude/agents/team-ai-*.md | wc -l` → `3`
+- [ ] `engine-sme`, `practice-sme` and `title-sme` are told to delegate, and
+      none of them mentions `cli.js search`. Summing a group's namespaces would
+      push all three over the threshold; they own no content, so the threshold
+      does not apply to them and sign-off B-S2 is not exceeded
 - [ ] `engineering-practice-sme`, `product-roadmap-sme` and `nightcap-sme` are told to use ranked search
-- [ ] `.claude/settings.json` permits the search command only, not general shell access
+- [ ] `.claude/settings.json` permits the search command only, not general
+      shell access, and no agent outside B-S2's three needs it
 - [ ] Regenerating produces no diff
 
 **Verify:** `node ../team-ai/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked && git diff --exit-code -- .claude/agents` → exit 0
