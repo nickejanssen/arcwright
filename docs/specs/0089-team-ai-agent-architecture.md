@@ -14,10 +14,10 @@ supersedes: []
 # team-ai Agent Architecture for Arcwright
 
 **Status**: Approved (design). Phase A implemented. Phase B designed, planned
-and approved 2026-09-20, including four boundary sign-offs; implementation not
-started.
+and approved 2026-09-20 with four boundary sign-offs; implementation in
+progress — 14 of 21 tasks committed, the framework not yet published.
 
-**Version**: 1.5 | **Last updated**: 2026-09-20 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
+**Version**: 1.6 | **Last updated**: 2026-09-20 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
 
 **Author**: Claude (with founder) | **Date**: 2026-09-13
 
@@ -75,7 +75,7 @@ Delivered in three phases, each independently reviewable.
 
 Redesigned 2026-09-20 after measurement. The design of record is
 [`docs/superpowers/specs/2026-09-20-team-ai-agent-architecture-phase-b-design.md`](../superpowers/specs/2026-09-20-team-ai-agent-architecture-phase-b-design.md)
-(v2.0); the plan is
+(v2.1); the plan is
 [`docs/superpowers/plans/2026-09-20-team-ai-agent-architecture-phase-b.md`](../superpowers/plans/2026-09-20-team-ai-agent-architecture-phase-b.md).
 Where this section and that design differ, the design wins.
 
