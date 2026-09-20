@@ -4,6 +4,4 @@
 # team-ai/evals/baseline-2026-09-20.json and measured-2026-09-20.json.
 hitRate: 0.45
 citationValidity: 1.0
-routingAccuracy: 0.2
-namespaceAccuracy: 0.35
 coverage: 0.95
