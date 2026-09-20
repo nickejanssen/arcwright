@@ -13,9 +13,11 @@ supersedes: []
 
 # team-ai Agent Architecture for Arcwright
 
-**Status**: Approved (design) — revisions since approval pending founder confirmation
+**Status**: Approved (design). Phase A implemented. Phase B designed, planned
+and approved 2026-09-20, including four boundary sign-offs; implementation not
+started.
 
-**Version**: 1.4 | **Last updated**: 2026-09-13 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
+**Version**: 1.5 | **Last updated**: 2026-09-20 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
 
 **Author**: Claude (with founder) | **Date**: 2026-09-13
 
@@ -69,12 +71,36 @@ Delivered in three phases, each independently reviewable.
 - Emit the 17 agents as Claude Code subagents under `.claude/agents/team-ai-*.md`
 - Emit the `domains`, `agents`, and `skills` manifest sections
 
-**Phase B — Enforcement skills, hooks, workflows, measurement**
+**Phase B — Retrieval correctness, enforcement, hooks, measurement**
 
+Redesigned 2026-09-20 after measurement. The design of record is
+[`docs/superpowers/specs/2026-09-20-team-ai-agent-architecture-phase-b-design.md`](../superpowers/specs/2026-09-20-team-ai-agent-architecture-phase-b-design.md)
+(v2.0); the plan is
+[`docs/superpowers/plans/2026-09-20-team-ai-agent-architecture-phase-b.md`](../superpowers/plans/2026-09-20-team-ai-agent-architecture-phase-b.md).
+Where this section and that design differ, the design wins.
+
+- Fix the lexical scoring defect in team-ai, then re-measure. A query of pure
+  stopwords scored 0.731 and padding a question with meaningless words raised
+  its score, because every query token was joined with `OR`, BM25 accumulated
+  across common terms, and the score transform saturated. That one defect
+  explains refusal being impossible, hit rate at 22%, and routing accuracy at 0%
+- Choose retrieval strategy per domain by corpus size: eleven domains holding
+  5.3% of the corpus read their documents outright; the three holding 94.7% use
+  the ranked index that already exists and is currently unused
 - Three deterministic enforcement skills
-- Four Claude Code hooks
-- `workflows` manifest section with human approval gates
-- Golden question set and routing-accuracy eval gate
+- Four Claude Code hooks, redesigned as a non-blocking loop rather than four
+  independent additions costing ~16 seconds per session
+- Golden question set, coverage metric, and ratcheted gates measuring hit rate
+  as the primary signal; a separate on-demand delegation eval on the Arcwright
+  side measures the path that actually ships
+- `/doc-review` slash command
+
+**Dropped from Phase B**, with reasons recorded in the design:
+
+- Scored-router improvements — the scored router is not in the delivery path
+- The `workflows` manifest section and any workflow engine — nothing would
+  execute the section, and the engine would be the largest item in the phase to
+  orchestrate a sequence runnable in one command
 
 **Phase C — Temporal graph and hybrid retrieval**
 
@@ -455,15 +481,35 @@ rank fusion.
 - [ ] Every changed path is inside the approved layout: `team-ai/`, `.claude/agents/team-ai-*.md`, `docs/**` front-matter `namespace`/`id` lines, `AGENTS.md`, `.github/copilot-instructions.md`, `.gitignore`, and the CI workflow file
 - [ ] `docs/agents/`, `docs/skills/`, and every other file under `.claude/` are unchanged
 
-**Phase B**
+**Phase B** — superseded 2026-09-20 by the acceptance criteria in the Phase B
+design, which carries a verify command per criterion. Summarised here:
 
-- [ ] `manifest.yaml` validates against the extended schema with all four sections
-- [ ] `provider-leak-check` fails on a provider string planted in runtime code outside the two allowed files, and passes on the clean tree
-- [ ] `scope-evidence-check` fails for scope with no decision record and passes with one
-- [ ] `knowledge-query-guard` fails on a generation call with no preceding knowledge query
-- [ ] All four hooks fire and are individually disableable
-- [ ] Golden set of ≥ 30 real questions with known-correct domains; routing accuracy reported as a number
-- [ ] `doc-currency-review` workflow runs end to end and pauses at the approval gate
+- [ ] A pure-stopword query scores near zero, and padding a question with
+      meaningless words does not raise its score
+- [ ] Out-of-scope questions fall below the refusal threshold while in-scope
+      questions stay above it
+- [ ] Hit rate is measured before and after the scoring fix and both are recorded
+- [ ] Each domain's emitted agent states the retrieval strategy matching its
+      corpus size; the three large domains can run the search command and nothing else
+- [ ] No emitted agent references `kb_manifest`, `kb_search` or `kb_coverage_gap`,
+      and regenerating produces no diff
+- [ ] `provider-leak-check` passes on the clean tree with no exception list, and
+      fails on a planted provider string
+- [ ] `scope-evidence-check` reports zero dangling references, fails on a
+      fabricated decision id, and requires declared evidence on newly added
+      specs and roadmap tasks only
+- [ ] `knowledge-query-guard` fails on a `character_dialogue` generation with no
+      preceding knowledge query, and does not flag narration or mini-game resolution
+- [ ] All four hooks fire, are individually disableable, and session stop is not delayed
+- [ ] Golden set of ≥ 30 paraphrased questions carrying source path, expected
+      domain, expected refuse, generation date and answer evidence; coverage
+      reported per domain
+- [ ] `/doc-review` reports and pauses for approval without changing anything
+
+**Two criteria from version 1.4 are withdrawn**, not merely unmet:
+`manifest.yaml` validating "with all four sections" and the
+`doc-currency-review` workflow running end to end. Both assumed a `workflows`
+section and an engine to execute it, which Phase B does not build.
 
 **Phase C**
 
@@ -531,13 +577,69 @@ rank fusion.
 # Open Questions
 
 - **Q1 — Where does the embedding model identifier live?** `AGENTS.md` and
-  `docs/README.md` forbid model strings outside the two routing files. Options:
-  add an embedding task type to `config/routing_table.json`, or record a narrow
-  ADR exemption for retrieval index configuration. Decide before Phase C.
+  `docs/README.md` forbid model strings outside the two routing files.
+  **Still open, and now conditional.** Phase B makes semantic retrieval
+  contingent on measurement (D-B2), so this may never need answering. If it
+  does, the Phase B design recommends a narrow decision record scoping the
+  provider-name rule to *runtime inference*, with the identifier in
+  `team-ai/index.lock`, which already carries an `embedding: null` slot. A local
+  embedding model indexing internal documentation at development time is neither
+  runtime inference nor a provider dependency, and putting it in
+  `config/routing_table.json` would place a documentation-index setting in the
+  runtime routing table. Not approved; decide only if the work proceeds.
 
 ---
 
 # Approved Decisions
+
+## Phase B sign-offs — approved 2026-09-20
+
+Four boundary exceptions, each approved explicitly and separately by the
+founder. They authorise the Phase B implementation session and nothing beyond
+what is scoped here.
+
+**B-S1 — One `engine/` comment line may be reworded.** `engine/safety/l3.py:196`
+changes "Anthropic's `cache_control`" to "the provider's `cache_control`". This
+is a narrow, named exception to *Out of Scope*, which otherwise forbids any
+`engine/` change in this spec. It covers that one line and no other `engine/`
+edit. It exists so `provider-leak-check` passes on a clean tree with no
+exception list, since an exception list is how such a check stops being trusted.
+
+**B-S2 — Scoped shell access for the three large-corpus agents.**
+`engineering-practice-sme`, `product-roadmap-sme` and `nightcap-sme` may run the
+team-ai `search` command, permitted in `.claude/settings.json` as that
+subcommand alone. A bare `Bash` or `Bash(node:*)` permission is **not**
+authorised. The other fourteen agents keep `Read, Grep, Glob`.
+
+**B-S3 — The 17-file regeneration diff is approved.** Removing the emitted
+`## Original instructions` block rewrites all 17 files under
+`.claude/agents/team-ai-*.md`, cutting roughly 43% from each. Those files are
+generated; the diff is the expected consequence of the emitter fix.
+
+**B-S4 — The `AGENTS.md` `.claude/` rule is corrected.** The rule states the
+`team-ai-*.md` exception "covers no other path under `.claude/`", which is
+inaccurate: `.claude/settings.json`, `.claude/commands/`,
+`.claude/agents/implementer.md` and `.claude/agents/reviewer.md` are already
+tracked and were committed earlier. The rule is replaced with an accurate list,
+adding hook registration in `.claude/settings.json`. No path outside that list
+becomes writable, and `.github/copilot-instructions.md` is re-mirrored to match.
+
+## Phase B design decisions — approved 2026-09-20
+
+Recorded in full, with the measurements behind each, in the Phase B design
+document. In brief: fix lexical scoring before buying retrieval infrastructure
+(D-B1); semantic retrieval is conditional on the post-fix measurement rather
+than scheduled (D-B2); retrieval strategy is chosen per domain by corpus size
+(D-B3); phases are cut by dependency rather than artifact type (D-B4); the eval
+gate measures coverage deterministically in team-ai and delegation on the
+Arcwright side (D-B5); `scope-evidence-check` enforces reference integrity plus
+a declared evidence field (D-B6) required only on newly added documents (D-B7);
+all four hooks ship as a non-blocking loop (D-B8); no workflow engine (D-B9);
+`provider-leak-check` skips test files (D-B10); the dead instruction block is no
+longer emitted (D-B11); the 17-to-8 topology question waits for Phase B's
+evidence (D-B12).
+
+---
 
 **D1 — Existing agents and skills are registered, never regenerated.** Approved
 2026-09-13. The hand-authored contracts in `docs/agents/` and skills in
