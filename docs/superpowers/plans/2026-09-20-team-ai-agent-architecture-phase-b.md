@@ -1070,12 +1070,17 @@ git commit -m "test(evals): chunk size chosen by measurement"
 **Goal:** A domain whose whole corpus is small tells its agent to read everything; a large one tells it to use ranked search. Uniform strategy is wrong at both ends of a 232-to-609,458-token range.
 
 **Files:**
-- Modify: `src/emit/index.ts` (`EmitInput`, `loadEmitInput`)
+- Modify: `src/commands/emit.ts` (compute corpus sizes for the one path that needs them)
 - Modify: `src/emit/claude-code.ts` (`searchSection`)
 - Test: `src/emit/claude-code.test.ts`
 
 **Acceptance Criteria:**
-- [ ] `EmitInput` carries `corpusTokens: Record<string, number>` per namespace
+- [ ] `corpusTokens` is an option on the claude-code emitter, not a field on
+      `EmitInput`, and is computed only for `--target claude-code --builtin-search`
+- [ ] `loadEmitInput` still reads no knowledge base, so `mcp-only` and `generic`
+      emits keep working on an instance that has none
+- [ ] A missing or unreadable knowledge base fails loudly on the path that needs
+      it, and never silently reports zero tokens
 - [ ] An agent whose namespaces total under the threshold is told to read every document
 - [ ] An agent above it is told to run the ranked search command, scoped to its namespaces
 - [ ] The threshold is a named constant with the rationale in a comment
@@ -1120,13 +1125,29 @@ Expected: FAIL.
 
 - [ ] **Step 3: Add corpus sizes to the emit input**
 
-In `src/emit/index.ts`, add to `EmitInput`:
+**Do not put this on `EmitInput` and do not load it in `loadEmitInput`.**
+`commands/emit.ts` calls `loadEmitInput(dir)` once, before it dispatches on
+target, so a knowledge-base load there would make every `mcp-only` and
+`generic` emit fail on an instance that has no `kb/` — and would break the
+twelve existing emitter tests, whose fixture deliberately has none.
+
+Corpus size is needed by exactly one path: `--target claude-code` with
+`--builtin-search`. Scope the dependency to it.
+
+Add the map to `EmitClaudeCodeOptions` in `src/emit/claude-code.ts`:
 
 ```ts
-  corpusTokens: Record<string, number>;
+export interface EmitClaudeCodeOptions {
+  filePrefix?: string;
+  pluginManifest?: boolean;
+  builtinSearch?: boolean;
+  corpusTokens?: Record<string, number>;
+}
 ```
 
-and in `loadEmitInput`, after loading the manifest:
+Then in `src/commands/emit.ts`, compute it only on that path and fail loudly if
+the knowledge base cannot be read — a silent zero would tell a
+609,000-token domain to read its whole corpus:
 
 ```ts
 import { loadKb } from "../kb/loader.js";
@@ -1137,6 +1158,8 @@ import { resolveKbScope } from "../retrieval/index-lock.js";
 // nothing; the exact figure never matters, only which side of the threshold
 // a namespace falls.
 async function corpusTokensByNamespace(instanceDir: string): Promise<Record<string, number>> {
+  // Let a missing or unreadable KB throw. Reporting zero here would emit
+  // "read your whole corpus" instructions to a 609,000-token domain.
   const scope = resolveKbScope(instanceDir);
   const docs = await loadKb(scope.root, { exclude: scope.exclude });
   const out: Record<string, number> = {};
@@ -1149,7 +1172,35 @@ async function corpusTokensByNamespace(instanceDir: string): Promise<Record<stri
 }
 ```
 
-Make `loadEmitInput` async if it is not already, and thread the result through; update `src/commands/emit.ts` to await it.
+Call it from `run` in `src/commands/emit.ts`, only for the path that needs it:
+
+```ts
+  const corpusTokens =
+    target === "claude-code" && opts.builtinSearch === true
+      ? await corpusTokensByNamespace(dir)
+      : undefined;
+```
+
+and pass it through to `emitClaudeCode(input, outResolved, { ..., corpusTokens })`.
+
+In `searchSection`, treat an absent map as a programming error rather than an
+empty corpus:
+
+```ts
+  const sizes = corpusTokens ?? {};
+  const total = namespaces.reduce((sum, ns) => sum + (sizes[ns] ?? 0), 0);
+```
+
+is **wrong** — it silently yields the read-everything branch. Require it:
+
+```ts
+  if (corpusTokens === undefined) {
+    throw new Error("builtin-search emit requires corpus sizes; none were computed");
+  }
+```
+
+**The tests need no knowledge-base fixture.** They pass `corpusTokens` directly
+as an option, which is what the tests in Step 1 already assume.
 
 - [ ] **Step 4: Branch the search section**
 
@@ -1210,23 +1261,22 @@ function searchSection(agent: EmitAgent, corpusTokens: Record<string, number>): 
 }
 ```
 
-`frontMatter` receives a single agent (`EmitInput["agents"][number]`), not the
-whole `EmitInput`, so it has no `corpusTokens` of its own. Add a third
-parameter and thread it from `emitClaudeCode`:
+`frontMatter` receives a single agent (`EmitInput["agents"][number]`), and the
+corpus sizes now arrive on `opts`, so no extra parameter is needed — read
+them from the options it already has:
 
 ```ts
 function frontMatter(
   input: EmitInput["agents"][number],
   opts: EmitClaudeCodeOptions,
-  corpusTokens: Record<string, number>,
 ): string {
+  const body =
+    opts.builtinSearch === true
+      ? searchSection(input, opts.corpusTokens)
+      : input.instructions.trim();
 ```
 
-and at its call site inside `emitClaudeCode`, which does have the full input:
-
-```ts
-    const content = frontMatter(agent, opts, input.corpusTokens);
-```
+Its call site inside `emitClaudeCode` is unchanged.
 
 - [ ] **Step 5: Run to confirm all pass**
 
@@ -1293,11 +1343,13 @@ In `src/emit/claude-code.ts`, replace the body expression in `frontMatter`:
   // fabricate a tool call. The search section fully replaces them.
   const body =
     opts.builtinSearch === true
-      ? searchSection(input, corpusTokens)
+      ? searchSection(input, opts.corpusTokens)
       : input.instructions.trim();
 ```
 
-`corpusTokens` is the third parameter added to `frontMatter` in Task 9, Step 4.
+Task 9 already put `corpusTokens` on `EmitClaudeCodeOptions`, so this line is
+the same one that task leaves behind. If Task 9 is done, the only change here
+is deleting the `## Original instructions` concatenation around it.
 
 Also drop the now-false clause in `searchSection`'s `common` array: `"Use Read, Grep, and Glob to search it. The tool names under Original instructions are unavailable."` — Task 9 already replaced it per branch.
 
