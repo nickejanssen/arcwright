@@ -2209,13 +2209,12 @@ on every invocation from then on rather than once.
 **This must land before Task 15 cuts the tag.** It is a framework change, so a
 tag cut before it gives CI an emitter that does not set `model`.
 
-> **Blocked pending founder decision D-B13.** Setting `model` puts a model alias
-> into every `.claude/agents/team-ai-*.md`. `AGENTS.md` says no model string may
-> appear "anywhere" outside `config/routing_table.json` and
-> `engine/routing/router.py`. Whether that rule reaches development tooling, or
-> governs only the product's runtime inference, is unsettled — the same
-> question left open as Q1 for the embedding model identifier. Do not implement
-> this task until D-B13 is recorded as approved.
+> **Unblocked: D-B13 approved 2026-09-20.** Setting `model` puts a model alias
+> into every `.claude/agents/team-ai-*.md`. That is within the rule, not an
+> exemption to it: principle 8 scopes itself to platform operations and model
+> calls, and `provider-leak-check` already scans product code only, never
+> `.claude/`. Development tooling is outside the rule; the product's runtime
+> inference is not. See D-B13 in the design document.
 
 **Files:**
 - Modify (team-ai): `src/emit/claude-code.ts` (the `meta` object, around line 132)
@@ -2235,7 +2234,7 @@ tag cut before it gives CI an emitter that does not set `model`.
 - [ ] Agents still load and answer — invoke one and confirm it returns a cited
       answer rather than erroring on unknown front matter
 
-**Verify:** `grep -L "^model:" .claude/agents/team-ai-*.md | wc -l` → `0`, and D-B13 is recorded as approved in the design document before any of this runs
+**Verify:** `grep -L "^model:" .claude/agents/team-ai-*.md | wc -l` → `0`
 
 **Steps:**
 

@@ -576,7 +576,14 @@ section and an engine to execute it, which Phase B does not build.
 
 # Open Questions
 
-- **Q1 — Where does the embedding model identifier live?** `AGENTS.md` and
+- **Q1 — RESOLVED 2026-09-20 by D-B13.** The identifier lives in
+  `team-ai/index.lock`. The provider-and-model rule scopes itself to platform
+  operations and model calls — principle 8's own first two bullets — and
+  `provider-leak-check` already scans product code only. A model indexing
+  internal documentation at development time is outside it, and needs no
+  exemption. Original question retained below for the record.
+
+- **Q1 (original) — Where does the embedding model identifier live?** `AGENTS.md` and
   `docs/README.md` forbid model strings outside the two routing files.
   **Still open, and now conditional.** Phase B makes semantic retrieval
   contingent on measurement (D-B2), so this may never need answering. If it
