@@ -633,7 +633,7 @@ Arcwright-side delegation eval in Task 19. `run-evals` measures the
 deterministic harness, which the design establishes is not what ships.
 
 **Files:**
-- Modify: `src/evals/metrics.ts` (move `refusalRate` out of the gated metrics)
+- Modify: `src/evals/metrics.ts` (move the three harness metrics out of the gated set)
 - Modify: `src/evals/run.ts` (`DEFAULT_GATES`, `REFUSE_THRESHOLD` and its comparison)
 - Modify: `src/commands/run-evals.ts` (print it under diagnostics)
 - Modify: `evals/gates.yaml` (team-ai's own reference copy of the defaults)
@@ -642,18 +642,22 @@ deterministic harness, which the design establishes is not what ships.
   changes. Updating them is part of this change, not a widening of it.
 
 **Acceptance Criteria:**
-- [ ] `refusalRate` is reported but no longer gates the run
-- [ ] It is printed under a "diagnostics" heading alongside `routingAccuracy`
-      and `namespaceAccuracy`, which the design already demotes for the same
-      reason
+- [ ] `refusalRate`, `routingAccuracy` and `namespaceAccuracy` are reported but
+      none of them gates the run
+- [ ] All three print under a "diagnostics" heading; the gated set after this
+      task is exactly `hitRate` and `citationValidity`. `coverage` is added by
+      Task 6 and must not be pulled forward — each task has to verify and
+      commit on its own
 - [ ] `REFUSE_THRESHOLD` carries a comment recording the three measured
       distributions and why no value separates them
-- [ ] A run whose only failing metric is `refusalRate` exits 0
+- [ ] A run whose only failing metrics are diagnostics exits 0
+- [ ] No `gates.yaml`, in the framework or the instance, names a metric that is
+      no longer gated
 - [ ] The whole `src/evals/` suite passes — *Verify:* `npx vitest run src/evals/`
       reports 0 failures
 - [ ] The word-boundary routing test still expects `platform-sme`
 
-**Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai --json | python -c "import sys,json;r=json.load(sys.stdin);print('gated:', sorted(r['gates']))"` → `refusalRate` absent from the gated list
+**Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai --json | python -c "import sys,json;r=json.load(sys.stdin);print('gated:', sorted(r['gates']))"` → exactly `['citationValidity', 'hitRate']`
 
 **Steps:**
 
@@ -678,11 +682,19 @@ it("reports refusalRate without gating on it", () => {
 Run: `cd ../team-ai && npx vitest run src/evals/metrics.test.ts`
 Expected: FAIL — `refusalRate` currently gates and the report fails.
 
-- [ ] **Step 3: Remove it from the gates**
+- [ ] **Step 3: Remove all three harness metrics from the gates**
 
-In `src/evals/run.ts`, drop `refusalRate` from `DEFAULT_GATES` and from the
-`GateThresholds` type, and from `loadGates`. Replace the `REFUSE_THRESHOLD`
-comment with the measured finding:
+`refusalRate`, `routingAccuracy` and `namespaceAccuracy` all describe the
+deterministic harness, which the design establishes is not the delivery path.
+Step 4 prints all three as diagnostics, so all three must leave the gate set —
+gating on a metric while labelling it "not gated" is the inconsistency this
+task exists to remove.
+
+In `src/evals/run.ts`, drop `refusalRate`, `routingAccuracy` and
+`namespaceAccuracy` from `DEFAULT_GATES`, from the `GateThresholds` type, and
+from `loadGates`. What remains gated is `hitRate`, `citationValidity` and
+`coverage` — the three that describe whether the knowledge base can answer.
+Replace the `REFUSE_THRESHOLD` comment with the measured finding:
 
 ```ts
 // Measured against the 37-question Arcwright set on 2026-09-20: no threshold
@@ -743,9 +755,9 @@ depend on the old threshold and need judgement:
 
 | test | what to do |
 |---|---|
-| `loadGates > returns the shipped defaults when no gates.yaml is present` | drop `refusalRate` from the expectation |
-| `loadGates > reads overrides from <instance>/evals/gates.yaml` | drop the `refusalRate` override and its assertion |
-| `loadGates > keeps the reference evals/gates.yaml in sync with DEFAULT_GATES` | remove `refusalRate` from `evals/gates.yaml` at the team-ai repo root, so the file and the defaults agree again |
+| `loadGates > returns the shipped defaults when no gates.yaml is present` | drop all three demoted metrics from the expectation |
+| `loadGates > reads overrides from <instance>/evals/gates.yaml` | drop the demoted overrides and their assertions |
+| `loadGates > keeps the reference evals/gates.yaml in sync with DEFAULT_GATES` | remove all three demoted metrics from `evals/gates.yaml` at the team-ai repo root, so the file and the defaults agree again. **Stage that file in Step 8** — the test reads the working tree, so an unstaged fix passes locally and fails in CI |
 | `routeQuestion > matches keywords on word boundaries, not as interior substrings` | **leave the expectation alone.** It asserts `platform-sme`, and after Step 5 it gets it. Its purpose is to prove a keyword does not fire as an interior substring; changing it to expect `__refuse__` would record a regression as intended behaviour |
 | `routeQuestion > refuses when the stub search top hit is below the 0.2 threshold` | rewrite. "Below 0.2" is no longer a behaviour this code has. Change the stub's score to `0` and rename it to `refuses when the top hit is a non-match`, which is the behaviour that survives |
 
@@ -756,15 +768,17 @@ and ask — that distinction is the whole value of the suite.
 
 - [ ] **Step 7: Remove the stale instance override**
 
-Delete `refusalRate` from `team-ai/evals/gates.yaml` in the Arcwright instance,
-so the file does not claim to set a gate that no longer exists.
+Delete `refusalRate`, `routingAccuracy` and `namespaceAccuracy` from
+`team-ai/evals/gates.yaml` in the Arcwright instance, so the file does not
+claim to set gates that no longer exist. Task 7 rewrites this file later; its
+template has been kept in step with this change.
 
 - [ ] **Step 8: Run and commit**
 
 ```bash
 cd ../team-ai && npx vitest run src/evals/ && npm run build && cd -
 node ../team-ai/dist/cli.js run-evals --root team-ai
-cd ../team-ai && git add src/evals src/commands/run-evals.ts && git commit -m "fix(evals): refusal is a delivery-path judgement, not a lexical gate"
+cd ../team-ai && git add src/evals src/commands/run-evals.ts evals/gates.yaml && git commit -m "fix(evals): refusal is a delivery-path judgement, not a lexical gate"
 ```
 
 ---
@@ -787,8 +801,11 @@ cd ../team-ai && git add src/evals src/commands/run-evals.ts && git commit -m "f
 - [ ] Deleting an evidence phrase from its source makes that question uncovered
 - [ ] Questions whose source changed since `generated_on` are listed as needing review
 - [ ] Coverage is reported separately for read-everything and retrieval domains
+- [ ] `coverage` joins the gated set, which becomes exactly `hitRate`,
+      `citationValidity` and `coverage` — the three that describe whether the
+      knowledge base can answer
 
-**Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai` → prints a `coverage` row and a per-namespace table
+**Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai` → prints a `coverage` row and a per-namespace table, and `node ../team-ai/dist/cli.js run-evals --root team-ai --json | python -c "import sys,json;r=json.load(sys.stdin);print('gated:', sorted(r['gates']))"` → exactly `['citationValidity', 'coverage', 'hitRate']`
 
 **Steps:**
 
@@ -981,11 +998,13 @@ Edit `team-ai/evals/gates.yaml` to the measured values, rounded down to the near
 # team-ai/evals/baseline-2026-09-20.json and measured-2026-09-20.json.
 hitRate: <MEASURED>
 citationValidity: 1.0
-routingAccuracy: <MEASURED>
-refusalRate: 1.0
-namespaceAccuracy: <MEASURED>
 coverage: <MEASURED>
 ```
+
+Only these three are gated. `routingAccuracy`, `namespaceAccuracy` and
+`refusalRate` are diagnostics after Task 5 and must not reappear here —
+listing them would re-add gates that `GateThresholds` and `loadGates` no longer
+have, and silently undo Task 5.
 
 - [ ] **Step 3: Record the conditional-semantic decision**
 
@@ -1056,12 +1075,17 @@ git commit -m "test(evals): chunk size chosen by measurement"
 **Goal:** A domain whose whole corpus is small tells its agent to read everything; a large one tells it to use ranked search. Uniform strategy is wrong at both ends of a 232-to-609,458-token range.
 
 **Files:**
-- Modify: `src/emit/index.ts` (`EmitInput`, `loadEmitInput`)
+- Modify: `src/commands/emit.ts` (compute corpus sizes for the one path that needs them)
 - Modify: `src/emit/claude-code.ts` (`searchSection`)
 - Test: `src/emit/claude-code.test.ts`
 
 **Acceptance Criteria:**
-- [ ] `EmitInput` carries `corpusTokens: Record<string, number>` per namespace
+- [ ] `corpusTokens` is an option on the claude-code emitter, not a field on
+      `EmitInput`, and is computed only for `--target claude-code --builtin-search`
+- [ ] `loadEmitInput` still reads no knowledge base, so `mcp-only` and `generic`
+      emits keep working on an instance that has none
+- [ ] A missing or unreadable knowledge base fails loudly on the path that needs
+      it, and never silently reports zero tokens
 - [ ] An agent whose namespaces total under the threshold is told to read every document
 - [ ] An agent above it is told to run the ranked search command, scoped to its namespaces
 - [ ] The threshold is a named constant with the rationale in a comment
@@ -1106,13 +1130,29 @@ Expected: FAIL.
 
 - [ ] **Step 3: Add corpus sizes to the emit input**
 
-In `src/emit/index.ts`, add to `EmitInput`:
+**Do not put this on `EmitInput` and do not load it in `loadEmitInput`.**
+`commands/emit.ts` calls `loadEmitInput(dir)` once, before it dispatches on
+target, so a knowledge-base load there would make every `mcp-only` and
+`generic` emit fail on an instance that has no `kb/` — and would break the
+twelve existing emitter tests, whose fixture deliberately has none.
+
+Corpus size is needed by exactly one path: `--target claude-code` with
+`--builtin-search`. Scope the dependency to it.
+
+Add the map to `EmitClaudeCodeOptions` in `src/emit/claude-code.ts`:
 
 ```ts
-  corpusTokens: Record<string, number>;
+export interface EmitClaudeCodeOptions {
+  filePrefix?: string;
+  pluginManifest?: boolean;
+  builtinSearch?: boolean;
+  corpusTokens?: Record<string, number>;
+}
 ```
 
-and in `loadEmitInput`, after loading the manifest:
+Then in `src/commands/emit.ts`, compute it only on that path and fail loudly if
+the knowledge base cannot be read — a silent zero would tell a
+609,000-token domain to read its whole corpus:
 
 ```ts
 import { loadKb } from "../kb/loader.js";
@@ -1123,6 +1163,8 @@ import { resolveKbScope } from "../retrieval/index-lock.js";
 // nothing; the exact figure never matters, only which side of the threshold
 // a namespace falls.
 async function corpusTokensByNamespace(instanceDir: string): Promise<Record<string, number>> {
+  // Let a missing or unreadable KB throw. Reporting zero here would emit
+  // "read your whole corpus" instructions to a 609,000-token domain.
   const scope = resolveKbScope(instanceDir);
   const docs = await loadKb(scope.root, { exclude: scope.exclude });
   const out: Record<string, number> = {};
@@ -1135,7 +1177,35 @@ async function corpusTokensByNamespace(instanceDir: string): Promise<Record<stri
 }
 ```
 
-Make `loadEmitInput` async if it is not already, and thread the result through; update `src/commands/emit.ts` to await it.
+Call it from `run` in `src/commands/emit.ts`, only for the path that needs it:
+
+```ts
+  const corpusTokens =
+    target === "claude-code" && opts.builtinSearch === true
+      ? await corpusTokensByNamespace(dir)
+      : undefined;
+```
+
+and pass it through to `emitClaudeCode(input, outResolved, { ..., corpusTokens })`.
+
+In `searchSection`, treat an absent map as a programming error rather than an
+empty corpus:
+
+```ts
+  const sizes = corpusTokens ?? {};
+  const total = namespaces.reduce((sum, ns) => sum + (sizes[ns] ?? 0), 0);
+```
+
+is **wrong** — it silently yields the read-everything branch. Require it:
+
+```ts
+  if (corpusTokens === undefined) {
+    throw new Error("builtin-search emit requires corpus sizes; none were computed");
+  }
+```
+
+**The tests need no knowledge-base fixture.** They pass `corpusTokens` directly
+as an option, which is what the tests in Step 1 already assume.
 
 - [ ] **Step 4: Branch the search section**
 
@@ -1196,23 +1266,22 @@ function searchSection(agent: EmitAgent, corpusTokens: Record<string, number>): 
 }
 ```
 
-`frontMatter` receives a single agent (`EmitInput["agents"][number]`), not the
-whole `EmitInput`, so it has no `corpusTokens` of its own. Add a third
-parameter and thread it from `emitClaudeCode`:
+`frontMatter` receives a single agent (`EmitInput["agents"][number]`), and the
+corpus sizes now arrive on `opts`, so no extra parameter is needed — read
+them from the options it already has:
 
 ```ts
 function frontMatter(
   input: EmitInput["agents"][number],
   opts: EmitClaudeCodeOptions,
-  corpusTokens: Record<string, number>,
 ): string {
+  const body =
+    opts.builtinSearch === true
+      ? searchSection(input, opts.corpusTokens)
+      : input.instructions.trim();
 ```
 
-and at its call site inside `emitClaudeCode`, which does have the full input:
-
-```ts
-    const content = frontMatter(agent, opts, input.corpusTokens);
-```
+Its call site inside `emitClaudeCode` is unchanged.
 
 - [ ] **Step 5: Run to confirm all pass**
 
@@ -1279,11 +1348,13 @@ In `src/emit/claude-code.ts`, replace the body expression in `frontMatter`:
   // fabricate a tool call. The search section fully replaces them.
   const body =
     opts.builtinSearch === true
-      ? searchSection(input, corpusTokens)
+      ? searchSection(input, opts.corpusTokens)
       : input.instructions.trim();
 ```
 
-`corpusTokens` is the third parameter added to `frontMatter` in Task 9, Step 4.
+Task 9 already put `corpusTokens` on `EmitClaudeCodeOptions`, so this line is
+the same one that task leaves behind. If Task 9 is done, the only change here
+is deleting the `## Original instructions` concatenation around it.
 
 Also drop the now-false clause in `searchSection`'s `common` array: `"Use Read, Grep, and Glob to search it. The tool names under Original instructions are unavailable."` — Task 9 already replaced it per branch.
 
