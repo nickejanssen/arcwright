@@ -13,6 +13,7 @@
       "Bash(alembic revision:*)",
       "Bash(npm run typecheck:*)",
       "Bash(npm run build:*)",
+      "Bash(node ../team-ai/dist/cli.js search:*)",
       "Bash(git status:*)",
       "Bash(git diff:*)"
     ]
