@@ -201,6 +201,26 @@ the highest in the out-of-scope set. Retrieval was correct; the question had
 stopped being out-of-scope the moment it was documented. Golden questions and
 the corpus must stay disjoint, and the plan now checks it.
 
+**Task 7 post-fix measurement.** The committed baseline and the rebuilt
+evaluator report these results:
+
+| metric | before | after |
+|---|---:|---:|
+| hitRate | 48.5% | 48.5% |
+| citationValidity | 100.0% | 100.0% |
+| routingAccuracy | 24.3% | 24.3% |
+| refusalRate | 0.0% | 0.0% |
+| namespaceAccuracy | 35.1% | 35.1% |
+| coverage | not recorded | 97.0% |
+| tierCeiling | 100.0% | 100.0% |
+| questions | 37 | 37 |
+
+Hit rate is not adequate: it remains 48.5% against the 80% target. Semantic
+retrieval is therefore still conditionally needed for the domains that remain
+below target after Task 9's per-domain strategy measurement. It is not
+commissioned as a blanket change by this measurement; only the ranked-
+retrieval domains may justify it.
+
 ---
 
 ## M7 — What was built, and what the phase cost
