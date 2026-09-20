@@ -194,6 +194,14 @@ cd ../team-ai && git add schemas/golden.schema.json src/schema/types.ts src/sche
 - [ ] At least 3 questions spanning two domains
 - [ ] At least 5 questions grounded in code or specs rather than prose
 - [ ] Every domain with ≥ 1 document has ≥ 1 question
+- [ ] **No question appears verbatim anywhere under `docs/`.** A question
+      written into a design document, plan or spec becomes part of the corpus
+      being measured, and retrieval then finds the question rather than the
+      answer. This happened on 2026-09-20: an out-of-scope probe question was
+      quoted in the Phase B design and plan, and afterwards scored 0.773
+      against those two documents — the highest score in the whole
+      out-of-scope set. Eval questions and the corpus must stay disjoint, the
+      same separation a test set needs from training data
 - [ ] The baseline file records hitRate, refusalRate, routingAccuracy, namespaceAccuracy
 
 **Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai --json > team-ai/evals/baseline-2026-09-20.json; python -c "import json;d=json.load(open('team-ai/evals/baseline-2026-09-20.json'));print(d['metrics'])"` → prints the metric object
@@ -297,6 +305,25 @@ PY
 ```
 Expected: `reusing distinctive terms: 0`. Rephrase any that are listed and re-run.
 
+- [ ] **Step 4: Check for corpus contamination**
+
+```bash
+python - <<'EOF'
+import yaml, subprocess
+qs = yaml.safe_load(open('team-ai/evals/golden/arcwright.golden.yaml', encoding='utf-8'))
+bad = 0
+for q in qs:
+    hit = subprocess.run(['git', 'grep', '-l', '-F', q['question'], '--', 'docs'],
+                         capture_output=True, text=True).stdout.strip()
+    if hit:
+        print('CONTAMINATED:', q['id'], '->', hit.replace(chr(10), ', '))
+        bad += 1
+print('questions:', len(qs), 'appearing verbatim in the corpus:', bad)
+EOF
+```
+Expected: `appearing verbatim in the corpus: 0`. Rephrase any that are listed.
+Do not quote the replacements into any document under `docs/`.
+
 - [ ] **Step 4: Check category counts**
 
 ```bash
@@ -341,9 +368,9 @@ git commit -m "test(evals): Arcwright golden question set and pre-fix baseline"
 - Test: `src/retrieval/lexical.test.ts`
 
 **Acceptance Criteria:**
-- [ ] `sanitizeQuery` drops stopwords before building the FTS5 expression
+- [ ] `sanitizeQuery` uses the stopword list as a gate, not as a filter — every token still reaches the match expression
 - [ ] A query of only stopwords returns `null`, so search returns `[]`
-- [ ] A question's distinctive terms are preserved exactly
+- [ ] Hit rate does not regress against the Task 2 baseline — *Verify:* `run-evals` hitRate is at or above the recorded baseline
 - [ ] Existing lexical tests still pass
 
 **Verify:** `cd ../team-ai && npx vitest run src/retrieval/lexical.test.ts` → all pass
@@ -366,9 +393,8 @@ Add to `src/retrieval/lexical.test.ts`:
 import { LexicalAdapter, sanitizeQuery } from "./lexical.js";
 
 describe("sanitizeQuery", () => {
-  it("drops stopwords and keeps distinctive terms", () => {
-    expect(sanitizeQuery("How many weeks of paid parental leave does the company offer?"))
-      .toBe('"many" OR "weeks" OR "paid" OR "parental" OR "leave" OR "company" OR "offer"');
+  it("keeps every token when the query has at least one content word", () => {
+    expect(sanitizeQuery("the 429 errors")).toBe('"the" OR "429" OR "errors"');
   });
 
   it("returns null when every token is a stopword", () => {
@@ -380,7 +406,8 @@ describe("sanitizeQuery", () => {
   });
 
   it("keeps hyphenated and numeric terms", () => {
-    expect(sanitizeQuery("the 429 rate-limit errors")).toBe('"429" OR "rate-limit" OR "errors"');
+    expect(sanitizeQuery("the 429 rate-limit errors"))
+      .toBe('"the" OR "429" OR "rate-limit" OR "errors"');
   });
 });
 ```
@@ -395,10 +422,16 @@ Expected: the stopword tests FAIL — current output ORs every token.
 Replace `sanitizeQuery` in `src/retrieval/lexical.ts` with:
 
 ```ts
-// English function words carry no retrieval signal but dominate an OR query:
-// BM25 accumulates a contribution from every matched term, so a long natural
-// question of mostly common words outscores a short precise one. Dropping them
-// is what makes the score reflect relevance rather than sentence length.
+// A query made only of function words carries no retrieval intent and must
+// retrieve nothing. The list below is used as a GATE for that purpose — it is
+// deliberately NOT used to filter terms out of the match expression.
+//
+// Measured 2026-09-20 on the 37-question Arcwright set: filtering stopwords out
+// of the match cost 6.1 points of hit rate (48.5% -> 42.4%) and 8.1 points of
+// routing accuracy (24.3% -> 16.2%). BM25 already discounts common terms by
+// inverse document frequency, so removing them discards disambiguating context
+// and buys nothing. Gating on them preserves the "no content words retrieves
+// nothing" property at zero cost.
 const STOPWORDS = new Set([
   "a", "about", "an", "and", "any", "are", "as", "at", "be", "been", "but", "by",
   "can", "could", "did", "do", "does", "for", "from", "get", "had", "has", "have",
@@ -412,19 +445,24 @@ const STOPWORDS = new Set([
 
 // Turn arbitrary user text into a safe FTS5 MATCH string. FTS5 treats bare
 // punctuation and quotes as syntax and throws on malformed input, so we reduce
-// the query to alphanumeric/hyphen tokens, drop stopwords, quote each survivor,
-// and OR them together. Returns null when nothing meaningful survives — a query
-// with no content words should retrieve nothing, not everything.
+// the query to alphanumeric/hyphen tokens, quote each one, and OR them
+// together. Returns null when the query contains no content word at all — such
+// a query should retrieve nothing, not everything.
 export function sanitizeQuery(query: string): string | null {
   const tokens = query
     .split(/\s+/)
     .map((t) => t.replace(/[^\w-]/g, ""))
     .filter((t) => /\w/.test(t));
-  const content = tokens.filter((t) => !STOPWORDS.has(t.toLowerCase()));
-  if (content.length === 0) return null;
-  return content.map((t) => `"${t}"`).join(" OR ");
+  const hasContentWord = tokens.some((t) => !STOPWORDS.has(t.toLowerCase()));
+  if (!hasContentWord) return null;
+  return tokens.map((t) => `"${t}"`).join(" OR ");
 }
 ```
+
+**If you have already implemented the filtering version**, this is the
+correction: keep the gate (`hasContentWord`), and match on `tokens`, not on the
+filtered list. Re-run `run-evals` and confirm hit rate returns to the recorded
+baseline rather than sitting below it.
 
 - [ ] **Step 5: Run to confirm all pass**
 
@@ -556,75 +594,118 @@ cd ../team-ai && git add src/retrieval/lexical.ts src/retrieval/lexical.test.ts 
 
 ---
 
-### Task 5: Re-tune the refusal threshold from measurement
+### Task 5: Demote refusal to a diagnostic — lexical refusal is not achievable
 
 **Repository:** team-ai
 
-**Goal:** `REFUSE_THRESHOLD` separates in-scope from out-of-scope questions on a real corpus, replacing a constant tuned on a fixture with short queries.
+**Goal:** Stop gating CI on a metric that measurement shows cannot be satisfied
+lexically, and record why, so nobody re-attempts it.
+
+**This task replaces "re-tune the refusal threshold", whose premise was
+falsified on 2026-09-20.** Three mechanisms were tested on the 37-question
+Arcwright set. All three overlap completely between in-scope and out-of-scope
+questions:
+
+| mechanism | out-of-scope | in-scope | separable? |
+|---|---|---|---|
+| absolute top score | 0.547 – 0.773 | 0.525 – 0.686 | no |
+| peakedness (top ÷ mean of hits 2–8) | 1.088 – 1.436 | 1.026 – 1.278 | no |
+| content-word coverage | 0.67 – 1.00 | 0.80 – 1.00 | no |
+
+The reason is structural: 966,000 tokens of English prose contains nearly every
+common English word, so "what is the best recipe for a French dessert?" finds
+real matches for *recipe*, *best* and *traditional*. Only proper nouns miss.
+Term statistics cannot express "this corpus does not cover this question", and
+no threshold over them will.
+
+**Refusal still happens — in the delivery path, not here.** Emitted agents are
+instructed to read their documents and say so when those documents do not
+answer. That is a judgement over actual content, and it is measured by the
+Arcwright-side delegation eval in Task 19. `run-evals` measures the
+deterministic harness, which the design establishes is not what ships.
 
 **Files:**
-- Modify: `src/evals/run.ts` (`REFUSE_THRESHOLD`, around line 38)
-- Test: `src/evals/run.test.ts`
+- Modify: `src/evals/metrics.ts` (move `refusalRate` out of the gated metrics)
+- Modify: `src/evals/run.ts` (`DEFAULT_GATES`, `REFUSE_THRESHOLD` comment)
+- Modify: `src/commands/run-evals.ts` (print it under diagnostics)
+- Test: `src/evals/metrics.test.ts`
 
 **Acceptance Criteria:**
-- [ ] The threshold value is chosen from measured score distributions, and the two distributions are recorded in a comment
-- [ ] Every refusal question in the Arcwright set refuses
-- [ ] No in-scope question is wrongly refused
+- [ ] `refusalRate` is reported but no longer gates the run
+- [ ] It is printed under a "diagnostics" heading alongside `routingAccuracy`
+      and `namespaceAccuracy`, which the design already demotes for the same
+      reason
+- [ ] `REFUSE_THRESHOLD` carries a comment recording the three measured
+      distributions and why no value separates them
+- [ ] A run whose only failing metric is `refusalRate` exits 0
 
-**Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai --json | python -c "import sys,json;m=json.load(sys.stdin)['metrics'];print('refusalRate',m['refusalRate'])"` → `1.0`
+**Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai --json | python -c "import sys,json;r=json.load(sys.stdin);print('gated:', sorted(r['gates']))"` → `refusalRate` absent from the gated list
 
 **Steps:**
 
-- [ ] **Step 1: Measure both distributions**
+- [ ] **Step 1: Write the failing test**
 
-From the Arcwright checkout:
-
-```bash
-python - <<'PY'
-import subprocess,yaml,json
-qs=yaml.safe_load(open('team-ai/evals/golden/arcwright.golden.yaml',encoding='utf-8'))
-def top(q):
-    out=subprocess.run(["node","../team-ai/dist/cli.js","search",q,"--root","team-ai","--k","1","--json"],
-                       capture_output=True,text=True).stdout
-    hits=json.loads(out) if out.strip() else []
-    return hits[0]["score"] if hits else 0.0
-ins=[top(q['question']) for q in qs if q['expect_route']!='__refuse__']
-outs=[top(q['question']) for q in qs if q['expect_route']=='__refuse__']
-print("in-scope  min/median:", round(min(ins),3), round(sorted(ins)[len(ins)//2],3))
-print("out-scope max/median:", round(max(outs),3), round(sorted(outs)[len(outs)//2],3))
-PY
-```
-
-- [ ] **Step 2: Choose the threshold**
-
-Pick a value strictly between `out-scope max` and `in-scope min`. If those overlap, the scoring fix is insufficient — record that fact, choose the value that maximises correct decisions, and note it as evidence for the conditional semantic work (D-B2).
-
-- [ ] **Step 3: Apply it**
-
-In `src/evals/run.ts`, replace the constant, substituting the measured numbers:
+Add to `src/evals/metrics.test.ts`:
 
 ```ts
-// Tuned against the Arcwright corpus on 2026-09-20 after the scoring fix:
-// in-scope top hits ranged <MIN>..<MAX>; out-of-scope top hits peaked at <OUTMAX>.
-// A confident wrong route is worse than no answer, so the threshold sits above
-// the out-of-scope peak.
-const REFUSE_THRESHOLD = <CHOSEN>;
+it("reports refusalRate without gating on it", () => {
+  const outcomes = [
+    outcome({ id: "a", refuseExpected: true, refuseCorrect: false }),
+  ];
+  const report = computeReport(outcomes, DEFAULT_GATES);
+  expect(report.metrics.refusalRate).toBe(0);
+  expect(report.gates.refusalRate).toBeUndefined();
+  expect(report.pass).toBe(true);
+});
 ```
 
-Replace `<MIN>`, `<MAX>`, `<OUTMAX>` and `<CHOSEN>` with the numbers printed in Step 1.
+- [ ] **Step 2: Run to confirm failure**
 
-- [ ] **Step 4: Verify**
+Run: `cd ../team-ai && npx vitest run src/evals/metrics.test.ts`
+Expected: FAIL — `refusalRate` currently gates and the report fails.
+
+- [ ] **Step 3: Remove it from the gates**
+
+In `src/evals/run.ts`, drop `refusalRate` from `DEFAULT_GATES` and from the
+`GateThresholds` type, and from `loadGates`. Replace the `REFUSE_THRESHOLD`
+comment with the measured finding:
+
+```ts
+// Measured against the 37-question Arcwright set on 2026-09-20: no threshold
+// over term statistics separates answerable from unanswerable questions on a
+// ~966,000-token corpus. Out-of-scope top scores ran 0.547-0.773 against
+// in-scope 0.525-0.686; peakedness and content-word coverage overlap likewise.
+// A corpus this large contains nearly every common English word, so an
+// unrelated question still finds real matches. Refusal is a judgement over
+// retrieved content, made by the agent in the delivery path and measured by
+// the Arcwright-side delegation eval, not by this harness. The threshold below
+// only suppresses genuinely empty result sets.
+const REFUSE_THRESHOLD = 0.2;
+```
+
+- [ ] **Step 4: Print it as a diagnostic**
+
+In `src/commands/run-evals.ts`, move `refusalRate`, `routingAccuracy` and
+`namespaceAccuracy` out of the gated table into a diagnostics block printed
+after it, labelled:
+
+```ts
+  console.log("");
+  console.log("diagnostics (reported, not gated — these describe the");
+  console.log("deterministic harness, which is not the delivery path):");
+```
+
+- [ ] **Step 5: Remove the stale instance override**
+
+Delete `refusalRate` from `team-ai/evals/gates.yaml` in the Arcwright instance,
+so the file does not claim to set a gate that no longer exists.
+
+- [ ] **Step 6: Run and commit**
 
 ```bash
-cd ../team-ai && npm run build && cd -
+cd ../team-ai && npx vitest run src/evals/ && npm run build && cd -
 node ../team-ai/dist/cli.js run-evals --root team-ai
-```
-Expected: `refusalRate` is 100%.
-
-- [ ] **Step 5: Commit**
-
-```bash
-cd ../team-ai && git add src/evals/run.ts && git commit -m "fix(evals): tune refusal threshold against a real corpus"
+cd ../team-ai && git add src/evals src/commands/run-evals.ts && git commit -m "fix(evals): refusal is a delivery-path judgement, not a lexical gate"
 ```
 
 ---

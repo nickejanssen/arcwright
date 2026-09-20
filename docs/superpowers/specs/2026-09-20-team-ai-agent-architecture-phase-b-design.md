@@ -13,11 +13,11 @@ supersedes: []
 
 # team-ai Agent Architecture Phase B Design
 
-> Current version: v2.0
+> Current version: v2.1
 > Last updated: 2026-09-20
-> Status: Draft — awaiting founder review
+> Status: Approved. Amended during implementation by measurement — see *M6*.
 > Canonical path: `docs/superpowers/specs/2026-09-20-team-ai-agent-architecture-phase-b-design.md`
-> Parent spec: `docs/specs/0089-team-ai-agent-architecture.md` (v1.4)
+> Parent spec: `docs/specs/0089-team-ai-agent-architecture.md` (v1.5)
 
 ---
 
@@ -29,14 +29,16 @@ against the real repositories shows that list is organised by artifact type
 rather than by dependency, and that it defers the one thing everything else
 depends on.
 
-**The binding constraint is findability.** For a paraphrased question, the
-correct source document reaches the top eight results two times in nine.
-The cause is a scoring defect in team-ai's lexical retrieval, not a missing
-feature. Phase B fixes that first, re-measures, and only then decides whether
-semantic retrieval is needed at all.
+**The binding constraint is findability.** On the committed 37-question set the
+correct source document reaches the top eight results 48.5% of the time,
+against a target of 80%. Phase B first removes a scoring defect that made every
+score meaningless, re-measures, and only then decides whether semantic
+retrieval is needed — and for which domains.
 
-Version 2.0 replaces v1.0 of this document, which treated routing as the
-problem and deferred retrieval to Phase C.
+Version 2.0 replaced v1.0, which treated routing as the problem and deferred
+retrieval to Phase C. Version 2.1 records what implementation measured: the
+scoring fix does not by itself improve retrieval, and refusal is not achievable
+from term statistics at all. See *M6*.
 
 ---
 
@@ -146,6 +148,61 @@ than the cost of searching — yet still greps, reads, then paraphrases.
 Spec and plan creation draws on `docs/specs/` and `docs/roadmap/`, which are
 precisely the two largest and worst-served domains.
 
+## M6 — Amendment: the lexical fix does not improve retrieval, and refusal is not lexically achievable
+
+Added 2026-09-20 during implementation, against the committed 37-question set.
+Two findings overturn parts of this document; they are recorded here rather
+than quietly edited in.
+
+**The stopword fix as specified was a regression.**
+
+| metric | baseline | stopwords filtered out | stopwords used only as a gate |
+|---|---|---|---|
+| hitRate | 48.5% | 42.4% | 48.5% |
+| routingAccuracy | 24.3% | 16.2% | 24.3% |
+| namespaceAccuracy | 35.1% | 27.0% | 35.1% |
+
+BM25 already discounts common terms by inverse document frequency, so removing
+them discards disambiguating context and buys nothing. The corrected form uses
+the stopword list as a *gate* — a query with no content word retrieves
+nothing — while every token still reaches the match expression. That keeps
+the desirable property at no cost.
+
+Normalising by query term count is rank-preserving within a query, since the
+divisor is constant across that query's hits. It therefore cannot change hit
+rate, and did not. It remains correct and is kept: it is what makes scores
+comparable *between* queries.
+
+**Refusal cannot be decided from term statistics on this corpus.** Three
+mechanisms were measured; all three overlap completely:
+
+| mechanism | out-of-scope | in-scope | separable? |
+|---|---|---|---|
+| absolute top score | 0.547 – 0.773 | 0.525 – 0.686 | no |
+| peakedness (top ÷ mean of hits 2–8) | 1.088 – 1.436 | 1.026 – 1.278 | no |
+| content-word coverage | 0.67 – 1.00 | 0.80 – 1.00 | no |
+
+966,000 tokens of English prose contains nearly every common English word, so
+an unrelated question still finds genuine matches; only proper nouns miss. No
+threshold over term statistics can express "this corpus does not cover this
+question".
+
+This also corrects an inconsistency in v2.0: *routingAccuracy* and
+*namespaceAccuracy* were demoted to diagnostics because they describe the
+deterministic harness rather than the delivery path, but *refusalRate* was left
+as a gate despite describing the same harness. It is now a diagnostic too.
+Refusal in the delivery path is an agent reading its documents and saying they
+do not answer — a judgement over content, measured by the Arcwright-side
+delegation eval.
+
+**Eval-set contamination.** An out-of-scope probe question quoted verbatim in
+this document and in the plan afterwards scored 0.773 against those two files,
+the highest in the out-of-scope set. Retrieval was correct; the question had
+stopped being out-of-scope the moment it was documented. Golden questions and
+the corpus must stay disjoint, and the plan now checks it.
+
+---
+
 ---
 
 # Decisions
@@ -154,12 +211,24 @@ Approved by the founder on 2026-09-20.
 
 **D-B1 — Fix lexical scoring before buying retrieval infrastructure.** M1 is a
 defect, not a missing feature. Semantic embeddings would have hidden it and
-paid for it on every future query.
+paid for it on every future query. **Amended by M6:** the fix makes scores
+meaningful and comparable, which was its stated purpose, but it does not
+improve retrieval — hit rate is unchanged at 48.5%. Sequencing it first was
+still right: it cost little and it is what established that the remaining gap
+is not a scoring artefact.
 
 **D-B2 — Semantic retrieval is conditional, not scheduled.** After the scoring
 fix, hit rate is re-measured. Embeddings are commissioned only if the gap
-remains, and sized to the domains that still miss. This may remove most of
-Phase C's retrieval cost.
+remains, and sized to the domains that still miss.
+
+**The condition has now been evaluated (M6), and the gap remains:** hit rate is
+48.5% against a target of 80%, and the lexical levers are exhausted. But the
+decision waits for the per-domain strategy in Task 9, not for this measurement.
+Eleven of fourteen domains are small enough to read outright, where findability
+becomes 100% by construction and no retrieval runs at all. Only the three
+domains holding 94.7% of the corpus need ranked retrieval, so any embedding
+work should be scoped and justified against those three alone — measured
+after Task 9, not before.
 
 **D-B3 — Retrieval strategy is chosen per domain by corpus size.** Small
 domains read their whole corpus; large domains use ranked retrieval. Uniform
