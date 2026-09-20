@@ -5,7 +5,7 @@ Two checks:
 1. Reference integrity: every D-NNN and ADR-NNNN reference under docs/specs/
    and docs/roadmap/ resolves to a real record.
 2. Declared evidence: specs and roadmap tasks added in this change set carry a
-   `scope_evidence` front-matter field naming their approval record, or the
+   `x-scope-evidence` front-matter field naming their approval record, or the
    literal `none` meaning the document claims no new product scope.
 
 Detecting a scope claim is reading comprehension and out of reach for a
@@ -37,7 +37,7 @@ DECISION_REF = re.compile(r"\bD-(\d+)\b")
 ADR_REF = re.compile(r"\bADR[- ]?(\d{4})\b")
 ADR_PATH_REF = re.compile(r"docs/decisions/(\d{4})-")
 FRONT_MATTER = re.compile(r"\A---\r?\n(.*?)\r?\n---", re.DOTALL)
-SCOPE_EVIDENCE = re.compile(r"^scope_evidence:\s*(.+?)\s*$", re.MULTILINE)
+SCOPE_EVIDENCE = re.compile(r"^x-scope-evidence:\s*(.+?)\s*$", re.MULTILINE)
 
 
 def normalise(number: str) -> str:
@@ -116,7 +116,7 @@ def check_declared_evidence(base: str) -> list[str]:
         field = SCOPE_EVIDENCE.search(front.group(1)) if front else None
         if field is None:
             problems.append(
-                f"{rel}: new document has no `scope_evidence` field "
+                f"{rel}: new document has no `x-scope-evidence` field "
                 f"(name the approving record, or `none` if it claims no new product scope)"
             )
             continue
@@ -128,17 +128,17 @@ def check_declared_evidence(base: str) -> list[str]:
             cited = True
             if normalise(number) not in decisions:
                 problems.append(
-                    f"{rel}: scope_evidence cites D-{number}, which does not exist"
+                    f"{rel}: x-scope-evidence cites D-{number}, which does not exist"
                 )
         for number in set(ADR_REF.findall(value)) | set(ADR_PATH_REF.findall(value)):
             cited = True
             if number not in adrs:
                 problems.append(
-                    f"{rel}: scope_evidence cites ADR {number}, which does not exist"
+                    f"{rel}: x-scope-evidence cites ADR {number}, which does not exist"
                 )
         if not cited:
             problems.append(
-                f"{rel}: scope_evidence names no D-NNN or ADR reference and is not `none`"
+                f"{rel}: x-scope-evidence names no D-NNN or ADR reference and is not `none`"
             )
     return problems
 
