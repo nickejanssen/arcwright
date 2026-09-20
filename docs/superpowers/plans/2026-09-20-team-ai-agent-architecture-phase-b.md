@@ -1471,6 +1471,7 @@ Tag team-ai `v0.6.0` and update `.github/workflows/team-ai.yml`:
 - [ ] **Step 5: Confirm regeneration is stable and commit**
 
 ```bash
+git add .claude/agents          # snapshot the first emit; HEAD is not the baseline yet
 node ../team-ai/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
 git diff --exit-code -- .claude/agents && echo "stable"
 git add .claude/agents .claude/settings.json .github/workflows/team-ai.yml
@@ -2208,6 +2209,14 @@ on every invocation from then on rather than once.
 **This must land before Task 15 cuts the tag.** It is a framework change, so a
 tag cut before it gives CI an emitter that does not set `model`.
 
+> **Blocked pending founder decision D-B13.** Setting `model` puts a model alias
+> into every `.claude/agents/team-ai-*.md`. `AGENTS.md` says no model string may
+> appear "anywhere" outside `config/routing_table.json` and
+> `engine/routing/router.py`. Whether that rule reaches development tooling, or
+> governs only the product's runtime inference, is unsettled — the same
+> question left open as Q1 for the embedding model identifier. Do not implement
+> this task until D-B13 is recorded as approved.
+
 **Files:**
 - Modify (team-ai): `src/emit/claude-code.ts` (the `meta` object, around line 132)
 - Test (team-ai): `src/emit/claude-code.test.ts`
@@ -2226,7 +2235,7 @@ tag cut before it gives CI an emitter that does not set `model`.
 - [ ] Agents still load and answer — invoke one and confirm it returns a cited
       answer rather than erroring on unknown front matter
 
-**Verify:** `grep -L "^model:" .claude/agents/team-ai-*.md | wc -l` → `0`
+**Verify:** `grep -L "^model:" .claude/agents/team-ai-*.md | wc -l` → `0`, and D-B13 is recorded as approved in the design document before any of this runs
 
 **Steps:**
 
@@ -2306,6 +2315,7 @@ git diff --stat -- .claude/agents                           # expect 17 files, o
 Then confirm regeneration is stable:
 
 ```bash
+git add .claude/agents          # snapshot the first emit; HEAD is not the baseline yet
 node ../team-ai/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
 git diff --exit-code -- .claude/agents && echo stable
 ```

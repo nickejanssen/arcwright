@@ -259,6 +259,45 @@ reworded.** No exception list.
 
 **D-B11 — The dead `## Original instructions` block is no longer emitted.**
 
+**D-B13 — Emit the declared cost tier as a host `model`. PENDING founder
+decision; not approved.** Every domain declares `model_tier: small` and the
+router declares `none`, but that field is team-ai's own vocabulary and the host
+does not read it. No emitted agent sets `model`, so all 17 run on the session
+default — the most expensive option — while the architecture marks every
+one of them cheap-tier work. Principle 6 forbids exactly that.
+
+The founder approved adding the task on 2026-09-20. **What is not settled is
+the rule question it raises**, and an automated review of the plan flagged it:
+setting `model` puts a model alias into all 17 `.claude/agents/team-ai-*.md`
+files, and `AGENTS.md` states that no model string may appear *anywhere*
+outside `config/routing_table.json` and `engine/routing/router.py`, treating any
+violation as a bug.
+
+Two readings, and the founder decides which holds:
+
+1. **The rule governs the product's runtime inference.** Its purpose is
+   commercial — keeping model choice swappable for shipped features. Claude
+   Code subagents are development tooling: not shipped, not runtime, not part of
+   the product. Under this reading `.claude/` is outside the rule's scope, and
+   the same reasoning resolves Q1 for the embedding model identifier.
+2. **The rule is absolute as written.** "Anywhere" means anywhere, so emitting
+   `model` requires a narrow recorded exemption naming `.claude/agents/` and
+   nothing else.
+
+Either way the tier-to-alias mapping lives in team-ai's Claude Code emitter, so
+no model string enters Arcwright's own source or docs. A host-specific value
+belongs in the host-specific emitter.
+
+**Rejected as part of this:** unifying the mapping with
+`config/routing_table.json`. That file routes the *product's* task types —
+character dialogue, safety classification — to models at runtime. Which model
+answers a documentation question during development is a different concern, and
+merging them would couple the product's routing to a development tool.
+
+Reviewers also noted this is plan-only build scope until recorded. That is the
+gap this entry closes: Task 14b is blocked until this decision is marked
+approved.
+
 **D-B12 — The 17-to-8 topology question is deferred** to the coverage and
 usage evidence Phase B produces.
 
