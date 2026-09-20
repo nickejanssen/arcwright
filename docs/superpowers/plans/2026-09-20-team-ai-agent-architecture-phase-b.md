@@ -644,8 +644,10 @@ deterministic harness, which the design establishes is not what ships.
 **Acceptance Criteria:**
 - [ ] `refusalRate`, `routingAccuracy` and `namespaceAccuracy` are reported but
       none of them gates the run
-- [ ] All three print under a "diagnostics" heading; the gated set is exactly
-      `hitRate`, `citationValidity` and `coverage`
+- [ ] All three print under a "diagnostics" heading; the gated set after this
+      task is exactly `hitRate` and `citationValidity`. `coverage` is added by
+      Task 6 and must not be pulled forward — each task has to verify and
+      commit on its own
 - [ ] `REFUSE_THRESHOLD` carries a comment recording the three measured
       distributions and why no value separates them
 - [ ] A run whose only failing metrics are diagnostics exits 0
@@ -655,7 +657,7 @@ deterministic harness, which the design establishes is not what ships.
       reports 0 failures
 - [ ] The word-boundary routing test still expects `platform-sme`
 
-**Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai --json | python -c "import sys,json;r=json.load(sys.stdin);print('gated:', sorted(r['gates']))"` → exactly `['citationValidity', 'coverage', 'hitRate']`
+**Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai --json | python -c "import sys,json;r=json.load(sys.stdin);print('gated:', sorted(r['gates']))"` → exactly `['citationValidity', 'hitRate']`
 
 **Steps:**
 
@@ -799,8 +801,11 @@ cd ../team-ai && git add src/evals src/commands/run-evals.ts evals/gates.yaml &&
 - [ ] Deleting an evidence phrase from its source makes that question uncovered
 - [ ] Questions whose source changed since `generated_on` are listed as needing review
 - [ ] Coverage is reported separately for read-everything and retrieval domains
+- [ ] `coverage` joins the gated set, which becomes exactly `hitRate`,
+      `citationValidity` and `coverage` — the three that describe whether the
+      knowledge base can answer
 
-**Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai` → prints a `coverage` row and a per-namespace table
+**Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai` → prints a `coverage` row and a per-namespace table, and `node ../team-ai/dist/cli.js run-evals --root team-ai --json | python -c "import sys,json;r=json.load(sys.stdin);print('gated:', sorted(r['gates']))"` → exactly `['citationValidity', 'coverage', 'hitRate']`
 
 **Steps:**
 
