@@ -633,7 +633,7 @@ Arcwright-side delegation eval in Task 19. `run-evals` measures the
 deterministic harness, which the design establishes is not what ships.
 
 **Files:**
-- Modify: `src/evals/metrics.ts` (move `refusalRate` out of the gated metrics)
+- Modify: `src/evals/metrics.ts` (move the three harness metrics out of the gated set)
 - Modify: `src/evals/run.ts` (`DEFAULT_GATES`, `REFUSE_THRESHOLD` and its comparison)
 - Modify: `src/commands/run-evals.ts` (print it under diagnostics)
 - Modify: `evals/gates.yaml` (team-ai's own reference copy of the defaults)
@@ -642,18 +642,20 @@ deterministic harness, which the design establishes is not what ships.
   changes. Updating them is part of this change, not a widening of it.
 
 **Acceptance Criteria:**
-- [ ] `refusalRate` is reported but no longer gates the run
-- [ ] It is printed under a "diagnostics" heading alongside `routingAccuracy`
-      and `namespaceAccuracy`, which the design already demotes for the same
-      reason
+- [ ] `refusalRate`, `routingAccuracy` and `namespaceAccuracy` are reported but
+      none of them gates the run
+- [ ] All three print under a "diagnostics" heading; the gated set is exactly
+      `hitRate`, `citationValidity` and `coverage`
 - [ ] `REFUSE_THRESHOLD` carries a comment recording the three measured
       distributions and why no value separates them
-- [ ] A run whose only failing metric is `refusalRate` exits 0
+- [ ] A run whose only failing metrics are diagnostics exits 0
+- [ ] No `gates.yaml`, in the framework or the instance, names a metric that is
+      no longer gated
 - [ ] The whole `src/evals/` suite passes — *Verify:* `npx vitest run src/evals/`
       reports 0 failures
 - [ ] The word-boundary routing test still expects `platform-sme`
 
-**Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai --json | python -c "import sys,json;r=json.load(sys.stdin);print('gated:', sorted(r['gates']))"` → `refusalRate` absent from the gated list
+**Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai --json | python -c "import sys,json;r=json.load(sys.stdin);print('gated:', sorted(r['gates']))"` → exactly `['citationValidity', 'coverage', 'hitRate']`
 
 **Steps:**
 
@@ -678,11 +680,19 @@ it("reports refusalRate without gating on it", () => {
 Run: `cd ../team-ai && npx vitest run src/evals/metrics.test.ts`
 Expected: FAIL — `refusalRate` currently gates and the report fails.
 
-- [ ] **Step 3: Remove it from the gates**
+- [ ] **Step 3: Remove all three harness metrics from the gates**
 
-In `src/evals/run.ts`, drop `refusalRate` from `DEFAULT_GATES` and from the
-`GateThresholds` type, and from `loadGates`. Replace the `REFUSE_THRESHOLD`
-comment with the measured finding:
+`refusalRate`, `routingAccuracy` and `namespaceAccuracy` all describe the
+deterministic harness, which the design establishes is not the delivery path.
+Step 4 prints all three as diagnostics, so all three must leave the gate set —
+gating on a metric while labelling it "not gated" is the inconsistency this
+task exists to remove.
+
+In `src/evals/run.ts`, drop `refusalRate`, `routingAccuracy` and
+`namespaceAccuracy` from `DEFAULT_GATES`, from the `GateThresholds` type, and
+from `loadGates`. What remains gated is `hitRate`, `citationValidity` and
+`coverage` — the three that describe whether the knowledge base can answer.
+Replace the `REFUSE_THRESHOLD` comment with the measured finding:
 
 ```ts
 // Measured against the 37-question Arcwright set on 2026-09-20: no threshold
@@ -743,9 +753,9 @@ depend on the old threshold and need judgement:
 
 | test | what to do |
 |---|---|
-| `loadGates > returns the shipped defaults when no gates.yaml is present` | drop `refusalRate` from the expectation |
-| `loadGates > reads overrides from <instance>/evals/gates.yaml` | drop the `refusalRate` override and its assertion |
-| `loadGates > keeps the reference evals/gates.yaml in sync with DEFAULT_GATES` | remove `refusalRate` from `evals/gates.yaml` at the team-ai repo root, so the file and the defaults agree again |
+| `loadGates > returns the shipped defaults when no gates.yaml is present` | drop all three demoted metrics from the expectation |
+| `loadGates > reads overrides from <instance>/evals/gates.yaml` | drop the demoted overrides and their assertions |
+| `loadGates > keeps the reference evals/gates.yaml in sync with DEFAULT_GATES` | remove all three demoted metrics from `evals/gates.yaml` at the team-ai repo root, so the file and the defaults agree again. **Stage that file in Step 8** — the test reads the working tree, so an unstaged fix passes locally and fails in CI |
 | `routeQuestion > matches keywords on word boundaries, not as interior substrings` | **leave the expectation alone.** It asserts `platform-sme`, and after Step 5 it gets it. Its purpose is to prove a keyword does not fire as an interior substring; changing it to expect `__refuse__` would record a regression as intended behaviour |
 | `routeQuestion > refuses when the stub search top hit is below the 0.2 threshold` | rewrite. "Below 0.2" is no longer a behaviour this code has. Change the stub's score to `0` and rename it to `refuses when the top hit is a non-match`, which is the behaviour that survives |
 
@@ -756,15 +766,17 @@ and ask — that distinction is the whole value of the suite.
 
 - [ ] **Step 7: Remove the stale instance override**
 
-Delete `refusalRate` from `team-ai/evals/gates.yaml` in the Arcwright instance,
-so the file does not claim to set a gate that no longer exists.
+Delete `refusalRate`, `routingAccuracy` and `namespaceAccuracy` from
+`team-ai/evals/gates.yaml` in the Arcwright instance, so the file does not
+claim to set gates that no longer exist. Task 7 rewrites this file later; its
+template has been kept in step with this change.
 
 - [ ] **Step 8: Run and commit**
 
 ```bash
 cd ../team-ai && npx vitest run src/evals/ && npm run build && cd -
 node ../team-ai/dist/cli.js run-evals --root team-ai
-cd ../team-ai && git add src/evals src/commands/run-evals.ts && git commit -m "fix(evals): refusal is a delivery-path judgement, not a lexical gate"
+cd ../team-ai && git add src/evals src/commands/run-evals.ts evals/gates.yaml && git commit -m "fix(evals): refusal is a delivery-path judgement, not a lexical gate"
 ```
 
 ---
@@ -981,11 +993,13 @@ Edit `team-ai/evals/gates.yaml` to the measured values, rounded down to the near
 # team-ai/evals/baseline-2026-09-20.json and measured-2026-09-20.json.
 hitRate: <MEASURED>
 citationValidity: 1.0
-routingAccuracy: <MEASURED>
-refusalRate: 1.0
-namespaceAccuracy: <MEASURED>
 coverage: <MEASURED>
 ```
+
+Only these three are gated. `routingAccuracy`, `namespaceAccuracy` and
+`refusalRate` are diagnostics after Task 5 and must not reappear here —
+listing them would re-add gates that `GateThresholds` and `loadGates` no longer
+have, and silently undo Task 5.
 
 - [ ] **Step 3: Record the conditional-semantic decision**
 
