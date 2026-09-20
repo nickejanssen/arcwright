@@ -634,9 +634,12 @@ deterministic harness, which the design establishes is not what ships.
 
 **Files:**
 - Modify: `src/evals/metrics.ts` (move `refusalRate` out of the gated metrics)
-- Modify: `src/evals/run.ts` (`DEFAULT_GATES`, `REFUSE_THRESHOLD` comment)
+- Modify: `src/evals/run.ts` (`DEFAULT_GATES`, `REFUSE_THRESHOLD` and its comparison)
 - Modify: `src/commands/run-evals.ts` (print it under diagnostics)
+- Modify: `evals/gates.yaml` (team-ai's own reference copy of the defaults)
 - Test: `src/evals/metrics.test.ts`
+- Test: `src/evals/run.test.ts` — five tests here depend on what this task
+  changes. Updating them is part of this change, not a widening of it.
 
 **Acceptance Criteria:**
 - [ ] `refusalRate` is reported but no longer gates the run
@@ -646,6 +649,9 @@ deterministic harness, which the design establishes is not what ships.
 - [ ] `REFUSE_THRESHOLD` carries a comment recording the three measured
       distributions and why no value separates them
 - [ ] A run whose only failing metric is `refusalRate` exits 0
+- [ ] The whole `src/evals/` suite passes — *Verify:* `npx vitest run src/evals/`
+      reports 0 failures
+- [ ] The word-boundary routing test still expects `platform-sme`
 
 **Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai --json | python -c "import sys,json;r=json.load(sys.stdin);print('gated:', sorted(r['gates']))"` → `refusalRate` absent from the gated list
 
@@ -703,12 +709,57 @@ after it, labelled:
   console.log("deterministic harness, which is not the delivery path):");
 ```
 
-- [ ] **Step 5: Remove the stale instance override**
+- [ ] **Step 5: Correct the refusal threshold to match its new job**
+
+Task 4 divides BM25 relevance by the query's term count, which lowers every
+absolute score. `REFUSE_THRESHOLD = 0.2` was calibrated against the old scale,
+so a correctly-routed query can now fall under it. Verified on the fixture
+knowledge base: `routeQuestion("how does our cryptography key rotation work")`
+returns `__refuse__` at 0.2 and routes correctly to `platform-sme` at a
+near-zero threshold.
+
+Since refusal is no longer a lexical decision, the threshold's only remaining
+job is to suppress genuinely empty result sets. In `src/evals/run.ts`:
+
+```ts
+// Refusal is not decidable from term statistics (see the design document, M6),
+// so this no longer expresses "too weak to answer" — it only rejects a
+// non-match. `scoreFromBm25` returns exactly 0 when FTS5 reports no match, and
+// `sanitizeQuery` returns null for a query with no content word, so a strict
+// `>` here means: refuse when nothing matched at all, and otherwise route.
+const REFUSE_THRESHOLD = 0;
+```
+
+and change the comparison from `>=` to `>`:
+
+```ts
+  if (top !== undefined && top.score > REFUSE_THRESHOLD) {
+```
+
+- [ ] **Step 6: Update the five dependent tests in `src/evals/run.test.ts`**
+
+Three encode the old gate set and are a straightforward contract update. Two
+depend on the old threshold and need judgement:
+
+| test | what to do |
+|---|---|
+| `loadGates > returns the shipped defaults when no gates.yaml is present` | drop `refusalRate` from the expectation |
+| `loadGates > reads overrides from <instance>/evals/gates.yaml` | drop the `refusalRate` override and its assertion |
+| `loadGates > keeps the reference evals/gates.yaml in sync with DEFAULT_GATES` | remove `refusalRate` from `evals/gates.yaml` at the team-ai repo root, so the file and the defaults agree again |
+| `routeQuestion > matches keywords on word boundaries, not as interior substrings` | **leave the expectation alone.** It asserts `platform-sme`, and after Step 5 it gets it. Its purpose is to prove a keyword does not fire as an interior substring; changing it to expect `__refuse__` would record a regression as intended behaviour |
+| `routeQuestion > refuses when the stub search top hit is below the 0.2 threshold` | rewrite. "Below 0.2" is no longer a behaviour this code has. Change the stub's score to `0` and rename it to `refuses when the top hit is a non-match`, which is the behaviour that survives |
+
+**The rule for every one of these:** a test may be changed when it encodes a
+contract this task deliberately replaced. A test may never be changed to make a
+regression look intended. If you cannot say which of the two a failure is, stop
+and ask — that distinction is the whole value of the suite.
+
+- [ ] **Step 7: Remove the stale instance override**
 
 Delete `refusalRate` from `team-ai/evals/gates.yaml` in the Arcwright instance,
 so the file does not claim to set a gate that no longer exists.
 
-- [ ] **Step 6: Run and commit**
+- [ ] **Step 8: Run and commit**
 
 ```bash
 cd ../team-ai && npx vitest run src/evals/ && npm run build && cd -
