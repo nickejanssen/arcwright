@@ -261,8 +261,8 @@ One YAML list at `team-ai/evals/golden/arcwright.golden.yaml`. Paths in `expect_
   generated_on: "2026-09-20"
   answer_evidence: constrained by character knowledge state
 
-- id: eval.refuse.parental-leave
-  question: How many weeks of paid parental leave does the company offer?
+- id: eval.refuse.<topic>
+  question: <a question about something Arcwright holds no documents on>
   expect_namespace: ""
   expect_paths: []
   expect_route: __refuse__
@@ -270,6 +270,14 @@ One YAML list at `team-ai/evals/golden/arcwright.golden.yaml`. Paths in `expect_
   must_cite: false
   generated_on: "2026-09-20"
 ```
+
+The refusal entry is deliberately a placeholder. **Write your own, and do not
+paste it into any file under `docs/`.** A question recorded in a document
+becomes part of the corpus and stops being out-of-scope. The parental-leave
+question used during design is permanently burned for exactly this reason: it
+is quoted in this plan and in the design document as the record of a
+measurement that was taken, and that record must not be edited to make an old
+question legal again. Pick a different one.
 
 Rules while writing, per the design document:
 - Open each `source_path`, note its distinctive terms, and phrase the question without them.
