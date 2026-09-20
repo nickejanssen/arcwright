@@ -1664,6 +1664,7 @@ git commit -m "feat(checks): provider-leak-check with no exception list"
 **Goal:** Every cited decision id and ADR reference resolves to a real record, and newly added specs and roadmap tasks declare their approval evidence.
 
 **Files:**
+- Modify (team-ai): `schemas/frontmatter.schema.json`, `src/schema/validate.test.ts`
 - Create: `scripts/checks/scope_evidence_check.py`
 - Create: `scripts/checks/tests/test_scope_evidence_check.py`
 - Modify: `docs/specs/0000-template.md` (add the field)
@@ -1674,12 +1675,54 @@ git commit -m "feat(checks): provider-leak-check with no exception list"
 - [ ] Normalises zero-padding so `D-45` and `D-045` are the same id
 - [ ] Reports zero dangling references on the current tree
 - [ ] Fails on a fabricated `D-999`
-- [ ] Requires `scope_evidence` on files added against the base branch, accepting `none`
+- [ ] Requires `x-scope-evidence` on files added against the base branch, accepting `none`
+- [ ] `validate-kb` still passes on every document carrying the new field
 - [ ] Does not fail existing files that lack the field
 
 **Verify:** `python scripts/checks/scope_evidence_check.py --base main` → exit 0
 
 **Steps:**
+
+- [ ] **Step 0 (team-ai): let instances add their own front-matter fields**
+
+`schemas/frontmatter.schema.json` sets `additionalProperties: false`, so an
+instance cannot add any field of its own — `validate-kb` rejects the document.
+That is a framework limitation, not a problem with this field: every instance
+that ever wants its own metadata hits it.
+
+Fix it generically, reserving an `x-` prefix for instance extensions. Keep
+`additionalProperties: false` so a misspelled core field (`reviewby:`) is still
+caught — only keys that explicitly announce themselves as extensions are
+allowed through:
+
+```json
+  "patternProperties": {
+    "^x-[a-z0-9-]+$": {}
+  },
+```
+
+Add it alongside `properties` in `schemas/frontmatter.schema.json`. Do **not**
+add `scope-evidence` itself to the framework schema — Arcwright's approval
+process is instance content, and the framework must not learn about it.
+
+Test in `src/schema/validate.test.ts`:
+
+```ts
+it("allows instance extension fields under the x- prefix", () => {
+  expect(validate("frontmatter", { ...validFrontMatter(), "x-scope-evidence": "none" }).ok)
+    .toBe(true);
+});
+
+it("still rejects a misspelled core field", () => {
+  expect(validate("frontmatter", { ...validFrontMatter(), reviewby: "2027-01-01" }).ok)
+    .toBe(false);
+});
+```
+
+Verify: `cd ../team-ai && npx vitest run src/schema/ && npm run build`, then
+from Arcwright `node ../team-ai/dist/cli.js validate-kb --instance team-ai`.
+
+Commit in team-ai: `feat(kb): reserve the x- prefix for instance front-matter fields`
 
 - [ ] **Step 1: Write the failing test**
 
@@ -1744,7 +1787,7 @@ Two checks:
 1. Reference integrity — every D-NNN and ADR-NNNN reference under docs/specs/
    and docs/roadmap/ resolves to a real record.
 2. Declared evidence — specs and roadmap tasks added in this change set carry a
-   `scope_evidence` front-matter field naming their approval record, or the
+   `x-scope-evidence` front-matter field naming their approval record, or the
    literal `none` meaning the document claims no new product scope.
 
 Detecting a scope *claim* is reading comprehension and out of reach for a
@@ -1776,7 +1819,7 @@ DECISION_REF = re.compile(r"\bD-(\d+)\b")
 ADR_REF = re.compile(r"\bADR[- ]?(\d{4})\b")
 ADR_PATH_REF = re.compile(r"docs/decisions/(\d{4})-")
 FRONT_MATTER = re.compile(r"\A---\r?\n(.*?)\r?\n---", re.DOTALL)
-SCOPE_EVIDENCE = re.compile(r"^scope_evidence:\s*(.+?)\s*$", re.MULTILINE)
+SCOPE_EVIDENCE = re.compile(r"^x-scope-evidence:\s*(.+?)\s*$", re.MULTILINE)
 
 
 def normalise(number: str) -> str:
@@ -1848,7 +1891,7 @@ def check_declared_evidence(base: str) -> list[str]:
         field = SCOPE_EVIDENCE.search(front.group(1)) if front else None
         if field is None:
             problems.append(
-                f"{rel}: new document has no `scope_evidence` field "
+                f"{rel}: new document has no `x-scope-evidence` field "
                 f"(name the approving record, or `none` if it claims no new product scope)"
             )
             continue
@@ -1859,13 +1902,13 @@ def check_declared_evidence(base: str) -> list[str]:
         for number in DECISION_REF.findall(value):
             cited = True
             if normalise(number) not in decisions:
-                problems.append(f"{rel}: scope_evidence cites D-{number}, which does not exist")
+                problems.append(f"{rel}: x-scope-evidence cites D-{number}, which does not exist")
         for number in set(ADR_REF.findall(value)) | set(ADR_PATH_REF.findall(value)):
             cited = True
             if number not in adrs:
-                problems.append(f"{rel}: scope_evidence cites ADR {number}, which does not exist")
+                problems.append(f"{rel}: x-scope-evidence cites ADR {number}, which does not exist")
         if not cited:
-            problems.append(f"{rel}: scope_evidence names no D-NNN or ADR reference and is not `none`")
+            problems.append(f"{rel}: x-scope-evidence names no D-NNN or ADR reference and is not `none`")
     return problems
 
 
@@ -1907,12 +1950,12 @@ if __name__ == "__main__":
 In `docs/specs/0000-template.md` front matter, after `source: authored`:
 
 ```yaml
-scope_evidence: none
+x-scope-evidence: none
 ```
 
 with a line in the body under *References*:
 
-> **scope_evidence** — the approving record for any new product scope this spec
+> **x-scope-evidence** — the approving record for any new product scope this spec
 > claims (`D-NNN`, `ADR-NNNN`, or several). Use `none` when the document claims
 > no new product scope. Checked by `scripts/checks/scope_evidence_check.py`.
 
