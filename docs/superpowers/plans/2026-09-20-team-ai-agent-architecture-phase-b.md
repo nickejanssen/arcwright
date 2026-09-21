@@ -3108,6 +3108,9 @@ git commit -m "test(evals): delegation eval over the emitted agent descriptions"
 - [ ] The Q1 open question is resolved or explicitly restated
 - [ ] `AGENTS.md` states accurately which `.claude/` paths are tracked
 - [ ] `.github/copilot-instructions.md` matches `AGENTS.md` exactly
+- [ ] Spec 0089 carries a *Kill Criteria* section naming the conditions under
+      which the agent layer is cut back, and stating that Phase C is one thing
+      and there is no Phase D
 
 **Verify:** `diff <(sed -n '/^# Agent Operating Guide/,$p' AGENTS.md) <(sed -n '/^# Agent Operating Guide/,$p' .github/copilot-instructions.md)` → no output
 
@@ -3151,6 +3154,48 @@ that no longer apply — the workflow criterion in particular — with the
 `/doc-review` equivalent. Add the measured before-and-after numbers. Resolve
 Q1 with the decision recorded in the design document, or restate it if the
 conditional semantic work did not proceed.
+
+- [ ] **Step 3b: Record the kill criteria**
+
+Approved by the founder on 2026-09-20, to be written when Phase B closes. Add
+this section to `docs/specs/0089-team-ai-agent-architecture.md`, after
+*Approved Decisions*. The wording is settled — add it as given.
+
+```markdown
+# Kill Criteria
+
+Approved 2026-09-20, before the system was operated, while it was still easy to
+be honest. Adapted from team-ai's own design, section 21.
+
+The return on this system depends entirely on it being used. 17 agents, 449
+documents, a golden set and a measurement harness are sunk cost if nobody asks
+them anything. These conditions say when to cut back rather than extend.
+
+Reviewed at the end of each month of operation:
+
+- **The coverage gap log goes unread for a month** → cut the agent layer back.
+- **Hit rate sits below the ratcheted gate and no one is fixing documents**
+  → stop building retrieval. The corpus is the problem, not the machinery.
+- **Fewer than a handful of real SME questions a week, one month after Phase B
+  closes** → cut back to the three enforcement checkers and `/doc-review`.
+  Those pay for themselves without anyone asking them anything; the agent layer
+  does not.
+- **Measured cost per answer exceeds the time it saves** → stop.
+
+**The temporal graph is cancelled, not postponed, if** three months after the
+observation log starts collecting it shows no repeated cross-domain access
+patterns and freshness still reports zero stale documents. Three of its four
+stated uses — staleness propagation, gap detection, routing hints — have
+no data today, and the fourth is marginal.
+
+**Phase C is one thing:** semantic retrieval for the three domains that hold
+94.7% of the corpus, gated on hit rate. When that gate clears, the build is
+finished and the system is operated rather than extended. There is no Phase D.
+
+A stale knowledge base that answers confidently is worse than no knowledge base.
+These criteria and the gap log are what prevent that, and they only work if
+someone reads them.
+```
 
 - [ ] **Step 4: Verify the whole suite one more time**
 
