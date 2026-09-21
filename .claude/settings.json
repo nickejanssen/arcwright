@@ -13,8 +13,29 @@
       "Bash(alembic revision:*)",
       "Bash(npm run typecheck:*)",
       "Bash(npm run build:*)",
+      "Bash(python scripts/team_ai_cli.py search:*)",
       "Bash(git status:*)",
       "Bash(git diff:*)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [{ "type": "command", "command": "python scripts/hooks/block_generated_writes.py" }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [{ "type": "command", "command": "python scripts/hooks/record_observation.py" }]
+      }
+    ],
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "python scripts/hooks/snapshot_knowledge_state.py" }] }
+    ],
+    "SessionStart": [
+      { "hooks": [{ "type": "command", "command": "python scripts/hooks/inject_session_context.py" }] }
     ]
   }
 }

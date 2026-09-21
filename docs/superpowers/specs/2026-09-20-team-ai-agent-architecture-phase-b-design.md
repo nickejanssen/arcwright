@@ -201,6 +201,26 @@ the highest in the out-of-scope set. Retrieval was correct; the question had
 stopped being out-of-scope the moment it was documented. Golden questions and
 the corpus must stay disjoint, and the plan now checks it.
 
+**Task 7 post-fix measurement.** The committed baseline and the rebuilt
+evaluator report these results:
+
+| metric | before | after |
+|---|---:|---:|
+| hitRate | 48.5% | 48.5% |
+| citationValidity | 100.0% | 100.0% |
+| routingAccuracy | 24.3% | 24.3% |
+| refusalRate | 0.0% | 0.0% |
+| namespaceAccuracy | 35.1% | 35.1% |
+| coverage | not recorded | 97.0% |
+| tierCeiling | 100.0% | 100.0% |
+| questions | 37 | 37 |
+
+Hit rate is not adequate: it remains 48.5% against the 80% target. Semantic
+retrieval is therefore still conditionally needed for the domains that remain
+below target after Task 9's per-domain strategy measurement. It is not
+commissioned as a blanket change by this measurement; only the ranked-
+retrieval domains may justify it.
+
 ---
 
 ## M7 — What was built, and what the phase cost
@@ -706,7 +726,7 @@ and stops. Lives beside `/implement`, `/review-pr` and `/scribe`.
 - **Coverage will read low for thin domains.** That is the measurement working.
   The report must name which domains cover nothing, or a low number will be
   read as a broken check.
-- ~~Windows background detachment is unverified.~~ **Verified 2026-09-20:** the `Stop` hook returns in 216ms and the detached child writes the snapshot; `SessionStart` reads it in 219ms. The documented fallback is not needed.
+- **Windows background detachment is verified 2026-09-20 and is no longer a risk:** the `Stop` hook returns in 216ms and the detached child writes the snapshot; `SessionStart` reads it in 219ms. The documented fallback is not needed.
 - **Widening agent tool access** is a real boundary change, scoped to one
   command and listed for sign-off.
 - **The declared-evidence field can be filled carelessly.** The `none` value

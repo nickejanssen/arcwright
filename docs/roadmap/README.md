@@ -26,6 +26,9 @@ This split structure keeps Markdown as the human-editable source of truth while 
 - Markdown files in this directory are the canonical roadmap source of truth.
 - `index.json` is a lookup manifest for agents and scripts. It should match the Markdown files, but it is not authoritative over them.
 - If a split file and the architecture or PRD disagree, the architecture or PRD wins. Update the roadmap file.
+- New roadmap task documents must declare `x-scope-evidence` in front matter as
+  the approving `D-NNN` or `ADR-NNNN` record, or `none` when they claim no new
+  product scope. It is checked by `scripts/checks/scope_evidence_check.py`.
 
 ## GitHub Relationship
 

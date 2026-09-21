@@ -13,11 +13,11 @@ supersedes: []
 
 # team-ai Agent Architecture for Arcwright
 
-**Status**: Approved (design). Phase A implemented. Phase B designed, planned
-and approved 2026-09-20 with four boundary sign-offs; implementation in
-progress — 14 of 21 tasks committed, the framework not yet published.
+**Status**: Approved. Phase A implemented. Phase B completed 2026-09-20 as a
+21-task phase, with the model-based delegation eval deliberately cut and the
+framework resolver release still pending.
 
-**Version**: 1.6 | **Last updated**: 2026-09-20 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
+**Version**: 1.7 | **Last updated**: 2026-09-20 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
 
 **Author**: Claude (with founder) | **Date**: 2026-09-13
 
@@ -75,32 +75,36 @@ Delivered in three phases, each independently reviewable.
 
 Redesigned 2026-09-20 after measurement. The design of record is
 [`docs/superpowers/specs/2026-09-20-team-ai-agent-architecture-phase-b-design.md`](../superpowers/specs/2026-09-20-team-ai-agent-architecture-phase-b-design.md)
-(v2.1); the plan is
+(v3.0); the plan is
 [`docs/superpowers/plans/2026-09-20-team-ai-agent-architecture-phase-b.md`](../superpowers/plans/2026-09-20-team-ai-agent-architecture-phase-b.md).
 Where this section and that design differ, the design wins.
 
-- Fix the lexical scoring defect in team-ai, then re-measure. A query of pure
-  stopwords scored 0.731 and padding a question with meaningless words raised
-  its score, because every query token was joined with `OR`, BM25 accumulated
-  across common terms, and the score transform saturated. That one defect
-  explains refusal being impossible, hit rate at 22%, and routing accuracy at 0%
-- Choose retrieval strategy per domain by corpus size: eleven domains holding
-  5.3% of the corpus read their documents outright; the three holding 94.7% use
-  the ranked index that already exists and is currently unused
-- Three deterministic enforcement skills
-- Four Claude Code hooks, redesigned as a non-blocking loop rather than four
-  independent additions costing ~16 seconds per session
-- Golden question set, coverage metric, and ratcheted gates measuring hit rate
-  as the primary signal; a separate on-demand delegation eval on the Arcwright
-  side measures the path that actually ships
-- `/doc-review` slash command
+- Fixed the lexical scoring defect in team-ai and re-measured it. Stopword-only
+  queries now return no results, padding does not improve ranking, and query
+  scores are normalized by term count. Hit rate remained 48.5%.
+- Chose retrieval strategy per domain by corpus size: eleven domains holding
+  5.3% of the corpus read their documents outright; the three holding 94.7%
+  use the ranked index through the scoped search command.
+- Added three deterministic enforcement skills.
+- Added four Claude Code hooks as a non-blocking loop. Stop returns in 216ms
+  and SessionStart returns in 219ms.
+- Added the 37-question golden set, coverage metric, and ratcheted gates.
+  Coverage is 100%; hit rate is 48.5% against the 80% target, which is the
+  entire content of Phase C.
+- Added the `/doc-review` slash command, which reports stale or orphaned
+  documents and pauses for named approval before changes.
 
 **Dropped from Phase B**, with reasons recorded in the design:
 
-- Scored-router improvements — the scored router is not in the delivery path
+- Scored-router improvements — not in the delivery path
 - The `workflows` manifest section and any workflow engine — nothing would
-  execute the section, and the engine would be the largest item in the phase to
-  orchestrate a sequence runnable in one command
+  execute the section, and the engine would be the largest item in the phase
+- Semantic retrieval, unconditionally — conditional on post-fix measurement
+- Topology change from 17 agents to 8 — deferred to real-use evidence
+- A model-based delegation eval — D-B14; a proxy for what real use shows for
+  free
+- Corpus re-namespacing — a second migration over roughly 390 documents would
+  not fix scoring
 
 **Phase C — Temporal graph and hybrid retrieval**
 
@@ -481,30 +485,31 @@ rank fusion.
 - [ ] Every changed path is inside the approved layout: `team-ai/`, `.claude/agents/team-ai-*.md`, `docs/**` front-matter `namespace`/`id` lines, `AGENTS.md`, `.github/copilot-instructions.md`, `.gitignore`, and the CI workflow file
 - [ ] `docs/agents/`, `docs/skills/`, and every other file under `.claude/` are unchanged
 
-**Phase B** — superseded 2026-09-20 by the acceptance criteria in the Phase B
-design, which carries a verify command per criterion. Summarised here:
+**Phase B** — completed 2026-09-20. The design carries the detailed verify
+commands; the results below record the real outcome:
 
-- [ ] A pure-stopword query scores near zero, and padding a question with
+- [x] A pure-stopword query returns no results, and padding a question with
       meaningless words does not raise its score
-- [ ] Out-of-scope questions fall below the refusal threshold while in-scope
-      questions stay above it
-- [ ] Hit rate is measured before and after the scoring fix and both are recorded
-- [ ] Each domain's emitted agent states the retrieval strategy matching its
+- [x] Refusal remains a diagnostic rather than a lexical gate: term statistics
+      do not separate in-scope from out-of-scope questions on this corpus
+- [x] Hit rate is measured before and after the scoring fix: 48.5% before and
+      48.5% after
+- [x] Each domain's emitted agent states the retrieval strategy matching its
       corpus size; the three large domains can run the search command and nothing else
-- [ ] No emitted agent references `kb_manifest`, `kb_search` or `kb_coverage_gap`,
+- [x] No emitted agent references `kb_manifest`, `kb_search` or `kb_coverage_gap`,
       and regenerating produces no diff
-- [ ] `provider-leak-check` passes on the clean tree with no exception list, and
+- [x] `provider-leak-check` passes on the clean tree with no exception list, and
       fails on a planted provider string
-- [ ] `scope-evidence-check` reports zero dangling references, fails on a
+- [x] `scope-evidence-check` reports zero dangling references, fails on a
       fabricated decision id, and requires declared evidence on newly added
       specs and roadmap tasks only
-- [ ] `knowledge-query-guard` fails on a `character_dialogue` generation with no
+- [x] `knowledge-query-guard` fails on a `character_dialogue` generation with no
       preceding knowledge query, and does not flag narration or mini-game resolution
-- [ ] All four hooks fire, are individually disableable, and session stop is not delayed
-- [ ] Golden set of ≥ 30 paraphrased questions carrying source path, expected
+- [x] All four hooks fire, are individually disableable, and session stop is not delayed
+- [x] Golden set of ≥ 30 paraphrased questions carrying source path, expected
       domain, expected refuse, generation date and answer evidence; coverage
       reported per domain
-- [ ] `/doc-review` reports and pauses for approval without changing anything
+- [x] `/doc-review` reports and pauses for approval without changing anything
 
 **Two criteria from version 1.4 are withdrawn**, not merely unmet:
 `manifest.yaml` validating "with all four sections" and the
@@ -583,17 +588,11 @@ section and an engine to execute it, which Phase B does not build.
   internal documentation at development time is outside it, and needs no
   exemption. Original question retained below for the record.
 
-- **Q1 (original) — Where does the embedding model identifier live?** `AGENTS.md` and
-  `docs/README.md` forbid model strings outside the two routing files.
-  **Still open, and now conditional.** Phase B makes semantic retrieval
-  contingent on measurement (D-B2), so this may never need answering. If it
-  does, the Phase B design recommends a narrow decision record scoping the
-  provider-name rule to *runtime inference*, with the identifier in
-  `team-ai/index.lock`, which already carries an `embedding: null` slot. A local
-  embedding model indexing internal documentation at development time is neither
-  runtime inference nor a provider dependency, and putting it in
-  `config/routing_table.json` would place a documentation-index setting in the
-  runtime routing table. Not approved; decide only if the work proceeds.
+- **Q1 (original) — Where does the embedding model identifier live?** Historical
+  wording retained for traceability. D-B13 resolved the rule question: a local
+  embedding model used for development-time indexing belongs in
+  `team-ai/index.lock`, not the runtime routing table, if Phase C proceeds. Phase
+  B did not commission semantic retrieval unconditionally.
 
 ---
 
@@ -683,6 +682,48 @@ under `team-ai/agents/` and registered with `source: authored`. No group-SME
 generation is added to team-ai.
 
 **Layout — approved 2026-09-13**, as specified in *Generated file layout*.
+
+---
+
+# Kill Criteria
+
+Approved 2026-09-20, before the system was operated, while it was still easy to
+be honest. Adapted from team-ai's own design, section 21.
+
+The return on this system depends entirely on it being used. 17 agents, 449
+documents, a golden set and a measurement harness are sunk cost if nobody asks
+them anything. These conditions say when to cut back rather than extend.
+
+Reviewed at the end of each month of operation:
+
+- **The coverage gap log goes unread for a month** → cut the agent layer back.
+- **Hit rate sits below the ratcheted gate and no one is fixing documents**
+  → stop building retrieval. The corpus is the problem, not the machinery.
+- **Fewer than a handful of real SME questions a week, one month after Phase B
+  closes** → cut back to the three enforcement checkers and `/doc-review`.
+  Those pay for themselves without anyone asking them anything; the agent layer
+  does not.
+- **Measured cost per answer exceeds the time it saves** → stop.
+
+**The temporal graph is cancelled, not postponed, if** three months after the
+observation log starts collecting it shows no repeated cross-domain access
+patterns and freshness still reports zero stale documents. Three of its four
+stated uses — staleness propagation, gap detection, routing hints — have
+no data today, and the fourth is marginal.
+
+**Phase C is one thing:** semantic retrieval for the three domains that hold
+94.7% of the corpus, gated on hit rate. When that gate clears, the build is
+finished and the system is operated rather than extended. There is no Phase D.
+
+A stale knowledge base that answers confidently is worse than no knowledge base.
+These criteria and the gap log are what prevent that, and they only work if
+someone reads them.
+
+**Delegation quality** is assessed from real use and the observation log,
+reviewed at the one-month mark alongside these criteria. If SME questions are
+being asked and the wrong agent is picked repeatedly, that is the evidence for
+the 17-to-8 topology decision. If no questions are being asked, that decision is
+moot and the agent layer is cut back under the criteria above.
 
 ---
 

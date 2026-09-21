@@ -1,0 +1,412 @@
+# Golden question set for Arcwright. Generated once, committed, refreshed when
+# the knowledge base changes. See docs/superpowers/plans/2026-09-20-team-ai-agent-architecture-phase-b.md
+#
+# Two rules learned the hard way, both enforced by the coverage metric:
+#
+#  1. answer_evidence must be a LITERAL substring of the raw source file. It
+#     must not span markdown markup: "**Current canonical source:**" means the
+#     substring "Current canonical source: Checkpoint" does not exist.
+#  2. Source evidence from stable canonical documents, not from a phase's own
+#     planning documents. A question sourced from a spec being actively
+#     rewritten breaks as soon as someone edits a sentence.
+#
+# Never lower the coverage gate to make a run pass. A failure names the question;
+# fix the question or the document.
+- id: eval.arc.execution-output
+  question: What does the core session component produce instead of rendering a surface?
+  expect_namespace: arc-execution
+  expect_paths: [architecture/03-arc-execution.md]
+  expect_route: arc-execution-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/03-arc-execution.md
+  generated_on: "2026-09-20"
+  answer_evidence: It does not render anything.
+
+- id: eval.arc.initial-state
+  question: Where does the first state for every experience come from?
+  expect_namespace: arc-execution
+  expect_paths: [architecture/03-arc-execution.md]
+  expect_route: arc-execution-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/03-arc-execution.md
+  generated_on: "2026-09-20"
+  answer_evidence: arc_definition.beats[0].beat_id
+
+- id: eval.character.pre-generation
+  question: What must happen before a system-controlled guest produces a reply?
+  expect_namespace: character-behavior
+  expect_paths: [architecture/07-character-behavior.md]
+  expect_route: character-behavior-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/07-character-behavior.md
+  generated_on: "2026-09-20"
+  answer_evidence: Query knowledge state.
+
+- id: eval.character.profile
+  question: How is each participant's inner life represented for the session?
+  expect_namespace: character-behavior
+  expect_paths: [architecture/07-character-behavior.md]
+  expect_route: character-behavior-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/07-character-behavior.md
+  generated_on: "2026-09-20"
+  answer_evidence: a structured JSON object stored in the `characters` table
+
+- id: eval.api.delivery-layer
+  question: What do builders attach to their chosen delivery layer?
+  expect_namespace: developer-api
+  expect_paths: [architecture/09-developer-api.md]
+  expect_route: developer-api-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/09-developer-api.md
+  generated_on: "2026-09-20"
+  answer_evidence: surface-agnostic event stream
+
+- id: eval.practice.canonical-docs
+  question: Which document tells agents to prefer current material over historical material?
+  expect_namespace: engineering-practice
+  expect_paths: [README.md]
+  expect_route: engineering-practice-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: README.md
+  generated_on: "2026-09-20"
+  answer_evidence: Prefer canonical current docs over archived exports or superseded design documents.
+
+- id: eval.practice.phase-b-measurement
+  question: What does the agent-architecture work use to judge whether the right material is found?
+  expect_namespace: engineering-practice
+  expect_paths: [specs/0089-team-ai-agent-architecture.md]
+  expect_route: engineering-practice-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: specs/0089-team-ai-agent-architecture.md
+  generated_on: "2026-09-20"
+  answer_evidence: coverage metric, and ratcheted gates
+
+- id: eval.knowledge.three-facts
+  question: Which three facts does the shared record keep about what a person knows?
+  expect_namespace: knowledge-graph
+  expect_paths: [architecture/04-knowledge-graph.md]
+  expect_route: knowledge-graph-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/04-knowledge-graph.md
+  generated_on: "2026-09-20"
+  answer_evidence: what does this character know, when did they learn it, and who told them?
+
+- id: eval.knowledge.mandatory-query
+  question: Is the information lookup before a generated character response optional?
+  expect_namespace: knowledge-graph
+  expect_paths: [architecture/04-knowledge-graph.md]
+  expect_route: knowledge-graph-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/04-knowledge-graph.md
+  generated_on: "2026-09-20"
+  answer_evidence: This query is mandatory.
+
+- id: eval.routing.single-place
+  question: Where do all artificial-intelligence calls go before a choice is made?
+  expect_namespace: model-routing
+  expect_paths: [architecture/06-model-routing.md]
+  expect_route: model-routing-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/06-model-routing.md
+  generated_on: "2026-09-20"
+  answer_evidence: all AI calls pass through one place
+
+- id: eval.routing.cost-decision
+  question: When should the platform consider running its own model infrastructure?
+  expect_namespace: model-routing
+  expect_paths: [architecture/13-cost-model.md]
+  expect_route: model-routing-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/13-cost-model.md
+  generated_on: "2026-09-20"
+  answer_evidence: Evaluate self-hosting at the H2-to-H3 transition when actual session volume is known.
+
+- id: eval.daily-case.cadence
+  question: How long does the planned experience last?
+  expect_namespace: daily-case
+  expect_paths: [story-bibles/daily-case.md]
+  expect_route: daily-case-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: story-bibles/daily-case.md
+  generated_on: "2026-09-20"
+  answer_evidence: one week, seven calendar days
+
+- id: eval.monster-rpg.story-shape
+  question: Does the experience have one predetermined story to finish?
+  expect_namespace: monster-rpg
+  expect_paths: [story-bibles/monster-rpg.md]
+  expect_route: monster-rpg-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: story-bibles/monster-rpg.md
+  generated_on: "2026-09-20"
+  answer_evidence: There is no single fixed story to complete.
+
+- id: eval.nightcap.authority
+  question: What does the current experience package identify as its source of truth?
+  expect_namespace: nightcap
+  expect_paths: [gdd/nightcap/00-governance/01-master-gdd-index.md]
+  expect_route: nightcap-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: gdd/nightcap/00-governance/01-master-gdd-index.md
+  generated_on: "2026-09-20"
+  answer_evidence: "Checkpoint 05 / Session B / Decisions 1–17 / Structured Reconstruction"
+
+- id: eval.nightcap.runtime-contract
+  question: Who resolves the authored state and events in the current runtime?
+  expect_namespace: nightcap
+  expect_paths: [gdd/nightcap/00-governance/02-current-design-state.md]
+  expect_route: nightcap-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: gdd/nightcap/00-governance/02-current-design-state.md
+  generated_on: "2026-09-20"
+  answer_evidence: Arcwright deterministically resolves authored state
+
+- id: eval.couch-race.archive
+  question: Should the old variant document be treated as the current design authority?
+  expect_namespace: nightcap-couch-race
+  expect_paths: [story-bibles/nightcap-couch-race.md]
+  expect_route: title-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: story-bibles/nightcap-couch-race.md
+  generated_on: "2026-09-20"
+  answer_evidence: Do not use this file as current Nightcap design authority.
+
+- id: eval.playtest.telemetry-required
+  question: When must instrumentation be live relative to the first session with a real player?
+  expect_namespace: playtest-ops
+  expect_paths: [architecture/11-telemetry.md]
+  expect_route: playtest-ops-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/11-telemetry.md
+  generated_on: "2026-09-20"
+  answer_evidence: Telemetry must be live before a single real-user session runs.
+
+- id: eval.playtest.events-append-only
+  question: Can the primary record of session events be edited after it is written?
+  expect_namespace: playtest-ops
+  expect_paths: [architecture/11-telemetry.md]
+  expect_route: playtest-ops-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/11-telemetry.md
+  generated_on: "2026-09-20"
+  answer_evidence: The `events` table is append-only.
+
+- id: eval.product-roadmap.authority
+  question: What should happen when an old delivery plan conflicts with current game design?
+  expect_namespace: product-roadmap
+  expect_paths: [roadmap/00-overview.md]
+  expect_route: product-roadmap-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: roadmap/00-overview.md
+  generated_on: "2026-09-20"
+  answer_evidence: treat that as reconciliation work rather than silently following the older rule
+
+- id: eval.safety.arc-cannot-disable
+  question: Can an authored scenario switch off the platform protections?
+  expect_namespace: safety
+  expect_paths: [architecture/10-content-safety.md]
+  expect_route: safety-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/10-content-safety.md
+  generated_on: "2026-09-20"
+  answer_evidence: safety constraints are enforced at the engine layer and cannot be bypassed by arc configuration.
+
+- id: eval.safety.hard-stop
+  question: What happens when a deterministic prohibited-input check fires?
+  expect_namespace: safety
+  expect_paths: [architecture/10-content-safety.md]
+  expect_route: safety-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/10-content-safety.md
+  generated_on: "2026-09-20"
+  answer_evidence: The player receives no error message that reveals the safety trigger
+
+- id: eval.session.resume-state
+  question: What information must remain available after a pause so play can continue?
+  expect_namespace: session-runtime
+  expect_paths: [architecture/05-session-persistence.md]
+  expect_route: session-runtime-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/05-session-persistence.md
+  generated_on: "2026-09-20"
+  answer_evidence: Session state is everything that needs to survive an interruption
+
+- id: eval.session.nearest-boundary
+  question: Where does the system resume instead of restarting in the middle of a scene?
+  expect_namespace: session-runtime
+  expect_paths: [architecture/05-session-persistence.md]
+  expect_route: session-runtime-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/05-session-persistence.md
+  generated_on: "2026-09-20"
+  answer_evidence: the nearest completed beat boundary
+
+- id: eval.practice.review-phases
+  question: Which three phases organize the review checks?
+  expect_namespace: engineering-practice
+  expect_paths: [specs/0001-review-checklist-convention.md]
+  expect_route: engineering-practice-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: specs/0001-review-checklist-convention.md
+  generated_on: "2026-09-20"
+  answer_evidence: pre-diff, in-diff, and pre-merge review checks
+
+- id: eval.practice.commit-security
+  question: What causes a commit to fail in the repository setup?
+  expect_namespace: engineering-practice
+  expect_paths: [specs/0002-pre-commit-hook-setup.md]
+  expect_route: engineering-practice-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: specs/0002-pre-commit-hook-setup.md
+  generated_on: "2026-09-20"
+  answer_evidence: Commits fail if gitleaks detects secrets
+
+- id: eval.practice.ci-trigger
+  question: Which repository events start the main automation checks?
+  expect_namespace: engineering-practice
+  expect_paths: [specs/0003-ci-and-codeql-workflows.md]
+  expect_route: engineering-practice-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: specs/0003-ci-and-codeql-workflows.md
+  generated_on: "2026-09-20"
+  answer_evidence: on pushes to `main` and on pull requests
+
+- id: eval.practice.eval-blocking
+  question: Does the first check stop a pull request?
+  expect_namespace: engineering-practice
+  expect_paths: [specs/0004-initial-eval-harness.md]
+  expect_route: engineering-practice-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: specs/0004-initial-eval-harness.md
+  generated_on: "2026-09-20"
+  answer_evidence: does not fail the PR on eval regressions
+
+- id: eval.practice.package-boundaries
+  question: How are the engine and API dependencies separated in the repository setup?
+  expect_namespace: engineering-practice
+  expect_paths: [specs/0009-aw-101-repository-structure-and-python-project-setup.md]
+  expect_route: engineering-practice-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: specs/0009-aw-101-repository-structure-and-python-project-setup.md
+  generated_on: "2026-09-20"
+  answer_evidence: gives `engine/` and `api/` their own package manifests
+
+- id: eval.practice.orm-source
+  question: What is the authoritative input for generating the database migration?
+  expect_namespace: engineering-practice
+  expect_paths: [specs/0011-aw-103-sqlalchemy-orm-models.md]
+  expect_route: engineering-practice-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: specs/0011-aw-103-sqlalchemy-orm-models.md
+  generated_on: "2026-09-20"
+  answer_evidence: the sole source of truth for Alembic autogenerate
+
+- id: eval.session.surface-targets
+  question: How does delivery keep a private item from reaching the wrong participant?
+  expect_namespace: session-runtime
+  expect_paths: [architecture/08-event-system.md]
+  expect_route: session-runtime-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/08-event-system.md
+  generated_on: "2026-09-20"
+  answer_evidence: delivers it to exactly the right place
+
+- id: eval.cross.knowledge-character
+  question: Can a generated response mention facts outside the allowed state?
+  expect_namespace: knowledge-graph
+  expect_paths: [architecture/04-knowledge-graph.md, architecture/07-character-behavior.md]
+  expect_route: knowledge-graph-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/04-knowledge-graph.md
+  generated_on: "2026-09-20"
+  answer_evidence: the AI is explicitly told what this character knows and what they do not.
+
+- id: eval.cross.arc-session
+  question: How are a live experience and a pause kept coherent when work is in progress?
+  expect_namespace: arc-execution
+  expect_paths: [architecture/03-arc-execution.md, architecture/05-session-persistence.md]
+  expect_route: arc-execution-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/03-arc-execution.md
+  generated_on: "2026-09-20"
+  answer_evidence: The coordinator never blocks.
+
+- id: eval.cross.routing-practice
+  question: Where can a change to the model selection policy be made without changing every caller?
+  expect_namespace: model-routing
+  expect_paths: [architecture/06-model-routing.md, architecture/13-cost-model.md]
+  expect_route: model-routing-sme
+  expect_tier_max: small
+  must_cite: true
+  source_path: architecture/06-model-routing.md
+  generated_on: "2026-09-20"
+  answer_evidence: a routing table update is a config file change, not a code deployment.
+
+- id: eval.refuse.passport-renewal
+  question: What documents are needed to renew a passport for a child in Spain?
+  expect_namespace: ""
+  expect_paths: []
+  expect_route: __refuse__
+  expect_tier_max: small
+  must_cite: false
+  generated_on: "2026-09-20"
+
+- id: eval.refuse.weather
+  question: What will the weather be tomorrow in Copenhagen?
+  expect_namespace: ""
+  expect_paths: []
+  expect_route: __refuse__
+  expect_tier_max: small
+  must_cite: false
+  generated_on: "2026-09-20"
+
+- id: eval.refuse.stock
+  question: Which public company will have the highest share price next month?
+  expect_namespace: ""
+  expect_paths: []
+  expect_route: __refuse__
+  expect_tier_max: small
+  must_cite: false
+  generated_on: "2026-09-20"
+
+- id: eval.refuse.recipe
+  question: What is the best recipe for a traditional French dessert?
+  expect_namespace: ""
+  expect_paths: []
+  expect_route: __refuse__
+  expect_tier_max: small
+  must_cite: false
+  generated_on: "2026-09-20"

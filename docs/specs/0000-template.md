@@ -7,6 +7,7 @@ status: active
 review_by: "2027-01-13"
 sensitivity: internal
 source: authored
+x-scope-evidence: none
 tags: []
 supersedes: []
 ---
@@ -25,6 +26,10 @@ supersedes: []
 - Architecture sections: [Link]
 - Related specs: [Link]
 - PRD sections: [Link]
+
+**x-scope-evidence**: the approving record for any new product scope this spec
+claims (`D-NNN`, `ADR-NNNN`, or several). Use `none` when the document claims
+no new product scope. Checked by `scripts/checks/scope_evidence_check.py`.
 
 ---
 

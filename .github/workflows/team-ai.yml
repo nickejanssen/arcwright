@@ -11,12 +11,19 @@ permissions:
 jobs:
   team-ai:
     runs-on: ubuntu-latest
+    env:
+      # CI checks the framework out to .team-ai-cli/, not beside the repository,
+      # so the resolver's sibling search cannot find it. TEAM_AI_CLI is the
+      # documented override and exercising it here keeps that path tested.
+      TEAM_AI_CLI: .team-ai-cli/dist/cli.js
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/checkout@v4
         with:
           repository: nickejanssen/team-ai
-          ref: v0.4.0
+          ref: v0.6.3
           path: .team-ai-cli
       - uses: actions/setup-node@v4
         with:
@@ -27,8 +34,25 @@ jobs:
       - run: node .team-ai-cli/dist/cli.js validate-manifest --root team-ai
       - name: emitted subagents match regeneration
         run: |
-          node .team-ai-cli/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
+          # --search-command must match what the committed agents were emitted with,
+          # or this check regenerates them with the framework default and fails.
+          node .team-ai-cli/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked --search-command "python scripts/team_ai_cli.py"
           git diff --exit-code -- .claude/agents
       - name: no prior-namespace ids survive
         run: |
           ! git grep -n -E '^[[:space:]]*id:[[:space:]]*"?(operating|patterns|playbooks|custom|decisions|platform|unmapped)\.' -- . ':!docs/archive' ':!adoption-plan.yaml' ':!docs/adoption-plan.md' ':!team-ai/remap-proposal.yaml' ':!team-ai/inventory.txt' ':!.team-ai-cli'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - name: python test dependencies
+        run: python -m pip install --quiet pytest
+      - name: checker unit tests
+        run: python -m pytest scripts/checks/tests/ scripts/hooks/tests/ scripts/tests/ -q
+      - name: provider-leak-check
+        run: python scripts/checks/provider_leak_check.py
+      - name: knowledge-query-guard
+        run: python scripts/checks/knowledge_query_guard.py
+      - name: scope-evidence-check
+        run: python scripts/checks/scope_evidence_check.py --base origin/${{ github.base_ref || 'main' }}
+      - name: eval gate
+        run: node .team-ai-cli/dist/cli.js run-evals --root team-ai
