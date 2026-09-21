@@ -42,7 +42,7 @@ supersedes: []
 |---|---|
 | Arcwright checkout | the working directory |
 | team-ai checkout | `../team-ai` (adjust if yours differs; confirm with `ls ../team-ai/package.json`) |
-| team-ai CLI, built | `node ../team-ai/dist/cli.js` |
+| team-ai CLI | `python scripts/team_ai_cli.py` — resolves the framework from any checkout, including a worktree (Task 16b). Never hardcode `../team-ai`: it is correct only in the main checkout |
 
 Build team-ai once before starting: `cd ../team-ai && npm ci && npm run build`
 
@@ -79,6 +79,16 @@ Build team-ai once before starting: `cd ../team-ai && npm ci && npm run build`
 ---
 
 ## Part 1 — Retrieval correctness
+
+> **Never hardcode the framework's path.** `../team-ai` resolves only in the
+> main checkout; every agent session here runs in a git worktree, where the
+> repository's parent is the worktree container. Use
+> `python scripts/team_ai_cli.py` — in commands you run, in scripts that ship,
+> in hook error messages, in slash commands, and in the settings permission. The
+> only exception is team-ai's own emitter default, which must keep working for
+> instances that have no resolver of their own. *Verify before every commit:*
+> `grep -rn "\.\./team-ai" scripts .claude docs/superpowers/plans | grep -v emitter`
+
 
 > **Framework code names no instance.** `team-ai` ships to any team, and
 > `check-agnostic` fails the build when a team's proper noun appears in shipped
@@ -214,7 +224,7 @@ cd ../team-ai && git add schemas/golden.schema.json src/schema/types.ts src/sche
       same separation a test set needs from training data
 - [ ] The baseline file records hitRate, refusalRate, routingAccuracy, namespaceAccuracy
 
-**Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai --json > team-ai/evals/baseline-2026-09-20.json; python -c "import json;d=json.load(open('team-ai/evals/baseline-2026-09-20.json'));print(d['metrics'])"` → prints the metric object
+**Verify:** `python scripts/team_ai_cli.py run-evals --root team-ai --json > team-ai/evals/baseline-2026-09-20.json; python -c "import json;d=json.load(open('team-ai/evals/baseline-2026-09-20.json'));print(d['metrics'])"` → prints the metric object
 
 **Steps:**
 
@@ -361,7 +371,7 @@ Expected: total ≥ 30, refusal ≥ 4, cross-domain ≥ 3, code/spec-grounded �
 - [ ] **Step 5: Record the baseline**
 
 ```bash
-node ../team-ai/dist/cli.js run-evals --root team-ai --json > team-ai/evals/baseline-2026-09-20.json
+python scripts/team_ai_cli.py run-evals --root team-ai --json > team-ai/evals/baseline-2026-09-20.json
 python -c "import json;print(json.load(open('team-ai/evals/baseline-2026-09-20.json'))['metrics'])"
 ```
 Expected: a metrics object. It will FAIL the gates — that is the point of a baseline. Record the numbers.
@@ -594,13 +604,13 @@ Expected: PASS.
 
 ```bash
 cd ../team-ai && npm run build && cd -
-node ../team-ai/dist/cli.js reindex --root team-ai
+python scripts/team_ai_cli.py reindex --root team-ai
 echo "--- meaningless query, expect no results ---"
-node ../team-ai/dist/cli.js search "how does the of a to and it" --root team-ai --k 1
+python scripts/team_ai_cli.py search "how does the of a to and it" --root team-ai --k 1
 echo "--- out-of-scope, expect a low score ---"
-node ../team-ai/dist/cli.js search "How many weeks of paid parental leave does the company offer?" --root team-ai --k 1
+python scripts/team_ai_cli.py search "How many weeks of paid parental leave does the company offer?" --root team-ai --k 1
 echo "--- in-scope, expect a clearly higher score ---"
-node ../team-ai/dist/cli.js search "Where do we record that someone only found something out from another guest?" --root team-ai --k 1
+python scripts/team_ai_cli.py search "Where do we record that someone only found something out from another guest?" --root team-ai --k 1
 ```
 Expected: the first prints no hits; the out-of-scope score is visibly below the in-scope score. Record both numbers — Task 6 sets the threshold from them.
 
@@ -668,7 +678,7 @@ deterministic harness, which the design establishes is not what ships.
       reports 0 failures
 - [ ] The word-boundary routing test still expects `platform-sme`
 
-**Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai --json | python -c "import sys,json;r=json.load(sys.stdin);print('gated:', sorted(r['gates']))"` → exactly `['citationValidity', 'hitRate']`
+**Verify:** `python scripts/team_ai_cli.py run-evals --root team-ai --json | python -c "import sys,json;r=json.load(sys.stdin);print('gated:', sorted(r['gates']))"` → exactly `['citationValidity', 'hitRate']`
 
 **Steps:**
 
@@ -789,7 +799,7 @@ template has been kept in step with this change.
 
 ```bash
 cd ../team-ai && npx vitest run src/evals/ && npm run build && cd -
-node ../team-ai/dist/cli.js run-evals --root team-ai
+python scripts/team_ai_cli.py run-evals --root team-ai
 cd ../team-ai && git add src/evals src/commands/run-evals.ts evals/gates.yaml && git commit -m "fix(evals): refusal is a delivery-path judgement, not a lexical gate"
 ```
 
@@ -817,7 +827,7 @@ cd ../team-ai && git add src/evals src/commands/run-evals.ts evals/gates.yaml &&
       `citationValidity` and `coverage` — the three that describe whether the
       knowledge base can answer
 
-**Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai` → prints a `coverage` row and a per-namespace table, and `node ../team-ai/dist/cli.js run-evals --root team-ai --json | python -c "import sys,json;r=json.load(sys.stdin);print('gated:', sorted(r['gates']))"` → exactly `['citationValidity', 'coverage', 'hitRate']`
+**Verify:** `python scripts/team_ai_cli.py run-evals --root team-ai` → prints a `coverage` row and a per-namespace table, and `python scripts/team_ai_cli.py run-evals --root team-ai --json | python -c "import sys,json;r=json.load(sys.stdin);print('gated:', sorted(r['gates']))"` → exactly `['citationValidity', 'coverage', 'hitRate']`
 
 **Steps:**
 
@@ -957,7 +967,7 @@ function sourceChangedSince(root: string, path: string, since: string): boolean 
 
 ```bash
 cd ../team-ai && npx vitest run src/evals/ && npm run build && cd -
-node ../team-ai/dist/cli.js run-evals --root team-ai
+python scripts/team_ai_cli.py run-evals --root team-ai
 cd ../team-ai && git add src/evals src/commands/run-evals.ts && git commit -m "feat(evals): coverage metric with per-namespace breakdown"
 ```
 
@@ -980,14 +990,14 @@ cd ../team-ai && git add src/evals src/commands/run-evals.ts && git commit -m "f
 - [ ] A comment in `gates.yaml` states the thresholds ratchet upward only
 - [ ] The design document records whether semantic retrieval is still needed (D-B2)
 
-**Verify:** `node ../team-ai/dist/cli.js run-evals --root team-ai` → exits 0
+**Verify:** `python scripts/team_ai_cli.py run-evals --root team-ai` → exits 0
 
 **Steps:**
 
 - [ ] **Step 1: Measure**
 
 ```bash
-node ../team-ai/dist/cli.js run-evals --root team-ai --json > team-ai/evals/measured-2026-09-20.json
+python scripts/team_ai_cli.py run-evals --root team-ai --json > team-ai/evals/measured-2026-09-20.json
 python - <<'PY'
 import json
 b=json.load(open('team-ai/evals/baseline-2026-09-20.json'))['metrics']
@@ -1061,9 +1071,9 @@ p=pathlib.Path('team-ai/index.lock'); t=p.read_text(encoding='utf-8')
 t=re.sub(r'target_tokens: \d+', f'target_tokens: {n}', t)
 p.write_text(t,encoding='utf-8')
 PY
-  node ../team-ai/dist/cli.js reindex --root team-ai >/dev/null
+  python scripts/team_ai_cli.py reindex --root team-ai >/dev/null
   echo -n "target_tokens=$n  "
-  node ../team-ai/dist/cli.js run-evals --root team-ai --json | python -c "import sys,json;m=json.load(sys.stdin)['metrics'];print('hitRate',round(m['hitRate'],3),'coverage',round(m['coverage'],3))"
+  python scripts/team_ai_cli.py run-evals --root team-ai --json | python -c "import sys,json;m=json.load(sys.stdin)['metrics'];print('hitRate',round(m['hitRate'],3),'coverage',round(m['coverage'],3))"
 done
 ```
 
@@ -1430,14 +1440,14 @@ git add src/emit && git commit -m "fix(emit): stop emitting instructions for too
       shell access, and no agent outside B-S2's three needs it
 - [ ] Regenerating produces no diff
 
-**Verify:** `node ../team-ai/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked && git diff --exit-code -- .claude/agents` → exit 0
+**Verify:** `python scripts/team_ai_cli.py emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked && git diff --exit-code -- .claude/agents` → exit 0
 
 **Steps:**
 
 - [ ] **Step 1: Regenerate**
 
 ```bash
-node ../team-ai/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
+python scripts/team_ai_cli.py emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
 git diff --stat -- .claude/agents
 ```
 Expected: 17 files changed, each substantially smaller.
@@ -1455,7 +1465,7 @@ grep -l "kb_search\|kb_manifest\|kb_coverage_gap" .claude/agents/ -r || echo "no
 In `.claude/settings.json`, inside `permissions.allow`:
 
 ```json
-      "Bash(node ../team-ai/dist/cli.js search:*)"
+      "Bash(python scripts/team_ai_cli.py search:*)"
 ```
 
 This permits the search subcommand only. Do not add a bare `Bash(node:*)`.
@@ -1472,7 +1482,7 @@ Tag team-ai `v0.6.0` and update `.github/workflows/team-ai.yml`:
 
 ```bash
 git add .claude/agents          # snapshot the first emit; HEAD is not the baseline yet
-node ../team-ai/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
+python scripts/team_ai_cli.py emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
 git diff --exit-code -- .claude/agents && echo "stable"
 git add .claude/agents .claude/settings.json .github/workflows/team-ai.yml
 git commit -m "feat(agents): per-domain retrieval strategy; drop dead tool instructions"
@@ -1733,7 +1743,7 @@ it("still rejects a misspelled core field", () => {
 ```
 
 Verify: `cd ../team-ai && npx vitest run src/schema/ && npm run build`, then
-from Arcwright `node ../team-ai/dist/cli.js validate-kb --instance team-ai`.
+from Arcwright `python scripts/team_ai_cli.py validate-kb --instance team-ai`.
 
 Commit in team-ai: `feat(kb): reserve the x- prefix for instance front-matter fields`
 
@@ -2307,7 +2317,7 @@ Expected: PASS, and `check-agnostic: OK`.
 
 ```bash
 cd ../team-ai && npm run build && cd -
-node ../team-ai/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
+python scripts/team_ai_cli.py emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
 grep -L "^model:" .claude/agents/team-ai-*.md | wc -l      # expect 0
 git diff --stat -- .claude/agents                           # expect 17 files, one line each
 ```
@@ -2316,7 +2326,7 @@ Then confirm regeneration is stable:
 
 ```bash
 git add .claude/agents          # snapshot the first emit; HEAD is not the baseline yet
-node ../team-ai/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
+python scripts/team_ai_cli.py emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
 git diff --exit-code -- .claude/agents && echo stable
 ```
 
@@ -2467,7 +2477,7 @@ python -m pytest scripts/checks/tests/ -q
 python scripts/checks/provider_leak_check.py
 python scripts/checks/knowledge_query_guard.py
 python scripts/checks/scope_evidence_check.py --base main
-node ../team-ai/dist/cli.js run-evals --root team-ai
+python scripts/team_ai_cli.py run-evals --root team-ai
 ```
 Expected: all pass.
 
@@ -2580,7 +2590,7 @@ import sys
 BLOCKED = (
     (".claude/agents/team-ai-*.md",
      "Generated from team-ai/. Edit team-ai/agents/<name>.md, then run:\n"
-     "  node ../team-ai/dist/cli.js emit --target claude-code --dir team-ai "
+     "  python scripts/team_ai_cli.py emit --target claude-code --dir team-ai "
      "--out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked"),
     ("team-ai/manifest.yaml",
      "Generated by assemble-manifest. Edit team-ai/agents/manifest.fragment.yaml instead."),
@@ -2949,7 +2959,7 @@ be moved: cut `v0.6.1` after the merge and bump the workflow pin.
 - [ ] **Step 1: Commit the freshness baseline**
 
 ```bash
-node ../team-ai/dist/cli.js freshness-audit --instance team-ai > team-ai/graph/freshness-baseline.json
+python scripts/team_ai_cli.py freshness-audit --instance team-ai > team-ai/graph/freshness-baseline.json
 python -c "import json;print(json.load(open('team-ai/graph/freshness-baseline.json'))['summary'])"
 ```
 Expected: `{'total': 447, 'stale': 0, 'orphaned': 436, 'unowned': 0, ...}`.
@@ -3208,7 +3218,7 @@ description: Review which knowledge-base documents have gone stale and fix the o
 Run the freshness audit and read the JSON:
 
 ```bash
-node ../team-ai/dist/cli.js freshness-audit --instance team-ai
+python scripts/team_ai_cli.py freshness-audit --instance team-ai
 ```
 
 Its three categories mean:
@@ -3246,7 +3256,7 @@ hide the staleness rather than resolve it.
 List what changed and what was deliberately left, and run:
 
 ```bash
-node ../team-ai/dist/cli.js validate-kb --instance team-ai
+python scripts/team_ai_cli.py validate-kb --instance team-ai
 ```
 ```
 
@@ -3429,10 +3439,10 @@ python -m pytest scripts/checks/tests/ scripts/hooks/tests/ -q
 python scripts/checks/provider_leak_check.py
 python scripts/checks/knowledge_query_guard.py
 python scripts/checks/scope_evidence_check.py --base main
-node ../team-ai/dist/cli.js validate-kb --instance team-ai
-node ../team-ai/dist/cli.js validate-manifest --root team-ai
-node ../team-ai/dist/cli.js run-evals --root team-ai
-node ../team-ai/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
+python scripts/team_ai_cli.py validate-kb --instance team-ai
+python scripts/team_ai_cli.py validate-manifest --root team-ai
+python scripts/team_ai_cli.py run-evals --root team-ai
+python scripts/team_ai_cli.py emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked
 git diff --exit-code -- .claude/agents && echo "emit stable"
 git status --short
 ```
