@@ -1,3 +1,17 @@
+# Golden question set for Arcwright. Generated once, committed, refreshed when
+# the knowledge base changes. See docs/superpowers/plans/2026-09-20-team-ai-agent-architecture-phase-b.md
+#
+# Two rules learned the hard way, both enforced by the coverage metric:
+#
+#  1. answer_evidence must be a LITERAL substring of the raw source file. It
+#     must not span markdown markup: "**Current canonical source:**" means the
+#     substring "Current canonical source: Checkpoint" does not exist.
+#  2. Source evidence from stable canonical documents, not from a phase's own
+#     planning documents. A question sourced from a spec being actively
+#     rewritten breaks as soon as someone edits a sentence.
+#
+# Never lower the coverage gate to make a run pass. A failure names the question;
+# fix the question or the document.
 - id: eval.arc.execution-output
   question: What does the core session component produce instead of rendering a surface?
   expect_namespace: arc-execution
@@ -73,7 +87,7 @@
   must_cite: true
   source_path: specs/0089-team-ai-agent-architecture.md
   generated_on: "2026-09-20"
-  answer_evidence: Golden question set, coverage metric, and ratcheted gates
+  answer_evidence: coverage metric, and ratcheted gates
 
 - id: eval.knowledge.three-facts
   question: Which three facts does the shared record keep about what a person knows?
@@ -150,7 +164,7 @@
   must_cite: true
   source_path: gdd/nightcap/00-governance/01-master-gdd-index.md
   generated_on: "2026-09-20"
-  answer_evidence: "Current canonical source: Checkpoint 05 / Session B / Decisions 1–17 / Structured Reconstruction + Case Graph"
+  answer_evidence: "Checkpoint 05 / Session B / Decisions 1–17 / Structured Reconstruction"
 
 - id: eval.nightcap.runtime-contract
   question: Who resolves the authored state and events in the current runtime?

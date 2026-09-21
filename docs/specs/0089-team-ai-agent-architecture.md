@@ -75,7 +75,7 @@ Delivered in three phases, each independently reviewable.
 
 Redesigned 2026-09-20 after measurement. The design of record is
 [`docs/superpowers/specs/2026-09-20-team-ai-agent-architecture-phase-b-design.md`](../superpowers/specs/2026-09-20-team-ai-agent-architecture-phase-b-design.md)
-(v2.1); the plan is
+(v3.0); the plan is
 [`docs/superpowers/plans/2026-09-20-team-ai-agent-architecture-phase-b.md`](../superpowers/plans/2026-09-20-team-ai-agent-architecture-phase-b.md).
 Where this section and that design differ, the design wins.
 
@@ -89,7 +89,8 @@ Where this section and that design differ, the design wins.
 - Added four Claude Code hooks as a non-blocking loop. Stop returns in 216ms
   and SessionStart returns in 219ms.
 - Added the 37-question golden set, coverage metric, and ratcheted gates.
-  Coverage reached 97.0%; hit rate remained 48.5% against the 80% target.
+  Coverage is 100%; hit rate is 48.5% against the 80% target, which is the
+  entire content of Phase C.
 - Added the `/doc-review` slash command, which reports stale or orphaned
   documents and pauses for named approval before changes.
 
