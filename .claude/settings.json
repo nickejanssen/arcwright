@@ -17,5 +17,19 @@
       "Bash(git status:*)",
       "Bash(git diff:*)"
     ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [{ "type": "command", "command": "python scripts/hooks/block_generated_writes.py" }]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [{ "type": "command", "command": "python scripts/hooks/record_observation.py" }]
+      }
+    ]
   }
 }
