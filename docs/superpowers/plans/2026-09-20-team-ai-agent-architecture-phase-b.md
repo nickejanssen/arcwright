@@ -2370,7 +2370,9 @@ cd - && git add .claude/agents && git commit -m "feat(agents): emit the declared
       from the team-ai clone returns a sha, and that sha's
       `schemas/frontmatter.schema.json` contains `patternProperties`
 
-**Verify:** Push the branch and confirm the `team-ai` workflow passes
+**Verify:** the local commands below all pass. The workflow itself cannot be
+confirmed until a branch reaches GitHub, so that check happens when Phase B's
+pull request opens — not mid-phase, and not by pushing a detached worktree
 
 **Steps:**
 
@@ -2711,6 +2713,210 @@ git commit -m "feat(hooks): block generated writes and record raw observations"
 
 ---
 
+### Task 16b: Resolve the framework CLI from anywhere in the repo
+
+**Repository:** Arcwright, then team-ai
+
+**Goal:** Nothing in the repository assumes the framework sits at `../team-ai`.
+That path is correct only in the main checkout, and every session here runs in a
+git worktree.
+
+**Why.** Three things hardcode it, and the worst ships to the agents:
+
+| where | consequence |
+|---|---|
+| The three large-domain agents' search command | An agent is told to run a path that does not exist, and will fail or improvise — the hallucination surface that removing the dead tool instructions existed to close |
+| Task 17's hook scripts | A `Stop` hook that errors every session |
+| `.claude/settings.json`'s permission string | Names a path that varies by checkout |
+
+In a worktree, the repository's parent is the worktree container, not the
+checkout's parent. `git rev-parse --git-common-dir` points at the *main*
+repository's `.git` from anywhere, including a worktree, which is what makes
+this solvable at all.
+
+**Files:**
+- Create: `scripts/team_ai_cli.py`
+- Create: `scripts/tests/test_team_ai_cli.py`
+- Modify (team-ai): `src/emit/claude-code.ts`, `src/commands/emit.ts`
+- Modify: `.claude/agents/team-ai-*.md` (regenerated), `.claude/settings.json`
+
+**Acceptance Criteria:**
+- [ ] The resolver finds the CLI from the main checkout and from a worktree
+- [ ] `TEAM_AI_CLI` overrides the search when set
+- [ ] A missing CLI returns nothing rather than raising; callers decide
+- [ ] No emitted agent contains `../team-ai`
+- [ ] The settings permission names the resolver, not a framework path
+- [ ] team-ai learns nothing about Arcwright — the command is passed in
+
+**Verify:** from a worktree, `python scripts/team_ai_cli.py --path` prints an existing path
+
+**Steps:**
+
+- [ ] **Step 1: Write the failing test**
+
+Create `scripts/tests/test_team_ai_cli.py`:
+
+```python
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[2]
+SCRIPT = ROOT / "scripts" / "team_ai_cli.py"
+
+
+def test_resolves_from_this_checkout():
+    out = subprocess.run([sys.executable, str(SCRIPT), "--path"],
+                         capture_output=True, text=True, cwd=ROOT)
+    assert out.returncode == 0, out.stderr
+    assert Path(out.stdout.strip()).exists()
+
+
+def test_env_override_wins(tmp_path):
+    fake = tmp_path / "cli.js"
+    fake.write_text("", encoding="utf-8")
+    env = {**os.environ, "TEAM_AI_CLI": str(fake)}
+    out = subprocess.run([sys.executable, str(SCRIPT), "--path"],
+                         capture_output=True, text=True, cwd=ROOT, env=env)
+    assert out.stdout.strip() == str(fake)
+
+
+def test_missing_cli_exits_nonzero_without_raising(tmp_path):
+    env = {**os.environ, "TEAM_AI_CLI": str(tmp_path / "absent.js")}
+    out = subprocess.run([sys.executable, str(SCRIPT), "--path"],
+                         capture_output=True, text=True, cwd=ROOT, env=env)
+    assert out.returncode != 0
+    assert "Traceback" not in out.stderr
+```
+
+- [ ] **Step 2: Run to confirm failure**
+
+Run: `python -m pytest scripts/tests/test_team_ai_cli.py -q`
+Expected: FAIL — the script does not exist.
+
+- [ ] **Step 3: Write the resolver**
+
+Create `scripts/team_ai_cli.py`:
+
+```python
+"""Locate the team-ai CLI, and optionally run it.
+
+`../team-ai` is correct only in the main checkout. Every agent session here runs
+in a git worktree, where the repository's parent is the worktree container
+rather than the checkout's parent. `git rev-parse --git-common-dir` points at
+the main repository's `.git` from anywhere, including a worktree, so the
+checkout's real sibling stays reachable from all of them.
+
+Callers decide what a missing CLI means. Hooks must not fail because a sibling
+checkout is absent: a check that breaks every session is worse than no check.
+"""
+
+from __future__ import annotations
+
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+REL = Path("team-ai") / "dist" / "cli.js"
+
+
+def _main_checkout() -> Path | None:
+    try:
+        out = subprocess.run(
+            ["git", "rev-parse", "--path-format=absolute", "--git-common-dir"],
+            capture_output=True, text=True, check=True,
+        ).stdout.strip()
+    except (subprocess.CalledProcessError, OSError):
+        return None
+    return Path(out).parent if out else None
+
+
+def find_cli() -> Path | None:
+    """Return the CLI path, or None. Never raises."""
+    override = os.environ.get("TEAM_AI_CLI")
+    if override:
+        candidate = Path(override)
+        return candidate if candidate.is_file() else None
+
+    roots: list[Path] = []
+    main = _main_checkout()
+    if main is not None:
+        roots.append(main.parent)
+    here = Path(__file__).resolve().parents[1]
+    roots.extend([here.parent, here.parent.parent])
+
+    for root in roots:
+        candidate = root / REL
+        if candidate.is_file():
+            return candidate
+    return None
+
+
+def main() -> int:
+    args = sys.argv[1:]
+    cli = find_cli()
+    if cli is None:
+        print("team-ai CLI not found. Set TEAM_AI_CLI, or clone team-ai beside "
+              "this repository and run npm ci && npm run build.", file=sys.stderr)
+        return 1
+    if args[:1] == ["--path"]:
+        print(cli)
+        return 0
+    return subprocess.run(["node", str(cli), *args]).returncode
+
+
+if __name__ == "__main__":
+    sys.exit(main())
+```
+
+- [ ] **Step 4: Run to confirm all pass**
+
+```bash
+python -m pytest scripts/tests/test_team_ai_cli.py -q
+python scripts/team_ai_cli.py --path
+python scripts/team_ai_cli.py validate-kb --instance team-ai
+```
+
+- [ ] **Step 5: Let the emitter take the search command as an option**
+
+The framework must not learn Arcwright's script name. In
+`src/emit/claude-code.ts`, add `searchCommand?: string` to
+`EmitClaudeCodeOptions`, default it to the current `node ../team-ai/dist/cli.js`
+so other instances are unaffected, and use it where the search line is built. In
+`src/commands/emit.ts`, add a `--search-command <cmd>` flag that passes it
+through. Add an emitter test asserting a custom command appears in the output.
+
+- [ ] **Step 6: Regenerate with the resolver, and fix the permission**
+
+```bash
+python scripts/team_ai_cli.py emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked --search-command "python scripts/team_ai_cli.py"
+grep -l "team-ai/dist/cli.js" .claude/agents/team-ai-*.md || echo "no hardcoded framework paths"
+```
+
+In `.claude/settings.json`, replace the framework-path permission with the
+resolver, which does not vary by checkout:
+
+```json
+      "Bash(python scripts/team_ai_cli.py search:*)"
+```
+
+Then confirm regeneration is stable, staging the first emit first as Task 11 does.
+
+- [ ] **Step 7: Commit**
+
+```bash
+cd ../team-ai && git add src/emit src/commands/emit.ts && git commit -m "feat(emit): let the instance supply the search command"
+cd - && git add scripts .claude/agents .claude/settings.json && git commit -m "feat(scripts): resolve the framework CLI from any checkout"
+```
+
+**The tag moves again — to a new number.** This is another framework change, so
+`v0.6.0` no longer matches `main`. `v0.6.0` has been published, so it must not
+be moved: cut `v0.6.1` after the merge and bump the workflow pin.
+
+---
+
 ### Task 17: Stop and SessionStart as a non-blocking loop
 
 **Repository:** Arcwright
@@ -2771,7 +2977,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-CLI = ROOT.parent / "team-ai" / "dist" / "cli.js"
+sys.path.insert(0, str(ROOT / "scripts"))
+from team_ai_cli import find_cli          # noqa: E402  (Task 16b)
 SNAPSHOT = ROOT / "team-ai" / "graph" / "last-session-snapshot.json"
 
 
