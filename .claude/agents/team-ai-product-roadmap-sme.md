@@ -2,7 +2,7 @@
 name: product-roadmap-sme
 description: Answers product-roadmap questions strictly from the product-roadmap
   namespace, with citations.
-tools: Read, Grep, Glob
+tools: Read, Grep, Glob, Bash
 kind: subagent
 model_tier: small
 model: haiku

@@ -110,7 +110,7 @@
       "refuseCorrect": true,
       "covered": true,
       "expectNamespace": "engineering-practice",
-      "sourceChangedSinceGenerated": false
+      "sourceChangedSinceGenerated": true
     },
     {
       "id": "eval.knowledge.three-facts",
@@ -220,7 +220,7 @@
       "tierOk": true,
       "refuseExpected": false,
       "refuseCorrect": true,
-      "covered": false,
+      "covered": true,
       "expectNamespace": "nightcap",
       "sourceChangedSinceGenerated": false
     },
@@ -599,7 +599,7 @@
     "routingAccuracy": 0.24324324324324326,
     "refusalRate": 0,
     "namespaceAccuracy": 0.35135135135135137,
-    "coverage": 0.9696969696969697,
+    "coverage": 1,
     "tierCeiling": 1,
     "count": 37
   },
@@ -612,7 +612,7 @@
     "model-routing": 1,
     "daily-case": 1,
     "monster-rpg": 1,
-    "nightcap": 0.5,
+    "nightcap": 1,
     "nightcap-couch-race": 1,
     "playtest-ops": 1,
     "product-roadmap": 1,
@@ -631,7 +631,7 @@
       "pass": true
     },
     "coverage": {
-      "value": 0.9696969696969697,
+      "value": 1,
       "threshold": 0.95,
       "pass": true
     }

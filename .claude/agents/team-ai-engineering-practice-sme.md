@@ -2,7 +2,7 @@
 name: engineering-practice-sme
 description: Answers engineering-practice questions strictly from the
   engineering-practice namespace, with citations.
-tools: Read, Grep, Glob
+tools: Read, Grep, Glob, Bash
 kind: subagent
 model_tier: small
 model: haiku

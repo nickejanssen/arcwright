@@ -38,16 +38,20 @@ ADR_REF = re.compile(r"\bADR[- ]?(\d{4})\b")
 ADR_PATH_REF = re.compile(r"docs/decisions/(\d{4})-")
 FRONT_MATTER = re.compile(r"\A---\r?\n(.*?)\r?\n---", re.DOTALL)
 SCOPE_EVIDENCE = re.compile(r"^x-scope-evidence:\s*(.+?)\s*$", re.MULTILINE)
+# The CSV currently uses Committed, Decided, and Accepted for approved records.
+APPROVED_DECISION_STATUSES = {"Committed", "Decided", "Accepted"}
 
 
 def normalise(number: str) -> str:
     return f"D-{int(number):03d}"
 
 
-def known_decision_ids() -> set[str]:
+def approved_decision_ids() -> set[str]:
     ids: set[str] = set()
     with DECISIONS_CSV.open(encoding="utf-8-sig", newline="") as handle:
         for row in csv.DictReader(handle):
+            if (row.get("Status") or "").strip() not in APPROVED_DECISION_STATUSES:
+                continue
             match = re.match(r"\s*D-(\d+)", row.get("Decision") or "")
             if match:
                 ids.add(normalise(match.group(1)))
@@ -67,7 +71,7 @@ def markdown_files() -> list[Path]:
 
 
 def check_references() -> list[str]:
-    decisions, adrs = known_decision_ids(), known_adr_ids()
+    decisions, adrs = approved_decision_ids(), known_adr_ids()
     problems: list[str] = []
     for path in markdown_files():
         text = path.read_text(encoding="utf-8", errors="replace")
@@ -107,7 +111,7 @@ def added_files(base: str) -> list[Path]:
 
 
 def check_declared_evidence(base: str) -> list[str]:
-    decisions, adrs = known_decision_ids(), known_adr_ids()
+    decisions, adrs = approved_decision_ids(), known_adr_ids()
     problems: list[str] = []
     for path in added_files(base):
         rel = path.relative_to(ROOT).as_posix()
@@ -159,7 +163,7 @@ def main() -> int:
             target = normalise(match.group(1))
             print(
                 f"{args.explain} -> {target}: "
-                f"{'resolved' if target in known_decision_ids() else 'NOT FOUND'}"
+                f"{'resolved' if target in approved_decision_ids() else 'NOT FOUND'}"
             )
             return 0
         print(f"{args.explain}: not a decision id")

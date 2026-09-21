@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: nickejanssen/team-ai
-          ref: v0.6.2
+          ref: v0.6.3
           path: .team-ai-cli
       - uses: actions/setup-node@v4
         with:
@@ -45,7 +45,7 @@ jobs:
         with:
           python-version: "3.11"
       - name: python test dependencies
-        run: python -m pip install --quiet pytest pyyaml
+        run: python -m pip install --quiet pytest
       - name: checker unit tests
         run: python -m pytest scripts/checks/tests/ scripts/hooks/tests/ scripts/tests/ -q
       - name: provider-leak-check

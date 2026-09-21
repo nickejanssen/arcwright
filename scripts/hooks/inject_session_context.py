@@ -12,15 +12,16 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 from pathlib import Path
-
-import yaml
 
 ROOT = Path(__file__).resolve().parents[2]
 MANIFEST = ROOT / "team-ai" / "manifest.yaml"
 SNAPSHOT = ROOT / "team-ai" / "graph" / "last-session-snapshot.json"
 BASELINE = ROOT / "team-ai" / "graph" / "freshness-baseline.json"
+DOMAIN_ID = re.compile(r"^  - id: (.+)$")
+SUBAGENT = re.compile(r"^    subagent: (.+)$")
 
 
 def read_json(path: Path) -> dict:
@@ -30,16 +31,33 @@ def read_json(path: Path) -> dict:
         return {}
 
 
+def read_domains(text: str) -> list[dict[str, str]]:
+    domains: list[dict[str, str]] = []
+    current: dict[str, str] | None = None
+    for line in text.splitlines():
+        id_match = DOMAIN_ID.match(line)
+        if id_match:
+            if current and "subagent" in current:
+                domains.append(current)
+            current = {"id": id_match.group(1).strip()}
+            continue
+        subagent_match = SUBAGENT.match(line)
+        if current is not None and subagent_match:
+            current["subagent"] = subagent_match.group(1).strip()
+    if current and "subagent" in current:
+        domains.append(current)
+    return domains
+
+
 def main() -> int:
     if os.environ.get("ARCWRIGHT_HOOK_SESSION_CONTEXT", "1") != "1":
         return 0
 
     lines: list[str] = []
     try:
-        manifest = yaml.safe_load(MANIFEST.read_text(encoding="utf-8")) or {}
-    except (OSError, yaml.YAMLError):
-        manifest = {}
-    domains = manifest.get("domains", [])
+        domains = read_domains(MANIFEST.read_text(encoding="utf-8"))
+    except OSError:
+        domains = []
     if domains:
         lines.append("Knowledge domains and the agent that owns each:")
         for domain in domains:
@@ -54,7 +72,7 @@ def main() -> int:
     elif snapshot:
         problems = [
             name
-            for name in ("validate_kb", "validate_manifest")
+            for name in ("validate_kb", "validate_manifest", "freshness")
             if isinstance(snapshot.get(name), dict)
             and snapshot[name].get("ok") is False
         ]
@@ -65,7 +83,8 @@ def main() -> int:
             )
 
         baseline = read_json(BASELINE).get("summary", {})
-        current = snapshot.get("freshness", {})
+        freshness = snapshot.get("freshness", {})
+        current = freshness.get("summary", {}) if isinstance(freshness, dict) else {}
         deltas = [
             f"{key} {current[key] - baseline.get(key, 0):+d}"
             for key in ("stale", "orphaned", "unowned")

@@ -2,7 +2,7 @@
 name: nightcap-sme
 description: Answers nightcap questions strictly from the nightcap namespace,
   with citations.
-tools: Read, Grep, Glob
+tools: Read, Grep, Glob, Bash
 kind: subagent
 model_tier: small
 model: haiku

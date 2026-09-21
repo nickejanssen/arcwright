@@ -37,3 +37,14 @@ def test_fails_on_a_fabricated_id():
         assert "D-999" in result.stdout
     finally:
         planted.unlink()
+
+
+def test_fails_on_a_tentative_id():
+    planted = ROOT / "docs" / "specs" / "9999-probe.md"
+    planted.write_text("Approved per D-047.\n", encoding="utf-8")
+    try:
+        result = run()
+        assert result.returncode != 0
+        assert "D-047" in result.stdout
+    finally:
+        planted.unlink()

@@ -47,15 +47,21 @@ def run_checks() -> dict:
     kb_code, kb_out = call(["validate-kb", "--instance", "team-ai"])
     mf_code, mf_out = call(["validate-manifest", "--root", "team-ai"])
     fr_code, fr_out = call(["freshness-audit", "--instance", "team-ai"])
+    freshness_ok = fr_code == 0
     try:
         freshness = json.loads(fr_out)["summary"]
-    except (json.JSONDecodeError, KeyError):
+    except (json.JSONDecodeError, KeyError, TypeError):
+        freshness_ok = False
         freshness = {}
     return {
         "at": datetime.now(timezone.utc).isoformat(),
         "validate_kb": {"ok": kb_code == 0, "output": kb_out[-500:]},
         "validate_manifest": {"ok": mf_code == 0, "output": mf_out[-500:]},
-        "freshness": freshness,
+        "freshness": {
+            "ok": freshness_ok,
+            "output": fr_out[-500:],
+            "summary": freshness,
+        },
     }
 
 

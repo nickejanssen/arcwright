@@ -45,17 +45,28 @@ def is_guarded_generation(node: ast.Call) -> bool:
     return False
 
 
+def direct_call(statement: ast.stmt) -> ast.Call | None:
+    value: ast.AST | None = None
+    if isinstance(statement, ast.Expr):
+        value = statement.value
+    elif isinstance(statement, (ast.Assign, ast.AnnAssign, ast.Return)):
+        value = statement.value
+    if isinstance(value, (ast.Await, ast.YieldFrom)):
+        value = value.value
+    return value if isinstance(value, ast.Call) else None
+
+
 def check_function(node: ast.FunctionDef | ast.AsyncFunctionDef) -> int | None:
-    """Return the line of an unguarded generation, or None if the function is fine."""
-    knowledge_lines = [
-        child.lineno
-        for child in ast.walk(node)
-        if isinstance(child, ast.Call) and call_name(child) == KNOWLEDGE_QUERY
-    ]
-    for child in ast.walk(node):
-        if isinstance(child, ast.Call) and is_guarded_generation(child):
-            if not any(line < child.lineno for line in knowledge_lines):
-                return child.lineno
+    """Require context and generation calls as unconditional direct statements."""
+    context_seen = False
+    for statement in node.body:
+        call = direct_call(statement)
+        if call is None:
+            continue
+        if call_name(call) == KNOWLEDGE_QUERY:
+            context_seen = True
+        elif is_guarded_generation(call) and not context_seen:
+            return call.lineno
     return None
 
 
