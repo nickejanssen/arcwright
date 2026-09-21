@@ -2933,6 +2933,11 @@ be moved: cut `v0.6.1` after the merge and bump the workflow pin.
 - [ ] `Stop` returns immediately; the checks run detached
 - [ ] The snapshot records validate-kb, validate-manifest and freshness results
 - [ ] `SessionStart` injects the domain map plus the delta against the committed baseline, not the raw 436 orphaned count
+- [ ] With the framework CLI absent, `Stop` still exits 0 and the next
+      `SessionStart` reports that the checks did not run — *Verify:*
+      `TEAM_AI_CLI=/nonexistent python scripts/hooks/snapshot_knowledge_state.py`,
+      wait for the child, then run the injector and confirm it says so rather
+      than reporting a clean knowledge base
 - [ ] `SessionStart` completes in well under a second
 - [ ] Both honour their enable flags
 - [ ] If detachment proves unreliable on Windows, the documented fallback is used and recorded
@@ -2983,9 +2988,19 @@ SNAPSHOT = ROOT / "team-ai" / "graph" / "last-session-snapshot.json"
 
 
 def run_checks() -> dict:
+    # find_cli returns None rather than raising. A missing sibling checkout must
+    # not break the session, but it must also not be reported as a clean run —
+    # record that the checks could not execute and let SessionStart say so.
+    cli = find_cli()
+    if cli is None:
+        return {
+            "at": datetime.now(timezone.utc).isoformat(),
+            "unavailable": "team-ai CLI not found; set TEAM_AI_CLI or build the framework",
+        }
+
     def call(args: list[str]) -> tuple[int, str]:
         result = subprocess.run(
-            ["node", str(CLI), *args], capture_output=True, text=True, cwd=ROOT
+            ["node", str(cli), *args], capture_output=True, text=True, cwd=ROOT
         )
         return result.returncode, (result.stdout or result.stderr).strip()
 
@@ -3082,11 +3097,14 @@ def main() -> int:
             lines.append(f"  {domain['id']:24} -> {domain['subagent']}")
 
     snapshot = read_json(SNAPSHOT)
-    if snapshot:
+    if snapshot.get("unavailable"):
+        lines.append("")
+        lines.append(f"Knowledge-base checks did not run last session: {snapshot['unavailable']}")
+    elif snapshot:
         problems = [
             name
             for name in ("validate_kb", "validate_manifest")
-            if snapshot.get(name, {}).get("ok") is False
+            if isinstance(snapshot.get(name), dict) and snapshot[name].get("ok") is False
         ]
         if problems:
             lines.append("")
