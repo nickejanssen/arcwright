@@ -2420,22 +2420,43 @@ The tag must also contain every framework change this phase made — including
 the front-matter extension from Task 13. Tagging before that commit gives CI a
 schema that rejects `x-scope-evidence` while the local build accepts it.
 
-`v0.6.0` has never been published, so it can simply be moved:
+**The tag follows the merge, it does not precede it.** team-ai lands every
+change through a squash PR, so merging produces a *new* commit on `main` with a
+SHA that does not exist on the feature branch. Tagging before the merge points
+`v0.6.0` at a commit `main` never contains, and CI checks out the tag.
+
+The framework work is also not on `main` — it accumulates on a feature branch.
+Check before assuming: `git rev-parse --abbrev-ref HEAD`.
 
 ```bash
 cd ../team-ai
 git log --oneline origin/main..HEAD          # every commit CI still cannot see
-git tag -f v0.6.0                            # re-point at the finished work
-git push origin main
-git push -f origin v0.6.0                    # safe only because it was never published
-git ls-remote --tags origin v0.6.0           # confirm it is actually there
+git push origin HEAD:refs/heads/feat/<name>  # a new branch, never a force push
+gh pr create --base main --head feat/<name> --title "..." --body "..."
+# after CI passes and the PR is squash-merged:
+git fetch origin
+git tag -f v0.6.0 origin/main                # the merged commit, not the branch tip
+git push -f origin v0.6.0
 ```
 
-**Founder approval required before this push.** It is the first publish to the
-framework repository in this phase, and everything after it depends on that tag
-being correct. If any framework change lands later, the tag moves again — or
-cut `v0.6.1` and bump the workflow, which is the safer habit once a tag has
-been published even once.
+Then verify what CI will actually receive, by fetching the tag the way CI does
+rather than trusting the local clone:
+
+```bash
+git clone --depth 1 --branch v0.6.0 https://github.com/nickejanssen/team-ai.git /tmp/tagcheck
+cd /tmp/tagcheck && npm ci && npm run build && node dist/cli.js check-agnostic
+cd <arcwright> && node /tmp/tagcheck/dist/cli.js validate-kb --instance team-ai
+```
+
+**Force-pushing the tag is safe only while it has never been published.** Once
+it has, cut `v0.6.1` and bump the workflow instead of moving it.
+
+**Founder approval required before this push.** It is a publish to the
+framework repository, and everything after it depends on the tag being correct.
+
+*Completed 2026-09-20:* team-ai PR #8 squash-merged as `86c7503`; `v0.6.0`
+re-pointed there and pushed; the tag verified by fresh clone, build,
+`check-agnostic`, and `validate-kb` against Arcwright.
 
 - [ ] **Step 2: Verify locally first**
 
