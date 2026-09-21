@@ -13,6 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/checkout@v4
         with:
           repository: nickejanssen/team-ai
@@ -32,3 +34,16 @@ jobs:
       - name: no prior-namespace ids survive
         run: |
           ! git grep -n -E '^[[:space:]]*id:[[:space:]]*"?(operating|patterns|playbooks|custom|decisions|platform|unmapped)\.' -- . ':!docs/archive' ':!adoption-plan.yaml' ':!docs/adoption-plan.md' ':!team-ai/remap-proposal.yaml' ':!team-ai/inventory.txt' ':!.team-ai-cli'
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+      - name: checker unit tests
+        run: python -m pytest scripts/checks/tests/ -q
+      - name: provider-leak-check
+        run: python scripts/checks/provider_leak_check.py
+      - name: knowledge-query-guard
+        run: python scripts/checks/knowledge_query_guard.py
+      - name: scope-evidence-check
+        run: python scripts/checks/scope_evidence_check.py --base origin/${{ github.base_ref || 'main' }}
+      - name: eval gate
+        run: node .team-ai-cli/dist/cli.js run-evals --root team-ai
