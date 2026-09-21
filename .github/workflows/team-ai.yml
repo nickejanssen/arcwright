@@ -11,6 +11,11 @@ permissions:
 jobs:
   team-ai:
     runs-on: ubuntu-latest
+    env:
+      # CI checks the framework out to .team-ai-cli/, not beside the repository,
+      # so the resolver's sibling search cannot find it. TEAM_AI_CLI is the
+      # documented override and exercising it here keeps that path tested.
+      TEAM_AI_CLI: .team-ai-cli/dist/cli.js
     steps:
       - uses: actions/checkout@v4
         with:
