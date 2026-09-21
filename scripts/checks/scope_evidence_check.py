@@ -46,16 +46,35 @@ def normalise(number: str) -> str:
     return f"D-{int(number):03d}"
 
 
-def approved_decision_ids() -> set[str]:
+def _decision_ids(approved_only: bool) -> set[str]:
     ids: set[str] = set()
     with DECISIONS_CSV.open(encoding="utf-8-sig", newline="") as handle:
         for row in csv.DictReader(handle):
-            if (row.get("Status") or "").strip() not in APPROVED_DECISION_STATUSES:
+            status = (row.get("Status") or "").strip()
+            if approved_only and status not in APPROVED_DECISION_STATUSES:
                 continue
             match = re.match(r"\s*D-(\d+)", row.get("Decision") or "")
             if match:
                 ids.add(normalise(match.group(1)))
     return ids
+
+
+# Two different questions, so two different sets.
+#
+# "Does this id exist?" catches a fabricated citation, which is the failure an
+# agent actually produces. It must accept every recorded decision whatever its
+# status: a spec may legitimately write "D-047 is still tentative, so this is
+# not build scope", and that sentence is careful rather than wrong. Filtering it
+# here rejects the document and reports that the decision is absent, which is
+# false.
+#
+# "Is this id approval?" is the gate, and only an approved status counts there.
+def existing_decision_ids() -> set[str]:
+    return _decision_ids(approved_only=False)
+
+
+def approved_decision_ids() -> set[str]:
+    return _decision_ids(approved_only=True)
 
 
 def known_adr_ids() -> set[str]:
@@ -71,7 +90,7 @@ def markdown_files() -> list[Path]:
 
 
 def check_references() -> list[str]:
-    decisions, adrs = approved_decision_ids(), known_adr_ids()
+    decisions, adrs = existing_decision_ids(), known_adr_ids()
     problems: list[str] = []
     for path in markdown_files():
         text = path.read_text(encoding="utf-8", errors="replace")
@@ -131,8 +150,12 @@ def check_declared_evidence(base: str) -> list[str]:
         for number in DECISION_REF.findall(value):
             cited = True
             if normalise(number) not in decisions:
+                recorded = normalise(number) in existing_decision_ids()
                 problems.append(
-                    f"{rel}: x-scope-evidence cites D-{number}, which does not exist"
+                    f"{rel}: x-scope-evidence cites D-{number}, which is recorded but not "
+                    f"approved (needs one of {sorted(APPROVED_DECISION_STATUSES)})"
+                    if recorded
+                    else f"{rel}: x-scope-evidence cites D-{number}, which does not exist"
                 )
         for number in set(ADR_REF.findall(value)) | set(ADR_PATH_REF.findall(value)):
             cited = True
