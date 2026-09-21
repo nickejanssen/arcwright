@@ -1,7 +1,7 @@
 """Locate the team-ai CLI, and optionally run it.
 
-`../team-ai` is correct only in the main checkout. Every agent session here runs
-in a git worktree, where the repository's parent is the worktree container
+The framework may live outside the active checkout. Every agent session here
+runs in a git worktree, where the repository's parent is the worktree container
 rather than the checkout's parent. `git rev-parse --git-common-dir` points at
 the main repository's `.git` from anywhere, including a worktree, so the
 checkout's real sibling stays reachable from all of them.

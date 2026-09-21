@@ -16,8 +16,9 @@ BLOCKED = (
     (
         ".claude/agents/team-ai-*.md",
         "Generated from team-ai/. Edit team-ai/agents/<name>.md, then run:\n"
-        "  node ../team-ai/dist/cli.js emit --target claude-code --dir team-ai "
-        "--out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked",
+        "  python scripts/team_ai_cli.py emit --target claude-code --dir team-ai "
+        "--out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search "
+        '--allow-tracked --search-command "python scripts/team_ai_cli.py"',
     ),
     (
         "team-ai/manifest.yaml",
