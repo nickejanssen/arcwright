@@ -34,6 +34,13 @@ supersedes: []
 
 **Reference:** `docs/superpowers/specs/2026-09-20-team-ai-agent-architecture-phase-b-design.md`
 
+> **This plan is frozen at Task 20.** It changed sixteen times during
+> implementation, and two of the last three defects were introduced by
+> corrections to earlier ones. That churn was justified while we were
+> discovering that retrieval was fundamentally broken; it is not a way to work
+> by default. Anything found after Task 20 closes goes into Phase C's spec,
+> written once and reviewed once — not into this document.
+
 ---
 
 ## Repository paths
@@ -649,7 +656,7 @@ no threshold over them will.
 **Refusal still happens — in the delivery path, not here.** Emitted agents are
 instructed to read their documents and say so when those documents do not
 answer. That is a judgement over actual content, and it is measured by the
-Arcwright-side delegation eval in Task 19. `run-evals` measures the
+observation log and by real use (D-B14). `run-evals` measures the
 deterministic harness, which the design establishes is not what ships.
 
 **Files:**
@@ -2343,7 +2350,7 @@ prompt that requires reading nothing:
 
 A reply proves the front matter parsed and the agent is dispatchable. Whether
 it answers *correctly* from the corpus is a different question, already measured
-by the coverage metric (Task 6) and the delegation eval (Task 19) — do not
+by the coverage metric (Task 6) and real use (D-B14) — do not
 re-test it here.
 
 **This step is not the implementer's.** It exercises a Claude Code feature, so
@@ -3175,7 +3182,7 @@ git commit -m "feat(hooks): non-blocking knowledge-state loop between Stop and S
 
 ---
 
-## Part 4 — Command, delegation eval, and records
+## Part 4 — Command and records
 
 ### Task 18: The /doc-review command
 
@@ -3265,84 +3272,6 @@ python scripts/team_ai_cli.py validate-kb --instance team-ai
 ```bash
 git add .claude/commands/doc-review.md
 git commit -m "feat(commands): /doc-review for document currency"
-```
-
----
-
-### Task 19: Delegation eval
-
-**Repository:** Arcwright
-
-**Goal:** Measure the path that actually ships — which agent a model picks given the agent descriptions and a question.
-
-**Files:**
-- Create: `evals/delegation/run_delegation_eval.py`
-- Create: `evals/delegation/README.md`
-
-**Acceptance Criteria:**
-- [ ] Reuses the committed golden questions, so no second question set is maintained
-- [ ] Reports per question which agent was chosen and whether it matched `expect_route`
-- [ ] Reports refusal behaviour on the out-of-scope questions
-- [ ] Runs on demand only, never in the pull-request workflow
-- [ ] Does not import `engine.routing` — *Verify:* `grep -c "engine.routing" evals/delegation/run_delegation_eval.py` → `0`
-- [ ] The pinned model and the date are recorded in a comment
-- [ ] `--dry-run` makes no network call — *Verify:* run it with no credentials set and confirm exit 0
-- [ ] Writes a dated report under `evals/reports/`
-
-**Verify:** `python evals/delegation/run_delegation_eval.py --dry-run` → prints the prompt it would send, makes no model call
-
-**Steps:**
-
-- [ ] **Step 1: Write the runner**
-
-Create `evals/delegation/run_delegation_eval.py`. It must:
-1. Load `team-ai/evals/golden/arcwright.golden.yaml`.
-2. Read each `.claude/agents/team-ai-*.md` front matter for `name` and `description` — this is exactly what the host shows a model when delegating.
-3. For each question, send the agent list and the question to **the host's own model family**, asking for one agent name or `__refuse__`.
-4. Compare against `expect_route` and write a dated JSON report to `evals/reports/`.
-
-**Do not route this through `engine.routing`.** An earlier draft did, to avoid
-naming a model. Two reasons that was wrong:
-
-- **It would measure the wrong thing.** This eval exists to predict how the
-  *host* chooses among agent descriptions. `pacing_decision` resolves to a
-  different vendor's model, so the result would describe that model rather than
-  the delegation this system actually performs.
-- **It would make the measurement unstable.** Routing through the product's
-  table means the answering model changes whenever product routing changes, so
-  two runs are not comparable. A measurement harness needs a pinned model.
-
-So pin the model explicitly in this file, matching the host's family. B-S5
-permits naming a model in development tooling: this is not a platform operation
-and makes no call through the product's abstraction. Record the pinned value and
-the date in a comment, and treat changing it as a new baseline.
-
-**Payload, for the record.** A full run sends ~1,000 tokens: 37 paraphrased
-questions and 17 one-line agent descriptions. No document content — the
-questions are paraphrased away from their sources by construction, and the
-descriptions already reach the host on every session, since it keeps them in
-context to delegate. Requires founder authorization before the first real run;
-`--dry-run` needs none and prints the exact prompts.
-
-- [ ] **Step 2: Document why it is separate**
-
-In `evals/delegation/README.md`, record: this eval measures the delivery path
-(a model choosing among agent descriptions), whereas `run-evals` measures the
-deterministic harness. It costs model calls, so it runs on demand, which is
-what keeps team-ai free of them.
-
-- [ ] **Step 3: Dry run, then a real run**
-
-```bash
-python evals/delegation/run_delegation_eval.py --dry-run
-python evals/delegation/run_delegation_eval.py
-```
-
-- [ ] **Step 4: Commit**
-
-```bash
-git add evals/delegation
-git commit -m "test(evals): delegation eval over the emitted agent descriptions"
 ```
 
 ---
@@ -3453,6 +3382,22 @@ A stale knowledge base that answers confidently is worse than no knowledge base.
 These criteria and the gap log are what prevent that, and they only work if
 someone reads them.
 ```
+
+- [ ] **Step 3c: Record how delegation quality gets assessed**
+
+The delegation eval was cut (D-B14). The question it would have answered is not
+dropped — add this to the *Kill Criteria* section written in Step 3b:
+
+```markdown
+**Delegation quality** is assessed from real use and the observation log,
+reviewed at the one-month mark alongside these criteria. If SME questions are
+being asked and the wrong agent is picked repeatedly, that is the evidence for
+the 17-to-8 topology decision. If no questions are being asked, that decision is
+moot and the agent layer is cut back under the criteria above.
+```
+
+Also update the design document's risk section: Windows background detachment
+is verified, so it is no longer a risk. `Stop` returns in 216ms.
 
 - [ ] **Step 4: Verify the whole suite one more time**
 

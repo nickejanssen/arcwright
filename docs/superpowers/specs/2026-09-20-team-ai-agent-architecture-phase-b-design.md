@@ -13,9 +13,9 @@ supersedes: []
 
 # team-ai Agent Architecture Phase B Design
 
-> Current version: v2.1
+> Current version: v3.0
 > Last updated: 2026-09-20
-> Status: Approved. Amended during implementation by measurement — see *M6*.
+> Status: Approved and built. Amended twice during implementation by measurement — see *M6* and *M7*. Frozen at Phase B close.
 > Canonical path: `docs/superpowers/specs/2026-09-20-team-ai-agent-architecture-phase-b-design.md`
 > Parent spec: `docs/specs/0089-team-ai-agent-architecture.md` (v1.5)
 
@@ -193,13 +193,48 @@ deterministic harness rather than the delivery path, but *refusalRate* was left
 as a gate despite describing the same harness. It is now a diagnostic too.
 Refusal in the delivery path is an agent reading its documents and saying they
 do not answer — a judgement over content, measured by the Arcwright-side
-delegation eval.
+observation log and real use (D-B14).
 
 **Eval-set contamination.** An out-of-scope probe question quoted verbatim in
 this document and in the plan afterwards scored 0.773 against those two files,
 the highest in the out-of-scope set. Retrieval was correct; the question had
 stopped being out-of-scope the moment it was documented. Golden questions and
 the corpus must stay disjoint, and the plan now checks it.
+
+---
+
+## M7 — What was built, and what the phase cost
+
+Recorded at Phase B close.
+
+**Verified outcomes**
+
+| item | result |
+|---|---|
+| Framework release | team-ai `0.6.0` published; a second tag follows for the resolver |
+| Full framework suite | 72 files, 695 tests, 0 failures |
+| Framework neutrality | `check-agnostic` clean; 165 files, 0 denied tokens |
+| Knowledge base | `validate-kb` OK on 449 documents, including instance `x-` fields |
+| Enforcement checks | all three pass on a clean tree with **no exception list** |
+| Hook loop | `Stop` 216ms, `SessionStart` 219ms — neither blocks |
+| Agent split | 3 search, 10 read-all, 3 delegate, 1 route |
+| Cost tier | every agent carries a `model`; previously all ran the session default |
+| Dead instructions | removed — was 43% of every emitted agent |
+
+**What the phase actually cost.** Thirteen implementer blocks, each one a real
+defect. Six were gaps in the framework rather than the instance — Arcwright is
+the first corpus to exercise team-ai at scale, and roughly half of what went
+wrong was the framework meeting a million tokens for the first time. Two were
+defects introduced by corrections to earlier defects, which is the argument for
+freezing this plan rather than continuing to amend it.
+
+The implementer caught five errors in this plan by reading the code before
+writing it. That discipline found more than either review pass did.
+
+**What is still unfixed, and deliberately so.** Hit rate is 48.5% against a
+target of 80%, in the three domains holding 94.7% of the corpus. Lexical levers
+are exhausted. That is the entire content of Phase C, and it is scoped by a
+number rather than a wishlist.
 
 ---
 
@@ -221,7 +256,7 @@ is not a scoring artefact.
 fix, hit rate is re-measured. Embeddings are commissioned only if the gap
 remains, and sized to the domains that still miss.
 
-**The condition has now been evaluated (M6), and the gap remains:** hit rate is
+**The condition was evaluated (M6) and the gap remains:** hit rate is
 48.5% against a target of 80%, and the lexical levers are exhausted. But the
 decision waits for the per-domain strategy in Task 9, not for this measurement.
 Eleven of fourteen domains are small enough to read outright, where findability
@@ -238,9 +273,10 @@ strategy is wrong at both ends of a 232-to-609,458-token range.
 ordered work as skills, hooks, workflows, evals, graph, retrieval — a filing
 system that placed the dependency of everything last.
 
-**D-B5 — The eval gate measures coverage deterministically in team-ai, and
-delegation on the Arcwright side.** team-ai stays free of model calls; the
-delegation eval runs on demand.
+**D-B5 — The eval gate measures coverage deterministically in team-ai.**
+team-ai stays free of model calls. Delegation was to have been measured by a
+model-based eval on the Arcwright side; that was cut under D-B14 and is
+assessed from real use instead.
 
 **D-B6 — `scope-evidence-check` enforces reference integrity plus a declared
 evidence field**, because detecting a scope claim is reading comprehension and
@@ -319,6 +355,23 @@ merging them would couple the product's routing to a development tool.
 Reviewers also noted this is plan-only build scope until recorded. That is the
 gap this entry closes: Task 14b is blocked until this decision is marked
 approved.
+
+**D-B14 — The delegation eval is cut. Approved 2026-09-20.** It would ask a
+stand-in model to predict which agent the host picks from 17 descriptions. The
+host's real delegation has the whole session in context, not just descriptions,
+so the proxy does not measure the same mechanism — and the one decision it
+feeds, D-B12, is better served by evidence this phase already produces: the
+observation log records which documents sessions actually touch, and real
+questions asked in anger are a stronger signal than 37 synthetic ones.
+
+Nothing depends on it, so the phase is complete without it. Cutting it also
+removes the last external-transmission question in the phase. The information
+need is not dropped: Task 20 records that delegation quality is assessed from
+real use and the observation log at the one-month mark, alongside the kill
+criteria.
+
+Do not build a proxy for something that becomes directly observable, at no
+cost, the moment the system is used.
 
 **D-B12 — The 17-to-8 topology question is deferred** to the coverage and
 usage evidence Phase B produces.
@@ -547,6 +600,7 @@ and stops. Lives beside `/implement`, `/review-pr` and `/scribe`.
 | Workflow engine | D-B9 — largest item in the phase, for a one-command sequence |
 | Semantic retrieval, unconditionally | D-B2 — conditional on post-fix measurement |
 | Topology change (17 agents to 8) | D-B12 — deferred to evidence |
+| A model-based delegation eval | D-B14 — a proxy for something real use shows for free |
 | Corpus re-namespacing | A second migration over ~390 documents; would not fix scoring |
 
 ---
@@ -652,7 +706,7 @@ and stops. Lives beside `/implement`, `/review-pr` and `/scribe`.
 - **Coverage will read low for thin domains.** That is the measurement working.
   The report must name which domains cover nothing, or a low number will be
   read as a broken check.
-- **Windows background detachment is unverified.** Fallback specified above.
+- ~~Windows background detachment is unverified.~~ **Verified 2026-09-20:** the `Stop` hook returns in 216ms and the detached child writes the snapshot; `SessionStart` reads it in 219ms. The documented fallback is not needed.
 - **Widening agent tool access** is a real boundary change, scoped to one
   command and listed for sign-off.
 - **The declared-evidence field can be filled carelessly.** The `none` value
