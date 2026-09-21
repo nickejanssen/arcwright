@@ -39,8 +39,10 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
+      - name: python test dependencies
+        run: python -m pip install --quiet pytest pyyaml
       - name: checker unit tests
-        run: python -m pytest scripts/checks/tests/ -q
+        run: python -m pytest scripts/checks/tests/ scripts/hooks/tests/ scripts/tests/ -q
       - name: provider-leak-check
         run: python scripts/checks/provider_leak_check.py
       - name: knowledge-query-guard
