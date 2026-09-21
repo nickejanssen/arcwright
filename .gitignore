@@ -35,3 +35,6 @@ evals/reports/*
 
 # team-ai machine state
 .team-ai/
+
+# Written by the Stop hook every session; machine state, not config.
+team-ai/graph/last-session-snapshot.json
