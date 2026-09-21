@@ -726,7 +726,7 @@ and stops. Lives beside `/implement`, `/review-pr` and `/scribe`.
 - **Coverage will read low for thin domains.** That is the measurement working.
   The report must name which domains cover nothing, or a low number will be
   read as a broken check.
-- ~~Windows background detachment is unverified.~~ **Verified 2026-09-20:** the `Stop` hook returns in 216ms and the detached child writes the snapshot; `SessionStart` reads it in 219ms. The documented fallback is not needed.
+- **Windows background detachment is verified 2026-09-20 and is no longer a risk:** the `Stop` hook returns in 216ms and the detached child writes the snapshot; `SessionStart` reads it in 219ms. The documented fallback is not needed.
 - **Widening agent tool access** is a real boundary change, scoped to one
   command and listed for sign-off.
 - **The declared-evidence field can be filled carelessly.** The `none` value

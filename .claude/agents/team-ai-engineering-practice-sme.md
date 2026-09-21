@@ -15,7 +15,7 @@ max_hops: 0
 
 The knowledge base is the Markdown under the KB root in `team-ai/index.lock`.
 
-Your corpus is about 632,759 tokens — far too large to read. Use ranked search:
+Your corpus is about 634,143 tokens — far too large to read. Use ranked search:
 
 ```bash
 python scripts/team_ai_cli.py search "<the question, in full>" --root team-ai --namespace engineering-practice --k 8
