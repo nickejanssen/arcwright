@@ -30,6 +30,12 @@
         "matcher": "Write|Edit",
         "hooks": [{ "type": "command", "command": "python scripts/hooks/record_observation.py" }]
       }
+    ],
+    "Stop": [
+      { "hooks": [{ "type": "command", "command": "python scripts/hooks/snapshot_knowledge_state.py" }] }
+    ],
+    "SessionStart": [
+      { "hooks": [{ "type": "command", "command": "python scripts/hooks/inject_session_context.py" }] }
     ]
   }
 }
