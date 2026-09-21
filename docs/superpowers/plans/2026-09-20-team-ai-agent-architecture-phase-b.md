@@ -3284,6 +3284,9 @@ git commit -m "feat(commands): /doc-review for document currency"
 - [ ] Reports per question which agent was chosen and whether it matched `expect_route`
 - [ ] Reports refusal behaviour on the out-of-scope questions
 - [ ] Runs on demand only, never in the pull-request workflow
+- [ ] Does not import `engine.routing` — *Verify:* `grep -c "engine.routing" evals/delegation/run_delegation_eval.py` → `0`
+- [ ] The pinned model and the date are recorded in a comment
+- [ ] `--dry-run` makes no network call — *Verify:* run it with no credentials set and confirm exit 0
 - [ ] Writes a dated report under `evals/reports/`
 
 **Verify:** `python evals/delegation/run_delegation_eval.py --dry-run` → prints the prompt it would send, makes no model call
@@ -3295,12 +3298,31 @@ git commit -m "feat(commands): /doc-review for document currency"
 Create `evals/delegation/run_delegation_eval.py`. It must:
 1. Load `team-ai/evals/golden/arcwright.golden.yaml`.
 2. Read each `.claude/agents/team-ai-*.md` front matter for `name` and `description` — this is exactly what the host shows a model when delegating.
-3. For each question, send the agent list and the question through `engine.routing`'s abstraction with `task_type="pacing_decision"` and the cheapest quality tier, asking for one agent name or `__refuse__`.
+3. For each question, send the agent list and the question to **the host's own model family**, asking for one agent name or `__refuse__`.
 4. Compare against `expect_route` and write a dated JSON report to `evals/reports/`.
 
-Model selection goes through the routing abstraction. Do not name a provider or
-model anywhere in this file — `provider_leak_check.py` scans `engine/` and
-`api/`, but `AGENTS.md` applies everywhere.
+**Do not route this through `engine.routing`.** An earlier draft did, to avoid
+naming a model. Two reasons that was wrong:
+
+- **It would measure the wrong thing.** This eval exists to predict how the
+  *host* chooses among agent descriptions. `pacing_decision` resolves to a
+  different vendor's model, so the result would describe that model rather than
+  the delegation this system actually performs.
+- **It would make the measurement unstable.** Routing through the product's
+  table means the answering model changes whenever product routing changes, so
+  two runs are not comparable. A measurement harness needs a pinned model.
+
+So pin the model explicitly in this file, matching the host's family. B-S5
+permits naming a model in development tooling: this is not a platform operation
+and makes no call through the product's abstraction. Record the pinned value and
+the date in a comment, and treat changing it as a new baseline.
+
+**Payload, for the record.** A full run sends ~1,000 tokens: 37 paraphrased
+questions and 17 one-line agent descriptions. No document content — the
+questions are paraphrased away from their sources by construction, and the
+descriptions already reach the host on every session, since it keeps them in
+context to delegate. Requires founder authorization before the first real run;
+`--dry-run` needs none and prints the exact prompts.
 
 - [ ] **Step 2: Document why it is separate**
 
