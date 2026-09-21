@@ -5,6 +5,7 @@ description: Answers engineering-practice questions strictly from the
 tools: Read, Grep, Glob
 kind: subagent
 model_tier: small
+model: haiku
 kb_namespaces:
   - engineering-practice
 max_hops: 0
@@ -14,7 +15,7 @@ max_hops: 0
 
 The knowledge base is the Markdown under the KB root in `team-ai/index.lock`.
 
-Your corpus is about 625,988 tokens — far too large to read. Use ranked search:
+Your corpus is about 629,889 tokens — far too large to read. Use ranked search:
 
 ```bash
 node ../team-ai/dist/cli.js search "<the question, in full>" --root team-ai --namespace engineering-practice --k 8

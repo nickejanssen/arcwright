@@ -5,6 +5,7 @@ description: Answers session-runtime questions strictly from the session-runtime
 tools: Read, Grep, Glob
 kind: subagent
 model_tier: small
+model: haiku
 kb_namespaces:
   - session-runtime
 max_hops: 0

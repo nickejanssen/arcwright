@@ -5,6 +5,7 @@ description: Answers arc-execution questions strictly from the arc-execution
 tools: Read, Grep, Glob
 kind: subagent
 model_tier: small
+model: haiku
 kb_namespaces:
   - arc-execution
 max_hops: 0

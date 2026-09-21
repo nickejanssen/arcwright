@@ -5,6 +5,7 @@ description: Routes a question to the domain subagent that owns it, or refuses
 tools: Read, Grep, Glob
 kind: router
 model_tier: none
+model: haiku
 kb_namespaces: []
 max_hops: 2
 ---

@@ -5,6 +5,7 @@ description: Answers knowledge-graph questions strictly from the knowledge-graph
 tools: Read, Grep, Glob
 kind: subagent
 model_tier: small
+model: haiku
 kb_namespaces:
   - knowledge-graph
 max_hops: 0

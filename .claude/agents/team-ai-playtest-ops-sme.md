@@ -5,6 +5,7 @@ description: Answers playtest-ops questions strictly from the playtest-ops
 tools: Read, Grep, Glob
 kind: subagent
 model_tier: small
+model: haiku
 kb_namespaces:
   - playtest-ops
 max_hops: 0

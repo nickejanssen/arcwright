@@ -5,6 +5,7 @@ description: Answers product-roadmap questions strictly from the product-roadmap
 tools: Read, Grep, Glob
 kind: subagent
 model_tier: small
+model: haiku
 kb_namespaces:
   - product-roadmap
 max_hops: 0
@@ -14,7 +15,7 @@ max_hops: 0
 
 The knowledge base is the Markdown under the KB root in `team-ai/index.lock`.
 
-Your corpus is about 241,046 tokens — far too large to read. Use ranked search:
+Your corpus is about 241,105 tokens — far too large to read. Use ranked search:
 
 ```bash
 node ../team-ai/dist/cli.js search "<the question, in full>" --root team-ai --namespace product-roadmap --k 8

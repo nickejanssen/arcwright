@@ -5,6 +5,7 @@ description: Answers monster-rpg questions strictly from the monster-rpg
 tools: Read, Grep, Glob
 kind: subagent
 model_tier: small
+model: haiku
 kb_namespaces:
   - monster-rpg
 max_hops: 0

@@ -5,6 +5,7 @@ description: Answers engine questions that span specialists, delegating one hop
 tools: Read, Grep, Glob
 kind: subagent
 model_tier: small
+model: haiku
 kb_namespaces:
   - arc-execution
   - knowledge-graph

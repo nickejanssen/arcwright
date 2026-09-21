@@ -5,6 +5,7 @@ description: Answers developer-api questions strictly from the developer-api
 tools: Read, Grep, Glob
 kind: subagent
 model_tier: small
+model: haiku
 kb_namespaces:
   - developer-api
 max_hops: 0

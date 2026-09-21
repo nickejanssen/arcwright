@@ -5,6 +5,7 @@ description: Answers model-routing questions strictly from the model-routing
 tools: Read, Grep, Glob
 kind: subagent
 model_tier: small
+model: haiku
 kb_namespaces:
   - model-routing
 max_hops: 0

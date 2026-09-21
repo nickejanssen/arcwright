@@ -5,6 +5,7 @@ description: Answers practice questions that span product, engineering, and
 tools: Read, Grep, Glob
 kind: subagent
 model_tier: small
+model: haiku
 kb_namespaces:
   - product-roadmap
   - engineering-practice

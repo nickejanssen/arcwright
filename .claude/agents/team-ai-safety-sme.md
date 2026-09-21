@@ -4,6 +4,7 @@ description: Answers safety questions strictly from the safety namespace, with c
 tools: Read, Grep, Glob
 kind: subagent
 model_tier: small
+model: haiku
 kb_namespaces:
   - safety
 max_hops: 0

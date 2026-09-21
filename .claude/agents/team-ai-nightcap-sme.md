@@ -5,6 +5,7 @@ description: Answers nightcap questions strictly from the nightcap namespace,
 tools: Read, Grep, Glob
 kind: subagent
 model_tier: small
+model: haiku
 kb_namespaces:
   - nightcap
 max_hops: 0

@@ -5,6 +5,7 @@ description: Answers character-behavior questions strictly from the
 tools: Read, Grep, Glob
 kind: subagent
 model_tier: small
+model: haiku
 kb_namespaces:
   - character-behavior
 max_hops: 0

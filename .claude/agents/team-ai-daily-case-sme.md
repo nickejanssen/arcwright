@@ -5,6 +5,7 @@ description: Answers daily-case questions strictly from the daily-case
 tools: Read, Grep, Glob
 kind: subagent
 model_tier: small
+model: haiku
 kb_namespaces:
   - daily-case
 max_hops: 0

@@ -5,6 +5,7 @@ description: Answers title questions across canonical, provisional, and archived
 tools: Read, Grep, Glob
 kind: subagent
 model_tier: small
+model: haiku
 kb_namespaces:
   - nightcap
   - monster-rpg
