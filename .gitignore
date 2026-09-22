@@ -38,3 +38,10 @@ evals/reports/*
 
 # Written by the Stop hook every session; machine state, not config.
 team-ai/graph/last-session-snapshot.json
+
+# Generated context bundles; regenerate with the arcwright-doc-bundler skill.
+# Snapshots, never source of truth, and a stale one outranks nothing.
+docs-bundles/
+
+# Per-session observation log written by the PostToolUse hook; machine state.
+team-ai/graph/observations/
