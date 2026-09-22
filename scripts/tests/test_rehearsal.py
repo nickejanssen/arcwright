@@ -7,12 +7,17 @@ parts worth pinning.
 """
 
 import json
+import re
 import socket
 import urllib.parse
+from pathlib import Path
 
 import pytest
 
 from scripts import rehearsal
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+LEGAL_ENV_VAR = re.compile(r"[A-Z_][A-Z0-9_]*")
 
 
 @pytest.fixture(autouse=True)
@@ -75,6 +80,104 @@ class TestRequiredProviderKeys:
     def test_absent_routing_table_requires_no_provider_keys(self):
         assert not rehearsal.ROUTING_TABLE.exists()
         assert rehearsal.required_provider_keys() == []
+
+    def test_every_derived_key_is_a_legal_env_var_name(self):
+        """An env var name with a separator in it cannot be set by any shell,
+        so `read_env` would demand a key the founder has no way to supply and
+        the rehearsal could never boot."""
+        write_routing_table(
+            rehearsal.ROUTING_TABLE,
+            {
+                "generation": {
+                    "cheap": "vendor-a/some-model",
+                    "premium": "vendor.b/other",
+                    "extra": "vendor c/third",
+                }
+            },
+        )
+        keys = rehearsal.required_provider_keys()
+        assert keys == [
+            "VENDOR_A_API_KEY",
+            "VENDOR_B_API_KEY",
+            "VENDOR_C_API_KEY",
+        ]
+        for key in keys:
+            assert LEGAL_ENV_VAR.fullmatch(key), f"illegal env var name: {key}"
+
+    def test_a_hyphenated_provider_key_can_actually_be_satisfied(self):
+        """End to end: the derived key is one a .env can define, so a complete
+        .env boots rather than failing on an unsatisfiable requirement."""
+        write_routing_table(
+            rehearsal.ROUTING_TABLE, {"generation": {"cheap": "vendor-a/model"}}
+        )
+        rehearsal.ENV_FILE.write_text(
+            complete_env_text() + "\nVENDOR_A_API_KEY=secret\n", encoding="utf-8"
+        )
+        assert rehearsal.read_env()["VENDOR_A_API_KEY"] == "secret"
+
+    def test_providers_that_normalize_alike_collapse_to_one_key(self):
+        write_routing_table(
+            rehearsal.ROUTING_TABLE,
+            {"generation": {"cheap": "vendor-a/x", "premium": "vendor_a/y"}},
+        )
+        assert rehearsal.required_provider_keys() == ["VENDOR_A_API_KEY"]
+
+    def test_a_model_with_an_empty_provider_is_ignored(self):
+        """`/model` would otherwise derive a bare `_API_KEY` that nothing can
+        satisfy."""
+        write_routing_table(
+            rehearsal.ROUTING_TABLE,
+            {"generation": {"cheap": "/model", "premium": "vendora/x"}},
+        )
+        assert rehearsal.required_provider_keys() == ["VENDORA_API_KEY"]
+
+
+class TestEnvVarStem:
+    @pytest.mark.parametrize(
+        ("provider", "expected"),
+        [
+            ("anthropic", "ANTHROPIC"),
+            ("vendor-a", "VENDOR_A"),
+            ("vendor.ai", "VENDOR_AI"),
+            ("together_ai", "TOGETHER_AI"),
+            ("vendor--a", "VENDOR_A"),
+            ("-vendor-", "VENDOR"),
+            ("", ""),
+        ],
+    )
+    def test_normalizes_to_a_legal_stem(self, provider, expected):
+        assert rehearsal.env_var_stem(provider) == expected
+
+
+class TestTheRealRoutingTable:
+    """These run against the committed routing table and .env.example."""
+
+    @pytest.fixture(autouse=True)
+    def _use_real_paths(self, monkeypatch):
+        monkeypatch.setattr(
+            rehearsal, "ROUTING_TABLE", REPO_ROOT / "config" / "routing_table.json"
+        )
+
+    def test_derived_keys_are_unchanged_and_legal(self):
+        keys = rehearsal.required_provider_keys()
+        assert keys == ["ANTHROPIC_API_KEY", "GROQ_API_KEY"]
+        for key in keys:
+            assert LEGAL_ENV_VAR.fullmatch(key)
+
+    def test_every_derived_key_is_documented_in_env_example(self):
+        """Adding a provider to the routing table without adding its key to
+        .env.example makes `make rehearsal` fail for everyone who sets up from
+        the example."""
+        example = (REPO_ROOT / ".env.example").read_text(encoding="utf-8")
+        documented = {
+            line.split("=", 1)[0].strip()
+            for line in example.splitlines()
+            if "=" in line and not line.strip().startswith("#")
+        }
+        missing = [
+            key for key in rehearsal.required_provider_keys() if key not in documented
+        ]
+        assert missing == []
 
 
 class TestReadEnv:

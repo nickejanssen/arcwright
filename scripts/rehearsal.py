@@ -54,6 +54,17 @@ REQUIRED_KEYS = (
 )
 
 
+def env_var_stem(provider: str) -> str:
+    """Normalize a routing-table provider id into a legal env var name stem.
+
+    Upper-casing alone leaves separators in place, so a provider written as
+    ``vendor-a`` would yield ``VENDOR-A_API_KEY`` — a name no shell can set and
+    that ``read_env`` could therefore never satisfy. Collapse every run of
+    non-alphanumeric characters into a single underscore instead.
+    """
+    return re.sub(r"[^A-Za-z0-9]+", "_", provider).strip("_").upper()
+
+
 def required_provider_keys() -> list[str]:
     """Derive the provider API-key env var names the active routing table needs.
 
@@ -65,14 +76,16 @@ def required_provider_keys() -> list[str]:
     if not ROUTING_TABLE.exists():
         return []
     table = json.loads(ROUTING_TABLE.read_text(encoding="utf-8"))
-    providers: set[str] = set()
+    stems: set[str] = set()
     for tier_map in table.values():
         if not isinstance(tier_map, dict):
             continue
         for model in tier_map.values():
             if isinstance(model, str) and "/" in model:
-                providers.add(model.split("/", 1)[0])
-    return [f"{provider.upper()}_API_KEY" for provider in sorted(providers)]
+                stem = env_var_stem(model.split("/", 1)[0])
+                if stem:
+                    stems.add(stem)
+    return sorted(f"{stem}_API_KEY" for stem in stems)
 
 
 TUNNEL_URL_RE = re.compile(r"https://[a-z0-9-]+\.trycloudflare\.com")
