@@ -15,7 +15,7 @@ records no number. Milestone state comes from GitHub's milestones.
     python scripts/roadmap_status.py --apply-milestones   # edits GitHub
 
 `--apply-milestones` sets each mismatched task or epic issue's GitHub milestone to
-the one the markdown records, skipping any issue titled for a different task. It
+the one the markdown records, skipping any issue whose title does not name it. It
 changes GitHub, so it runs only when asked.
 """
 
@@ -33,6 +33,9 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / "docs" / "roadmap" / "index.json"
 AW_PREFIX = re.compile(r"^(AW-\d+):")
+# The roadmap id an issue title declares: `AW-272: ...` for a task, or
+# `[Epic] M5-A: ...`, `M5-I Epic: ...`, `M5-H: ...` for an epic.
+TITLE_ID = re.compile(r"^(?:\[Epic\]\s*)?(AW-\d+|M\d+-[A-Z])\b")
 MILESTONE_LINE = re.compile(r"^\*\*Milestone(?: / Epic)?:\*\*\s*([^\s/]+)", re.M)
 
 
@@ -45,9 +48,9 @@ class TaskStatus:
     state: str | None
     github_milestone: str | None
     problems: list[str] = field(default_factory=list)
-    # False when the recorded issue is titled for a different task, or when
-    # index.json and the task file disagree about the milestone: the mapping is
-    # suspect, so nothing is written to GitHub on its strength.
+    # False when the recorded issue's title does not name this task or epic, or
+    # when index.json and the task file disagree about the milestone: the
+    # mapping is suspect, so nothing is written to GitHub on its strength.
     trusted: bool = True
 
 
@@ -55,7 +58,7 @@ class TaskStatus:
 class Report:
     tasks: list[TaskStatus]
     untracked_issues: list[dict]
-    problems: list[str]
+    problems: list[dict]
     epics: list[TaskStatus] = field(default_factory=list)
     milestones: list[dict] = field(default_factory=list)
 
@@ -120,10 +123,18 @@ def _join(
     status.issue = issue["number"]
     status.state = issue["state"].lower()
     status.github_milestone = milestone_id((issue.get("milestone") or {}).get("title"))
-    prefix = AW_PREFIX.match(issue["title"])
-    if prefix and prefix.group(1) != entry["id"]:
+    # Fail closed: an issue is trusted only when its title names this entry.
+    declared = TITLE_ID.match(issue["title"])
+    if declared is None:
         status.trusted = False
-        status.problems.append(f"issue #{issue['number']} is titled {prefix.group(1)}")
+        status.problems.append(
+            f"issue #{issue['number']}'s title does not name {entry['id']}"
+        )
+    elif declared.group(1) != entry["id"]:
+        status.trusted = False
+        status.problems.append(
+            f"issue #{issue['number']} is titled {declared.group(1)}"
+        )
     if status.github_milestone != status.milestone:
         status.problems.append(
             f"GitHub milestone {status.github_milestone or 'none'}, "
@@ -145,9 +156,24 @@ def reconcile(
         if match:
             by_prefix.setdefault(match.group(1), []).append(issue)
 
+    # Report-level warnings carry the milestones they concern, so a scoped
+    # report shows only its own: the task's milestone and each issue's.
+    task_milestone = {task["id"]: task["milestone"] for task in index["tasks"]}
     problems = [
-        f"{aw} is the title prefix of several issues: "
-        + ", ".join(f"#{i['number']}" for i in found)
+        {
+            "text": f"{aw} is the title prefix of several issues: "
+            + ", ".join(f"#{i['number']}" for i in found),
+            "milestones": sorted(
+                (
+                    {task_milestone.get(aw)}
+                    | {
+                        milestone_id((i.get("milestone") or {}).get("title"))
+                        for i in found
+                    }
+                )
+                - {None}
+            ),
+        }
         for aw, found in sorted(by_prefix.items())
         if len(found) > 1
     ]
@@ -239,6 +265,7 @@ def scoped(report: Report, milestone: str | None) -> Report:
         untracked_issues=[
             i for i in report.untracked_issues if i["milestone"] == milestone
         ],
+        problems=[p for p in report.problems if milestone in p["milestones"]],
     )
 
 
@@ -298,7 +325,7 @@ def render(report: Report, milestone: str | None) -> str:
                 f"{issue['title'][:66]}"
             )
     for problem in report.problems:
-        lines.append(f"! {problem}")
+        lines.append(f"! {problem['text']}")
     return "\n".join(lines)
 
 

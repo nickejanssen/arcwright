@@ -74,7 +74,9 @@ def test_flags_an_issue_titled_for_a_different_task():
 
 def test_flags_duplicate_title_prefixes():
     report = reconcile({"tasks": []}, [issue(1, "AW-300: a"), issue(2, "AW-300: b")])
-    assert report.problems == ["AW-300 is the title prefix of several issues: #1, #2"]
+    assert [p["text"] for p in report.problems] == [
+        "AW-300 is the title prefix of several issues: #1, #2"
+    ]
 
 
 def test_milestone_id_reads_the_prefix_before_the_colon():
@@ -218,3 +220,49 @@ def test_json_output_is_scoped_to_the_requested_milestone(
     out = json.loads(capsys.readouterr().out)
     assert [t["milestone"] for t in out["tasks"]] == ["M5"]
     assert out["untracked_issues"] == []
+
+
+def test_an_epic_mapped_to_another_epics_issue_is_never_edited():
+    # Review repro: M5-H recorded against #234, the M5-I epic, with a mismatch.
+    report = reconcile(
+        {
+            "tasks": [],
+            "epics": [
+                {
+                    "id": "M5-H",
+                    "title": "Narrative",
+                    "milestone": "M5",
+                    "github": {"issue_number": 234},
+                }
+            ],
+        },
+        [issue(234, "M5-I Epic: Couch Race", milestone=None)],
+    )
+    assert report.epics[0].trusted is False
+    assert "issue #234 is titled M5-I" in report.epics[0].problems
+    assert milestone_edits(report, None) == []
+
+
+def test_an_issue_whose_title_names_no_roadmap_id_fails_closed():
+    report = reconcile(
+        {"tasks": [task("AW-274", number=220)]},
+        [issue(220, "Game-specific vocabulary hardcoded", milestone=None)],
+    )
+    assert report.tasks[0].trusted is False
+    assert milestone_edits(report, None) == []
+
+
+def test_report_warnings_follow_the_milestone_scope():
+    report = reconcile(
+        {"tasks": [task("AW-1", "M1", 1), task("AW-2", "M5", 2)]},
+        [
+            issue(1, "AW-1: a", milestone="M1: Core"),
+            issue(3, "AW-1: duplicate", milestone="M1: Core"),
+            issue(2, "AW-2: b"),
+        ],
+    )
+    assert [p["text"] for p in report.problems] == [
+        "AW-1 is the title prefix of several issues: #1, #3"
+    ]
+    assert "AW-1 is the title prefix" not in render(report, "M5")
+    assert "AW-1 is the title prefix" in render(report, "M1")
