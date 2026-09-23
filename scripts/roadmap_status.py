@@ -26,12 +26,14 @@ import json
 import re
 import subprocess
 import sys
-from dataclasses import asdict, dataclass, field
+from collections.abc import Callable
+from dataclasses import asdict, dataclass, field, replace
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 INDEX = ROOT / "docs" / "roadmap" / "index.json"
 AW_PREFIX = re.compile(r"^(AW-\d+):")
+MILESTONE_LINE = re.compile(r"^\*\*Milestone(?: / Epic)?:\*\*\s*([^\s/]+)", re.M)
 
 
 @dataclass
@@ -43,8 +45,9 @@ class TaskStatus:
     state: str | None
     github_milestone: str | None
     problems: list[str] = field(default_factory=list)
-    # False when the recorded issue is titled for a different task: the mapping
-    # is suspect, so nothing is written to GitHub on its strength.
+    # False when the recorded issue is titled for a different task, or when
+    # index.json and the task file disagree about the milestone: the mapping is
+    # suspect, so nothing is written to GitHub on its strength.
     trusted: bool = True
 
 
@@ -64,16 +67,41 @@ def milestone_id(title: str | None) -> str | None:
     return title.split(":", 1)[0].strip()
 
 
+def read_roadmap_file(path: str) -> str | None:
+    try:
+        return (ROOT / path).read_text(encoding="utf-8")
+    except OSError:
+        return None
+
+
 def _join(
     entry: dict,
     by_number: dict[int, dict],
     by_prefix: dict[str, list[dict]],
     mapped: set[int],
+    read: Callable[[str], str | None],
 ) -> TaskStatus:
     number = (entry.get("github") or {}).get("issue_number")
-    status = TaskStatus(
-        entry["id"], entry["title"], entry["milestone"], None, None, None
-    )
+    # The task or epic file is canonical for scope, milestone included (D-109);
+    # index.json is a lookup manifest that can drift from it.
+    milestone = entry["milestone"]
+    status = TaskStatus(entry["id"], entry["title"], milestone, None, None, None)
+    if entry.get("path"):
+        text = read(entry["path"])
+        match = MILESTONE_LINE.search(text or "")
+        if match is None:
+            status.trusted = False
+            status.problems.append(
+                f"{entry['path']} "
+                + ("does not exist" if text is None else "records no milestone")
+                + f"; using index.json's {milestone}"
+            )
+        elif match.group(1) != milestone:
+            status.milestone = match.group(1)
+            status.trusted = False
+            status.problems.append(
+                f"index.json says {milestone}, {entry['path']} says {match.group(1)}"
+            )
     if number is None:
         candidates = by_prefix.get(entry["id"], [])
         if len(candidates) == 1:
@@ -96,16 +124,19 @@ def _join(
     if prefix and prefix.group(1) != entry["id"]:
         status.trusted = False
         status.problems.append(f"issue #{issue['number']} is titled {prefix.group(1)}")
-    if status.github_milestone != entry["milestone"]:
+    if status.github_milestone != status.milestone:
         status.problems.append(
             f"GitHub milestone {status.github_milestone or 'none'}, "
-            f"markdown says {entry['milestone']}"
+            f"the task file says {status.milestone}"
         )
     return status
 
 
 def reconcile(
-    index: dict, issues: list[dict], github_milestones: list[dict] | None = None
+    index: dict,
+    issues: list[dict],
+    github_milestones: list[dict] | None = None,
+    read: Callable[[str], str | None] = read_roadmap_file,
 ) -> Report:
     by_number = {issue["number"]: issue for issue in issues}
     by_prefix: dict[str, list[dict]] = {}
@@ -122,9 +153,9 @@ def reconcile(
     ]
 
     mapped: set[int] = set()
-    tasks = [_join(task, by_number, by_prefix, mapped) for task in index["tasks"]]
+    tasks = [_join(task, by_number, by_prefix, mapped, read) for task in index["tasks"]]
     epics = [
-        _join(epic, by_number, by_prefix, mapped)
+        _join(epic, by_number, by_prefix, mapped, read)
         for epic in index.get("epics", [])
         if "title" in epic and "milestone" in epic
     ]
@@ -196,7 +227,23 @@ def fetch_milestones() -> list[dict]:
     return json.loads(result.stdout)
 
 
+def scoped(report: Report, milestone: str | None) -> Report:
+    """The report limited to one milestone, so every output agrees on membership."""
+    if milestone is None:
+        return report
+    return replace(
+        report,
+        tasks=[t for t in report.tasks if t.milestone == milestone],
+        epics=[e for e in report.epics if e.milestone == milestone],
+        milestones=[m for m in report.milestones if m["id"] == milestone],
+        untracked_issues=[
+            i for i in report.untracked_issues if i["milestone"] == milestone
+        ],
+    )
+
+
 def render(report: Report, milestone: str | None) -> str:
+    report = scoped(report, milestone)
     lines: list[str] = []
     groups: dict[str, list[TaskStatus]] = {}
     for task in report.tasks:
@@ -324,7 +371,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"roadmap-status: {changed} milestone(s) updated")
         return 0
     if args.json:
-        print(json.dumps(asdict(report), indent=2))
+        print(json.dumps(asdict(scoped(report, args.milestone)), indent=2))
     else:
         print(render(report, args.milestone))
     return 0
