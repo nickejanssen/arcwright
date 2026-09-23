@@ -43,6 +43,8 @@ The knowledge graph lives in six tables in Cloud SQL PostgreSQL.
 
 ## 4.3 The Three Core Operations
 
+**Implemented by:** `engine/knowledge/graph.py::assert_knowledge`, `engine/knowledge/graph.py::get_character_knowledge`, `engine/knowledge/graph.py::revoke_knowledge`.
+
 The knowledge graph exposes three operations to the rest of the engine:
 
 **Assert:** a character learns something. Called when the arc delivers a clue to a player, when an NPC reveals information during dialogue, or when the pacing engine decides a character should know something to advance the session. Stored in `knowledge_states` with the fact, the character, the source, the timestamp, and the confidence level.

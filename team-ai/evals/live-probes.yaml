@@ -1,0 +1,106 @@
+# Live correctness probes for the knowledge-base agents.
+#
+# The golden set measures retrieval with a deterministic harness: did the right
+# document rank. It cannot tell whether the answer an agent gives is true. On
+# 2026-09-22 two agents cited real files and were wrong: one reported closed
+# tasks as planned, one reported an implemented subsystem as absent. These
+# probes are scored on correctness, against ground truth that lives outside the
+# knowledge base, so a confident citation cannot pass for a right answer.
+#
+# Run at each monthly kill-criteria review (docs/specs/0089, Kill Criteria):
+# dispatch each probe to its agent in a fresh session, check the ground truth
+# with the command given, and score each one:
+#   correct  - true, and from the right source
+#   deferred - named the owning source instead of answering, where that is right
+#   wrong    - false, invented, or answered from a source that does not own it
+# Record the scores and each wrong answer's cause in a dated file beside this
+# one. The cause decides the remedy: a retrieval miss (the document existed
+# and was not found) is Phase C's evidence; a rule or data failure is not.
+#
+# Ground truth drifts. Re-check each command's output at review time rather
+# than trusting the expectation below.
+
+probes:
+  - id: status-closed-task
+    agent: product-roadmap-sme
+    question: Is AW-272, the continuity and coherence eval suite, still planned?
+    expect: deferred
+    pass_if: Names the GitHub tracker or scripts/roadmap_status.py as the owner of status. Does not say Planned.
+    ground_truth: gh issue view 204 --json state
+
+  - id: milestone-membership-complete
+    agent: product-roadmap-sme
+    question: List every open task in M5.
+    expect: deferred
+    pass_if: Says a list drawn from the roadmap index is not complete and names scripts/roadmap_status.py.
+    ground_truth: python scripts/roadmap_status.py --milestone M5
+
+  - id: live-loop-exists
+    agent: arc-execution-sme
+    question: Does the engine advance a live session's beat when a player submits input? Which code does it?
+    expect: correct
+    pass_if: Cites section 3.6's Implemented-by line naming SessionService.advance_live_session_on_input. Does not say it is missing.
+    ground_truth: python scripts/checks/implemented_by_check.py
+
+  - id: merge-order
+    agent: session-runtime-sme
+    question: Which merged first, the Phase B team-ai architecture or the stale docs-bundles cleanup?
+    expect: deferred
+    pass_if: Names git history as the owner. Gives no order.
+    ground_truth: git log --oneline --grep "Phase B team-ai architecture" --grep "stale generated bundles"
+
+  - id: completion-percentage
+    agent: engineering-practice-sme
+    question: Roughly what percentage of the engine is implemented at MVP scope?
+    expect: deferred
+    pass_if: States no percentage.
+    ground_truth: none exists; any number is invented
+
+  - id: absence-discipline
+    agent: knowledge-graph-sme
+    question: How long does the knowledge graph retain a revoked fact before deleting it?
+    expect: correct
+    pass_if: Either cites a document that states it, or lists the terms searched and says not found under them. Never says the policy does not exist.
+    ground_truth: grep -rn -i "retain\|retention\|purge" docs/architecture/04-knowledge-graph.md
+
+  - id: nightcap-player-count
+    agent: nightcap-sme
+    question: How many players does Nightcap V1 support?
+    expect: correct
+    pass_if: Two-player play is mandatory, four is a reference configuration, the upper bound is OPEN, cited from docs/gdd/nightcap/. Does not give 2-8 or a four-player floor as current.
+    ground_truth: grep -rn "D-108" docs/product/decisions-log.csv
+
+  - id: couch-race-is-history
+    agent: nightcap-couch-race-sme
+    question: How many beats does a Couch Race session have?
+    expect: correct
+    pass_if: Opens by saying the material is superseded, then answers from the archived document and names nightcap-sme for current design.
+    ground_truth: docs/decisions/0023-nightcap-master-gdd-authority.md
+
+  - id: conflict-cited-together
+    agent: nightcap-sme
+    question: Is the Nightcap killer one of the players?
+    expect: correct
+    pass_if: Current design is an AI suspect from the GDD; any older player-killer or Imposter material is cited as historical, not merged into the answer.
+    ground_truth: docs/prd/02-requirements.md (Nightcap authority override)
+
+  - id: routing-without-agents-md
+    agent: model-routing-sme
+    question: Where are provider and model names allowed to appear?
+    expect: correct
+    pass_if: Answers from docs/architecture/06-model-routing.md with a citation. The agent loads no AGENTS.md, so a correct answer here is retrieval, not recall.
+    ground_truth: docs/architecture/06-model-routing.md
+
+  - id: safety-positive-control
+    agent: safety-sme
+    question: Can an arc's configuration disable the L1 hard stops?
+    expect: correct
+    pass_if: No, cited from docs/architecture/10-content-safety.md section 10.2.
+    ground_truth: docs/architecture/10-content-safety.md
+
+  - id: caller-routes-cross-domain
+    agent: main-session
+    question: What does the knowledge graph record, and how does it constrain what an AI character may say?
+    expect: correct
+    pass_if: The calling session dispatches both knowledge-graph-sme and character-behavior-sme and reconciles them. No router agent exists to do it.
+    ground_truth: the dispatch list in the calling session's transcript
