@@ -146,6 +146,9 @@ def bash_verdict(command: str, owned: set[str], cwd: str | None) -> str | None:
         f"exactly, from the repository root: {search_command(owned)}. "
         "For status, code or history, name the source that owns the answer."
     )
+    # A trailing stderr redirect is harmless and habitual; refusing it set off
+    # retry cascades that ended in agents misreporting a missing interpreter.
+    command = re.sub(r"\s+2>&1\s*$", "", command)
     if re.search(r"[;|`<>$\n]", command):
         return refusal
     try:

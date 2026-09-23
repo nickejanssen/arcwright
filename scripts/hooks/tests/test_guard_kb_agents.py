@@ -96,3 +96,11 @@ def test_refusal_names_the_exact_command_and_rules_out_a_missing_interpreter():
     )
     assert "Python is available" in reason
     assert "--root team-ai --namespace nightcap --k 8" in reason
+
+
+def test_a_trailing_stderr_redirect_is_accepted_but_nothing_else_is():
+    agent = "nightcap-sme"
+    ok = f'{SEARCH} "players" --root team-ai --namespace nightcap --k 8'
+    assert allowed("Bash", agent, command=ok + " 2>&1")
+    assert not allowed("Bash", agent, command=ok + " 2>&1 | head")
+    assert not allowed("Bash", agent, command=ok + " > out.txt")
