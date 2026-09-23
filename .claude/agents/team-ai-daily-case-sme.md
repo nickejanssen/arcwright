@@ -5,6 +5,12 @@ description: Daily Case title material, labelled as provisional until canonized.
   citations.
 tools: Read, Grep, Glob
 omitClaudeMd: true
+hooks:
+  PreToolUse:
+    - matcher: Read|Grep|Glob|Bash
+      hooks:
+        - type: command
+          command: python scripts/hooks/guard_kb_agents.py
 kind: subagent
 model_tier: small
 model: haiku

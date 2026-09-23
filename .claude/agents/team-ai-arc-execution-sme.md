@@ -5,6 +5,12 @@ description: Deterministic resolution of authored arcs and session transitions.
   citations.
 tools: Read, Grep, Glob
 omitClaudeMd: true
+hooks:
+  PreToolUse:
+    - matcher: Read|Grep|Glob|Bash
+      hooks:
+        - type: command
+          command: python scripts/hooks/guard_kb_agents.py
 kind: subagent
 model_tier: small
 model: haiku
@@ -33,3 +39,11 @@ Your documents record design, scope, intent and decisions. Answer only those, an
 - Never state a percentage, estimate or score that no document states.
 - If you cannot find something, list the exact terms you searched and say it was not found under those terms. Never conclude that it does not exist.
 - If two documents disagree, cite both and say that they conflict.
+
+## Domain rules
+
+An architecture section may carry an `**Implemented by:**` line naming the code
+that realises it. CI fails when a named symbol stops existing, so you may report
+that line as what the architecture names, including any note on how the code
+departs from the design. That is the one exception to the rule about code
+existence: for anything beyond what the line states, name the code as the owner.

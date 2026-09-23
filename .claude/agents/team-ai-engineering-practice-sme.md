@@ -5,6 +5,12 @@ description: Engineering conventions, architecture practice, and delivery
   docs, with citations.
 tools: Read, Grep, Glob, Bash
 omitClaudeMd: true
+hooks:
+  PreToolUse:
+    - matcher: Read|Grep|Glob|Bash
+      hooks:
+        - type: command
+          command: python scripts/hooks/guard_kb_agents.py
 kind: subagent
 model_tier: small
 model: haiku

@@ -39,7 +39,7 @@ probes:
     agent: arc-execution-sme
     question: Does the engine advance a live session's beat when a player submits input? Which code does it?
     expect: correct
-    pass_if: Cites section 3.6's Implemented-by line naming SessionService.advance_live_session_on_input. Does not say it is missing.
+    pass_if: Reports section 3.6's Implemented-by line, SessionService.advance_live_session_on_input, as what the architecture names, including its note that the code is input-driven rather than a long-running coroutine, and names the code as the owner for anything further. Does not say it is missing, and does not describe the design's event queue as how the code works.
     ground_truth: python scripts/checks/implemented_by_check.py
 
   - id: merge-order

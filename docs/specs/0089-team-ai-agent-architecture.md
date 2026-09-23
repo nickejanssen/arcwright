@@ -728,6 +728,14 @@ and CI named to the tracker, the code, git and CI; no unstated percentages; an
 unfound item reported with the terms searched, never as nonexistent;
 conflicting documents cited together. An instance's `## Domain rules` section is
 emitted, and emit refuses any agent whose instructions need a tool it lacks.
+Live probes then showed that words were not enough: agents read the probe answer
+key and engine code, and one ran a script beyond its search command. From
+team-ai v0.6.5 each emitted agent declares `scripts/hooks/guard_kb_agents.py` as
+a `PreToolUse` hook in its own front matter: Read, Grep and Glob only under the
+KB root, Bash only for the search command. Declared per agent, it adds nothing
+to the main session's tool calls. Engine specialists may report an
+`**Implemented by:**` line, which CI keeps true, as the one exception to the
+code-existence rule.
 
 **B-S8 — Status lives on GitHub (D-109).** `scripts/roadmap_status.py` joins
 the markdown's scope to live GitHub state and reports every mismatch. Plain
