@@ -6,9 +6,11 @@ rehearsal starts at all, or starts pointing at the wrong place, so they are the
 parts worth pinning.
 """
 
-import json
+import builtins
 import re
 import socket
+import sys
+import types
 import urllib.parse
 from pathlib import Path
 
@@ -17,174 +19,110 @@ import pytest
 from scripts import rehearsal
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-LEGAL_ENV_VAR = re.compile(r"[A-Z_][A-Z0-9_]*")
+# No trailing \b: the leak to catch is `ANTHROPIC_API_KEY`, and `_` is a word
+# character, so a closing boundary would step straight over it.
+PROVIDER_NAME = re.compile(
+    r"\b(?:anthropic|groq|openai|cohere|mistral|bedrock|vertex)", re.IGNORECASE
+)
+
+# What the routing layer reports for the committed routing table. Stubbed in
+# most tests so they exercise rehearsal.py's own handling rather than the
+# router, and so they do not pay the LLM SDK import.
+CREDENTIALS = [
+    ("ANTHROPIC_API_KEY", "PRIMARY_LLM_API_KEY"),
+    ("GROQ_API_KEY", "SECONDARY_LLM_API_KEY"),
+]
 
 
 @pytest.fixture(autouse=True)
 def _isolate_repo_paths(monkeypatch, tmp_path):
-    """Keep every test off the real .env, .env.example and routing table."""
+    """Keep every test off the real .env and .env.example."""
     monkeypatch.setattr(rehearsal, "ENV_FILE", tmp_path / ".env")
     monkeypatch.setattr(rehearsal, "SHARED_ENV_FILE", tmp_path / "shared" / ".env")
     monkeypatch.setattr(rehearsal, "ENV_EXAMPLE", tmp_path / ".env.example")
-    monkeypatch.setattr(rehearsal, "ROUTING_TABLE", tmp_path / "routing_table.json")
     monkeypatch.setattr(rehearsal, "children", [])
 
 
-def write_routing_table(path, table):
-    path.write_text(json.dumps(table), encoding="utf-8")
+@pytest.fixture
+def credentials(monkeypatch):
+    """Stand in for the routing layer with the real committed requirements."""
+    monkeypatch.setattr(
+        rehearsal, "required_credential_env_vars", lambda: list(CREDENTIALS)
+    )
 
 
 def complete_env_text(**overrides):
     values = {key: "set" for key in rehearsal.REQUIRED_KEYS}
+    values.update({name: "set" for name, _ in CREDENTIALS})
     values.update(overrides)
-    return "\n".join(f"{key}={value}" for key, value in values.items())
+    return "\n".join(f"{key}={value}" for key, value in values.items() if value)
 
 
-class TestRequiredProviderKeys:
-    """Rule 8: provider names live in the routing table, not in this script."""
+class TestRequiredCredentialEnvVars:
+    """Rule 8: this script holds no provider names and derives nothing. It asks
+    the routing layer, which owns the one mapping."""
 
-    def test_derives_one_key_per_provider_in_the_routing_table(self):
-        write_routing_table(
-            rehearsal.ROUTING_TABLE,
-            {
-                "generation": {"premium": "vendorb/big-model", "cheap": "vendora/x"},
-                "classification": {"cheap": "vendora/y"},
-            },
-        )
-        assert rehearsal.required_provider_keys() == [
-            "VENDORA_API_KEY",
-            "VENDORB_API_KEY",
-        ]
-
-    def test_a_new_provider_in_the_table_becomes_a_new_required_key(self):
-        """The reason this function exists: adding a provider must not need an
-        edit here. If someone hardcodes the provider list, this goes red."""
-        write_routing_table(
-            rehearsal.ROUTING_TABLE, {"generation": {"cheap": "vendora/x"}}
-        )
-        before = rehearsal.required_provider_keys()
-        write_routing_table(
-            rehearsal.ROUTING_TABLE,
-            {"generation": {"cheap": "vendora/x", "premium": "newcomer/z"}},
-        )
-        after = rehearsal.required_provider_keys()
-        assert set(after) - set(before) == {"NEWCOMER_API_KEY"}
-
-    def test_ignores_bare_model_names_that_carry_no_provider(self):
-        write_routing_table(
-            rehearsal.ROUTING_TABLE,
-            {"generation": {"cheap": "no-slash-here", "premium": "vendora/x"}},
-        )
-        assert rehearsal.required_provider_keys() == ["VENDORA_API_KEY"]
-
-    def test_absent_routing_table_requires_no_provider_keys(self):
-        assert not rehearsal.ROUTING_TABLE.exists()
-        assert rehearsal.required_provider_keys() == []
-
-    def test_every_derived_key_is_a_legal_env_var_name(self):
-        """An env var name with a separator in it cannot be set by any shell,
-        so `read_env` would demand a key the founder has no way to supply and
-        the rehearsal could never boot."""
-        write_routing_table(
-            rehearsal.ROUTING_TABLE,
-            {
-                "generation": {
-                    "cheap": "vendor-a/some-model",
-                    "premium": "vendor.b/other",
-                    "extra": "vendor c/third",
-                }
-            },
-        )
-        keys = rehearsal.required_provider_keys()
-        assert keys == [
-            "VENDOR_A_API_KEY",
-            "VENDOR_B_API_KEY",
-            "VENDOR_C_API_KEY",
-        ]
-        for key in keys:
-            assert LEGAL_ENV_VAR.fullmatch(key), f"illegal env var name: {key}"
-
-    def test_a_hyphenated_provider_key_can_actually_be_satisfied(self):
-        """End to end: the derived key is one a .env can define, so a complete
-        .env boots rather than failing on an unsatisfiable requirement."""
-        write_routing_table(
-            rehearsal.ROUTING_TABLE, {"generation": {"cheap": "vendor-a/model"}}
-        )
-        rehearsal.ENV_FILE.write_text(
-            complete_env_text() + "\nVENDOR_A_API_KEY=secret\n", encoding="utf-8"
-        )
-        assert rehearsal.read_env()["VENDOR_A_API_KEY"] == "secret"
-
-    def test_providers_that_normalize_alike_collapse_to_one_key(self):
-        write_routing_table(
-            rehearsal.ROUTING_TABLE,
-            {"generation": {"cheap": "vendor-a/x", "premium": "vendor_a/y"}},
-        )
-        assert rehearsal.required_provider_keys() == ["VENDOR_A_API_KEY"]
-
-    def test_a_model_with_an_empty_provider_is_ignored(self):
-        """`/model` would otherwise derive a bare `_API_KEY` that nothing can
-        satisfy."""
-        write_routing_table(
-            rehearsal.ROUTING_TABLE,
-            {"generation": {"cheap": "/model", "premium": "vendora/x"}},
-        )
-        assert rehearsal.required_provider_keys() == ["VENDORA_API_KEY"]
-
-
-class TestEnvVarStem:
-    @pytest.mark.parametrize(
-        ("provider", "expected"),
-        [
-            ("anthropic", "ANTHROPIC"),
-            ("vendor-a", "VENDOR_A"),
-            ("vendor.ai", "VENDOR_AI"),
-            ("together_ai", "TOGETHER_AI"),
-            ("vendor--a", "VENDOR_A"),
-            ("-vendor-", "VENDOR"),
-            ("", ""),
-        ],
-    )
-    def test_normalizes_to_a_legal_stem(self, provider, expected):
-        assert rehearsal.env_var_stem(provider) == expected
-
-
-class TestTheRealRoutingTable:
-    """These run against the committed routing table and .env.example."""
-
-    @pytest.fixture(autouse=True)
-    def _use_real_paths(self, monkeypatch):
+    def test_returns_what_the_routing_layer_reports(self, monkeypatch):
         monkeypatch.setattr(
-            rehearsal, "ROUTING_TABLE", REPO_ROOT / "config" / "routing_table.json"
+            rehearsal.sys, "path", [str(REPO_ROOT), *rehearsal.sys.path]
         )
-
-    def test_derived_keys_are_unchanged_and_legal(self):
-        keys = rehearsal.required_provider_keys()
-        assert keys == ["ANTHROPIC_API_KEY", "GROQ_API_KEY"]
-        for key in keys:
-            assert LEGAL_ENV_VAR.fullmatch(key)
-
-    def test_every_derived_key_is_documented_in_env_example(self):
-        """Adding a provider to the routing table without adding its key to
-        .env.example makes `make rehearsal` fail for everyone who sets up from
-        the example."""
-        example = (REPO_ROOT / ".env.example").read_text(encoding="utf-8")
-        documented = {
-            line.split("=", 1)[0].strip()
-            for line in example.splitlines()
-            if "=" in line and not line.strip().startswith("#")
-        }
-        missing = [
-            key for key in rehearsal.required_provider_keys() if key not in documented
+        assert rehearsal.required_credential_env_vars() == [
+            ("ANTHROPIC_API_KEY", "PRIMARY_LLM_API_KEY"),
+            ("GROQ_API_KEY", "SECONDARY_LLM_API_KEY"),
         ]
-        assert missing == []
+
+    def test_this_script_names_no_provider(self):
+        """The check `scripts/checks/provider_leak_check.py` does not scan
+        scripts/, so nothing else stops a provider name reappearing here."""
+        source = (REPO_ROOT / "scripts" / "rehearsal.py").read_text(encoding="utf-8")
+        assert not PROVIDER_NAME.search(source), PROVIDER_NAME.search(source)
+
+    def test_an_unmapped_provider_points_at_the_file_to_edit(self, monkeypatch, capsys):
+        def raise_unmapped():
+            raise ValueError(
+                "routing table uses provider 'newcomer', which has no "
+                "credential entry in router.py"
+            )
+
+        monkeypatch.setitem(
+            sys.modules,
+            "engine.routing.router",
+            types.SimpleNamespace(required_credential_env_vars=raise_unmapped),
+        )
+        with pytest.raises(SystemExit) as exc:
+            rehearsal.required_credential_env_vars()
+        err = capsys.readouterr().err
+        assert exc.value.code == 1
+        assert "newcomer" in err
+        assert "engine/routing/router.py" in err
+
+    def test_an_unimportable_routing_layer_fails_with_an_install_hint(
+        self, monkeypatch, capsys
+    ):
+        """The rehearsal must not die on a bare ImportError traceback when the
+        dependencies are simply not installed yet."""
+        real_import = builtins.__import__
+
+        def refuse(name, *args, **kwargs):
+            if name == "engine.routing.router":
+                raise ModuleNotFoundError("No module named 'litellm'")
+            return real_import(name, *args, **kwargs)
+
+        monkeypatch.setitem(sys.modules, "engine.routing.router", None)
+        monkeypatch.delitem(sys.modules, "engine.routing.router")
+        monkeypatch.setattr(builtins, "__import__", refuse)
+        with pytest.raises(SystemExit) as exc:
+            rehearsal.required_credential_env_vars()
+        err = capsys.readouterr().err
+        assert exc.value.code == 1
+        assert "litellm" in err
+        assert "pip install -r requirements.txt" in err
 
 
 class TestReadEnv:
-    def test_blank_required_key_stops_the_rehearsal(self):
+    def test_blank_required_key_stops_the_rehearsal(self, credentials):
         """A blank value is the failure mode this catches: the key is present,
         so a naive membership check would pass and the stack would boot broken."""
-        write_routing_table(rehearsal.ROUTING_TABLE, {})
         rehearsal.ENV_FILE.write_text(
             complete_env_text(FIREBASE_WEB_API_KEY=""), encoding="utf-8"
         )
@@ -192,17 +130,66 @@ class TestReadEnv:
             rehearsal.read_env()
         assert exc.value.code == 1
 
-    def test_missing_provider_key_stops_the_rehearsal(self, capsys):
-        write_routing_table(
-            rehearsal.ROUTING_TABLE, {"generation": {"cheap": "vendora/x"}}
+    def test_a_blank_llm_credential_stops_the_rehearsal(self, credentials, capsys):
+        rehearsal.ENV_FILE.write_text(
+            complete_env_text(ANTHROPIC_API_KEY=""), encoding="utf-8"
         )
-        rehearsal.ENV_FILE.write_text(complete_env_text(), encoding="utf-8")
+        with pytest.raises(SystemExit) as exc:
+            rehearsal.read_env()
+        err = capsys.readouterr().err
+        assert exc.value.code == 1
+        assert "ANTHROPIC_API_KEY or PRIMARY_LLM_API_KEY" in err
+        assert "GROQ_API_KEY" not in err
+
+    def test_the_neutral_deploy_slot_satisfies_a_provider_credential(self, credentials):
+        """Deploy binds PRIMARY_LLM_API_KEY / SECONDARY_LLM_API_KEY and the
+        router hydrates the provider vars from them at runtime. A .env written
+        that way must boot locally too, or the cloud runbook's setup is
+        rejected by the local preflight."""
+        values = {key: "set" for key in rehearsal.REQUIRED_KEYS}
+        values["PRIMARY_LLM_API_KEY"] = "primary-secret"
+        values["SECONDARY_LLM_API_KEY"] = "secondary-secret"
+        rehearsal.ENV_FILE.write_text(
+            "\n".join(f"{k}={v}" for k, v in values.items()), encoding="utf-8"
+        )
+        env = rehearsal.read_env()
+        assert env["PRIMARY_LLM_API_KEY"] == "primary-secret"
+        assert "ANTHROPIC_API_KEY" not in env
+
+    def test_neither_the_provider_var_nor_its_slot_fails(self, credentials, capsys):
+        values = {key: "set" for key in rehearsal.REQUIRED_KEYS}
+        rehearsal.ENV_FILE.write_text(
+            "\n".join(f"{k}={v}" for k, v in values.items()), encoding="utf-8"
+        )
         with pytest.raises(SystemExit):
             rehearsal.read_env()
-        assert "VENDORA_API_KEY" in capsys.readouterr().err
+        err = capsys.readouterr().err
+        assert "ANTHROPIC_API_KEY or PRIMARY_LLM_API_KEY" in err
+        assert "GROQ_API_KEY or SECONDARY_LLM_API_KEY" in err
 
-    def test_complete_env_parses_and_returns_values(self):
-        write_routing_table(rehearsal.ROUTING_TABLE, {})
+    def test_infrastructure_keys_are_checked_before_the_routing_layer_loads(
+        self, monkeypatch, capsys
+    ):
+        """Loading the router costs seconds. A missing Postgres password is the
+        common failure and must still report immediately."""
+        loaded = []
+
+        def record_and_return():
+            loaded.append(True)
+            return list(CREDENTIALS)
+
+        monkeypatch.setattr(
+            rehearsal, "required_credential_env_vars", record_and_return
+        )
+        rehearsal.ENV_FILE.write_text(
+            complete_env_text(POSTGRES_PASSWORD=""), encoding="utf-8"
+        )
+        with pytest.raises(SystemExit):
+            rehearsal.read_env()
+        assert "POSTGRES_PASSWORD" in capsys.readouterr().err
+        assert loaded == [], "routing layer was loaded before the cheap checks failed"
+
+    def test_complete_env_parses_and_returns_values(self, credentials):
         rehearsal.ENV_FILE.write_text(
             "# a comment\n"
             "\n"
@@ -217,16 +204,14 @@ class TestReadEnv:
         assert "not_a_pair_line" not in env
         assert "# a comment" not in env
 
-    def test_seeds_env_from_example_when_absent(self):
-        write_routing_table(rehearsal.ROUTING_TABLE, {})
+    def test_seeds_env_from_example_when_absent(self, credentials):
         rehearsal.ENV_EXAMPLE.write_text(complete_env_text(), encoding="utf-8")
         assert not rehearsal.ENV_FILE.exists()
         env = rehearsal.read_env()
         assert rehearsal.ENV_FILE.exists()
         assert env["POSTGRES_DB"] == "set"
 
-    def test_prefers_the_shared_env_over_the_example(self):
-        write_routing_table(rehearsal.ROUTING_TABLE, {})
+    def test_prefers_the_shared_env_over_the_example(self, credentials):
         rehearsal.SHARED_ENV_FILE.parent.mkdir(parents=True)
         rehearsal.SHARED_ENV_FILE.write_text(
             complete_env_text(POSTGRES_DB="from-shared"), encoding="utf-8"
@@ -236,8 +221,7 @@ class TestReadEnv:
         )
         assert rehearsal.read_env()["POSTGRES_DB"] == "from-shared"
 
-    def test_no_env_and_no_example_fails(self):
-        write_routing_table(rehearsal.ROUTING_TABLE, {})
+    def test_no_env_and_no_example_fails(self, credentials):
         with pytest.raises(SystemExit):
             rehearsal.read_env()
 

@@ -13,8 +13,10 @@ import pytest
 from engine.routing import RouteResult, route_generation
 from engine.routing.router import (
     ROUTING_TABLE_PATH,
+    UnmappedProviderError,
     compute_cost,
     hydrate_provider_credentials,
+    required_credential_env_vars,
     resolve_fallback_model_key,
     resolve_model_key,
 )
@@ -304,6 +306,58 @@ def test_hydrate_provider_credentials_is_a_noop_without_generic_slots() -> None:
     hydrate_provider_credentials(env)
 
     assert env == {}
+
+
+def test_required_credential_env_vars_covers_every_routing_table_provider() -> None:
+    requirements = required_credential_env_vars()
+
+    assert requirements == [
+        ("ANTHROPIC_API_KEY", "PRIMARY_LLM_API_KEY"),
+        ("GROQ_API_KEY", "SECONDARY_LLM_API_KEY"),
+    ]
+
+
+def test_required_credential_env_vars_lists_the_deploy_slot_as_an_alternative() -> None:
+    # The neutral slot is what deploy infrastructure binds, so an environment
+    # that sets only the slot must count as satisfying the provider.
+    for accepted in required_credential_env_vars():
+        assert len(accepted) == 2
+        provider_var, slot_var = accepted
+        assert provider_var.endswith("_API_KEY")
+        assert slot_var.endswith("_LLM_API_KEY")
+
+
+def test_required_credential_env_vars_tracks_the_table_it_is_given() -> None:
+    # A table using only one provider must not demand the other's credential.
+    requirements = required_credential_env_vars(
+        {"character_dialogue": {"standard": "groq/llama-3.1-8b-instant"}}
+    )
+
+    assert requirements == [("GROQ_API_KEY", "SECONDARY_LLM_API_KEY")]
+
+
+def test_required_credential_env_vars_rejects_an_unmapped_provider() -> None:
+    # Guessing a variable name would send the operator hunting for a key no
+    # SDK reads. Naming the file to edit is the useful failure.
+    with pytest.raises(UnmappedProviderError) as exc:
+        required_credential_env_vars(
+            {"character_dialogue": {"standard": "newcomer/some-model"}}
+        )
+
+    assert "newcomer" in str(exc.value)
+    assert "router.py" in str(exc.value)
+
+
+def test_hydrate_and_required_credentials_agree_on_the_same_variables() -> None:
+    # The two are one mapping: whatever hydrate writes must be what the
+    # requirement check accepts, or a hydrated environment could still be
+    # reported as missing its credentials.
+    env = {"PRIMARY_LLM_API_KEY": "a", "SECONDARY_LLM_API_KEY": "b"}
+
+    hydrate_provider_credentials(env)
+
+    for accepted in required_credential_env_vars():
+        assert any(env.get(name) for name in accepted)
 
 
 def test_cost_rates_cover_all_routing_table_models() -> None:
