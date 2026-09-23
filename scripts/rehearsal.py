@@ -30,7 +30,6 @@ SHARED_ROOT = (
 ENV_FILE = REPO_ROOT / ".env"
 SHARED_ENV_FILE = SHARED_ROOT / ".env"
 ENV_EXAMPLE = REPO_ROOT / ".env.example"
-ROUTING_TABLE = REPO_ROOT / "config" / "routing_table.json"
 STATE_DIR = REPO_ROOT / ".rehearsal"
 STATE_FILE = STATE_DIR / "current-session.json"
 API_PORT = 8000
@@ -38,9 +37,9 @@ WEB_PORT = 5173
 API_STARTUP_TIMEOUT_S = 120
 SESSION_BOOTSTRAP_TIMEOUT_S = 90
 DEFAULT_ARC_ID = "nightcap-couch-race-v1"
-# Provider-neutral required keys. Provider API-key names are derived from the
-# routing table at runtime (see required_provider_keys) so provider names stay
-# out of this script per AGENTS.md rule 8.
+# Infrastructure keys this script checks itself. LLM credentials are not listed
+# here: naming them would name a provider, so they come from the routing layer
+# at runtime (see required_credential_env_vars) per AGENTS.md rule 8.
 REQUIRED_KEYS = (
     "POSTGRES_HOST",
     "POSTGRES_PORT",
@@ -54,25 +53,38 @@ REQUIRED_KEYS = (
 )
 
 
-def required_provider_keys() -> list[str]:
-    """Derive the provider API-key env var names the active routing table needs.
+def required_credential_env_vars() -> list[tuple[str, ...]]:
+    """Ask the routing layer which LLM credentials the active routing table needs.
 
-    Reads ``config/routing_table.json`` (the canonical home for provider
-    identifiers) and maps each ``provider/model`` prefix to LiteLLM's
-    ``{PROVIDER}_API_KEY`` convention. Keeps provider names out of this
-    ops script so a routing change is the only edit needed to add a provider.
+    Returns one tuple per provider, listing the env var names that satisfy it.
+    The mapping from provider to env var lives in engine/routing/router.py,
+    which AGENTS.md rule 8 makes the only code allowed to name a provider; this
+    script deliberately holds no copy of it and derives nothing by convention.
+
+    Imported here rather than at module scope for two reasons: the router pulls
+    in the LLM SDK, which costs seconds that the cheap .env checks above should
+    not pay, and `python scripts/rehearsal.py` does not put the repo root on
+    sys.path.
     """
-    if not ROUTING_TABLE.exists():
-        return []
-    table = json.loads(ROUTING_TABLE.read_text(encoding="utf-8"))
-    providers: set[str] = set()
-    for tier_map in table.values():
-        if not isinstance(tier_map, dict):
-            continue
-        for model in tier_map.values():
-            if isinstance(model, str) and "/" in model:
-                providers.add(model.split("/", 1)[0])
-    return [f"{provider.upper()}_API_KEY" for provider in sorted(providers)]
+    if str(REPO_ROOT) not in sys.path:
+        sys.path.insert(0, str(REPO_ROOT))
+    try:
+        from engine.routing.router import required_credential_env_vars as required
+    except Exception as exc:
+        fail(
+            "Routing layer",
+            f"could not load engine.routing.router to resolve LLM credentials: {exc}",
+            "run: pip install -r requirements.txt, then re-run make rehearsal",
+        )
+    try:
+        return required()
+    except ValueError as exc:
+        fail(
+            "Routing layer",
+            str(exc),
+            "add the provider's credential entry to engine/routing/router.py",
+        )
+    return []
 
 
 TUNNEL_URL_RE = re.compile(r"https://[a-z0-9-]+\.trycloudflare\.com")
@@ -148,12 +160,26 @@ def read_env() -> dict[str, str]:
         key, _, value = line.partition("=")
         env[key.strip()] = value.strip()
 
-    required = [*REQUIRED_KEYS, *required_provider_keys()]
-    missing = [key for key in required if not env.get(key)]
+    missing = [key for key in REQUIRED_KEYS if not env.get(key)]
     if missing:
         fail(
             ".env",
             f"blank required keys: {', '.join(missing)}",
+            "open .env and fill the missing values, then re-run make rehearsal",
+        )
+
+    # Only now pay for loading the routing layer: the checks above are the
+    # common failures and should report in milliseconds.
+    unsatisfied = [
+        accepted
+        for accepted in required_credential_env_vars()
+        if not any(env.get(name) for name in accepted)
+    ]
+    if unsatisfied:
+        fail(
+            ".env",
+            "blank LLM credentials: "
+            + "; ".join(" or ".join(accepted) for accepted in unsatisfied),
             "open .env and fill the missing values, then re-run make rehearsal",
         )
     return env

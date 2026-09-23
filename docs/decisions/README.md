@@ -70,6 +70,7 @@ When proposing changes:
 - `0021-minigame-readiness-program-deferred-until-after-rehearsal-1.md` - D-102 defers the whole mini-game readiness program until after AW-286 Rehearsal 1 has run and been debriefed, keeping scope capped at the merged browser golden path and redirecting capacity to the Couch Race content path (AW-277 to AW-280, AW-290, AW-291)
 - `0022-resolved-case-persistence.md` - D-103 persists the resolved case in six normalized tables with real foreign keys, extending ADR-0017 which authorized only the anchor shape; follows the ADR-0016 dedicated-table precedent and makes the alibi contradiction an integrity-enforced join, at the cost of growing AW-290 well past its recorded size
 - `0024-kb-front-matter-backfill-via-team-ai-adopt.md` - Proposed: backfills machine-readable front matter (status, namespace, owner, review_by) onto the ~470 docs/ files that had none, via the external team-ai adopt tool under founder interactive review; awaiting founder approval
+- `0025-provider-credential-mapping-owned-by-router.md` - `engine/routing/router.py` becomes the single provider-keyed credential map (provider id to env var, plus its deploy slot); `scripts/rehearsal.py` derives nothing and asks the router instead, and the local preflight now accepts either a provider's own env var or its provider-neutral deploy slot, matching what the router already does at runtime
 
 ## Current Decision Categories
 

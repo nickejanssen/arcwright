@@ -18,22 +18,97 @@ ROUTING_TABLE_PATH = (
 )
 _ROUTING_TABLE: Dict[str, Dict[str, str]] = json.loads(ROUTING_TABLE_PATH.read_text())
 
+
+@dataclass(frozen=True)
+class ProviderCredential:
+    """How one provider's credential reaches its SDK.
+
+    ``env_var`` is what the SDK reads. ``deploy_slot`` is the provider-neutral
+    name deploy infrastructure binds it under, or None when the provider has no
+    allocated slot.
+    """
+
+    env_var: str
+    deploy_slot: Optional[str] = None
+
+    def accepted_env_vars(self) -> tuple[str, ...]:
+        if self.deploy_slot is None:
+            return (self.env_var,)
+        return (self.env_var, self.deploy_slot)
+
+
 # Deploy infrastructure binds LLM credentials under provider-neutral names
 # (PRIMARY_LLM_API_KEY, SECONDARY_LLM_API_KEY) so no workflow or Secret Manager
 # config outside this file has to name a provider. This is the one place,
 # per AGENTS.md's provider-agnostic routing rule, allowed to translate those
 # into the env vars each provider's SDK expects.
-_PROVIDER_CREDENTIAL_ENV_MAP: Dict[str, str] = {
-    "PRIMARY_LLM_API_KEY": "ANTHROPIC_API_KEY",
-    "SECONDARY_LLM_API_KEY": "GROQ_API_KEY",
+#
+# Keyed by the provider id used in config/routing_table.json, so callers that
+# only know the routing table can resolve what credential a route needs. The
+# env var name is whatever that provider's SDK reads, which is not derivable
+# from the provider id by any rule worth trusting: some providers do not use
+# an {NAME}_API_KEY variable at all. Adding a provider to the routing table
+# means adding it here too.
+_PROVIDER_CREDENTIALS: Dict[str, ProviderCredential] = {
+    "anthropic": ProviderCredential("ANTHROPIC_API_KEY", "PRIMARY_LLM_API_KEY"),
+    "groq": ProviderCredential("GROQ_API_KEY", "SECONDARY_LLM_API_KEY"),
 }
+
+
+class UnmappedProviderError(ValueError):
+    """A routing-table provider has no credential entry in this module."""
+
+
+def _routing_table_providers(
+    table: Optional[Dict[str, Dict[str, str]]] = None,
+) -> list[str]:
+    """Provider ids referenced by the active routing table, in sorted order."""
+    source = _ROUTING_TABLE if table is None else table
+    providers: set[str] = set()
+    for tier_map in source.values():
+        if not isinstance(tier_map, dict):
+            continue
+        for model in tier_map.values():
+            if isinstance(model, str) and "/" in model:
+                provider = model.split("/", 1)[0]
+                if provider:
+                    providers.add(provider)
+    return sorted(providers)
+
+
+def required_credential_env_vars(
+    table: Optional[Dict[str, Dict[str, str]]] = None,
+) -> list[tuple[str, ...]]:
+    """Env var names that can supply each credential the routing table needs.
+
+    One entry per provider the table references, each listing the names that
+    satisfy it: the provider's own variable first, then its provider-neutral
+    deploy slot where one exists. Callers outside this module use this to check
+    an environment without naming a provider themselves.
+
+    Raises UnmappedProviderError when the table references a provider this
+    module has no entry for, rather than guessing a variable name.
+    """
+    requirements: list[tuple[str, ...]] = []
+    for provider in _routing_table_providers(table):
+        credential = _PROVIDER_CREDENTIALS.get(provider)
+        if credential is None:
+            raise UnmappedProviderError(
+                f"routing table uses provider {provider!r}, which has no "
+                f"credential entry in {Path(__file__).name}"
+            )
+        requirements.append(credential.accepted_env_vars())
+    return requirements
 
 
 def hydrate_provider_credentials(env: Optional[Dict[str, str]] = None) -> None:
     target = os.environ if env is None else env
-    for slot_var, provider_var in _PROVIDER_CREDENTIAL_ENV_MAP.items():
-        if not target.get(provider_var) and target.get(slot_var):
-            target[provider_var] = target[slot_var]
+    for credential in _PROVIDER_CREDENTIALS.values():
+        slot_var = credential.deploy_slot
+        if slot_var is None:
+            continue
+        if not target.get(credential.env_var) and target.get(slot_var):
+            target[credential.env_var] = target[slot_var]
 
 
 hydrate_provider_credentials()
