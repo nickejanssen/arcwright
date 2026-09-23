@@ -1,3 +1,16 @@
+---
+id: productroadmap.decisions.0025-provider-credential-mapping-owned-by-router
+namespace: product-roadmap
+title: "ADR-0025: Provider Credential Mapping Is Owned by the Router"
+owner: Nico Janssen
+status: active
+review_by: "2027-03-21"
+sensitivity: internal
+source: authored
+tags: []
+supersedes: []
+---
+
 # ADR 0025: Provider credential mapping is owned by the router
 
 - **Status:** Accepted
