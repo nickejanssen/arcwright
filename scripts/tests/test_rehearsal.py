@@ -63,13 +63,21 @@ class TestRequiredCredentialEnvVars:
     the routing layer, which owns the one mapping."""
 
     def test_returns_what_the_routing_layer_reports(self, monkeypatch):
-        monkeypatch.setattr(
-            rehearsal.sys, "path", [str(REPO_ROOT), *rehearsal.sys.path]
+        # Stubbed rather than importing the real router: scripts/tests/ runs in
+        # CI (team-ai.yml) with only pytest installed, not requirements.txt, so
+        # a real import here would fail on the engine's own dependencies (see
+        # test_an_unimportable_routing_layer_fails_with_an_install_hint below
+        # for that exact case). The real values are pinned against the actual
+        # router in engine/tests/test_routing.py, which does run with the
+        # engine's dependencies installed.
+        monkeypatch.setitem(
+            sys.modules,
+            "engine.routing.router",
+            types.SimpleNamespace(
+                required_credential_env_vars=lambda: list(CREDENTIALS)
+            ),
         )
-        assert rehearsal.required_credential_env_vars() == [
-            ("ANTHROPIC_API_KEY", "PRIMARY_LLM_API_KEY"),
-            ("GROQ_API_KEY", "SECONDARY_LLM_API_KEY"),
-        ]
+        assert rehearsal.required_credential_env_vars() == CREDENTIALS
 
     def test_this_script_names_no_provider(self):
         """The check `scripts/checks/provider_leak_check.py` does not scan
