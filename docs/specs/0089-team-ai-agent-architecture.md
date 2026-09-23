@@ -68,7 +68,8 @@ Delivered in three phases, each independently reviewable.
   namespaces: 13 specialist domains plus the archived `nightcap-couch-race`
 - Generate the router and 13 specialists into `team-ai/`; hand-author and
   register the three tier-2 group SMEs
-- Emit the 17 agents as Claude Code subagents under `.claude/agents/team-ai-*.md`
+- Emit the specialists as Claude Code subagents under `.claude/agents/team-ai-*.md`
+  (14 files from v1.8: tiers 1 and 2 are not emitted, B-S6)
 - Emit the `domains`, `agents`, and `skills` manifest sections
 
 **Phase B — Retrieval correctness, enforcement, hooks, measurement**
@@ -207,7 +208,9 @@ TIER 3  Specialists           model_tier: small  max_hops: 0    generated
         practice: product-roadmap · engineering-practice · playtest-ops
 ```
 
-17 agents: 14 generated from team-ai templates and 3 hand-authored. The
+18 agents in the manifest: 14 generated from team-ai templates and 4 authored
+(the three tier-2 agents, and from v1.8 `nightcap-couch-race-sme`, which took the
+archived namespace from `title-sme`). Before v1.8 this read 17, with 3 authored. The
 generator produces the router from `agents/sme.yaml.hbs` and one specialist per
 `agents.domains` entry from `agents/_domain-sme.yaml.hbs`. team-ai has no
 group-SME template, and `team.size: 1-3` suppresses generated role subagents,
@@ -485,8 +488,8 @@ rank fusion.
 - [ ] `team-ai/inventory.txt` is committed and lists every KB document with its current and target namespace
 - [ ] The migration proposal has zero conflicts and is explicitly approved by the founder before any write
 - [ ] After migration, `validate-kb` passes against the configured KB root, `git grep -h '^namespace:' -- docs ':!docs/archive'` reports only the 14 target namespaces, and a repository grep outside `docs/archive/` finds no id beginning with any of the seven prior values
-- [ ] 14 agents generated and 3 hand-authored; `team-ai validate-manifest` passes
-- [ ] 17 files exist at `.claude/agents/team-ai-*.md`, each with `tools: Read, Grep, Glob`, and regenerating them produces no diff
+- [ ] 18 agents in the manifest, 14 generated and 4 authored; `team-ai validate-manifest` passes *(v1.8; was 14 and 3)*
+- [ ] 14 files exist at `.claude/agents/team-ai-*.md`, one per specialist and none for a router or tier-2 agent (B-S6); each sets `omitClaudeMd: true`; only the three ranked-search agents add `Bash` to `Read, Grep, Glob`; deleting and regenerating them produces no diff *(v1.8; was 17 files, all `Read, Grep, Glob`)*
 - [ ] `nightcap` is `authority: canonical`; `monster-rpg` and `daily-case` are `provisional`; `nightcap-couch-race` is `archived`
 - [ ] Every changed path is inside the approved layout: `team-ai/`, `.claude/agents/team-ai-*.md`, `docs/**` front-matter `namespace`/`id` lines, `AGENTS.md`, `.github/copilot-instructions.md`, `.gitignore`, and the CI workflow file
 - [ ] `docs/agents/`, `docs/skills/`, and every other file under `.claude/` are unchanged
@@ -566,8 +569,8 @@ section and an engine to execute it, which Phase B does not build.
   cannot enforce them at runtime.
 - **Refusal rate may frustrate.** Mitigation: the golden set measures it;
   `not_owned` and keyword tuning are cheap to iterate.
-- **17 agents is real maintenance surface** for a solo founder. Mitigation: 14
-  are generated; each agent's description stays to one line because Claude Code
+- **18 agents in the manifest, 14 emitted, is real maintenance surface** for a
+  solo founder. Mitigation: 14 are generated; each agent's description stays to one line because Claude Code
   keeps subagent descriptions in context for delegation.
 - **Local embedding model adds a dependency and per-query CPU work.** Mitigation:
   automatic lexical fallback.
@@ -747,7 +750,7 @@ retrieval diagnostic.
 Approved 2026-09-20, before the system was operated, while it was still easy to
 be honest. Adapted from team-ai's own design, section 21.
 
-The return on this system depends entirely on it being used. 17 agents, 449
+The return on this system depends entirely on it being used. 14 agents, 449
 documents, a golden set and a measurement harness are sunk cost if nobody asks
 them anything. These conditions say when to cut back rather than extend.
 
