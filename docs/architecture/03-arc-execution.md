@@ -21,6 +21,8 @@ The arc execution engine is the core of the platform. It takes an arc definition
 
 ## 3.1 StateChart Architecture
 
+**Implemented by:** `engine/arc/arc_state.py::build_arc_state_chart_class`, `engine/arc/arc_state.py::ArcStateChart`.
+
 Each session instantiates one `ArcStateChart`, a subclass of `python-statemachine`'s `StateChart`. The chart represents the arc's beat graph: states are beats, transitions are arc progressions, guards are authored entry and exit conditions.
 
 ```python
@@ -76,6 +78,8 @@ The engine derives the initial beat and evaluates all exit/entry conditions gene
 Any engine code that references a beat ID by name (such as `"arrival"` or any other arc-specific beat name) is an architecture violation.
 
 ## 3.3 Pacing Engine
+
+**Implemented by:** `engine/arc/pacing.py::compute_dramatic_tension_score`, `engine/arc/pacing.py::evaluate_pacing_interventions`.
 
 The pacing engine runs as a single asyncio background task per session. It computes a `dramatic_tension_score` (0.0 to 1.0) on a configurable interval (default: 30 seconds) and drives all pacing decisions from that one score.
 
@@ -142,6 +146,8 @@ Six commitments from Decision 13, with implementation approach:
 | Arc-level non-determinism | The arc's `generative_elements.killer_assignment` is resolved through the assignment interface. Nightcap v1 uses constrained-random assignment. The seed is stored in session state for replay and persistence. Two identical player groups can produce different killers across sessions. |
 
 ## 3.6 Session Coordinator Loop
+
+**Implemented by:** `engine/session/service.py::SessionService.advance_live_session_on_input`, called from `engine/characters/service.py::CharacterService.submit_input`; pause and resume in `engine/session/service.py::SessionService.pause_session` and `engine/session/service.py::SessionService.resume_session`. Realised as an input-driven service method rather than a long-running coroutine with its own event queue: the beat advances when validated player input arrives.
 
 The session coordinator is an asyncio coroutine that runs for the lifetime of each session. It:
 

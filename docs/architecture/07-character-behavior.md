@@ -79,6 +79,8 @@ Total pipeline latency target at MVP: under 1,500ms for standard tier, under 2,5
 
 ## 7.4 Social Pressure Dynamics
 
+**Implemented by:** `engine/characters/initiative.py::modulate_threshold_for_pressure`, `engine/characters/initiative.py::compute_initiative_score`.
+
 Most AI character systems treat each exchange as independent: one player asks a question, one character answers. The behavior engine treats the room as a social system.
 
 **Social pressure score** is computed per AI character on every pacing poll, alongside the `dramatic_tension_score`. It measures how much collective suspicion is currently directed at this character across all players:

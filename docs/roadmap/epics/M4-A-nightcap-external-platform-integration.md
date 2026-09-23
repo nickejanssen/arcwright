@@ -14,7 +14,6 @@ supersedes: []
 # M4-A: Nightcap Web Experience Runtime Integration
 
 **Milestone:** M4  
-**Status:** Planned
 
 ## Plain-English Summary
 

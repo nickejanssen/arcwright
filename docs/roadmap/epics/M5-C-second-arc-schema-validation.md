@@ -14,7 +14,6 @@ supersedes: []
 # M5-C: Second Arc Schema And Executable Follow-Through
 
 **Milestone:** M5  
-**Status:** Planned
 
 ## Plain-English Summary
 

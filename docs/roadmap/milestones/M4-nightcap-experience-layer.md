@@ -13,7 +13,6 @@ supersedes: []
 
 # M4: Nightcap Experience Layer
 
-**Status:** Planned  
 **Build-order coverage:** none (experience layer, PRD-required)
 
 ## Summary

@@ -14,7 +14,6 @@ supersedes: []
 # M6-A: Playtest Operations
 
 **Milestone:** M6  
-**Status:** Planned
 
 ## Plain-English Summary
 

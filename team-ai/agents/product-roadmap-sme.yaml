@@ -1,7 +1,7 @@
 name: product-roadmap-sme
 kind: subagent
-description: "Answers product-roadmap questions strictly from the product-roadmap namespace, with citations."
-model_tier: small
+description: "Product scope, roadmap decisions, and approved sequencing. Answers design and decision questions from the product-roadmap docs, with citations."
+model_tier: large
 kb_namespaces: [product-roadmap]
 tools: [kb_search, kb_get, kb_coverage_gap]
 max_hops: 0

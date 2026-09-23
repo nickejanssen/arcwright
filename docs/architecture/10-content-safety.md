@@ -47,6 +47,8 @@ Three layers at MVP. Each layer catches different things and operates at a diffe
 
 ## 10.2 Layer 1: Hard Stops
 
+**Implemented by:** `engine/safety/l1.py::evaluate_l1_hard_stops`.
+
 Deterministic code. No model call. No configuration. These categories are blocked unconditionally, regardless of arc definition, developer configuration, or player input:
 
 - Sexual content involving anyone under 18
@@ -57,6 +59,8 @@ Deterministic code. No model call. No configuration. These categories are blocke
 L1 runs on player input before any model call and on the assembled prompt before submission to L2/L3. If L1 fires, the event is blocked, logged to the `events` table with `event_type = "safety_hard_stop"`, and the session continues with a neutral narrator bridge. The player receives no error message that reveals the safety trigger; the experience is preserved.
 
 ## 10.3 Layer 2: Pre-Generation Classification
+
+**Implemented by:** `engine/safety/l2.py::build_l2_classification_messages`, `engine/safety/l2.py::parse_l2_classification`.
 
 GPT-OSS-Safeguard 20B running on Groq. Fast (Groq's inference is optimized for low latency) and cheap (~$0.075/million input tokens). Supports bring-your-own-policy: the arc definition's `content_rails` configuration is passed as the policy context.
 
@@ -71,6 +75,8 @@ L2 runs before every main LLM generation call. If L2 classifies the assembled pr
 Note: Groq output rate for GPT-OSS-Safeguard 20B is pending verification (open question in `docs/product/open-questions-log.csv`). Cost model in Section 13 uses a conservative estimate pending confirmation.
 
 ## 10.4 Layer 3: In-Generation Policy
+
+**Implemented by:** `engine/safety/l3.py::inject_l3_policy_block`.
 
 A policy block is injected into the system prompt of every main LLM call, after the character identity and knowledge state blocks. The policy block states in plain language what the model must not produce, calibrated to the arc's `content_rails` configuration. This is the backstop that handles edge cases L2 did not catch: ambiguous content that is technically within policy but contextually inappropriate for the arc.
 

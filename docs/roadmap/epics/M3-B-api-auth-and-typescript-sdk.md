@@ -14,7 +14,6 @@ supersedes: []
 # M3-B: API, Auth, And TypeScript SDK
 
 **Milestone:** M3  
-**Status:** Planned
 
 ## Plain-English Summary
 

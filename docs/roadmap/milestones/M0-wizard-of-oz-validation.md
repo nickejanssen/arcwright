@@ -13,7 +13,7 @@ supersedes: []
 
 # M0: Wizard-of-Oz Validation
 
-**Status:** Overridden, May 2026  
+**Scope note:** Overridden, May 2026
 **Build-order coverage:** none (manual, no code)
 
 ## Summary

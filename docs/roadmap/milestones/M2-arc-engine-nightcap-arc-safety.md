@@ -13,7 +13,7 @@ supersedes: []
 
 # M2: Arc Engine + Nightcap Arc + Safety
 
-**Status:** Exit Gate Satisfied (2026-06-14)
+**Scope note:** Exit gate satisfied 2026-06-14
 **Build-order coverage:** #4 arc execution, #5 safety, #7 character behavior
 
 ## Summary
