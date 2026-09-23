@@ -20,6 +20,9 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+# CREATE_NO_WINDOW on Windows; zero, meaning no flags, elsewhere.
+NO_WINDOW = getattr(subprocess, "CREATE_NO_WINDOW", 0)
+
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "scripts"))
 from team_ai_cli import find_cli  # noqa: E402  (Task 16b)
@@ -40,7 +43,11 @@ def run_checks() -> dict:
 
     def call(args: list[str]) -> tuple[int, str]:
         result = subprocess.run(
-            ["node", str(cli), *args], capture_output=True, text=True, cwd=ROOT
+            ["node", str(cli), *args],
+            capture_output=True,
+            text=True,
+            cwd=ROOT,
+            creationflags=NO_WINDOW,
         )
         return result.returncode, (result.stdout or result.stderr).strip()
 
@@ -82,9 +89,10 @@ def main() -> int:
         "stderr": subprocess.DEVNULL,
     }
     if os.name == "nt":
-        kwargs["creationflags"] = (
-            subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.DETACHED_PROCESS
-        )
+        # A hidden console, not DETACHED_PROCESS: a detached parent has no console,
+        # so Windows opens a visible window for every console program it starts,
+        # which put three CMD windows on screen at the end of every turn.
+        kwargs["creationflags"] = subprocess.CREATE_NEW_PROCESS_GROUP | NO_WINDOW
     else:
         kwargs["start_new_session"] = True
     subprocess.Popen([sys.executable, str(Path(__file__).resolve())], **kwargs)
