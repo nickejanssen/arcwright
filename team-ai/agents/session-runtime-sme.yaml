@@ -1,7 +1,7 @@
 name: session-runtime-sme
 kind: subagent
 description: "Session lifecycle, persistence, and structured runtime events. Answers design and decision questions from the session-runtime docs, with citations."
-model_tier: small
+model_tier: large
 kb_namespaces: [session-runtime]
 tools: [kb_search, kb_get, kb_coverage_gap]
 max_hops: 0

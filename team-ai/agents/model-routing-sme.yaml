@@ -1,7 +1,7 @@
 name: model-routing-sme
 kind: subagent
 description: "Provider-agnostic, cost-aware routing by task and quality tier. Answers design and decision questions from the model-routing docs, with citations."
-model_tier: small
+model_tier: large
 kb_namespaces: [model-routing]
 tools: [kb_search, kb_get, kb_coverage_gap]
 max_hops: 0

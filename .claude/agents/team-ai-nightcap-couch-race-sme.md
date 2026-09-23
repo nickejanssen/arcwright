@@ -11,8 +11,8 @@ hooks:
         - type: command
           command: python scripts/hooks/guard_kb_agents.py
 kind: subagent
-model_tier: small
-model: haiku
+model_tier: large
+model: sonnet
 kb_namespaces:
   - nightcap-couch-race
 max_hops: 0

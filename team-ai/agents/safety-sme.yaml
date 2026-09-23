@@ -1,7 +1,7 @@
 name: safety-sme
 kind: subagent
 description: "Engine-layer content safety constraints and enforcement boundaries. Answers design and decision questions from the safety docs, with citations."
-model_tier: small
+model_tier: large
 kb_namespaces: [safety]
 tools: [kb_search, kb_get, kb_coverage_gap]
 max_hops: 0

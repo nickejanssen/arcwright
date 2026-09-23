@@ -201,7 +201,7 @@ TIER 2  engine-sme            model_tier: small  max_hops: 1    hand-authored (D
         title-sme             Cross-cutting questions spanning >1 specialist.
         practice-sme
 
-TIER 3  Specialists           model_tier: small  max_hops: 0    generated
+TIER 3  Specialists           model_tier: large  max_hops: 0    generated
         engine:   arc-execution · knowledge-graph · character-behavior
                   model-routing · session-runtime · safety · developer-api
         title:    nightcap (canonical) · monster-rpg · daily-case (provisional)
@@ -747,6 +747,18 @@ kept as Scope notes. GitHub milestones are corrected from the markdown.
 `scripts/checks/implemented_by_check.py` fails the build when one stops
 resolving. A reader searching the design's words finds the code instead of
 concluding it is absent.
+
+**B-S11 — Specialists run on the large tier (approved 2026-09-23).** Live
+probes on the small tier answered two of eight questions wrongly, each by
+breaking a rule when tempting data was in reach: a merge order inferred from the
+git snapshot the host gives every agent, and a player count that stopped one
+line short of "upper bound NOT decided". The large tier answered both correctly,
+citing its rules. An earlier trap with no tempting data was refused by both
+tiers, which is why the small tier looked sufficient at first. Tokens per answer
+were similar; the per-token price is higher, set against the main session's
+larger cost of reading documents itself. All fourteen specialists move to
+`model_tier: large` and the golden set's `expect_tier_max` follows. Re-measured
+at each monthly probe review.
 
 **B-S10 — Correctness is measured, not inferred from citations.**
 `team-ai/evals/live-probes.yaml` holds twelve probes scored against ground truth

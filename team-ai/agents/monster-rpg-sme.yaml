@@ -1,7 +1,7 @@
 name: monster-rpg-sme
 kind: subagent
 description: "Monster RPG title material, labelled as provisional until canonized. Answers design and decision questions from the monster-rpg docs, with citations."
-model_tier: small
+model_tier: large
 kb_namespaces: [monster-rpg]
 tools: [kb_search, kb_get, kb_coverage_gap]
 max_hops: 0

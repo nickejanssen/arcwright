@@ -1,7 +1,7 @@
 name: daily-case-sme
 kind: subagent
 description: "Daily Case title material, labelled as provisional until canonized. Answers design and decision questions from the daily-case docs, with citations."
-model_tier: small
+model_tier: large
 kb_namespaces: [daily-case]
 tools: [kb_search, kb_get, kb_coverage_gap]
 max_hops: 0
