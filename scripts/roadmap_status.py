@@ -5,16 +5,18 @@ markdown is authoritative for what a task is and which milestone it belongs to.
 This joins the two and reports every place they disagree, so nobody has to read
 a stale status line or correlate titles by hand.
 
-Tasks map to issues through `github.issue_number` in docs/roadmap/index.json,
-falling back to an issue titled `AW-NNN:` for a task that records no number.
+Tasks and epics map to issues through `github.issue_number` in
+docs/roadmap/index.json, a task falling back to an issue titled `AW-NNN:` when it
+records no number. Milestone state comes from GitHub's milestones.
 
     python scripts/roadmap_status.py                 # every milestone
     python scripts/roadmap_status.py --milestone M5  # one milestone
     python scripts/roadmap_status.py --json
     python scripts/roadmap_status.py --apply-milestones   # edits GitHub
 
-`--apply-milestones` sets each mismatched issue's GitHub milestone to the one the
-markdown records. It changes GitHub, so it runs only when asked.
+`--apply-milestones` sets each mismatched task or epic issue's GitHub milestone to
+the one the markdown records, skipping any issue titled for a different task. It
+changes GitHub, so it runs only when asked.
 """
 
 from __future__ import annotations
@@ -41,6 +43,9 @@ class TaskStatus:
     state: str | None
     github_milestone: str | None
     problems: list[str] = field(default_factory=list)
+    # False when the recorded issue is titled for a different task: the mapping
+    # is suspect, so nothing is written to GitHub on its strength.
+    trusted: bool = True
 
 
 @dataclass
@@ -48,6 +53,8 @@ class Report:
     tasks: list[TaskStatus]
     untracked_issues: list[dict]
     problems: list[str]
+    epics: list[TaskStatus] = field(default_factory=list)
+    milestones: list[dict] = field(default_factory=list)
 
 
 def milestone_id(title: str | None) -> str | None:
@@ -57,7 +64,49 @@ def milestone_id(title: str | None) -> str | None:
     return title.split(":", 1)[0].strip()
 
 
-def reconcile(index: dict, issues: list[dict]) -> Report:
+def _join(
+    entry: dict,
+    by_number: dict[int, dict],
+    by_prefix: dict[str, list[dict]],
+    mapped: set[int],
+) -> TaskStatus:
+    number = (entry.get("github") or {}).get("issue_number")
+    status = TaskStatus(
+        entry["id"], entry["title"], entry["milestone"], None, None, None
+    )
+    if number is None:
+        candidates = by_prefix.get(entry["id"], [])
+        if len(candidates) == 1:
+            number = candidates[0]["number"]
+            status.problems.append(
+                f"index.json records no issue; found #{number} by title prefix"
+            )
+    issue = by_number.get(number) if number is not None else None
+    if issue is None:
+        status.problems.append(
+            "no GitHub issue" if number is None else f"issue #{number} not found"
+        )
+        return status
+
+    mapped.add(issue["number"])
+    status.issue = issue["number"]
+    status.state = issue["state"].lower()
+    status.github_milestone = milestone_id((issue.get("milestone") or {}).get("title"))
+    prefix = AW_PREFIX.match(issue["title"])
+    if prefix and prefix.group(1) != entry["id"]:
+        status.trusted = False
+        status.problems.append(f"issue #{issue['number']} is titled {prefix.group(1)}")
+    if status.github_milestone != entry["milestone"]:
+        status.problems.append(
+            f"GitHub milestone {status.github_milestone or 'none'}, "
+            f"markdown says {entry['milestone']}"
+        )
+    return status
+
+
+def reconcile(
+    index: dict, issues: list[dict], github_milestones: list[dict] | None = None
+) -> Report:
     by_number = {issue["number"]: issue for issue in issues}
     by_prefix: dict[str, list[dict]] = {}
     for issue in issues:
@@ -72,52 +121,32 @@ def reconcile(index: dict, issues: list[dict]) -> Report:
         if len(found) > 1
     ]
 
-    tasks: list[TaskStatus] = []
     mapped: set[int] = set()
-    for task in index["tasks"]:
-        number = (task.get("github") or {}).get("issue_number")
-        status = TaskStatus(
-            task["id"], task["title"], task["milestone"], None, None, None
-        )
-        if number is None:
-            candidates = by_prefix.get(task["id"], [])
-            if len(candidates) == 1:
-                number = candidates[0]["number"]
-                status.problems.append(
-                    f"index.json records no issue; found #{number} by title prefix"
-                )
-        issue = by_number.get(number) if number is not None else None
-        if issue is None:
-            status.problems.append(
-                "no GitHub issue" if number is None else f"issue #{number} not found"
-            )
-            tasks.append(status)
-            continue
-
-        mapped.add(issue["number"])
-        status.issue = issue["number"]
-        status.state = issue["state"].lower()
-        status.github_milestone = milestone_id(
-            (issue.get("milestone") or {}).get("title")
-        )
-        prefix = AW_PREFIX.match(issue["title"])
-        if prefix and prefix.group(1) != task["id"]:
-            status.problems.append(
-                f"issue #{issue['number']} is titled {prefix.group(1)}"
-            )
-        if status.github_milestone != task["milestone"]:
-            status.problems.append(
-                f"GitHub milestone {status.github_milestone or 'none'}, "
-                f"markdown says {task['milestone']}"
-            )
-        tasks.append(status)
-
-    # Epics are recorded in the index too; their issues are known, not untracked.
+    tasks = [_join(task, by_number, by_prefix, mapped) for task in index["tasks"]]
+    epics = [
+        _join(epic, by_number, by_prefix, mapped)
+        for epic in index.get("epics", [])
+        if "title" in epic and "milestone" in epic
+    ]
+    # An epic's issue is known to the index even when its entry is incomplete.
     mapped |= {
         epic["github"]["issue_number"]
         for epic in index.get("epics", [])
         if (epic.get("github") or {}).get("issue_number")
     }
+    by_id = {milestone_id(m["title"]): m for m in github_milestones or []}
+    milestones = []
+    for entry in index.get("milestones", []):
+        found = by_id.get(entry["id"])
+        milestones.append(
+            {
+                "id": entry["id"],
+                "title": entry.get("title", ""),
+                "state": found["state"] if found else None,
+                "open_issues": found.get("open_issues") if found else None,
+                "closed_issues": found.get("closed_issues") if found else None,
+            }
+        )
     untracked = [
         {
             "number": issue["number"],
@@ -132,7 +161,7 @@ def reconcile(index: dict, issues: list[dict]) -> Report:
             or (issue.get("milestone") or {}).get("title")
         )
     ]
-    return Report(tasks, untracked, problems)
+    return Report(tasks, untracked, problems, epics, milestones)
 
 
 def fetch_issues() -> list[dict]:
@@ -156,7 +185,7 @@ def fetch_issues() -> list[dict]:
     return json.loads(result.stdout)
 
 
-def fetch_milestone_titles() -> dict[str, str]:
+def fetch_milestones() -> list[dict]:
     result = subprocess.run(
         ["gh", "api", "repos/{owner}/{repo}/milestones?state=all&per_page=100"],
         capture_output=True,
@@ -164,8 +193,7 @@ def fetch_milestone_titles() -> dict[str, str]:
         check=True,
         cwd=ROOT,
     )
-    titles = [m["title"] for m in json.loads(result.stdout)]
-    return {milestone_id(title): title for title in titles if milestone_id(title)}
+    return json.loads(result.stdout)
 
 
 def render(report: Report, milestone: str | None) -> str:
@@ -174,8 +202,27 @@ def render(report: Report, milestone: str | None) -> str:
     for task in report.tasks:
         if milestone is None or task.milestone == milestone:
             groups.setdefault(task.milestone, []).append(task)
+    states = {m["id"]: m for m in report.milestones}
+    epics_by_milestone: dict[str, list[TaskStatus]] = {}
+    for epic in report.epics:
+        epics_by_milestone.setdefault(epic.milestone, []).append(epic)
     for name in sorted(groups):
         members = groups[name]
+        github = states.get(name)
+        if github and github["state"]:
+            lines.append(
+                f"{name} on GitHub: milestone {github['state']}, "
+                f"{github['open_issues']} open and {github['closed_issues']} closed issues"
+            )
+        elif github:
+            lines.append(f"{name} on GitHub: no milestone found")
+        for epic in sorted(epics_by_milestone.get(name, []), key=lambda e: e.id):
+            ref = f"#{epic.issue}" if epic.issue else "-"
+            lines.append(
+                f"  epic {epic.id:6} {ref:6} {epic.state or 'none':6}  {epic.title[:54]}"
+            )
+            for problem in epic.problems:
+                lines.append(f"           ! {problem}")
         closed = sum(1 for t in members if t.state == "closed")
         opened = sum(1 for t in members if t.state == "open")
         untracked = sum(1 for t in members if t.state is None)
@@ -208,14 +255,29 @@ def render(report: Report, milestone: str | None) -> str:
     return "\n".join(lines)
 
 
-def apply_milestones(report: Report, milestone: str | None) -> int:
-    titles = fetch_milestone_titles()
-    changed = 0
-    for task in report.tasks:
+def milestone_edits(report: Report, milestone: str | None) -> list[TaskStatus]:
+    """Tasks and epics whose GitHub milestone should be set from the markdown."""
+    edits = []
+    for task in [*report.tasks, *report.epics]:
         if task.issue is None or task.github_milestone == task.milestone:
             continue
         if milestone is not None and task.milestone != milestone:
             continue
+        if not task.trusted:
+            print(f"skip {task.id}: #{task.issue} is titled for another task")
+            continue
+        edits.append(task)
+    return edits
+
+
+def apply_milestones(report: Report, milestone: str | None) -> int:
+    titles = {
+        milestone_id(m["title"]): m["title"]
+        for m in fetch_milestones()
+        if milestone_id(m["title"])
+    }
+    changed = 0
+    for task in milestone_edits(report, milestone):
         title = titles.get(task.milestone)
         if title is None:
             print(f"skip {task.id}: no GitHub milestone for {task.milestone}")
@@ -247,6 +309,7 @@ def main(argv: list[str] | None = None) -> int:
     index = json.loads(INDEX.read_text(encoding="utf-8"))
     try:
         issues = fetch_issues()
+        milestones = fetch_milestones()
     except (OSError, subprocess.CalledProcessError) as error:
         print(
             f"roadmap-status: cannot read GitHub issues ({error}); is gh installed and "
@@ -254,7 +317,7 @@ def main(argv: list[str] | None = None) -> int:
             file=sys.stderr,
         )
         return 2
-    report = reconcile(index, issues)
+    report = reconcile(index, issues, milestones)
 
     if args.apply_milestones:
         changed = apply_milestones(report, args.milestone)

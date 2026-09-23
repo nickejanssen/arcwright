@@ -1,4 +1,4 @@
-from scripts.roadmap_status import milestone_id, reconcile, render
+from scripts.roadmap_status import milestone_edits, milestone_id, reconcile, render
 
 
 def task(aw, milestone="M5", number=None, title="A task"):
@@ -100,3 +100,61 @@ def test_epic_issues_recorded_in_the_index_are_not_untracked():
         ],
     )
     assert [i["number"] for i in report.untracked_issues] == [201]
+
+
+def test_never_edits_the_milestone_of_an_issue_titled_for_another_task():
+    report = reconcile(
+        {"tasks": [task("AW-274", milestone="M5", number=220)]},
+        [issue(220, "AW-275: Something else", milestone=None)],
+    )
+    assert report.tasks[0].trusted is False
+    assert milestone_edits(report, None) == []
+
+
+def test_reports_epic_issue_state_and_corrects_its_milestone():
+    report = reconcile(
+        {
+            "tasks": [],
+            "epics": [
+                {
+                    "id": "M5-I",
+                    "title": "Couch Race",
+                    "milestone": "M5",
+                    "github": {"issue_number": 234},
+                }
+            ],
+        },
+        [issue(234, "M5-I Epic: Couch Race", milestone=None)],
+    )
+    assert report.epics[0].state == "open"
+    assert [e.id for e in milestone_edits(report, "M5")] == ["M5-I"]
+
+
+def test_milestone_state_comes_from_github():
+    report = reconcile(
+        {
+            "tasks": [task("AW-1", number=1)],
+            "milestones": [{"id": "M5", "title": "Hardening"}],
+        },
+        [issue(1, "AW-1: a")],
+        [
+            {
+                "title": "M5: Hardening",
+                "state": "open",
+                "open_issues": 21,
+                "closed_issues": 19,
+            }
+        ],
+    )
+    assert report.milestones == [
+        {
+            "id": "M5",
+            "title": "Hardening",
+            "state": "open",
+            "open_issues": 21,
+            "closed_issues": 19,
+        }
+    ]
+    assert "M5 on GitHub: milestone open, 21 open and 19 closed issues" in render(
+        report, "M5"
+    )
