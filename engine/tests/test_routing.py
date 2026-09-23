@@ -329,8 +329,12 @@ def test_required_credential_env_vars_lists_the_deploy_slot_as_an_alternative() 
 
 def test_required_credential_env_vars_tracks_the_table_it_is_given() -> None:
     # A table using only one provider must not demand the other's credential.
+    # A synthetic model name here (not one of the real configured models) keeps
+    # this out of evals/cases/no_hardcoded_model_strings_outside_routing_layer.json,
+    # which flags any real routing-table model string appearing outside the
+    # routing layer.
     requirements = required_credential_env_vars(
-        {"character_dialogue": {"standard": "groq/llama-3.1-8b-instant"}}
+        {"character_dialogue": {"standard": "groq/test-fixture-model"}}
     )
 
     assert requirements == [("GROQ_API_KEY", "SECONDARY_LLM_API_KEY")]

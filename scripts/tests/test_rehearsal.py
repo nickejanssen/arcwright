@@ -265,7 +265,9 @@ class TestEnsurePortAvailable:
         """Without this guard the rehearsal boots a second API against a port
         it does not own, and the display talks to the stale process."""
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as holder:
-            holder.bind(("0.0.0.0", 0))
+            # Loopback is enough to occupy the port for this test; no need to
+            # expose a listening socket on every interface.
+            holder.bind(("127.0.0.1", 0))
             holder.listen()
             port = holder.getsockname()[1]
             with pytest.raises(SystemExit) as exc:
@@ -275,7 +277,7 @@ class TestEnsurePortAvailable:
 
     def test_passes_on_a_free_port(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
-            probe.bind(("0.0.0.0", 0))
+            probe.bind(("127.0.0.1", 0))
             port = probe.getsockname()[1]
         rehearsal.ensure_port_available("API", port)
 
