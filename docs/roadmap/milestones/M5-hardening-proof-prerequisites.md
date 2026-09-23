@@ -13,7 +13,6 @@ supersedes: []
 
 # M5: Hardening + Proof Prerequisites
 
-**Status:** Planned  
 **Build-order coverage:** none (PRD MVP done-criteria)
 
 ## Summary

@@ -13,7 +13,6 @@ supersedes: []
 
 # M6: First Qualifying Sessions
 
-**Status:** Planned  
 **Build-order coverage:** none (the actual H1 proof)
 
 ## Summary

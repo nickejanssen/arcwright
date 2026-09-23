@@ -1,63 +1,23 @@
 import json
-import re
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 
 
-def _status(path: str) -> str:
-    content = (REPO_ROOT / path).read_text(encoding="utf-8")
-    match = re.search(r"^\*\*Status:\*\* (.+)$", content, re.MULTILINE)
-    assert match, f"missing status in {path}"
-    return match.group(1).strip()
-
-
-def test_minigame_roadmap_statuses_match_the_authoritative_hierarchy() -> None:
+def test_minigame_roadmap_scope_matches_the_authoritative_hierarchy() -> None:
+    # Status is not asserted here: it lives on GitHub (D-109) and is reported by
+    # scripts/roadmap_status.py. The markdown owns scope, which is what this checks.
     index = json.loads(
         (REPO_ROOT / "docs/roadmap/index.json").read_text(encoding="utf-8")
     )
     epics = {item["id"]: item for item in index["epics"]}
-    milestones = {item["id"]: item for item in index["milestones"]}
-
-    assert (
-        _status(
-            "docs/roadmap/tasks/AW-287-nightcap-leverage-advantages-and-sabotages.md"
-        )
-        == "Complete"
-    )
-    assert (
-        _status("docs/roadmap/tasks/AW-254-first-production-nightcap-mini-game.md")
-        == "Superseded"
-    )
-    assert (
-        _status("docs/roadmap/tasks/AW-285-couch-race-tv-and-phone-rendering.md")
-        == "Complete — accepted Phase 1 structural scope"
-    )
-    assert (
-        _status(
-            "docs/roadmap/tasks/AW-286-couch-race-rehearsal-slice-and-rehearsal-1-retarget.md"
-        )
-        == "Planned"
-    )
-    assert (
-        _status(
-            "docs/roadmap/tasks/AW-288-couch-race-mini-game-beat-coverage-and-tmst-acceleration.md"
-        )
-        == "Planned"
-    )
-    assert (
-        _status("docs/roadmap/epics/M4-E-nightcap-mini-game-interaction-layer.md")
-        == "Complete"
-    )
-    assert (
-        _status("docs/roadmap/epics/M5-I-nightcap-couch-race-arc-and-interrogation.md")
-        == "Active"
-    )
-    assert epics["M5-I"]["status"] == "active"
     assert set(f"AW-{number}" for number in range(287, 293)).issubset(
         epics["M5-I"]["tasks"]
     )
-    assert milestones["M6"]["status"] == "planned"
+    superseded = (
+        REPO_ROOT / "docs/roadmap/tasks/AW-254-first-production-nightcap-mini-game.md"
+    ).read_text(encoding="utf-8")
+    assert "**Scope note:** Superseded" in superseded
     tasks = {item["id"]: item for item in index["tasks"]}
     assert (
         tasks["AW-288"]["title"]

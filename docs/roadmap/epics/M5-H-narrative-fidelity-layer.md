@@ -14,7 +14,6 @@ supersedes: []
 # M5-H: Narrative Fidelity Layer
 
 **Milestone:** M5  
-**Status:** Planned
 
 ## Plain-English Summary
 

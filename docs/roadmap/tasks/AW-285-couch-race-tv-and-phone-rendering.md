@@ -15,7 +15,7 @@ supersedes: []
 
 **Milestone / Epic:** M5 / M5-I
 **Size:** L
-**Status:** Complete — accepted Phase 1 structural scope
+**Scope note:** Accepted at Phase 1 structural scope
 
 ## Closeout Scope (2026-08-02)
 

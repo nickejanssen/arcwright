@@ -14,7 +14,6 @@ supersedes: []
 # M4-D: Real-Device Privacy And Join Validation
 
 **Milestone:** M4  
-**Status:** Planned
 
 ## Plain-English Summary
 

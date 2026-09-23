@@ -14,7 +14,6 @@ supersedes: []
 # M3-D: Telemetry And Full Simulation Harness
 
 **Milestone:** M3  
-**Status:** Planned
 
 ## Plain-English Summary
 

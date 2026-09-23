@@ -14,7 +14,6 @@ supersedes: []
 # M5-A: Adversarial Safety And Remediation
 
 **Milestone:** M5  
-**Status:** Planned
 
 ## Plain-English Summary
 

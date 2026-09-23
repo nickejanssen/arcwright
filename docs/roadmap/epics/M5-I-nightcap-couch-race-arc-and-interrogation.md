@@ -14,7 +14,6 @@ supersedes: []
 # M5-I: Nightcap Couch Race Arc And Interrogation Layer
 
 **Milestone:** M5
-**Status:** Active
 
 ## Plain-English Summary
 

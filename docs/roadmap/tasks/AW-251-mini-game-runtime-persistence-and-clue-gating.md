@@ -15,7 +15,6 @@ supersedes: []
 
 **Milestone / Epic:** M4 / M4-E
 **Size:** L
-**Status:** Complete
 
 ## Plain-English Summary
 

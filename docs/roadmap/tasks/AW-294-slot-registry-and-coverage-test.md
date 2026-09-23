@@ -15,7 +15,6 @@ supersedes: []
 
 **Milestone / Epic:** M5 / M5-I
 **Size:** S
-**Status:** Planned
 
 > **Split from AW-290**, approved by the founder 2026-08-05.
 >

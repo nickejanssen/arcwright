@@ -14,7 +14,6 @@ supersedes: []
 # M3-C: Session Persistence And Resume
 
 **Milestone:** M3  
-**Status:** Planned
 
 ## Plain-English Summary
 
