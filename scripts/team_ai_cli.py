@@ -67,7 +67,11 @@ def main() -> int:
     if args[:1] == ["--path"]:
         print(cli)
         return 0
-    return subprocess.run(["node", str(cli), *args]).returncode
+    # No new window if the caller has no console (a hook or a detached process).
+    return subprocess.run(
+        ["node", str(cli), *args],
+        creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
+    ).returncode
 
 
 if __name__ == "__main__":
