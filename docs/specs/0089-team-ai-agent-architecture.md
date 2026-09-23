@@ -729,11 +729,18 @@ unfound item reported with the terms searched, never as nonexistent;
 conflicting documents cited together. An instance's `## Domain rules` section is
 emitted, and emit refuses any agent whose instructions need a tool it lacks.
 Live probes then showed that words were not enough: agents read the probe answer
-key and engine code, and one ran a script beyond its search command. From
-team-ai v0.6.5 each emitted agent declares `scripts/hooks/guard_kb_agents.py` as
-a `PreToolUse` hook in its own front matter: Read, Grep and Glob only under the
-KB root, Bash only for the search command. Declared per agent, it adds nothing
-to the main session's tool calls. Engine specialists may report an
+key and engine code, and one ran a script beyond its search command.
+`scripts/hooks/guard_kb_agents.py` now enforces the boundary as a `PreToolUse`
+hook in `.claude/settings.json`: an agent reads only indexed, non-excluded
+documents in its own namespaces, may list matching files across the KB but read
+content only from its own, and runs only the search command for its own
+namespaces. Measured on 2026-09-23: a hook declared in an agent's own front
+matter (team-ai v0.6.5) never ran, in the desktop app or the CLI, and was
+removed in v0.6.6; a settings hook does run for subagent calls, carries
+`agent_type`, and its refusal blocks the call, verified in both. Main-session
+calls carry no `agent_type` and return before any import (about 100 ms, the
+interpreter's start-up). Also measured: `omitClaudeMd` is honoured by the
+desktop app and ignored by CLI 2.1.248 headless sessions. Engine specialists may report an
 `**Implemented by:**` line, which CI keeps true, as the one exception to the
 code-existence rule.
 

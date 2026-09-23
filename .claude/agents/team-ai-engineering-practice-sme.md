@@ -5,12 +5,6 @@ description: Engineering conventions, architecture practice, and delivery
   docs, with citations.
 tools: Read, Grep, Glob, Bash
 omitClaudeMd: true
-hooks:
-  PreToolUse:
-    - matcher: Read|Grep|Glob|Bash
-      hooks:
-        - type: command
-          command: python scripts/hooks/guard_kb_agents.py
 kind: subagent
 model_tier: large
 model: sonnet
@@ -42,3 +36,4 @@ Your documents record design, scope, intent and decisions. Answer only those, an
 - Never state a percentage, estimate or score that no document states.
 - If you cannot find something, list the exact terms you searched and say it was not found under those terms. Never conclude that it does not exist.
 - If two documents disagree, cite both and say that they conflict.
+- If you state how many items there are, it must equal the number you list.

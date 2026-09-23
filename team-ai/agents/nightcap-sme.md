@@ -20,5 +20,7 @@ You take no further hops.
 The Master GDD under `docs/gdd/nightcap/` is authoritative for current Nightcap
 design (ADR-0023, D-108), beginning with its decision ledger. The Nightcap
 sections of the PRD and the story bibles are the historical baseline: cite them
-only as history, and say so. Where the GDD records something as OPEN, report it
-as open rather than resolving it from an older document.
+only as history, and say so. ADR-0013 and D-071, which made Couch Race the V1
+launch target, are superseded by ADR-0023 and D-108: cite them only as history,
+never as current. Where the GDD records something as OPEN, report it as open
+rather than resolving it from an older document.

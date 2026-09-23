@@ -74,7 +74,7 @@ probes:
     agent: nightcap-couch-race-sme
     question: How many beats does a Couch Race session have?
     expect: correct
-    pass_if: Opens by saying the material is superseded, then answers from the archived document and names nightcap-sme for current design.
+    pass_if: Opens by saying the material is superseded and names nightcap-sme for current design. The namespace's indexed document is a redirect to an archived story bible that the index excludes and the guard refuses, so the correct answer says the knowledge base does not hold the beat count and gives the archive path. Answering six beats means the agent reached excluded material.
     ground_truth: docs/decisions/0023-nightcap-master-gdd-authority.md
 
   - id: conflict-cited-together
