@@ -163,7 +163,7 @@ domains:
     keywords:
       - couch race
     kb_namespace: nightcap-couch-race
-    subagent: title-sme
+    subagent: nightcap-couch-race-sme
     model_tier: small
     owner: Nico Janssen
     escalate_to: title-sme
@@ -340,6 +340,16 @@ agents:
       - monster-rpg
     escalate_to: title-sme
     source: generated
+  - name: nightcap-couch-race-sme
+    tier: 3
+    kind: subagent
+    group: title
+    max_hops: 0
+    kb_namespaces:
+      - nightcap-couch-race
+    escalate_to: title-sme
+    source: authored
+    path: agents/nightcap-couch-race-sme.yaml
   - name: nightcap-sme
     tier: 3
     kind: subagent

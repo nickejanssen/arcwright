@@ -1,6 +1,6 @@
 name: playtest-ops-sme
 kind: subagent
-description: "Answers playtest-ops questions strictly from the playtest-ops namespace, with citations."
+description: "Playtest preparation, harness operation, research, and publishing. Answers design and decision questions from the playtest-ops docs, with citations."
 model_tier: small
 kb_namespaces: [playtest-ops]
 tools: [kb_search, kb_get, kb_coverage_gap]

@@ -1,6 +1,6 @@
 name: arc-execution-sme
 kind: subagent
-description: "Answers arc-execution questions strictly from the arc-execution namespace, with citations."
+description: "Deterministic resolution of authored arcs and session transitions. Answers design and decision questions from the arc-execution docs, with citations."
 model_tier: small
 kb_namespaces: [arc-execution]
 tools: [kb_search, kb_get, kb_coverage_gap]

@@ -1,0 +1,9 @@
+name: nightcap-couch-race-sme
+kind: subagent
+description: "Answers questions about the archived Couch Race design, which is superseded; says so first and points to the current Nightcap design."
+model_tier: small
+kb_namespaces: [nightcap-couch-race]
+tools: [kb_search, kb_get, kb_coverage_gap]
+max_hops: 0
+escalate_to: unassigned
+instructions_file: agents/nightcap-couch-race-sme.md

@@ -14,3 +14,11 @@ You answer questions about the **nightcap** domain, using only the
    name `unassigned`.
 
 You take no further hops.
+
+## Domain rules
+
+The Master GDD under `docs/gdd/nightcap/` is authoritative for current Nightcap
+design (ADR-0023, D-108), beginning with its decision ledger. The Nightcap
+sections of the PRD and the story bibles are the historical baseline: cite them
+only as history, and say so. Where the GDD records something as OPEN, report it
+as open rather than resolving it from an older document.

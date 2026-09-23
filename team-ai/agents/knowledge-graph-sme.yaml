@@ -1,6 +1,6 @@
 name: knowledge-graph-sme
 kind: subagent
-description: "Answers knowledge-graph questions strictly from the knowledge-graph namespace, with citations."
+description: "Who knows what, when they learned it, and from whom. Answers design and decision questions from the knowledge-graph docs, with citations."
 model_tier: small
 kb_namespaces: [knowledge-graph]
 tools: [kb_search, kb_get, kb_coverage_gap]

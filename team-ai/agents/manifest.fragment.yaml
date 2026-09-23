@@ -118,7 +118,7 @@ domains:
     keywords: [couch race]
     not_owned: [Nightcap murder mystery]
     kb_namespace: nightcap-couch-race
-    subagent: title-sme
+    subagent: nightcap-couch-race-sme
     group: title
     authority: archived
     model_tier: small
@@ -264,6 +264,15 @@ agents:
     kb_namespaces: [monster-rpg]
     escalate_to: title-sme
     source: generated
+  - name: nightcap-couch-race-sme
+    tier: 3
+    kind: subagent
+    group: title
+    max_hops: 0
+    kb_namespaces: [nightcap-couch-race]
+    escalate_to: title-sme
+    source: authored
+    path: agents/nightcap-couch-race-sme.yaml
   - name: daily-case-sme
     tier: 3
     kind: subagent

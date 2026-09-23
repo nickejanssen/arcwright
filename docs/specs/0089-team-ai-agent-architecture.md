@@ -14,10 +14,10 @@ supersedes: []
 # team-ai Agent Architecture for Arcwright
 
 **Status**: Approved. Phase A implemented. Phase B completed 2026-09-20 as a
-21-task phase, with the model-based delegation eval deliberately cut and the
-framework resolver release still pending.
+21-task phase, with the model-based delegation eval deliberately cut. Corrected
+2026-09-22 after live use exposed wrong answers; see Phase B correction.
 
-**Version**: 1.7 | **Last updated**: 2026-09-20 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
+**Version**: 1.8 | **Last updated**: 2026-09-22 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
 
 **Author**: Claude (with founder) | **Date**: 2026-09-13
 
@@ -229,6 +229,12 @@ invariants:
 
 Routing refusal and hop limits at runtime depend on the host honouring the
 emitted definitions. That limitation is stated rather than hidden.
+
+**Claude Code emission (v1.8).** Tiers 1 and 2 stay in the manifest and are not
+emitted for Claude Code, where the calling session routes (B-S6). Fourteen
+agents are emitted: the thirteen specialists above, plus
+`nightcap-couch-race-sme` for the archived Couch Race namespace, which
+`title-sme` had owned. The topology invariants are unchanged and still enforced.
 
 ## Generated file layout
 
@@ -685,6 +691,57 @@ generation is added to team-ai.
 
 ---
 
+## Phase B correction — approved 2026-09-22
+
+**What happened.** An orientation run dispatched three agents. Two gave answers
+a caller would have acted on and that were false, each with real citations.
+`product-roadmap-sme` reported closed tasks (AW-267, AW-271, AW-272) as
+planned, reading stale `**Status:**` lines, and presented a list drawn from
+`index.json` as complete when GitHub carried M5 work the index did not.
+`engine-sme` reported the live session loop as absent when
+`SessionService.advance_live_session_on_input` implements it, asserted a merge
+order it had no tool to check, and gave an unfounded "70% implemented".
+
+**Why.** The failures trace to the system, not the model. The tier-2 and router
+agents were told to hand off and granted no `Agent` tool, so they improvised
+across seven namespaces on the cheapest model. The emitter dropped each agent's
+instructions file, so no rule written for an agent reached it. Every subagent
+loaded `AGENTS.md`, an answer source that bypasses retrieval. A trap question
+sent to `session-runtime-sme` on the small and large tiers was refused
+correctly by both, with the small tier faster and cheaper: a narrow specialist
+with clear rules behaves, so no tier changed.
+
+**B-S6 — The calling session routes; routers are not emitted for Claude Code.**
+Claude Code allows nested subagents, but a router hop reloads instruction files,
+relays the question without the conversation, and puts a weaker picker in front
+of a stronger one that already holds every agent's description. team-ai v0.6.4
+skips delegating agents on this target. Specialist descriptions carry each
+domain's manifest description so routing has something to route on.
+
+**B-S7 — Each kind of claim comes from the source that owns it.** Every emitted
+agent sets `omitClaudeMd: true` and carries answering rules: design, scope,
+intent and decisions from documents; task status, code existence, merge history
+and CI named to the tracker, the code, git and CI; no unstated percentages; an
+unfound item reported with the terms searched, never as nonexistent;
+conflicting documents cited together. An instance's `## Domain rules` section is
+emitted, and emit refuses any agent whose instructions need a tool it lacks.
+
+**B-S8 — Status lives on GitHub (D-109).** `scripts/roadmap_status.py` joins
+the markdown's scope to live GitHub state and reports every mismatch. Plain
+status lines are removed from roadmap files; qualifiers that carry scope are
+kept as Scope notes. GitHub milestones are corrected from the markdown.
+
+**B-S9 — Architecture names its implementation.** Architecture sections carry
+`**Implemented by:**` lines naming code symbols, and
+`scripts/checks/implemented_by_check.py` fails the build when one stops
+resolving. A reader searching the design's words finds the code instead of
+concluding it is absent.
+
+**B-S10 — Correctness is measured, not inferred from citations.**
+`team-ai/evals/live-probes.yaml` holds twelve probes scored against ground truth
+outside the knowledge base, run at each monthly review. Hit rate stays as a
+retrieval diagnostic.
+
 # Kill Criteria
 
 Approved 2026-09-20, before the system was operated, while it was still easy to
@@ -712,7 +769,10 @@ stated uses — staleness propagation, gap detection, routing hints — have
 no data today, and the fourth is marginal.
 
 **Phase C is one thing:** semantic retrieval for the three domains that hold
-94.7% of the corpus, gated on hit rate. When that gate clears, the build is
+94.7% of the corpus, gated on hit rate. From v1.8 the gate also needs the live
+probes to show that wrong answers come from retrieval misses (the document
+existed and was not found). A failure caused by a rule or by stale data is
+fixed there, and is not evidence for better search. When that gate clears, the build is
 finished and the system is operated rather than extended. There is no Phase D.
 
 A stale knowledge base that answers confidently is worse than no knowledge base.

@@ -62,6 +62,13 @@ def main() -> int:
         lines.append("Knowledge domains and the agent that owns each:")
         for domain in domains:
             lines.append(f"  {domain['id']:24} -> {domain['subagent']}")
+        # No router agent is emitted (spec 0089, B-S6): this session routes.
+        lines.append(
+            "Dispatch the owning agent directly; for a question spanning two domains, "
+            "dispatch both in parallel and reconcile. These agents answer design, scope and "
+            "decisions only: task status is on GitHub (python scripts/roadmap_status.py), "
+            "code existence in the code, history in git."
+        )
 
     snapshot = read_json(SNAPSHOT)
     if snapshot.get("unavailable"):

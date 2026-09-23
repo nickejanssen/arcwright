@@ -104,6 +104,7 @@ These five constraints are non-negotiable and may not be bypassed by arc configu
 - Do not manually maintain duplicate `_all.csv` mirrors unless the task is explicitly about import reconciliation.
 - For roadmap work, use `/docs/roadmap/index.json` to locate the relevant milestone, epic, or task before opening broader roadmap files.
 - For product, roadmap, business, or story questions, answer from canonical current docs first: `/docs/prd/`, `/docs/architecture/`, `/docs/story-bibles/`, `/docs/product/`, `/docs/roadmap/`, `/docs/decisions/`, and `/docs/specs/`.
+- Treat an answer from a knowledge-base subagent as a lead, not a finding. Before acting on one, check it against the source that owns the claim: task status on GitHub (`python scripts/roadmap_status.py`), whether code exists in the code, what merged or when in git. When looking for the code behind an architecture component, follow its `**Implemented by:**` line or search for the state it changes, not only the architecture's name for it.
 - If canonical docs conflict, state the conflict with file paths and ask for direction before implementing.
 
 ## Product Scope Approval Rules

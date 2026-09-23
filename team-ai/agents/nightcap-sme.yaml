@@ -1,6 +1,6 @@
 name: nightcap-sme
 kind: subagent
-description: "Answers nightcap questions strictly from the nightcap namespace, with citations."
+description: "Canonical Nightcap murder-mystery experience and story content. Answers design and decision questions from the nightcap docs, with citations."
 model_tier: small
 kb_namespaces: [nightcap]
 tools: [kb_search, kb_get, kb_coverage_gap]
