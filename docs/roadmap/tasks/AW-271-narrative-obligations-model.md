@@ -15,7 +15,7 @@ supersedes: []
 
 **Milestone / Epic:** M5 / M5-H
 **Size:** M
-**Status:** Planned (post-M6)
+**Scope note:** Sequenced after M6
 
 ## Plain-English Summary
 

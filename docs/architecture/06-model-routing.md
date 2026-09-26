@@ -25,6 +25,8 @@ This matters for three reasons. First, AI pricing and model quality change frequ
 
 ## 6.2 The Provider-Agnostic Contract
 
+**Implemented by:** `engine/routing/router.py::route_generation`, `engine/routing/router.py::resolve_model_key`, `engine/routing/logging.py::generate`.
+
 Every component in the engine that needs an AI call follows the same contract:
 
 ```python
@@ -77,6 +79,8 @@ The effect: the most capable model is deployed precisely when the session is at 
 
 ## 6.5 Fallback Behavior
 
+**Implemented by:** `engine/routing/router.py::resolve_fallback_model_key`.
+
 LiteLLM handles provider-level fallbacks natively. The routing table supports a `fallback` key per task type and tier:
 
 ```json
@@ -93,6 +97,8 @@ LiteLLM handles provider-level fallbacks natively. The routing table supports a 
 If the primary model call fails (provider outage, rate limit, timeout), LiteLLM automatically retries against the fallback. The session continues. Fallback activations are logged to `events` with `event_type = "routing_fallback"` so the founder can see which providers are causing fallback pressure.
 
 ## 6.6 Cost Tracking
+
+**Implemented by:** `engine/routing/router.py::compute_cost`.
 
 Every generation call logs to `generation_logs` immediately on completion: model used, input tokens, output tokens, latency, and computed cost in USD. Cost is calculated from a rates table embedded in `router.py` and updated when provider pricing changes.
 

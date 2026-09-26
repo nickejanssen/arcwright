@@ -15,7 +15,6 @@ supersedes: []
 
 **Milestone / Epic:** M5 / M5-I
 **Size:** L
-**Status:** Complete
 
 ## Closeout Evidence
 

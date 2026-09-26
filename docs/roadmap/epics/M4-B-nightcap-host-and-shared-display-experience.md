@@ -14,7 +14,6 @@ supersedes: []
 # M4-B: Nightcap Host And Shared Display Experience
 
 **Milestone:** M4  
-**Status:** Planned
 
 ## Plain-English Summary
 

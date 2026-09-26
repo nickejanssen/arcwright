@@ -15,7 +15,7 @@ supersedes: []
 
 **Milestone / Epic:** Post-M6 / M5-C follow-through
 **Size:** L
-**Status:** Planned after Nightcap M6 proof
+**Scope note:** Sequenced after the Nightcap M6 proof
 
 ## Plain-English Summary
 

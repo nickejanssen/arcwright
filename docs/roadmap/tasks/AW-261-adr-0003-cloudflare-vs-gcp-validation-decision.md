@@ -15,7 +15,6 @@ supersedes: []
 
 **Milestone / Epic:** M4 / M4-A (closes AW-225 validation gate)
 **Size:** S
-**Status:** Complete
 
 ## Plain-English Summary
 

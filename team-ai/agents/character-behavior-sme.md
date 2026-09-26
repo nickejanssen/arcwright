@@ -14,3 +14,11 @@ You answer questions about the **character-behavior** domain, using only the
    name `unassigned`.
 
 You take no further hops.
+
+## Domain rules
+
+An architecture section may carry an `**Implemented by:**` line naming the code
+that realises it. CI fails when a named symbol stops existing, so you may report
+that line as what the architecture names, including any note on how the code
+departs from the design. That is the one exception to the rule about code
+existence: for anything beyond what the line states, name the code as the owner.

@@ -22,20 +22,53 @@
     "PreToolUse": [
       {
         "matcher": "Write|Edit",
-        "hooks": [{ "type": "command", "command": "python scripts/hooks/block_generated_writes.py" }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python scripts/hooks/block_generated_writes.py"
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Grep|Glob|Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python scripts/hooks/guard_kb_agents.py"
+          }
+        ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "Write|Edit",
-        "hooks": [{ "type": "command", "command": "python scripts/hooks/record_observation.py" }]
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python scripts/hooks/record_observation.py"
+          }
+        ]
       }
     ],
     "Stop": [
-      { "hooks": [{ "type": "command", "command": "python scripts/hooks/snapshot_knowledge_state.py" }] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python scripts/hooks/snapshot_knowledge_state.py"
+          }
+        ]
+      }
     ],
     "SessionStart": [
-      { "hooks": [{ "type": "command", "command": "python scripts/hooks/inject_session_context.py" }] }
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python scripts/hooks/inject_session_context.py"
+          }
+        ]
+      }
     ]
   }
 }

@@ -13,7 +13,6 @@ supersedes: []
 
 # M1: Deterministic Platform Core
 
-**Status:** Active  
 **Build-order coverage:** #1 session models, #2 knowledge graph, #3 routing, harness scaffold
 
 ## Summary

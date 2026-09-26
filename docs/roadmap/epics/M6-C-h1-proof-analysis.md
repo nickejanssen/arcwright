@@ -14,7 +14,6 @@ supersedes: []
 # M6-C: H1 Proof Analysis
 
 **Milestone:** M6  
-**Status:** Planned
 
 ## Plain-English Summary
 

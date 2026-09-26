@@ -15,7 +15,6 @@ supersedes: []
 
 **Milestone / Epic:** M5 / M5-I
 **Size:** M
-**Status:** Planned
 
 > **Rescoped by an approved split, 2026-08-05.** This task previously carried
 > anchors, case persistence, a wrapper dressing pack, and a slot registry at

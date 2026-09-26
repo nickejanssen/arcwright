@@ -15,7 +15,6 @@ supersedes: []
 
 **Milestone / Epic:** M5 (M4 exit-gate debt; no epic)
 **Size:** M
-**Status:** Planned
 
 ## Plain-English Summary
 

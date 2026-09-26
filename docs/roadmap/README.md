@@ -61,6 +61,23 @@ For an AI agent handed a GitHub issue number or URL:
 3. Use the manifest path to open the canonical roadmap file
 4. Treat the GitHub issue as execution status and discussion, not the source of truth for scope
 
+## Status
+
+Task status lives on GitHub, not in these files (D-109). The files record what a
+task is, why it exists, what it covers and which milestone it belongs to.
+
+```bash
+python scripts/roadmap_status.py --milestone M5
+```
+
+reports live open or closed state for every task, joined to the markdown's
+scope, and lists every mismatch: tasks with no issue, GitHub milestones that
+disagree with the markdown, and GitHub work that `index.json` does not know
+about. Closed is not the same as done; read the task's Scope note and the issue.
+
+A `**Scope note:**` line records a scope or sequencing qualifier (superseded,
+deferred, gated, closed without the work being executed). It is not a status.
+
 ## Directory Layout
 
 - `00-overview.md`: roadmap-wide usage, milestone map, decomposition policy, and override notes

@@ -15,7 +15,6 @@ supersedes: []
 
 **Milestone / Epic:** M5 / TBD (epic assignment when M5 starts)
 **Size:** L
-**Status:** Planned
 
 ## Plain-English Summary
 

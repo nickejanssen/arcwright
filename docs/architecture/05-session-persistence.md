@@ -37,6 +37,8 @@ Four categories of state, each mapped to specific tables:
 
 ## 5.3 The Nearest-Beat Restore Pattern
 
+**Implemented by:** `engine/session/snapshots.py::write_snapshot`, `engine/session/snapshots.py::load_current_snapshot`, `engine/session/snapshots.py::restore_chart_from_snapshot`.
+
 The engine does not resume from mid-scene. Resuming mid-dialogue is disorienting for players and risks AI coherence failures. Instead:
 
 1. When interruption is detected, complete any atomic operation in progress (await an in-flight generation call up to 5 seconds, complete any beat transition already underway)

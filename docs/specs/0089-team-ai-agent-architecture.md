@@ -14,10 +14,10 @@ supersedes: []
 # team-ai Agent Architecture for Arcwright
 
 **Status**: Approved. Phase A implemented. Phase B completed 2026-09-20 as a
-21-task phase, with the model-based delegation eval deliberately cut and the
-framework resolver release still pending.
+21-task phase, with the model-based delegation eval deliberately cut. Corrected
+2026-09-22 after live use exposed wrong answers; see Phase B correction.
 
-**Version**: 1.7 | **Last updated**: 2026-09-20 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
+**Version**: 1.8 | **Last updated**: 2026-09-22 | **Canonical path**: `docs/specs/0089-team-ai-agent-architecture.md`
 
 **Author**: Claude (with founder) | **Date**: 2026-09-13
 
@@ -68,7 +68,8 @@ Delivered in three phases, each independently reviewable.
   namespaces: 13 specialist domains plus the archived `nightcap-couch-race`
 - Generate the router and 13 specialists into `team-ai/`; hand-author and
   register the three tier-2 group SMEs
-- Emit the 17 agents as Claude Code subagents under `.claude/agents/team-ai-*.md`
+- Emit the specialists as Claude Code subagents under `.claude/agents/team-ai-*.md`
+  (14 files from v1.8: tiers 1 and 2 are not emitted, B-S6)
 - Emit the `domains`, `agents`, and `skills` manifest sections
 
 **Phase B — Retrieval correctness, enforcement, hooks, measurement**
@@ -200,14 +201,16 @@ TIER 2  engine-sme            model_tier: small  max_hops: 1    hand-authored (D
         title-sme             Cross-cutting questions spanning >1 specialist.
         practice-sme
 
-TIER 3  Specialists           model_tier: small  max_hops: 0    generated
+TIER 3  Specialists           model_tier: large  max_hops: 0    generated
         engine:   arc-execution · knowledge-graph · character-behavior
                   model-routing · session-runtime · safety · developer-api
         title:    nightcap (canonical) · monster-rpg · daily-case (provisional)
         practice: product-roadmap · engineering-practice · playtest-ops
 ```
 
-17 agents: 14 generated from team-ai templates and 3 hand-authored. The
+18 agents in the manifest: 14 generated from team-ai templates and 4 authored
+(the three tier-2 agents, and from v1.8 `nightcap-couch-race-sme`, which took the
+archived namespace from `title-sme`). Before v1.8 this read 17, with 3 authored. The
 generator produces the router from `agents/sme.yaml.hbs` and one specialist per
 `agents.domains` entry from `agents/_domain-sme.yaml.hbs`. team-ai has no
 group-SME template, and `team.size: 1-3` suppresses generated role subagents,
@@ -229,6 +232,12 @@ invariants:
 
 Routing refusal and hop limits at runtime depend on the host honouring the
 emitted definitions. That limitation is stated rather than hidden.
+
+**Claude Code emission (v1.8).** Tiers 1 and 2 stay in the manifest and are not
+emitted for Claude Code, where the calling session routes (B-S6). Fourteen
+agents are emitted: the thirteen specialists above, plus
+`nightcap-couch-race-sme` for the archived Couch Race namespace, which
+`title-sme` had owned. The topology invariants are unchanged and still enforced.
 
 ## Generated file layout
 
@@ -479,8 +488,8 @@ rank fusion.
 - [ ] `team-ai/inventory.txt` is committed and lists every KB document with its current and target namespace
 - [ ] The migration proposal has zero conflicts and is explicitly approved by the founder before any write
 - [ ] After migration, `validate-kb` passes against the configured KB root, `git grep -h '^namespace:' -- docs ':!docs/archive'` reports only the 14 target namespaces, and a repository grep outside `docs/archive/` finds no id beginning with any of the seven prior values
-- [ ] 14 agents generated and 3 hand-authored; `team-ai validate-manifest` passes
-- [ ] 17 files exist at `.claude/agents/team-ai-*.md`, each with `tools: Read, Grep, Glob`, and regenerating them produces no diff
+- [ ] 18 agents in the manifest, 14 generated and 4 authored; `team-ai validate-manifest` passes *(v1.8; was 14 and 3)*
+- [ ] 14 files exist at `.claude/agents/team-ai-*.md`, one per specialist and none for a router or tier-2 agent (B-S6); each sets `omitClaudeMd: true`; only the three ranked-search agents add `Bash` to `Read, Grep, Glob`; deleting and regenerating them produces no diff *(v1.8; was 17 files, all `Read, Grep, Glob`)*
 - [ ] `nightcap` is `authority: canonical`; `monster-rpg` and `daily-case` are `provisional`; `nightcap-couch-race` is `archived`
 - [ ] Every changed path is inside the approved layout: `team-ai/`, `.claude/agents/team-ai-*.md`, `docs/**` front-matter `namespace`/`id` lines, `AGENTS.md`, `.github/copilot-instructions.md`, `.gitignore`, and the CI workflow file
 - [ ] `docs/agents/`, `docs/skills/`, and every other file under `.claude/` are unchanged
@@ -560,8 +569,8 @@ section and an engine to execute it, which Phase B does not build.
   cannot enforce them at runtime.
 - **Refusal rate may frustrate.** Mitigation: the golden set measures it;
   `not_owned` and keyword tuning are cheap to iterate.
-- **17 agents is real maintenance surface** for a solo founder. Mitigation: 14
-  are generated; each agent's description stays to one line because Claude Code
+- **18 agents in the manifest, 14 emitted, is real maintenance surface** for a
+  solo founder. Mitigation: 14 are generated; each agent's description stays to one line because Claude Code
   keeps subagent descriptions in context for delegation.
 - **Local embedding model adds a dependency and per-query CPU work.** Mitigation:
   automatic lexical fallback.
@@ -685,12 +694,90 @@ generation is added to team-ai.
 
 ---
 
+## Phase B correction — approved 2026-09-22
+
+**What happened.** An orientation run dispatched three agents. Two gave answers
+a caller would have acted on and that were false, each with real citations.
+`product-roadmap-sme` reported closed tasks (AW-267, AW-271, AW-272) as
+planned, reading stale `**Status:**` lines, and presented a list drawn from
+`index.json` as complete when GitHub carried M5 work the index did not.
+`engine-sme` reported the live session loop as absent when
+`SessionService.advance_live_session_on_input` implements it, asserted a merge
+order it had no tool to check, and gave an unfounded "70% implemented".
+
+**Why.** The failures trace to the system, not the model. The tier-2 and router
+agents were told to hand off and granted no `Agent` tool, so they improvised
+across seven namespaces on the cheapest model. The emitter dropped each agent's
+instructions file, so no rule written for an agent reached it. Every subagent
+loaded `AGENTS.md`, an answer source that bypasses retrieval. A trap question
+sent to `session-runtime-sme` on the small and large tiers was refused
+correctly by both, with the small tier faster and cheaper: a narrow specialist
+with clear rules behaves, so no tier changed.
+
+**B-S6 — The calling session routes; routers are not emitted for Claude Code.**
+Claude Code allows nested subagents, but a router hop reloads instruction files,
+relays the question without the conversation, and puts a weaker picker in front
+of a stronger one that already holds every agent's description. team-ai v0.6.4
+skips delegating agents on this target. Specialist descriptions carry each
+domain's manifest description so routing has something to route on.
+
+**B-S7 — Each kind of claim comes from the source that owns it.** Every emitted
+agent sets `omitClaudeMd: true` and carries answering rules: design, scope,
+intent and decisions from documents; task status, code existence, merge history
+and CI named to the tracker, the code, git and CI; no unstated percentages; an
+unfound item reported with the terms searched, never as nonexistent;
+conflicting documents cited together. An instance's `## Domain rules` section is
+emitted, and emit refuses any agent whose instructions need a tool it lacks.
+Live probes then showed that words were not enough: agents read the probe answer
+key and engine code, and one ran a script beyond its search command.
+`scripts/hooks/guard_kb_agents.py` now enforces the boundary as a `PreToolUse`
+hook in `.claude/settings.json`: an agent reads only indexed, non-excluded
+documents in its own namespaces, may list matching files across the KB but read
+content only from its own, and runs only the search command for its own
+namespaces. Measured on 2026-09-23: a hook declared in an agent's own front
+matter (team-ai v0.6.5) never ran, in the desktop app or the CLI, and was
+removed in v0.6.6; a settings hook does run for subagent calls, carries
+`agent_type`, and its refusal blocks the call, verified in both. Main-session
+calls carry no `agent_type` and return before any import (about 100 ms, the
+interpreter's start-up). Also measured: `omitClaudeMd` is honoured by the
+desktop app and ignored by CLI 2.1.248 headless sessions. Engine specialists may report an
+`**Implemented by:**` line, which CI keeps true, as the one exception to the
+code-existence rule.
+
+**B-S8 — Status lives on GitHub (D-109).** `scripts/roadmap_status.py` joins
+the markdown's scope to live GitHub state and reports every mismatch. Plain
+status lines are removed from roadmap files; qualifiers that carry scope are
+kept as Scope notes. GitHub milestones are corrected from the markdown.
+
+**B-S9 — Architecture names its implementation.** Architecture sections carry
+`**Implemented by:**` lines naming code symbols, and
+`scripts/checks/implemented_by_check.py` fails the build when one stops
+resolving. A reader searching the design's words finds the code instead of
+concluding it is absent.
+
+**B-S11 — Specialists run on the large tier (approved 2026-09-23).** Live
+probes on the small tier answered two of eight questions wrongly, each by
+breaking a rule when tempting data was in reach: a merge order inferred from the
+git snapshot the host gives every agent, and a player count that stopped one
+line short of "upper bound NOT decided". The large tier answered both correctly,
+citing its rules. An earlier trap with no tempting data was refused by both
+tiers, which is why the small tier looked sufficient at first. Tokens per answer
+were similar; the per-token price is higher, set against the main session's
+larger cost of reading documents itself. All fourteen specialists move to
+`model_tier: large` and the golden set's `expect_tier_max` follows. Re-measured
+at each monthly probe review.
+
+**B-S10 — Correctness is measured, not inferred from citations.**
+`team-ai/evals/live-probes.yaml` holds twelve probes scored against ground truth
+outside the knowledge base, run at each monthly review. Hit rate stays as a
+retrieval diagnostic.
+
 # Kill Criteria
 
 Approved 2026-09-20, before the system was operated, while it was still easy to
 be honest. Adapted from team-ai's own design, section 21.
 
-The return on this system depends entirely on it being used. 17 agents, 449
+The return on this system depends entirely on it being used. 14 agents, 449
 documents, a golden set and a measurement harness are sunk cost if nobody asks
 them anything. These conditions say when to cut back rather than extend.
 
@@ -712,7 +799,10 @@ stated uses — staleness propagation, gap detection, routing hints — have
 no data today, and the fourth is marginal.
 
 **Phase C is one thing:** semantic retrieval for the three domains that hold
-94.7% of the corpus, gated on hit rate. When that gate clears, the build is
+94.7% of the corpus, gated on hit rate. From v1.8 the gate also needs the live
+probes to show that wrong answers come from retrieval misses (the document
+existed and was not found). A failure caused by a rule or by stale data is
+fixed there, and is not evidence for better search. When that gate clears, the build is
 finished and the system is operated rather than extended. There is no Phase D.
 
 A stale knowledge base that answers confidently is worse than no knowledge base.

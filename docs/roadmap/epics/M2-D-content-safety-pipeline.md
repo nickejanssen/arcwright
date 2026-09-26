@@ -14,7 +14,6 @@ supersedes: []
 # M2-D: Content Safety Pipeline
 
 **Milestone:** M2  
-**Status:** Planned
 
 ## Plain-English Summary
 

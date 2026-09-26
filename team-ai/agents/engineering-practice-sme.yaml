@@ -1,7 +1,7 @@
 name: engineering-practice-sme
 kind: subagent
-description: "Answers engineering-practice questions strictly from the engineering-practice namespace, with citations."
-model_tier: small
+description: "Engineering conventions, architecture practice, and delivery playbooks. Answers design and decision questions from the engineering-practice docs, with citations."
+model_tier: large
 kb_namespaces: [engineering-practice]
 tools: [kb_search, kb_get, kb_coverage_gap]
 max_hops: 0

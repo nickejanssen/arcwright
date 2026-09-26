@@ -15,7 +15,6 @@ supersedes: []
 
 **Milestone / Epic:** M6 / M6-A  
 **Size:** M  
-**Status:** Planned
 
 ## Plain-English Summary
 

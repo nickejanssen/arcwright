@@ -14,7 +14,6 @@ supersedes: []
 # M6-B: Qualifying Session Execution
 
 **Milestone:** M6  
-**Status:** Planned
 
 ## Plain-English Summary
 

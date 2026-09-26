@@ -14,7 +14,6 @@ supersedes: []
 # M2-E: Character Behavior Engine
 
 **Milestone:** M2  
-**Status:** Planned
 
 ## Plain-English Summary
 

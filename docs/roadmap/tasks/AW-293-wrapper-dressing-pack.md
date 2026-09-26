@@ -15,7 +15,6 @@ supersedes: []
 
 **Milestone / Epic:** M5 / M5-I
 **Size:** M
-**Status:** Planned
 
 > **Split from AW-290**, approved by the founder 2026-08-05. AW-290 was
 > recorded Size `M` and carried anchors, persistence, a dressing pack, and a

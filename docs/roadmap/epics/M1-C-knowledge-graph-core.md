@@ -14,7 +14,6 @@ supersedes: []
 # M1-C: Knowledge Graph Core
 
 **Milestone:** M1  
-**Status:** Planned
 
 ## What This Epic Covers
 

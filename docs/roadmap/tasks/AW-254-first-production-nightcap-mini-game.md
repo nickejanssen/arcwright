@@ -15,7 +15,7 @@ supersedes: []
 
 **Milestone / Epic:** M4 / M4-E
 **Size:** M
-**Status:** Superseded
+**Scope note:** Superseded; see the body of this file
 **Parent:** AW-259
 
 ## Repurpose Note

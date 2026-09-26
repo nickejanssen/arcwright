@@ -14,7 +14,6 @@ supersedes: []
 # M4-E: Nightcap Mini-game Interaction Layer
 
 **Milestone:** M4
-**Status:** Complete
 
 ## Closeout Note (2026-08-02)
 

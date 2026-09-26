@@ -15,7 +15,7 @@ supersedes: []
 
 **Milestone / Epic:** M5 / M5-I
 **Size:** M
-**Status:** Planned — GATED on paper-test validation (D-091)
+**Scope note:** Gated on paper-test validation (D-091)
 
 ## Plain-English Summary
 

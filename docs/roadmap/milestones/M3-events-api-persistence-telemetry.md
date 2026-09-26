@@ -13,7 +13,6 @@ supersedes: []
 
 # M3: Events, API, Persistence, Telemetry
 
-**Status:** Planned  
 **Build-order coverage:** #6 events, #8 API + auth, #9 persistence, #10 telemetry, #11 full harness
 
 ## Summary

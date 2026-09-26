@@ -14,7 +14,6 @@ supersedes: []
 # M5-D: Visual Storyworld Knowledge Graph Inspection
 
 **Milestone:** M5  
-**Status:** Planned
 
 ## Plain-English Summary
 

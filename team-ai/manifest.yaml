@@ -9,7 +9,7 @@ domains:
       - runtime
     kb_namespace: arc-execution
     subagent: arc-execution-sme
-    model_tier: small
+    model_tier: large
     owner: Nico Janssen
     escalate_to: engine-sme
     group: engine
@@ -27,7 +27,7 @@ domains:
       - relationships
     kb_namespace: character-behavior
     subagent: character-behavior-sme
-    model_tier: small
+    model_tier: large
     owner: Nico Janssen
     escalate_to: engine-sme
     group: engine
@@ -44,7 +44,7 @@ domains:
       - case of the day
     kb_namespace: daily-case
     subagent: daily-case-sme
-    model_tier: small
+    model_tier: large
     owner: Nico Janssen
     escalate_to: title-sme
     group: title
@@ -62,7 +62,7 @@ domains:
       - contract
     kb_namespace: developer-api
     subagent: developer-api-sme
-    model_tier: small
+    model_tier: large
     owner: Nico Janssen
     escalate_to: engine-sme
     group: engine
@@ -79,7 +79,7 @@ domains:
       - playbook
     kb_namespace: engineering-practice
     subagent: engineering-practice-sme
-    model_tier: small
+    model_tier: large
     owner: Nico Janssen
     escalate_to: practice-sme
     group: practice
@@ -97,7 +97,7 @@ domains:
       - knowledge graph
     kb_namespace: knowledge-graph
     subagent: knowledge-graph-sme
-    model_tier: small
+    model_tier: large
     owner: Nico Janssen
     escalate_to: engine-sme
     group: engine
@@ -117,7 +117,7 @@ domains:
       - cost
     kb_namespace: model-routing
     subagent: model-routing-sme
-    model_tier: small
+    model_tier: large
     owner: Nico Janssen
     escalate_to: engine-sme
     group: engine
@@ -133,7 +133,7 @@ domains:
       - roleplaying
     kb_namespace: monster-rpg
     subagent: monster-rpg-sme
-    model_tier: small
+    model_tier: large
     owner: Nico Janssen
     escalate_to: title-sme
     group: title
@@ -150,7 +150,7 @@ domains:
       - canon
     kb_namespace: nightcap
     subagent: nightcap-sme
-    model_tier: small
+    model_tier: large
     owner: Nico Janssen
     escalate_to: title-sme
     group: title
@@ -163,8 +163,8 @@ domains:
     keywords:
       - couch race
     kb_namespace: nightcap-couch-race
-    subagent: title-sme
-    model_tier: small
+    subagent: nightcap-couch-race-sme
+    model_tier: large
     owner: Nico Janssen
     escalate_to: title-sme
     group: title
@@ -181,7 +181,7 @@ domains:
       - publishing
     kb_namespace: playtest-ops
     subagent: playtest-ops-sme
-    model_tier: small
+    model_tier: large
     owner: Nico Janssen
     escalate_to: practice-sme
     group: practice
@@ -199,7 +199,7 @@ domains:
       - decision
     kb_namespace: product-roadmap
     subagent: product-roadmap-sme
-    model_tier: small
+    model_tier: large
     owner: Nico Janssen
     escalate_to: practice-sme
     group: practice
@@ -216,7 +216,7 @@ domains:
       - policy
     kb_namespace: safety
     subagent: safety-sme
-    model_tier: small
+    model_tier: large
     owner: Nico Janssen
     escalate_to: engine-sme
     group: engine
@@ -234,7 +234,7 @@ domains:
       - runtime
     kb_namespace: session-runtime
     subagent: session-runtime-sme
-    model_tier: small
+    model_tier: large
     owner: Nico Janssen
     escalate_to: engine-sme
     group: engine
@@ -340,6 +340,16 @@ agents:
       - monster-rpg
     escalate_to: title-sme
     source: generated
+  - name: nightcap-couch-race-sme
+    tier: 3
+    kind: subagent
+    group: title
+    max_hops: 0
+    kb_namespaces:
+      - nightcap-couch-race
+    escalate_to: title-sme
+    source: authored
+    path: agents/nightcap-couch-race-sme.yaml
   - name: nightcap-sme
     tier: 3
     kind: subagent

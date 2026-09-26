@@ -14,7 +14,6 @@ supersedes: []
 # M2-A: Nightcap Web Experience Runtime Decision Gate
 
 **Milestone:** M2  
-**Status:** Planned
 
 ## Plain-English Summary
 

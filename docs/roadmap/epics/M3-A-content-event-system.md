@@ -14,7 +14,6 @@ supersedes: []
 # M3-A: Content Event System
 
 **Milestone:** M3  
-**Status:** Planned
 
 ## Plain-English Summary
 

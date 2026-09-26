@@ -15,7 +15,7 @@ computes its value but never interprets beat ids or obligation names.
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 from uuid import UUID, uuid4
 
 from sqlalchemy import select
@@ -62,7 +62,9 @@ async def register_authored_obligations(
             Obligation.source_type == SOURCE_TYPE_AUTHORED,
         )
     )
-    existing_keys = {ref.get("obligation_key") for (ref,) in existing.all()}
+    existing_keys = {
+        cast(dict[str, object], ref).get("obligation_key") for (ref,) in existing.all()
+    }
 
     created: list[Obligation] = []
     for config in arc_definition.obligations:

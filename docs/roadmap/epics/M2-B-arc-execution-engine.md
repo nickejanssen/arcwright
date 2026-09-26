@@ -14,7 +14,6 @@ supersedes: []
 # M2-B: Arc Execution Engine
 
 **Milestone:** M2  
-**Status:** Planned
 
 ## Plain-English Summary
 

@@ -15,7 +15,6 @@ supersedes: []
 
 **Milestone / Epic:** M5 / M5-I
 **Size:** M
-**Status:** Planned
 
 > **Ownership, decided 2026-08-05 by D-101.** AW-286 owns the remaining AW-285
 > scope: six-beat mini-game integration, privacy and device checks, and

@@ -14,7 +14,6 @@ supersedes: []
 # M5-E: Character Behavior Engine Hardening
 
 **Milestone:** M5
-**Status:** Planned
 
 ## Plain-English Summary
 

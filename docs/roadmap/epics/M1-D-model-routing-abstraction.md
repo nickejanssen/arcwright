@@ -14,7 +14,6 @@ supersedes: []
 # M1-D: Model Routing Abstraction
 
 **Milestone:** M1  
-**Status:** Planned
 
 ## What This Epic Covers
 

@@ -15,7 +15,7 @@ supersedes: []
 
 **Milestone / Epic:** M5 / M5-D  
 **Size:** M  
-**Status:** Deferred / Post-proof optional
+**Scope note:** Deferred; optional after the proof
 
 ## Plain-English Summary
 

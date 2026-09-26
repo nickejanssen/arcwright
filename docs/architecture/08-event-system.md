@@ -67,6 +67,8 @@ class PresentationHints(BaseModel):
 
 ## 8.3 Event Bus Architecture
 
+**Implemented by:** `engine/events/bus.py::SessionEventBus`.
+
 At MVP, the event bus is an in-memory asyncio queue per session, held in the engine worker process. The API service subscribes to the bus via an internal async channel when a client connects via SSE.
 
 ```
@@ -85,6 +87,8 @@ Arc execution engine
 For Horizon 2 with multiple engine worker instances, the in-memory bus does not survive process boundaries. The upgrade path: replace the asyncio queue with a lightweight pub/sub layer (Redis Pub/Sub or Cloud Pub/Sub). The fan-out router code does not change; only the bus implementation changes. This is the transport adapter pattern committed in Decision 10.
 
 ## 8.4 Target Audience Filtering
+
+**Implemented by:** `engine/events/fanout.py::SessionConnectionRegistry.route`.
 
 The fan-out router maintains a connection registry per session:
 
@@ -123,6 +127,8 @@ When the arc engine distributes a clue to Player 3:
 Player 3 receives their clue privately. Everyone in the room sees that something happened. The host sees what it was. The engine emits three events; the routing layer handles the rest.
 
 ## 8.6 SSE Implementation
+
+**Implemented by:** `engine/events/fanout.py::run_fanout`, `engine/events/fanout.py::SSEConnection`.
 
 FastAPI's `EventSourceResponse` (from the `sse-starlette` library) handles the SSE stream per client. Each connection:
 

@@ -14,7 +14,6 @@ supersedes: []
 # M1-A: Scaffolding and Infrastructure
 
 **Milestone:** M1  
-**Status:** Planned
 
 ## What This Epic Covers
 

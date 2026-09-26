@@ -14,7 +14,6 @@ supersedes: []
 # M5-F: Tell Me Something True Social Opener Implementation
 
 **Milestone:** M5
-**Status:** Active
 
 ## Plain-English Summary
 

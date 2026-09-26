@@ -14,7 +14,6 @@ supersedes: []
 # M5-G: Nightcap Visual Identity and Polish
 
 **Milestone:** M5
-**Status:** Planned
 
 ## Plain-English Summary
 

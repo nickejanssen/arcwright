@@ -15,7 +15,6 @@ supersedes: []
 
 **Milestone / Epic:** M2 / Roadmap bootstrap  
 **Size:** M  
-**Status:** Planned
 
 ## Plain-English Summary
 

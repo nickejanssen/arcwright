@@ -14,7 +14,6 @@ supersedes: []
 # M5-B: Cost, Usage, And Gross Margin
 
 **Milestone:** M5  
-**Status:** Planned
 
 ## Plain-English Summary
 

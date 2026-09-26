@@ -1,7 +1,7 @@
 name: character-behavior-sme
 kind: subagent
-description: "Answers character-behavior questions strictly from the character-behavior namespace, with citations."
-model_tier: small
+description: "Unified character identity, behavior, goals, and relationships. Answers design and decision questions from the character-behavior docs, with citations."
+model_tier: large
 kb_namespaces: [character-behavior]
 tools: [kb_search, kb_get, kb_coverage_gap]
 max_hops: 0

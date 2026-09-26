@@ -14,7 +14,6 @@ supersedes: []
 # M2-C: Nightcap Arc Runtime
 
 **Milestone:** M2  
-**Status:** Planned
 
 ## Plain-English Summary
 

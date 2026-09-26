@@ -14,7 +14,6 @@ supersedes: []
 # M1-E: Harness Scaffold
 
 **Milestone:** M1  
-**Status:** Planned
 
 ## What This Epic Covers
 

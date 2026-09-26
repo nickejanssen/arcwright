@@ -14,7 +14,6 @@ supersedes: []
 # M4-C: Nightcap Player Device Experience
 
 **Milestone:** M4  
-**Status:** Planned
 
 ## Plain-English Summary
 

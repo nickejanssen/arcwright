@@ -17,7 +17,7 @@
   expect_namespace: arc-execution
   expect_paths: [architecture/03-arc-execution.md]
   expect_route: arc-execution-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/03-arc-execution.md
   generated_on: "2026-09-20"
@@ -28,7 +28,7 @@
   expect_namespace: arc-execution
   expect_paths: [architecture/03-arc-execution.md]
   expect_route: arc-execution-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/03-arc-execution.md
   generated_on: "2026-09-20"
@@ -39,7 +39,7 @@
   expect_namespace: character-behavior
   expect_paths: [architecture/07-character-behavior.md]
   expect_route: character-behavior-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/07-character-behavior.md
   generated_on: "2026-09-20"
@@ -50,7 +50,7 @@
   expect_namespace: character-behavior
   expect_paths: [architecture/07-character-behavior.md]
   expect_route: character-behavior-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/07-character-behavior.md
   generated_on: "2026-09-20"
@@ -61,7 +61,7 @@
   expect_namespace: developer-api
   expect_paths: [architecture/09-developer-api.md]
   expect_route: developer-api-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/09-developer-api.md
   generated_on: "2026-09-20"
@@ -72,7 +72,7 @@
   expect_namespace: engineering-practice
   expect_paths: [README.md]
   expect_route: engineering-practice-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: README.md
   generated_on: "2026-09-20"
@@ -83,7 +83,7 @@
   expect_namespace: engineering-practice
   expect_paths: [specs/0089-team-ai-agent-architecture.md]
   expect_route: engineering-practice-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: specs/0089-team-ai-agent-architecture.md
   generated_on: "2026-09-20"
@@ -94,7 +94,7 @@
   expect_namespace: knowledge-graph
   expect_paths: [architecture/04-knowledge-graph.md]
   expect_route: knowledge-graph-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/04-knowledge-graph.md
   generated_on: "2026-09-20"
@@ -105,7 +105,7 @@
   expect_namespace: knowledge-graph
   expect_paths: [architecture/04-knowledge-graph.md]
   expect_route: knowledge-graph-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/04-knowledge-graph.md
   generated_on: "2026-09-20"
@@ -116,7 +116,7 @@
   expect_namespace: model-routing
   expect_paths: [architecture/06-model-routing.md]
   expect_route: model-routing-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/06-model-routing.md
   generated_on: "2026-09-20"
@@ -127,7 +127,7 @@
   expect_namespace: model-routing
   expect_paths: [architecture/13-cost-model.md]
   expect_route: model-routing-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/13-cost-model.md
   generated_on: "2026-09-20"
@@ -138,7 +138,7 @@
   expect_namespace: daily-case
   expect_paths: [story-bibles/daily-case.md]
   expect_route: daily-case-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: story-bibles/daily-case.md
   generated_on: "2026-09-20"
@@ -149,7 +149,7 @@
   expect_namespace: monster-rpg
   expect_paths: [story-bibles/monster-rpg.md]
   expect_route: monster-rpg-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: story-bibles/monster-rpg.md
   generated_on: "2026-09-20"
@@ -160,7 +160,7 @@
   expect_namespace: nightcap
   expect_paths: [gdd/nightcap/00-governance/01-master-gdd-index.md]
   expect_route: nightcap-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: gdd/nightcap/00-governance/01-master-gdd-index.md
   generated_on: "2026-09-20"
@@ -171,7 +171,7 @@
   expect_namespace: nightcap
   expect_paths: [gdd/nightcap/00-governance/02-current-design-state.md]
   expect_route: nightcap-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: gdd/nightcap/00-governance/02-current-design-state.md
   generated_on: "2026-09-20"
@@ -182,7 +182,7 @@
   expect_namespace: nightcap-couch-race
   expect_paths: [story-bibles/nightcap-couch-race.md]
   expect_route: title-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: story-bibles/nightcap-couch-race.md
   generated_on: "2026-09-20"
@@ -193,7 +193,7 @@
   expect_namespace: playtest-ops
   expect_paths: [architecture/11-telemetry.md]
   expect_route: playtest-ops-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/11-telemetry.md
   generated_on: "2026-09-20"
@@ -204,7 +204,7 @@
   expect_namespace: playtest-ops
   expect_paths: [architecture/11-telemetry.md]
   expect_route: playtest-ops-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/11-telemetry.md
   generated_on: "2026-09-20"
@@ -215,7 +215,7 @@
   expect_namespace: product-roadmap
   expect_paths: [roadmap/00-overview.md]
   expect_route: product-roadmap-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: roadmap/00-overview.md
   generated_on: "2026-09-20"
@@ -226,7 +226,7 @@
   expect_namespace: safety
   expect_paths: [architecture/10-content-safety.md]
   expect_route: safety-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/10-content-safety.md
   generated_on: "2026-09-20"
@@ -237,7 +237,7 @@
   expect_namespace: safety
   expect_paths: [architecture/10-content-safety.md]
   expect_route: safety-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/10-content-safety.md
   generated_on: "2026-09-20"
@@ -248,7 +248,7 @@
   expect_namespace: session-runtime
   expect_paths: [architecture/05-session-persistence.md]
   expect_route: session-runtime-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/05-session-persistence.md
   generated_on: "2026-09-20"
@@ -259,7 +259,7 @@
   expect_namespace: session-runtime
   expect_paths: [architecture/05-session-persistence.md]
   expect_route: session-runtime-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/05-session-persistence.md
   generated_on: "2026-09-20"
@@ -270,7 +270,7 @@
   expect_namespace: engineering-practice
   expect_paths: [specs/0001-review-checklist-convention.md]
   expect_route: engineering-practice-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: specs/0001-review-checklist-convention.md
   generated_on: "2026-09-20"
@@ -281,7 +281,7 @@
   expect_namespace: engineering-practice
   expect_paths: [specs/0002-pre-commit-hook-setup.md]
   expect_route: engineering-practice-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: specs/0002-pre-commit-hook-setup.md
   generated_on: "2026-09-20"
@@ -292,7 +292,7 @@
   expect_namespace: engineering-practice
   expect_paths: [specs/0003-ci-and-codeql-workflows.md]
   expect_route: engineering-practice-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: specs/0003-ci-and-codeql-workflows.md
   generated_on: "2026-09-20"
@@ -303,7 +303,7 @@
   expect_namespace: engineering-practice
   expect_paths: [specs/0004-initial-eval-harness.md]
   expect_route: engineering-practice-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: specs/0004-initial-eval-harness.md
   generated_on: "2026-09-20"
@@ -314,7 +314,7 @@
   expect_namespace: engineering-practice
   expect_paths: [specs/0009-aw-101-repository-structure-and-python-project-setup.md]
   expect_route: engineering-practice-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: specs/0009-aw-101-repository-structure-and-python-project-setup.md
   generated_on: "2026-09-20"
@@ -325,7 +325,7 @@
   expect_namespace: engineering-practice
   expect_paths: [specs/0011-aw-103-sqlalchemy-orm-models.md]
   expect_route: engineering-practice-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: specs/0011-aw-103-sqlalchemy-orm-models.md
   generated_on: "2026-09-20"
@@ -336,7 +336,7 @@
   expect_namespace: session-runtime
   expect_paths: [architecture/08-event-system.md]
   expect_route: session-runtime-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/08-event-system.md
   generated_on: "2026-09-20"
@@ -347,7 +347,7 @@
   expect_namespace: knowledge-graph
   expect_paths: [architecture/04-knowledge-graph.md, architecture/07-character-behavior.md]
   expect_route: knowledge-graph-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/04-knowledge-graph.md
   generated_on: "2026-09-20"
@@ -358,7 +358,7 @@
   expect_namespace: arc-execution
   expect_paths: [architecture/03-arc-execution.md, architecture/05-session-persistence.md]
   expect_route: arc-execution-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/03-arc-execution.md
   generated_on: "2026-09-20"
@@ -369,7 +369,7 @@
   expect_namespace: model-routing
   expect_paths: [architecture/06-model-routing.md, architecture/13-cost-model.md]
   expect_route: model-routing-sme
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: true
   source_path: architecture/06-model-routing.md
   generated_on: "2026-09-20"
@@ -380,7 +380,7 @@
   expect_namespace: ""
   expect_paths: []
   expect_route: __refuse__
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: false
   generated_on: "2026-09-20"
 
@@ -389,7 +389,7 @@
   expect_namespace: ""
   expect_paths: []
   expect_route: __refuse__
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: false
   generated_on: "2026-09-20"
 
@@ -398,7 +398,7 @@
   expect_namespace: ""
   expect_paths: []
   expect_route: __refuse__
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: false
   generated_on: "2026-09-20"
 
@@ -407,6 +407,6 @@
   expect_namespace: ""
   expect_paths: []
   expect_route: __refuse__
-  expect_tier_max: small
+  expect_tier_max: large
   must_cite: false
   generated_on: "2026-09-20"
