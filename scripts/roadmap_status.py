@@ -120,9 +120,6 @@ def _join(
         return status
 
     mapped.add(issue["number"])
-    status.issue = issue["number"]
-    status.state = issue["state"].lower()
-    status.github_milestone = milestone_id((issue.get("milestone") or {}).get("title"))
     # Fail closed: an issue is trusted only when its title names this entry.
     declared = TITLE_ID.match(issue["title"])
     if declared is None:
@@ -130,11 +127,16 @@ def _join(
         status.problems.append(
             f"issue #{issue['number']}'s title does not name {entry['id']}"
         )
+        return status
     elif declared.group(1) != entry["id"]:
         status.trusted = False
         status.problems.append(
             f"issue #{issue['number']} is titled {declared.group(1)}"
         )
+        return status
+    status.issue = issue["number"]
+    status.state = issue["state"].lower()
+    status.github_milestone = milestone_id((issue.get("milestone") or {}).get("title"))
     if status.github_milestone != status.milestone:
         status.problems.append(
             f"GitHub milestone {status.github_milestone or 'none'}, "

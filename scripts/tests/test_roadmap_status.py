@@ -243,6 +243,56 @@ def test_an_epic_mapped_to_another_epics_issue_is_never_edited():
     assert milestone_edits(report, None) == []
 
 
+def test_wrong_epic_mapping_does_not_report_another_epics_state(
+    monkeypatch, capsys, tmp_path
+):
+    import json
+
+    import scripts.roadmap_status as module
+
+    index = tmp_path / "index.json"
+    index.write_text(
+        json.dumps(
+            {
+                "tasks": [task("AW-1", number=1)],
+                "epics": [
+                    {
+                        "id": "M5-H",
+                        "title": "Narrative",
+                        "milestone": "M5",
+                        "github": {"issue_number": 234},
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(module, "INDEX", index)
+    monkeypatch.setattr(
+        module,
+        "fetch_issues",
+        lambda: [
+            issue(1, "AW-1: Example"),
+            issue(234, "M5-I Epic: Couch Race", state="CLOSED"),
+        ],
+    )
+    monkeypatch.setattr(module, "fetch_milestones", lambda: [])
+
+    assert module.main(["--milestone", "M5"]) == 0
+    text = capsys.readouterr().out
+    epic_line = next(line for line in text.splitlines() if "epic M5-H" in line)
+    assert "#234" not in epic_line
+    assert "closed" not in epic_line
+    assert "issue #234 is titled M5-I" in text
+
+    assert module.main(["--json", "--milestone", "M5"]) == 0
+    epic = json.loads(capsys.readouterr().out)["epics"][0]
+    assert epic["issue"] is None
+    assert epic["state"] is None
+    assert epic["github_milestone"] is None
+    assert epic["trusted"] is False
+
+
 def test_an_issue_whose_title_names_no_roadmap_id_fails_closed():
     report = reconcile(
         {"tasks": [task("AW-274", number=220)]},
