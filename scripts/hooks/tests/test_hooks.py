@@ -1,8 +1,11 @@
 import json
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
+
+import pytest
 
 from scripts.hooks import inject_session_context, snapshot_knowledge_state
 
@@ -102,3 +105,36 @@ def test_snapshot_records_freshness_failure(monkeypatch):
 
     assert snapshot["freshness"]["ok"] is False
     assert snapshot["freshness"]["output"] == "freshness failed"
+
+
+@pytest.mark.skipif(shutil.which("bash") is None, reason="hooks run under bash")
+def test_registered_hooks_run_from_a_subdirectory():
+    # A Bash `cd` persists into the session, and hooks inherit that directory;
+    # a command relative to the repository root then fails on every tool call.
+    settings = json.loads(
+        (ROOT / ".claude" / "settings.json").read_text(encoding="utf-8")
+    )
+    commands = [
+        hook["command"]
+        for entries in settings["hooks"].values()
+        for entry in entries
+        for hook in entry["hooks"]
+    ]
+    env = {
+        **os.environ,
+        "CLAUDE_PROJECT_DIR": str(ROOT),
+        "ARCWRIGHT_HOOK_BLOCK_GENERATED": "0",
+        "ARCWRIGHT_HOOK_RECORD_OBSERVATIONS": "0",
+        "ARCWRIGHT_HOOK_SNAPSHOT": "0",
+        "ARCWRIGHT_HOOK_SESSION_CONTEXT": "0",
+    }
+    for command in commands:
+        result = subprocess.run(
+            [shutil.which("bash"), "-c", command],
+            input="{}",
+            capture_output=True,
+            text=True,
+            cwd=ROOT / "scripts",
+            env=env,
+        )
+        assert result.returncode == 0, f"{command}: {result.stderr}"

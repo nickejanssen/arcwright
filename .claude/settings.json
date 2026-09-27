@@ -25,7 +25,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python scripts/hooks/block_generated_writes.py"
+            "command": "python \"$CLAUDE_PROJECT_DIR/scripts/hooks/block_generated_writes.py\""
           }
         ]
       },
@@ -34,7 +34,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python scripts/hooks/guard_kb_agents.py"
+            "command": "python \"$CLAUDE_PROJECT_DIR/scripts/hooks/guard_kb_agents.py\""
           }
         ]
       }
@@ -45,7 +45,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python scripts/hooks/record_observation.py"
+            "command": "python \"$CLAUDE_PROJECT_DIR/scripts/hooks/record_observation.py\""
           }
         ]
       }
@@ -55,7 +55,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python scripts/hooks/snapshot_knowledge_state.py"
+            "command": "python \"$CLAUDE_PROJECT_DIR/scripts/hooks/snapshot_knowledge_state.py\""
           }
         ]
       }
@@ -65,7 +65,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python scripts/hooks/inject_session_context.py"
+            "command": "python \"$CLAUDE_PROJECT_DIR/scripts/hooks/inject_session_context.py\""
           }
         ]
       }
