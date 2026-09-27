@@ -13,7 +13,7 @@ supersedes: []
 
 # AW-271: Narrative Obligations Model and Reveal-Readiness Condition (post-M6)
 
-**Milestone / Epic:** M5 / M5-H
+**Milestone / Epic:** Post-M6 / M5-H follow-through
 **Size:** M
 **Scope note:** Sequenced after M6
 
