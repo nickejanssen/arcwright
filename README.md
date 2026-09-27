@@ -121,12 +121,14 @@ This repository is still scaffold-stage, so setup is intentionally light.
 ### Python
 
 ```bash
-python -m venv .venv
+uv venv
 . .venv/Scripts/activate
-pip install -r requirements.txt
-pip install "pre-commit>=3.7.0"
+uv pip install -r requirements.txt
+uv pip install "pre-commit>=3.7.0"
 pre-commit install
 ```
+
+`uv venv` reads `.python-version` (3.11), which matches CI. Windows' default `python` may be newer than 3.11, and mypy then fails on numpy's type stubs. Without `uv`, create the environment with `py -3.11 -m venv .venv` instead.
 
 ### Repo Tooling
 
