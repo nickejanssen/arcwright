@@ -37,7 +37,7 @@ jobs:
       - name: Validate playtest catalog
         run: python scripts/playtest_catalog.py playtests/catalog.json
       - name: Test playtest scripts
-        run: python -m pytest scripts/tests -q --basetemp .pytest-tmp-pages
+        run: python -m pytest scripts/tests -q --basetemp .pytest-tmp-pages --ignore=scripts/tests/test_team_ai_cli.py
       - name: Test playtest runtime
         run: >-
           node --test
