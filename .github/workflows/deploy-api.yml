@@ -10,6 +10,7 @@ name: Deploy API
       - "engine/**"
       - "config/**"
       - "Dockerfile"
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -19,8 +20,41 @@ env:
   IMAGE_NAME: arcwright-api
 
 jobs:
+  preflight:
+    name: Check deploy configuration
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+
+    steps:
+      - name: Check required deploy settings
+        id: check
+        env:
+          GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ vars.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          GCP_SERVICE_ACCOUNT: ${{ vars.GCP_SERVICE_ACCOUNT }}
+          GCP_REGION: ${{ secrets.GCP_REGION }}
+          GCP_PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+          AR_REPO: ${{ secrets.AR_REPO }}
+        run: |
+          required=(GCP_WORKLOAD_IDENTITY_PROVIDER GCP_SERVICE_ACCOUNT GCP_REGION GCP_PROJECT_ID AR_REPO)
+          missing=()
+          for name in "${required[@]}"; do
+            [ -n "${!name}" ] || missing+=("$name")
+          done
+          if [ "${#missing[@]}" -eq 0 ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          elif [ "${#missing[@]}" -eq "${#required[@]}" ]; then
+            echo "::notice title=Deploy skipped::No deploy settings configured (${required[*]}). Configure them to enable deploys (AW-269)."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error title=Deploy partially configured::Missing: ${missing[*]}"
+            exit 1
+          fi
+
   deploy:
     name: Build and Deploy Cloud Run API
+    needs: preflight
+    if: needs.preflight.outputs.ready == 'true'
     runs-on: ubuntu-latest
 
     steps:

@@ -7,13 +7,44 @@ name: Deploy Web
       - main
     paths:
       - "nightcap-web/**"
+  workflow_dispatch:
 
 permissions:
   contents: read
 
 jobs:
+  preflight:
+    name: Check deploy configuration
+    runs-on: ubuntu-latest
+    outputs:
+      ready: ${{ steps.check.outputs.ready }}
+
+    steps:
+      - name: Check required deploy settings
+        id: check
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          required=(CLOUDFLARE_API_TOKEN CLOUDFLARE_ACCOUNT_ID)
+          missing=()
+          for name in "${required[@]}"; do
+            [ -n "${!name}" ] || missing+=("$name")
+          done
+          if [ "${#missing[@]}" -eq 0 ]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          elif [ "${#missing[@]}" -eq "${#required[@]}" ]; then
+            echo "::notice title=Deploy skipped::No deploy settings configured (${required[*]}). Configure them to enable deploys (AW-269)."
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "::error title=Deploy partially configured::Missing: ${missing[*]}"
+            exit 1
+          fi
+
   deploy:
     name: Build and Deploy Nightcap Web
+    needs: preflight
+    if: needs.preflight.outputs.ready == 'true'
     runs-on: ubuntu-latest
 
     steps:

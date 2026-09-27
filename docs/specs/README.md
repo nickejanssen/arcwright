@@ -62,4 +62,5 @@ This directory contains detailed specs for implementing features and systems. Ea
 - **Platform Agnosticism**: Generic role assignment, knowledge seeding, and session-outcome vocabulary (0070)
 - **Structured Interaction Loop**: AW-282 authored questioning, deterministic resolution, and public/private event boundary (0074)
 - **Playtest Lab Contract**: Homepage/catalog/immutable-route/legacy-alias contract for the Playtest Lab (0088)
+- **Phase 0 Development Friction** (0090): deployment preflight, tooling freeze record, and Python 3.11 local setup (PR #339)
 
