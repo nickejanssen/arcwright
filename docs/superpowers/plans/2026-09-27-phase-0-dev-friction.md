@@ -21,7 +21,7 @@ supersedes: []
 
 **Tech Stack:** GitHub Actions YAML, bash, Python 3.11 standard library plus PyYAML (already installed transitively by `requirements.txt`), `uv`.
 
-**Spec:** `docs/superpowers/specs/2026-09-27-phase-0-dev-friction-design.md` (approved)
+**Spec:** `docs/specs/0090-phase-0-development-friction.md` (approved)
 
 **User decisions (already made):**
 - "Freeze ends when the Gate 1 call is recorded" (the founder chose this over "engine phase starts" and "fixed date").
@@ -34,7 +34,7 @@ supersedes: []
 ## Ground rules for the executor
 
 - **Collaboration profile:** independent execution. The spec settles every decision. If you hit something the spec and this plan do not answer, stop and ask; do not guess.
-- **No GitHub issue exists for this work.** Do not create one. Reference the spec in commits and the PR (`Refs docs/superpowers/specs/2026-09-27-phase-0-dev-friction-design.md`). Skip the Implementer skill's tracker-closing step (section 11).
+- **No GitHub issue exists for this work.** Do not create one. Reference the spec in commits and the PR (`Refs docs/specs/0090-phase-0-development-friction.md`). Skip the Implementer skill's tracker-closing step (section 11).
 - **Branch:** create `task/phase-0-dev-friction` from `origin/claude/arcwright-nightcap-phase-plan-a023ca`, which carries the spec and this plan. Your PR targets `main` and will include those two documents.
   ```bash
   git fetch origin
@@ -65,7 +65,7 @@ supersedes: []
 - Modify: `README.md` (the `### Python` block, lines 121–129)
 
 **Acceptance Criteria:**
-- [ ] The `### Python` block uses `uv venv` and `uv pip install -r requirements.txt`, and states the `py -3.11 -m venv .venv` fallback and why 3.11 matters.
+- [ ] The `### Python` block uses `uv venv` and `uv pip` for requirements, pinned verification tools, and pre-commit; its complete Windows no-uv fallback uses `py -3.11 -m venv .venv` and `python -m pip` for those installs, and explains why 3.11 matters.
 - [ ] Following the new block in this checkout yields `.venv` whose `python --version` prints `Python 3.11.x`.
 - [ ] In that `.venv`, ruff, mypy and the engine tests pass (commands under Verify).
 - [ ] No other README content changes.
@@ -97,11 +97,20 @@ Replace it with exactly:
 uv venv
 . .venv/Scripts/activate
 uv pip install -r requirements.txt
-pip install "pre-commit>=3.7.0"
+uv pip install "pre-commit>=3.7.0"
 pre-commit install
 ```
 
-`uv venv` reads `.python-version` (3.11), which matches CI. Windows' default `python` may be newer than 3.11, and mypy then fails on numpy's type stubs. Without `uv`, create the environment with `py -3.11 -m venv .venv` instead.
+`uv venv` reads `.python-version` (3.11), which matches CI. Windows' default `python` may be newer than 3.11, and mypy then fails on numpy's type stubs. Without `uv`, use this complete Windows fallback instead:
+
+```bash
+py -3.11 -m venv .venv
+. .venv/Scripts/activate
+python -m pip install -r requirements.txt
+python -m pip install ruff==0.15.14 mypy==1.13.0 pytest==8.3.4
+python -m pip install "pre-commit>=3.7.0"
+pre-commit install
+```
 ````
 
 - [ ] **Step 2: Follow the new instructions in this checkout.** `.venv/` is already gitignored. On Linux or macOS the activate path is `.venv/bin/activate`. If `uv` is missing, use the documented `py -3.11` fallback.
@@ -115,6 +124,8 @@ python --version
 ```
 
 Expected: `Python 3.11.x`. (The second install line pins the same tool versions CI's `verify-tasks.yml` installs.)
+
+Also follow the documented no-uv fallback in an isolated temporary environment. If this host lacks the py launcher, use another installed Python 3.11 executable only to simulate py -3.11. Confirm the new environment reports Python 3.11.x, python -m pip --version resolves inside it, and the pinned ruff, mypy, pytest, and pre-commit installations complete.
 
 - [ ] **Step 3: Run the CI-equivalent checks in the new environment.**
 
@@ -130,7 +141,7 @@ Expected: `All checks passed!`; `Success: no issues found in 126 source files` (
 
 ```bash
 git add README.md
-git commit -m "docs(readme): set up the local Python 3.11 environment with uv" -m "Refs docs/superpowers/specs/2026-09-27-phase-0-dev-friction-design.md"
+git commit -m "docs(readme): set up the local Python 3.11 environment with uv" -m "Refs docs/specs/0090-phase-0-development-friction.md"
 ```
 
 ---
@@ -401,7 +412,7 @@ PASS deploy-web.yml [all] rc=0 output='ready=true'
 
 ```bash
 git add .github/workflows/deploy-api.yml .github/workflows/deploy-web.yml
-git commit -m "ci(deploy): skip deploys cleanly until deploy settings are configured" -m "Refs docs/superpowers/specs/2026-09-27-phase-0-dev-friction-design.md"
+git commit -m "ci(deploy): skip deploys cleanly until deploy settings are configured" -m "Refs docs/specs/0090-phase-0-development-friction.md"
 ```
 
 ---
@@ -411,16 +422,16 @@ git commit -m "ci(deploy): skip deploys cleanly until deploy settings are config
 **Goal:** `docs/product/decisions-log.csv` gains exactly one correctly quoted D-110 row recording the freeze, its scope, its break-fix exception and its end condition.
 
 **Files:**
-- Modify (append one row): `docs/product/decisions-log.csv`
+- Modify (append D-110, then update its spec reference to the canonical numbered path): `docs/product/decisions-log.csv`
 - Scratch only (not committed): `$SCRATCH/append_d110.py`, `$SCRATCH/check_d110.py`
 
 **Acceptance Criteria:**
 - [ ] The last row's `Decision` starts with `D-110 `, and D-110 appears exactly once.
 - [ ] The row parses with `csv.DictReader` into exactly the six columns `Decision, Date, Rationale, Section, Status, Tags`, with `Section` = `Process / Tooling` and `Status` = `Committed`.
-- [ ] `git diff docs/product/decisions-log.csv` shows exactly one added line and no removed lines.
+- [ ] The final D-110 row remains unique, six-field, and committed; its only content adjustment from the original appended row is the canonical spec path.
 - [ ] `python scripts/checks/scope_evidence_check.py` prints `scope-evidence-check: OK`.
 
-**Verify:** `python $SCRATCH/check_d110.py` → `D-110 OK (N rows)`; `git diff --numstat docs/product/decisions-log.csv` → `1	0	docs/product/decisions-log.csv`.
+**Verify:** `python $SCRATCH/check_d110.py` → `D-110 OK (N rows)`; `git diff --numstat docs/product/decisions-log.csv` → `1	1	docs/product/decisions-log.csv`.
 
 **Steps:**
 
@@ -463,7 +474,7 @@ row = [
     "correction, per docs/gdd/nightcap/02-validation/98-validation-state-and-remaining-plan.md "
     "step 5) is recorded. AGENTS.md is intentionally unchanged: a temporary rule does not belong "
     "in the permanent always-on file. Spec: "
-    "docs/superpowers/specs/2026-09-27-phase-0-dev-friction-design.md.",
+    "docs/specs/0090-phase-0-development-friction.md.",
     "Process / Tooling",
     "Committed",
     "process; tooling; knowledge-base; nightcap",
@@ -497,7 +508,7 @@ Expected: `appended D-110 to docs/product/decisions-log.csv`; `D-110 OK (193 row
 
 ```bash
 git add docs/product/decisions-log.csv
-git commit -m "docs(decisions): D-110 freeze tooling to break-fixes until the Gate 1 call" -m "Refs docs/superpowers/specs/2026-09-27-phase-0-dev-friction-design.md"
+git commit -m "docs(decisions): D-110 freeze tooling to break-fixes until the Gate 1 call" -m "Refs docs/specs/0090-phase-0-development-friction.md"
 ```
 
 ---
@@ -510,11 +521,11 @@ git commit -m "docs(decisions): D-110 freeze tooling to break-fixes until the Ga
 
 **Acceptance Criteria:**
 - [ ] `git status` shows a clean tree, with nothing staged or committed under `.claude/`, `.codex/`, `.venv/` or `team-ai/`.
-- [ ] The branch contains exactly these changed paths relative to `origin/main`: `README.md`, `.github/workflows/deploy-api.yml`, `.github/workflows/deploy-web.yml`, `docs/product/decisions-log.csv`, `docs/superpowers/specs/2026-09-27-phase-0-dev-friction-design.md`, `docs/superpowers/plans/2026-09-27-phase-0-dev-friction.md`, `docs/superpowers/plans/2026-09-27-phase-0-dev-friction.md.tasks.json`.
+- [ ] The branch contains exactly these changed paths relative to `origin/main`: `README.md`, `.github/workflows/deploy-api.yml`, `.github/workflows/deploy-web.yml`, `docs/product/decisions-log.csv`, `docs/specs/0090-phase-0-development-friction.md`, `docs/specs/README.md`, `docs/superpowers/specs/2026-09-27-phase-0-dev-friction-design.md` (compatibility pointer), `docs/superpowers/plans/2026-09-27-phase-0-dev-friction.md`, `docs/superpowers/plans/2026-09-27-phase-0-dev-friction.md.tasks.json`.
 - [ ] The local checks in Step 2 pass.
 - [ ] The PR is open against `main`, and its CI checks (CI, CodeQL, Verify Roadmap Tasks, team-ai) pass.
 
-**Verify:** `git diff --name-only origin/main...HEAD` → exactly the seven paths above; `gh pr checks` → all passing.
+**Verify:** `git diff --name-only origin/main...HEAD` → exactly the nine paths above; `gh pr checks` → all passing.
 
 **Steps:**
 
@@ -541,7 +552,7 @@ python scripts/checks/scope_evidence_check.py
   - one line per change;
   - each acceptance criterion from Tasks 1–3 with its evidence (paste the six `PASS` lines and `D-110 OK`);
   - a note that the deploy behavior can only be confirmed after merge (Task 5);
-  - `Refs docs/superpowers/specs/2026-09-27-phase-0-dev-friction-design.md`.
+  - `Refs docs/specs/0090-phase-0-development-friction.md`.
 
 ```bash
 git push -u origin task/phase-0-dev-friction
