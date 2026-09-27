@@ -48,6 +48,11 @@ Phase 1 ends when the founder gives the go-ahead to send invites. Running the se
 - The Jotform connector is in the MCP registry and is not yet connected.
 - The fixture keeps its state in `sessionStorage` under the key `nightcap-paper-test-02-v3.0-state`, and sets `prototype_version` to `3.0` (from `case.json` `fixture_version`).
 - **Abandonment is never recorded.** `markAbandoned` exists in `runtime.js`, but `app.js` never imports or calls it. This does not block sending: a player who quits never reaches the survey, so nothing would be submitted anyway, and the completion rate comes from the founder's invite tracker (Section 4).
+- **The lock "timeout" ending cannot happen.**
+  - `renderLock` in `app.js` checks the rival clock (`rival_finish_seconds: 19`) before the timeout (`duration_seconds: 45`), so a player who never sets all four pins always gets `rival-win`.
+  - This doesn't block sending, because timeout and rival-win both leave the case solvable.
+- **The survey link omits empty fields.** `buildSurveyUrl` skips empty values, so a field that is empty for a run is absent from the link, and Jotform stores it as empty.
+- Last Call opens only after 5 major moves (`last_call_min_actions: 5`), and the lock opens by move 3 at the latest. So every finished run passes through the lock and makes at least two moves after it.
 - **Not every hidden field is filled on a finished run.** `deriveTelemetry` in `runtime.js` leaves `abandonment_point` empty on every completed run. It leaves `pulse_result` empty when no lock result occurred, and `final_next_interest` empty when no investigation or inference follows the lock result.
 
 ## Guardrails (all sections)
@@ -69,7 +74,7 @@ The agent plays the **live** v3.0 in the built-in browser and works through the 
 | 3 | Rival wins the lock, then spends Listen In |
 | 4 | Rival wins the lock, then saves Leverage |
 | 5 | Lock break |
-| 6 | Lock timeout |
+| 6 | Lock timeout (known gap: unreachable because the rival always finishes first; confirm that a player who sets no pins gets `rival-win` at about 19s, and record this as a documented gap, not a failure) |
 | 7 | Lock abort |
 | 8 | Red-herring-first investigation |
 | 9 | Reaches the Case File without winning the lock |
@@ -87,7 +92,7 @@ Every run uses a desktop viewport except #15, which runs a full playthrough at 3
 
 **Survey handoff check (#16):** open the survey link the fixture generates, **without submitting**, and confirm all of the following:
 - the link carries the run's `run_id`;
-- all 18 `JOTFORM_FIELD_MAP` fields are present and pass the **telemetry field rule** below;
+- every field the **telemetry field rule** below requires to be non-empty is present in the link, and every field it requires to be empty is absent (empty values are omitted);
 - `completion_status=completed`.
 
 **Telemetry field rule** (used here and in Section 2). A completed run passes when:
@@ -98,7 +103,7 @@ Every run uses a desktop viewport except #15, which runs a full playthrough at 3
 
 Record #16's `run_id` as **excluded**. Opening the survey can create a Jotform partial entry if the form saves unfinished submissions, and that entry must never count as a tester.
 
-**Stop rule:** if any situation other than the documented #14 gap fails, stop and report it to the founder with evidence. Fixture files are not edited. A fix means a founder decision on a v3.0.1 or a v3.1.
+**Stop rule:** if any situation other than the documented #6 and #14 gaps fails, stop and report it to the founder with evidence. Fixture files are not edited. A fix means a founder decision on a v3.0.1 or a v3.1.
 
 **Not claimed:** real-phone behavior, and whether Jotform stores the submitted values. Section 2 covers both.
 
@@ -218,7 +223,7 @@ These are every action Phase 1 needs from you, in order. Everything else is the 
 
 ## Done when
 
-- The QA evidence file records situations 1–13, 15 and 16 as pass, and #14 as the documented abandonment gap, with the smoke run section complete.
+- The QA evidence file records situations 1–5, 7–13, 15 and 16 as pass, and #6 (timeout) and #14 (abandonment) as documented gaps, with the smoke run section complete.
 - The v2.2 results file exists.
 - The analysis plan is marked APPROVED by the founder.
 - The tester brief exists.
