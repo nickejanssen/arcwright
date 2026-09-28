@@ -94,7 +94,37 @@ All four checkpoints measured `scrollWidth: 360`, `innerWidth: 360` (`sw <= iw`,
 - `7e933637-6e94-49e4-b4e0-963cea0f08a9`, `20ba3d58-d548-4f1a-b582-5e823954a992`, `2a7c5311-dd03-4ede-ba66-bbe33f467b6e`, `1e3efa8b-d5a8-4734-875a-c52498a2ef53`, `41d17908-8079-4e94-a163-c64f3df08d1d` — QA runs (B, C, D, E, F); none reached the survey screen's "Open survey" action, so none reached Jotform.
 
 ## Survey instrument (read-only inspection)
-<filled by Task 2>
+**Inspection date:** 2026-09-27 · **Method:** Jotform read-only connector metadata and rendered form view; no survey answers entered or submitted.
+
+**Form:** `262397917027062` · **Title:** Nightcap Paper Test #2 — Post-Play Research · **Enabled:** yes (`ENABLED`) · **Question count reported by connector:** 31 · **Submission count reported by connector:** 3.
+
+### Visible questions
+
+| # | Exact wording | Type | Scale or options |
+|---|---|---|---|
+| 2 | Overall, how fun was this prototype? | Radio scale | 1 is Not fun; 5 is Very fun (1–5) |
+| 3 | How much did you feel like a detective? | Radio scale | 1 is Not at all; 5 is Very much (1–5) |
+| 4 | Would you want to keep playing? | Radio choice | Yes; Maybe; No |
+| 5 | How clear was what you could do next? | Radio choice | Very clear; Mostly clear; Mostly confusing; Very confusing |
+| 6 | What was the most interesting or fun moment? | Text area | Free text |
+| 7 | What felt confusing, boring, repetitive, or too much like operating an interface? | Text area | Free text |
+| 8 | Did anything feel over-signposted or like the prototype told you what to think? | Text area | Free text |
+| 9 | Was there anything you wanted to investigate, say, accuse, use, or do but could not? | Text area | Free text |
+| 10 | How difficult was it to remember useful information while playing? | Radio choice | Very easy; Mostly easy; Neutral; Mostly difficult; Very difficult |
+| 11 | What single change would most improve this experience? | Text area | Free text |
+| 12 | Anything else you want us to know? | Text area | Free text |
+
+**First free-text question:** #6, “What was the most interesting or fun moment?”
+
+**Hidden telemetry fields (names only):** `prototype_version`, `run_id`, `started_at`, `completed_at`, `duration_seconds`, `action_sequence`, `investigation_branches`, `discoveries`, `pulse_result`, `case_commitment`, `final_next_interest`, `device_class`, `browser_class`, `completion_status`, `time_to_first_investigation_seconds`, `major_investigations`, `event_sequence`, `abandonment_point`.
+
+**Post-submit redirect:** Not exposed by the connector; Task 5 smoke run is the proof.
+
+**Partial or unfinished submission setting:** Not exposed by the connector.
+
+**QA #16 Run A lookup:** Searched the read-only submissions tool for exact `run_id` `811b3eff-afcc-4b72-b67b-1298ca93a980` (Jotform field `q14_textbox12`). The connector returned no matching submission. Run A remains listed under “Excluded run_ids”; no survey submission was made for QA.
+
+**Run A device-class note:** The QA #16 prefill link reported `device_class=mobile` even though the run was described as desktop. The fixture source sets this value from `window.matchMedia("(max-width: 640px)")`, so the field represents CSS viewport width rather than physical device type. The QA evidence does not include Run A's measured `innerWidth`; this finding is unresolved and should not be interpreted as proof of a phone run or a telemetry defect.
 
 ## Smoke run
 <filled by Task 5>
