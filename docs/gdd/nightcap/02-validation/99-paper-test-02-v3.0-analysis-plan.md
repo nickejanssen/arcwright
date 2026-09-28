@@ -13,7 +13,7 @@ supersedes: []
 
 # Nightcap — Paper Test #2 v3.0 Analysis Plan
 
-**Status:** DRAFT — awaiting founder approval
+**Status:** APPROVED — 2026-09-28, founder
 
 ## Dataset boundary
 
