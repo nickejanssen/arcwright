@@ -58,4 +58,4 @@ Evaluate each percentage over the included sessions. A required response or tele
 
 ## Founder approval
 
-Please review the proposed bars as written and ask: “If v3.0 scored exactly at these bars, would I honestly call it a pass?” Reply `approved` or identify the numbers or rules to change. The status remains `DRAFT — awaiting founder approval` until approval is explicit. No invites go out before approval. After approval or requested changes, the status will read `APPROVED — <date>, founder` and the approved version will be committed.
+The founder approved the v3.0 thresholds and analysis plan on 2026-09-28. The approved numeric rules above remain the v3.0 historical contract. No further approval request or draft-status condition applies to this version.
