@@ -9,6 +9,7 @@ import {
   commitCaseFile,
   completeOpening,
   createInitialState,
+  declineLockWindow,
   enterLastCall,
   followThread as acquireFollowThread,
   isRevealMode,
@@ -16,15 +17,15 @@ import {
   markRevealReturn,
   markSurveyHandoff,
   openLockWindow,
+  attemptLockPin,
   persistState,
   reviewEncounter,
-  releaseCylinderPublicly,
   resolveLock,
+  resolveRivalTheory,
   restoreState,
   saveLeverage,
   setCaseFileDraft,
   setPrivateNotes,
-  setLockProgress,
   shouldOpenLockWindow,
   spendLeverage,
   triggerRivalActivity,
@@ -167,10 +168,10 @@ function rivalBeatAfterAction() {
       ["seance-room", "gideon-materials", "writing-room"].find(
         (id) => !state.investigatedTargets.includes(id),
       ) ?? "edwin-rusk";
-    if (triggerRivalActivity(state, "pursued", candidate))
+    if (triggerRivalActivity(state, caseData, "pursued", candidate))
       state.ui.notice = `${caseData.rival.name} heads for ${labelForTarget(candidate)} without waiting to see what you found.`;
   } else if (state.majorActions === 2 && state.lock.status === "unavailable") {
-    if (triggerRivalActivity(state, "followed", "edwin-rusk"))
+    if (triggerRivalActivity(state, caseData, "followed", "edwin-rusk"))
       state.ui.notice = `${caseData.rival.name} notices Rusk checking the service corridor and follows him.`;
   }
 }
@@ -183,31 +184,31 @@ function labelForTarget(id) {
   return route?.label ?? suspect?.name ?? id;
 }
 
-function consumeFirstLookTurnIfNeeded() {
-  if (state.lock.status === "resolved" && !state.lock.publicReleased) {
-    state.lock.postResultActions = (state.lock.postResultActions ?? 0) + 1;
-    if (state.lock.postResultActions >= 1)
-      releaseCylinderPublicly(state, caseData);
-  }
-}
-
 function visitRoute(routeId) {
+  const closesFirstLook =
+    state.lock.status === "resolved" && !state.lock.publicReleased;
   if (!visitInvestigation(state, caseData, routeId)) return;
   state.ui.lastTarget = routeId;
   state.ui.lastEncounterId = `route:${routeId}`;
   state.ui.lastScene = reviewEncounter(state, state.ui.lastEncounterId).scene;
   state.ui.peoplePickerOpen = false;
   rivalBeatAfterAction();
-  consumeFirstLookTurnIfNeeded();
+  if (closesFirstLook)
+    state.ui.notice =
+      "Rusk brings cylinder 43 into the open. Your earlier reading remains in your notebook.";
   save();
   render();
 }
 
 function visitInterview(suspectId, isRevisit = false) {
   if (!isRevisit) {
+    const closesFirstLook =
+      state.lock.status === "resolved" && !state.lock.publicReleased;
     if (!visitInvestigation(state, caseData, suspectId)) return;
     rivalBeatAfterAction();
-    consumeFirstLookTurnIfNeeded();
+    if (closesFirstLook)
+      state.ui.notice =
+        "Rusk brings cylinder 43 into the open. Your earlier reading remains in your notebook.";
   } else if (!state.investigatedTargets.includes(suspectId)) {
     return;
   }
@@ -283,7 +284,7 @@ function renderScene() {
 
 function lockCallout() {
   if (!shouldOpenLockWindow(state, caseData)) return "";
-  return `<section class="card"><p class="eyebrow">Something just moved</p><h2>Rusk is heading for a locked hotel strongbox.</h2><p class="story">${caseData.rival.name} sees it too. Rusk has hidden something he found after the séance. If you want first look, get the box open before your rival does.</p><div class="actions"><button class="primary" id="openLock" type="button">Crack the box</button></div></section>`;
+  return `<section class="card"><p class="eyebrow">The Locked Box · ready</p><h2>Rusk is heading for the hotel strongbox.</h2><p class="story">${esc(caseData.rival.name)} sees it too. Rusk hid something he found after the séance. Start gives you 19 seconds to set four pins before Nora opens the box. Click or tap <strong>Set pin</strong> when the marker is inside each bright band. A red end breaks the pick. If you win, you see the contents first; if Nora wins, you may spend Leverage to Listen In. Backing off or declining makes the contents public without costing a move or Leverage.</p><p class="small">The clock starts only when you choose Start. Declining preserves the evidence, but gives neither detective a private first look.</p><div class="actions"><button class="primary" id="openLock" type="button">Start lock race</button><button class="secondary" id="declineLock" type="button">Decline and release the contents</button></div></section>`;
 }
 
 function renderInvestigationMenu() {
@@ -303,7 +304,7 @@ function renderInvestigationMenu() {
     : "";
   return `
     ${meta()}
-    ${state.ui.notice ? `<div class="notice rival"><strong>Rival activity:</strong> ${esc(state.ui.notice)}</div>` : ""}
+    ${state.ui.notice ? `<div class="notice rival"><strong>Case update:</strong> ${esc(state.ui.notice)}</div>` : ""}
     <section class="card"><h2>Your next move</h2><p class="small">New places and people cost one investigation. Last Call opens after five; the sixth is your final new investigation. Review and earned questions are free. The notebook keeps facts, not conclusions.</p><div class="choice-grid">${locationButtons}<button class="choice" id="peopleChoice" ${!peopleAvailable ? "disabled" : ""}><strong>Question Someone</strong><span>Clara, Quill, Rusk, or Beatrice.</span><small>New person: 1 investigation. Revisit: free.</small></button></div></section>
     ${lastCall}`;
 }
@@ -353,6 +354,13 @@ function renderInvestigation() {
       save();
       render();
     });
+    document.querySelector("#declineLock").addEventListener("click", () => {
+      if (!declineLockWindow(state, caseData)) return;
+      state.ui.notice =
+        "Rusk opens the strongbox in front of both detectives. Cylinder 43 is public evidence in your notebook.";
+      save();
+      render();
+    });
     return;
   }
   app.innerHTML = renderInvestigationMenu();
@@ -387,11 +395,21 @@ function meterPosition() {
   return cycle <= 0.5 ? cycle * 200 : (1 - cycle) * 200;
 }
 
+function announceLockResult() {
+  if (state.lock.outcome === "human-win")
+    state.ui.notice =
+      "You found cylinder 43 first. Its observation is private in your notebook until the next new investigation or Last Call.";
+  else if (state.lock.outcome === "rival-win")
+    state.ui.notice = `${caseData.rival.name} opens the box first and studies what Rusk hid.`;
+  else if (state.lock.publicReleased)
+    state.ui.notice =
+      "Rusk opens the strongbox before both detectives. Cylinder 43 is now public evidence in your notebook.";
+}
+
 function finishLock(outcome) {
   stopLockTimers();
   if (resolveLock(state, caseData, outcome)) {
-    if (outcome === "rival-win")
-      state.ui.notice = `${caseData.rival.name} got the box open first.`;
+    announceLockResult();
     save();
     render();
   }
@@ -405,17 +423,30 @@ function renderLockResult() {
     const cylinder = state.privateDiscoveries.find(
       (item) => item.id === "e-cylinder-43",
     );
-    body = `<h2>You get the box open first.</h2><p class="story">Inside is Gideon March's missing cylinder 43.</p><div class="notice"><strong>Private first look:</strong> ${esc(cylinder?.fact ?? "You inspect cylinder 43 before anyone else.")}</div><p class="small">This is an information advantage, not a solution. The cylinder will enter normal investigation after your next move.</p>`;
-    actions = `<button class="primary" id="returnFromLock" type="button">Use the head start</button>`;
+    body = `<h2>You get the box open first.</h2><p class="story">Rusk steps back as you lift Gideon March's missing cylinder 43 from the box. Nora can see you found something, but cannot read it yet.</p><div class="notice"><strong>Private first look:</strong> ${esc(cylinder?.fact ?? "You inspect cylinder 43 before anyone else.")}</div><p class="small">This fact remains in your notebook. It becomes public after your next new major investigation or when you enter Last Call. Free review and earned questions do not close first look.</p>`;
+    actions = `${state.leverage > 0 && !state.lock.leverageChoice ? '<button class="secondary" id="saveLeverage" type="button">Save Leverage for later</button>' : ""}<button class="primary" id="returnFromLock" type="button">Use the head start</button>`;
   } else if (outcome === "rival-win") {
-    body = `<h2>${esc(caseData.rival.name)} gets there first.</h2><p class="story">She opens the box and gets a private look at whatever Rusk hid inside. You know she found something tied to Gideon's recordings, but you do not own what she learned.</p>`;
-    if (state.leverage > 0 && !owned("e-cylinder-43")) {
+    const heard = state.privateDiscoveries.find(
+      (item) => item.id === "e-cylinder-43",
+    );
+    body = `<h2>${esc(caseData.rival.name)} gets there first.</h2><p class="story">She opens the box and studies the cylinder Rusk hid. ${heard ? "You spent Leverage to hear her observation." : "You know she found something tied to Gideon's recordings, but not what she learned."}</p>${heard ? `<div class="notice"><strong>Listen In acquired:</strong> ${esc(heard.fact)}</div><p class="small">This fact stays in your notebook. It becomes public after your next new major investigation or entering Last Call.</p>` : ""}`;
+    if (
+      state.leverage > 0 &&
+      !owned("e-cylinder-43") &&
+      !state.lock.leverageChoice
+    ) {
       actions = `<button class="secondary" id="listenIn" type="button">Spend 1 Leverage: Listen In</button><button class="primary" id="saveLeverage" type="button">Save it and keep investigating</button>`;
     } else {
       actions = `<button class="primary" id="returnFromLock" type="button">Keep investigating</button>`;
     }
   } else {
-    body = `<h2>The lock wins the argument.</h2><p class="story">Rusk loses control of the situation. The strongbox is opened in front of everyone, and cylinder 43 becomes public evidence.</p><div class="notice"><strong>Cylinder 43:</strong> ${esc(caseData.competition.fallback_public_observation.fact)}</div>`;
+    const cause =
+      outcome === "abort"
+        ? "You back away from the box. Rusk opens it in front of both detectives rather than leave it contested."
+        : outcome === "break"
+          ? "The pick snaps. Rusk opens the box in front of both detectives to settle what he hid."
+          : "The lock takes too long. Rusk opens the box in front of both detectives.";
+    body = `<h2>The box opens in public.</h2><p class="story">${cause}</p><div class="notice"><strong>Cylinder 43:</strong> ${esc(caseData.competition.fallback_public_observation.fact)}</div>`;
     actions = `<button class="primary" id="returnFromLock" type="button">Back to the case</button>`;
   }
   app.innerHTML =
@@ -427,7 +458,7 @@ function renderLockResult() {
     render();
   });
   document.querySelector("#saveLeverage")?.addEventListener("click", () => {
-    saveLeverage(state, "listen-in");
+    saveLeverage(state, outcome === "human-win" ? "first-look" : "listen-in");
     acknowledgeLockResult(state);
     state.ui.lastScene = null;
     save();
@@ -443,18 +474,23 @@ function renderLockResult() {
 
 function renderLock() {
   if (state.lock.status === "resolved") return renderLockResult();
+  if (
+    Date.now() - state.lock.startedAtMs >=
+    caseData.competition.rival_finish_seconds * 1000
+  )
+    return finishLock("rival-win");
   const pin = caseData.competition.pins[state.lock.currentPin];
   if (!pin) return finishLock("human-win");
   app.innerHTML = `
     ${meta()}
-    <section class="card lock-stage"><p class="eyebrow">The Locked Box</p><h2>Set four pins before ${esc(caseData.rival.name)} cracks the lock.</h2><p class="small">The bright band is where this pin wants to settle. Tap <strong>Set pin</strong> when the marker crosses it. Release in the red ends and the pick snaps.</p>
+    <section class="card lock-stage"><p class="eyebrow">The Locked Box</p><h2>Set four pins before ${esc(caseData.rival.name)} cracks the lock.</h2><p class="small">Click or tap <strong>Set pin</strong> while the marker is inside the bright band. A red end breaks the pick. Nora opens the box at 19 seconds.</p>
       <div class="lock-box">
         <div class="pin-dots">${caseData.competition.pins.map((_, index) => `<span class="pin-dot ${state.lock.setPins.includes(index) ? "set" : ""}"></span>`).join("")}</div>
-        <div class="lock-status"><span>Pin ${state.lock.currentPin + 1} of 4</span><span id="timeLeft">45s</span></div>
+        <div class="lock-status"><span>Pin ${state.lock.currentPin + 1} of 4</span><span id="timeLeft">19s until Nora opens it</span></div>
         <div class="meter" aria-label="Lock tension meter"><span class="target-zone" style="left:${pin.target - pin.tolerance}%;width:${pin.tolerance * 2}%"></span><span class="marker" id="marker"></span></div>
         <div class="lock-status"><span>${esc(caseData.rival.name)}</span><span id="rivalTime">moving</span></div><div class="progress"><span id="rivalProgress" style="width:0%"></span></div>
       </div>
-      <div id="lockMessage" class="small" aria-live="polite">Feel for the first pin.</div>
+      <div id="lockMessage" class="small" aria-live="polite">Pin ${state.lock.currentPin + 1} ready. Set pin when the marker reaches the bright band.</div>
       <div class="actions" style="justify-content:center"><button class="primary" id="setPin" type="button">Set pin</button><button class="danger-button" id="abortLock" type="button">Back off</button></div>
     </section>`;
   const marker = document.querySelector("#marker");
@@ -479,7 +515,7 @@ function renderLock() {
       100,
       (elapsed / caseData.competition.rival_finish_seconds) * 100,
     );
-    timeLeft.textContent = `${Math.ceil(remaining)}s`;
+    timeLeft.textContent = `${Math.ceil(Math.max(0, caseData.competition.rival_finish_seconds - elapsed))}s until Nora opens it`;
     rivalProgress.style.width = `${rivalPct}%`;
     if (elapsed >= caseData.competition.rival_finish_seconds)
       return finishLock("rival-win");
@@ -488,28 +524,28 @@ function renderLock() {
   updateClock();
   lockInterval = setInterval(updateClock, 120);
   document.querySelector("#setPin").addEventListener("click", () => {
-    const value = currentMeterValue;
-    if (
-      value <= caseData.competition.red_zone_max ||
-      value >= caseData.competition.red_zone_min
-    ) {
-      setLockProgress(state, state.lock.currentPin, value, "break");
+    const result = attemptLockPin(
+      state,
+      caseData,
+      currentMeterValue,
+      Date.now(),
+    );
+    if (!result.accepted && state.lock.status === "resolved") {
+      announceLockResult();
       save();
-      finishLock("break");
+      render();
       return;
     }
-    if (Math.abs(value - pin.target) <= pin.tolerance) {
-      setLockProgress(state, state.lock.currentPin, value, "set");
-      lockMessage.textContent = "Set.";
-      save();
-      stopLockTimers();
-      if (state.lock.currentPin >= caseData.competition.pins.length)
-        finishLock("human-win");
-      else render();
+    if (!result.accepted) return;
+    save();
+    if (state.lock.status === "resolved") {
+      announceLockResult();
+      render();
+    } else if (result.outcome === "set") {
+      render();
+      document.querySelector("#setPin")?.focus();
     } else {
-      setLockProgress(state, state.lock.currentPin, value, "miss");
-      lockMessage.textContent = "Not quite. The pin drops back.";
-      save();
+      lockMessage.textContent = "Pin not set. Keep watching the marker.";
     }
   });
   document
@@ -552,8 +588,7 @@ function renderLastCall() {
       return;
     }
     if (commitCaseFile(state, caseData, culprit, pieces)) {
-      state.rival.accusation =
-        state.lock.winner === "rival" ? "clara-hensley" : "lenora-quill";
+      state.rival.accusation = resolveRivalTheory(state, caseData);
       save();
       render();
     }
@@ -599,6 +634,16 @@ function render() {
   save();
   renderInvestigation();
 }
+
+document.addEventListener("visibilitychange", () => {
+  if (
+    document.visibilityState === "visible" &&
+    state?.lock.status === "active" &&
+    Date.now() - state.lock.startedAtMs >=
+      caseData.competition.rival_finish_seconds * 1000
+  )
+    finishLock("rival-win");
+});
 
 async function boot() {
   const response = await fetch("./case.json", { cache: "no-store" });

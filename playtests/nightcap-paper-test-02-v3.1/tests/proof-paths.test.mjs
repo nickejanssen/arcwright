@@ -88,7 +88,7 @@ test("Rusk chronology works without Beatrice confrontation testimony", () => {
   ]);
 });
 
-test("lock loss still releases a sufficient recording at Last Call", () => {
+test("lock loss releases a sufficient recording after the next investigation", () => {
   const state = runVisits(
     [
       "gideon-materials",
@@ -102,7 +102,7 @@ test("lock loss still releases a sufficient recording at Last Call", () => {
   assert.equal(challengeClaim(state, caseData, "beatrice-ashcombe", 750), true);
   assert.equal(
     state.discoveries.some((item) => item.id === "e-cylinder-43"),
-    false,
+    true,
   );
   solved(state, [
     "e-beatrice-impact",

@@ -34,6 +34,7 @@ export function createInitialState(caseData, options = {}) {
     followThreadUsed: false,
     rival: {
       actions: [],
+      knownFacts: [...(caseData.rival.initial_knowledge ?? [])],
       lockObservation: null,
       accusation: null,
     },
@@ -47,6 +48,7 @@ export function createInitialState(caseData, options = {}) {
       firstLookClaimed: false,
       publicReleased: false,
       postResultActions: 0,
+      leverageChoice: null,
     },
     caseFile: {
       culprit: null,
@@ -185,6 +187,8 @@ export function visitInvestigation(
     scene,
     discoveryIds: discoveries.map((item) => item.id),
   });
+  if (state.lock.status === "resolved" && !state.lock.publicReleased)
+    releaseCylinderPublicly(state, caseData, nowMs);
   return true;
 }
 
@@ -311,6 +315,7 @@ export function recordInferenceAction(
 
 export function triggerRivalActivity(
   state,
+  caseData,
   action,
   target,
   nowMs = Date.now(),
@@ -318,6 +323,13 @@ export function triggerRivalActivity(
   const key = `${action}:${target}`;
   if (state.rival.actions.some((item) => item.key === key)) return false;
   state.rival.actions.push({ key, action, target });
+  const earned = caseData.rival.trajectory?.find(
+    (item) => item.action === action && item.target === target,
+  );
+  if (earned?.fact && !state.rival.knownFacts?.includes(earned.fact)) {
+    state.rival.knownFacts ??= [];
+    state.rival.knownFacts.push(earned.fact);
+  }
   recordEvent(
     state,
     { event_type: "rival_activity", target, choice: action },
@@ -340,7 +352,8 @@ export function shouldOpenLockWindow(state, caseData) {
 }
 
 export function openLockWindow(state, nowMs = Date.now()) {
-  if (state.lock.status !== "unavailable") return false;
+  if (state.phase !== "investigation" || state.lock.status !== "unavailable")
+    return false;
   state.phase = "lock";
   state.lock.status = "active";
   state.lock.startedAtMs = nowMs;
@@ -357,6 +370,70 @@ export function openLockWindow(state, nowMs = Date.now()) {
     nowMs,
   );
   return true;
+}
+
+export function declineLockWindow(state, caseData, nowMs = Date.now()) {
+  if (state.phase !== "investigation" || state.lock.status !== "unavailable")
+    return false;
+  state.lock.status = "resolved";
+  state.lock.outcome = "declined";
+  state.lock.winner = null;
+  state.lock.publicReleased = true;
+  recordEvent(
+    state,
+    { event_type: "competitive_window_declined", target: "the-locked-box" },
+    nowMs,
+  );
+  recordDiscovery(
+    state,
+    caseData.competition.fallback_public_observation,
+    { visibility: "public" },
+    nowMs,
+  );
+  return true;
+}
+
+export function attemptLockPin(
+  state,
+  caseData,
+  displayedValue,
+  nowMs = Date.now(),
+) {
+  const pinIndex = state.lock.currentPin;
+  if (state.lock.status !== "active")
+    return { accepted: false, outcome: state.lock.outcome, pinIndex };
+  const elapsed = nowMs - state.lock.startedAtMs;
+  if (elapsed >= caseData.competition.rival_finish_seconds * 1000) {
+    resolveLock(state, caseData, "rival-win", nowMs);
+    return { accepted: false, outcome: "rival-win", pinIndex };
+  }
+  if (elapsed >= caseData.competition.duration_seconds * 1000) {
+    resolveLock(state, caseData, "timeout", nowMs);
+    return { accepted: false, outcome: "timeout", pinIndex };
+  }
+  if (
+    !Number.isFinite(displayedValue) ||
+    displayedValue < 0 ||
+    displayedValue > 100 ||
+    !caseData.competition.pins[pinIndex]
+  )
+    return { accepted: false, outcome: "invalid", pinIndex };
+  const pin = caseData.competition.pins[pinIndex];
+  const outcome =
+    displayedValue <= caseData.competition.red_zone_max ||
+    displayedValue >= caseData.competition.red_zone_min
+      ? "break"
+      : Math.abs(displayedValue - pin.target) <= pin.tolerance
+        ? "set"
+        : "miss";
+  setLockProgress(state, pinIndex, displayedValue, outcome, nowMs);
+  if (outcome === "break") resolveLock(state, caseData, "break", nowMs);
+  if (
+    outcome === "set" &&
+    state.lock.currentPin === caseData.competition.pins.length
+  )
+    resolveLock(state, caseData, "human-win", nowMs);
+  return { accepted: true, outcome, pinIndex };
 }
 
 export function setLockProgress(
@@ -391,6 +468,11 @@ function cylinderObservation(caseData) {
 
 export function resolveLock(state, caseData, outcome, nowMs = Date.now()) {
   if (state.lock.status !== "active") return false;
+  if (
+    nowMs - state.lock.startedAtMs >=
+    caseData.competition.rival_finish_seconds * 1000
+  )
+    outcome = "rival-win";
   const allowed = new Set([
     "human-win",
     "rival-win",
@@ -475,11 +557,20 @@ export function spendLeverage(state, caseData, effectId, nowMs = Date.now()) {
   if (state.leverage < 1) return false;
   const effect = caseData.leverage.effects.find((item) => item.id === effectId);
   if (!effect) return false;
-  if (effectId === "listen-in" && !state.rival.lockObservation) return false;
+  if (
+    effectId === "listen-in" &&
+    (!state.rival.lockObservation ||
+      state.lock.status !== "resolved" ||
+      state.lock.outcome !== "rival-win" ||
+      state.lock.leverageChoice)
+  )
+    return false;
   if (effectId === "follow-the-thread" && state.followThreadUsed) return false;
 
   state.leverage -= 1;
   if (effectId === "listen-in") {
+    state.lock.leverageChoice = "spend";
+    state.lock.firstLookClaimed = true;
     recordDiscovery(
       state,
       state.rival.lockObservation,
@@ -502,6 +593,16 @@ export function spendLeverage(state, caseData, effectId, nowMs = Date.now()) {
 }
 
 export function saveLeverage(state, effectId, nowMs = Date.now()) {
+  if (
+    state.leverage < 1 ||
+    state.lock.status !== "resolved" ||
+    !["human-win", "rival-win"].includes(state.lock.outcome) ||
+    state.lock.leverageChoice ||
+    effectId !==
+      (state.lock.outcome === "human-win" ? "first-look" : "listen-in")
+  )
+    return false;
+  state.lock.leverageChoice = "save";
   recordEvent(
     state,
     {
@@ -512,6 +613,18 @@ export function saveLeverage(state, effectId, nowMs = Date.now()) {
     },
     nowMs,
   );
+  return true;
+}
+
+export function resolveRivalTheory(state, caseData) {
+  const theory = caseData.rival.theory;
+  const knownFacts = new Set([
+    ...(caseData.rival.initial_knowledge ?? []),
+    ...(state.rival.knownFacts ?? []),
+  ]);
+  if (!theory?.requires_every?.every((fact) => knownFacts.has(fact)))
+    return null;
+  return theory.accusation;
 }
 
 export function canEnterLastCall(state, caseData) {

@@ -7,7 +7,20 @@
   "rival": {
     "id": "nora-vance",
     "name": "Nora Vance",
-    "research_scaffolding_only": true
+    "research_scaffolding_only": true,
+    "initial_knowledge": ["quill-controlled-trumpet"],
+    "trajectory": [
+      {
+        "action": "followed",
+        "target": "edwin-rusk",
+        "fact": "rusk-checked-service-corridor"
+      }
+    ],
+    "theory": {
+      "requires_every": ["quill-controlled-trumpet"],
+      "accusation": "lenora-quill",
+      "reason": "Nora saw Quill control the trumpet when Gideon's voice sounded. She treats the performance as Quill's doing and mistakes the fraud for the murder. The cylinder does not tell her who killed Gideon."
+    }
   },
   "suspects": [
     {
