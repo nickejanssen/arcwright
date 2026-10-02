@@ -141,16 +141,15 @@ function renderOpening() {
     <section class="card">
       <p class="eyebrow">The Larkspur Hotel · Atlantic coast · 1926</p>
       <div class="story lede">
-        <p>The séance is supposed to end with Gideon March embarrassing Lenora Quill before midnight. Gideon, a professional destroyer of fraudulent mediums and other profitable arrangements, has stationed himself somewhere outside the room. In the next room, a tray of untouched oysters is quietly losing its reason to exist.</p>
-        <p>At 11:47, Quill raises a brass trumpet from the table. A man's voice comes through it.</p>
+        <p>Gideon March invited you to the Larkspur to watch him expose Lenora Quill's séance. He invited Nora Vance too. Two detectives, one demonstration. He seemed to relish an audience that might argue back.</p>
+        <p>At 11:47, Quill raises a brass trumpet from the table. Gideon's voice comes through it.</p>
         <p><strong>“Mrs. Quill, do carry on. I can hear every word.”</strong></p>
-        <p>Everybody recognizes Gideon.</p>
-        <p>Quill does not look triumphant. She looks frightened. Clara Hensley, Gideon's secretary, is sitting three places from you. Edwin Rusk leaves the room almost immediately. Beatrice Ashcombe mutters that Gideon has always loved an entrance, particularly when he isn't making one.</p>
+        <p>Quill flinches. Clara Hensley, Gideon's secretary, is seated with the guests. Edwin Rusk leaves the room.</p>
         <p>At midnight, Rusk knocks on Gideon's writing-room door.</p>
-        <p>There is no answer.</p>
-        <p>Gideon March is dead inside.</p>
+        <p>There is no answer. When the door opens, Gideon lies dead beside his desk.</p>
+        <p>Nora looks from the body to the corridor. Then she looks at you.</p>
       </div>
-      <div class="notice"><strong>What happened in plain view:</strong> you heard Gideon's voice shortly before his body was found. Quill flinched. Rusk left. Clara was in the room. Beatrice had already threatened Gideon twice.</div>
+      <div class="notice"><strong>What you saw:</strong> Gideon's voice came through Quill's trumpet before the body was found. Quill flinched. Rusk left. Clara sat with the guests.</div>
       <div class="actions"><button class="primary" id="startInvestigation" type="button">Start investigating</button></div>
     </section>`;
   document
@@ -273,7 +272,7 @@ function renderScene() {
   let extra = "";
   if (interview) {
     if (canChallengeClaim(state, caseData, target))
-      extra += `<button class="secondary" id="challengeClaim" type="button">Ask about the contradiction (free)</button>`;
+      extra += `<button class="secondary" id="challengeClaim" type="button">${esc(interview.conditional.prompt)} (free)</button>`;
     const follow = interview.follow_thread;
     if (canFollowThread(state, caseData, target))
       extra += `<button class="secondary" id="followThread" type="button">Spend 1 Leverage: ${esc(follow.prompt)}</button>`;
@@ -636,7 +635,7 @@ function renderSurvey() {
 
 function renderReveal() {
   const solved = state?.caseFile?.correct === true;
-  app.innerHTML = `<section class="card"><p class="eyebrow">The Truth</p><h2>Clara Hensley killed Gideon March.</h2><div class="reveal-list story"><div class="truth-step"><strong>Before the séance</strong><p>Gideon discovered that confidential research passing through Clara had reached Lenora Quill. He confronted Clara in the writing room. She killed him with the brass bookend.</p></div><div class="truth-step"><strong>The false voice</strong><p>Gideon had already recorded cylinder 43, including the sentence everyone later heard. Clara substituted it into Quill's concealed apparatus. Quill unknowingly played Gideon's recording at her normal cue while Clara sat visibly with the group.</p></div><div class="truth-step"><strong>The second cover-up</strong><p>Rusk found Gideon's cylinder in the apparatus and hid it in the strongbox to protect the hotel and Quill's fraudulent séances. His cover-up protected Clara without his knowing it.</p></div><div class="truth-step"><strong>Why the lies mattered</strong><p>Quill lied to protect her fraud. Rusk lied to protect the hotel. Beatrice lied to hide her threat and eavesdropping. Those three lies gave Clara cover she never had to invent.</p></div></div><hr><h3>The Verdict</h3><p>${solved ? "You reconstructed the murder correctly." : "Your locked reconstruction missed at least one essential part of the murder."}</p><p class="small">No model judged your argument. The fixture resolved your selected culprit and evidence against the authored solution graph.</p></section>`;
+  app.innerHTML = `<section class="card"><p class="eyebrow">The Truth</p><h2>Clara Hensley killed Gideon March.</h2><div class="reveal-list story"><div class="truth-step"><strong>At 11:33</strong><p>Gideon had traced his leaked research to Quill. He confronted Clara in the writing room. She struck him with the brass bookend.</p></div><div class="truth-step"><strong>At 11:47</strong><p>Gideon was already dead. Clara had put his recorded cylinder into Quill's concealed apparatus. Quill played her usual cue, unaware that the voice was Gideon's. Clara sat with the guests while it sounded.</p></div><div class="truth-step"><strong>After the voice</strong><p>Rusk found cylinder 43 and hid it to protect the hotel and Quill's fraud. He did not know whose murder he was concealing.</p></div><div class="truth-step"><strong>The other lies</strong><p>Quill concealed the séance trick. Rusk concealed the cylinder. Beatrice concealed her threats and what she heard at Gideon's door. Their reasons were their own; Clara used the confusion.</p></div></div><hr><h3>The Verdict</h3><p>${solved ? "You named Clara and supported the case with the facts you chose." : "Your committed case missed part of what happened."}</p></section>`;
   if (state) {
     markComplete(state);
     save();
@@ -696,5 +695,5 @@ async function boot() {
 
 boot().catch((error) => {
   console.error(error);
-  app.innerHTML = `<section class="card"><h2>The case file failed to open.</h2><p>${esc(error.message)}</p></section>`;
+  app.innerHTML = `<section class="card"><h2>The case could not be loaded.</h2><p>Reload this page to try again.</p></section>`;
 });

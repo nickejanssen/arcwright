@@ -27,7 +27,7 @@
       "id": "clara-hensley",
       "name": "Clara Hensley",
       "role": "Gideon March's secretary and research assistant",
-      "public_hook": "Precise, composed, and already reorganizing Gideon's papers before anyone has asked her to.",
+      "public_hook": "Gideon's secretary is sorting his notes into neat piles beside the room where he died.",
       "secret": "She leaked selected confidential research to Lenora Quill, killed Gideon when he confronted her, and substituted cylinder 43 into Quill's apparatus.",
       "knows": [
         "g_march_leak_discovered",
@@ -45,7 +45,7 @@
       "id": "lenora-quill",
       "name": "Lenora Quill",
       "role": "Trance medium",
-      "public_hook": "A celebrated medium whose control of the room cracked the instant Gideon's voice came through her own trumpet.",
+      "public_hook": "The medium held the brass trumpet when Gideon's voice came through it, and her hand shook afterward.",
       "secret": "Her séances are fraudulent; she uses a concealed playback/acoustic route and receives private client information in advance.",
       "knows": ["quill_apparatus", "clara_supplied_some_material"],
       "believes": ["gideon_alive_during_voice"],
@@ -55,7 +55,7 @@
       "id": "edwin-rusk",
       "name": "Edwin Rusk",
       "role": "Owner of the Larkspur Hotel",
-      "public_hook": "A hotelier with the smile of a man who has successfully postponed several creditors until Tuesday.",
+      "public_hook": "The Larkspur's owner left the séance just after Gideon's voice came through Quill's trumpet.",
       "secret": "He profits from Quill's séances, allowed the service modifications, found cylinder 43 after the séance, and locked it away to protect the hotel.",
       "knows": [
         "quill_apparatus",
@@ -72,7 +72,7 @@
       "id": "beatrice-ashcombe",
       "name": "Beatrice Ashcombe",
       "role": "Wealthy widow and séance patron",
-      "public_hook": "She came to hear from her late husband and spent most of the evening making it clear she would rather hear from almost anyone else.",
+      "public_hook": "The séance patron looks toward the writing room when Gideon is mentioned.",
       "secret": "She supplied Quill private letters, threatened Gideon over material he planned to publish, and secretly overheard part of Gideon's confrontation with Clara.",
       "knows": [
         "beatrice_letters",
@@ -270,8 +270,8 @@
   },
   "interviews": {
     "clara-hensley": {
-      "opening": "Clara folds Gideon's loose notes into three precise piles. 'He recorded everything. He trusted paper more than people, which was occasionally mutual.' She confirms that she transcribed cylinder 43 earlier in the evening.",
-      "claim": "She says she last saw Gideon shortly after eleven twenty and did not return to the writing-room corridor before the body was found.",
+      "opening": "Clara folds Gideon's loose notes into three exact piles. 'I transcribed cylinder 43 at 11:23, five minutes after Gideon recorded it.' She squares the pages against the table edge.",
+      "claim": "'I last saw Gideon shortly after eleven twenty. I did not go back to the writing-room corridor before they found him.'",
       "discoveries": [
         {
           "id": "e-clara-lie",
@@ -290,8 +290,8 @@
       ],
       "follow_thread": {
         "requires_any": ["e-gideon-final-note"],
-        "prompt": "Ask Clara why Gideon wrote her name after Quill's.",
-        "scene": "For the first time, Clara stops sorting. 'Gideon showed people things when it suited him. He enjoyed the moment they realized he knew more than they did.' She returns to the papers without answering how Quill obtained material from his private files.",
+        "prompt": "Ask Clara about Gideon's unfinished note.",
+        "scene": "Clara reads 'After Quill, Hensley' once, then sets the page down. 'Gideon liked to show people how much he knew.' She aligns its edge with the others. She will not say how Quill obtained material from Gideon's private files.",
         "discovery": {
           "id": "e-clara-evasion",
           "label": "Clara avoids the source question",
@@ -302,8 +302,8 @@
       }
     },
     "lenora-quill": {
-      "opening": "Quill has removed one glove. The bare hand is shaking. 'Mr. March spent his life mistaking cruelty for skepticism.'",
-      "claim": "She insists at first that the trumpet carried a spirit voice and that she never receives information before a sitting.",
+      "opening": "Quill has removed one glove. Her bare hand shakes as she folds it. 'The audience heard Mr. March. I cannot tell you why he chose my room.'",
+      "claim": "'The trumpet carried a spirit voice. I never receive information before a sitting.'",
       "discoveries": [
         {
           "id": "e-quill-denial",
@@ -320,7 +320,8 @@
           "e-cylinder-transcript",
           "e-cylinder-43"
         ],
-        "scene": "Quill looks at the coupling, then at you. 'Fine. It is a tube, a cabinet, and several years of excellent posture. Gideon's voice was not mine. I thought he had found the service cupboard and was using my own trick against me.'",
+        "prompt": "Ask Quill to account for the voice from her trumpet.",
+        "scene": "Quill sets the glove on the table. 'It is a tube, a cabinet, and a cue I have used for years. Gideon's voice was not mine. I thought he had found the service cupboard and turned the trick on me.' Without the audience, she speaks plainly.",
         "discoveries": [
           {
             "id": "e-quill-admission",
@@ -334,7 +335,7 @@
       "follow_thread": {
         "requires_any": ["e-quill-denial"],
         "prompt": "Ask Quill who gave her information before the sitting.",
-        "scene": "Quill closes her case. 'Miss Hensley brought envelopes. I paid for envelopes. You can make the nouns uglier if it helps.' A folded receipt inside carries Clara Hensley's initials beside two cash payments.",
+        "scene": "Quill closes her case before she answers. 'Miss Hensley brought envelopes. I paid her for them.' She takes out a folded receipt. Clara Hensley's initials sit beside two cash payments. 'If this reaches the guests, the sittings are finished.'",
         "discovery": {
           "id": "e-quill-payment",
           "label": "Payments tied to Clara",
@@ -345,8 +346,8 @@
       }
     },
     "edwin-rusk": {
-      "opening": "Rusk is offended by the murder in roughly the same way a hotelier might be offended by a burst pipe during dinner service.",
-      "claim": "He says he knew nothing about Quill's equipment and did not touch the séance apparatus after the voice incident.",
+      "opening": "Rusk straightens a chair that no one has asked him to move. 'There are guests upstairs. I need this corridor cleared before they come down.'",
+      "claim": "'I knew nothing about Quill's equipment. After the voice, I did not touch the séance apparatus.'",
       "discoveries": [
         {
           "id": "e-rusk-denial",
@@ -362,7 +363,8 @@
           "e-cylinder-index",
           "e-cylinder-transcript"
         ],
-        "scene": "Rusk rubs both hands over his face. 'Yes, I checked the service side. Before the sitting, I saw Clara come out of the writing-room passage and go back to the guests. After March's voice, Quill and I checked the cabinet and found one of his cylinders where hers should have been. I put it in the strongbox. I own a hotel. Sometimes you move the fire before you ask who lit it.'",
+        "prompt": "Ask Rusk what he did after Gideon's voice.",
+        "scene": "Rusk grips the chair back. 'I checked the service side. Before the sitting, I saw Clara come out of the writing-room passage and return to the guests. After March's voice, Quill and I opened the cabinet. We found one of his cylinders where hers should have been. I put it in the strongbox.' He looks toward the occupied rooms upstairs. 'If the fraud ruins this hotel, I lose the business.'",
         "discoveries": [
           {
             "id": "e-rusk-found-cylinder",
@@ -395,8 +397,8 @@
       }
     },
     "beatrice-ashcombe": {
-      "opening": "Beatrice looks toward the writing room and says, 'If you're about to ask whether I threatened him, be specific. I threatened him twice.' She admits giving Quill letters and objects before the sitting, despite denying it in public.",
-      "claim": "She admits arguing with Gideon over material about her late husband's finances but initially says she saw nothing useful near the writing room.",
+      "opening": "Beatrice looks toward the writing room. 'If you mean to ask whether I threatened Gideon, be specific. I threatened him twice.' She admits giving Quill letters and objects before the sitting, though she denied it before the other guests.",
+      "claim": "'Gideon meant to publish material about my late husband's finances. We argued. I saw nothing useful near his room.'",
       "discoveries": [
         {
           "id": "e-beatrice-threat",
@@ -415,7 +417,8 @@
       ],
       "conditional": {
         "requires_any": ["e-gideon-final-note", "e-clara-lie", "e-bookend"],
-        "scene": "Beatrice exhales through her nose. 'I was listening at his door. There. Write that down with all the dignity it deserves.' She heard Gideon say, 'You sold my work to a parlour trick,' heard Clara answer, then a heavy impact. A moment later she saw Clara leave the writing-room corridor. Beatrice kept quiet because she had no intention of explaining why she was at Gideon's door.",
+        "prompt": "Ask Beatrice to account for her time near the writing room.",
+        "scene": "Beatrice looks toward the door. 'I said I saw nothing useful. I was at his door. I had threatened him already, and I would not explain why I was there.' She sets down her glass. 'I heard Gideon say, ‘You sold my work to a parlour trick.’ Clara answered. Then I heard a heavy impact. I did not see the blow. I saw Clara leave the corridor. Later she was seated with us when his voice came through.'",
         "discoveries": [
           {
             "id": "e-beatrice-impact",

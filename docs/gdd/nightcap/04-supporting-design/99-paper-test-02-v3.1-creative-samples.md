@@ -17,7 +17,7 @@ supersedes: []
 **Version:** 1.0 | **Date:** 2026-10-01  
 **Purpose:** settle the voice and delivery direction for improvements 19-24 before rewriting the fixture.
 
-These are inexpensive text samples, not implemented scenes or approved Nightcap canon. The source is the non-canon *A Knock at Midnight* fixture. They preserve the murder solution and chronology. See the [implementation contract](../../../specs/0091-nightcap-v3.1-improvements.md).
+These are inexpensive text samples, not implemented scenes or approved Nightcap canon. The source is the non-canon _A Knock at Midnight_ fixture. They preserve the murder solution and chronology. See the [implementation contract](../../../specs/0091-nightcap-v3.1-improvements.md).
 
 ## Direction and review instructions
 
@@ -83,12 +83,12 @@ The complete reveal must also resolve the innocent suspects' lies and show the p
 
 ## Four voices to preserve across the rewrite
 
-| Suspect | Speech and behavior | Existing stakes | Avoid |
-|---|---|---|---|
-| Clara | Precise times, clipped corrections, controlled admissions | Exposure for leaking Gideon's research | Making composure an automatic guilt signal |
-| Quill | Public theatrical authority that becomes plain speech under pressure | Exposure of fraudulent séances | Every response sounding like a comic performance |
-| Rusk | Practical contingencies and damage control | Hotel business tied to Quill's performances | Giving him knowledge of the killer he does not possess |
-| Beatrice | Blunt admissions with hard limits around what she witnessed | Threats, letters, and publication of her husband's finances | Converting everything she says into unquestioned fact |
+| Suspect  | Speech and behavior                                                  | Existing stakes                                             | Avoid                                                  |
+| -------- | -------------------------------------------------------------------- | ----------------------------------------------------------- | ------------------------------------------------------ |
+| Clara    | Precise times, clipped corrections, controlled admissions            | Exposure for leaking Gideon's research                      | Making composure an automatic guilt signal             |
+| Quill    | Public theatrical authority that becomes plain speech under pressure | Exposure of fraudulent séances                              | Every response sounding like a comic performance       |
+| Rusk     | Practical contingencies and damage control                           | Hotel business tied to Quill's performances                 | Giving him knowledge of the killer he does not possess |
+| Beatrice | Blunt admissions with hard limits around what she witnessed          | Threats, letters, and publication of her husband's finances | Converting everything she says into unquestioned fact  |
 
 Sharper employment, debt, family, or social consequences are new authored facts and need explicit consideration. The voice pass cannot invent them silently.
 
@@ -102,3 +102,7 @@ Sharper employment, debt, family, or social consequences are new authored facts 
 - [ ] Actual players describe concrete moments of curiosity, tension, confusion, and payoff after play.
 
 No creative criterion above has been marked passed by the agents who prepared these samples.
+
+## Full-draft handoff, 2026-10-02
+
+The approved invitation framing and restrained voice direction are now applied in the v3.1 fixture. The four interviews use distinct pressure responses: Clara controls times and papers; Quill drops her performance when confronted; Rusk treats the hotel as his immediate concern; Beatrice admits compromising conduct while separating what she heard from what she saw. The opening, Beatrice challenge, and reveal received a deliberate line-by-line editorial read. This records author judgment, not founder sign-off or player response. Review the playable draft and proof dossier before marking the remaining creative criteria complete.
