@@ -127,6 +127,16 @@ export function restoreState(caseData, storage, key = DEFAULT_STORAGE_KEY) {
       !parsed.caseFile ||
       !Array.isArray(parsed.caseFile.draftPieces) ||
       !parsed.lock ||
+      !Array.isArray(parsed.lock.setPins) ||
+      !Number.isInteger(parsed.lock.currentPin) ||
+      parsed.lock.currentPin < 0 ||
+      parsed.lock.currentPin > caseData.competition.pins.length ||
+      (parsed.phase === "lock" &&
+        !["active", "resolved"].includes(parsed.lock.status)) ||
+      (parsed.phase === "lock" &&
+        parsed.lock.status === "active" &&
+        (!Number.isFinite(parsed.lock.startedAtMs) ||
+          parsed.lock.currentPin >= caseData.competition.pins.length)) ||
       !parsed.rival ||
       !parsed.ui ||
       (["survey", "reveal"].includes(parsed.phase) &&

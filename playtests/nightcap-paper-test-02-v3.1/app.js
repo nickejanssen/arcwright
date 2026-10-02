@@ -615,9 +615,14 @@ function renderLastCall() {
     const pieces = [
       ...document.querySelectorAll('input[name="evidence"]:checked'),
     ].map((input) => input.value);
-    if (!culprit || pieces.length < 4 || pieces.length > 5) {
+    if (!culprit) {
       document.querySelector("#caseFileError").textContent =
-        "Choose one culprit and four or five facts.";
+        "Choose one culprit.";
+      return;
+    }
+    if (pieces.length < 4 || pieces.length > 5) {
+      document.querySelector("#caseFileError").textContent =
+        "Choose four or five facts.";
       return;
     }
     if (commitCaseFile(state, caseData, culprit, pieces)) {

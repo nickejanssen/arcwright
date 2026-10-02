@@ -185,6 +185,28 @@ test("storage failures leave a usable in-memory state and restore no invented ru
   assert.equal(state.phase, "last-call");
 });
 
+test("malformed active lock cannot restore into the app renderer", () => {
+  const state = createInitialState(caseData, {
+    nowMs: 1000,
+    runId: "bad-lock",
+  });
+  state.phase = "lock";
+  state.lock.status = "active";
+  state.lock.startedAtMs = 1200;
+  for (const lock of [
+    { ...state.lock, setPins: undefined },
+    { ...state.lock, startedAtMs: null },
+    { ...state.lock, currentPin: -1 },
+  ]) {
+    const malformed = { ...state, lock };
+    assert.equal(
+      restoreState(caseData, storage(JSON.stringify(malformed))),
+      null,
+    );
+  }
+  assert.equal(createInitialState(caseData).lock.status, "unavailable");
+});
+
 test("restore rejects missing or malformed commitments and preserves intact results", () => {
   const state = caseState();
   assert.equal(
@@ -252,6 +274,14 @@ test("Case File UI reports selection count and preserves notebook access", () =>
   assert.match(appSource, /id="selectionCount"[^>]*aria-live="polite"/);
   assert.match(appSource, /pieces\.length} of 4 or 5 facts/);
   assert.match(appSource, /id="reviewNotebook"/);
+});
+
+test("Case File UI asks for a culprit separately from missing facts", () => {
+  assert.match(appSource, /if \(!culprit\) \{[\s\S]*?"Choose one culprit\."/);
+  assert.match(
+    appSource,
+    /if \(pieces\.length < 4 \|\| pieces\.length > 5\) \{[\s\S]*?"Choose four or five facts\."/,
+  );
 });
 
 test("reveal startup never creates a replacement run and load retry is bounded", () => {
