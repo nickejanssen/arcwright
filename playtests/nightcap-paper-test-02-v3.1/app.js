@@ -184,6 +184,12 @@ function labelForTarget(id) {
   return route?.label ?? suspect?.name ?? id;
 }
 
+function publicReleaseNotice() {
+  return state.lock.firstLookClaimed
+    ? "Rusk brings cylinder 43 into the open. Your earlier reading remains in your notebook."
+    : "Rusk brings cylinder 43 into the open. The recording is now public evidence.";
+}
+
 function visitRoute(routeId) {
   const closesFirstLook =
     state.lock.status === "resolved" && !state.lock.publicReleased;
@@ -193,9 +199,10 @@ function visitRoute(routeId) {
   state.ui.lastScene = reviewEncounter(state, state.ui.lastEncounterId).scene;
   state.ui.peoplePickerOpen = false;
   rivalBeatAfterAction();
-  if (closesFirstLook)
-    state.ui.notice =
-      "Rusk brings cylinder 43 into the open. Your earlier reading remains in your notebook.";
+  if (closesFirstLook) {
+    state.ui.sceneNotice = publicReleaseNotice();
+    state.ui.notice = null;
+  }
   save();
   render();
 }
@@ -206,9 +213,10 @@ function visitInterview(suspectId, isRevisit = false) {
       state.lock.status === "resolved" && !state.lock.publicReleased;
     if (!visitInvestigation(state, caseData, suspectId)) return;
     rivalBeatAfterAction();
-    if (closesFirstLook)
-      state.ui.notice =
-        "Rusk brings cylinder 43 into the open. Your earlier reading remains in your notebook.";
+    if (closesFirstLook) {
+      state.ui.sceneNotice = publicReleaseNotice();
+      state.ui.notice = null;
+    }
   } else if (!state.investigatedTargets.includes(suspectId)) {
     return;
   }
@@ -225,6 +233,7 @@ function visitInterview(suspectId, isRevisit = false) {
 
 function challengeInterview(suspectId) {
   if (!challengeClaim(state, caseData, suspectId)) return;
+  state.ui.sceneNotice = null;
   state.ui.lastEncounterId = `challenge:${suspectId}`;
   state.ui.lastScene = reviewEncounter(state, state.ui.lastEncounterId).scene;
   if (
@@ -239,6 +248,7 @@ function challengeInterview(suspectId) {
 
 function followThread(suspectId) {
   if (!acquireFollowThread(state, caseData, suspectId)) return;
+  state.ui.sceneNotice = null;
   state.ui.lastEncounterId = `follow:${suspectId}`;
   state.ui.lastScene = reviewEncounter(state, state.ui.lastEncounterId).scene;
   save();
@@ -274,7 +284,7 @@ function renderScene() {
   const suspectHistory = interview
     ? (state.encounterHistory ?? []).filter((item) => item.targetId === target)
     : [];
-  return `<section class="card"><p class="eyebrow">${esc(labelForTarget(target))}</p><div class="story">${state.ui.lastScene
+  return `<section class="card">${state.ui.sceneNotice ? `<div class="notice"><strong>Case update:</strong> ${esc(state.ui.sceneNotice)}</div>` : ""}<p class="eyebrow">${esc(labelForTarget(target))}</p><div class="story">${state.ui.lastScene
     .split("\n\n")
     .map((p) => `<p>${esc(p)}</p>`)
     .join(
@@ -342,6 +352,7 @@ function renderInvestigation() {
     document.querySelector("#backToCase").addEventListener("click", () => {
       state.ui.lastScene = null;
       state.ui.lastTarget = null;
+      state.ui.sceneNotice = null;
       save();
       render();
     });

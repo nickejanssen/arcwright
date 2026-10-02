@@ -11,13 +11,13 @@ import {
   deriveTelemetry,
   declineLockWindow,
   enterLastCall,
+  followThread,
   openLockWindow,
   releaseCylinderPublicly,
   resolveLock,
   resolveRivalTheory,
   restoreState,
   saveLeverage,
-  spendLeverage,
   triggerRivalActivity,
   visitInvestigation,
 } from "../runtime.js";
@@ -27,6 +27,7 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const caseData = JSON.parse(
   fs.readFileSync(path.join(here, "..", "case.json"), "utf8"),
 );
+const appSource = fs.readFileSync(path.join(here, "..", "app.js"), "utf8");
 const makeState = (eligible = true) => {
   const state = createInitialState(caseData, { nowMs: 0, runId: "lock-test" });
   completeOpening(state, 1);
@@ -154,6 +155,57 @@ test("first look closes on next new investigation or Last Call, not free review"
   assert.equal(events(second, "first_look_closed").length, 1);
 });
 
+test("a public-release notice appears on the newly opened scene and is cleared on return", () => {
+  const start = appSource.indexOf("function renderScene() {");
+  const end = appSource.indexOf("\nfunction lockCallout()", start);
+  assert.ok(start >= 0 && end > start);
+  const renderScene = new Function(
+    "state",
+    "caseData",
+    "reviewEncounter",
+    "canChallengeClaim",
+    "canFollowThread",
+    "allEvidence",
+    "labelForTarget",
+    "esc",
+    `${appSource.slice(start, end)}\nreturn renderScene();`,
+  );
+  const state = makeState();
+  state.ui.lastTarget = "writing-room";
+  state.ui.lastScene = "A new scene.";
+  state.ui.sceneNotice = "Cylinder 43 is now public.";
+  const html = renderScene(
+    state,
+    caseData,
+    () => null,
+    () => false,
+    () => false,
+    () => [],
+    () => "Writing Room",
+    String,
+  );
+  assert.match(html, /Cylinder 43 is now public/);
+  const back = appSource.slice(
+    appSource.indexOf('querySelector("#backToCase")'),
+  );
+  assert.match(back, /state\.ui\.sceneNotice = null/);
+  const route = appSource.slice(
+    appSource.indexOf("function visitRoute("),
+    appSource.indexOf("function visitInterview("),
+  );
+  const interview = appSource.slice(
+    appSource.indexOf("function visitInterview("),
+    appSource.indexOf("function challengeInterview("),
+  );
+  for (const transition of [route, interview]) {
+    assert.match(
+      transition,
+      /state\.ui\.sceneNotice = publicReleaseNotice\(\)/,
+    );
+    assert.match(transition, /state\.ui\.notice = null/);
+  }
+});
+
 test("human win can explicitly save once and later spend; zero balance cannot save", () => {
   const state = makeState();
   openLockWindow(state, caseData, 1000);
@@ -165,9 +217,22 @@ test("human win can explicitly save once and later spend; zero balance cannot sa
       .length,
     1,
   );
-  assert.equal(spendLeverage(state, caseData, "follow-the-thread", 2300), true);
+  assert.equal(acknowledgeLockResult(state), true);
+  assert.equal(visitInvestigation(state, caseData, "lenora-quill", 2300), true);
+  assert.equal(followThread(state, caseData, "lenora-quill", 2400), true);
+  assert.equal(followThread(state, caseData, "lenora-quill", 2500), false);
+  assert.equal(state.followThreadUsed, true);
+  assert.equal(
+    state.discoveries.some((item) => item.id === "e-quill-payment"),
+    true,
+  );
   assert.equal(state.leverage, 0);
-  assert.equal(saveLeverage(state, "first-look", 2400), false);
+  assert.equal(saveLeverage(state, "first-look", 2600), false);
+  assert.equal(
+    events(state, "leverage_choice").filter((item) => item.choice === "spend")
+      .length,
+    1,
+  );
   assert.deepEqual(classifyLeverage(state.eventSequence, 1), {
     spent: 1,
     explicitlySaved: 1,
@@ -175,10 +240,12 @@ test("human win can explicitly save once and later spend; zero balance cannot sa
     unused: 0,
   });
   const zero = makeState();
-  spendLeverage(zero, caseData, "follow-the-thread", 100);
   openLockWindow(zero, caseData, 1000);
   resolveLock(zero, caseData, "human-win", 2000);
-  assert.equal(saveLeverage(zero, "first-look", 2100), false);
+  acknowledgeLockResult(zero);
+  assert.equal(visitInvestigation(zero, caseData, "lenora-quill", 2100), true);
+  assert.equal(followThread(zero, caseData, "lenora-quill", 2200), true);
+  assert.equal(saveLeverage(zero, "first-look", 2300), false);
 });
 
 test("rival theory follows authored public evidence and ignores human-private lock facts", () => {

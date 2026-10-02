@@ -67,6 +67,7 @@ export function createInitialState(caseData, options = {}) {
       lastTarget: null,
       peoplePickerOpen: false,
       notice: null,
+      sceneNotice: null,
     },
   };
 }
