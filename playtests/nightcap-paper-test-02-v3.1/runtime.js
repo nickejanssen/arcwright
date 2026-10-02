@@ -351,8 +351,8 @@ export function shouldOpenLockWindow(state, caseData) {
   );
 }
 
-export function openLockWindow(state, nowMs = Date.now()) {
-  if (state.phase !== "investigation" || state.lock.status !== "unavailable")
+export function openLockWindow(state, caseData, nowMs = Date.now()) {
+  if (state.phase !== "investigation" || !shouldOpenLockWindow(state, caseData))
     return false;
   state.phase = "lock";
   state.lock.status = "active";
@@ -373,7 +373,7 @@ export function openLockWindow(state, nowMs = Date.now()) {
 }
 
 export function declineLockWindow(state, caseData, nowMs = Date.now()) {
-  if (state.phase !== "investigation" || state.lock.status !== "unavailable")
+  if (state.phase !== "investigation" || !shouldOpenLockWindow(state, caseData))
     return false;
   state.lock.status = "resolved";
   state.lock.outcome = "declined";

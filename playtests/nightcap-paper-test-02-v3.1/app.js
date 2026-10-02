@@ -350,7 +350,7 @@ function renderInvestigation() {
   if (shouldOpenLockWindow(state, caseData)) {
     app.innerHTML = meta() + lockCallout();
     document.querySelector("#openLock").addEventListener("click", () => {
-      openLockWindow(state);
+      openLockWindow(state, caseData);
       save();
       render();
     });

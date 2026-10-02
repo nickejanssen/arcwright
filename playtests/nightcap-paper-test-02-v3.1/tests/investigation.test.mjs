@@ -23,7 +23,7 @@ function visit(state, target, at) {
   assert.equal(typeof runtime.visitInvestigation, "function");
   assert.equal(runtime.visitInvestigation(state, caseData, target, at), true);
   if (runtime.shouldOpenLockWindow(state, caseData)) {
-    assert.equal(runtime.openLockWindow(state, at + 1), true);
+    assert.equal(runtime.openLockWindow(state, caseData, at + 1), true);
     assert.equal(runtime.resolveLock(state, caseData, "abort", at + 2), true);
     assert.equal(runtime.acknowledgeLockResult(state), true);
   }

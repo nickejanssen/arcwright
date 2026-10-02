@@ -27,13 +27,31 @@ const here = path.dirname(fileURLToPath(import.meta.url));
 const caseData = JSON.parse(
   fs.readFileSync(path.join(here, "..", "case.json"), "utf8"),
 );
-const makeState = () => {
+const makeState = (eligible = true) => {
   const state = createInitialState(caseData, { nowMs: 0, runId: "lock-test" });
   completeOpening(state, 1);
+  if (eligible) {
+    visitInvestigation(state, caseData, "seance-room", 100);
+    visitInvestigation(state, caseData, "gideon-materials", 200);
+  }
   return state;
 };
 const events = (state, type) =>
   state.eventSequence.filter((event) => event.event_type === type);
+
+test("Start and Decline reject a lock window before the authored trigger", () => {
+  const start = makeState(false);
+  const decline = makeState(false);
+  assert.equal(start.majorActions, 0);
+  assert.equal(openLockWindow(start, caseData, 1000), false);
+  assert.equal(declineLockWindow(decline, caseData, 1000), false);
+  for (const state of [start, decline]) {
+    assert.equal(state.lock.status, "unavailable");
+    assert.equal(state.lock.startedAtMs, null);
+    assert.equal(state.discoveries.length, 0);
+    assert.equal(state.eventSequence.length, 1);
+  }
+});
 
 test("ready state is untimed; decline grants public evidence without a minigame", () => {
   const state = makeState();
@@ -53,12 +71,12 @@ test("ready state is untimed; decline grants public evidence without a minigame"
   assert.equal(events(state, "minigame_result").length, 0);
   assert.equal(events(state, "first_look_closed").length, 0);
   assert.equal(deriveTelemetry(state).lock_completion_seconds, "");
-  assert.equal(openLockWindow(state, 92000), false);
+  assert.equal(openLockWindow(state, caseData, 92000), false);
 });
 
 test("the exact rival deadline resolves before a queued pin and only once", () => {
   const state = makeState();
-  openLockWindow(state, 1000);
+  openLockWindow(state, caseData, 1000);
   assert.equal(state.lock.startedAtMs, 1000);
   const first = attemptLockPin(state, caseData, 22, 20000);
   assert.deepEqual(first, {
@@ -76,7 +94,7 @@ test("the exact rival deadline resolves before a queued pin and only once", () =
 
 test("last displayed value wins before the deadline; resume cannot grant a late human win", () => {
   const state = makeState();
-  openLockWindow(state, 1000);
+  openLockWindow(state, caseData, 1000);
   assert.deepEqual(attemptLockPin(state, caseData, 22, 19999), {
     accepted: true,
     outcome: "set",
@@ -94,7 +112,7 @@ test("last displayed value wins before the deadline; resume cannot grant a late 
 
 test("a fourth pin queued at the exact deadline is a rival win", () => {
   const state = makeState();
-  openLockWindow(state, 1000);
+  openLockWindow(state, caseData, 1000);
   for (let pin = 0; pin < 3; pin += 1)
     assert.equal(
       attemptLockPin(
@@ -117,7 +135,7 @@ test("a fourth pin queued at the exact deadline is a rival win", () => {
 test("first look closes on next new investigation or Last Call, not free review", () => {
   const state = makeState();
   state.phase = "investigation";
-  openLockWindow(state, 1000);
+  openLockWindow(state, caseData, 1000);
   resolveLock(state, caseData, "human-win", 2000);
   acknowledgeLockResult(state);
   assert.equal(state.lock.publicReleased, false);
@@ -129,7 +147,7 @@ test("first look closes on next new investigation or Last Call, not free review"
   const second = makeState();
   second.phase = "investigation";
   second.majorActions = 5;
-  openLockWindow(second, 1000);
+  openLockWindow(second, caseData, 1000);
   resolveLock(second, caseData, "human-win", 2000);
   acknowledgeLockResult(second);
   assert.equal(enterLastCall(second, caseData, 3000), true);
@@ -138,7 +156,7 @@ test("first look closes on next new investigation or Last Call, not free review"
 
 test("human win can explicitly save once and later spend; zero balance cannot save", () => {
   const state = makeState();
-  openLockWindow(state, 1000);
+  openLockWindow(state, caseData, 1000);
   resolveLock(state, caseData, "human-win", 2000);
   assert.equal(saveLeverage(state, "first-look", 2100), true);
   assert.equal(saveLeverage(state, "first-look", 2200), false);
@@ -158,7 +176,7 @@ test("human win can explicitly save once and later spend; zero balance cannot sa
   });
   const zero = makeState();
   spendLeverage(zero, caseData, "follow-the-thread", 100);
-  openLockWindow(zero, 1000);
+  openLockWindow(zero, caseData, 1000);
   resolveLock(zero, caseData, "human-win", 2000);
   assert.equal(saveLeverage(zero, "first-look", 2100), false);
 });
@@ -166,8 +184,8 @@ test("human win can explicitly save once and later spend; zero balance cannot sa
 test("rival theory follows authored public evidence and ignores human-private lock facts", () => {
   const human = makeState();
   const rival = makeState();
-  openLockWindow(human, 1000);
-  openLockWindow(rival, 1000);
+  openLockWindow(human, caseData, 1000);
+  openLockWindow(rival, caseData, 1000);
   resolveLock(human, caseData, "human-win", 2000);
   resolveLock(rival, caseData, "rival-win", 2000);
   assert.equal(

@@ -38,7 +38,7 @@ test("Rusk chronology route can solve without Beatrice confrontation testimony",
     const now = 100 + index * 100;
     assert.equal(visitInvestigation(state, caseData, target, now), true);
     if (shouldOpenLockWindow(state, caseData)) {
-      assert.equal(openLockWindow(state, now + 1), true);
+      assert.equal(openLockWindow(state, caseData, now + 1), true);
       assert.equal(resolveLock(state, caseData, "abort", now + 2), true);
       assert.equal(acknowledgeLockResult(state), true);
     }

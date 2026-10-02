@@ -60,6 +60,20 @@ function discovery(id) {
   return all.find((item) => item.id === id);
 }
 
+function makeLockReady(state, nowMs) {
+  for (const target of [
+    "seance-room",
+    "writing-room",
+    "lenora-quill",
+    "edwin-rusk",
+  ]) {
+    if (shouldOpenLockWindow(state, caseData)) return;
+    if (!state.investigatedTargets.includes(target))
+      chooseInvestigation(state, target, nowMs - 1);
+  }
+  assert.equal(shouldOpenLockWindow(state, caseData), true);
+}
+
 test("initial state is versioned, private, and starts with one test-granted Leverage", () => {
   const state = createInitialState(caseData, { nowMs: 1000, runId: "run-1" });
   assert.equal(state.fixtureVersion, "3.1");
@@ -114,7 +128,8 @@ test("human lock win gives private first look then public release without duplic
     runId: "run-human-win",
   });
   completeOpening(state, 1);
-  openLockWindow(state, 1000);
+  makeLockReady(state, 1000);
+  openLockWindow(state, caseData, 1000);
   for (let pin = 0; pin < 4; pin += 1)
     setLockProgress(
       state,
@@ -151,7 +166,8 @@ test("rival win offers meaningful Listen In spend or save", () => {
     runId: "run-rival-spend",
   });
   completeOpening(spendState, 1);
-  openLockWindow(spendState, 1000);
+  makeLockReady(spendState, 1000);
+  openLockWindow(spendState, caseData, 1000);
   resolveLock(spendState, caseData, "rival-win", 5000);
   assert.equal(spendLeverage(spendState, caseData, "listen-in", 5100), true);
   assert.equal(spendState.leverage, 0);
@@ -165,7 +181,8 @@ test("rival win offers meaningful Listen In spend or save", () => {
     runId: "run-rival-save",
   });
   completeOpening(saveState, 1);
-  openLockWindow(saveState, 1000);
+  makeLockReady(saveState, 1000);
+  openLockWindow(saveState, caseData, 1000);
   resolveLock(saveState, caseData, "rival-win", 5000);
   saveLeverage(saveState, "listen-in", 5100);
   assert.equal(saveState.leverage, 1);
@@ -182,7 +199,8 @@ test("break timeout and abort all preserve cylinder access through public fallba
       runId: `run-${outcome}`,
     });
     completeOpening(state, 1);
-    openLockWindow(state, 1000);
+    makeLockReady(state, 1000);
+    openLockWindow(state, caseData, 1000);
     resolveLock(state, caseData, outcome, 3000);
     assert.equal(
       state.discoveries.some((item) => item.id === "e-cylinder-43"),
@@ -200,7 +218,8 @@ test("refresh after lock resolution cannot award a second result", () => {
     runId: "run-refresh-lock",
   });
   completeOpening(state, 1);
-  openLockWindow(state, 1000);
+  makeLockReady(state, 1000);
+  openLockWindow(state, caseData, 1000);
   resolveLock(state, caseData, "human-win", 2000);
   persistState(state, storage);
   const restored = restoreState(caseData, storage);
@@ -294,7 +313,8 @@ test("telemetry derives investigation, inference, lock, return, and same run id"
     "opened",
     2500,
   );
-  openLockWindow(state, 3000);
+  makeLockReady(state, 3000);
+  openLockWindow(state, caseData, 3000);
   resolveLock(state, caseData, "break", 7000);
   acknowledgeLockResult(state);
   chooseInvestigation(state, "lenora-quill", 9000);
@@ -351,7 +371,8 @@ test("lock failure still permits a complete correct reconstruction", () => {
     runId: "run-lock-fallback-solve",
   });
   completeOpening(state, 1);
-  openLockWindow(state, 1000);
+  makeLockReady(state, 1000);
+  openLockWindow(state, caseData, 1000);
   resolveLock(state, caseData, "break", 2000);
   acknowledgeLockResult(state);
   for (const id of [

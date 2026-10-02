@@ -32,7 +32,7 @@ function runVisits(targets, lockOutcome = "abort") {
     const at = 100 + index * 100;
     assert.equal(visitInvestigation(state, caseData, target, at), true, target);
     if (shouldOpenLockWindow(state, caseData)) {
-      assert.equal(openLockWindow(state, at + 1), true);
+      assert.equal(openLockWindow(state, caseData, at + 1), true);
       assert.equal(resolveLock(state, caseData, lockOutcome, at + 2), true);
       assert.equal(acknowledgeLockResult(state), true);
     }
