@@ -155,6 +155,107 @@ test("first look closes on next new investigation or Last Call, not free review"
   assert.equal(events(second, "first_look_closed").length, 1);
 });
 
+test("Last Call shows a one-time release notice only when it closes first look", () => {
+  assert.match(
+    appSource,
+    /querySelector\("#enterLastCall"\)\?\.addEventListener\("click", \(\) => \{\s*enterLastCallWithNotice\(\);/,
+  );
+  const start = appSource.indexOf("function enterLastCallWithNotice() {");
+  const end = appSource.indexOf("\nfunction stopLockTimers()", start);
+  assert.ok(start >= 0 && end > start);
+  const transition = new Function(
+    "state",
+    "caseData",
+    "enterLastCall",
+    "render",
+    "save",
+    `${appSource.slice(start, end)}\nreturn enterLastCallWithNotice();`,
+  );
+  const renderStart = appSource.indexOf("function renderLastCall() {");
+  const renderEnd = appSource.indexOf("\nfunction renderSurvey()", renderStart);
+  assert.ok(renderStart >= 0 && renderEnd > renderStart);
+  const renderHtml = new Function(
+    "state",
+    "caseData",
+    "allEvidence",
+    "app",
+    "document",
+    "meta",
+    "esc",
+    `${appSource.slice(renderStart, renderEnd)}\nrenderLastCall(); return app.innerHTML;`,
+  );
+  const htmlFor = (state) =>
+    renderHtml(
+      state,
+      caseData,
+      () => [],
+      {},
+      {
+        querySelector: () => ({ addEventListener() {} }),
+        querySelectorAll: () => [],
+      },
+      () => "",
+      String,
+    );
+  const run = (state) => {
+    let shown = null;
+    let saved = null;
+    const accepted = transition(
+      state,
+      caseData,
+      enterLastCall,
+      () => {
+        shown = htmlFor(state);
+      },
+      () => {
+        saved = JSON.stringify(state);
+      },
+    );
+    return { accepted, shown, saved };
+  };
+  const privateState = makeState();
+  for (const [index, target] of [
+    "writing-room",
+    "clara-hensley",
+    "beatrice-ashcombe",
+  ].entries())
+    assert.equal(
+      visitInvestigation(privateState, caseData, target, 300 + index * 100),
+      true,
+    );
+  assert.equal(openLockWindow(privateState, caseData, 1000), true);
+  assert.equal(resolveLock(privateState, caseData, "human-win", 2000), true);
+  assert.equal(acknowledgeLockResult(privateState), true);
+  const first = run(privateState);
+  assert.equal(first.accepted, true);
+  assert.match(first.shown, /cylinder 43.*public evidence/i);
+  assert.equal(events(privateState, "first_look_closed").length, 1);
+  assert.doesNotMatch(
+    htmlFor(JSON.parse(first.saved)),
+    /cylinder 43.*public evidence/i,
+  );
+  const repeated = run(privateState);
+  assert.equal(repeated.accepted, false);
+  assert.equal(repeated.shown, null);
+  assert.equal(events(privateState, "first_look_closed").length, 1);
+
+  const publicState = makeState();
+  assert.equal(declineLockWindow(publicState, caseData, 1000), true);
+  for (const [index, target] of [
+    "writing-room",
+    "clara-hensley",
+    "beatrice-ashcombe",
+  ].entries())
+    assert.equal(
+      visitInvestigation(publicState, caseData, target, 1100 + index * 100),
+      true,
+    );
+  const alreadyPublic = run(publicState);
+  assert.equal(alreadyPublic.accepted, true);
+  assert.doesNotMatch(alreadyPublic.shown, /cylinder 43.*public evidence/i);
+  assert.equal(events(publicState, "first_look_closed").length, 0);
+});
+
 test("a public-release notice appears on the newly opened scene and is cleared on return", () => {
   const start = appSource.indexOf("function renderScene() {");
   const end = appSource.indexOf("\nfunction lockCallout()", start);

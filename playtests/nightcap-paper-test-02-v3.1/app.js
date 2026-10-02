@@ -387,10 +387,21 @@ function renderInvestigation() {
     render();
   });
   document.querySelector("#enterLastCall")?.addEventListener("click", () => {
-    enterLastCall(state, caseData);
-    save();
-    render();
+    enterLastCallWithNotice();
   });
+}
+
+function enterLastCallWithNotice() {
+  const releasesCylinder =
+    state.lock.status === "resolved" && !state.lock.publicReleased;
+  if (!enterLastCall(state, caseData)) return false;
+  state.ui.lastCallReleaseNotice = releasesCylinder
+    ? "Rusk opens the strongbox to everyone. Cylinder 43 is now public evidence."
+    : null;
+  render();
+  state.ui.lastCallReleaseNotice = null;
+  save();
+  return true;
 }
 
 function stopLockTimers() {
@@ -568,6 +579,7 @@ function renderLastCall() {
   const evidence = allEvidence();
   app.innerHTML = `
     ${meta()}
+    ${state.ui.lastCallReleaseNotice ? `<div class="notice" role="status">${esc(state.ui.lastCallReleaseNotice)}</div>` : ""}
     <section class="card"><p class="eyebrow">Last Call</p><h2>Lock your theory.</h2><p class="story">Choose the person you believe killed Gideon, then choose four or five facts that best reconstruct what happened. Your rival is locking a theory too. You will not see it first.</p>
       <label for="culpritSelect"><strong>Culprit</strong></label><select id="culpritSelect" class="suspect-select"><option value="">Choose one</option>${caseData.suspects.map((s) => `<option value="${esc(s.id)}" ${state.caseFile.draftCulprit === s.id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select>
       <div class="evidence-grid">${evidence.map((item) => `<label class="evidence-option"><input type="checkbox" name="evidence" value="${esc(item.id)}" ${state.caseFile.draftPieces.includes(item.id) ? "checked" : ""}><span><strong>${esc(item.label)}</strong><br><span class="small">${esc(item.fact)}</span></span></label>`).join("")}</div>
