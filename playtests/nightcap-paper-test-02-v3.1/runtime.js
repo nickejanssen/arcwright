@@ -199,6 +199,9 @@ export function canChallengeClaim(state, caseData, suspectId) {
     state.investigatedTargets.includes(suspectId) &&
     Boolean(conditional) &&
     hasPromptFact(state, conditional.requires_any) &&
+    !(conditional.discoveries ?? []).every((item) =>
+      discoveryOwned(state, item.id),
+    ) &&
     !(state.encounterHistory ?? []).some(
       (item) => item.id === `challenge:${suspectId}`,
     )

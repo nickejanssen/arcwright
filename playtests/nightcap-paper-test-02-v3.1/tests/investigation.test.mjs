@@ -92,6 +92,34 @@ test("earned challenge stays free at cap and cannot grant twice", () => {
   );
 });
 
+test("restored legacy facts block challenge replay without encounter history", () => {
+  const state = fresh();
+  visit(state, "gideon-materials", 100);
+  visit(state, "edwin-rusk", 200);
+  assert.equal(
+    runtime.challengeClaim(state, caseData, "edwin-rusk", 300),
+    true,
+  );
+  delete state.encounterHistory;
+  const saved = JSON.stringify(state);
+  const storage = { getItem: () => saved };
+  const restored = runtime.restoreState(caseData, storage);
+  const before = JSON.stringify(restored.eventSequence);
+  assert.equal(
+    runtime.canChallengeClaim(restored, caseData, "edwin-rusk"),
+    false,
+  );
+  assert.equal(
+    runtime.challengeClaim(restored, caseData, "edwin-rusk", 400),
+    false,
+  );
+  assert.equal(JSON.stringify(restored.eventSequence), before);
+  assert.equal(
+    restored.discoveries.filter((item) => item.id === "e-rusk-sighting").length,
+    1,
+  );
+});
+
 test("single paid follow-up requires its context and remains available at cap", () => {
   const state = fresh();
   assert.equal(typeof runtime.followThread, "function");
