@@ -131,6 +131,16 @@ test("contextual challenge prompts ask without supplying the conclusion", () => 
   assert.match(app, /interview\.conditional\.prompt/);
 });
 
+test("Beatrice challenge uses her stated claim, not unearned whereabouts", () => {
+  const interview = caseData.interviews["beatrice-ashcombe"];
+  assert.match(interview.claim, /saw nothing useful near his room/i);
+  assert.match(
+    interview.conditional.prompt,
+    /what she meant by seeing nothing useful near Gideon's room/i,
+  );
+  assert.doesNotMatch(interview.conditional.prompt, /her time near/i);
+});
+
 test("opening gives the approved invitation without premature evidence", () => {
   const opening = app.slice(
     app.indexOf("function renderOpening()"),

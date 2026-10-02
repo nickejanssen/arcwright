@@ -417,7 +417,7 @@
       ],
       "conditional": {
         "requires_any": ["e-gideon-final-note", "e-clara-lie", "e-bookend"],
-        "prompt": "Ask Beatrice to account for her time near the writing room.",
+        "prompt": "Ask Beatrice what she meant by seeing nothing useful near Gideon's room.",
         "scene": "Beatrice looks toward the door. 'I said I saw nothing useful. I was at his door. I had threatened him already, and I would not explain why I was there.' She sets down her glass. 'I heard Gideon say, ‘You sold my work to a parlour trick.’ Clara answered. Then I heard a heavy impact. I did not see the blow. I saw Clara leave the corridor. Later she was seated with us when his voice came through.'",
         "discoveries": [
           {
