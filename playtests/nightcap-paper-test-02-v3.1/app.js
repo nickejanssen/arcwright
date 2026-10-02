@@ -12,6 +12,7 @@ import {
   declineLockWindow,
   enterLastCall,
   followThread as acquireFollowThread,
+  getVerdictView,
   isRevealMode,
   markComplete,
   markRevealReturn,
@@ -59,6 +60,8 @@ let state;
 let lockFrame = null;
 let lockInterval = null;
 let currentMeterValue = 50;
+let storageAvailable = true;
+let loadAttempts = 0;
 
 function esc(value) {
   return String(value ?? "").replace(
@@ -71,8 +74,9 @@ function esc(value) {
 }
 
 function save() {
-  persistState(state);
+  storageAvailable = persistState(state);
   renderNotebook();
+  return storageAvailable;
 }
 
 function owned(id) {
@@ -120,6 +124,7 @@ function renderNotebook() {
 }
 
 function openNotebook() {
+  if (!state) return;
   notebook.hidden = false;
   notebookButton.setAttribute("aria-expanded", "true");
   renderNotebook();
@@ -133,7 +138,7 @@ notebookButton.addEventListener("click", () =>
 );
 
 function meta() {
-  return `<div class="meta-row"><span class="pill">Rival: <strong>${esc(caseData.rival.name)}</strong></span><span class="pill">Leverage: <strong>${state.leverage}</strong></span><span class="pill">Moves made: <strong>${state.majorActions}/${caseData.investigation.max_major_actions}</strong></span></div>`;
+  return `${storageAvailable ? "" : '<div class="notice" role="status">This is an in-memory session. This browser cannot save it, so refresh and survey return cannot restore your Case File.</div>'}<div class="meta-row"><span class="pill">Rival: <strong>${esc(caseData.rival.name)}</strong></span><span class="pill">Leverage: <strong>${state.leverage}</strong></span><span class="pill">Moves made: <strong>${state.majorActions}/${caseData.investigation.max_major_actions}</strong></span></div>`;
 }
 
 function renderOpening() {
@@ -576,12 +581,13 @@ function renderLock() {
 
 function renderLastCall() {
   const evidence = allEvidence();
+  const selectedCount = state.caseFile.draftPieces.length;
   app.innerHTML = `
     ${meta()}
     ${state.ui.lastCallReleaseNotice ? `<div class="notice" role="status">${esc(state.ui.lastCallReleaseNotice)}</div>` : ""}
-    <section class="card"><p class="eyebrow">Last Call</p><h2>Lock your theory.</h2><p class="story">Choose the person you believe killed Gideon, then choose four or five facts that best reconstruct what happened. Your rival is locking a theory too. You will not see it first.</p>
+    <section class="card"><p class="eyebrow">Last Call</p><h2>Lock your theory.</h2><p class="story">Choose the person you believe killed Gideon, then choose four or five facts that best reconstruct what happened. Your rival is locking a theory too. You will not see it first.</p><p class="small">This Case File is a short fact selection for this paper test. You can review your earned journal without spending a move.</p><button class="ghost-button" id="reviewNotebook" type="button">Review notebook and journal</button>
       <label for="culpritSelect"><strong>Culprit</strong></label><select id="culpritSelect" class="suspect-select"><option value="">Choose one</option>${caseData.suspects.map((s) => `<option value="${esc(s.id)}" ${state.caseFile.draftCulprit === s.id ? "selected" : ""}>${esc(s.name)}</option>`).join("")}</select>
-      <div class="evidence-grid">${evidence.map((item) => `<label class="evidence-option"><input type="checkbox" name="evidence" value="${esc(item.id)}" ${state.caseFile.draftPieces.includes(item.id) ? "checked" : ""}><span><strong>${esc(item.label)}</strong><br><span class="small">${esc(item.fact)}</span></span></label>`).join("")}</div>
+      <p id="selectionCount" class="small" aria-live="polite">${selectedCount} of 4 or 5 facts selected.</p><div class="evidence-grid" role="group" aria-label="Earned facts" aria-describedby="selectionCount">${evidence.map((item) => `<label class="evidence-option"><input type="checkbox" name="evidence" value="${esc(item.id)}" ${state.caseFile.draftPieces.includes(item.id) ? "checked" : ""}><span><strong>${esc(item.label)}</strong><br><span class="small">${esc(item.fact)}</span></span></label>`).join("")}</div>
       <div id="caseFileError" class="small" aria-live="polite"></div>
       <div class="actions"><button class="primary" id="commitTheory" type="button">Commit theory</button></div>
     </section>`;
@@ -591,8 +597,13 @@ function renderLastCall() {
       ...document.querySelectorAll('input[name="evidence"]:checked'),
     ].map((input) => input.value);
     setCaseFileDraft(state, culprit, pieces);
+    document.querySelector("#selectionCount").textContent =
+      `${pieces.length} of 4 or 5 facts selected.`;
     save();
   };
+  document
+    .querySelector("#reviewNotebook")
+    .addEventListener("click", () => openNotebook());
   document
     .querySelector("#culpritSelect")
     .addEventListener("change", persistDraft);
@@ -613,6 +624,9 @@ function renderLastCall() {
       state.rival.accusation = resolveRivalTheory(state, caseData);
       save();
       render();
+    } else {
+      document.querySelector("#caseFileError").textContent =
+        "Choose four or five different facts from your notebook.";
     }
   });
 }
@@ -624,7 +638,7 @@ function renderSurvey() {
   const rivalAccused =
     caseData.suspects.find((s) => s.id === state.rival.accusation)?.name ??
     "Unknown";
-  app.innerHTML = `<section class="card"><p class="eyebrow">The accusations are locked</p><h2>You accused ${esc(playerAccused)}.</h2><p class="story">${esc(caseData.rival.name)} accused ${esc(rivalAccused)}.</p><p class="story">Before the truth is shown, answer the short post-play survey. Your run ID and playtest telemetry will be prefilled into the existing research form.</p><div class="actions"><button class="primary" id="openSurvey" type="button">Open post-play survey</button></div></section>`;
+  app.innerHTML = `<section class="card"><p class="eyebrow">The accusations are locked</p><h2>You accused ${esc(playerAccused)}.</h2><p class="story">${esc(caseData.rival.name)} accused ${esc(rivalAccused)}.</p><p class="story">Before the truth is shown, answer the short post-play survey. Your run ID and playtest telemetry will be prefilled into the existing research form.</p>${storageAvailable ? "" : '<div class="notice" role="status">This browser could not save your Case File. You can continue to the survey, but your individual verdict will be unavailable on return.</div>'}<div class="actions"><button class="primary" id="openSurvey" type="button">Open post-play survey</button></div></section>`;
   document.querySelector("#openSurvey").addEventListener("click", () => {
     markComplete(state);
     markSurveyHandoff(state);
@@ -634,18 +648,14 @@ function renderSurvey() {
 }
 
 function renderReveal() {
-  const solved = state?.caseFile?.correct === true;
-  app.innerHTML = `<section class="card"><p class="eyebrow">The Truth</p><h2>Clara Hensley killed Gideon March.</h2><div class="reveal-list story"><div class="truth-step"><strong>At 11:33</strong><p>Gideon had traced his leaked research to Quill. He confronted Clara in the writing room. She struck him with the brass bookend.</p></div><div class="truth-step"><strong>At 11:47</strong><p>Gideon was already dead. Clara had put his recorded cylinder into Quill's concealed apparatus. Quill played her usual cue, unaware that the voice was Gideon's. Clara sat with the guests while it sounded.</p></div><div class="truth-step"><strong>After the voice</strong><p>Rusk found cylinder 43 and hid it to protect the hotel and Quill's fraud. He did not know whose murder he was concealing.</p></div><div class="truth-step"><strong>The other lies</strong><p>Quill concealed the séance trick. Rusk concealed the cylinder. Beatrice concealed her threats and what she heard at Gideon's door. Their reasons were their own; Clara used the confusion.</p></div></div><hr><h3>The Verdict</h3><p>${solved ? "You named Clara and supported the case with the facts you chose." : "Your committed case missed part of what happened."}</p></section>`;
-  if (state) {
-    markComplete(state);
-    save();
-  }
+  const verdict = getVerdictView(state, caseData);
+  app.innerHTML = `<section class="card"><p class="eyebrow">The Truth</p><h2>Clara Hensley killed Gideon March.</h2><div class="reveal-list story"><div class="truth-step"><strong>At 11:33</strong><p>Gideon had traced his leaked research to Quill. He confronted Clara in the writing room. She struck him with the brass bookend.</p></div><div class="truth-step"><strong>At 11:47</strong><p>Gideon was already dead. Clara had put his recorded cylinder into Quill's concealed apparatus. Quill played her usual cue, unaware that the voice was Gideon's. Clara sat with the guests while it sounded.</p></div><div class="truth-step"><strong>After the voice</strong><p>Rusk found cylinder 43 and hid it to protect the hotel and Quill's fraud. He did not know whose murder he was concealing.</p></div><div class="truth-step"><strong>The other lies</strong><p>Quill concealed the séance trick. Rusk concealed the cylinder. Beatrice concealed her threats and what she heard at Gideon's door. Their reasons were their own; Clara used the confusion.</p></div></div><hr><h3>The Verdict</h3><p>${esc(verdict.message)}</p></section>`;
 }
 
 function render() {
   stopLockTimers();
-  renderNotebook();
   if (isRevealMode()) return renderReveal();
+  renderNotebook();
   if (state.phase === "opening") return renderOpening();
   if (state.phase === "investigation") return renderInvestigation();
   if (state.phase === "lock") return renderLock();
@@ -668,6 +678,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 async function boot() {
+  loadAttempts += 1;
   const response = await fetch("./case.json", { cache: "no-store" });
   if (!response.ok)
     throw new Error(`Could not load case data: ${response.status}`);
@@ -685,15 +696,30 @@ async function boot() {
         : ua.includes("safari")
           ? "safari"
           : "other";
+  const restored = restoreState(caseData);
+  if (isRevealMode()) {
+    state = restored;
+    if (getVerdictView(state, caseData).available) {
+      markRevealReturn(state);
+      save();
+    } else {
+      notebookButton.hidden = true;
+    }
+    render();
+    return;
+  }
   state =
-    restoreState(caseData) ??
-    createInitialState(caseData, { deviceClass, browserClass });
-  if (isRevealMode()) markRevealReturn(state);
+    restored ?? createInitialState(caseData, { deviceClass, browserClass });
   save();
   render();
 }
 
-boot().catch((error) => {
+function showLoadFailure(error) {
   console.error(error);
-  app.innerHTML = `<section class="card"><h2>The case could not be loaded.</h2><p>Reload this page to try again.</p></section>`;
-});
+  app.innerHTML = `<section class="card"><h2>The case could not be loaded.</h2><p>${loadAttempts < 3 ? "Try loading the case again." : "Reload this page to try again."}</p>${loadAttempts < 3 ? '<button class="primary" id="retryCaseLoad" type="button">Retry loading case</button>' : ""}</section>`;
+  document.querySelector("#retryCaseLoad")?.addEventListener("click", () => {
+    boot().catch(showLoadFailure);
+  });
+}
+
+boot().catch(showLoadFailure);

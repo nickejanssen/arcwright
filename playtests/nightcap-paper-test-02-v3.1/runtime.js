@@ -87,29 +87,50 @@ export function recordEvent(state, event, nowMs = Date.now()) {
   return normalized;
 }
 
-export function persistState(
-  state,
-  storage = globalThis.sessionStorage,
-  key = DEFAULT_STORAGE_KEY,
-) {
-  if (!storage?.setItem) return false;
-  storage.setItem(key, JSON.stringify(state));
-  return true;
+export function persistState(state, storage, key = DEFAULT_STORAGE_KEY) {
+  try {
+    const target = storage === undefined ? globalThis.sessionStorage : storage;
+    if (!target?.setItem || !target?.getItem) return false;
+    const serialized = JSON.stringify(state);
+    target.setItem(key, serialized);
+    return target.getItem(key) === serialized;
+  } catch {
+    return false;
+  }
 }
 
-export function restoreState(
-  caseData,
-  storage = globalThis.sessionStorage,
-  key = DEFAULT_STORAGE_KEY,
-) {
-  if (!storage?.getItem) return null;
-  const raw = storage.getItem(key);
-  if (!raw) return null;
+export function restoreState(caseData, storage, key = DEFAULT_STORAGE_KEY) {
   try {
+    const target = storage === undefined ? globalThis.sessionStorage : storage;
+    if (!target?.getItem) return null;
+    const raw = target.getItem(key);
+    if (!raw) return null;
     const parsed = JSON.parse(raw);
     if (
+      !parsed ||
       parsed.fixtureId !== caseData.fixture_id ||
-      parsed.fixtureVersion !== caseData.fixture_version
+      parsed.fixtureVersion !== caseData.fixture_version ||
+      typeof parsed.runId !== "string" ||
+      !parsed.runId ||
+      ![
+        "opening",
+        "investigation",
+        "lock",
+        "last-call",
+        "survey",
+        "reveal",
+      ].includes(parsed.phase) ||
+      !Array.isArray(parsed.eventSequence) ||
+      !Array.isArray(parsed.discoveries) ||
+      !Array.isArray(parsed.privateDiscoveries) ||
+      !Array.isArray(parsed.investigatedTargets) ||
+      !parsed.caseFile ||
+      !Array.isArray(parsed.caseFile.draftPieces) ||
+      !parsed.lock ||
+      !parsed.rival ||
+      !parsed.ui ||
+      (["survey", "reveal"].includes(parsed.phase) &&
+        !getVerdictView(parsed, caseData).available)
     )
       return null;
     return parsed;
@@ -654,16 +675,25 @@ export function ownedEvidenceIds(state) {
 
 export function setCaseFileDraft(state, culpritId, pieceIds) {
   if (state.phase !== "last-call" || state.caseFile.lockedAt) return false;
+  if (!Array.isArray(pieceIds)) return false;
   state.caseFile.draftCulprit = culpritId || null;
   state.caseFile.draftPieces = [...new Set(pieceIds)];
   return true;
 }
 
 export function evaluateCaseFile(state, caseData, culpritId, pieceIds) {
+  if (!Array.isArray(pieceIds))
+    return { correct: false, reason: "choose-four-or-five" };
   const owned = ownedEvidenceIds(state);
   const uniquePieces = [...new Set(pieceIds)];
-  if (uniquePieces.length < 4 || uniquePieces.length > 5)
+  if (
+    pieceIds.length < 4 ||
+    pieceIds.length > 5 ||
+    uniquePieces.length !== pieceIds.length
+  )
     return { correct: false, reason: "choose-four-or-five" };
+  if (!caseData.suspects.some((suspect) => suspect.id === culpritId))
+    return { correct: false, reason: "choose-culprit" };
   if (uniquePieces.some((id) => !owned.has(id)))
     return { correct: false, reason: "unowned-evidence" };
   if (culpritId !== caseData.culprit_id)
@@ -679,6 +709,75 @@ export function evaluateCaseFile(state, caseData, culpritId, pieceIds) {
   return { correct: true, reason: "solved" };
 }
 
+export function getVerdictView(state, caseData) {
+  const unavailable = {
+    available: false,
+    correct: null,
+    reason: null,
+    message:
+      "Your saved Case File is unavailable, so your individual verdict cannot be shown.",
+  };
+  const file = state?.caseFile;
+  if (
+    state?.fixtureId !== caseData.fixture_id ||
+    state?.fixtureVersion !== caseData.fixture_version ||
+    !file?.lockedAt ||
+    !Number.isFinite(Date.parse(file.lockedAt)) ||
+    !Array.isArray(file.pieces) ||
+    !Array.isArray(state.discoveries) ||
+    !Array.isArray(state.privateDiscoveries) ||
+    !Array.isArray(state.eventSequence) ||
+    [...state.discoveries, ...state.privateDiscoveries].some(
+      (item) => !item || typeof item.id !== "string",
+    ) ||
+    state.eventSequence.some((event) => !event || typeof event !== "object") ||
+    !state.eventSequence.some(
+      (event) =>
+        event.event_type === "case_file_commitment" &&
+        event.target === file.culprit &&
+        event.outcome === (file.correct ? "solved" : "not-solved"),
+    ) ||
+    file.pieces.some(
+      (id) =>
+        !state.eventSequence.some(
+          (event) => event.event_type === "discovery" && event.target === id,
+        ),
+    )
+  )
+    return unavailable;
+  const actual = evaluateCaseFile(state, caseData, file.culprit, file.pieces);
+  if (
+    ["choose-four-or-five", "choose-culprit", "unowned-evidence"].includes(
+      actual.reason,
+    ) ||
+    actual.correct !== file.correct ||
+    actual.reason !== file.reason
+  )
+    return unavailable;
+  const reasons = {
+    solved:
+      "You named Clara and connected the false recording, Gideon's earlier death, the leak, and Clara's staging.",
+    "wrong-culprit":
+      "The facts you chose did not change who killed Gideon. Clara struck him before the recorded voice played.",
+    "missing-t1-false-voice":
+      "Your Case File did not establish that the later voice came from a recording.",
+    "missing-t2-before-voice":
+      "Your Case File did not establish that Gideon died before the later voice was heard.",
+    "missing-t3-leak-motive":
+      "Your Case File did not connect the leaked research to the confrontation.",
+    "missing-t4-clara-staging":
+      "Your Case File did not connect Clara to staging the later voice.",
+  };
+  return {
+    available: true,
+    correct: actual.correct,
+    reason: actual.reason,
+    message:
+      reasons[actual.reason] ??
+      "Your Case File did not establish the full reconstruction.",
+  };
+}
+
 export function commitCaseFile(
   state,
   caseData,
@@ -688,6 +787,12 @@ export function commitCaseFile(
 ) {
   if (state.phase !== "last-call" || state.caseFile.lockedAt) return false;
   const verdict = evaluateCaseFile(state, caseData, culpritId, pieceIds);
+  if (
+    ["choose-four-or-five", "choose-culprit", "unowned-evidence"].includes(
+      verdict.reason,
+    )
+  )
+    return false;
   state.caseFile = {
     culprit: culpritId,
     pieces: [...pieceIds],
@@ -730,7 +835,7 @@ export function markRevealReturn(state, nowMs = Date.now()) {
 }
 
 export function markComplete(state, nowMs = Date.now()) {
-  if (state.completedAt) return false;
+  if (state.completedAt || state.completionStatus === "abandoned") return false;
   state.completedAt = new Date(nowMs).toISOString();
   state.completionStatus = "completed";
   recordEvent(state, { event_type: "completion" }, nowMs);
@@ -738,7 +843,7 @@ export function markComplete(state, nowMs = Date.now()) {
 }
 
 export function markAbandoned(state, point, nowMs = Date.now()) {
-  if (state.completionStatus === "completed") return false;
+  if (state.completionStatus !== "in-progress") return false;
   state.completionStatus = "abandoned";
   state.abandonmentPoint = point;
   recordEvent(state, { event_type: "abandonment", target: point }, nowMs);
