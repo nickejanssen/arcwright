@@ -2,29 +2,33 @@
 import {
   acknowledgeLockResult,
   buildSurveyUrl,
+  canChallengeClaim,
   canEnterLastCall,
-  chooseInvestigation,
+  canFollowThread,
+  challengeClaim,
   commitCaseFile,
   completeOpening,
   createInitialState,
   enterLastCall,
+  followThread as acquireFollowThread,
   isRevealMode,
   markComplete,
   markRevealReturn,
   markSurveyHandoff,
   openLockWindow,
   persistState,
-  recordDiscovery,
-  recordInferenceAction,
+  reviewEncounter,
   releaseCylinderPublicly,
   resolveLock,
   restoreState,
   saveLeverage,
   setCaseFileDraft,
+  setPrivateNotes,
   setLockProgress,
   shouldOpenLockWindow,
   spendLeverage,
   triggerRivalActivity,
+  visitInvestigation,
 } from "./runtime.js";
 
 function sanitizedHtmlTarget(element) {
@@ -87,14 +91,31 @@ function allEvidence() {
 
 function renderNotebook() {
   const facts = allEvidence();
+  const encounters = state.encounterHistory ?? [];
+  const notes = state.privateNotes ?? "";
   notebook.innerHTML = `
     <div class="close-row"><h2>Detective notebook</h2><button class="ghost-button" id="closeNotebook" type="button">Close</button></div>
     <p class="small">This remembers what you actually encountered. It does not tell you what matters.</p>
     ${facts.length ? `<ul class="fact-list">${facts.map((item) => `<li class="fact"><strong>${esc(item.label)}</strong><div>${esc(item.fact)}</div><small>${esc(item.source)}${state.privateDiscoveries.some((privateItem) => privateItem.id === item.id) ? " · private for now" : ""}</small></li>`).join("")}</ul>` : `<p class="small">Nothing recorded yet.</p>`}
+    <h3>Encounter journal</h3>
+    ${encounters.length ? encounters.map((item) => `<section class="fact"><strong>${esc(labelForTarget(item.targetId))}</strong><small> · ${esc(item.kind)}</small><p>${esc(item.scene)}</p></section>`).join("") : `<p class="small">No encounters yet.</p>`}
+    <label for="privateNotes"><strong>Private notes</strong></label>
+    <textarea id="privateNotes" maxlength="500" rows="5" aria-describedby="notesLimit">${esc(notes)}</textarea>
+    <p class="small" id="notesLimit">Your own notes stay on this device and do not count as evidence. <span id="notesCount">${Array.from(notes).length}</span>/500 characters.</p>
   `;
   notebook
     .querySelector("#closeNotebook")
     ?.addEventListener("click", closeNotebook);
+  notebook
+    .querySelector("#privateNotes")
+    ?.addEventListener("input", (event) => {
+      const stored = setPrivateNotes(state, event.target.value);
+      event.target.value = stored;
+      notebook.querySelector("#notesCount").textContent = String(
+        Array.from(stored).length,
+      );
+      persistState(state);
+    });
 }
 
 function openNotebook() {
@@ -111,7 +132,7 @@ notebookButton.addEventListener("click", () =>
 );
 
 function meta() {
-  return `<div class="meta-row"><span class="pill">Rival: <strong>${esc(caseData.rival.name)}</strong></span><span class="pill">Leverage: <strong>${state.leverage}</strong></span><span class="pill">Moves made: <strong>${state.majorActions}</strong></span></div>`;
+  return `<div class="meta-row"><span class="pill">Rival: <strong>${esc(caseData.rival.name)}</strong></span><span class="pill">Leverage: <strong>${state.leverage}</strong></span><span class="pill">Moves made: <strong>${state.majorActions}/${caseData.investigation.max_major_actions}</strong></span></div>`;
 }
 
 function renderOpening() {
@@ -162,10 +183,6 @@ function labelForTarget(id) {
   return route?.label ?? suspect?.name ?? id;
 }
 
-function addDiscoveries(items, visibility = "public") {
-  for (const item of items ?? []) recordDiscovery(state, item, { visibility });
-}
-
 function consumeFirstLookTurnIfNeeded() {
   if (state.lock.status === "resolved" && !state.lock.publicReleased) {
     state.lock.postResultActions = (state.lock.postResultActions ?? 0) + 1;
@@ -175,11 +192,10 @@ function consumeFirstLookTurnIfNeeded() {
 }
 
 function visitRoute(routeId) {
-  if (!chooseInvestigation(state, routeId)) return;
-  const route = caseData.investigation.routes[routeId];
-  addDiscoveries(route.discoveries);
+  if (!visitInvestigation(state, caseData, routeId)) return;
   state.ui.lastTarget = routeId;
-  state.ui.lastScene = route.scene;
+  state.ui.lastEncounterId = `route:${routeId}`;
+  state.ui.lastScene = reviewEncounter(state, state.ui.lastEncounterId).scene;
   state.ui.peoplePickerOpen = false;
   rivalBeatAfterAction();
   consumeFirstLookTurnIfNeeded();
@@ -188,71 +204,52 @@ function visitRoute(routeId) {
 }
 
 function visitInterview(suspectId, isRevisit = false) {
-  const interview = caseData.interviews[suspectId];
-  if (!isRevisit && !state.investigatedTargets.includes(suspectId)) {
-    chooseInvestigation(state, suspectId);
-    addDiscoveries(interview.discoveries);
+  if (!isRevisit) {
+    if (!visitInvestigation(state, caseData, suspectId)) return;
     rivalBeatAfterAction();
     consumeFirstLookTurnIfNeeded();
+  } else if (!state.investigatedTargets.includes(suspectId)) {
+    return;
   }
   state.ui.lastTarget = suspectId;
-  state.ui.lastScene = `${interview.opening}\n\n${interview.claim}`;
+  state.ui.lastEncounterId = `interview:${suspectId}`;
+  const interview = caseData.interviews[suspectId];
+  state.ui.lastScene =
+    reviewEncounter(state, state.ui.lastEncounterId)?.scene ??
+    `${interview.opening}\n\n${interview.claim}`;
   state.ui.peoplePickerOpen = false;
   save();
   render();
 }
 
-function conditionalAvailable(interview) {
-  const conditional = interview.conditional;
-  if (!conditional) return false;
-  const already = (conditional.discoveries ?? []).every((item) =>
-    owned(item.id),
-  );
-  if (already) return false;
-  return (conditional.requires_any ?? []).some((id) => owned(id));
-}
-
 function challengeInterview(suspectId) {
-  const interview = caseData.interviews[suspectId];
-  if (!conditionalAvailable(interview)) return;
-  recordInferenceAction(state, suspectId, "challenge-claim", "new-testimony");
-  addDiscoveries(interview.conditional.discoveries);
-  state.ui.lastScene = `${interview.conditional.scene}`;
-  if (interview.conditional.unlocks?.includes("locked-box-trigger"))
+  if (!challengeClaim(state, caseData, suspectId)) return;
+  state.ui.lastEncounterId = `challenge:${suspectId}`;
+  state.ui.lastScene = reviewEncounter(state, state.ui.lastEncounterId).scene;
+  if (
+    caseData.interviews[suspectId].conditional.unlocks?.includes(
+      "locked-box-trigger",
+    )
+  )
     state.ui.notice = "Rusk has now admitted he locked Gideon's cylinder away.";
   save();
   render();
 }
 
 function followThread(suspectId) {
-  const interview = caseData.interviews[suspectId];
-  const follow = interview.follow_thread;
-  if (!follow || owned(follow.discovery.id) || state.leverage < 1) return;
-  if (!spendLeverage(state, caseData, "follow-the-thread")) return;
-  recordInferenceAction(
-    state,
-    suspectId,
-    "follow-the-thread",
-    follow.discovery.id,
-  );
-  recordDiscovery(state, follow.discovery);
-  state.ui.lastScene = follow.scene;
+  if (!acquireFollowThread(state, caseData, suspectId)) return;
+  state.ui.lastEncounterId = `follow:${suspectId}`;
+  state.ui.lastScene = reviewEncounter(state, state.ui.lastEncounterId).scene;
   save();
   render();
 }
 
 function renderPeoplePicker() {
+  const maxed = state.majorActions >= caseData.investigation.max_major_actions;
   const buttons = caseData.suspects
     .map((suspect) => {
       const investigated = state.investigatedTargets.includes(suspect.id);
-      const interview = caseData.interviews[suspect.id];
-      const revisit =
-        investigated &&
-        (conditionalAvailable(interview) ||
-          (!owned(interview.follow_thread?.discovery?.id) &&
-            state.leverage > 0));
-      const disabled = investigated && !revisit;
-      return `<button class="choice" data-suspect="${esc(suspect.id)}" data-revisit="${revisit ? "1" : "0"}" ${disabled ? "disabled" : ""}><strong>${revisit ? "Revisit " : ""}${esc(suspect.name)}</strong><span>${esc(suspect.role)}</span></button>`;
+      return `<button class="choice" data-suspect="${esc(suspect.id)}" data-revisit="${investigated ? "1" : "0"}" ${maxed && !investigated ? "disabled" : ""}><strong>${investigated ? "Revisit " : "Question "}${esc(suspect.name)}</strong><span>${esc(suspect.public_hook)}</span><small>${investigated ? "Free review and earned questions" : "Costs 1 investigation"}</small></button>`;
     })
     .join("");
   return `<section class="card"><h2>Who do you want to question?</h2><div class="choice-grid">${buttons}</div><div class="actions"><button class="secondary" id="cancelPeople" type="button">Back</button></div></section>`;
@@ -261,20 +258,27 @@ function renderPeoplePicker() {
 function renderScene() {
   const target = state.ui.lastTarget;
   const interview = caseData.interviews[target];
+  const encounter = reviewEncounter(state, state.ui.lastEncounterId);
   let extra = "";
   if (interview) {
-    if (conditionalAvailable(interview))
-      extra += `<button class="secondary" id="challengeClaim" type="button">Challenge that claim</button>`;
+    if (canChallengeClaim(state, caseData, target))
+      extra += `<button class="secondary" id="challengeClaim" type="button">Ask about the contradiction (free)</button>`;
     const follow = interview.follow_thread;
-    if (follow && !owned(follow.discovery.id) && state.leverage > 0)
+    if (canFollowThread(state, caseData, target))
       extra += `<button class="secondary" id="followThread" type="button">Spend 1 Leverage: ${esc(follow.prompt)}</button>`;
   }
+  const learned = (encounter?.discoveryIds ?? [])
+    .map((id) => allEvidence().find((item) => item.id === id))
+    .filter(Boolean);
+  const suspectHistory = interview
+    ? (state.encounterHistory ?? []).filter((item) => item.targetId === target)
+    : [];
   return `<section class="card"><p class="eyebrow">${esc(labelForTarget(target))}</p><div class="story">${state.ui.lastScene
     .split("\n\n")
     .map((p) => `<p>${esc(p)}</p>`)
     .join(
       "",
-    )}</div><div class="actions">${extra}<button class="primary" id="backToCase" type="button">Back to the case</button></div></section>`;
+    )}</div>${learned.length ? `<div class="notice"><strong>Recorded from this encounter</strong><ul>${learned.map((item) => `<li>${esc(item.label)}: ${esc(item.fact)}</li>`).join("")}</ul></div>` : ""}${suspectHistory.length > 1 ? `<details><summary>Review earned history with ${esc(labelForTarget(target))}</summary>${suspectHistory.map((item) => `<p class="small">${esc(item.scene)}</p>`).join("")}</details>` : ""}<div class="actions">${extra}<button class="primary" id="backToCase" type="button">Back to the case</button></div></section>`;
 }
 
 function lockCallout() {
@@ -283,29 +287,24 @@ function lockCallout() {
 }
 
 function renderInvestigationMenu() {
-  const maxed = state.majorActions >= 6;
+  const maxed = state.majorActions >= caseData.investigation.max_major_actions;
   const locationButtons = caseData.investigation.opening_opportunities
     .filter((item) => item.id !== "people")
     .map((item) => {
       const done = state.investigatedTargets.includes(item.id);
-      return `<button class="choice" data-route="${esc(item.id)}" ${done || maxed ? "disabled" : ""}><strong>${done ? "Visited: " : ""}${esc(item.label)}</strong><span>${done ? "You already searched this route." : esc(item.description)}</span></button>`;
+      return `<button class="choice" data-route="${esc(item.id)}" ${done || maxed ? "disabled" : ""}><strong>${done ? "Visited: " : ""}${esc(item.label)}</strong><span>${done ? "Review in your notebook." : esc(item.description)}</span><small>${done ? "Free review" : "Costs 1 investigation"}</small></button>`;
     })
     .join("");
-  const peopleAvailable = caseData.suspects.some((suspect) => {
-    const interview = caseData.interviews[suspect.id];
-    return (
-      !state.investigatedTargets.includes(suspect.id) ||
-      conditionalAvailable(interview) ||
-      (!owned(interview.follow_thread?.discovery?.id) && state.leverage > 0)
-    );
-  });
+  const peopleAvailable = caseData.suspects.some(
+    (suspect) => state.investigatedTargets.includes(suspect.id) || !maxed,
+  );
   const lastCall = canEnterLastCall(state, caseData)
-    ? `<section class="card"><p class="eyebrow">Last Call is open</p><h2>You have enough time for ${state.majorActions >= 6 ? "no more detours" : "one final move, if you want it"}.</h2><p class="story">When you are ready, lock your theory. Nobody gets to revise it after seeing what the other detective chose.</p><div class="actions"><button class="primary" id="enterLastCall" type="button">Lock my theory</button></div></section>`
+    ? `<section class="card"><p class="eyebrow">Last Call is open</p><h2>You have enough time for ${maxed ? "no more detours" : "one final move, if you want it"}.</h2><p class="story">Earned questions and the one paid follow-up remain available until you enter Last Call. Nobody gets to revise a locked theory.</p><div class="actions"><button class="primary" id="enterLastCall" type="button">Lock my theory</button></div></section>`
     : "";
   return `
     ${meta()}
     ${state.ui.notice ? `<div class="notice rival"><strong>Rival activity:</strong> ${esc(state.ui.notice)}</div>` : ""}
-    <section class="card"><h2>Your next move</h2><p class="small">Follow what interests you. The notebook keeps facts, not conclusions.</p><div class="choice-grid">${locationButtons}<button class="choice" id="peopleChoice" ${!peopleAvailable || maxed ? "disabled" : ""}><strong>Question Someone</strong><span>Clara, Quill, Rusk, or Beatrice.</span></button></div></section>
+    <section class="card"><h2>Your next move</h2><p class="small">New places and people cost one investigation. Last Call opens after five; the sixth is your final new investigation. Review and earned questions are free. The notebook keeps facts, not conclusions.</p><div class="choice-grid">${locationButtons}<button class="choice" id="peopleChoice" ${!peopleAvailable ? "disabled" : ""}><strong>Question Someone</strong><span>Clara, Quill, Rusk, or Beatrice.</span><small>New person: 1 investigation. Revisit: free.</small></button></div></section>
     ${lastCall}`;
 }
 

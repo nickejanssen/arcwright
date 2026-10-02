@@ -28,6 +28,8 @@ export function createInitialState(caseData, options = {}) {
     investigatedTargets: [],
     discoveries: [],
     privateDiscoveries: [],
+    encounterHistory: [],
+    privateNotes: "",
     leverage: caseData.leverage.starting_amount,
     followThreadUsed: false,
     rival: {
@@ -120,8 +122,14 @@ export function completeOpening(state, nowMs = Date.now()) {
   return true;
 }
 
-export function chooseInvestigation(state, targetId, nowMs = Date.now()) {
+export function chooseInvestigation(
+  state,
+  targetId,
+  nowMs = Date.now(),
+  maxActions = 6,
+) {
   if (state.phase !== "investigation") return false;
+  if (state.majorActions >= maxActions) return false;
   if (state.investigatedTargets.includes(targetId)) return false;
   state.investigatedTargets.push(targetId);
   state.majorActions += 1;
@@ -130,6 +138,127 @@ export function chooseInvestigation(state, targetId, nowMs = Date.now()) {
     { event_type: "investigation_choice", target: targetId, choice: targetId },
     nowMs,
   );
+  return true;
+}
+
+function appendEncounter(state, encounter) {
+  state.encounterHistory ??= [];
+  if (state.encounterHistory.some((item) => item.id === encounter.id))
+    return false;
+  state.encounterHistory.push(clone(encounter));
+  return true;
+}
+
+export function reviewEncounter(state, encounterId) {
+  const encounter = (state.encounterHistory ?? []).find(
+    (item) => item.id === encounterId,
+  );
+  return encounter ? clone(encounter) : null;
+}
+
+export function setPrivateNotes(state, text) {
+  state.privateNotes = Array.from(String(text ?? ""))
+    .slice(0, 500)
+    .join("");
+  return state.privateNotes;
+}
+
+export function visitInvestigation(
+  state,
+  caseData,
+  targetId,
+  nowMs = Date.now(),
+) {
+  const route = caseData.investigation.routes[targetId];
+  const interview = caseData.interviews[targetId];
+  if (!route && !interview) return false;
+  const maxActions = caseData.investigation.max_major_actions ?? 6;
+  if (!chooseInvestigation(state, targetId, nowMs, maxActions)) return false;
+  const scene = route?.scene ?? `${interview.opening}\n\n${interview.claim}`;
+  const discoveries = route?.discoveries ?? interview.discoveries ?? [];
+  for (const discovery of discoveries)
+    recordDiscovery(state, discovery, {}, nowMs);
+  appendEncounter(state, {
+    id: `${route ? "route" : "interview"}:${targetId}`,
+    targetId,
+    kind: route ? "route" : "interview",
+    scene,
+    discoveryIds: discoveries.map((item) => item.id),
+  });
+  return true;
+}
+
+function hasPromptFact(state, requiresAny) {
+  return (requiresAny ?? []).some((id) => discoveryOwned(state, id));
+}
+
+export function canChallengeClaim(state, caseData, suspectId) {
+  const conditional = caseData.interviews[suspectId]?.conditional;
+  return (
+    state.phase === "investigation" &&
+    state.investigatedTargets.includes(suspectId) &&
+    Boolean(conditional) &&
+    hasPromptFact(state, conditional.requires_any) &&
+    !(state.encounterHistory ?? []).some(
+      (item) => item.id === `challenge:${suspectId}`,
+    )
+  );
+}
+
+export function challengeClaim(state, caseData, suspectId, nowMs = Date.now()) {
+  if (!canChallengeClaim(state, caseData, suspectId)) return false;
+  const conditional = caseData.interviews[suspectId].conditional;
+  recordInferenceAction(
+    state,
+    suspectId,
+    "challenge-claim",
+    "new-testimony",
+    nowMs,
+  );
+  for (const discovery of conditional.discoveries ?? [])
+    recordDiscovery(state, discovery, {}, nowMs);
+  appendEncounter(state, {
+    id: `challenge:${suspectId}`,
+    targetId: suspectId,
+    kind: "challenge",
+    scene: conditional.scene,
+    discoveryIds: (conditional.discoveries ?? []).map((item) => item.id),
+  });
+  return true;
+}
+
+export function canFollowThread(state, caseData, suspectId) {
+  const follow = caseData.interviews[suspectId]?.follow_thread;
+  return (
+    state.phase === "investigation" &&
+    state.investigatedTargets.includes(suspectId) &&
+    Boolean(follow) &&
+    state.leverage >= 1 &&
+    !state.followThreadUsed &&
+    !discoveryOwned(state, follow.discovery.id) &&
+    hasPromptFact(state, follow.requires_any)
+  );
+}
+
+export function followThread(state, caseData, suspectId, nowMs = Date.now()) {
+  if (!canFollowThread(state, caseData, suspectId)) return false;
+  const follow = caseData.interviews[suspectId].follow_thread;
+  if (!spendLeverage(state, caseData, "follow-the-thread", nowMs)) return false;
+  recordInferenceAction(
+    state,
+    suspectId,
+    "follow-the-thread",
+    follow.discovery.id,
+    nowMs,
+  );
+  recordDiscovery(state, follow.discovery, {}, nowMs);
+  appendEncounter(state, {
+    id: `follow:${suspectId}`,
+    targetId: suspectId,
+    kind: "follow",
+    scene: follow.scene,
+    discoveryIds: [follow.discovery.id],
+  });
   return true;
 }
 

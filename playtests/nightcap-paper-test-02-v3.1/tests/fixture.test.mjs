@@ -77,6 +77,50 @@ test("case file requires causal evidence, not culprit-only guessing", () => {
   }
 });
 
+test("investigation cap and contextual follow-ups are declared in case data", () => {
+  assert.equal(caseData.investigation.last_call_min_actions, 5);
+  assert.equal(caseData.investigation.max_major_actions, 6);
+  const earnedFacts = new Set([
+    ...Object.values(caseData.investigation.routes).flatMap((route) =>
+      route.discoveries.map((item) => item.id),
+    ),
+    ...Object.values(caseData.interviews).flatMap((interview) => [
+      ...interview.discoveries.map((item) => item.id),
+      ...(interview.conditional?.discoveries ?? []).map((item) => item.id),
+    ]),
+  ]);
+  for (const [id, interview] of Object.entries(caseData.interviews)) {
+    assert.ok(
+      interview.follow_thread.requires_any?.length,
+      `${id} needs a prompt context`,
+    );
+    for (const factId of interview.follow_thread.requires_any)
+      assert.ok(
+        earnedFacts.has(factId),
+        `${id} prompt refers to an unavailable fact`,
+      );
+  }
+});
+
+test("existing initial fact grants are stated in the encountered source", () => {
+  assert.match(
+    caseData.investigation.routes["gideon-materials"].scene,
+    /Clara Hensley's transcription initials/,
+  );
+  assert.match(
+    caseData.interviews["clara-hensley"].opening,
+    /transcribed cylinder 43/,
+  );
+  assert.match(
+    caseData.interviews["beatrice-ashcombe"].opening,
+    /giving Quill letters/,
+  );
+  for (const suspect of caseData.suspects) {
+    assert.ok(suspect.public_hook);
+    assert.ok(!suspect.public_hook.includes(suspect.secret));
+  }
+});
+
 test("all referenced evidence IDs exist in the authored case", () => {
   const evidence = new Set([
     ...Object.values(caseData.investigation.routes)

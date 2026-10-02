@@ -34,17 +34,9 @@
       "role": "Trance medium",
       "public_hook": "A celebrated medium whose control of the room cracked the instant Gideon's voice came through her own trumpet.",
       "secret": "Her séances are fraudulent; she uses a concealed playback/acoustic route and receives private client information in advance.",
-      "knows": [
-        "quill_apparatus",
-        "clara_supplied_some_material"
-      ],
-      "believes": [
-        "gideon_alive_during_voice"
-      ],
-      "lies": [
-        "apparatus_is_spiritual",
-        "no_advance_information"
-      ]
+      "knows": ["quill_apparatus", "clara_supplied_some_material"],
+      "believes": ["gideon_alive_during_voice"],
+      "lies": ["apparatus_is_spiritual", "no_advance_information"]
     },
     {
       "id": "edwin-rusk",
@@ -57,9 +49,7 @@
         "cylinder_43_found_after_seance",
         "locked_box_location"
       ],
-      "believes": [
-        "gideon_caused_voice_stunt"
-      ],
+      "believes": ["gideon_caused_voice_stunt"],
       "lies": [
         "never_touched_apparatus_after_seance",
         "no_knowledge_of_quill_fraud"
@@ -76,10 +66,7 @@
         "heard_confrontation",
         "saw_clara_leave_corridor"
       ],
-      "lies": [
-        "no_argument_with_gideon",
-        "saw_nothing_near_writing_room"
-      ]
+      "lies": ["no_argument_with_gideon", "saw_nothing_near_writing_room"]
     }
   ],
   "canonical_timeline": [
@@ -129,60 +116,28 @@
       "id": "t1-false-voice",
       "text": "The later voice attributed to Gideon was a prerecorded cylinder played through Quill's fraudulent apparatus.",
       "routes": [
-        [
-          "e-cylinder-transcript",
-          "e-service-route"
-        ],
-        [
-          "e-cylinder-43",
-          "e-quill-cue-sheet"
-        ],
-        [
-          "e-cylinder-43",
-          "e-quill-admission"
-        ]
+        ["e-cylinder-transcript", "e-service-route"],
+        ["e-cylinder-43", "e-quill-cue-sheet"],
+        ["e-cylinder-43", "e-quill-admission"]
       ]
     },
     {
       "id": "t2-before-voice",
       "text": "Gideon was killed before the séance voice was heard.",
       "routes": [
-        [
-          "e-beatrice-impact",
-          "e-cylinder-transcript"
-        ],
-        [
-          "e-beatrice-sighting",
-          "e-cylinder-transcript"
-        ],
-        [
-          "e-rusk-sighting",
-          "e-cylinder-transcript"
-        ],
-        [
-          "e-beatrice-impact",
-          "e-cylinder-43"
-        ],
-        [
-          "e-rusk-sighting",
-          "e-cylinder-43"
-        ]
+        ["e-beatrice-impact", "e-cylinder-transcript"],
+        ["e-beatrice-sighting", "e-cylinder-transcript"],
+        ["e-rusk-sighting", "e-cylinder-transcript"],
+        ["e-beatrice-impact", "e-cylinder-43"],
+        ["e-rusk-sighting", "e-cylinder-43"]
       ]
     },
     {
       "id": "t3-leak-motive",
       "text": "Clara had been feeding Gideon's confidential research into Quill's performances, and Gideon discovered it.",
       "routes": [
-        [
-          "e-quill-payment",
-          "e-private-detail-match",
-          "e-gideon-final-note"
-        ],
-        [
-          "e-quill-payment",
-          "e-private-detail-match",
-          "e-clara-access"
-        ]
+        ["e-quill-payment", "e-private-detail-match", "e-gideon-final-note"],
+        ["e-quill-payment", "e-private-detail-match", "e-clara-access"]
       ]
     },
     {
@@ -229,6 +184,7 @@
     ],
     "major_action_target": 5,
     "last_call_min_actions": 5,
+    "max_major_actions": 6,
     "routes": {
       "writing-room": {
         "scene": "Gideon's chair lies on its side beside the writing desk. A heavy brass bookend has been set back crookedly, leaving a clean rectangle in the dust beneath it. A fresh carbon sheet in the wastebasket carries one incomplete typed line: 'After Quill, Hensley.'",
@@ -238,63 +194,44 @@
             "label": "Displaced bookend",
             "fact": "A heavy brass bookend was moved and replaced recently.",
             "source": "Writing Room",
-            "truths": [
-              "t4-clara-staging"
-            ]
+            "truths": ["t4-clara-staging"]
           },
           {
             "id": "e-gideon-final-note",
             "label": "Gideon's unfinished note",
             "fact": "Gideon's last typed line reads: 'After Quill, Hensley.'",
             "source": "Writing Room",
-            "truths": [
-              "t3-leak-motive",
-              "t4-clara-staging"
-            ]
+            "truths": ["t3-leak-motive", "t4-clara-staging"]
           }
         ],
-        "unlocks": [
-          "beatrice-ashcombe",
-          "clara-hensley"
-        ]
+        "unlocks": ["beatrice-ashcombe", "clara-hensley"]
       },
       "gideon-materials": {
-        "scene": "Gideon numbered his dictation cylinders like a man who expected future historians to be grateful. The rack jumps from 42 to 44. His transcript folder still contains page 43, including a peculiar sentence: 'Mrs. Quill, do carry on. I can hear every word.'",
+        "scene": "Gideon numbered his dictation cylinders like a man who expected future historians to be grateful. The rack jumps from 42 to 44. His transcript folder still contains page 43, including a peculiar sentence: 'Mrs. Quill, do carry on. I can hear every word.' Clara Hensley's transcription initials appear at the foot of that page.",
         "discoveries": [
           {
             "id": "e-cylinder-index",
             "label": "Missing cylinder 43",
             "fact": "Gideon's numbered rack is missing cylinder 43.",
             "source": "Gideon's Things",
-            "truths": [
-              "t1-false-voice"
-            ]
+            "truths": ["t1-false-voice"]
           },
           {
             "id": "e-cylinder-transcript",
             "label": "Transcript of cylinder 43",
             "fact": "Before the séance, Gideon recorded the exact unusual sentence later heard through Quill's trumpet.",
             "source": "Gideon's Things",
-            "truths": [
-              "t1-false-voice",
-              "t4-clara-staging"
-            ]
+            "truths": ["t1-false-voice", "t4-clara-staging"]
           },
           {
             "id": "e-clara-access",
             "label": "Clara's transcription initials",
             "fact": "The transcript of cylinder 43 bears Clara Hensley's transcription initials.",
             "source": "Gideon's Things",
-            "truths": [
-              "t3-leak-motive",
-              "t4-clara-staging"
-            ]
+            "truths": ["t3-leak-motive", "t4-clara-staging"]
           }
         ],
-        "unlocks": [
-          "locked-box-trigger",
-          "clara-hensley"
-        ]
+        "unlocks": ["locked-box-trigger", "clara-hensley"]
       },
       "seance-room": {
         "scene": "The trumpet sits on the séance table, but its base is wrong for an ornament: a narrow coupling disappears through the table pedestal toward the old service wall. Quill's cue sheet lists a bell, a whisper, and 'Ashcombe voice.' Gideon March is nowhere on it.",
@@ -304,32 +241,23 @@
             "label": "Concealed voice route",
             "fact": "The séance trumpet connects to a concealed service-side playback/acoustic route.",
             "source": "Séance Room",
-            "truths": [
-              "t1-false-voice",
-              "t4-clara-staging"
-            ]
+            "truths": ["t1-false-voice", "t4-clara-staging"]
           },
           {
             "id": "e-quill-cue-sheet",
             "label": "Quill's cue sheet",
             "fact": "Quill's planned effects did not include Gideon's voice.",
             "source": "Séance Room",
-            "truths": [
-              "t1-false-voice"
-            ]
+            "truths": ["t1-false-voice"]
           }
         ],
-        "unlocks": [
-          "lenora-quill",
-          "edwin-rusk",
-          "locked-box-trigger"
-        ]
+        "unlocks": ["lenora-quill", "edwin-rusk", "locked-box-trigger"]
       }
     }
   },
   "interviews": {
     "clara-hensley": {
-      "opening": "Clara folds Gideon's loose notes into three precise piles. 'He recorded everything. He trusted paper more than people, which was occasionally mutual.'",
+      "opening": "Clara folds Gideon's loose notes into three precise piles. 'He recorded everything. He trusted paper more than people, which was occasionally mutual.' She confirms that she transcribed cylinder 43 earlier in the evening.",
       "claim": "She says she last saw Gideon shortly after eleven twenty and did not return to the writing-room corridor before the body was found.",
       "discoveries": [
         {
@@ -337,31 +265,26 @@
           "label": "Clara's timeline",
           "fact": "Clara claims she did not go near the writing room after about 11:20 PM.",
           "source": "Clara Hensley",
-          "truths": [
-            "t4-clara-staging"
-          ]
+          "truths": ["t4-clara-staging"]
         },
         {
           "id": "e-clara-transcribed-43",
           "label": "Clara knew cylinder 43",
           "fact": "Clara acknowledges she transcribed cylinder 43 earlier that evening.",
           "source": "Clara Hensley",
-          "truths": [
-            "t4-clara-staging"
-          ]
+          "truths": ["t4-clara-staging"]
         }
       ],
       "follow_thread": {
-        "prompt": "Press Clara on how Quill could know private details from Gideon's files.",
+        "requires_any": ["e-gideon-final-note"],
+        "prompt": "Ask Clara why Gideon wrote her name after Quill's.",
         "scene": "For the first time, Clara stops sorting. 'Gideon showed people things when it suited him. He enjoyed the moment they realized he knew more than they did.' She returns to the papers without answering how Quill obtained material from his private files.",
         "discovery": {
           "id": "e-clara-evasion",
           "label": "Clara avoids the source question",
           "fact": "Clara will not explain how Quill obtained information found in Gideon's private research.",
           "source": "Clara Hensley",
-          "truths": [
-            "t3-leak-motive"
-          ]
+          "truths": ["t3-leak-motive"]
         }
       }
     },
@@ -391,24 +314,20 @@
             "label": "Quill admits the fraud",
             "fact": "Quill admits the trumpet uses a concealed apparatus and says Gideon's voice was not part of her planned performance.",
             "source": "Lenora Quill",
-            "truths": [
-              "t1-false-voice"
-            ]
+            "truths": ["t1-false-voice"]
           }
         ]
       },
       "follow_thread": {
-        "prompt": "Ask who supplied information Quill could not have received from Beatrice.",
+        "requires_any": ["e-quill-denial"],
+        "prompt": "Ask Quill who gave her information before the sitting.",
         "scene": "Quill closes her case. 'Miss Hensley brought envelopes. I paid for envelopes. You can make the nouns uglier if it helps.' A folded receipt inside carries Clara Hensley's initials beside two cash payments.",
         "discovery": {
           "id": "e-quill-payment",
           "label": "Payments tied to Clara",
           "fact": "Quill's private records show cash payments associated with Clara Hensley.",
           "source": "Lenora Quill",
-          "truths": [
-            "t3-leak-motive",
-            "t4-clara-staging"
-          ]
+          "truths": ["t3-leak-motive", "t4-clara-staging"]
         }
       }
     },
@@ -437,41 +356,33 @@
             "label": "Rusk found Gideon's cylinder",
             "fact": "Rusk found a Gideon March cylinder in Quill's apparatus after the séance voice.",
             "source": "Edwin Rusk",
-            "truths": [
-              "t1-false-voice"
-            ]
+            "truths": ["t1-false-voice"]
           },
           {
             "id": "e-rusk-sighting",
             "label": "Rusk saw Clara return",
             "fact": "Before the séance voice, Rusk saw Clara leave the writing-room passage and return to the gathering.",
             "source": "Edwin Rusk",
-            "truths": [
-              "t2-before-voice",
-              "t4-clara-staging"
-            ]
+            "truths": ["t2-before-voice", "t4-clara-staging"]
           }
         ],
-        "unlocks": [
-          "locked-box-trigger"
-        ]
+        "unlocks": ["locked-box-trigger"]
       },
       "follow_thread": {
-        "prompt": "Press Rusk on who knew the service side of Quill's setup.",
+        "requires_any": ["e-service-route", "e-rusk-found-cylinder"],
+        "prompt": "Ask Rusk who could enter the service corridor.",
         "scene": "Rusk names Quill, himself, two hotel employees, and then reluctantly Clara. 'Miss Hensley came through the service corridor more than once. I assumed she was arranging March's little war.'",
         "discovery": {
           "id": "e-clara-quill-connection",
           "label": "Clara knew the service route",
           "fact": "Rusk confirms Clara had used the service corridor associated with Quill's apparatus before the murder.",
           "source": "Edwin Rusk",
-          "truths": [
-            "t4-clara-staging"
-          ]
+          "truths": ["t4-clara-staging"]
         }
       }
     },
     "beatrice-ashcombe": {
-      "opening": "Beatrice looks toward the writing room and says, 'If you're about to ask whether I threatened him, be specific. I threatened him twice.'",
+      "opening": "Beatrice looks toward the writing room and says, 'If you're about to ask whether I threatened him, be specific. I threatened him twice.' She admits giving Quill letters and objects before the sitting, despite denying it in public.",
       "claim": "She admits arguing with Gideon over material about her late husband's finances but initially says she saw nothing useful near the writing room.",
       "discoveries": [
         {
@@ -486,17 +397,11 @@
           "label": "Beatrice supplied Quill letters",
           "fact": "Beatrice privately gave Quill letters and objects before the séance despite publicly denying advance contact.",
           "source": "Beatrice Ashcombe",
-          "truths": [
-            "t3-leak-motive"
-          ]
+          "truths": ["t3-leak-motive"]
         }
       ],
       "conditional": {
-        "requires_any": [
-          "e-gideon-final-note",
-          "e-clara-lie",
-          "e-bookend"
-        ],
+        "requires_any": ["e-gideon-final-note", "e-clara-lie", "e-bookend"],
         "scene": "Beatrice exhales through her nose. 'I was listening at his door. There. Write that down with all the dignity it deserves.' She heard Gideon say, 'You sold my work to a parlour trick,' heard Clara answer, then a heavy impact. A moment later she saw Clara leave the writing-room corridor. Beatrice kept quiet because she had no intention of explaining why she was at Gideon's door.",
         "discoveries": [
           {
@@ -504,44 +409,34 @@
             "label": "Argument and impact",
             "fact": "Before the séance voice, Beatrice heard Gideon accuse someone of selling his work, heard Clara answer, and then heard a heavy impact.",
             "source": "Beatrice Ashcombe",
-            "truths": [
-              "t2-before-voice",
-              "t3-leak-motive",
-              "t4-clara-staging"
-            ]
+            "truths": ["t2-before-voice", "t3-leak-motive", "t4-clara-staging"]
           },
           {
             "id": "e-beatrice-sighting",
             "label": "Beatrice saw Clara leave",
             "fact": "Beatrice saw Clara leave the writing-room corridor before Clara later appeared at the séance.",
             "source": "Beatrice Ashcombe",
-            "truths": [
-              "t2-before-voice",
-              "t4-clara-staging"
-            ]
+            "truths": ["t2-before-voice", "t4-clara-staging"]
           },
           {
             "id": "e-clara-visible-seance",
             "label": "Clara was present for the voice",
             "fact": "Clara was visibly present with the group when Gideon's voice came through the trumpet.",
             "source": "Beatrice Ashcombe",
-            "truths": [
-              "t2-before-voice"
-            ]
+            "truths": ["t2-before-voice"]
           }
         ]
       },
       "follow_thread": {
-        "prompt": "Compare Beatrice's supplied letters with the detail Quill used in the séance.",
+        "requires_any": ["e-beatrice-letters"],
+        "prompt": "Ask Beatrice what her letters did and did not tell Quill.",
         "scene": "The letters explain most of Quill's performance, but not one odd reference to a sealed family account Gideon had uncovered separately. The same phrase appears in Gideon's private research notes, in a section Clara transcribed.",
         "discovery": {
           "id": "e-private-detail-match",
           "label": "Private detail crossed from Gideon's file",
           "fact": "A distinctive detail used by Quill appears in Gideon's private research but not in Beatrice's supplied letters; Clara transcribed the relevant section.",
           "source": "Beatrice Ashcombe",
-          "truths": [
-            "t3-leak-motive"
-          ]
+          "truths": ["t3-leak-motive"]
         }
       }
     }
@@ -588,20 +483,14 @@
       "label": "Cylinder 43",
       "fact": "Cylinder 43 contains Gideon speaking the exact sentence later heard through Quill's trumpet.",
       "source": "The Locked Box",
-      "truths": [
-        "t1-false-voice",
-        "t4-clara-staging"
-      ]
+      "truths": ["t1-false-voice", "t4-clara-staging"]
     },
     "winner_private_observation": {
       "id": "e-cylinder-43",
       "label": "Cylinder 43",
       "fact": "Cylinder 43 contains Gideon speaking the exact sentence later heard through Quill's trumpet.",
       "source": "The Locked Box",
-      "truths": [
-        "t1-false-voice",
-        "t4-clara-staging"
-      ]
+      "truths": ["t1-false-voice", "t4-clara-staging"]
     }
   },
   "leverage": {
@@ -616,7 +505,7 @@
       {
         "id": "follow-the-thread",
         "label": "Follow the Thread",
-        "description": "Take one contextual follow-up immediately after an eligible interview."
+        "description": "Take one contextual follow-up with a person you have interviewed before entering Last Call."
       }
     ]
   },
@@ -630,84 +519,30 @@
     ],
     "proof_groups": {
       "t1-false-voice": [
-        [
-          "e-cylinder-transcript"
-        ],
-        [
-          "e-cylinder-43"
-        ],
-        [
-          "e-service-route",
-          "e-quill-cue-sheet"
-        ],
-        [
-          "e-service-route",
-          "e-quill-admission"
-        ]
+        ["e-cylinder-transcript"],
+        ["e-cylinder-43"],
+        ["e-service-route", "e-quill-cue-sheet"],
+        ["e-service-route", "e-quill-admission"]
       ],
       "t2-before-voice": [
-        [
-          "e-beatrice-impact",
-          "e-cylinder-transcript"
-        ],
-        [
-          "e-beatrice-sighting",
-          "e-cylinder-transcript"
-        ],
-        [
-          "e-beatrice-impact",
-          "e-cylinder-43"
-        ],
-        [
-          "e-beatrice-sighting",
-          "e-cylinder-43"
-        ],
-        [
-          "e-rusk-sighting",
-          "e-cylinder-transcript"
-        ],
-        [
-          "e-rusk-sighting",
-          "e-cylinder-43"
-        ]
+        ["e-beatrice-impact", "e-cylinder-transcript"],
+        ["e-beatrice-sighting", "e-cylinder-transcript"],
+        ["e-beatrice-impact", "e-cylinder-43"],
+        ["e-beatrice-sighting", "e-cylinder-43"],
+        ["e-rusk-sighting", "e-cylinder-transcript"],
+        ["e-rusk-sighting", "e-cylinder-43"]
       ],
       "t3-leak-motive": [
-        [
-          "e-beatrice-impact"
-        ],
-        [
-          "e-private-detail-match"
-        ],
-        [
-          "e-quill-payment",
-          "e-gideon-final-note"
-        ],
-        [
-          "e-quill-payment",
-          "e-clara-access"
-        ]
+        ["e-beatrice-impact"],
+        ["e-private-detail-match"],
+        ["e-quill-payment", "e-gideon-final-note"],
+        ["e-quill-payment", "e-clara-access"]
       ],
       "t4-clara-staging": [
-        [
-          "e-beatrice-impact",
-          "e-clara-transcribed-43",
-          "e-service-route"
-        ],
-        [
-          "e-beatrice-sighting",
-          "e-clara-transcribed-43",
-          "e-service-route"
-        ],
-        [
-          "e-clara-lie",
-          "e-clara-quill-connection",
-          "e-cylinder-transcript"
-        ],
-        [
-          "e-rusk-sighting",
-          "e-clara-transcribed-43",
-          "e-service-route"
-        ]
+        ["e-beatrice-impact", "e-clara-transcribed-43", "e-service-route"],
+        ["e-beatrice-sighting", "e-clara-transcribed-43", "e-service-route"],
+        ["e-clara-lie", "e-clara-quill-connection", "e-cylinder-transcript"],
+        ["e-rusk-sighting", "e-clara-transcribed-43", "e-service-route"]
       ]
     }
   },
