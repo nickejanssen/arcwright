@@ -149,6 +149,34 @@ export function restoreState(caseData, storage, key = DEFAULT_STORAGE_KEY) {
   }
 }
 
+export function ensureEnvironmentMetadata(state, options = {}) {
+  if (!state || typeof state !== "object") return state;
+  const deviceClass = ["mobile", "desktop", "unknown"].includes(
+    options.deviceClass,
+  )
+    ? options.deviceClass
+    : "unknown";
+  const browserClass = [
+    "chrome",
+    "edge",
+    "firefox",
+    "safari",
+    "other",
+    "unknown",
+  ].includes(options.browserClass)
+    ? options.browserClass
+    : "unknown";
+  if (!["mobile", "desktop"].includes(state.deviceClass))
+    state.deviceClass = deviceClass;
+  if (
+    !["chrome", "edge", "firefox", "safari", "other"].includes(
+      state.browserClass,
+    )
+  )
+    state.browserClass = browserClass;
+  return state;
+}
+
 export function completeOpening(state, nowMs = Date.now()) {
   if (state.phase !== "opening") return false;
   state.phase = "investigation";

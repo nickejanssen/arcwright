@@ -24,6 +24,7 @@ import {
   resolveLock,
   resolveRivalTheory,
   restoreState,
+  ensureEnvironmentMetadata,
   saveLeverage,
   setCaseFileDraft,
   setPrivateNotes,
@@ -688,10 +689,10 @@ async function boot() {
   if (!response.ok)
     throw new Error(`Could not load case data: ${response.status}`);
   caseData = await response.json();
-  const deviceClass = window.matchMedia("(max-width: 640px)").matches
+  const ua = navigator.userAgent.toLowerCase();
+  const deviceClass = /android|iphone|ipad|ipod|mobile/i.test(ua)
     ? "mobile"
     : "desktop";
-  const ua = navigator.userAgent.toLowerCase();
   const browserClass = ua.includes("firefox")
     ? "firefox"
     : ua.includes("edg/")
@@ -702,6 +703,8 @@ async function boot() {
           ? "safari"
           : "other";
   const restored = restoreState(caseData);
+  if (restored)
+    ensureEnvironmentMetadata(restored, { deviceClass, browserClass });
   if (isRevealMode()) {
     state = restored;
     if (getVerdictView(state, caseData).available) {
