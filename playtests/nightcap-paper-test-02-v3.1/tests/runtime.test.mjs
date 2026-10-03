@@ -12,6 +12,7 @@ import {
   completeOpening,
   createInitialState,
   deriveTelemetry,
+  ensureEnvironmentMetadata,
   enterLastCall,
   evaluateCaseFile,
   markRevealReturn,
@@ -336,6 +337,25 @@ test("survey URL carries the same run id and handoff is single-fire", () => {
   assert.equal(markSurveyHandoff(state, 1100), false);
   const url = new URL(buildSurveyUrl(state));
   assert.equal(url.searchParams.get("q14_textbox12"), "run-survey");
+});
+
+test("restored sessions backfill missing environment metadata", () => {
+  const state = createInitialState(caseData, {
+    nowMs: 0,
+    runId: "run-legacy-metadata",
+    deviceClass: "unknown",
+    browserClass: "unknown",
+  });
+  delete state.deviceClass;
+  delete state.browserClass;
+  ensureEnvironmentMetadata(state, {
+    deviceClass: "desktop",
+    browserClass: "chrome",
+  });
+  assert.equal(state.deviceClass, "desktop");
+  assert.equal(state.browserClass, "chrome");
+  assert.equal(deriveTelemetry(state).device_class, "desktop");
+  assert.equal(deriveTelemetry(state).browser_class, "chrome");
 });
 
 test("reveal return is locally observable once but not represented as external proof", () => {

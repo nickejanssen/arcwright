@@ -45,3 +45,11 @@ test("completed gameplay telemetry can be prefilled into the existing form", () 
   );
   assert.equal(url.searchParams.get("q26_textbox24"), "completed");
 });
+
+test("environment metadata uses user-agent device class, not viewport width", () => {
+  assert.match(
+    appSource,
+    /android\|iphone\|ipad\|ipod\|mobile\/i\.test\(ua\)/,
+  );
+  assert.equal(appSource.includes('matchMedia("(max-width: 640px)")'), false);
+});
