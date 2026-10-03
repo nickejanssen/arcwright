@@ -3,15 +3,15 @@ on:
   push:
     branches: [main]
     paths:
-      - 'playtests/**'
-      - 'scripts/build_playtest_site.py'
-      - 'scripts/playtest_catalog.py'
-      - 'scripts/playtest_tool.py'
-      - 'scripts/tests/**'
-      - 'docs/specs/0088-arcwright-playtest-lab-contract.md'
-      - 'docs/skills/arcwright-playtest-*/**'
-      - '.agents/skills/arcwright-playtest-*/**'
-      - '.github/workflows/nightcap-playtest-pages.yml'
+      - "playtests/**"
+      - "scripts/build_playtest_site.py"
+      - "scripts/playtest_catalog.py"
+      - "scripts/playtest_tool.py"
+      - "scripts/tests/**"
+      - "docs/specs/0088-arcwright-playtest-lab-contract.md"
+      - "docs/skills/arcwright-playtest-*/**"
+      - ".agents/skills/arcwright-playtest-*/**"
+      - ".github/workflows/nightcap-playtest-pages.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -30,7 +30,7 @@ jobs:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: "3.11"
       - uses: actions/configure-pages@v5
       - name: Install test tooling
         run: python -m pip install pytest==8.3.4
@@ -48,6 +48,19 @@ jobs:
           playtests/nightcap-paper-test-02-v3.0/tests/rusk-route.test.mjs
           playtests/nightcap-paper-test-02-v3.0/tests/survey-flow.test.mjs
           playtests/nightcap-paper-test-02-v3.0/tests/security.test.mjs
+          playtests/nightcap-paper-test-02-v3.1/tests/fixture.test.mjs
+          playtests/nightcap-paper-test-02-v3.1/tests/investigation.test.mjs
+          playtests/nightcap-paper-test-02-v3.1/tests/lock-interaction.test.mjs
+          playtests/nightcap-paper-test-02-v3.1/tests/narrative-contract.test.mjs
+          playtests/nightcap-paper-test-02-v3.1/tests/proof-paths.test.mjs
+          playtests/nightcap-paper-test-02-v3.1/tests/qa-contract.test.mjs
+          playtests/nightcap-paper-test-02-v3.1/tests/recovery.test.mjs
+          playtests/nightcap-paper-test-02-v3.1/tests/research.test.mjs
+          playtests/nightcap-paper-test-02-v3.1/tests/runtime.test.mjs
+          playtests/nightcap-paper-test-02-v3.1/tests/rusk-route.test.mjs
+          playtests/nightcap-paper-test-02-v3.1/tests/security.test.mjs
+          playtests/nightcap-paper-test-02-v3.1/tests/survey-flow.test.mjs
+          playtests/nightcap-paper-test-02-v3.1/tests/transport.test.mjs
       - name: Build playtest site
         run: python scripts/build_playtest_site.py --output _site
       - uses: actions/upload-pages-artifact@v4
