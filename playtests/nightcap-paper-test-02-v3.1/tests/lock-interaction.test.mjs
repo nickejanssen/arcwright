@@ -379,3 +379,31 @@ test("rival theory follows authored public evidence and ignores human-private lo
     false,
   );
 });
+
+test("Set pin samples the marker on pointerdown and keeps click for keyboard activation", () => {
+  const start = appSource.indexOf("function renderLock()");
+  const end = appSource.indexOf("function renderLastCall()");
+  const lockSource = appSource.slice(start, end);
+  assert.match(
+    lockSource,
+    /querySelector\("#setPin"\);?[\s\S]*?addEventListener\("pointerdown"/,
+    "pointer press must be handled on pointerdown, not release",
+  );
+  assert.match(lockSource, /event\.isPrimary/);
+  assert.match(lockSource, /event\.button\s*!==\s*0/);
+  assert.match(
+    lockSource,
+    /addEventListener\("click"[\s\S]*?pointerHandled[\s\S]*?event\.detail/,
+    "click must skip clicks already handled by pointerdown",
+  );
+  assert.equal(
+    (lockSource.match(/attemptLockPin\(/g) ?? []).length,
+    1,
+    "both handlers must share one attemptLockPin call site",
+  );
+  assert.match(
+    lockSource,
+    /function setPinAttempt\([\s\S]*?attemptLockPin\(\s*state,\s*caseData,\s*meterPosition\(\)/,
+    "the press must sample a fresh meterPosition(), not the cached frame value",
+  );
+});
