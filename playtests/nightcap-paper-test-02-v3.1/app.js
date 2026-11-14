@@ -550,13 +550,8 @@ function renderLock() {
   };
   updateClock();
   lockInterval = setInterval(updateClock, 120);
-  document.querySelector("#setPin").addEventListener("click", () => {
-    const result = attemptLockPin(
-      state,
-      caseData,
-      currentMeterValue,
-      Date.now(),
-    );
+  function setPinAttempt() {
+    const result = attemptLockPin(state, caseData, meterPosition(), Date.now());
     if (!result.accepted && state.lock.status === "resolved") {
       announceLockResult();
       save();
@@ -574,6 +569,21 @@ function renderLock() {
     } else {
       lockMessage.textContent = "Pin not set. Keep watching the marker.";
     }
+  }
+  const setPinButton = document.querySelector("#setPin");
+  let pointerHandled = false;
+  setPinButton.addEventListener("pointerdown", (event) => {
+    if (!event.isPrimary || event.button !== 0) return;
+    pointerHandled = true;
+    setPinAttempt();
+  });
+  setPinButton.addEventListener("click", (event) => {
+    if (pointerHandled && event.detail > 0) {
+      pointerHandled = false;
+      return;
+    }
+    pointerHandled = false;
+    setPinAttempt();
   });
   document
     .querySelector("#abortLock")
