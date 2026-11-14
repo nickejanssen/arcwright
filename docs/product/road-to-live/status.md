@@ -18,6 +18,8 @@ supersedes: []
 
 # Road to Live Status
 
+> Note, 2026-11-14: this record stops at 2026-08-05 and predates the Nightcap Master GDD (D-108). For the current state of the Nightcap plan, see [../nightcap-status.md](../nightcap-status.md).
+
 This record reconciles the "Road to Live" program against repo state as of
 2026-08-04, superseding the 26 Jul artifact snapshot's completion picture. It
 does not revise any prior approval or decision; it records what has changed

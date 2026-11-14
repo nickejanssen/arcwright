@@ -169,6 +169,8 @@ Test whether accessibility filtering preserves enough variety, spectacle, and fa
 
 ## Remaining Validation Order
 
+> **Paused, 2026-11-13 (D-111).** The founder paused Paper Test #2 while the proposed Nightcap rebuild is planned and run. Steps 2 through 5 below are on hold: the phone smoke proof was not run, no external sessions were held, and no Gate 1 call is recorded. Gate 1 remains NOT PASSED. The order below is unchanged and applies again when a new decision resumes the paper test. Current state: `docs/product/nightcap-status.md`.
+
 1. Complete v3 publication and live-route verification.
 2. Complete the separately approved survey/reveal smoke proof.
 3. Run representative external Gate 1 sessions on immutable v3.0.
