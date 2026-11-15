@@ -12,18 +12,38 @@ checkout is absent: a check that breaks every session is worse than no check.
 
 from __future__ import annotations
 
-import os
-import subprocess
 import sys
-from pathlib import Path
+
+# A linked worktree can supply extra files next to this approved wrapper.
+# Drop Python's implicit script directory before importing the standard library.
+if __name__ == "__main__" and not sys.flags.safe_path:
+    del sys.path[0]
+
+import os  # noqa: E402
+import shutil  # noqa: E402
+import subprocess  # noqa: E402
+from pathlib import Path  # noqa: E402
 
 REL = Path("team-ai") / "dist" / "cli.js"
 
 
+def _tool_on_path(name: str) -> str | None:
+    filename = f"{name}.exe" if os.name == "nt" else name
+    for directory in map(Path, os.get_exec_path()):
+        if directory.is_absolute():
+            match = shutil.which(str(directory / filename))
+            if match:
+                return match
+    return None
+
+
 def _main_checkout() -> Path | None:
+    git = _tool_on_path("git")
+    if git is None:
+        return None
     try:
         out = subprocess.run(
-            ["git", "rev-parse", "--path-format=absolute", "--git-common-dir"],
+            [git, "rev-parse", "--path-format=absolute", "--git-common-dir"],
             capture_output=True,
             text=True,
             check=True,
@@ -40,12 +60,9 @@ def find_cli() -> Path | None:
         candidate = Path(override)
         return candidate if candidate.is_file() else None
 
-    roots: list[Path] = []
     main = _main_checkout()
-    if main is not None:
-        roots.append(main.parent)
     here = Path(__file__).resolve().parents[1]
-    roots.extend([here.parent, here.parent.parent])
+    roots = [main.parent] if main is not None else [here.parent, here.parent.parent]
 
     for root in roots:
         candidate = root / REL
@@ -67,7 +84,45 @@ def main() -> int:
     if args[:1] == ["--path"]:
         print(cli)
         return 0
-    return subprocess.run(["node", str(cli), *args]).returncode
+    node = _tool_on_path("node")
+    if node is None:
+        print("Node.js not found on PATH.", file=sys.stderr)
+        return 1
+    command = [node, str(cli), *args]
+    if args[:1] != ["search"]:
+        return subprocess.run(command).returncode
+
+    options = args[2:]
+    flags = options[::2]
+    # The pinned CLI filters namespaces after its global candidate limit. Give
+    # specialist searches more candidates while keeping their eight-result limit.
+    widen = (
+        options[-2:] == ["--k", "8"]
+        and len(options) % 2 == 0
+        and "--namespace" in flags
+        and flags.count("--k") == 1
+        and set(flags) <= {"--root", "--namespace", "--k"}
+    )
+    if widen:
+        command[-1] = "16"
+    result = subprocess.run(
+        command, stdout=subprocess.PIPE if widen else None, stderr=subprocess.PIPE
+    )
+    if widen:
+        output = result.stdout
+        if result.returncode == 0:
+            output = b"".join(output.splitlines(keepends=True)[:8])
+        sys.stdout.buffer.write(output)
+    sys.stderr.buffer.write(result.stderr)
+    if result.returncode and result.stderr.startswith(b"index not built"):
+        print(
+            "Ranked search is unavailable in this checkout. Use plain search with "
+            "Grep or Glob under docs/, then Read the matches in your namespace. "
+            "A maintainer can restore ranked search by running "
+            "`python scripts/team_ai_cli.py reindex --root team-ai` from the checkout root.",
+            file=sys.stderr,
+        )
+    return result.returncode
 
 
 if __name__ == "__main__":

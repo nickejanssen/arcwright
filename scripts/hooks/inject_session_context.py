@@ -53,7 +53,14 @@ def main() -> int:
     if os.environ.get("ARCWRIGHT_HOOK_SESSION_CONTEXT", "1") != "1":
         return 0
 
-    lines: list[str] = []
+    lines = [
+        "Before choosing work, resolve its exact ID with python scripts/roadmap_status.py --task AW-NNN "
+        "or open the linked GitHub issue. Verify prerequisites and approval in the owning records.",
+        "Before editing important docs, open docs/README.md and read the canonical file directly. "
+        "Use dated decisions and approved specs for scope, git for history, and code and tests for behavior.",
+        "On handoff, record the task ID, commit, constraints, approvals, source paths, checks, blockers and next action "
+        "in the existing task or pull request.",
+    ]
     try:
         domains = read_domains(MANIFEST.read_text(encoding="utf-8"))
     except OSError:
@@ -65,9 +72,8 @@ def main() -> int:
         # No router agent is emitted (spec 0089, B-S6): this session routes.
         lines.append(
             "Dispatch the owning agent directly; for a question spanning two domains, "
-            "dispatch both in parallel and reconcile. These agents answer design, scope and "
-            "decisions only: task status is on GitHub (python scripts/roadmap_status.py), "
-            "code existence in the code, history in git."
+            "dispatch both in parallel and reconcile. Specialists help find and explain sources "
+            "for design, scope and decisions. Open the owning sources before acting."
         )
 
     snapshot = read_json(SNAPSHOT)
@@ -100,8 +106,7 @@ def main() -> int:
         if deltas:
             lines.append(f"Freshness change since baseline: {', '.join(deltas)}")
 
-    if lines:
-        print("\n".join(lines))
+    print("\n".join(lines))
     return 0
 
 

@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[3]
 BLOCK = ROOT / "scripts" / "hooks" / "block_generated_writes.py"
 RECORD = ROOT / "scripts" / "hooks" / "record_observation.py"
 INJECT = ROOT / "scripts" / "hooks" / "inject_session_context.py"
+GUARD = ROOT / "scripts" / "hooks" / "guard_kb_agents.py"
 
 
 def run(script, payload):
@@ -65,6 +66,20 @@ def test_injector_has_no_external_yaml_dependency():
     assert result.returncode == 0, result.stdout + result.stderr
 
 
+def test_injector_keeps_authoritative_work_sources_available_without_kb_state(
+    tmp_path, monkeypatch, capsys
+):
+    monkeypatch.setattr(inject_session_context, "MANIFEST", tmp_path / "missing.yaml")
+    monkeypatch.setattr(inject_session_context, "SNAPSHOT", tmp_path / "missing.json")
+    monkeypatch.setenv("ARCWRIGHT_HOOK_SESSION_CONTEXT", "1")
+
+    assert inject_session_context.main() == 0
+    out = capsys.readouterr().out
+    assert "python scripts/roadmap_status.py --task AW-NNN" in out
+    assert "docs/README.md" in out
+    assert "approval" in out and "next action" in out
+
+
 def test_injector_surfaces_freshness_failure(tmp_path, monkeypatch, capsys):
     manifest = tmp_path / "manifest.yaml"
     manifest.write_text(
@@ -105,6 +120,177 @@ def test_snapshot_records_freshness_failure(monkeypatch):
 
     assert snapshot["freshness"]["ok"] is False
     assert snapshot["freshness"]["output"] == "freshness failed"
+
+
+def checkout_with_worktree(tmp_path):
+    """A main checkout holding the guard hook, and a git worktree of it.
+
+    Laid out as desktop sessions are: the worktree sits under the main
+    checkout's .claude/worktrees/, and the registered hook may be the main
+    checkout's copy while the agent works in the worktree.
+    """
+    main = tmp_path / "main"
+    (main / "scripts" / "hooks").mkdir(parents=True)
+    shutil.copy(GUARD, main / "scripts" / "hooks" / "guard_kb_agents.py")
+    (main / "scripts" / "team_ai_cli.py").write_text("# search CLI\n", encoding="utf-8")
+    (main / "team-ai").mkdir()
+    (main / "team-ai" / "index.lock").write_text(
+        "kb:\n  root: ../docs\n  exclude:\n    - archive/\n", encoding="utf-8"
+    )
+    (main / ".claude" / "agents").mkdir(parents=True)
+    (main / ".claude" / "agents" / "team-ai-safety-sme.md").write_text(
+        "---\nname: safety-sme\nkb_namespaces:\n  - safety\n---\n", encoding="utf-8"
+    )
+    (main / "docs").mkdir()
+    (main / "docs" / "safety.md").write_text(
+        "---\nnamespace: safety\n---\n# Safety\n", encoding="utf-8"
+    )
+    (main / "engine").mkdir()
+    (main / "engine" / "service.py").write_text("x = 1\n", encoding="utf-8")
+    git = ["git", "-c", "user.name=t", "-c", "user.email=t@example.com"]
+    for args in (["init", "-q"], ["add", "-A"], ["commit", "-q", "-m", "init"]):
+        subprocess.run([*git, *args], cwd=main, check=True, capture_output=True)
+    worktree = main / ".claude" / "worktrees" / "wt"
+    subprocess.run(
+        [*git, "worktree", "add", "-q", "-b", "wt", str(worktree)],
+        cwd=main,
+        check=True,
+        capture_output=True,
+    )
+    return main, worktree
+
+
+def guard_denies(hook_checkout, cwd, tool, **tool_input):
+    result = run(
+        hook_checkout / "scripts" / "hooks" / "guard_kb_agents.py",
+        {
+            "agent_type": "safety-sme",
+            "tool_name": tool,
+            "tool_input": tool_input,
+            "cwd": str(cwd),
+        },
+    )
+    assert result.returncode == 0, result.stderr
+    return '"deny"' in result.stdout
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_allows_the_kb_from_a_worktree(tmp_path):
+    main, worktree = checkout_with_worktree(tmp_path)
+    for hook_checkout in (main, worktree):
+        assert not guard_denies(
+            hook_checkout, worktree, "Grep", pattern="x", path="docs"
+        )
+        assert not guard_denies(
+            hook_checkout, worktree, "Glob", pattern="*", path="docs"
+        )
+        assert not guard_denies(
+            hook_checkout, worktree, "Read", file_path="docs/safety.md"
+        )
+        assert not guard_denies(
+            hook_checkout,
+            worktree,
+            "Bash",
+            command=f'cd "{worktree}" && python scripts/team_ai_cli.py search "x" '
+            "--root team-ai --namespace safety --k 8",
+        )
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_refuses_outside_the_kb_from_main_and_worktree(tmp_path):
+    main, worktree = checkout_with_worktree(tmp_path)
+    for hook_checkout in (main, worktree):
+        for cwd in (main, worktree):
+            assert guard_denies(
+                hook_checkout, cwd, "Read", file_path="engine/service.py"
+            )
+            assert guard_denies(hook_checkout, cwd, "Grep", pattern="x", path="engine")
+            assert guard_denies(hook_checkout, cwd, "Glob", pattern="*", path=".")
+            assert guard_denies(hook_checkout, cwd, "Grep", pattern="x", path="docs/..")
+        assert guard_denies(
+            hook_checkout,
+            worktree,
+            "Read",
+            file_path=str(main / "engine" / "service.py"),
+        )
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_uses_registered_policy_when_worktree_files_differ(tmp_path):
+    main, worktree = checkout_with_worktree(tmp_path)
+    worktree_lock = worktree / "team-ai" / "index.lock"
+    worktree_lock.write_text("kb:\n  root: ..\n", encoding="utf-8")
+    assert guard_denies(main, worktree, "Grep", path="engine", pattern="x")
+    assert guard_denies(
+        main,
+        worktree,
+        "Bash",
+        command='python scripts/team_ai_cli.py search "x" '
+        "--root team-ai --namespace safety --k 8",
+    )
+
+    (worktree / ".claude" / "agents" / "team-ai-safety-sme.md").unlink()
+    assert guard_denies(main, worktree, "Read", file_path="engine/service.py")
+    assert guard_denies(main, worktree, "Bash", command="git status")
+    assert not guard_denies(main, worktree, "Read", file_path="docs/safety.md")
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_does_not_trust_an_unregistered_checkout_marker(tmp_path):
+    main, _ = checkout_with_worktree(tmp_path)
+    other = tmp_path / "other"
+    (other / "team-ai").mkdir(parents=True)
+    shutil.copyfile(main / "team-ai" / "index.lock", other / "team-ai" / "index.lock")
+    assert guard_denies(
+        main, other, "Read", file_path=str(main / "engine" / "service.py")
+    )
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_ignores_a_worktree_registration_with_no_backlink(tmp_path):
+    main, worktree = checkout_with_worktree(tmp_path)
+    (worktree / ".git").unlink()
+    assert guard_denies(main, worktree, "Read", file_path="docs/safety.md")
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_rejects_an_invalid_locked_worktree_marker(tmp_path):
+    main, worktree = checkout_with_worktree(tmp_path)
+    subprocess.run(
+        ["git", "worktree", "lock", str(worktree)],
+        cwd=main,
+        check=True,
+        capture_output=True,
+    )
+    (worktree / ".git").unlink()
+    (worktree / ".git").write_text("gitdir: missing\n", encoding="utf-8")
+    assert guard_denies(main, worktree, "Read", file_path="docs/safety.md")
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_denies_search_through_a_modified_worktree_wrapper(tmp_path):
+    main, worktree = checkout_with_worktree(tmp_path)
+    command = 'python scripts/team_ai_cli.py search "x" --root team-ai --namespace safety --k 8'
+    assert not guard_denies(main, worktree, "Bash", command=command)
+    (worktree / "scripts" / "team_ai_cli.py").write_text(
+        "print(open('engine/service.py').read())\n", encoding="utf-8"
+    )
+    assert guard_denies(main, worktree, "Bash", command=command)
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_allows_same_policy_with_different_line_endings(tmp_path):
+    main, worktree = checkout_with_worktree(tmp_path)
+    for relative in ("scripts/team_ai_cli.py", "team-ai/index.lock"):
+        normalized = (main / relative).read_bytes().replace(b"\r\n", b"\n")
+        (main / relative).write_bytes(normalized)
+        (worktree / relative).write_bytes(normalized.replace(b"\n", b"\r\n"))
+    assert not guard_denies(
+        main,
+        worktree,
+        "Bash",
+        command='python scripts/team_ai_cli.py search "x" --root team-ai --namespace safety --k 8',
+    )
 
 
 @pytest.mark.skipif(shutil.which("bash") is None, reason="hooks run under bash")

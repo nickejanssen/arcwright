@@ -11,6 +11,7 @@ records no number. Milestone state comes from GitHub's milestones.
 
     python scripts/roadmap_status.py                 # every milestone
     python scripts/roadmap_status.py --milestone M5  # one milestone
+    python scripts/roadmap_status.py --task AW-NNN   # exact task evidence as JSON
     python scripts/roadmap_status.py --json
     python scripts/roadmap_status.py --apply-milestones   # edits GitHub
 
@@ -371,9 +372,35 @@ def apply_milestones(report: Report, milestone: str | None) -> int:
     return changed
 
 
+def task_evidence(entry: dict, report: Report) -> dict:
+    status = next(task for task in report.tasks if task.id == entry["id"])
+    prerequisites = []
+    for dependency in entry.get("depends_on", []):
+        matches = [
+            item for item in (*report.tasks, *report.epics) if item.id == dependency
+        ]
+        verified = matches[0] if len(matches) == 1 and matches[0].trusted else None
+        prerequisites.append(
+            {
+                "id": dependency,
+                "issue": verified.issue if verified else None,
+                "state": verified.state if verified else None,
+            }
+        )
+    return {
+        "task": asdict(status),
+        "scope_path": entry.get("path"),
+        "prerequisites": prerequisites,
+    }
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.split("\n")[0])
-    parser.add_argument("--milestone", help="limit to one milestone id, e.g. M5")
+    scope = parser.add_mutually_exclusive_group()
+    scope.add_argument("--milestone", help="limit to one milestone id, e.g. M5")
+    scope.add_argument(
+        "--task", help="show the exact task, scope path and prerequisites as JSON"
+    )
     parser.add_argument("--json", action="store_true", help="emit the report as JSON")
     parser.add_argument(
         "--apply-milestones",
@@ -381,11 +408,30 @@ def main(argv: list[str] | None = None) -> int:
         help="set GitHub milestones from the markdown (changes GitHub)",
     )
     args = parser.parse_args(argv)
+    if args.task is not None and args.apply_milestones:
+        parser.error(
+            "--task is read-only and cannot be combined with --apply-milestones"
+        )
 
     index = json.loads(INDEX.read_text(encoding="utf-8"))
+    selected = None
+    if args.task is not None:
+        matches = [task for task in index["tasks"] if task["id"] == args.task.upper()]
+        if len(matches) != 1:
+            print(
+                f"roadmap-status: expected one roadmap entry for {args.task}; found {len(matches)}",
+                file=sys.stderr,
+            )
+            return 2
+        selected = matches[0]
+        ids = {selected["id"], *selected.get("depends_on", [])}
+        index = {
+            key: [entry for entry in index.get(key, []) if entry["id"] in ids]
+            for key in ("tasks", "epics")
+        }
     try:
         issues = fetch_issues()
-        milestones = fetch_milestones()
+        milestones = fetch_milestones() if selected is None else []
     except (OSError, subprocess.CalledProcessError) as error:
         print(
             f"roadmap-status: cannot read GitHub issues ({error}); is gh installed and "
@@ -395,6 +441,11 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     report = reconcile(index, issues, milestones)
 
+    if selected is not None:
+        evidence = task_evidence(selected, report)
+        print(json.dumps(evidence, indent=2))
+        task = evidence["task"]
+        return 0 if task["trusted"] and task["state"] is not None else 2
     if args.apply_milestones:
         changed = apply_milestones(report, args.milestone)
         print(f"roadmap-status: {changed} milestone(s) updated")

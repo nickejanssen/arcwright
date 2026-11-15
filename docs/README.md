@@ -31,6 +31,16 @@ For Nightcap design work, begin with `docs/gdd/nightcap/README.md` and its requi
 
 For implementation tasks, start with the relevant spec in [specs/](specs/), then read the referenced PRD and architecture sections plus the current experience authority before changing code. If an older implementation spec conflicts with the current Nightcap GDD, record and reconcile the implementation gap rather than assuming the old spec still defines product intent.
 
+For an exact roadmap ID, run `python scripts/roadmap_status.py --task AW-NNN`.
+It reports the owning GitHub issue, the scope document, and each direct
+prerequisite's known issue and state. Open the scope and approval records before
+deciding what is ready. A null prerequisite state needs investigation. If the task
+has no roadmap entry yet, open its GitHub issue and follow its source links.
+
+Keep handoffs in the task or pull request. Record the task ID, checked commit,
+constraints, approvals, source paths, verification results, blockers, and next
+action. Open those sources again before resuming work that depends on them.
+
 ## Versioning Policy
 
 Canonical documentation uses stable filenames. Do not create a new active file for each version. Record version changes inside the file header and rely on git history for prior versions.

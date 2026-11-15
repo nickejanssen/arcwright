@@ -626,6 +626,24 @@ team-ai `search` command, permitted in `.claude/settings.json` as that
 subcommand alone. A bare `Bash` or `Bash(node:*)` permission is **not**
 authorised. The other fourteen agents keep `Read, Grep, Glob`.
 
+**Maintaining ranked search (AW-297).** From the root of the main checkout or
+the worktree you want to search, a maintainer runs:
+
+```bash
+python scripts/team_ai_cli.py reindex --root team-ai
+```
+
+Run it after pulling changes to the knowledge base and when setting up ranked
+search in a new worktree. Each checkout indexes its own `docs/` using the
+tracked `team-ai/index.lock`. The generated database in `team-ai/.team-ai/`
+stays gitignored. If a checkout has no built index, the search command directs
+the specialist to Grep or Glob under `docs/` and to Read matches in its own
+namespace. A maintainer rebuilds the index to restore ranked results.
+
+The specialist command asks the pinned CLI to consider more candidates before
+it applies the namespace filter. It still returns at most eight results, in the
+same ranking order and with the same threshold and namespace restrictions.
+
 **B-S3 — The 17-file regeneration diff is approved.** Removing the emitted
 `## Original instructions` block rewrites all 17 files under
 `.claude/agents/team-ai-*.md`, cutting roughly 43% from each. Those files are
