@@ -26,23 +26,24 @@ Bring the knowledge-base search index up to date with main, then measure whether
 
 ## Why This Matters
 
-The committed index dates from 21 September 2026, before the freeze and rebuild decisions were written. One ranked-search query about the tooling freeze returned three unrelated documents. Nobody has measured whether the agents give right answers with the right citations.
+The local index in the main checkout dated from 21 September 2026, before the freeze and rebuild decisions were written. One ranked-search query about the tooling freeze returned three unrelated documents. The live check measures whether agents give right answers with the right citations.
 
 ## Technical Scope
 
-- Run the existing `team-ai reindex` and commit the refreshed index files under `team-ai/`.
+- Run `python scripts/team_ai_cli.py reindex --root team-ai` from the checkout being indexed. Keep each generated database gitignored, as required by spec 0089. Give unindexed worktrees an explicit Grep/Glob and Read fallback within the specialist's namespace.
+- Use the existing CLI with 64 candidates before namespace filtering and at most eight returned results. Keep its index, scoring and namespace restrictions.
 - Run the ten questions in `docs/conventions/knowledge-base-upkeep.md` against the owning agents.
 - Score each answer on four things: answered, correct, cited the right file, flagged a known conflict.
 - Record the scores and the date in that same document.
 
 ## Human Collaboration Contract
 
-**Interaction profile:** Independent execution. Running the existing reindex command is upkeep, not new tooling.
+**Interaction profile:** Independent execution. On 2026-11-15 the founder explicitly approved local ignored indexes, worktree fallback, and committed live scores in PR #352. The founder subsequently approved measured retrieval, routing and handoff repairs using the existing architecture, including the candidate-window adjustment. Approval and measured evidence are recorded in PR #352 and GitHub issue #349.
 
 ## Acceptance Criteria
 
-- [ ] The index on main includes documents merged after 21 September 2026.
-- [ ] Ranked search from a worktree session returns results, or states clearly that it is falling back to plain search.
+- [ ] The local index in the main checkout includes documents merged after 21 September 2026.
+- [ ] Ranked search from a worktree returns results after reindexing and clearly gives a plain-search fallback when the index is missing.
 - [ ] All ten questions are scored and the table is committed.
 - [ ] Every wrong or uncited answer has a GitHub issue naming the document or agent to fix.
 
@@ -58,5 +59,5 @@ The committed index dates from 21 September 2026, before the freeze and rebuild 
 
 ## Must Not Do
 
-- Do not change how the index is built or ranked; that is new capability and frozen.
+- Do not replace index construction or ranking. The approved candidate-window adjustment above is the only retrieval expansion.
 - Do not edit generated agent files by hand.
