@@ -118,6 +118,7 @@ def checkout_with_worktree(tmp_path):
     main = tmp_path / "main"
     (main / "scripts" / "hooks").mkdir(parents=True)
     shutil.copy(GUARD, main / "scripts" / "hooks" / "guard_kb_agents.py")
+    (main / "scripts" / "team_ai_cli.py").write_text("# search CLI\n", encoding="utf-8")
     (main / "team-ai").mkdir()
     (main / "team-ai" / "index.lock").write_text(
         "kb:\n  root: ../docs\n  exclude:\n    - archive/\n", encoding="utf-8"
@@ -198,6 +199,48 @@ def test_kb_guard_refuses_outside_the_kb_from_main_and_worktree(tmp_path):
             "Read",
             file_path=str(main / "engine" / "service.py"),
         )
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_uses_registered_policy_when_worktree_files_differ(tmp_path):
+    main, worktree = checkout_with_worktree(tmp_path)
+    worktree_lock = worktree / "team-ai" / "index.lock"
+    worktree_lock.write_text("kb:\n  root: ..\n", encoding="utf-8")
+    assert guard_denies(main, worktree, "Grep", path="engine", pattern="x")
+    assert guard_denies(
+        main,
+        worktree,
+        "Bash",
+        command='python scripts/team_ai_cli.py search "x" '
+        "--root team-ai --namespace safety --k 8",
+    )
+
+    (worktree / ".claude" / "agents" / "team-ai-safety-sme.md").unlink()
+    assert guard_denies(main, worktree, "Read", file_path="engine/service.py")
+    assert guard_denies(main, worktree, "Bash", command="git status")
+    assert not guard_denies(main, worktree, "Read", file_path="docs/safety.md")
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_does_not_trust_an_unregistered_checkout_marker(tmp_path):
+    main, _ = checkout_with_worktree(tmp_path)
+    other = tmp_path / "other"
+    (other / "team-ai").mkdir(parents=True)
+    shutil.copyfile(main / "team-ai" / "index.lock", other / "team-ai" / "index.lock")
+    assert guard_denies(
+        main, other, "Read", file_path=str(main / "engine" / "service.py")
+    )
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_denies_search_through_a_modified_worktree_wrapper(tmp_path):
+    main, worktree = checkout_with_worktree(tmp_path)
+    command = 'python scripts/team_ai_cli.py search "x" --root team-ai --namespace safety --k 8'
+    assert not guard_denies(main, worktree, "Bash", command=command)
+    (worktree / "scripts" / "team_ai_cli.py").write_text(
+        "print(open('engine/service.py').read())\n", encoding="utf-8"
+    )
+    assert guard_denies(main, worktree, "Bash", command=command)
 
 
 @pytest.mark.skipif(shutil.which("bash") is None, reason="hooks run under bash")

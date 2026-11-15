@@ -25,30 +25,49 @@ from __future__ import annotations
 import sys
 
 
-def paths(cwd: str | None = None):
-    """The checkout the agent works in, its agents directory and index.lock.
-
-    A session in a git worktree may run the main checkout's copy of this hook,
-    so the checkout is the nearest one holding the agent's working directory,
-    not the one holding this file. Without a usable cwd, this file's checkout.
-    """
+def paths():
+    """The registered hook's checkout and its specialist policy files."""
     from pathlib import Path
 
     root = Path(__file__).resolve().parents[2]
-    if cwd:
-        here = Path(cwd).resolve()
-        for candidate in (here, *here.parents):
-            if (candidate / "team-ai" / "index.lock").is_file():
-                root = candidate
-                break
     return root, root / ".claude" / "agents", root / "team-ai" / "index.lock"
 
 
-def kb_config(cwd: str | None = None):
+def checkout_root(registered, cwd: str | None):
+    """Find the registered Git worktree containing the tool's working directory."""
+    import os
+    import subprocess
+    from pathlib import Path
+
+    here = Path(cwd).resolve() if cwd else registered
+    if here == registered:
+        return registered
+    try:
+        report = subprocess.run(
+            ["git", "-C", str(registered), "worktree", "list", "--porcelain", "-z"],
+            capture_output=True,
+            check=True,
+        ).stdout
+    except (OSError, subprocess.CalledProcessError):
+        return registered
+    prefix = b"worktree "
+    candidates = (
+        Path(os.fsdecode(item.removeprefix(prefix)))
+        for item in report.split(b"\0")
+        if item.startswith(prefix)
+    )
+    return max(
+        (candidate for candidate in candidates if within(here, candidate)),
+        key=lambda candidate: len(candidate.parts),
+        default=registered,
+    )
+
+
+def kb_config():
     """The KB root and its exclusion patterns, from team-ai/index.lock."""
     import re
 
-    root, _, index_lock = paths(cwd)
+    root, _, index_lock = paths()
     try:
         text = index_lock.read_text(encoding="utf-8")
     except OSError:
@@ -65,11 +84,11 @@ def kb_config(cwd: str | None = None):
     return kb_root, excludes
 
 
-def kb_agents(cwd: str | None = None) -> dict[str, set[str]]:
+def kb_agents() -> dict[str, set[str]]:
     """Each emitted knowledge-base agent and the namespaces it owns."""
     import re
 
-    _, agents, _ = paths(cwd)
+    _, agents, _ = paths()
     owned: dict[str, set[str]] = {}
     for path in agents.glob("team-ai-*.md"):
         text = path.read_text(encoding="utf-8")
@@ -97,14 +116,26 @@ def within(path, parent) -> bool:
     return child == base or child.startswith(base.rstrip("\\/") + os.sep)
 
 
-def resolve(raw: str, cwd: str | None):
+def resolve(raw: str, cwd: str | None, root):
     from pathlib import Path
 
-    root, _, _ = paths(cwd)
     path = Path(raw)
     if not path.is_absolute():
         path = Path(cwd or root) / path
     return path.resolve()
+
+
+def matches_registered_file(root, registered, path) -> bool:
+    if root == registered:
+        return True
+    try:
+        candidate = root / path
+        return (
+            candidate.resolve() == candidate
+            and candidate.read_bytes() == (registered / path).read_bytes()
+        )
+    except OSError:
+        return False
 
 
 def excluded(path, kb_root, excludes: list[str]) -> bool:
@@ -147,11 +178,12 @@ def search_command(owned: set[str]) -> str:
     return f'python scripts/team_ai_cli.py search "<the question>" --root team-ai {namespace} --k 8'
 
 
-def bash_verdict(command: str, owned: set[str], cwd: str | None) -> str | None:
+def bash_verdict(
+    command: str, owned: set[str], cwd: str | None, root, registered
+) -> str | None:
     import re
     import shlex
 
-    root, _, _ = paths(cwd)
     refusal = (
         "Refused by the knowledge-base boundary, not by a missing interpreter: "
         "Python is available. Knowledge-base agents may run only this command, "
@@ -168,9 +200,11 @@ def bash_verdict(command: str, owned: set[str], cwd: str | None) -> str | None:
     except ValueError:
         return refusal
     if tokens[:1] == ["cd"] and len(tokens) > 3 and tokens[2] == "&&":
-        if resolve(tokens[1], cwd) != root.resolve():
+        if resolve(tokens[1], cwd, root) != root:
             return refusal
         tokens = tokens[3:]
+    elif resolve(".", cwd, root) != root:
+        return refusal
     if "&" in "".join(tokens) or tokens[:3] != [
         "python",
         "scripts/team_ai_cli.py",
@@ -199,22 +233,37 @@ def bash_verdict(command: str, owned: set[str], cwd: str | None) -> str | None:
         index += 2
     if not seen_root or not namespaces or not namespaces <= owned:
         return refusal
+    if not all(
+        matches_registered_file(root, registered, path)
+        for path in ("scripts/team_ai_cli.py", "team-ai/index.lock")
+    ):
+        return "Refused: the worktree search command or index configuration differs from the registered checkout. Use Grep or Glob under docs/."
     return None
 
 
 def verdict(event: dict) -> str | None:
     """A denial reason, or None to allow."""
-    import os
-
     cwd = event.get("cwd")
-    owned = kb_agents(cwd).get(event.get("agent_type"))
+    owned = kb_agents().get(event.get("agent_type"))
     if owned is None:
         return None
-    root_dir, _, index_lock = paths(cwd)
-    kb_root, excludes = kb_config(cwd)
+    registered, _, _ = paths()
+    root_dir = checkout_root(registered, cwd)
+    registered_kb, excludes = kb_config()
+    try:
+        kb_path = registered_kb.relative_to(registered)
+    except ValueError:
+        return "Refused: the knowledge-base root is outside the registered checkout."
+    kb_root = root_dir / kb_path
+    if not kb_path.parts or kb_root.resolve() != kb_root:
+        return (
+            "Refused: the knowledge-base root must be a directory inside the checkout."
+        )
+    lock_path = "team-ai/index.lock"
+    index_lock = root_dir / lock_path
     tool = event.get("tool_name")
     args = event.get("tool_input") or {}
-    rel_root = os.path.relpath(kb_root, root_dir).replace(os.sep, "/")
+    rel_root = kb_path.as_posix()
     yours = ", ".join(sorted(owned))
 
     def readable(target) -> str | None:
@@ -232,8 +281,10 @@ def verdict(event: dict) -> str | None:
         return None
 
     if tool == "Read":
-        target = resolve(str(args.get("file_path", "")), cwd)
-        if target == index_lock.resolve():
+        target = resolve(str(args.get("file_path", "")), cwd, root_dir)
+        if target == index_lock and matches_registered_file(
+            root_dir, registered, lock_path
+        ):
             return None
         problem = readable(target)
         return None if problem is None else f"Refused: {problem}"
@@ -241,8 +292,10 @@ def verdict(event: dict) -> str | None:
         raw = args.get("path")
         if not raw:
             return f'Refused: pass path: "{rel_root}" to search the knowledge base.'
-        target = resolve(str(raw), cwd)
-        if target == index_lock.resolve():
+        target = resolve(str(raw), cwd, root_dir)
+        if target == index_lock and matches_registered_file(
+            root_dir, registered, lock_path
+        ):
             return None
         if not within(target, kb_root):
             return f'Refused: search only under {rel_root}/. Pass path: "{rel_root}".'
@@ -260,7 +313,9 @@ def verdict(event: dict) -> str | None:
             return None if problem is None else f"Refused: {problem}"
         return None
     if tool == "Bash":
-        return bash_verdict(str(args.get("command", "")).strip(), owned, cwd)
+        return bash_verdict(
+            str(args.get("command", "")).strip(), owned, cwd, root_dir, registered
+        )
     return None
 
 
