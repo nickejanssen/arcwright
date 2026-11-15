@@ -1,3 +1,5 @@
+import pytest
+
 from scripts.roadmap_status import milestone_edits, milestone_id, reconcile, render
 
 
@@ -220,6 +222,74 @@ def test_json_output_is_scoped_to_the_requested_milestone(
     out = json.loads(capsys.readouterr().out)
     assert [t["milestone"] for t in out["tasks"]] == ["M5"]
     assert out["untracked_issues"] == []
+
+
+def test_exact_task_lookup_reports_official_status_and_each_prerequisite(
+    monkeypatch, capsys, tmp_path
+):
+    import json
+
+    import scripts.roadmap_status as module
+
+    scope = tmp_path / "task.md"
+    scope.write_text("**Milestone:** M5\n\nStatus: Complete\n", encoding="utf-8")
+    index = tmp_path / "index.json"
+    index.write_text(
+        json.dumps(
+            {
+                "tasks": [
+                    dict(
+                        task("AW-297", number=349),
+                        path="task.md",
+                        depends_on=["AW-296", "AW-295"],
+                    ),
+                    task("AW-296", number=347),
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    monkeypatch.setattr(module, "ROOT", tmp_path)
+    monkeypatch.setattr(module, "INDEX", index)
+    monkeypatch.setattr(
+        module,
+        "fetch_issues",
+        lambda: [
+            issue(349, "AW-297: Refresh the index"),
+            issue(347, "AW-296: Fix the guard", state="CLOSED"),
+        ],
+    )
+    monkeypatch.setattr(module, "fetch_milestones", lambda: [])
+    assert module.main(["--task", "AW-297"]) == 0
+    found = json.loads(capsys.readouterr().out)
+    assert found["task"]["state"] == "open"
+    assert found["scope_path"] == "task.md"
+    assert found["prerequisites"] == [
+        {"id": "AW-296", "issue": 347, "state": "closed"},
+        {"id": "AW-295", "issue": None, "state": None},
+    ]
+
+    monkeypatch.setattr(
+        module,
+        "fetch_issues",
+        lambda: [issue(349, "AW-298: Another task", state="CLOSED")],
+    )
+    assert module.main(["--task", "AW-297"]) == 2
+    found = json.loads(capsys.readouterr().out)
+    assert found["task"]["state"] is None
+    assert "issue #349 is titled AW-298" in found["task"]["problems"]
+
+
+def test_empty_task_cannot_enable_milestone_writes(capsys, monkeypatch):
+    import scripts.roadmap_status as module
+
+    monkeypatch.setattr(
+        module, "fetch_issues", lambda: pytest.fail("unexpected GitHub read")
+    )
+    with pytest.raises(SystemExit) as caught:
+        module.main(["--task", "", "--apply-milestones"])
+    assert caught.value.code == 2
+    assert "--task is read-only" in capsys.readouterr().err
 
 
 def test_an_epic_mapped_to_another_epics_issue_is_never_edited():

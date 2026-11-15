@@ -40,6 +40,11 @@ supersedes: []
 
 Reduce development friction by keeping unconfigured deploy workflows green, recording the approved tooling freeze D-110, and documenting reproducible Python 3.11 setup. No product code in `engine/`, `api/`, `sdk/`, `dashboard/`, or `config/` changes.
 
+**Current tooling freeze endpoint.** D-111 moved the end of the D-110 freeze
+to the rebuilt game's first TV session. The break-fix exception still applies.
+See [D-111 in the decision log](../product/decisions-log.csv) and the
+[current Nightcap status](../product/nightcap-status.md).
+
 ## Evidence
 
 Measured on 2026-09-27: Deploy API had failed all 32 observed runs since July at Google Cloud authentication because no workload identity provider was configured. Deploy Web had failed all 8 observed runs. The repository had no Actions secrets or variables. `.python-version` already pins Python 3.11, while the Windows launcher selected Python 3.14; mypy then failed on NumPy type stubs. CI uses Python 3.11; a local 3.11 environment passed mypy on 126 files, ruff, and 912 engine tests with one database integration skip. Between September 1 and September 27, nearly all commits went to agent and knowledge-base infrastructure while Paper Test #2 v3.0 had no external sessions.

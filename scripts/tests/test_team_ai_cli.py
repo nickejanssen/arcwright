@@ -63,7 +63,7 @@ def test_wrapper_ignores_modules_in_its_worktree_scripts_directory(tmp_path):
     assert Path(out.stdout.strip()).exists()
 
 
-def test_search_explains_plain_search_fallback_until_the_index_is_built(tmp_path):
+def kb_instance(tmp_path):
     instance = tmp_path / "team-ai"
     instance.mkdir()
     (instance / "index.lock").write_bytes(
@@ -71,13 +71,22 @@ def test_search_explains_plain_search_fallback_until_the_index_is_built(tmp_path
     )
     docs = tmp_path / "docs"
     docs.mkdir()
-    (docs / "worktree-proof.md").write_text(
-        "---\nid: safety.worktree-proof\nnamespace: safety\ntitle: Worktree proof\n"
+    return instance, docs
+
+
+def write_kb_doc(docs, name, namespace, body):
+    (docs / f"{name}.md").write_text(
+        f"---\nid: {namespace}.{name}\nnamespace: {namespace}\ntitle: Retrieval fixture\n"
         "owner: test\nstatus: active\nreview_by: '2027-01-01'\n"
         "sensitivity: internal\nsource: authored\ntags: []\nsupersedes: []\n---\n"
-        "# Worktree proof\n\nQuicksilver is a known test term.\n",
+        f"# Retrieval fixture\n\n{body}\n",
         encoding="utf-8",
     )
+
+
+def test_search_explains_plain_search_fallback_until_the_index_is_built(tmp_path):
+    instance, docs = kb_instance(tmp_path)
+    write_kb_doc(docs, "worktree-proof", "safety", "Quicksilver is a known test term.")
     base = [sys.executable, str(SCRIPT)]
     root = ["--root", str(instance)]
     search = [*base, "search", "quicksilver", *root, "--namespace", "safety", "--json"]
@@ -103,3 +112,34 @@ def test_search_explains_plain_search_fallback_until_the_index_is_built(tmp_path
     assert ranked.returncode == 0, ranked.stderr
     assert "worktree-proof.md" in ranked.stdout
     assert "Use plain search" not in ranked.stderr
+
+
+def test_specialist_search_returns_owned_hits_when_other_namespaces_dominate(tmp_path):
+    instance, docs = kb_instance(tmp_path)
+    for index in range(40):
+        write_kb_doc(docs, f"noise-{index}", "strategy", "reconstruction " * 12)
+    for index in range(10):
+        write_kb_doc(
+            docs, f"owned-{index}", "safety", "reconstruction and its safeguards"
+        )
+    for index in range(70):
+        write_kb_doc(
+            docs, f"filler-{index}", "strategy", "Scoring and session controls."
+        )
+
+    base = [sys.executable, str(SCRIPT)]
+    root = ["--root", str(instance)]
+    built = subprocess.run(
+        [*base, "reindex", *root], cwd=ROOT, capture_output=True, text=True
+    )
+    assert built.returncode == 0, built.stderr
+    result = subprocess.run(
+        [*base, "search", "reconstruction", *root, "--namespace", "safety", "--k", "8"],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+    )
+    assert result.returncode == 0, result.stderr
+    hits = result.stdout.splitlines()
+    assert len(hits) == 8
+    assert all("owned-" in hit for hit in hits)

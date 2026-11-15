@@ -95,10 +95,12 @@ def checkout_root(registered, cwd: str | None):
 
     try:
         top, common = checkout_info(candidate)
-        _, registered_common = checkout_info(registered)
+        registered_git = registered / ".git"
+        if registered_git.is_file() or (registered_git / "commondir").is_file():
+            _, registered_common = checkout_info(registered)
+            registered_git = Path(os.fsdecode(registered_common))
         if Path(os.fsdecode(top)).resolve() == candidate and (
-            Path(os.fsdecode(common)).resolve()
-            == Path(os.fsdecode(registered_common)).resolve()
+            Path(os.fsdecode(common)).resolve() == registered_git.resolve()
         ):
             return candidate
     except (OSError, ValueError, subprocess.CalledProcessError):

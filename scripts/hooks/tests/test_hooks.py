@@ -66,6 +66,20 @@ def test_injector_has_no_external_yaml_dependency():
     assert result.returncode == 0, result.stdout + result.stderr
 
 
+def test_injector_keeps_authoritative_work_sources_available_without_kb_state(
+    tmp_path, monkeypatch, capsys
+):
+    monkeypatch.setattr(inject_session_context, "MANIFEST", tmp_path / "missing.yaml")
+    monkeypatch.setattr(inject_session_context, "SNAPSHOT", tmp_path / "missing.json")
+    monkeypatch.setenv("ARCWRIGHT_HOOK_SESSION_CONTEXT", "1")
+
+    assert inject_session_context.main() == 0
+    out = capsys.readouterr().out
+    assert "python scripts/roadmap_status.py --task AW-NNN" in out
+    assert "docs/README.md" in out
+    assert "approval" in out and "next action" in out
+
+
 def test_injector_surfaces_freshness_failure(tmp_path, monkeypatch, capsys):
     manifest = tmp_path / "manifest.yaml"
     manifest.write_text(

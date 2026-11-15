@@ -92,7 +92,27 @@ def main() -> int:
     if args[:1] != ["search"]:
         return subprocess.run(command).returncode
 
-    result = subprocess.run(command, stderr=subprocess.PIPE)
+    options = args[2:]
+    flags = options[::2]
+    # The pinned CLI filters namespaces after its global candidate limit. Give
+    # specialist searches more candidates while keeping their eight-result limit.
+    widen = (
+        options[-2:] == ["--k", "8"]
+        and len(options) % 2 == 0
+        and "--namespace" in flags
+        and flags.count("--k") == 1
+        and set(flags) <= {"--root", "--namespace", "--k"}
+    )
+    if widen:
+        command[-1] = "16"
+    result = subprocess.run(
+        command, stdout=subprocess.PIPE if widen else None, stderr=subprocess.PIPE
+    )
+    if widen:
+        output = result.stdout
+        if result.returncode == 0:
+            output = b"".join(output.splitlines(keepends=True)[:8])
+        sys.stdout.buffer.write(output)
     sys.stderr.buffer.write(result.stderr)
     if result.returncode and result.stderr.startswith(b"index not built"):
         print(

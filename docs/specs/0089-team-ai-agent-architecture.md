@@ -640,6 +640,10 @@ stays gitignored. If a checkout has no built index, the search command directs
 the specialist to Grep or Glob under `docs/` and to Read matches in its own
 namespace. A maintainer rebuilds the index to restore ranked results.
 
+The specialist command asks the pinned CLI to consider more candidates before
+it applies the namespace filter. It still returns at most eight results, in the
+same ranking order and with the same threshold and namespace restrictions.
+
 **B-S3 — The 17-file regeneration diff is approved.** Removing the emitted
 `## Original instructions` block rewrites all 17 files under
 `.claude/agents/team-ai-*.md`, cutting roughly 43% from each. Those files are
