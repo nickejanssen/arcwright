@@ -36,31 +36,74 @@ def paths():
 def checkout_root(registered, cwd: str | None):
     """Find the registered Git worktree containing the tool's working directory."""
     import os
+    import shutil
     import subprocess
     from pathlib import Path
 
     here = Path(cwd).resolve() if cwd else registered
     if here == registered:
         return registered
+    filename = "git.exe" if os.name == "nt" else "git"
+    git = next(
+        (
+            found
+            for directory in map(Path, os.get_exec_path())
+            if directory.is_absolute()
+            if (found := shutil.which(str(directory / filename)))
+        ),
+        None,
+    )
+    if git is None:
+        return registered
     try:
         report = subprocess.run(
-            ["git", "-C", str(registered), "worktree", "list", "--porcelain", "-z"],
+            [git, "-C", str(registered), "worktree", "list", "--porcelain", "-z"],
             capture_output=True,
             check=True,
         ).stdout
     except (OSError, subprocess.CalledProcessError):
         return registered
     prefix = b"worktree "
-    candidates = (
-        Path(os.fsdecode(item.removeprefix(prefix)))
-        for item in report.split(b"\0")
-        if item.startswith(prefix)
-    )
-    return max(
+    candidates = []
+    for record in report.split(b"\0\0"):
+        location, *fields = record.split(b"\0")
+        if location.startswith(prefix) and not any(
+            field.split(b" ", 1)[0] == b"prunable" for field in fields
+        ):
+            candidates.append(Path(os.fsdecode(location.removeprefix(prefix))))
+    candidate = max(
         (candidate for candidate in candidates if within(here, candidate)),
         key=lambda candidate: len(candidate.parts),
         default=registered,
     )
+    if candidate == registered:
+        return registered
+
+    def checkout_info(path):
+        return subprocess.check_output(
+            [
+                git,
+                "-C",
+                str(path),
+                "rev-parse",
+                "--path-format=absolute",
+                "--show-toplevel",
+                "--git-common-dir",
+            ],
+            stderr=subprocess.DEVNULL,
+        ).splitlines()
+
+    try:
+        top, common = checkout_info(candidate)
+        _, registered_common = checkout_info(registered)
+        if Path(os.fsdecode(top)).resolve() == candidate and (
+            Path(os.fsdecode(common)).resolve()
+            == Path(os.fsdecode(registered_common)).resolve()
+        ):
+            return candidate
+    except (OSError, ValueError, subprocess.CalledProcessError):
+        pass
+    return registered
 
 
 def kb_config():

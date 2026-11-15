@@ -233,6 +233,27 @@ def test_kb_guard_does_not_trust_an_unregistered_checkout_marker(tmp_path):
 
 
 @pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_ignores_a_worktree_registration_with_no_backlink(tmp_path):
+    main, worktree = checkout_with_worktree(tmp_path)
+    (worktree / ".git").unlink()
+    assert guard_denies(main, worktree, "Read", file_path="docs/safety.md")
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_rejects_an_invalid_locked_worktree_marker(tmp_path):
+    main, worktree = checkout_with_worktree(tmp_path)
+    subprocess.run(
+        ["git", "worktree", "lock", str(worktree)],
+        cwd=main,
+        check=True,
+        capture_output=True,
+    )
+    (worktree / ".git").unlink()
+    (worktree / ".git").write_text("gitdir: missing\n", encoding="utf-8")
+    assert guard_denies(main, worktree, "Read", file_path="docs/safety.md")
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
 def test_kb_guard_denies_search_through_a_modified_worktree_wrapper(tmp_path):
     main, worktree = checkout_with_worktree(tmp_path)
     command = 'python scripts/team_ai_cli.py search "x" --root team-ai --namespace safety --k 8'
