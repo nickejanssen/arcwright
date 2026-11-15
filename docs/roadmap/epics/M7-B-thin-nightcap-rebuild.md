@@ -9,6 +9,7 @@ sensitivity: internal
 source: authored
 tags: []
 supersedes: []
+x-scope-evidence: "D-112, D-113"
 ---
 
 # M7-B: Thin Nightcap Rebuild
