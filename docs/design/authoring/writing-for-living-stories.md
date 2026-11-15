@@ -169,6 +169,32 @@ its work: one small sentence, and the room fills in everything.
 
 ---
 
+## 8. Show Evidence, Not Conclusions
+
+Added in the November 2026 reset. The v2.2 paper test found that the game "too often supplied conclusions instead of evidence", and players scored "felt like a detective" at 2 to 3 of 5. Generic dialogue is the second failure.
+
+An invented example, not from any real case.
+
+Weak, and typical of unconstrained generation:
+
+> The gardener looks nervous. "I was nowhere near the greenhouse," she says. Her muddy boots suggest she is lying about where she was.
+
+It tells the player the conclusion, and the line could belong to anyone.
+
+Stronger, authored and constrained:
+
+> She keeps pruning while she answers. "Greenhouse? Not since the frost." There is fresh potting grit in the tread of her boots. The greenhouse is the only place on the grounds that uses it.
+
+The player gets two observations and has to connect them. The voice is specific.
+
+The route:
+
+- **Scene first, fact second.** Show what the player saw or heard. Record the fact underneath for the engine.
+- **Never state the implication.** The game presents observations; the player owns what they mean.
+- **Write the moments that matter by hand:** the key clues, the lies, the reveal.
+- **Let a model dress, not decide:** room descriptions, small talk, variations on an authored line.
+- **A reviewer checklist per clue:** does it state a conclusion? Could another character say this line? Is there a second route to the same truth?
+
 ## The Author's Checklist
 
 Before an arc goes to validation:
