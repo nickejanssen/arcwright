@@ -13,6 +13,7 @@ ROOT = Path(__file__).resolve().parents[3]
 BLOCK = ROOT / "scripts" / "hooks" / "block_generated_writes.py"
 RECORD = ROOT / "scripts" / "hooks" / "record_observation.py"
 INJECT = ROOT / "scripts" / "hooks" / "inject_session_context.py"
+GUARD = ROOT / "scripts" / "hooks" / "guard_kb_agents.py"
 
 
 def run(script, payload):
@@ -105,6 +106,98 @@ def test_snapshot_records_freshness_failure(monkeypatch):
 
     assert snapshot["freshness"]["ok"] is False
     assert snapshot["freshness"]["output"] == "freshness failed"
+
+
+def checkout_with_worktree(tmp_path):
+    """A main checkout holding the guard hook, and a git worktree of it.
+
+    Laid out as desktop sessions are: the worktree sits under the main
+    checkout's .claude/worktrees/, and the registered hook may be the main
+    checkout's copy while the agent works in the worktree.
+    """
+    main = tmp_path / "main"
+    (main / "scripts" / "hooks").mkdir(parents=True)
+    shutil.copy(GUARD, main / "scripts" / "hooks" / "guard_kb_agents.py")
+    (main / "team-ai").mkdir()
+    (main / "team-ai" / "index.lock").write_text(
+        "kb:\n  root: ../docs\n  exclude:\n    - archive/\n", encoding="utf-8"
+    )
+    (main / ".claude" / "agents").mkdir(parents=True)
+    (main / ".claude" / "agents" / "team-ai-safety-sme.md").write_text(
+        "---\nname: safety-sme\nkb_namespaces:\n  - safety\n---\n", encoding="utf-8"
+    )
+    (main / "docs").mkdir()
+    (main / "docs" / "safety.md").write_text(
+        "---\nnamespace: safety\n---\n# Safety\n", encoding="utf-8"
+    )
+    (main / "engine").mkdir()
+    (main / "engine" / "service.py").write_text("x = 1\n", encoding="utf-8")
+    git = ["git", "-c", "user.name=t", "-c", "user.email=t@example.com"]
+    for args in (["init", "-q"], ["add", "-A"], ["commit", "-q", "-m", "init"]):
+        subprocess.run([*git, *args], cwd=main, check=True, capture_output=True)
+    worktree = main / ".claude" / "worktrees" / "wt"
+    subprocess.run(
+        [*git, "worktree", "add", "-q", "-b", "wt", str(worktree)],
+        cwd=main,
+        check=True,
+        capture_output=True,
+    )
+    return main, worktree
+
+
+def guard_denies(hook_checkout, cwd, tool, **tool_input):
+    result = run(
+        hook_checkout / "scripts" / "hooks" / "guard_kb_agents.py",
+        {
+            "agent_type": "safety-sme",
+            "tool_name": tool,
+            "tool_input": tool_input,
+            "cwd": str(cwd),
+        },
+    )
+    assert result.returncode == 0, result.stderr
+    return '"deny"' in result.stdout
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_allows_the_kb_from_a_worktree(tmp_path):
+    main, worktree = checkout_with_worktree(tmp_path)
+    for hook_checkout in (main, worktree):
+        assert not guard_denies(
+            hook_checkout, worktree, "Grep", pattern="x", path="docs"
+        )
+        assert not guard_denies(
+            hook_checkout, worktree, "Glob", pattern="*", path="docs"
+        )
+        assert not guard_denies(
+            hook_checkout, worktree, "Read", file_path="docs/safety.md"
+        )
+        assert not guard_denies(
+            hook_checkout,
+            worktree,
+            "Bash",
+            command=f'cd "{worktree}" && python scripts/team_ai_cli.py search "x" '
+            "--root team-ai --namespace safety --k 8",
+        )
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_refuses_outside_the_kb_from_main_and_worktree(tmp_path):
+    main, worktree = checkout_with_worktree(tmp_path)
+    for hook_checkout in (main, worktree):
+        for cwd in (main, worktree):
+            assert guard_denies(
+                hook_checkout, cwd, "Read", file_path="engine/service.py"
+            )
+            assert guard_denies(hook_checkout, cwd, "Grep", pattern="x", path="engine")
+            assert guard_denies(hook_checkout, cwd, "Glob", pattern="*", path=".")
+            assert guard_denies(hook_checkout, cwd, "Grep", pattern="x", path="docs/..")
+        assert guard_denies(
+            hook_checkout,
+            worktree,
+            "Read",
+            file_path=str(main / "engine" / "service.py"),
+        )
 
 
 @pytest.mark.skipif(shutil.which("bash") is None, reason="hooks run under bash")

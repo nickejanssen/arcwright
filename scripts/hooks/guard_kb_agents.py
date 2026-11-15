@@ -25,18 +25,30 @@ from __future__ import annotations
 import sys
 
 
-def paths():
+def paths(cwd: str | None = None):
+    """The checkout the agent works in, its agents directory and index.lock.
+
+    A session in a git worktree may run the main checkout's copy of this hook,
+    so the checkout is the nearest one holding the agent's working directory,
+    not the one holding this file. Without a usable cwd, this file's checkout.
+    """
     from pathlib import Path
 
     root = Path(__file__).resolve().parents[2]
+    if cwd:
+        here = Path(cwd).resolve()
+        for candidate in (here, *here.parents):
+            if (candidate / "team-ai" / "index.lock").is_file():
+                root = candidate
+                break
     return root, root / ".claude" / "agents", root / "team-ai" / "index.lock"
 
 
-def kb_config():
+def kb_config(cwd: str | None = None):
     """The KB root and its exclusion patterns, from team-ai/index.lock."""
     import re
 
-    root, _, index_lock = paths()
+    root, _, index_lock = paths(cwd)
     try:
         text = index_lock.read_text(encoding="utf-8")
     except OSError:
@@ -53,11 +65,11 @@ def kb_config():
     return kb_root, excludes
 
 
-def kb_agents() -> dict[str, set[str]]:
+def kb_agents(cwd: str | None = None) -> dict[str, set[str]]:
     """Each emitted knowledge-base agent and the namespaces it owns."""
     import re
 
-    _, agents, _ = paths()
+    _, agents, _ = paths(cwd)
     owned: dict[str, set[str]] = {}
     for path in agents.glob("team-ai-*.md"):
         text = path.read_text(encoding="utf-8")
@@ -88,7 +100,7 @@ def within(path, parent) -> bool:
 def resolve(raw: str, cwd: str | None):
     from pathlib import Path
 
-    root, _, _ = paths()
+    root, _, _ = paths(cwd)
     path = Path(raw)
     if not path.is_absolute():
         path = Path(cwd or root) / path
@@ -139,7 +151,7 @@ def bash_verdict(command: str, owned: set[str], cwd: str | None) -> str | None:
     import re
     import shlex
 
-    root, _, _ = paths()
+    root, _, _ = paths(cwd)
     refusal = (
         "Refused by the knowledge-base boundary, not by a missing interpreter: "
         "Python is available. Knowledge-base agents may run only this command, "
@@ -194,14 +206,14 @@ def verdict(event: dict) -> str | None:
     """A denial reason, or None to allow."""
     import os
 
-    owned = kb_agents().get(event.get("agent_type"))
+    cwd = event.get("cwd")
+    owned = kb_agents(cwd).get(event.get("agent_type"))
     if owned is None:
         return None
-    root_dir, _, index_lock = paths()
-    kb_root, excludes = kb_config()
+    root_dir, _, index_lock = paths(cwd)
+    kb_root, excludes = kb_config(cwd)
     tool = event.get("tool_name")
     args = event.get("tool_input") or {}
-    cwd = event.get("cwd")
     rel_root = os.path.relpath(kb_root, root_dir).replace(os.sep, "/")
     yours = ", ".join(sorted(owned))
 
