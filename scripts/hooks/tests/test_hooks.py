@@ -278,6 +278,21 @@ def test_kb_guard_denies_search_through_a_modified_worktree_wrapper(tmp_path):
     assert guard_denies(main, worktree, "Bash", command=command)
 
 
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_allows_same_policy_with_different_line_endings(tmp_path):
+    main, worktree = checkout_with_worktree(tmp_path)
+    for relative in ("scripts/team_ai_cli.py", "team-ai/index.lock"):
+        normalized = (main / relative).read_bytes().replace(b"\r\n", b"\n")
+        (main / relative).write_bytes(normalized)
+        (worktree / relative).write_bytes(normalized.replace(b"\n", b"\r\n"))
+    assert not guard_denies(
+        main,
+        worktree,
+        "Bash",
+        command='python scripts/team_ai_cli.py search "x" --root team-ai --namespace safety --k 8',
+    )
+
+
 @pytest.mark.skipif(shutil.which("bash") is None, reason="hooks run under bash")
 def test_registered_hooks_run_from_a_subdirectory():
     # A Bash `cd` persists into the session, and hooks inherit that directory;

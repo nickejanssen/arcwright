@@ -175,10 +175,10 @@ def matches_registered_file(root, registered, path) -> bool:
         return True
     try:
         candidate = root / path
-        return (
-            candidate.resolve() == candidate
-            and candidate.read_bytes() == (registered / path).read_bytes()
-        )
+        # Git can check out identical tracked text with different line endings.
+        return candidate.resolve() == candidate and candidate.read_bytes().replace(
+            b"\r\n", b"\n"
+        ) == (registered / path).read_bytes().replace(b"\r\n", b"\n")
     except OSError:
         return False
 
