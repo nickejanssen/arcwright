@@ -178,6 +178,9 @@ combination.
   prior general approval.
 - If founder input is unavailable, continue reversible research only, then
   stop before making a choice or starting dependent implementation.
+- In every reply to the founder, follow the Founder Communication Style
+  section of `docs/conventions/human-collaboration.md`: conclusion first, plain
+  words, evidence labelled, candid recommendations, next steps tracked.
 
 ## Hard Rules (Requires Explicit Approval)
 
