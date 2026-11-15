@@ -184,7 +184,11 @@
         "M7-A",
         "M7-B",
         "M7-C"
-      ]
+      ],
+      "github": {
+        "milestone_number": 7,
+        "url": "https://github.com/nickejanssen/arcwright/milestone/7"
+      }
     }
   ],
   "epics": [
@@ -651,7 +655,11 @@
         "AW-297",
         "AW-298",
         "AW-299"
-      ]
+      ],
+      "github": {
+        "issue_number": 372,
+        "url": "https://github.com/nickejanssen/arcwright/issues/372"
+      }
     },
     {
       "id": "M7-B",
@@ -668,7 +676,11 @@
         "AW-306",
         "AW-307",
         "AW-309"
-      ]
+      ],
+      "github": {
+        "issue_number": 373,
+        "url": "https://github.com/nickejanssen/arcwright/issues/373"
+      }
     },
     {
       "id": "M7-C",
@@ -677,7 +689,11 @@
       "path": "docs/roadmap/epics/M7-C-session-1-readiness-and-run.md",
       "tasks": [
         "AW-308"
-      ]
+      ],
+      "github": {
+        "issue_number": 374,
+        "url": "https://github.com/nickejanssen/arcwright/issues/374"
+      }
     },
     {
       "id": "M6-D",
@@ -693,7 +709,11 @@
         "AW-315",
         "AW-316",
         "AW-317"
-      ]
+      ],
+      "github": {
+        "issue_number": 375,
+        "url": "https://github.com/nickejanssen/arcwright/issues/375"
+      }
     }
   ],
   "tasks": [
