@@ -89,6 +89,7 @@ These five constraints are non-negotiable and may not be bypassed by arc configu
 
 ## Before Starting Any Task
 
+0. Read `/HANDOVER.md`: the short start-of-session brief on where things stand, where work lives, known issues, and choices that must not be "fixed". Add a dated log entry there after every merged pull request.
 1. Read `/docs/README.md` for documentation routing, versioning, and AI-cost rules.
 2. Read the relevant **PRD section** from `/docs/prd/` for product context.
 3. Read the relevant **architecture section** from `/docs/architecture/` for design details.
@@ -176,6 +177,7 @@ combination.
   sign-off, and durable decision recording are separate approvals.
 - Never infer founder approval from silence, PR creation, review activity, or
   prior general approval.
+- Work is never left only in chat. Anything found that needs doing becomes a roadmap task record and a GitHub issue in the same session, in the standard format in `docs/roadmap/operations/working-model.md` (D-119).
 - If founder input is unavailable, continue reversible research only, then
   stop before making a choice or starting dependent implementation.
 - In every reply to the founder, follow the Founder Communication Style

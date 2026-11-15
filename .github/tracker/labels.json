@@ -63,5 +63,50 @@
     "name": "M6",
     "color": "b60205",
     "description": "Milestone 6 work"
+  },
+  {
+    "name": "M7",
+    "color": "1d76db",
+    "description": "Milestone 7 work: Nightcap GDD rebuild to session 1"
+  },
+  {
+    "name": "product:nightcap",
+    "color": "8b5cf6",
+    "description": "Serves the Nightcap game"
+  },
+  {
+    "name": "product:arcwright",
+    "color": "0ea5e9",
+    "description": "Serves the Arcwright engine or platform"
+  },
+  {
+    "name": "product:shared",
+    "color": "64748b",
+    "description": "Serves both Arcwright and Nightcap, or the development process"
+  },
+  {
+    "name": "needs-decision",
+    "color": "d93f0b",
+    "description": "Waiting on a founder decision; do not start"
+  },
+  {
+    "name": "superseded",
+    "color": "cfd3d7",
+    "description": "Describes scope replaced by a later decision; kept for history"
+  },
+  {
+    "name": "deferred",
+    "color": "e4e669",
+    "description": "Valid work, deliberately scheduled after the current milestone"
+  },
+  {
+    "name": "founder-action",
+    "color": "b60205",
+    "description": "Only the founder can do this step"
+  },
+  {
+    "name": "ops",
+    "color": "5a6b7b",
+    "description": "Harness, knowledge base, tracker or repository upkeep"
   }
 ]
