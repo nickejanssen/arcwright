@@ -25,6 +25,8 @@ Tabletop roleplaying games cracked this problem decades ago. A skilled GM holds 
 
 Arcwright automates the facilitation layer without removing human authorship. The arc is still designed by a person: the plot skeleton, the characters, the world rules, the constraints on what can and cannot happen. The engine makes that arc alive for the specific group inside it, reading who is in the room and producing an experience that could not have happened with any other combination of people. Every session is unrepeatable. No GM required.
 
+Put simply, Arcwright is the dungeon master for any game built on it. The component-by-component mapping is in [architecture section 1.6](../architecture/01-overview.md#16-the-dungeon-master-analogy).
+
 The commercial opportunity is not just party games. The same infrastructure that runs a murder mystery also runs a corporate team-building event, a museum installation, a language-learning simulation, or a monster-catching RPG with procedurally-generated worlds. This is platform territory. But platforms without proof are vaporware. The games are the proof: each one stress-tests the engine against a genuinely different design problem, and each one ships as a real product with real players.
 
 Arcwright builds both. The platform is the primary commercial product. The games are how the platform earns the right to exist.

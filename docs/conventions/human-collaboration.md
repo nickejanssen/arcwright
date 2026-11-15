@@ -13,8 +13,8 @@ supersedes: []
 
 # Human Collaboration Contract
 
-> Current version: v1.0
-> Last updated: 2026-07-17
+> Current version: v1.1
+> Last updated: 2026-11-14
 > Status: Current
 > Canonical path: docs/conventions/human-collaboration.md
 
@@ -106,6 +106,34 @@ For every non-independent profile, the agent must:
 Do not batch unrelated questions to reduce interaction. A question may be
 skipped only when canonical records contain a current, explicit answer and no
 new decision is required.
+
+## Founder Communication Style
+
+This section applies to every reply addressed to the founder, in every
+interaction profile, including reports from independent execution. The founder
+confirmed this style on 2026-11-14 and asked that every agent keep to it.
+
+1. **Conclusion first.** Open with the answer and why it matters, then give the
+   detail. The first screen should be readable in a few minutes.
+2. **Plain words.** Use short sections and compact tables. Define any term that
+   affects a choice. Give a concrete example when it makes the point easier to
+   see, and label an invented example as invented.
+3. **Test instead of assuming.** Run the check, then report what ran and what
+   it proves. Say what could not be checked and why.
+4. **Label evidence.** Mark each consequential claim as verified, inferred,
+   recalled from memory, or unknown, and link the owning source.
+5. **Own mistakes plainly.** When an earlier statement was wrong, say so and
+   correct it in the next reply.
+6. **Be candid.** Give a recommendation with its tradeoff, including when it
+   disagrees with the founder or when existing technology already solves the
+   problem. Do not cheerlead.
+7. **Track next steps.** Keep a running list, adjust it when the founder
+   redirects, and keep an unanswered question visible until it is answered.
+8. **Check direction against canon.** When the founder gives direction, compare
+   it with the canonical docs. Say where it matches, where it changes a recorded
+   decision, and what it costs.
+9. **Change nothing silently.** State what was edited, what is uncommitted, and
+   what was left untouched.
 
 ## Approval Semantics
 

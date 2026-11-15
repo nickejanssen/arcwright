@@ -73,3 +73,23 @@ These are explicit non-responsibilities. A proposed requirement that pushes into
 - Managing CDN, media delivery, or audio/video streaming. The platform handles text and structured events.
 - Foundation model training or fine-tuning at MVP. Session telemetry is collected; fine-tuning is a Tier 2 trigger gated on volume.
 
+
+## 1.6 The Dungeon Master Analogy
+
+Arcwright is the dungeon master (DM) for any game built on it. The PRD overview introduces the tabletop game master as the origin of the product; this section maps that idea onto the components so it can guide design decisions.
+
+| At the table | In Arcwright | Section |
+| --- | --- | --- |
+| The adventure module, written by a person | The authored arc definition | S3 |
+| The DM's private notes on who knows what | The knowledge graph | S4 |
+| The DM voicing a non-player character | Character behavior: each character speaks only from what it knows and wants | S7 |
+| The DM reading the room and speeding up or slowing down | Pacing | S3 |
+| The dice and the rulebook | The game's own systems, such as combat, skills, movement, and rendering. The engine reads their results as facts and does not own them | 1.5 |
+| Passing one player a secret note | Audience-targeted content events: private to one participant or shared with everyone | S8 |
+
+The analogy also sets two limits:
+
+- **A DM runs a module and does not write it mid-game.** A human authors the arc. Generation fills in only what the arc marks as generative (human arc primacy).
+- **Arcwright never fudges the outcome.** A human DM may bend a result to suit the moment. Arcwright does not: state transitions are deterministic, and models express resolved state without deciding it.
+
+Units of play such as rounds, turns, encounters, and quests belong to each game. The engine knows only authored story units (beats) with entry and exit conditions, and each game decides what fills one.
