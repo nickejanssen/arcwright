@@ -200,3 +200,14 @@ Each blocks the named work package. Recommendations are the author's, not decisi
 - **Q8. Suspect dialogue.** RESOLVED from the GDD: deterministic authored truth and state first, generative expression only within resolved state, and AI ownership expands only through evidence-gated autonomy. Suspects are unified character-model objects; authored lines ship first and generated expression is a per-element arc setting, constrained by knowledge state. Blocks: none.
 - **Q9. Couch Race arc and code.** No GDD or product decision covers the code. Deferred to the WP0 inventory, which proposes a disposition per file for founder approval. Until then nothing is deleted or unregistered. Blocks: none for WP0.
 - **Q10. Procedural case resolver.** RESOLVED from the GDD ("procedural scalability with authored quality", "hybrid library"): keep `engine/case` skeleton resolution. This rebuild's first case is authored in the WP1 format; how the two sources combine is specified in WP1. Blocks: none.
+
+## Corrections From The 15 November 2026 Code Check
+
+Added by the November 2026 reset audit (`docs/product/2026-11-15-reset-audit.md`). These correct the first-pass reconciliation table above against code. They do not approve this spec or change its scope. The work package 0 inventory (AW-300) confirms or corrects every remaining row.
+
+- **Arcs can already repeat a middle section.** The table says the arc cannot express a repeating phase. `engine/arc/arc_state.py` builds its state chart from arbitrary `beat_graph` edges, and `engine/tests/test_arc_state.py::test_loop_graph_can_return_to_earlier_beat` proves a loop back to an earlier beat. The old Couch Race arc file is a straight line; the engine is not limited to one. What is still missing is ending the middle early when Last Call triggers.
+- **Part of the notebook's record already exists.** The table reports no notebook code. The engine already records who said what to whom, which is the transcript half of a notebook.
+- **Nothing starts a mini-game in a real session.** Outside tests, nothing calls `create_run`, `start_run` or `check_timeout` in `engine/mini_games/runtime.py`, and nothing links a finished run to a beat ending. This is real work the table does not list (AW-303).
+- **The host's authored lines have no reader.** No engine or API code reads the line libraries; AW-291 is the planned reader.
+- **Two sets of screen code exist.** `scripts/rehearsal.py` launches `dashboard/`; the mini-game kit lives in `nightcap-web/`. The inventory must pick one.
+- **Founder decisions since this draft:** a thin, complete version on the 30-day date across three sessions (D-112); in Nightcap a beat is one round ending in a story-wrapped mini-game (D-113); three combined specs instead of one per work package (D-118, AW-302).

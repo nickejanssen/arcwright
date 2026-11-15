@@ -30,6 +30,7 @@ Readiness Program's device and real-player evidence.
 - [M6-A: Playtest Operations](../epics/M6-A-playtest-operations.md)
 - [M6-B: Qualifying Session Execution](../epics/M6-B-qualifying-session-execution.md)
 - [M6-C: H1 Proof Analysis](../epics/M6-C-h1-proof-analysis.md)
+- [M6-D: After Session 1: Cleanup, Learning And Research](../epics/M6-D-after-session-1-cleanup-learning-and-research.md)
 
 ## Exit Gate
 

@@ -71,6 +71,7 @@ When proposing changes:
 - `0022-resolved-case-persistence.md` - D-103 persists the resolved case in six normalized tables with real foreign keys, extending ADR-0017 which authorized only the anchor shape; follows the ADR-0016 dedicated-table precedent and makes the alibi contradiction an integrity-enforced join, at the cost of growing AW-290 well past its recorded size
 - `0024-kb-front-matter-backfill-via-team-ai-adopt.md` - Proposed: backfills machine-readable front matter (status, namespace, owner, review_by) onto the ~470 docs/ files that had none, via the external team-ai adopt tool under founder interactive review; awaiting founder approval
 - `0025-provider-credential-mapping-owned-by-router.md` - `engine/routing/router.py` becomes the single provider-keyed credential map (provider id to env var, plus its deploy slot); `scripts/rehearsal.py` derives nothing and asks the router instead, and the local preflight now accepts either a provider's own env var or its provider-neutral deploy slot, matching what the router already does at runtime
+- `0026-build-what-is-unique-adopt-the-rest.md` - D-114: build only what makes Arcwright unique (deterministic story state, the knowledge graph, knowledge-constrained characters, pacing, fairness checks, play records) and adopt existing technology for screens, animation, voices, story-writing tools, graph drawing, hosting and payments; replace an adopted tool only for a missing feature, cost or a strong purpose; free first with a $50 monthly ceiling
 
 ## Current Decision Categories
 
