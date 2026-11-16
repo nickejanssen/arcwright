@@ -108,7 +108,7 @@ Work the list top to bottom. Building starts only at step 7. Whether a step is d
 
 | # | Step | Who | Starts when |
 | --- | --- | --- | --- |
-| 1 | Done 2026-11-16: inventory reviewed; specs 0093 and 0094 approved (D-124, D-125); mini-game reward answered (D-126). Now: merge pull request #385, which carries all of it to main | Founder, 1 minute | Now |
+| 1 | Done 2026-11-16: inventory reviewed; specs 0093 and 0094 approved (D-124, D-125); mini-game reward answered (D-126). Pull request #385 merged 2026-11-16. | Founder, 1 minute | Now |
 | 2 | Require the two extra checks before merge (AW-298, #350) | Founder, about 10 minutes | Now |
 | 3 | Tell the session on branch `claude/lido-case-and-spec-followups` to commit, push and open a pull request | Founder, 2 minutes | Now |
 | 4 | Answer the two interview questions (what players should feel and do; the first outside creator) | Founder with any session | Before step 6 |
