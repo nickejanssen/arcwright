@@ -710,7 +710,8 @@
         "AW-314",
         "AW-315",
         "AW-316",
-        "AW-317"
+        "AW-317",
+        "AW-321"
       ],
       "github": {
         "issue_number": 375,
@@ -2679,6 +2680,19 @@
       ],
       "path": "docs/roadmap/tasks/AW-320-friend-voiced-characters-recorded-lines-first.md",
       "epic_id": "M7-B"
+    },
+    {
+      "id": "AW-321",
+      "title": "Map A Book Or Film Into The Story Map",
+      "milestone": "M6",
+      "epic": "M6-D",
+      "size": "M",
+      "depends_on": [
+        "AW-314",
+        "AW-317"
+      ],
+      "path": "docs/roadmap/tasks/AW-321-map-a-book-or-film-into-the-story-map.md",
+      "epic_id": "M6-D"
     }
   ],
   "superseded_sources": [
