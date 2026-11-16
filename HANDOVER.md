@@ -2,7 +2,7 @@
 
 > Read `AGENTS.md` first, then this file, before touching code. It is the short start-of-session brief for every agent (Claude, Codex, Copilot) and for the founder. If it disagrees with a current source, investigate before acting, then fix this file. Keep it short and link to the owner of each detail.
 
-Last updated: 2026-11-15, against main `14f12e2`.
+Last updated: 2026-11-16, against main `e2b1471`.
 
 ## System map
 
@@ -94,6 +94,7 @@ Open the task you were given on GitHub. Confirm its prerequisites against main. 
 
 Add one dated entry per merged pull request: what changed, why, which checks covered it, and what is still open.
 
+- **2026-11-16** Captured four founder ideas as tasks under D-119 (PR #383), with issues #379 to #382: AW-319 (detective agency framing as a wrapper on the first case; tone is comedic with depth), AW-320 (friends' recorded voices, no cloning; last in the session 1 fit order and first to cut), AW-321 (map a book or film into the story map; priority 2 after AW-317, waits for Nightcap to be live) and AW-322 (prove a mini-game can be built and played on its own, list the gaps). AW-314 gained the founder's story notes as material. Documentation only. Checks: `scripts/verify_human_collaboration.py --phase global` passes; no code changed, so engine tests were not run. Still open: none of the four is approved build scope; the founder chooses the framing comparison method and decides each gap from AW-322.
 - **2026-11-15** Knowledge-base agents can now read `docs/product/decisions-log.csv` (D-120, a deliberate exception to the tooling freeze). `SHARED_SOURCES` in `scripts/hooks/guard_kb_agents.py` allows Read and Grep content for that one file; the CSV carries no namespace, so the guard had refused it, and specialists answered from derived pages. Checks: hook tests pass except `test_registered_hooks_run_from_a_subdirectory`, which also fails on `main` here because `bash` resolves to the WSL launcher. Each of the 14 agent sources in `team-ai/agents/` now says when and how to open the log, and `.claude/agents/team-ai-*.md` were regenerated with the CI `emit` recipe. Still open: the log is not in the ranked index, so agents reach it by Grep on a decision ID; no live specialist read has been run yet.
 - **2026-11-15** Reset consolidation. Recorded decisions D-112 to D-119 and ADR-0026; added milestone M7 and tasks AW-296 to AW-317 with matching GitHub issues; added the full target stack (technology stack 2.11), the creator roles (architecture 1.7), the reset audit, the knowledge-base upkeep routine, this file and the task issue template; rewrote the Nightcap status page. Documentation only. Open: everything in "Current work".
 - **2026-11-14** Added the dungeon master section and the founder communication style (PR #346). Documentation only.

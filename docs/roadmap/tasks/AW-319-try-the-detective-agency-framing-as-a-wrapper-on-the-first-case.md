@@ -36,13 +36,14 @@ The founder's idea, 16 November 2026: every Nightcap case starts with the group 
 - Wrapper only. No change to mechanics, case structure, scoring, the engine or the case graph.
 - Draft two short intro texts for the first case (AW-305): the current invitation framing and the agency framing. Each is the opening the TV would show, plus two or three sample narrator lines and one end-of-case line.
 - Content lives in `nightcap/` with the first case. Nothing in `engine/` changes.
+- Tone, set by the founder on 16 November 2026: "Dysfunctional should be comedic, but can still have depth when appropriate." The drafts may draw on his recorded inspirations (`docs/product/2026-11-15-reset-audit.md`, section 3). The drafting session proposes which ones fit, for example Dungeon Crawler Carl for comedy that still carries weight and Jackbox for party humour; those two are the session's suggestion, not the founder's pick.
 - Open question for the founder: how to compare. Session 1 is one group on one night, so it cannot be a true A/B test. Options: the founder picks from the two drafts; a few outside readers react to both intros; or different framings run in different sessions after session 1. The online paper test stays paused (D-111).
 
 ## Human Collaboration Contract
 
 **Interaction profile:** Creative collaboration, then a decision interview.
 
-- Founder inputs: tone (how comedic "dysfunctional" should be against the "cinematic" promise), the comparison method, and the choice of framing for session 1.
+- Founder inputs: the comparison method, and the choice of framing for session 1. Tone is answered (see Technical Scope); the drafts show how comedy sits beside the "cinematic" promise.
 - Next gate: the founder reviews the two intro drafts side by side.
 - Approval: the founder's written choice on the issue. If the agency framing replaces the invitation framing, that is a product decision and goes in `docs/product/decisions-log.csv` before any canonical GDD page changes.
 

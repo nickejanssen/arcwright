@@ -35,6 +35,7 @@ The roadmap's first visual-editor phase is read-only inspection (AW-236 to AW-23
 - Draw graphs with React Flow (MIT) or Cytoscape.js (MIT); do not hand-draw them.
 - Do not build a general story editor; writing happens in an adopted tool (AW-306). Show only what Arcwright alone knows.
 - Trigger to build: the founder cannot tell why something happened during a debrief.
+- Founder direction, 16 November 2026: the story map is built for use with Arcwright. Priority 1 is mapping Arcwright and its games (this viewer). Priority 2 is importing outside material such as a book or film (AW-321). Building can wait until Nightcap is live, unless the founder decides it is needed sooner.
 
 ## Human Collaboration Contract
 

@@ -18,7 +18,7 @@ supersedes: []
 **Size:** M  
 **Product:** Arcwright  
 **Owner:** One AI build session; founder picks the stories and judges the maps  
-**Target date:** 2027-02-13
+**Target date:** 2027-02-13, or later: it waits for Nightcap to be live unless the founder pulls it forward
 
 ## Plain-English Summary
 
@@ -29,6 +29,7 @@ The founder's idea, 16 November 2026: pick a book or a film and have its story d
 - One map format for our own cases and for outside stories lets them be compared side by side.
 - It reuses two planned pieces instead of adding a third: the story breakdown from the story library experiment (AW-314) and the read-only viewer (AW-317).
 - Captured under D-119. It is an idea under test, not approved build scope.
+- Founder direction, 16 November 2026: the story map is built for use with Arcwright. Priority 1 is mapping Arcwright and its games (AW-317). Priority 2 is importing outside material and building its map (this task). Both can wait until Nightcap is live, unless the founder decides they are needed sooner.
 
 ## Technical Scope
 
