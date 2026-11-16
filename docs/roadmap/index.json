@@ -2898,6 +2898,10 @@
         "AW-303",
         "AW-325"
       ],
+      "github": {
+        "issue_number": 388,
+        "url": "https://github.com/nickejanssen/arcwright/issues/388"
+      },
       "path": "docs/roadmap/tasks/AW-326-build-last-call-the-private-lock-the-theory-check-and-the-winner-rule.md",
       "epic_id": "M7-B"
     },
@@ -2911,6 +2915,10 @@
         "AW-304",
         "AW-326"
       ],
+      "github": {
+        "issue_number": 389,
+        "url": "https://github.com/nickejanssen/arcwright/issues/389"
+      },
       "path": "docs/roadmap/tasks/AW-327-build-the-closing-sequence-and-prove-a-full-game-headless.md",
       "epic_id": "M7-B"
     }
