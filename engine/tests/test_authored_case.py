@@ -49,6 +49,7 @@ ENGINE_DIR = Path(__file__).resolve().parent.parent
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "authored_case"
 VALID_CASE = FIXTURES / "valid_case.json"
 BEATS = ["opening", "beat_one", "beat_two", "beat_three", "finale"]
+LEDGER_TEXT = "The ledger shows a crate signed out at nine."
 
 Raw = dict[str, Any]
 
@@ -143,6 +144,10 @@ def a6_slot_too_easy(raw: Raw) -> None:
     find(raw, "cast", "cast_id", "quillby")["nameable"] = False
 
 
+def a6_accepted_cast_not_selectable(raw: Raw) -> None:
+    find(raw, "cast", "cast_id", "marlowe")["nameable"] = False
+
+
 BREAKS: list[tuple[str, str, Callable[[Raw], None]]] = [
     ("A1", "duplicate_id", a1_duplicate_id),
     ("A1", "unknown_concept", a1_unknown_concept),
@@ -157,6 +162,7 @@ BREAKS: list[tuple[str, str, Callable[[Raw], None]]] = [
     ("A5", "thin_beat", a5_thin_beat),
     ("A6", "answer_unobtainable", a6_answer_unobtainable),
     ("A6", "slot_too_easy", a6_slot_too_easy),
+    ("A6", "accepted_cast_not_selectable", a6_accepted_cast_not_selectable),
 ]
 BREAK_IDS = [f"{rule}-{name}" for rule, name, _ in BREAKS]
 
@@ -210,6 +216,15 @@ class TestRefusals:
             assert failures[0] == rule
         else:
             assert failures == [rule]
+
+    def test_true_concepts_count_as_wrong_answers_for_a_concept_slot(self) -> None:
+        """A player may pick any concept they hold, so a true concept that is
+        not the accepted answer is a wrong answer (spec 0094)."""
+        raw = valid_raw()
+        for concept in raw["concepts"]:
+            concept["standing"] = "true"
+        raw["deceptions"] = []
+        assert run_check(raw).passed
 
     def test_a3_refuses_when_the_budget_is_too_small(self) -> None:
         assert run_check(valid_raw(), budget=4).passed
@@ -385,7 +400,11 @@ class TestHoldings:
     ) -> None:
         _, session_id, (alice, bob) = await make_session(db, patched_arc)
         assert await grant_concept(
-            db, session_id=session_id, character_id=alice, concept_id="c_ledger"
+            db,
+            session_id=session_id,
+            character_id=alice,
+            concept_id="c_ledger",
+            text=LEDGER_TEXT,
         )
         held_alice = await concepts_held(db, session_id=session_id, character_id=alice)
         held_bob = await concepts_held(db, session_id=session_id, character_id=bob)
@@ -398,10 +417,18 @@ class TestHoldings:
     ) -> None:
         _, session_id, (alice, _) = await make_session(db, patched_arc)
         assert await grant_concept(
-            db, session_id=session_id, character_id=alice, concept_id="c_ledger"
+            db,
+            session_id=session_id,
+            character_id=alice,
+            concept_id="c_ledger",
+            text=LEDGER_TEXT,
         )
         assert not await grant_concept(
-            db, session_id=session_id, character_id=alice, concept_id="c_ledger"
+            db,
+            session_id=session_id,
+            character_id=alice,
+            concept_id="c_ledger",
+            text=LEDGER_TEXT,
         )
         rows = await db.scalar(
             select(func.count())
@@ -416,14 +443,18 @@ class TestHoldings:
     ) -> None:
         _, session_id, (alice, bob) = await make_session(db, patched_arc)
         await grant_concept(
-            db, session_id=session_id, character_id=alice, concept_id="c_ledger"
+            db,
+            session_id=session_id,
+            character_id=alice,
+            concept_id="c_ledger",
+            text=LEDGER_TEXT,
         )
         await assert_knowledge(
             db,
             session_id=session_id,
             character_id=bob,
             fact_type=CONCEPT_FACT_TYPE,
-            fact_content={"concept_id": "c_ledger"},
+            fact_content={"concept_id": "c_ledger", "text": LEDGER_TEXT},
             source_character_id=alice,
         )
         assert (
@@ -440,18 +471,26 @@ class TestHoldings:
     ) -> None:
         _, session_id, (alice, bob) = await make_session(db, patched_arc)
         await grant_concept(
-            db, session_id=session_id, character_id=alice, concept_id="c_ledger"
+            db,
+            session_id=session_id,
+            character_id=alice,
+            concept_id="c_ledger",
+            text=LEDGER_TEXT,
         )
         await assert_knowledge(
             db,
             session_id=session_id,
             character_id=bob,
             fact_type=CONCEPT_FACT_TYPE,
-            fact_content={"concept_id": "c_ledger"},
+            fact_content={"concept_id": "c_ledger", "text": LEDGER_TEXT},
             source_character_id=alice,
         )
         assert await grant_concept(
-            db, session_id=session_id, character_id=bob, concept_id="c_ledger"
+            db,
+            session_id=session_id,
+            character_id=bob,
+            concept_id="c_ledger",
+            text=LEDGER_TEXT,
         )
         assert await concepts_held(db, session_id=session_id, character_id=bob) == {
             "c_ledger"
@@ -463,7 +502,11 @@ class TestHoldings:
     ) -> None:
         _, session_id, (alice, _) = await make_session(db, patched_arc)
         await grant_concept(
-            db, session_id=session_id, character_id=alice, concept_id="c_ledger"
+            db,
+            session_id=session_id,
+            character_id=alice,
+            concept_id="c_ledger",
+            text=LEDGER_TEXT,
         )
         fact_id = await db.scalar(select(Fact.fact_id))
         assert fact_id is not None
@@ -502,6 +545,12 @@ class TestSessionStart:
             )
             saved = {ks.fact.fact_content["concept_id"] for ks in states}
             assert saved == set(cast["knows"])
+            # Generation copies fact content as it is, so the written text
+            # must travel with the ID.
+            texts = {c["concept_id"]: c["text"] for c in raw["concepts"]}
+            for ks in states:
+                content = ks.fact.fact_content
+                assert content["text"] == texts[content["concept_id"]]
             profile = await db.scalar(
                 select(Character.behavior_profile).where(
                     Character.character_id == character_id

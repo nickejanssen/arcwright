@@ -13,6 +13,7 @@ participant hold". Everything that needs the answer calls it.
 
 from __future__ import annotations
 
+from typing import Any
 from uuid import UUID
 
 from sqlalchemy import select
@@ -45,7 +46,8 @@ async def concepts_held(
             Fact.fact_type == CONCEPT_FACT_TYPE,
         )
     )
-    return frozenset(str(content["concept_id"]) for content in result.scalars().all())
+    contents: list[dict[str, Any]] = list(result.scalars().all())
+    return frozenset(str(content["concept_id"]) for content in contents)
 
 
 async def grant_concept(
@@ -54,8 +56,13 @@ async def grant_concept(
     session_id: UUID,
     character_id: UUID,
     concept_id: str,
+    text: str,
 ) -> bool:
     """Give a participant a concept they found themselves.
+
+    The concept's written ``text`` is saved with its ID, so character
+    generation, which copies fact content as it is, sees what the concept
+    says and not only an opaque ID.
 
     Returns True if it was new, False if they already held it (nothing is
     saved the second time).
@@ -69,7 +76,7 @@ async def grant_concept(
         session_id=session_id,
         character_id=character_id,
         fact_type=CONCEPT_FACT_TYPE,
-        fact_content={"concept_id": concept_id},
+        fact_content={"concept_id": concept_id, "text": text},
         source_character_id=None,
     )
     return True

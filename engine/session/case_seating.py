@@ -81,6 +81,7 @@ async def seat_authored_case(
         )
         await db.flush()
 
+    texts = {c.concept_id: c.text for c in case.concepts}
     for cast in case.cast:
         for concept_id in cast.knows:
             await grant_concept(
@@ -88,6 +89,7 @@ async def seat_authored_case(
                 session_id=session_id,
                 character_id=seated[cast.cast_id],
                 concept_id=concept_id,
+                text=texts[concept_id],
             )
 
     result = await db.execute(
@@ -103,6 +105,7 @@ async def seat_authored_case(
                 session_id=session_id,
                 character_id=character_id,
                 concept_id=concept_id,
+                text=texts[concept_id],
             )
     return seated
 

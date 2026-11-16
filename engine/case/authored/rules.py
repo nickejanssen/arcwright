@@ -412,6 +412,14 @@ def _a6_answers(case: AuthoredCase, beat_order: Sequence[str]) -> RuleOutcome:
                     f"slot {slot.slot_id!r}: accepted answer {answer.value!r} "
                     "needs a concept that can never be obtained"
                 )
+        if slot.kind == "cast":
+            not_selectable = {c.cast_id for c in case.cast if not c.nameable}
+            problems.extend(
+                f"slot {slot.slot_id!r}: accepted answer {a.value!r} "
+                "is a cast member a player may not name"
+                for a in slot.accepted
+                if a.value in not_selectable
+            )
         wrong = _wrong_answers(case, slot, accepted_values, held)
         if len(wrong) < 2:
             problems.append(
@@ -435,7 +443,5 @@ def _wrong_answers(
     return [
         c.concept_id
         for c in case.concepts
-        if c.standing == "misleading"
-        and c.concept_id in held
-        and c.concept_id not in accepted_values
+        if c.concept_id in held and c.concept_id not in accepted_values
     ]
