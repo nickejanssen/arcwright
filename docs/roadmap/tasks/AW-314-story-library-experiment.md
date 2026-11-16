@@ -30,11 +30,12 @@ The founder asked whether training Arcwright on stories he wrote and on open sto
 
 ## Technical Scope
 
-- Material: the founder's own writing plus public-domain mysteries. Check each work's status first; "open source" is not the same as public domain.
+- Material: the founder's own writing, his short story notes and loose ideas, plus public-domain mysteries. Check each work's status first; "open source" is not the same as public domain.
 - Break each story into its structure: characters, secrets, motives, clue routes, story units.
 - Baseline: generate a case outline with no library. Test: generate one with five retrieved structures. Hold out three structures to check it is not copying.
 - The founder scores blind, 1 to 5, on: fair, two routes to each truth, surprising but inevitable, specific voice, no clue that hands over the conclusion.
 - Limit: two build days, two founder hours, under $10 of model usage.
+- Later questions, only if the library wins this test (founder, 16 November 2026): does it also improve plot progression, character interactions and procedural generation while a story runs? Each is its own small test with its own stop rule, and none is in this task.
 
 ## Human Collaboration Contract
 

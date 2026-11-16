@@ -12,7 +12,7 @@ supersedes: []
 ---
 
 > Current version: v2.0
-> Last updated: 2026-11-15
+> Last updated: 2026-11-16
 > Status: Current
 > Canonical path: docs/product/nightcap-status.md
 
@@ -71,6 +71,7 @@ Planning assumption: 10 to 15 founder hours a week, which depends on AI usage li
 5. Motion on the TV.
 6. Case Board.
 7. Difficulty settings.
+8. Friends' recorded voices for characters (AW-320). Only after everything above and every must-have is done; first to cut. Recorded lines, no voice cloning.
 
 **Not before session 3:** Counterintel, five or more players, cloud hosting.
 
