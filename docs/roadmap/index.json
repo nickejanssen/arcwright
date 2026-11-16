@@ -2756,6 +2756,10 @@
       "depends_on": [
         "AW-297"
       ],
+      "github": {
+        "issue_number": 377,
+        "url": "https://github.com/nickejanssen/arcwright/issues/377"
+      },
       "path": "docs/roadmap/tasks/AW-318-rerun-the-roadmap-questions-in-a-fresh-session-and-close-the-citation-misses.md",
       "epic_id": "M7-A"
     }
