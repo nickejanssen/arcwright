@@ -2934,6 +2934,10 @@
         "AW-303",
         "AW-325"
       ],
+      "github": {
+        "issue_number": 390,
+        "url": "https://github.com/nickejanssen/arcwright/issues/390"
+      },
       "path": "docs/roadmap/tasks/AW-328-give-the-mini-game-winner-one-extra-investigation.md",
       "epic_id": "M7-B"
     }
