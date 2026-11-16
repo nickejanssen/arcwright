@@ -43,6 +43,7 @@ The playable build is the superseded Couch Race design. The founder chose a thin
 - [AW-325: Make Rounds Move By Rule, With A Saved Investigation Budget](../tasks/AW-325-make-rounds-move-by-rule-with-a-saved-investigation-budget.md)
 - [AW-326: Build Last Call, The Private Lock, The Theory Check And The Winner Rule](../tasks/AW-326-build-last-call-the-private-lock-the-theory-check-and-the-winner-rule.md)
 - [AW-327: Build The Closing Sequence And Prove A Full Game Headless](../tasks/AW-327-build-the-closing-sequence-and-prove-a-full-game-headless.md)
+- [AW-328: Give The Mini-Game Winner One Extra Investigation](../tasks/AW-328-give-the-mini-game-winner-one-extra-investigation.md)
 - AW-291 (existing task; see `docs/roadmap/index.json`)
 - AW-274 (existing task; see `docs/roadmap/index.json`)
 

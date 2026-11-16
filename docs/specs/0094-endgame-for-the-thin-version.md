@@ -14,7 +14,7 @@ supersedes: []
 
 # Spec 0094: Endgame For The Thin Version
 
-**Status**: Draft. Not approved. No implementation may start from this file. It builds on spec 0093, which the founder approved on 2026-11-16 (D-124).
+**Status**: Approved by the founder on 2026-11-16 (D-125, issue #355). This permits AW-326 and AW-327 to write their plans once the tasks before them are merged. Each plan needs the founder's approval before code. It builds on spec 0093 (approved, D-124). See "Founder Approval" at the end.
 
 **Author**: Claude Code (Spec Author role) | **Date**: 2026-11-16 | **Task**: AW-302, the endgame spec of three | **Checked against**: main at `bd7f32c`
 
@@ -159,7 +159,7 @@ Thin handlers; all rules in the engine. Read my theory form (slots, my choices o
 
 **Review package:** this file. "What you are approving" is the part to read.
 
-**Approval evidence:** none yet.
+**Approval evidence:** the founder approved this spec on 2026-11-16: decision D-125, issue #355, and "Founder Approval" at the end of this file.
 
 **Owner actions:** none beyond the steps below.
 
@@ -228,7 +228,7 @@ Every test runs without a network, without a real database server, and with the 
 
 | Order | Task | Depends on |
 | --- | --- | --- |
-| 1 | AW-326: Last Call, the lock, the theory check, the winner rule, the standing on each run (Parts G, H, I) | Specs 0093 and 0094 approved; AW-325 and AW-303 merged |
+| 1 | AW-326: Last Call, the lock, the theory check, the winner rule (Parts G, H, I). The standing on each run is built first by AW-328, because the mini-game reward (spec 0093, Q1, D-126) needs it | AW-325, AW-303 and AW-328 merged |
 | 2 | AW-327: the closing sequence and the recap lines (Part J), and the join-to-recap headless proof | AW-326; AW-304 for the measures |
 
 ---
@@ -252,3 +252,19 @@ Every test runs without a network, without a real database server, and with the 
 # Open Questions
 
 None that block approval. The recap lines' voice is settled by the ten-line sample (phase gate 3), not by this spec.
+
+---
+
+# Founder Approval (2026-11-16)
+
+Recorded by the Scribe from the founder's message in session on 2026-11-16. Decision row: D-125. Also recorded on issue #355.
+
+**Founder's words:** "Approved Spec 0094 (endgame)." In the same message: "Lets move quickly and be open to change if they ont turn out to be the best solution. We need to be quick, nimble, flexible, and open to trying different things safely. remember that."
+
+**What this approves.** Phase gate 1 of this spec: Parts G to J, the six decisions listed under "What you are approving", and the direction of the changes across engine modules. It permits AW-326 and AW-327 to write their plans when the tasks before them are merged.
+
+**What this does not approve.** Any build task's plan or code; each plan is shown to the founder first. The recap lines; ten samples are reviewed first (phase gate 3). Any table change, new dependency, prompt change or model call; this spec says none is needed, and a build session that finds otherwise stops and asks.
+
+**Open to change (D-127).** The founder approved this as the current best plan, not as a fixed contract. A build session that finds a better way says so on its task's issue with a recommendation, and the change is recorded here before it is built.
+
+**Changed with this approval.** The standing on each finished mini-game run (Part I) is built by AW-328 instead of AW-326. The mini-game reward (spec 0093, Q1, answered the same day as D-126) needs the standing first. What Part I says is unchanged; only the task that builds that one field moved.

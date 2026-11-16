@@ -61,7 +61,7 @@ Verified in code on 14 November 2026: outside tests, nothing calls `create_run`,
 ## Must Not Do
 
 - Add no game-specific word to `engine/`.
-- No new mini-games, no package platform work, no reward redesign.
+- No new mini-games, no package platform work, no reward redesign. The reward for winning is AW-328 (D-126).
 
 ## Kickoff Prompt
 

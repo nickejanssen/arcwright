@@ -22,7 +22,7 @@ One page that says what is playable, what the plan is, what is next, and what th
 
 ## In one paragraph
 
-The game you can run today is not the game being shipped. The TV-and-phones build is the older Couch Race design. The Nightcap in the Master GDD has a rebuild plan (spec 0092), approved for the thin version on 2026-11-15 (D-123), and no code yet. That approval permits the inventory of the current build (AW-300) only. The first rebuild spec, the engine spine (spec 0093), was approved on 2026-11-16 (D-124); its build tasks may write plans, and each plan needs its own approval before code. The founder chose on 2026-11-14 to keep the date and ship a thin but complete version to friends at his house on 12 or 13 December 2026, with as much added as fits (D-112). The date is at risk, not safe. The two things most likely to move it are the first case and the new screens.
+The game you can run today is not the game being shipped. The TV-and-phones build is the older Couch Race design. The Nightcap in the Master GDD has a rebuild plan (spec 0092), approved for the thin version on 2026-11-15 (D-123), and no code yet. That approval permits the inventory of the current build (AW-300) only. The first rebuild spec, the engine spine (spec 0093), was approved on 2026-11-16 (D-124); its build tasks may write plans, and each plan needs its own approval before code. The second, the endgame (spec 0094), was approved the same day (D-125). A mini-game win gives the top-ranked one extra investigation (D-126, AW-328). The founder chose on 2026-11-14 to keep the date and ship a thin but complete version to friends at his house on 12 or 13 December 2026, with as much added as fits (D-112). The date is at risk, not safe. The two things most likely to move it are the first case and the new screens.
 
 ## What is proven, and how far
 
@@ -86,7 +86,7 @@ Estimates are inferred, not measured. "Build days" means focused AI build sessio
 | --- | --- | --- | --- | --- |
 | To 2026-11-21 | Agents fixed; index rebuilt; checks required; spec 0092 approved for the thin version; inventory; screen walkthrough; build-versus-adopt | AW-296 to AW-301, AW-309, issue #303 | 4 to 6 | 10 to 12, mostly the case |
 | 2026-11-22 to 28 | Three combined specs; case loaded and fair; mini-games start, time out and return; headless full game at two and four players | AW-302, AW-324, AW-325, AW-303, AW-305 | 5 to 7 | 8 to 10 |
-| 2026-11-29 to 12-05 | Endgame; screens; play records; story-tool importer; **founder TV run** | AW-326, AW-327, AW-304, AW-306, AW-242 | 7 to 9 | 12 to 15 |
+| 2026-11-29 to 12-05 | Endgame; screens; play records; story-tool importer; **founder TV run** | AW-328, AW-326, AW-327, AW-304, AW-306, AW-242 | 7 to 9 | 12 to 15 |
 | 2026-12-06 to 12 | Fix what the TV run found; preflight; "if it fits" items; **session 1** | AW-308, AW-240, AW-241 | 4 to 6 | 12 to 15 |
 
 Total: about 20 to 29 build days in four weeks, roughly one productive build session every day.

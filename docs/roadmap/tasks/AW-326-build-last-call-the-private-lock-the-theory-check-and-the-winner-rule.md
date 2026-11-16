@@ -35,14 +35,14 @@ After the last round, start a countdown, let each player privately build and loc
 - A `commit` phase on the clock from spec 0093: private drafts, a final lock, and what happens to a player who has not locked when time runs out.
 - A pure function that judges each locked theory against the case file's `solution`.
 - The winner rule: one solver wins; several are split by mini-game results; none means nobody wins.
-- A standing (players in order, ties allowed) recorded on every finished mini-game run, in each of the four mechanics.
+- Reads the standing (players in order, ties allowed) on every finished mini-game run. AW-328 records it; it moved there on 2026-11-16 because the mini-game reward needs it first (D-126).
 - Routes with thin handlers: read my theory form, save my draft, lock.
 
 ## Human Collaboration Contract
 
 **Interaction profile:** Independent execution after plan approval. The change crosses engine modules (`session`, `case`, `interactions`, `mini_games`), which is a hard rule in `AGENTS.md`.
 
-- Blocked until the founder approves specs 0093 and 0094 (issue #355), and AW-325 and AW-303 are merged.
+- Specs 0093 and 0094 are approved (D-124, D-125, issue #355). Still blocked until AW-325, AW-303 and AW-328 are merged.
 - The build session writes a plan and stops for the founder's approval before code.
 
 ## Acceptance Criteria
@@ -60,7 +60,7 @@ After the last round, start a countdown, let each player privately build and loc
 
 ## Dependencies
 
-- AW-325, AW-303
+- AW-325, AW-303, AW-328
 - AW-302: specs 0093 and 0094 approved (issue #355).
 - Spec: `docs/specs/0094-endgame-for-the-thin-version.md`
 
@@ -73,4 +73,4 @@ After the last round, start a countdown, let each player privately build and loc
 
 ## Kickoff Prompt
 
-> Read `AGENTS.md`, `HANDOVER.md`, `docs/specs/0093-engine-spine-for-the-thin-version.md` and `docs/specs/0094-endgame-for-the-thin-version.md`. Confirm on issue #355 that both specs are approved and that AW-325 and AW-303 are merged; if not, stop. Task AW-326: build Parts G, H and I of spec 0094. Write the tests first, one per result branch. Write a plan and stop for founder approval, because this crosses engine modules. Never open a real case file.
+> Read `AGENTS.md`, `HANDOVER.md`, `docs/specs/0093-engine-spine-for-the-thin-version.md` and `docs/specs/0094-endgame-for-the-thin-version.md`. Confirm on issue #355 that both specs are approved and that AW-325, AW-303 and AW-328 are merged; if not, stop. Task AW-326: build Parts G, H and I of spec 0094. Write the tests first, one per result branch. Write a plan and stop for founder approval, because this crosses engine modules. Never open a real case file.

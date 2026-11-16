@@ -357,7 +357,7 @@ At most two build sessions at once. The second and third change the same files, 
 
 # Open Questions
 
-- **Q1. What does winning a mini-game give in session 1?** Today a finished mini-game releases the same clue to every player, and the winner gets nothing extra. The GDD says rewards should be opportunities, and that winning must not replace detective work. Options: (1) the top-ranked player or players get one extra investigation, and nobody gets case information from the mini-game (author's recommendation: it is the GDD's own example, it uses the budget built here, and it is a small engine hook); (2) keep today's behaviour for session 1; (3) decide it with the first case's mini-game wrappers. Blocks: none of the four build tasks. It is settled before the screens spec.
+- **Q1. What does winning a mini-game give in session 1?** **Answered 2026-11-16: option 1 (D-126). See "Q1 Answered" at the end.** Today a finished mini-game releases the same clue to every player, and the winner gets nothing extra. The GDD says rewards should be opportunities, and that winning must not replace detective work. Options: (1) the top-ranked player or players get one extra investigation, and nobody gets case information from the mini-game (author's recommendation: it is the GDD's own example, it uses the budget built here, and it is a small engine hook); (2) keep today's behaviour for session 1; (3) decide it with the first case's mini-game wrappers. Blocks: none of the four build tasks. It is settled before the screens spec.
 
 Nothing else is open. Questions the build sessions find are raised on their task's issue, not decided silently.
 
@@ -374,3 +374,26 @@ Recorded by the Scribe from the founder's message in session on 2026-11-16. Deci
 **What this does not approve.** Any build task's plan or code; each plan is shown to the founder first (phase gate 2). Spec 0094. An answer to Q1, which stays open. Any table change, new dependency, prompt change or model call; this spec says none is needed, and a build session that finds otherwise stops and asks.
 
 **Still open at approval.** The case-writing session has not confirmed that its draft fits Part A. If it does not fit, the format is changed and the change is shown to the founder before AW-324 builds on it.
+
+---
+
+# Q1 Answered: What A Mini-Game Win Gives (2026-11-16)
+
+Recorded by the Scribe from the founder's message in session on 2026-11-16. Decision row: D-126. Also recorded on issue #355.
+
+**Founder's words:** "Go with your mini-game recommendation."
+
+**What was decided.** Option 1. The top-ranked player or players of a mini-game get one extra investigation. Nobody gets case information from the mini-game.
+
+**How it is built.** This part is the author's proposal. The founder's answer chose the option; the design below is approved through the build task's plan, like any other.
+
+- The reward is a setting on the beat's mini-game binding in the arc file: what is given, how much, and to whom. First values for the session 1 arc: one investigation, to the top-ranked.
+- An arc that sets no reward behaves exactly as today. The old arcs do not change.
+- "Top-ranked" is read from the standing that spec 0094, Part I, puts on every finished run. Everyone tied at the top gets the reward.
+- The extra investigation is added to that participant's budget (Part D) and saved, so a restart keeps it. It is given once, even if the end of the run is processed twice.
+- The session 1 arc's mini-games release no case information. How that is switched off is settled in the build task's plan.
+- Changing the reward later (two investigations, a different prize, none) is an edit to the arc file, not to code. This keeps the choice cheap to change after a playtest (D-127).
+
+**Task.** AW-328, after AW-303 and AW-325. It also records the standing, which AW-326 then reads.
+
+**What this changes above.** "Out of Scope" lists the reward as Q1; it is now in scope through AW-328. The line that says Q1 "is not approved by this spec" is answered by D-126. Part E's "what a package releases is not changed" still holds for the code: releases are switched off in the session 1 arc file, not removed.

@@ -684,7 +684,8 @@
         "AW-324",
         "AW-325",
         "AW-326",
-        "AW-327"
+        "AW-327",
+        "AW-328"
       ],
       "github": {
         "issue_number": 373,
@@ -2896,7 +2897,8 @@
       "depends_on": [
         "AW-302",
         "AW-303",
-        "AW-325"
+        "AW-325",
+        "AW-328"
       ],
       "github": {
         "issue_number": 388,
@@ -2920,6 +2922,19 @@
         "url": "https://github.com/nickejanssen/arcwright/issues/389"
       },
       "path": "docs/roadmap/tasks/AW-327-build-the-closing-sequence-and-prove-a-full-game-headless.md",
+      "epic_id": "M7-B"
+    },
+    {
+      "id": "AW-328",
+      "title": "Give The Mini-Game Winner One Extra Investigation",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "S",
+      "depends_on": [
+        "AW-303",
+        "AW-325"
+      ],
+      "path": "docs/roadmap/tasks/AW-328-give-the-mini-game-winner-one-extra-investigation.md",
       "epic_id": "M7-B"
     }
   ],
