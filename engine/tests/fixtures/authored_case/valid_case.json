@@ -1,0 +1,65 @@
+{
+  "case_id": "fixture-lantern-001",
+  "format_version": 1,
+  "title": "The Quiet Lantern Fixture",
+  "supported_participant_counts": [2, 3, 4],
+  "cast": [
+    {"cast_id": "marlowe", "display_name": "Marlowe Finch", "knows": ["c_witness", "c_ledger"], "nameable": true},
+    {"cast_id": "pinecone", "display_name": "Pinecone Ash", "knows": ["c_gate_log"], "nameable": true},
+    {"cast_id": "quillby", "display_name": "Quillby Ross", "knows": ["c_receipt"], "nameable": true},
+    {"cast_id": "storyteller", "display_name": "The Storyteller", "knows": ["c_how_true"], "nameable": false}
+  ],
+  "subjects": [
+    {"subject_id": "s_shed", "kind": "place", "label": "Garden shed"},
+    {"subject_id": "s_ledger", "kind": "record", "label": "Delivery ledger"},
+    {"subject_id": "s_gate", "kind": "record", "label": "Gate log"},
+    {"subject_id": "s_bench", "kind": "object", "label": "Workbench"},
+    {"subject_id": "s_attic", "kind": "place", "label": "Attic trunk"},
+    {"subject_id": "s_porter", "kind": "person", "label": "The porter"},
+    {"subject_id": "s_cellar", "kind": "place", "label": "Cellar door"}
+  ],
+  "concepts": [
+    {"concept_id": "c_open_a", "label": "The bird is gone", "text": "The clockwork bird vanished from its stand.", "standing": "true"},
+    {"concept_id": "c_open_b", "label": "Doors were shut", "text": "Every door was shut at dusk.", "standing": "true"},
+    {"concept_id": "c_ledger", "label": "Ledger entry", "text": "The ledger shows a crate signed out at nine.", "standing": "true"},
+    {"concept_id": "c_gate_log", "label": "Gate log", "text": "The gate log shows one late visitor.", "standing": "true"},
+    {"concept_id": "c_witness", "label": "Porter saw it", "text": "The porter saw a figure carrying the crate.", "standing": "true"},
+    {"concept_id": "c_tool_marks", "label": "Tool marks", "text": "Fresh tool marks score the lock.", "standing": "true"},
+    {"concept_id": "c_shed_key", "label": "Shed key", "text": "The shed key was cut recently.", "standing": "true"},
+    {"concept_id": "c_receipt", "label": "A receipt", "text": "A receipt from a clockmaker is folded in the trunk.", "standing": "true"},
+    {"concept_id": "c_note", "label": "Margin note", "text": "A margin note is dated the day before.", "standing": "true"},
+    {"concept_id": "c_how_true", "label": "Opened with the spare", "text": "The lock was opened with the spare key.", "standing": "true"},
+    {"concept_id": "c_how_false1", "label": "Window forced", "text": "The window latch looks forced.", "standing": "misleading"},
+    {"concept_id": "c_how_false2", "label": "Chimney route", "text": "Soot on the sill suggests the chimney.", "standing": "misleading"},
+    {"concept_id": "c_orphan", "label": "Unreachable detail", "text": "A detail no choice ever gives.", "standing": "true"}
+  ],
+  "opening": ["c_open_a", "c_open_b"],
+  "opportunities": [
+    {"opportunity_id": "o_ledger", "subject_id": "s_ledger", "label": "Read the ledger", "content": "You read the ledger closely.", "beats": ["beat_one", "beat_two"], "requires": [], "cost": 1, "gives": ["c_ledger"]},
+    {"opportunity_id": "o_shed", "subject_id": "s_shed", "label": "Search the shed", "content": "You search the shed.", "beats": ["beat_one"], "requires": [], "cost": 1, "gives": ["c_shed_key", "c_how_false1"]},
+    {"opportunity_id": "o_porter", "subject_id": "s_porter", "label": "Ask the porter", "content": "You ask the porter.", "beats": ["beat_one", "beat_two", "beat_three"], "requires": [], "cost": 1, "gives": ["c_witness"]},
+    {"opportunity_id": "o_gate", "subject_id": "s_gate", "label": "Check the gate log", "content": "You check the gate log.", "beats": ["beat_two", "beat_three"], "requires": ["c_ledger"], "cost": 1, "gives": ["c_gate_log"]},
+    {"opportunity_id": "o_bench", "subject_id": "s_bench", "label": "Examine the bench", "content": "You examine the bench.", "beats": ["beat_two"], "requires": [], "cost": 1, "gives": ["c_tool_marks", "c_how_false2"]},
+    {"opportunity_id": "o_note", "subject_id": "s_ledger", "label": "Reread the margin", "content": "You reread the margin.", "beats": ["beat_two"], "requires": ["c_ledger"], "cost": 0, "gives": ["c_note"]},
+    {"opportunity_id": "o_attic", "subject_id": "s_attic", "label": "Open the trunk", "content": "You open the trunk.", "beats": ["beat_three"], "requires": [], "cost": 1, "gives": ["c_receipt"]},
+    {"opportunity_id": "o_cellar", "subject_id": "s_cellar", "label": "Try the cellar door", "content": "You try the cellar door.", "beats": ["beat_three"], "requires": ["c_tool_marks"], "cost": 1, "gives": ["c_how_true"]}
+  ],
+  "essential_truths": [
+    {"truth_id": "t_who", "routes": [{"concepts": ["c_ledger", "c_gate_log"]}, {"concepts": ["c_witness"]}]},
+    {"truth_id": "t_how", "routes": [{"concepts": ["c_tool_marks", "c_shed_key"]}, {"concepts": ["c_receipt"]}]}
+  ],
+  "deceptions": [
+    {"concept_id": "c_how_false1", "exposed_by": ["c_how_true"]},
+    {"concept_id": "c_how_false2", "exposed_by": ["c_tool_marks"]}
+  ],
+  "solution": [
+    {"slot_id": "slot_who", "label": "Who took it", "kind": "cast", "shown_first": true, "accepted": [
+      {"value": "marlowe", "needs": ["c_witness"]},
+      {"value": "marlowe", "needs": ["c_ledger", "c_gate_log"]}
+    ]},
+    {"slot_id": "slot_how", "label": "How it was done", "kind": "concept", "shown_first": false, "accepted": [
+      {"value": "c_how_true", "needs": []}
+    ]}
+  ],
+  "closing": ["The porter had it all along.", "The spare key did the rest."]
+}
