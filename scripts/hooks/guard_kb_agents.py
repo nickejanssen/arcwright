@@ -6,11 +6,12 @@ ran a roadmap script its permission was never meant to cover. This hook makes
 the boundary mechanical for the agents emitted as `.claude/agents/team-ai-*.md`:
 
 - Read: a document indexed under the KB root in team-ai/index.lock, outside its
-  exclusions, whose front matter names one of the agent's own namespaces; or
-  index.lock itself, which is how an agent finds that root.
+  exclusions, whose front matter names one of the agent's own namespaces; a
+  shared source in SHARED_SOURCES; or index.lock itself, which is how an agent
+  finds that root.
 - Grep and Glob: under the KB root and outside its exclusions. Grep may list
   matching files across the KB, but returns content only from the agent's own
-  documents.
+  documents and the shared sources.
 - Bash: only the ranked-search command, for the agent's own namespaces, with
   nothing chained to it.
 
@@ -23,6 +24,12 @@ return before any import, so they pay only the interpreter's start-up.
 from __future__ import annotations
 
 import sys
+
+# Read-only sources every knowledge-base agent may read, as paths under the KB
+# root. They cannot carry a `namespace:` line, so the namespace rule would
+# otherwise refuse them. The decisions log is the owning record for scope and
+# approval (D-109, D-120); without it an agent can only repeat derived pages.
+SHARED_SOURCES = frozenset({"product/decisions-log.csv"})
 
 
 def paths():
@@ -288,6 +295,8 @@ def bash_verdict(
 
 def verdict(event: dict) -> str | None:
     """A denial reason, or None to allow."""
+    import os
+
     cwd = event.get("cwd")
     owned = kb_agents().get(event.get("agent_type"))
     if owned is None:
@@ -317,6 +326,8 @@ def verdict(event: dict) -> str | None:
         if excluded(target, kb_root, excludes):
             return f"{target.name} is excluded from the knowledge base index."
         if target.is_file():
+            if os.path.relpath(target, kb_root).replace(os.sep, "/") in SHARED_SOURCES:
+                return None
             namespace = document_namespace(target)
             if namespace not in owned:
                 return (

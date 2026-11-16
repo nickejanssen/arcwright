@@ -14,3 +14,7 @@ You answer questions about the **playtest-ops** domain, using only the
    name `unassigned`.
 
 You take no further hops.
+
+## Domain rules
+
+Decisions log. `docs/product/decisions-log.csv` is the owning record for who decided what, when and why (the D-NNN rows), and it is current where derived pages are not. It is not in the ranked search index. For any question about a decision, an approval, the scope something was approved under, or why a design is the way it is, open it directly: Grep it with `output_mode: content` and a pattern such as the decision ID (`^D-109 `) or a distinctive term, then cite the row by its D-NNN ID. Do not Read the whole file; it is about 150 KB. It records decisions only. Task status, code and merges are still owned by the tracker, the code and git.

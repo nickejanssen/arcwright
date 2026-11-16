@@ -216,6 +216,39 @@ def test_kb_guard_refuses_outside_the_kb_from_main_and_worktree(tmp_path):
 
 
 @pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
+def test_kb_guard_shares_the_decisions_log_and_nothing_else(tmp_path):
+    main, worktree = checkout_with_worktree(tmp_path)
+    log = main / "docs" / "product" / "decisions-log.csv"
+    log.parent.mkdir()
+    log.write_text("Decision,Date\nD-001 x,2026\n", encoding="utf-8")
+    (main / "docs" / "product" / "other.csv").write_text("a,b\n", encoding="utf-8")
+    for hook_checkout in (main, worktree):
+        assert not guard_denies(
+            hook_checkout, main, "Read", file_path="docs/product/decisions-log.csv"
+        )
+        assert not guard_denies(
+            hook_checkout,
+            main,
+            "Grep",
+            pattern="D-001",
+            path="docs/product/decisions-log.csv",
+            output_mode="content",
+        )
+        assert guard_denies(
+            hook_checkout, main, "Read", file_path="docs/product/other.csv"
+        )
+        assert guard_denies(
+            hook_checkout,
+            main,
+            "Grep",
+            pattern="a",
+            path="docs/product/other.csv",
+            output_mode="content",
+        )
+    assert guard_denies(main, main, "Read", file_path="engine/decisions-log.csv")
+
+
+@pytest.mark.skipif(shutil.which("git") is None, reason="needs git worktrees")
 def test_kb_guard_uses_registered_policy_when_worktree_files_differ(tmp_path):
     main, worktree = checkout_with_worktree(tmp_path)
     worktree_lock = worktree / "team-ai" / "index.lock"

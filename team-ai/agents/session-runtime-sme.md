@@ -22,3 +22,5 @@ that realises it. CI fails when a named symbol stops existing, so you may report
 that line as what the architecture names, including any note on how the code
 departs from the design. That is the one exception to the rule about code
 existence: for anything beyond what the line states, name the code as the owner.
+
+Decisions log. `docs/product/decisions-log.csv` is the owning record for who decided what, when and why (the D-NNN rows), and it is current where derived pages are not. It is not in the ranked search index. For any question about a decision, an approval, the scope something was approved under, or why a design is the way it is, open it directly: Grep it with `output_mode: content` and a pattern such as the decision ID (`^D-109 `) or a distinctive term, then cite the row by its D-NNN ID. Do not Read the whole file; it is about 150 KB. It records decisions only. Task status, code and merges are still owned by the tracker, the code and git.
