@@ -14,7 +14,7 @@ supersedes: []
 
 # Spec 0092 Work Package 0: Thin-Version Inventory Of The Current Build
 
-**Status**: Draft for founder review. Not reviewed. No spec may be written from it until the founder's review is recorded on issue #353.
+**Status**: Reviewed by the founder on 2026-11-16 ("Inventory reviewed", issue #353). That permits writing the three rebuild specs (AW-302). It approves no spec, no code and none of the decisions in section 10. One correction was added after the review; see the end.
 
 **Author**: Claude Code | **Date**: 2026-11-15 | **Task**: AW-300 | **Snapshot**: main at `bd7f32c`
 
@@ -206,3 +206,10 @@ Each is asked one at a time, with a recommendation, when its spec is written. No
 2. Read the "Disposition" column in section 2. Say if any must-have is marked in a way that surprises you.
 3. Read the recommendation in section 8. You do not need to decide it now; say whether it sounds right.
 4. Reply on issue #353 with "inventory reviewed" or with what to change. That unlocks the three rebuild specs (AW-302).
+
+## Correction after the review (2026-11-16)
+
+Found while writing spec 0093. It corrects one row and changes no disposition the founder was asked about.
+
+- **Section 2, "Opening" row.** The row says the opening's written content works in a live session. It does not. The arc file holds written content for each beat (`authored_content`), but no engine or API code reads it, and the shared screen shows the beat's internal name (`dashboard/src/screens/DisplayScreen.tsx:349`). Sending a beat's written scene to the screens is build work, in spec 0093 Part C (AW-325).
+- **Section 6, two additions.** A mini-game run does not record which beat it belongs to, and pausing a session does not pause its run. Both are covered by spec 0093 Parts C and E.

@@ -680,7 +680,9 @@
         "AW-317",
         "AW-319",
         "AW-320",
-        "AW-322"
+        "AW-322",
+        "AW-324",
+        "AW-325"
       ],
       "github": {
         "issue_number": 373,
@@ -2539,7 +2541,8 @@
       "epic": "M7-B",
       "size": "M",
       "depends_on": [
-        "AW-302"
+        "AW-302",
+        "AW-325"
       ],
       "github": {
         "issue_number": 356,
@@ -2555,7 +2558,8 @@
       "epic": "M7-B",
       "size": "M",
       "depends_on": [
-        "AW-302"
+        "AW-302",
+        "AW-325"
       ],
       "github": {
         "issue_number": 357,
@@ -2571,7 +2575,8 @@
       "epic": "M7-B",
       "size": "M",
       "depends_on": [
-        "AW-302"
+        "AW-302",
+        "AW-324"
       ],
       "github": {
         "issue_number": 358,
@@ -2846,6 +2851,31 @@
       },
       "path": "docs/roadmap/tasks/AW-323-founder-plays-the-two-closest-neighbours-and-records-what-they-do-better.md",
       "epic_id": "M6-D"
+    },
+    {
+      "id": "AW-324",
+      "title": "Build The Written Case Format, Its Fairness Check, And What Each Player Holds",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-302"
+      ],
+      "path": "docs/roadmap/tasks/AW-324-build-the-written-case-format-its-fairness-check-and-what-each-player-holds.md",
+      "epic_id": "M7-B"
+    },
+    {
+      "id": "AW-325",
+      "title": "Make Rounds Move By Rule, With A Saved Investigation Budget",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "L",
+      "depends_on": [
+        "AW-302",
+        "AW-324"
+      ],
+      "path": "docs/roadmap/tasks/AW-325-make-rounds-move-by-rule-with-a-saved-investigation-budget.md",
+      "epic_id": "M7-B"
     }
   ],
   "superseded_sources": [

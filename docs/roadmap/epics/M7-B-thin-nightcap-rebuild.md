@@ -39,6 +39,8 @@ The playable build is the superseded Couch Race design. The founder chose a thin
 - [AW-319: Try The Detective Agency Framing As A Wrapper On The First Case](../tasks/AW-319-try-the-detective-agency-framing-as-a-wrapper-on-the-first-case.md)
 - [AW-320: Friend-Voiced Characters, Recorded Lines First](../tasks/AW-320-friend-voiced-characters-recorded-lines-first.md)
 - [AW-322: Prove A Mini-Game Can Be Built And Played On Its Own, And List The Gaps](../tasks/AW-322-prove-a-mini-game-can-be-built-and-played-on-its-own-and-list-the-gaps.md)
+- [AW-324: Build The Written Case Format, Its Fairness Check, And What Each Player Holds](../tasks/AW-324-build-the-written-case-format-its-fairness-check-and-what-each-player-holds.md)
+- [AW-325: Make Rounds Move By Rule, With A Saved Investigation Budget](../tasks/AW-325-make-rounds-move-by-rule-with-a-saved-investigation-budget.md)
 - AW-291 (existing task; see `docs/roadmap/index.json`)
 - AW-274 (existing task; see `docs/roadmap/index.json`)
 

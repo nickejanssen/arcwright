@@ -39,6 +39,12 @@ Spec 0092 asks for an approved spec per work package. On 10 to 15 founder hours 
 
 **Interaction profile:** Decision interview. Each of the three specs needs its own founder approval before building starts.
 
+## Progress
+
+- **Engine spine: drafted 2026-11-16** as `docs/specs/0093-engine-spine-for-the-thin-version.md`. Draft, not approved. Waits on the founder's approval on issue #355. It needed two build tasks that did not exist: AW-324 and AW-325.
+- **Screens: not started.** Needs the two interview answers and is better after the walkthrough (AW-301).
+- **Endgame: not started.**
+
 ## Acceptance Criteria
 
 - [ ] Three specs in `docs/specs/` from the template, each with acceptance criteria and a named headless test.

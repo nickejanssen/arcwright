@@ -51,7 +51,8 @@ The first case is the most likely thing to move the session 1 date, and the foun
 
 ## Dependencies
 
-- AW-302
+- AW-302: spec 0093 approved. The format is Part A of `docs/specs/0093-engine-spine-for-the-thin-version.md`.
+- AW-324, which builds the loader and the fairness check the case must pass.
 - Findings and evidence: `docs/product/2026-11-15-reset-audit.md`
 
 ## Must Not Do
