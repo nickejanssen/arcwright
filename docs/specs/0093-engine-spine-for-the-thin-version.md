@@ -16,7 +16,7 @@ supersedes: []
 
 **Status**: Draft. Not approved. No implementation may start from this file.
 
-**Author**: Claude Code (Spec Author role) | **Date**: 2026-11-16 | **Task**: AW-302, the first of three combined specs | **Checked against**: main at `bd7f32c`
+**Author**: Claude Code (Spec Author role) | **Date**: 2026-11-16 | **Task**: AW-302, the engine-spine spec of three | **Checked against**: main at `bd7f32c`
 
 **Canonical path**: `docs/specs/0093-engine-spine-for-the-thin-version.md`
 
@@ -26,7 +26,7 @@ supersedes: []
 
 When this is built, a game runs by itself from "everyone has joined" to "Last Call begins". Each round shows its written scene, lets every player spend investigations from a saved budget, starts the round's mini-game, ends that mini-game on a clock even if nobody plays, and moves on. No person pushes it along and no AI decides anything. It also fixes the file format the first case is written in, and a rule-based check that the case is fair.
 
-It does not include the screens (the second spec) or Last Call onward (the third spec). After this spec is built you can watch a full game run in a test and on the old plain screens, but it will not look like the game yet.
+It does not include the screens (a later spec) or Last Call onward (spec 0094). After this spec is built you can watch a full game run in a test and on the old plain screens, but it will not look like the game yet.
 
 ---
 
@@ -106,23 +106,24 @@ One JSON file per written case, in the game's own folder. The arc file names it.
 | --- | --- |
 | `case_id`, `format_version`, `title` | Identity. `format_version` is `1` |
 | `supported_participant_counts` | The player counts the case is written for, for example 2, 3 and 4 |
-| `cast` | The characters in the story. Each has an ID, a display name, and the list of concepts that character knows. Each becomes a character in the engine's one character model |
+| `cast` | The characters in the story. Each has an ID, a display name, the list of concepts that character knows, and whether a player may name them in the final theory. Each becomes a character in the engine's one character model |
 | `subjects` | The things a player can look into: a person, a place, an object or a record. Each has an ID, a kind and a label |
 | `concepts` | The units of information a player can hold. Each has an ID, a short label, the written text the player sees, and whether it is true or misleading |
 | `opening` | The concepts every player holds at the start |
 | `opportunities` | The investigation choices. Each names its subject, a label, the written content shown to the player, the beats it is available in, the concepts a player must already hold to see it, its cost (1, or 0 for a follow-up), and the concepts it gives |
 | `essential_truths` | What must be established to solve the case. Each lists two or more routes; a route is a set of concepts that together establish the truth |
 | `deceptions` | Each misleading concept, with the true concepts that expose it |
-| `solution` | The slots of the final theory and the accepted answers. The loader checks that every ID in it exists. How a submitted theory is judged belongs to the endgame spec |
+| `solution` | The ordered slots of the final theory. Each slot has an ID, a label, a kind (a cast member, or a concept), and the list of answers that are accepted for it. Several accepted answers in one slot are equal ways of being right. One slot is marked as the one shown to the room first. How a submitted theory is judged belongs to the endgame spec (0094) |
+| `closing` | The written lines that explain what really happened, shown only after every theory is locked. Used by the endgame spec |
 
 **The loader refuses a case, with a named reason, when:**
 
 - A1. Any ID is duplicated, or any ID that is referred to does not exist.
 - A2. Any essential truth has fewer than two routes, or one single opportunity is needed by every route to it.
-- A3. For any supported player count, a single player starting from the opening cannot reach at least one route to every essential truth within the budget, obeying each opportunity's beats and prerequisites. This is computed by search, not by a model.
+- A3. For any supported player count, a single player starting from the opening cannot, within the budget, both reach at least one route to every essential truth and hold an accepted answer for every slot of the solution, obeying each opportunity's beats and prerequisites. This is computed by search, not by a model.
 - A4. Any misleading concept has nothing that exposes it, or what exposes it cannot be obtained.
 - A5. Any opportunity can never become available, or any round offers a fresh player fewer than two choices.
-- A6. Any accepted answer in `solution` uses a concept that cannot be obtained.
+- A6. Any accepted answer in `solution` uses a concept that cannot be obtained, or any slot has fewer than two obtainable wrong answers. A slot with only right answers on offer would solve the case for the player.
 
 **Two reports.** The check prints a full report for the case's author, and a summary for the founder that holds only each rule's name, pass or fail, and counts. The summary never prints a label, a text or an ID from the case file (spec 0092, Q7 spoiler rule).
 
@@ -205,8 +206,8 @@ Every session, for any game, saves these six facts. No table is renamed.
 
 # Out of Scope
 
-- Screens, the notebook's look, and any SDK or TypeScript change. Second spec.
-- Last Call, the final theory, its checker, the reveal, Truth, Verdict and Postmortem. Third spec. This spec only stores the `solution` block.
+- Screens, the notebook's look, and any SDK or TypeScript change. Screens spec, not yet written.
+- Last Call, the final theory, its checker, the reveal, Truth, Verdict and Postmortem. Spec 0094. This spec only stores and checks the `solution` and `closing` blocks.
 - What winning a mini-game gives the winner. See Q1.
 - Choosing between a beat's exits by rule, loops, and an early Last Call.
 - The line-library reader (AW-291), slot filling and host voice.
@@ -239,7 +240,7 @@ Every session, for any game, saves these six facts. No table is renamed.
 **Approval evidence:** none yet. The founder's inventory review is recorded on issue #353 (2026-11-16); that permitted writing this spec and approves nothing in it.
 
 **Owner actions:**
-- Send the case-writing session this message: "Read `docs/specs/0093-engine-spine-for-the-thin-version.md`, Part A. Say whether the case as drafted fits the format, and list anything it cannot express. Do not put any solution detail in your reply."
+- Send the case-writing session this message: "Read `docs/specs/0093-engine-spine-for-the-thin-version.md`, Part A. Say whether the case as drafted fits the format, and list anything it cannot express. In particular, say yes or no: is any answer in the final theory only right in combination with another answer? Do not put any solution detail in your reply."
 
 ## Your steps
 
@@ -348,7 +349,7 @@ At most two build sessions at once. The second and third change the same files, 
 - **Game words.** "Case" and "solution" are used as generic terms, as spec 0092 does. If AW-274 later chooses other words, this code is renamed with the rest.
 
 **Unknowns**
-- Whether the old plain screens show the new events well enough for the TV check, or whether the check has to wait for the second spec.
+- Whether the old plain screens show the new events well enough for the TV check, or whether the check has to wait for the screens spec.
 - Whether one written scene per round reads well at the lengths the case author writes. A playtest question.
 - The right length of each phase. All are configuration; first values come from the case author and are tuned after the founder TV run.
 
@@ -356,6 +357,6 @@ At most two build sessions at once. The second and third change the same files, 
 
 # Open Questions
 
-- **Q1. What does winning a mini-game give in session 1?** Today a finished mini-game releases the same clue to every player, and the winner gets nothing extra. The GDD says rewards should be opportunities, and that winning must not replace detective work. Options: (1) the top-ranked player or players get one extra investigation, and nobody gets case information from the mini-game (author's recommendation: it is the GDD's own example, it uses the budget built here, and it is a small engine hook); (2) keep today's behaviour for session 1; (3) decide it with the first case's mini-game wrappers. Blocks: none of the four build tasks. It is settled before the second spec.
+- **Q1. What does winning a mini-game give in session 1?** Today a finished mini-game releases the same clue to every player, and the winner gets nothing extra. The GDD says rewards should be opportunities, and that winning must not replace detective work. Options: (1) the top-ranked player or players get one extra investigation, and nobody gets case information from the mini-game (author's recommendation: it is the GDD's own example, it uses the budget built here, and it is a small engine hook); (2) keep today's behaviour for session 1; (3) decide it with the first case's mini-game wrappers. Blocks: none of the four build tasks. It is settled before the screens spec.
 
 Nothing else is open. Questions the build sessions find are raised on their task's issue, not decided silently.

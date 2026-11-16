@@ -86,7 +86,7 @@ Estimates are inferred, not measured. "Build days" means focused AI build sessio
 | --- | --- | --- | --- | --- |
 | To 2026-11-21 | Agents fixed; index rebuilt; checks required; spec 0092 approved for the thin version; inventory; screen walkthrough; build-versus-adopt | AW-296 to AW-301, AW-309, issue #303 | 4 to 6 | 10 to 12, mostly the case |
 | 2026-11-22 to 28 | Three combined specs; case loaded and fair; mini-games start, time out and return; headless full game at two and four players | AW-302, AW-324, AW-325, AW-303, AW-305 | 5 to 7 | 8 to 10 |
-| 2026-11-29 to 12-05 | Endgame; screens; play records; story-tool importer; **founder TV run** | AW-304, AW-306, AW-242 | 7 to 9 | 12 to 15 |
+| 2026-11-29 to 12-05 | Endgame; screens; play records; story-tool importer; **founder TV run** | AW-326, AW-327, AW-304, AW-306, AW-242 | 7 to 9 | 12 to 15 |
 | 2026-12-06 to 12 | Fix what the TV run found; preflight; "if it fits" items; **session 1** | AW-308, AW-240, AW-241 | 4 to 6 | 12 to 15 |
 
 Total: about 20 to 29 build days in four weeks, roughly one productive build session every day.

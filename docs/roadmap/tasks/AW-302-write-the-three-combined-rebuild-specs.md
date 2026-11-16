@@ -43,7 +43,7 @@ Spec 0092 asks for an approved spec per work package. On 10 to 15 founder hours 
 
 - **Engine spine: drafted 2026-11-16** as `docs/specs/0093-engine-spine-for-the-thin-version.md`. Draft, not approved. Waits on the founder's approval on issue #355. It needed two build tasks that did not exist: AW-324 and AW-325.
 - **Screens: not started.** Needs the two interview answers and is better after the walkthrough (AW-301).
-- **Endgame: not started.**
+- **Endgame: drafted 2026-11-16** as `docs/specs/0094-endgame-for-the-thin-version.md`. Draft, not approved. It builds on spec 0093 and is checked again if 0093 changes. It needed two build tasks that did not exist: AW-326 and AW-327.
 
 ## Acceptance Criteria
 
