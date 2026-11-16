@@ -654,7 +654,8 @@
         "AW-296",
         "AW-297",
         "AW-298",
-        "AW-299"
+        "AW-299",
+        "AW-318"
       ],
       "github": {
         "issue_number": 372,
@@ -2402,6 +2403,10 @@
         "AW-279",
         "AW-276"
       ],
+      "github": {
+        "issue_number": 371,
+        "url": "https://github.com/nickejanssen/arcwright/issues/371"
+      },
       "path": "docs/roadmap/tasks/AW-291-narrator-refrain-resolver.md",
       "epic_id": "M5-I"
     },
@@ -2426,6 +2431,10 @@
       "epic": "M7-A",
       "size": "S",
       "depends_on": [],
+      "github": {
+        "issue_number": 347,
+        "url": "https://github.com/nickejanssen/arcwright/issues/347"
+      },
       "path": "docs/roadmap/tasks/AW-296-fix-the-knowledge-base-agent-guard-in-worktree-sessions.md",
       "epic_id": "M7-A"
     },
@@ -2438,6 +2447,10 @@
       "depends_on": [
         "AW-296"
       ],
+      "github": {
+        "issue_number": 349,
+        "url": "https://github.com/nickejanssen/arcwright/issues/349"
+      },
       "path": "docs/roadmap/tasks/AW-297-rebuild-the-knowledge-base-index-and-run-the-ten-question-accuracy-check.md",
       "epic_id": "M7-A"
     },
@@ -2448,6 +2461,10 @@
       "epic": "M7-A",
       "size": "S",
       "depends_on": [],
+      "github": {
+        "issue_number": 350,
+        "url": "https://github.com/nickejanssen/arcwright/issues/350"
+      },
       "path": "docs/roadmap/tasks/AW-298-require-the-ci-and-knowledge-base-checks-before-merging-to-main.md",
       "epic_id": "M7-A"
     },
@@ -2458,6 +2475,10 @@
       "epic": "M7-A",
       "size": "M",
       "depends_on": [],
+      "github": {
+        "issue_number": 351,
+        "url": "https://github.com/nickejanssen/arcwright/issues/351"
+      },
       "path": "docs/roadmap/tasks/AW-299-reconcile-the-tracker-with-the-rebuild.md",
       "epic_id": "M7-A"
     },
@@ -2468,6 +2489,10 @@
       "epic": "M7-B",
       "size": "M",
       "depends_on": [],
+      "github": {
+        "issue_number": 353,
+        "url": "https://github.com/nickejanssen/arcwright/issues/353"
+      },
       "path": "docs/roadmap/tasks/AW-300-thin-version-inventory-of-the-current-build.md",
       "epic_id": "M7-B"
     },
@@ -2478,6 +2503,10 @@
       "epic": "M7-B",
       "size": "S",
       "depends_on": [],
+      "github": {
+        "issue_number": 354,
+        "url": "https://github.com/nickejanssen/arcwright/issues/354"
+      },
       "path": "docs/roadmap/tasks/AW-301-walk-the-current-build-on-a-tv-and-two-phones-and-record-every-screen.md",
       "epic_id": "M7-B"
     },
@@ -2491,6 +2520,10 @@
         "AW-300",
         "AW-309"
       ],
+      "github": {
+        "issue_number": 355,
+        "url": "https://github.com/nickejanssen/arcwright/issues/355"
+      },
       "path": "docs/roadmap/tasks/AW-302-write-the-three-combined-rebuild-specs.md",
       "epic_id": "M7-B"
     },
@@ -2503,6 +2536,10 @@
       "depends_on": [
         "AW-302"
       ],
+      "github": {
+        "issue_number": 356,
+        "url": "https://github.com/nickejanssen/arcwright/issues/356"
+      },
       "path": "docs/roadmap/tasks/AW-303-make-mini-games-start-time-out-and-return-to-the-story-inside-a-session.md",
       "epic_id": "M7-B"
     },
@@ -2515,6 +2552,10 @@
       "depends_on": [
         "AW-302"
       ],
+      "github": {
+        "issue_number": 357,
+        "url": "https://github.com/nickejanssen/arcwright/issues/357"
+      },
       "path": "docs/roadmap/tasks/AW-304-make-play-records-game-agnostic.md",
       "epic_id": "M7-B"
     },
@@ -2527,6 +2568,10 @@
       "depends_on": [
         "AW-302"
       ],
+      "github": {
+        "issue_number": 358,
+        "url": "https://github.com/nickejanssen/arcwright/issues/358"
+      },
       "path": "docs/roadmap/tasks/AW-305-load-the-first-case-pass-the-fairness-check-and-report-readiness-without-spoilers.md",
       "epic_id": "M7-B"
     },
@@ -2539,6 +2584,10 @@
       "depends_on": [
         "AW-302"
       ],
+      "github": {
+        "issue_number": 359,
+        "url": "https://github.com/nickejanssen/arcwright/issues/359"
+      },
       "path": "docs/roadmap/tasks/AW-306-connect-one-story-writing-tool-through-an-importer.md",
       "epic_id": "M7-B"
     },
@@ -2549,6 +2598,10 @@
       "epic": "M7-B",
       "size": "S",
       "depends_on": [],
+      "github": {
+        "issue_number": 360,
+        "url": "https://github.com/nickejanssen/arcwright/issues/360"
+      },
       "path": "docs/roadmap/tasks/AW-307-state-players-want-one-more-game-as-a-goal-in-the-game-design-document.md",
       "epic_id": "M7-B"
     },
@@ -2559,6 +2612,10 @@
       "epic": "M7-B",
       "size": "M",
       "depends_on": [],
+      "github": {
+        "issue_number": 361,
+        "url": "https://github.com/nickejanssen/arcwright/issues/361"
+      },
       "path": "docs/roadmap/tasks/AW-309-build-versus-adopt-review-for-the-layers-session-1-needs.md",
       "epic_id": "M7-B"
     },
@@ -2571,6 +2628,10 @@
       "depends_on": [
         "AW-303"
       ],
+      "github": {
+        "issue_number": 362,
+        "url": "https://github.com/nickejanssen/arcwright/issues/362"
+      },
       "path": "docs/roadmap/tasks/AW-308-session-1-preflight-reconnect-private-information-and-the-host-cheat-sheet.md",
       "epic_id": "M7-C"
     },
@@ -2581,6 +2642,10 @@
       "epic": "M6-D",
       "size": "S",
       "depends_on": [],
+      "github": {
+        "issue_number": 363,
+        "url": "https://github.com/nickejanssen/arcwright/issues/363"
+      },
       "path": "docs/roadmap/tasks/AW-310-triage-remote-branches-and-worktrees.md",
       "epic_id": "M6-D"
     },
@@ -2591,6 +2656,10 @@
       "epic": "M6-D",
       "size": "S",
       "depends_on": [],
+      "github": {
+        "issue_number": 364,
+        "url": "https://github.com/nickejanssen/arcwright/issues/364"
+      },
       "path": "docs/roadmap/tasks/AW-311-choose-one-location-for-specs-and-plans.md",
       "epic_id": "M6-D"
     },
@@ -2601,6 +2670,10 @@
       "epic": "M6-D",
       "size": "S",
       "depends_on": [],
+      "github": {
+        "issue_number": 365,
+        "url": "https://github.com/nickejanssen/arcwright/issues/365"
+      },
       "path": "docs/roadmap/tasks/AW-312-map-where-agent-and-skill-definitions-live.md",
       "epic_id": "M6-D"
     },
@@ -2611,6 +2684,10 @@
       "epic": "M6-D",
       "size": "S",
       "depends_on": [],
+      "github": {
+        "issue_number": 366,
+        "url": "https://github.com/nickejanssen/arcwright/issues/366"
+      },
       "path": "docs/roadmap/tasks/AW-313-fix-or-drop-the-orphaned-document-freshness-number.md",
       "epic_id": "M6-D"
     },
@@ -2621,6 +2698,10 @@
       "epic": "M6-D",
       "size": "M",
       "depends_on": [],
+      "github": {
+        "issue_number": 367,
+        "url": "https://github.com/nickejanssen/arcwright/issues/367"
+      },
       "path": "docs/roadmap/tasks/AW-314-story-library-experiment.md",
       "epic_id": "M6-D"
     },
@@ -2631,6 +2712,10 @@
       "epic": "M6-D",
       "size": "S",
       "depends_on": [],
+      "github": {
+        "issue_number": 368,
+        "url": "https://github.com/nickejanssen/arcwright/issues/368"
+      },
       "path": "docs/roadmap/tasks/AW-315-study-the-fourteen-inspirations-against-specific-design-decisions.md",
       "epic_id": "M6-D"
     },
@@ -2641,6 +2726,10 @@
       "epic": "M6-D",
       "size": "S",
       "depends_on": [],
+      "github": {
+        "issue_number": 369,
+        "url": "https://github.com/nickejanssen/arcwright/issues/369"
+      },
       "path": "docs/roadmap/tasks/AW-316-deeper-competitor-and-prior-art-research.md",
       "epic_id": "M6-D"
     },
@@ -2651,8 +2740,24 @@
       "epic": "M6-D",
       "size": "S",
       "depends_on": [],
+      "github": {
+        "issue_number": 370,
+        "url": "https://github.com/nickejanssen/arcwright/issues/370"
+      },
       "path": "docs/roadmap/tasks/AW-317-propose-a-minimal-read-only-viewer-of-the-story-and-the-live-session.md",
       "epic_id": "M6-D"
+    },
+    {
+      "id": "AW-318",
+      "title": "Rerun The Roadmap Questions In A Fresh Session And Close The Citation Misses",
+      "milestone": "M7",
+      "epic": "M7-A",
+      "size": "S",
+      "depends_on": [
+        "AW-297"
+      ],
+      "path": "docs/roadmap/tasks/AW-318-rerun-the-roadmap-questions-in-a-fresh-session-and-close-the-citation-misses.md",
+      "epic_id": "M7-A"
     }
   ],
   "superseded_sources": [

@@ -155,10 +155,10 @@ Since 2026-09-27, work on AI helper tooling and the knowledge base has been limi
 
 ## Your steps
 
-1. **Merge the reset pull request** so every session and agent can see this plan.
+1. **Done 2026-11-15.** Merge the reset pull request (PR #348).
 2. **Save the other session's work.** Open the session on branch `claude/lido-case-and-spec-followups` and send it: "Commit and push your spec 0092 edit and the case folder, and open a pull request." Until then that work can be lost.
 3. **Require all checks before merge (AW-298).** GitHub, then Settings, then Branches, then edit the rule for `main`, then add `Lint, Typecheck, Test, Build, and Scan` and `team-ai` under required status checks. About ten minutes.
-4. **Review and merge the agent fix** when the AW-296 session opens its pull request.
+4. **Done 2026-11-15.** Review and merge the agent fix (PR #352, then PR #376 for decisions-log access).
 5. **Decide on spec 0092 for the thin version.** Reply "approve 0092 for the thin version" on issue #303, or say what to change. The inventory (AW-300) starts on that approval.
 6. **Answer the open decisions**, one at a time, when asked: the issues labelled `needs-decision`.
 7. **Keep writing the first case** with its session. It is the critical path.
