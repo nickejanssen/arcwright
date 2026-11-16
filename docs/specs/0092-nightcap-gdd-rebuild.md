@@ -14,7 +14,7 @@ supersedes: []
 
 # Nightcap GDD Rebuild and Reconciliation Contract
 
-**Status**: Draft. Not approved. No implementation may start from this file.
+**Status**: Approved for the thin version only (founder, 2026-11-15, D-123). This permits the work package 0 inventory (AW-300) and nothing else. No implementation may start from this file. See "Founder Approval For The Thin Version" at the end.
 
 **Author**: Claude Code | **Date**: 2026-11-13
 
@@ -211,3 +211,20 @@ Added by the November 2026 reset audit (`docs/product/2026-11-15-reset-audit.md`
 - **The host's authored lines have no reader.** No engine or API code reads the line libraries; AW-291 is the planned reader.
 - **Two sets of screen code exist.** `scripts/rehearsal.py` launches `dashboard/`; the mini-game kit lives in `nightcap-web/`. The inventory must pick one.
 - **Founder decisions since this draft:** a thin, complete version on the 30-day date across three sessions (D-112); in Nightcap a beat is one round ending in a story-wrapped mini-game (D-113); three combined specs instead of one per work package (D-118, AW-302).
+
+## Founder Approval For The Thin Version (2026-11-15)
+
+Recorded by the Scribe from the founder's message in session on 2026-11-15. Decision row: D-123.
+
+**Founder's words:** "approve 0092 for the thin version as long as it includes the stretch goals that were added in the last PR including the graphical story interface and the idea for the game being around a dsfunctional private investigations agency where everyone competes to solve mysteries first"
+
+**What this approves.** Phase gate 1 of this spec, limited to the thin version defined in `docs/product/nightcap-status.md` (D-112). It permits the work package 0 inventory (AW-300) and nothing else. Where this section and the "Approval evidence" line above disagree, this section is the later record.
+
+**The conditions, and how each is met.** The thin version includes, as stretch goals:
+
+- Reading and changing the story graphically in the adopted story tool, plus a viewer for what that tool cannot show (D-122, AW-306, AW-317). Item 8 of the "if it fits" list on the status page.
+- Friends' recorded voices for characters (AW-320). Item 9 of the same list.
+- The detective agency framing: the players are a dysfunctional private investigations agency whose members compete to solve each mystery first (AW-319). Added to the status page on 2026-11-15 as a stretch goal in the writing lane.
+- Proving a mini-game can be built and played on its own (AW-322), which was added in the same pull request.
+
+**What this does not approve.** No code. No work package beyond the inventory. None of the three combined specs (AW-302), each of which needs its own approval. No hard-rule change (schema, cross-module engine change, new dependency, prompts). It does not replace the approved invitation framing with the agency framing; that choice is made in AW-319 and, if made, is recorded as its own decision.

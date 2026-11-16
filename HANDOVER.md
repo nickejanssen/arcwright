@@ -2,7 +2,7 @@
 
 > Read `AGENTS.md` first, then this file, before touching code. It is the short start-of-session brief for every agent (Claude, Codex, Copilot) and for the founder. If it disagrees with a current source, investigate before acting, then fix this file. Keep it short and link to the owner of each detail.
 
-Last updated: 2026-11-16, against main `afd14e8`.
+Last updated: 2026-11-16, against main `bd7f32c`.
 
 ## System map
 
@@ -15,7 +15,10 @@ Keep them apart. Nothing in `engine/` may name Nightcap or assume a murder myste
 ## Where things stand
 
 - The playable build is the older Couch Race design. The current design (the Master GDD) is not built.
-- The rebuild plan is `docs/specs/0092-nightcap-gdd-rebuild.md`. Draft, not approved. Building is blocked on the founder's approval (issue #303).
+- The first rebuild spec, `docs/specs/0093-engine-spine-for-the-thin-version.md`, was approved on 2026-11-16 (D-124). Its build tasks may write plans; each plan needs the founder's approval before code.
+- The second rebuild spec, `docs/specs/0094-endgame-for-the-thin-version.md` (the endgame), was approved on 2026-11-16 (D-125). A mini-game win gives the top-ranked one extra investigation (D-126, AW-328).
+- **Working rule from the founder (D-127): move fast, stay open to change, and prefer choices that are cheap to undo.** An approved spec is the current best plan, not a fixed contract. If you find a better way, say so on the task's issue with a recommendation; do not build the worse thing in silence and do not change the plan in silence. Hard rules and plan approval still apply.
+- The rebuild plan is `docs/specs/0092-nightcap-gdd-rebuild.md`. Approved for the thin version only on 2026-11-15 (D-123, issue #303). That permits the inventory (AW-300). Building waits on the three combined specs (AW-302), each with its own founder approval.
 - Target: a thin, complete game played by friends at the founder's house on 12 or 13 December 2026 (D-112). Plan, scope and cut order: `docs/product/nightcap-status.md`.
 - Nothing is deployed to the cloud. The game runs from the founder's PC through a tunnel.
 - The online paper test is paused (D-111). Do not restart it.
@@ -42,8 +45,16 @@ Work is never left in chat. If you find work, it becomes a roadmap task record a
 | Rerun the roadmap questions in a fresh session; close the three citation misses | AW-318 | Open |
 | Require all checks before merge | AW-298 | Founder action |
 | Finish reconciling the tracker | AW-299 | Open |
-| Approve spec 0092 for the thin version | Issue #303 | Founder decision |
-| Inventory, screen walkthrough, build-versus-adopt | AW-300, AW-301, AW-309 | AW-300 waits on the approval |
+| Approve spec 0092 for the thin version | Issue #303 | Done 2026-11-15 (D-123), with the stretch goals as a condition |
+| Inventory of the current build | AW-300 | Written 2026-11-15, reviewed by the founder 2026-11-16 (issue #353): `docs/specs/0092-wp0-thin-version-inventory.md`. Still open: a reviewer session's sample check |
+| Engine-spine spec | AW-302 | Approved 2026-11-16 (D-124, issue #355): `docs/specs/0093-engine-spine-for-the-thin-version.md` |
+| Endgame spec | AW-302 | Approved 2026-11-16 (D-125, issue #355): `docs/specs/0094-endgame-for-the-thin-version.md` |
+| Screens spec | AW-302 | Not started. Needs the two interview answers; better after the walkthrough (AW-301) |
+| Build tasks under those specs, in order | AW-324, AW-325, AW-303, AW-304, AW-328, AW-326, AW-327 | AW-324 may start: it writes a plan and stops for approval. The rest wait on the task before them. AW-328 is the mini-game reward (D-126) |
+| Screen walkthrough on a TV and two phones | AW-301 | Open; needs the founder, Docker, a TV and two phones |
+| Build-versus-adopt review | AW-309 | Done 2026-11-15: section 2.11.7 of the technology stack. Session 1 needs no paid plan and no new tool |
+| Competitor comparison | AW-316, AW-323 | Done by reading: `docs/product/2026-11-15-competitor-and-prior-art.md`. Playing the two closest is AW-323 (founder) |
+| Mini-game on its own | AW-322 | Headless half done; findings in the task file. TV run and the trial mini-game are open |
 | First case | AW-305 | In progress in another session; spoiler rules apply |
 
 ## Known issues
@@ -91,10 +102,34 @@ These were learned the hard way and used to live only in one tool's private note
 
 Open the task you were given on GitHub. Confirm its prerequisites against main. Write a plan and stop for founder approval, unless the task says it is a break-fix or documentation-only.
 
+### Run order from 2026-11-16
+
+Work the list top to bottom. Building starts only at step 7. Whether a step is done is on GitHub: `python scripts/roadmap_status.py --milestone M7`.
+
+| # | Step | Who | Starts when |
+| --- | --- | --- | --- |
+| 1 | Done 2026-11-16: inventory reviewed; specs 0093 and 0094 approved (D-124, D-125); mini-game reward answered (D-126). Now: merge pull request #385, which carries all of it to main | Founder, 1 minute | Now |
+| 2 | Require the two extra checks before merge (AW-298, #350) | Founder, about 10 minutes | Now |
+| 3 | Tell the session on branch `claude/lido-case-and-spec-followups` to commit, push and open a pull request | Founder, 2 minutes | Now |
+| 4 | Answer the two interview questions (what players should feel and do; the first outside creator) | Founder with any session | Before step 6 |
+| 5 | Drafted 2026-11-16 (spec 0093). Also send the case-writing session the message under "Owner actions" in that spec | Founder, 2 minutes | Now |
+| 6 | Walk the current build on a TV and two phones (AW-301, #354), then write the screens spec (AW-302). The endgame spec is approved (0094, D-125) | Founder starts Docker; one session | After steps 4 and 5 |
+| 7 | Build, one task per session, in this order: AW-324, AW-325, then AW-303 beside AW-304, then AW-328, AW-326, AW-327; AW-306, then AW-308 | Build sessions, at most two at once | When the spec that covers the task is approved |
+| Any time | AW-318 (fresh session only), AW-299, AW-322's TV half | One session each | Now |
+
+**To start any task in a fresh session, type:** `/implement AW-NNN`. To check a pull request before merging, type `/review-pr`. A session that is not Claude Code is given this instead: "Read `AGENTS.md` and `HANDOVER.md`. Run `python scripts/roadmap_status.py --task AW-NNN`. Do that task as its task file says, and stop at the first founder gate."
+
+**What needs the founder's approval before a build task starts:** its spec, and separately anything on the hard-rule list in `AGENTS.md` (database changes, changes across engine modules, new dependencies, prompts). The inventory found that most of the rebuild is wiring across engine modules, so expect one hard-rule approval per spec.
+
 ## Log
 
 Add one dated entry per merged pull request: what changed, why, which checks covered it, and what is still open.
 
+- **2026-11-16** Founder approved spec 0094, the endgame ("Approved Spec 0094 (endgame)."; D-125, issue #355), and answered spec 0093's Q1: a mini-game win gives the top-ranked one extra investigation (D-126). New task AW-328 builds the reward and the standing on each run; AW-326 now waits on it. Founder's working rule recorded as D-127: move fast, stay open to change, prefer choices that are cheap to undo. Not approved: any plan or code. Open: the screens spec; the case-writing session has not confirmed its draft fits the case format. Checks: knowledge-base validators; no code changed.
+- **2026-11-16** Founder approved spec 0093, the engine spine ("Approve 0093"; D-124, issue #355). It permits AW-324, AW-325, AW-303 and AW-304 to write plans; AW-324 is first and is unblocked. Not approved: any plan or code, spec 0094, the spec's Q1. Open: the case-writing session has not confirmed its draft fits the case format. Checks: knowledge-base validators; no code changed.
+- **2026-11-16** Founder reviewed the inventory ("Inventory reviewed", issue #353). Engine-spine spec drafted, the first of three (AW-302): `docs/specs/0093-engine-spine-for-the-thin-version.md`. Draft, not approved. It covers the written-case format and fairness check, what each player holds, rounds that move by rule, the saved budget of six, mini-game start and return, and play records. It needs no table change and no new dependency; it crosses engine modules. New build tasks AW-324 and AW-325. Found while writing it and added to the inventory as a correction: nothing sends a beat's written scene to the screens; a mini-game run does not record its beat; pausing a session does not pause its run. Checks: knowledge-base validators; no code changed. Not done: the case-writing session has not confirmed its draft fits the format; one open question (what a mini-game win gives). Endgame spec drafted the same day: `docs/specs/0094-endgame-for-the-thin-version.md` (Last Call and the private lock, the rule-based theory check, the winner rule, the closing sequence; no table change, no model call). New build tasks AW-326 and AW-327. It proposes leaving `engine/scoring` untouched instead of lifting the countdown out of it, which changes one inventory row; noted in the inventory.
+- **2026-11-15** Founder approved spec 0092 for the thin version, on condition that the stretch goals are included (D-123, issue #303); the detective agency framing (AW-319) was added to the status page as a stretch goal. The approval permits the inventory only. AW-300 inventory written the same evening: `docs/specs/0092-wp0-thin-version-inventory.md`. Main finding: the API reaches only nine engine modules; investigation choices, scoring, the case module and Leverage are built and tested but cannot be reached from a live session, and a live session today moves on only when every player has typed once. The inventory recommends `dashboard/` as the one client. Checks: knowledge-base validators; no code changed. Not done: nothing was run on a TV (AW-301); the founder has not reviewed the inventory.
+- **2026-11-15** AW-309 and AW-316, pulled forward at the founder's request. Build-versus-adopt review: section 2.11.7 of `docs/architecture/02-technology-stack.md`; session 1 needs no paid plan and no new tool; two founder decisions added to `docs/product/open-questions-log.csv` (React in the surviving client; Kokoro for sample host lines). Competitor comparison: `docs/product/2026-11-15-competitor-and-prior-art.md`. It corrects the reset audit: Hidden Door sells something close to a story engine for any world, and "rules decide, the AI only voices" is not unique; nobody was found directing a group in one room on a TV with phones. D-122 rules out Ink and Yarn Spinner as the main story tool (no editable graph); the shortlist for AW-306 is Twine, articy:draft X FREE and Arcweave. New task AW-323: the founder plays the two closest neighbours. AW-322 headless half: 93 mini-game tests pass and the standalone preview runs with no case, but it does not run the Python rules and is not playable. Checks: knowledge-base validators only; no code changed. Not done: no product was played; prices not on a maker's page are labelled third party.
 - **2026-11-16** Captured four founder ideas as tasks under D-119 (PR #383), with issues #379 to #382: AW-319 (detective agency framing as a wrapper on the first case; tone is comedic with depth), AW-320 (friends' recorded voices, no cloning; last in the session 1 fit order and first to cut), AW-321 (map a book or film into the story map; priority 2, waits for Nightcap to be live) and AW-322 (prove a mini-game can be built and played on its own, list the gaps). AW-314 gained the founder's story notes as material. Founder decision the same day (D-122): story viewing, editing and building are one tool, adopted first (AW-306) and built only if adoption falls short; AW-317 moved to M7-B as a stretch item for the thin version. Documentation only. Checks: `scripts/verify_human_collaboration.py --phase global` passes; no code changed, so engine tests were not run. Still open: none of the four is approved build scope; the founder chooses the framing comparison method and decides each gap from AW-322.
 - **2026-11-15** AW-297: rebuilt the search index in the main checkout and ran the ten-question check live from a worktree session (PR #378). Result: 10 of 10 answered and correct, 7 of 10 citing the owning record, the one known conflict flagged. Reading the decisions log works live (D-120). Also added the missing GitHub issue numbers for AW-291 and AW-296 to AW-317 to `docs/roadmap/index.json`, and recorded D-121. Documentation only; no agent or hook file changed. Open: AW-318.
 - **2026-11-15** PR #352 (AW-296, AW-297): the knowledge-base guard accepts a worktree of the registered checkout, so specialist agents can search and read `docs/` from worktree sessions. Also: the specialist search considers 64 candidates before namespace filtering, `python scripts/roadmap_status.py --task AW-NNN` gives exact task lookup, and the session-start text tells agents how to resolve a task and record a handoff (D-121). Checks: 197 script tests and ruff passed on `5ab3f2a`, checked independently by the reset session.

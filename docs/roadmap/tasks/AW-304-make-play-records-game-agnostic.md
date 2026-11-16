@@ -50,7 +50,8 @@ The founder's direction is that play data is captured at engine level so any gam
 
 ## Dependencies
 
-- AW-302
+- AW-302: spec 0093 approved. This task is Part F of `docs/specs/0093-engine-spine-for-the-thin-version.md`.
+- AW-325, which saves the choices and phase changes these records read.
 - Findings and evidence: `docs/product/2026-11-15-reset-audit.md`
 
 ## Must Not Do

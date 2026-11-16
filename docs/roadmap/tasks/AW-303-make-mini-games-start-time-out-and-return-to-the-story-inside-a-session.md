@@ -54,13 +54,14 @@ Verified in code on 14 November 2026: outside tests, nothing calls `create_run`,
 
 ## Dependencies
 
-- AW-302
+- AW-302: spec 0093 approved. This task is Part E of `docs/specs/0093-engine-spine-for-the-thin-version.md`.
+- AW-325, which builds the phases and the clock this task connects the run to.
 - Findings and evidence: `docs/product/2026-11-15-reset-audit.md`
 
 ## Must Not Do
 
 - Add no game-specific word to `engine/`.
-- No new mini-games, no package platform work, no reward redesign.
+- No new mini-games, no package platform work, no reward redesign. The reward for winning is AW-328 (D-126).
 
 ## Kickoff Prompt
 

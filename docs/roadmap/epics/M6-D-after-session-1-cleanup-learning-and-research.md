@@ -34,6 +34,7 @@ None of it blocks session 1. Writing it down with dates keeps it from being lost
 - [AW-315: Study The Fourteen Inspirations Against Specific Design Decisions](../tasks/AW-315-study-the-fourteen-inspirations-against-specific-design-decisions.md)
 - [AW-316: Deeper Competitor And Prior-Art Research](../tasks/AW-316-deeper-competitor-and-prior-art-research.md)
 - [AW-321: Map A Book Or Film Into The Story Map](../tasks/AW-321-map-a-book-or-film-into-the-story-map.md)
+- [AW-323: Founder Plays The Two Closest Neighbours And Records What They Do Better](../tasks/AW-323-founder-plays-the-two-closest-neighbours-and-records-what-they-do-better.md)
 
 ## Acceptance Criteria
 

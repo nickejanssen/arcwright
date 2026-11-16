@@ -154,7 +154,7 @@ Added in the November 2026 reset. Sections 2.1 to 2.10 record what is locked and
 
 **What happens when a player taps.** The phone sends the tap to the API. The engine checks it against the rules and updates the story state. Only then does it ask a model to voice the result. It sends events back saying what to show and to whom, and the screens perform them.
 
-In the tables below, "verified" means the licence or price was checked on 2026-11-14. Anything not marked verified is from memory and must be checked before it is relied on.
+In the tables below, "verified" means the licence or price was checked on 2026-11-14. Section 2.11.7 re-checks the session 1 layers on 2026-11-15. Anything not marked verified is from memory and must be checked before it is relied on.
 
 ### 2.11.1 The stack today, top to bottom
 
@@ -203,10 +203,12 @@ Nightcap stays in the browser with no install, as Jackbox does. Unity and Unreal
 | Ink (and inkjs) | Text script, strongest logic | MIT, verified; free |
 | Yarn Spinner | Text script, made for dialogue | MIT, verified; free |
 | Twine | Visual map of passages | GPL-3.0, verified; free |
-| Arcweave | Web-based, collaborative | Free plan: 3 projects, 200 items, JSON export (verified) |
-| articy:draft | Professional, heaviest | A free version exists; limits not verified |
+| Arcweave | Web-based, collaborative, editable graph | Free plan: 3 projects, 200 items, JSON export, **not for commercial projects** (vendor page, 2026-11-15). Pro $15 to $18 a member a month |
+| articy:draft X FREE | Professional, heaviest, editable flow chart | Free, commercial use allowed, 700 objects per project, all exports (vendor page, 2026-11-15) |
 
 These tools write branching scenes. None models who knows what, or fair routes to a truth. That part stays in Arcwright, so the work is an importer, not a replacement.
+
+D-122 requires a graph view the founder can edit. Ink and Yarn Spinner are text scripts with no editable graph, so neither can be the main tool; the shortlist for AW-306 is Twine, articy:draft X FREE and Arcweave. Detail: section 4 of the [competitor comparison](../product/2026-11-15-competitor-and-prior-art.md).
 
 ### 2.11.5 AI, data and running it
 
@@ -226,5 +228,26 @@ These tools write branching scenes. None models who knows what, or fair routes t
 
 ### 2.11.6 Candid notes for strategy
 
-From memory, not checked in the reset: middleware alone has rarely reached very large outcomes, and the large ones came from a hit game that became a platform. That supports the games-first order: the near-term fact everything rests on is whether a room of people has a great time with Nightcap and asks to play again. A proper comparison is AW-316.
+From memory, not checked in the reset: middleware alone has rarely reached very large outcomes, and the large ones came from a hit game that became a platform. That supports the games-first order: the near-term fact everything rests on is whether a room of people has a great time with Nightcap and asks to play again. The proper comparison was done on 2026-11-15: [competitor and prior-art comparison](../product/2026-11-15-competitor-and-prior-art.md). Its main findings: Hidden Door now sells something close to a story engine for any world; "rules decide, the AI only voices" is no longer a difference by itself; nobody was found directing a group in one room on a TV with phones.
 
+### 2.11.7 Build-versus-adopt review for session 1 (AW-309, 2026-11-15)
+
+The rule in ADR-0026 applied to each layer the thin first version needs. Licences and prices were read on the makers' own pages on 2026-11-15 unless a row says otherwise. **Session 1 needs no paid plan and no new tool.** Everything paid in this table together stays under the $50 a month ceiling.
+
+| Layer | Today | Recommendation | Licence and price | What it replaces | When |
+| --- | --- | --- | --- | --- | --- |
+| Screens | Two hand-built clients. `dashboard/` uses React 18 and Vite. `nightcap-web/` is about 5,300 lines with no libraries | **Adopt React for the one surviving client.** Which codebase survives is decided in the inventory (AW-300) | React: MIT (from memory), free, already in `dashboard/package.json` | Hand-written rendering code in `nightcap-web/` | Screens spec (AW-302) |
+| Rooms: TV plus phones | Built: room code, join, event stream | **Keep.** Do not adopt Playroom Kit | Playroom Kit: free plan is non-commercial and capped at 10 daily users; $10 a month above that. It would hold session state, which the engine must own | Nothing | Now |
+| Motion | None | **Wait.** For session 1 use the transitions browsers already have. Adopt Rive only if "motion on the TV" is reached in the if-it-fits list | Rive runtimes: MIT, no runtime fee. Free plan exports play a Rive splash screen. $9 a seat a month billed yearly, or $17 monthly, removes it | Nothing yet | If it fits, item 5 |
+| Host voice | None. The host's 468 written lines are text | **If it fits: render the written lines to audio files once, ahead of play, with Kokoro.** No voice call during a session, so no cost per session, no delay and no provider at run time | Kokoro: Apache-2.0, free, runs on the founder's PC. Alternatives: ElevenLabs free plan has no commercial licence and needs attribution, Starter is $6 a month; Inworld is $25 per million characters on demand, $15 for its fast model | Nothing yet | If it fits, item 1 |
+| Friends' voices (AW-320) | None | **Recorded files only.** No product needed | Free | Nothing | If it fits, item 9 |
+| Sound | None | **Wait.** The browser's own audio player is enough for line files and a few effects. Adopt Howler.js when sounds must overlap or phones refuse to play | Howler.js: MIT, free (verified 2026-11-14, not re-read today) | Nothing yet | Later |
+| Story tool | Hand-edited files | **Adopt one with an editable graph** (D-122). Shortlist in 2.11.4 | Free options exist on the shortlist | Hand-editing story files | AW-306 |
+| Talking-character products | None | **Do not adopt.** Take voices, not brains (ADR-0026) | Not applicable | Nothing | Not planned |
+
+Decisions this review raises for the founder, each recorded in `docs/product/open-questions-log.csv` and asked one at a time:
+
+1. Whether the surviving Nightcap client may add React as a dependency. Asked with the inventory (AW-300), because it depends on which codebase survives.
+2. Whether to install Kokoro on the founder's PC to render three sample host lines, so he can hear the quality before choosing a voice. Asked only when the must-have list is done.
+
+Not verified: how Kokoro sounds for this host, and the total length of the host's lines. Both are checked when decision 2 is reached.

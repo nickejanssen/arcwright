@@ -59,7 +59,7 @@ How to run it so runs can be compared:
 
 | # | Question | Verified answer | Owning agent | Owning record |
 | --- | --- | --- | --- | --- |
-| 1 | Is spec 0092 approved? | No. Draft | `nightcap-sme` | The status line of `docs/specs/0092-nightcap-gdd-rebuild.md` |
+| 1 | Is spec 0092 approved? | Only for the thin version, since 2026-11-15 (D-123); that permits the inventory and no building. Before that date the answer was "No. Draft" | `nightcap-sme` | The status line of `docs/specs/0092-nightcap-gdd-rebuild.md` |
 | 2 | When does the tooling freeze end? | At the rebuild's first TV session (D-111) | `product-roadmap-sme` | D-111 in `docs/product/decisions-log.csv` |
 | 3 | Has Gate 1 passed? | No | `product-roadmap-sme` | D-111; `docs/gdd/nightcap/02-validation/98-validation-state-and-remaining-plan.md` |
 | 4 | What is the two-player rule? | Two players is mandatory and first-class | `nightcap-sme` | `docs/gdd/nightcap/00-governance/00-decision-ledger.md`, Player count |

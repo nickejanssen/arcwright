@@ -22,7 +22,7 @@ One page that says what is playable, what the plan is, what is next, and what th
 
 ## In one paragraph
 
-The game you can run today is not the game being shipped. The TV-and-phones build is the older Couch Race design. The Nightcap in the Master GDD has a draft rebuild plan (spec 0092) and no code yet. The founder chose on 2026-11-14 to keep the date and ship a thin but complete version to friends at his house on 12 or 13 December 2026, with as much added as fits (D-112). The date is at risk, not safe. The two things most likely to move it are the first case and the new screens.
+The game you can run today is not the game being shipped. The TV-and-phones build is the older Couch Race design. The Nightcap in the Master GDD has a rebuild plan (spec 0092), approved for the thin version on 2026-11-15 (D-123), and no code yet. That approval permits the inventory of the current build (AW-300) only. The first rebuild spec, the engine spine (spec 0093), was approved on 2026-11-16 (D-124); its build tasks may write plans, and each plan needs its own approval before code. The second, the endgame (spec 0094), was approved the same day (D-125). A mini-game win gives the top-ranked one extra investigation (D-126, AW-328). The founder chose on 2026-11-14 to keep the date and ship a thin but complete version to friends at his house on 12 or 13 December 2026, with as much added as fits (D-112). The date is at risk, not safe. The two things most likely to move it are the first case and the new screens.
 
 ## What is proven, and how far
 
@@ -74,6 +74,8 @@ Planning assumption: 10 to 15 founder hours a week, which depends on AI usage li
 8. Reading and changing the story graphically in the adopted story tool, plus a viewer for what that tool cannot show (AW-306, AW-317).
 9. Friends' recorded voices for characters (AW-320). Only after everything above and every must-have is done; first to cut. Recorded lines, no voice cloning.
 
+**Stretch, in the writing lane.** The detective agency framing: the players are a dysfunctional private investigations agency whose members compete to solve each mystery first (AW-319). It is writing, not build work, so it takes no place in the order above. The founder made it a condition of approving spec 0092 that the thin version includes it as a stretch goal (D-123). Whether it replaces the approved invitation framing is still his choice inside AW-319.
+
 **Not before session 3:** Counterintel, five or more players, cloud hosting.
 
 ## Critical path by week
@@ -83,8 +85,8 @@ Estimates are inferred, not measured. "Build days" means focused AI build sessio
 | Week | Work | Tasks | Build days | Founder hours |
 | --- | --- | --- | --- | --- |
 | To 2026-11-21 | Agents fixed; index rebuilt; checks required; spec 0092 approved for the thin version; inventory; screen walkthrough; build-versus-adopt | AW-296 to AW-301, AW-309, issue #303 | 4 to 6 | 10 to 12, mostly the case |
-| 2026-11-22 to 28 | Three combined specs; case loaded and fair; mini-games start, time out and return; headless full game at two and four players | AW-302, AW-303, AW-305 | 5 to 7 | 8 to 10 |
-| 2026-11-29 to 12-05 | Endgame; screens; play records; story-tool importer; **founder TV run** | AW-304, AW-306, AW-242 | 7 to 9 | 12 to 15 |
+| 2026-11-22 to 28 | Three combined specs; case loaded and fair; mini-games start, time out and return; headless full game at two and four players | AW-302, AW-324, AW-325, AW-303, AW-305 | 5 to 7 | 8 to 10 |
+| 2026-11-29 to 12-05 | Endgame; screens; play records; story-tool importer; **founder TV run** | AW-328, AW-326, AW-327, AW-304, AW-306, AW-242 | 7 to 9 | 12 to 15 |
 | 2026-12-06 to 12 | Fix what the TV run found; preflight; "if it fits" items; **session 1** | AW-308, AW-240, AW-241 | 4 to 6 | 12 to 15 |
 
 Total: about 20 to 29 build days in four weeks, roughly one productive build session every day.
@@ -161,6 +163,6 @@ Since 2026-09-27, work on AI helper tooling and the knowledge base has been limi
 2. **Save the other session's work.** Open the session on branch `claude/lido-case-and-spec-followups` and send it: "Commit and push your spec 0092 edit and the case folder, and open a pull request." Until then that work can be lost.
 3. **Require all checks before merge (AW-298).** GitHub, then Settings, then Branches, then edit the rule for `main`, then add `Lint, Typecheck, Test, Build, and Scan` and `team-ai` under required status checks. About ten minutes.
 4. **Done 2026-11-15.** Review and merge the agent fix (PR #352, then PR #376 for decisions-log access).
-5. **Decide on spec 0092 for the thin version.** Reply "approve 0092 for the thin version" on issue #303, or say what to change. The inventory (AW-300) starts on that approval.
+5. **Done 2026-11-15.** Spec 0092 approved for the thin version, with the stretch goals as a condition (D-123, issue #303). The inventory (AW-300) started the same evening.
 6. **Answer the open decisions**, one at a time, when asked: the issues labelled `needs-decision`.
 7. **Keep writing the first case** with its session. It is the critical path.

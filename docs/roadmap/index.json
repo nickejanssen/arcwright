@@ -680,7 +680,12 @@
         "AW-317",
         "AW-319",
         "AW-320",
-        "AW-322"
+        "AW-322",
+        "AW-324",
+        "AW-325",
+        "AW-326",
+        "AW-327",
+        "AW-328"
       ],
       "github": {
         "issue_number": 373,
@@ -713,7 +718,8 @@
         "AW-314",
         "AW-315",
         "AW-316",
-        "AW-321"
+        "AW-321",
+        "AW-323"
       ],
       "github": {
         "issue_number": 375,
@@ -2538,7 +2544,8 @@
       "epic": "M7-B",
       "size": "M",
       "depends_on": [
-        "AW-302"
+        "AW-302",
+        "AW-325"
       ],
       "github": {
         "issue_number": 356,
@@ -2554,7 +2561,8 @@
       "epic": "M7-B",
       "size": "M",
       "depends_on": [
-        "AW-302"
+        "AW-302",
+        "AW-325"
       ],
       "github": {
         "issue_number": 357,
@@ -2570,7 +2578,8 @@
       "epic": "M7-B",
       "size": "M",
       "depends_on": [
-        "AW-302"
+        "AW-302",
+        "AW-324"
       ],
       "github": {
         "issue_number": 358,
@@ -2828,6 +2837,108 @@
         "url": "https://github.com/nickejanssen/arcwright/issues/382"
       },
       "path": "docs/roadmap/tasks/AW-322-prove-a-mini-game-can-be-built-and-played-on-its-own-and-list-the-gaps.md",
+      "epic_id": "M7-B"
+    },
+    {
+      "id": "AW-323",
+      "title": "Founder Plays The Two Closest Neighbours And Records What They Do Better",
+      "milestone": "M6",
+      "epic": "M6-D",
+      "size": "S",
+      "depends_on": [
+        "AW-316"
+      ],
+      "github": {
+        "issue_number": 384,
+        "url": "https://github.com/nickejanssen/arcwright/issues/384"
+      },
+      "path": "docs/roadmap/tasks/AW-323-founder-plays-the-two-closest-neighbours-and-records-what-they-do-better.md",
+      "epic_id": "M6-D"
+    },
+    {
+      "id": "AW-324",
+      "title": "Build The Written Case Format, Its Fairness Check, And What Each Player Holds",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-302"
+      ],
+      "github": {
+        "issue_number": 386,
+        "url": "https://github.com/nickejanssen/arcwright/issues/386"
+      },
+      "path": "docs/roadmap/tasks/AW-324-build-the-written-case-format-its-fairness-check-and-what-each-player-holds.md",
+      "epic_id": "M7-B"
+    },
+    {
+      "id": "AW-325",
+      "title": "Make Rounds Move By Rule, With A Saved Investigation Budget",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "L",
+      "depends_on": [
+        "AW-302",
+        "AW-324"
+      ],
+      "github": {
+        "issue_number": 387,
+        "url": "https://github.com/nickejanssen/arcwright/issues/387"
+      },
+      "path": "docs/roadmap/tasks/AW-325-make-rounds-move-by-rule-with-a-saved-investigation-budget.md",
+      "epic_id": "M7-B"
+    },
+    {
+      "id": "AW-326",
+      "title": "Build Last Call, The Private Lock, The Theory Check And The Winner Rule",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-302",
+        "AW-303",
+        "AW-325",
+        "AW-328"
+      ],
+      "github": {
+        "issue_number": 388,
+        "url": "https://github.com/nickejanssen/arcwright/issues/388"
+      },
+      "path": "docs/roadmap/tasks/AW-326-build-last-call-the-private-lock-the-theory-check-and-the-winner-rule.md",
+      "epic_id": "M7-B"
+    },
+    {
+      "id": "AW-327",
+      "title": "Build The Closing Sequence And Prove A Full Game Headless",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-304",
+        "AW-326"
+      ],
+      "github": {
+        "issue_number": 389,
+        "url": "https://github.com/nickejanssen/arcwright/issues/389"
+      },
+      "path": "docs/roadmap/tasks/AW-327-build-the-closing-sequence-and-prove-a-full-game-headless.md",
+      "epic_id": "M7-B"
+    },
+    {
+      "id": "AW-328",
+      "title": "Give The Mini-Game Winner One Extra Investigation",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "S",
+      "depends_on": [
+        "AW-303",
+        "AW-325"
+      ],
+      "github": {
+        "issue_number": 390,
+        "url": "https://github.com/nickejanssen/arcwright/issues/390"
+      },
+      "path": "docs/roadmap/tasks/AW-328-give-the-mini-game-winner-one-extra-investigation.md",
       "epic_id": "M7-B"
     }
   ],
