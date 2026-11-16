@@ -44,7 +44,7 @@ Give the engine one file format for a case written by a person, a loader that re
 
 **Interaction profile:** Independent execution after plan approval. The change crosses engine modules (`case`, `knowledge`, `session`), which is a hard rule in `AGENTS.md`.
 
-- Blocked until the founder approves spec 0093 (issue #355).
+- Unblocked on 2026-11-16: the founder approved spec 0093 (D-124, issue #355).
 - The build session writes a plan and stops for the founder's approval before code.
 
 ## Acceptance Criteria

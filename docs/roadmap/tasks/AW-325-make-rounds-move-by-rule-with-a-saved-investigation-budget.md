@@ -44,7 +44,7 @@ Make a round run by itself: show its written scene, open the investigation menu,
 
 **Interaction profile:** Independent execution after plan approval. The change crosses engine modules (`arc`, `session`, `interactions`, `characters`, `events`) and adds API routes, which is a hard rule in `AGENTS.md`.
 
-- Blocked until the founder approves spec 0093 (issue #355) and AW-324 is merged.
+- Spec 0093 was approved on 2026-11-16 (D-124, issue #355). Still blocked until AW-324 is merged.
 - The build session writes a plan and stops for the founder's approval before code.
 
 ## Acceptance Criteria

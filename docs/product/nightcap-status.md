@@ -22,7 +22,7 @@ One page that says what is playable, what the plan is, what is next, and what th
 
 ## In one paragraph
 
-The game you can run today is not the game being shipped. The TV-and-phones build is the older Couch Race design. The Nightcap in the Master GDD has a rebuild plan (spec 0092), approved for the thin version on 2026-11-15 (D-123), and no code yet. That approval permits the inventory of the current build (AW-300) only. The founder chose on 2026-11-14 to keep the date and ship a thin but complete version to friends at his house on 12 or 13 December 2026, with as much added as fits (D-112). The date is at risk, not safe. The two things most likely to move it are the first case and the new screens.
+The game you can run today is not the game being shipped. The TV-and-phones build is the older Couch Race design. The Nightcap in the Master GDD has a rebuild plan (spec 0092), approved for the thin version on 2026-11-15 (D-123), and no code yet. That approval permits the inventory of the current build (AW-300) only. The first rebuild spec, the engine spine (spec 0093), was approved on 2026-11-16 (D-124); its build tasks may write plans, and each plan needs its own approval before code. The founder chose on 2026-11-14 to keep the date and ship a thin but complete version to friends at his house on 12 or 13 December 2026, with as much added as fits (D-112). The date is at risk, not safe. The two things most likely to move it are the first case and the new screens.
 
 ## What is proven, and how far
 

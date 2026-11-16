@@ -14,7 +14,7 @@ supersedes: []
 
 # Spec 0093: Engine Spine For The Thin Version
 
-**Status**: Draft. Not approved. No implementation may start from this file.
+**Status**: Approved by the founder on 2026-11-16 (D-124, issue #355). This permits its four build tasks to write their plans. Each plan needs the founder's approval before code. See "Founder Approval" at the end.
 
 **Author**: Claude Code (Spec Author role) | **Date**: 2026-11-16 | **Task**: AW-302, the engine-spine spec of three | **Checked against**: main at `bd7f32c`
 
@@ -237,7 +237,7 @@ Every session, for any game, saves these six facts. No table is renamed.
 
 **Review package:** this file. "What you are approving" is the part to read. "Your steps" at the end says what to do.
 
-**Approval evidence:** none yet. The founder's inventory review is recorded on issue #353 (2026-11-16); that permitted writing this spec and approves nothing in it.
+**Approval evidence:** the founder's inventory review, issue #353 (2026-11-16), permitted writing this spec. The founder approved the spec on 2026-11-16: decision D-124, issue #355, and "Founder Approval" at the end of this file.
 
 **Owner actions:**
 - Send the case-writing session this message: "Read `docs/specs/0093-engine-spine-for-the-thin-version.md`, Part A. Say whether the case as drafted fits the format, and list anything it cannot express. In particular, say yes or no: is any answer in the final theory only right in combination with another answer? Do not put any solution detail in your reply."
@@ -360,3 +360,17 @@ At most two build sessions at once. The second and third change the same files, 
 - **Q1. What does winning a mini-game give in session 1?** Today a finished mini-game releases the same clue to every player, and the winner gets nothing extra. The GDD says rewards should be opportunities, and that winning must not replace detective work. Options: (1) the top-ranked player or players get one extra investigation, and nobody gets case information from the mini-game (author's recommendation: it is the GDD's own example, it uses the budget built here, and it is a small engine hook); (2) keep today's behaviour for session 1; (3) decide it with the first case's mini-game wrappers. Blocks: none of the four build tasks. It is settled before the screens spec.
 
 Nothing else is open. Questions the build sessions find are raised on their task's issue, not decided silently.
+
+---
+
+# Founder Approval (2026-11-16)
+
+Recorded by the Scribe from the founder's message in session on 2026-11-16. Decision row: D-124. Also recorded on issue #355.
+
+**Founder's words:** "Approve 0093"
+
+**What this approves.** Phase gate 1 of this spec: Parts A to F, the five decisions listed under "What you are approving", and the direction of the changes across engine modules. It permits AW-324, AW-325, AW-303 and AW-304 to write their plans, in the build order above.
+
+**What this does not approve.** Any build task's plan or code; each plan is shown to the founder first (phase gate 2). Spec 0094. An answer to Q1, which stays open. Any table change, new dependency, prompt change or model call; this spec says none is needed, and a build session that finds otherwise stops and asks.
+
+**Still open at approval.** The case-writing session has not confirmed that its draft fits Part A. If it does not fit, the format is changed and the change is shown to the founder before AW-324 builds on it.

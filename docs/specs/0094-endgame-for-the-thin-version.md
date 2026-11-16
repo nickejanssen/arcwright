@@ -14,7 +14,7 @@ supersedes: []
 
 # Spec 0094: Endgame For The Thin Version
 
-**Status**: Draft. Not approved. No implementation may start from this file. It builds on spec 0093, which is also a draft; if 0093 changes, this file is checked again before approval.
+**Status**: Draft. Not approved. No implementation may start from this file. It builds on spec 0093, which the founder approved on 2026-11-16 (D-124).
 
 **Author**: Claude Code (Spec Author role) | **Date**: 2026-11-16 | **Task**: AW-302, the endgame spec of three | **Checked against**: main at `bd7f32c`
 
@@ -239,7 +239,7 @@ Every test runs without a network, without a real database server, and with the 
 - **Per-slot answers may be too simple for some cases.** Each slot is judged alone. A case where answer A in slot 2 is only right together with answer B in slot 3 cannot be written in format version 1. The case-writing session is asked whether the first case needs that (the owner action in spec 0093). If it does, accepted combinations are added before AW-324 starts.
 - **The form may be fiddly on a phone.** The GDD marks the interaction TESTING and parks a simpler fallback (culprit plus a few decisive facts). The engine side is the same for both; only the screens differ.
 - **Recap lines can fall flat.** Rule-chosen written lines are safe and cheap but can feel canned. The ten-line sample is the check. If time runs short, the status page's first cut applies: one fixed closing text.
-- **Depends on a draft.** Spec 0093 is not approved. A change to phases or to the case file there changes this spec.
+- **Depends on spec 0093's case format.** Spec 0093 is approved, but the case-writing session has not yet confirmed its draft fits the format. A change to the case file there changes this spec.
 - **A refused transition is silent.** As in spec 0093, every test reads the state back.
 
 **Unknowns**
