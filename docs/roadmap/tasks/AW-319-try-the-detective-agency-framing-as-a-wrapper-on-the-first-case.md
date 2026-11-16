@@ -29,6 +29,7 @@ The founder's idea, 16 November 2026: every Nightcap case starts with the group 
 - The founder thinks it could give Nightcap more identity and wants to compare framings ("a/b test stories").
 - The current design has rival detectives racing each other with no in-fiction reason. The agency gives one.
 - Being hired works for any setting, so a case needs no invented reason for the group to be there.
+- On 2026-11-15 the founder made it a condition of approving spec 0092 that the thin version includes this as a stretch goal (D-123). It is listed on `docs/product/nightcap-status.md`.
 - This is an idea under test, not approved scope. The approved framing is still the invitation framing and restrained voice direction of 1 October 2026 (see `docs/gdd/nightcap/00-governance/`). Captured under D-119.
 
 ## Technical Scope

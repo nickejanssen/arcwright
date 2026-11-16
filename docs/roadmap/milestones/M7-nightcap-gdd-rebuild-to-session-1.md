@@ -21,7 +21,7 @@ x-scope-evidence: D-112
 
 M7 takes Nightcap from the superseded Couch Race build to a thin, complete version of the Master GDD game, played by friends at the founder's house. It was added in the November 2026 reset (D-112). It runs before M6 finishes: M6's sessions become sessions 1 to 3 of this plan, and AW-299 rewrites the M5 and M6 exit criteria to match.
 
-Scope, dates and the cut order live in [nightcap-status.md](../../product/nightcap-status.md). Spec 0092 is the rebuild plan; it is still a draft and building is blocked on the founder's approval of it for the thin version (#303).
+Scope, dates and the cut order live in [nightcap-status.md](../../product/nightcap-status.md). Spec 0092 is the rebuild plan. The founder approved it for the thin version on 2026-11-15 (D-123, #303), which permits the inventory (AW-300) only. Building still waits on the three combined specs (AW-302), each with its own approval.
 
 ## Epics
 

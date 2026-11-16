@@ -39,7 +39,7 @@ Spec 0092's own gap table is a first pass built on keyword scans and is already 
 
 ## Human Collaboration Contract
 
-**Interaction profile:** Independent execution, then a founder review of the inventory before any spec is written from it. Blocked until the founder approves spec 0092 for the thin version (#303).
+**Interaction profile:** Independent execution, then a founder review of the inventory before any spec is written from it. Unblocked on 2026-11-15: the founder approved spec 0092 for the thin version (D-123, #303).
 
 ## Acceptance Criteria
 

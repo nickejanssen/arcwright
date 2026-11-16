@@ -15,7 +15,7 @@ Keep them apart. Nothing in `engine/` may name Nightcap or assume a murder myste
 ## Where things stand
 
 - The playable build is the older Couch Race design. The current design (the Master GDD) is not built.
-- The rebuild plan is `docs/specs/0092-nightcap-gdd-rebuild.md`. Draft, not approved. Building is blocked on the founder's approval (issue #303).
+- The rebuild plan is `docs/specs/0092-nightcap-gdd-rebuild.md`. Approved for the thin version only on 2026-11-15 (D-123, issue #303). That permits the inventory (AW-300). Building waits on the three combined specs (AW-302), each with its own founder approval.
 - Target: a thin, complete game played by friends at the founder's house on 12 or 13 December 2026 (D-112). Plan, scope and cut order: `docs/product/nightcap-status.md`.
 - Nothing is deployed to the cloud. The game runs from the founder's PC through a tunnel.
 - The online paper test is paused (D-111). Do not restart it.
@@ -42,7 +42,7 @@ Work is never left in chat. If you find work, it becomes a roadmap task record a
 | Rerun the roadmap questions in a fresh session; close the three citation misses | AW-318 | Open |
 | Require all checks before merge | AW-298 | Founder action |
 | Finish reconciling the tracker | AW-299 | Open |
-| Approve spec 0092 for the thin version | Issue #303 | Founder decision |
+| Approve spec 0092 for the thin version | Issue #303 | Done 2026-11-15 (D-123), with the stretch goals as a condition |
 | Inventory, screen walkthrough | AW-300, AW-301 | AW-300 waits on the approval |
 | Build-versus-adopt review | AW-309 | Done 2026-11-15: section 2.11.7 of the technology stack. Session 1 needs no paid plan and no new tool |
 | Competitor comparison | AW-316, AW-323 | Done by reading: `docs/product/2026-11-15-competitor-and-prior-art.md`. Playing the two closest is AW-323 (founder) |
