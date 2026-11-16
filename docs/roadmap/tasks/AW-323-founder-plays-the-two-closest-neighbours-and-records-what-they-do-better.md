@@ -15,7 +15,7 @@ supersedes: []
 # AW-323: Founder Plays The Two Closest Neighbours And Records What They Do Better
 
 **Milestone / Epic:** M6 / M6-D  
-**Size:** XS  
+**Size:** S  
 **Product:** Arcwright  
 **Owner:** The founder, about 40 minutes; an AI session writes up his notes  
 **Target date:** 2026-12-20

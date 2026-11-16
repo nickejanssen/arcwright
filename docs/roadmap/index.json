@@ -2836,10 +2836,14 @@
       "title": "Founder Plays The Two Closest Neighbours And Records What They Do Better",
       "milestone": "M6",
       "epic": "M6-D",
-      "size": "XS",
+      "size": "S",
       "depends_on": [
         "AW-316"
       ],
+      "github": {
+        "issue_number": 384,
+        "url": "https://github.com/nickejanssen/arcwright/issues/384"
+      },
       "path": "docs/roadmap/tasks/AW-323-founder-plays-the-two-closest-neighbours-and-records-what-they-do-better.md",
       "epic_id": "M6-D"
     }
