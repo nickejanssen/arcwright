@@ -162,6 +162,18 @@ class SessionService:
                 arc_definition,
                 created_beat=orm.current_beat_id,
             )
+            from engine.session.case_seating import (
+                CaseRefusedAtStartError,
+                load_arc_case,
+                seat_authored_case,
+            )
+
+            try:
+                authored_case = load_arc_case(arc_definition)
+            except CaseRefusedAtStartError as exc:
+                raise SessionStateError(str(exc)) from exc
+            if authored_case is not None:
+                await seat_authored_case(db, session_id=session_id, case=authored_case)
         await db.flush()
         return _orm_session_to_pydantic(orm)
 

@@ -269,6 +269,8 @@ class ArcDefinition(BaseModel):
     tone_config: Dict[str, Any] = Field(default_factory=dict)
     authorial_intent: Optional[AuthorialIntent] = None
     obligations: List[ObligationConfig] = Field(default_factory=list)
+    case_file: Optional[str] = None
+    """Path, from the repository root, to a written case (spec 0093, Part A)."""
 
     @model_validator(mode="before")
     @classmethod
