@@ -33,7 +33,6 @@ None of it blocks session 1. Writing it down with dates keeps it from being lost
 - [AW-314: Story Library Experiment](../tasks/AW-314-story-library-experiment.md)
 - [AW-315: Study The Fourteen Inspirations Against Specific Design Decisions](../tasks/AW-315-study-the-fourteen-inspirations-against-specific-design-decisions.md)
 - [AW-316: Deeper Competitor And Prior-Art Research](../tasks/AW-316-deeper-competitor-and-prior-art-research.md)
-- [AW-317: Propose A Minimal Read-Only Viewer Of The Story And The Live Session](../tasks/AW-317-propose-a-minimal-read-only-viewer-of-the-story-and-the-live-session.md)
 - [AW-321: Map A Book Or Film Into The Story Map](../tasks/AW-321-map-a-book-or-film-into-the-story-map.md)
 
 ## Acceptance Criteria

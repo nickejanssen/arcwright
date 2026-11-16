@@ -676,6 +676,7 @@
         "AW-306",
         "AW-307",
         "AW-309",
+        "AW-317",
         "AW-319",
         "AW-320",
         "AW-322"
@@ -711,7 +712,6 @@
         "AW-314",
         "AW-315",
         "AW-316",
-        "AW-317",
         "AW-321"
       ],
       "github": {
@@ -2651,12 +2651,12 @@
     {
       "id": "AW-317",
       "title": "Propose A Minimal Read-Only Viewer Of The Story And The Live Session",
-      "milestone": "M6",
-      "epic": "M6-D",
+      "milestone": "M7",
+      "epic": "M7-B",
       "size": "S",
       "depends_on": [],
       "path": "docs/roadmap/tasks/AW-317-propose-a-minimal-read-only-viewer-of-the-story-and-the-live-session.md",
-      "epic_id": "M6-D"
+      "epic_id": "M7-B"
     },
     {
       "id": "AW-319",

@@ -71,7 +71,8 @@ Planning assumption: 10 to 15 founder hours a week, which depends on AI usage li
 5. Motion on the TV.
 6. Case Board.
 7. Difficulty settings.
-8. Friends' recorded voices for characters (AW-320). Only after everything above and every must-have is done; first to cut. Recorded lines, no voice cloning.
+8. Reading and changing the story graphically in the adopted story tool, plus a viewer for what that tool cannot show (AW-306, AW-317).
+9. Friends' recorded voices for characters (AW-320). Only after everything above and every must-have is done; first to cut. Recorded lines, no voice cloning.
 
 **Not before session 3:** Counterintel, five or more players, cloud hosting.
 
