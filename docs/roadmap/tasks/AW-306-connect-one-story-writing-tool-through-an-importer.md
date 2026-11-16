@@ -31,6 +31,7 @@ Founder decision D-117. Writing tools already exist and are free; Arcwright shou
 ## Technical Scope
 
 - Founder requirement, 16 November 2026: he must be able to read and manipulate a story graphically in the tool. Viewing, editing and building a story are one tool, adopted first to save time and built only if adoption falls short. The comparison must say, for each candidate, whether it has a graph view the founder can edit.
+- Input from the competitor comparison of 2026-11-15 (`docs/product/2026-11-15-competitor-and-prior-art.md`, section 4): Ink and Yarn Spinner have no editable graph and fail this requirement as the main tool. Shortlist: Twine, articy:draft X FREE and Arcweave. Arcweave's free plan may not be used for commercial projects.
 - A one-page comparison for the founder's choice. Candidates with licences checked on 14 November 2026: Ink (MIT), Yarn Spinner (MIT), Twine (GPL-3.0), Arcweave (free plan: 3 projects, 200 items, JSON export). articy:draft has a free version whose limits were not verified.
 - An importer from the chosen tool's export into the authored case and arc format.
 - Who knows what, and the fairness check, stay in Arcwright and run on the imported case.

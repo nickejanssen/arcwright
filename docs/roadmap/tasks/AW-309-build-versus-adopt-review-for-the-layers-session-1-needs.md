@@ -24,6 +24,10 @@ supersedes: []
 
 Apply the build-versus-adopt rule (ADR-0026) to each layer the thin version needs: screens, motion, voice, sound. Say for each whether to keep what exists, adopt something, or wait.
 
+## Result
+
+Done on 2026-11-15: section 2.11.7 of `docs/architecture/02-technology-stack.md`. Session 1 needs no paid plan and no new tool. Two founder decisions are recorded in `docs/product/open-questions-log.csv`.
+
 ## Why This Matters
 
 The Nightcap web client is about 5,300 lines with no third-party libraries, the clearest current case of building what exists. The rule is recorded; this task applies it before the screens spec is written.

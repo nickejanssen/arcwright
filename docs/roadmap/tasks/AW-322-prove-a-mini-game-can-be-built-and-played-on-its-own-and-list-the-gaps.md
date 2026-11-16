@@ -31,6 +31,19 @@ The founder's idea, 16 November 2026: a mini-game should be testable outside any
 - Not verified: whether any of it still works, whether it runs without a case or a session, and how long building a new mini-game takes. The playtest script's default points at a Couch Race adaptation, which is the superseded design.
 - Captured under D-119.
 
+## Findings So Far (2026-11-15, headless half only)
+
+Run from a worktree with no case, no session, no database and no model call. Nothing was seen on a TV or a phone, and no new mini-game was added.
+
+- `python -m pytest engine/tests/test_mini_game_models.py engine/tests/test_mini_game_onboarding.py engine/tests/test_mini_game_resolution.py engine/tests/test_mini_game_runtime.py engine/tests/test_mini_game_runtime_aw252.py engine/tests/test_minigame_tool.py -q`: 93 passed, 1 skipped (needs a database), 28 seconds.
+- `node nightcap-web/scripts/playtest-mini-game.mjs --session aw322-check --scenario happy-path --players 2 --json`: exit 0. It mounted the mini-game's screen code for phone, shared display and host in a simulated browser and recorded two phone submissions.
+- **Gap 1, game-agnostic.** The standalone script is a preview, and says so (`NON_AUTHORITATIVE_PREVIEW`). It steps through a fixed list of states written in JavaScript. The Python rules, clock and scoring do not run. So today there is no way to play a mini-game on its own with the real rules.
+- **Gap 2, game-agnostic.** With `--serve-ms` the script serves one page that prints the evidence as text. It is not a screen a person can play on a TV or a phone.
+- **Gap 3, tied to Nightcap.** The script reads packages only from `nightcap/mini_games/`, and its default adaptation is the superseded Couch Race one.
+- The script needs the repository's root `node_modules` (esbuild and happy-dom), which a fresh worktree does not have; it worked here only because Node found the main checkout's copy.
+
+Still to do: the TV and two phones run, the trivial new mini-game with its time, sizing each gap, and the founder's decision on each.
+
 ## Technical Scope
 
 - Run one existing mini-game on its own, with no case loaded: first headless, then on a TV and two phones. Record the exact commands.

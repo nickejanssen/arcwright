@@ -2,7 +2,7 @@
 
 > Read `AGENTS.md` first, then this file, before touching code. It is the short start-of-session brief for every agent (Claude, Codex, Copilot) and for the founder. If it disagrees with a current source, investigate before acting, then fix this file. Keep it short and link to the owner of each detail.
 
-Last updated: 2026-11-16, against main `afd14e8`.
+Last updated: 2026-11-15 (evening), against main `bd7f32c`.
 
 ## System map
 
@@ -43,7 +43,10 @@ Work is never left in chat. If you find work, it becomes a roadmap task record a
 | Require all checks before merge | AW-298 | Founder action |
 | Finish reconciling the tracker | AW-299 | Open |
 | Approve spec 0092 for the thin version | Issue #303 | Founder decision |
-| Inventory, screen walkthrough, build-versus-adopt | AW-300, AW-301, AW-309 | AW-300 waits on the approval |
+| Inventory, screen walkthrough | AW-300, AW-301 | AW-300 waits on the approval |
+| Build-versus-adopt review | AW-309 | Done 2026-11-15: section 2.11.7 of the technology stack. Session 1 needs no paid plan and no new tool |
+| Competitor comparison | AW-316, AW-323 | Done by reading: `docs/product/2026-11-15-competitor-and-prior-art.md`. Playing the two closest is AW-323 (founder) |
+| Mini-game on its own | AW-322 | Headless half done; findings in the task file. TV run and the trial mini-game are open |
 | First case | AW-305 | In progress in another session; spoiler rules apply |
 
 ## Known issues
@@ -95,6 +98,7 @@ Open the task you were given on GitHub. Confirm its prerequisites against main. 
 
 Add one dated entry per merged pull request: what changed, why, which checks covered it, and what is still open.
 
+- **2026-11-15** AW-309 and AW-316, pulled forward at the founder's request. Build-versus-adopt review: section 2.11.7 of `docs/architecture/02-technology-stack.md`; session 1 needs no paid plan and no new tool; two founder decisions added to `docs/product/open-questions-log.csv` (React in the surviving client; Kokoro for sample host lines). Competitor comparison: `docs/product/2026-11-15-competitor-and-prior-art.md`. It corrects the reset audit: Hidden Door sells something close to a story engine for any world, and "rules decide, the AI only voices" is not unique; nobody was found directing a group in one room on a TV with phones. D-122 rules out Ink and Yarn Spinner as the main story tool (no editable graph); the shortlist for AW-306 is Twine, articy:draft X FREE and Arcweave. New task AW-323: the founder plays the two closest neighbours. AW-322 headless half: 93 mini-game tests pass and the standalone preview runs with no case, but it does not run the Python rules and is not playable. Checks: knowledge-base validators only; no code changed. Not done: no product was played; prices not on a maker's page are labelled third party.
 - **2026-11-16** Captured four founder ideas as tasks under D-119 (PR #383), with issues #379 to #382: AW-319 (detective agency framing as a wrapper on the first case; tone is comedic with depth), AW-320 (friends' recorded voices, no cloning; last in the session 1 fit order and first to cut), AW-321 (map a book or film into the story map; priority 2, waits for Nightcap to be live) and AW-322 (prove a mini-game can be built and played on its own, list the gaps). AW-314 gained the founder's story notes as material. Founder decision the same day (D-122): story viewing, editing and building are one tool, adopted first (AW-306) and built only if adoption falls short; AW-317 moved to M7-B as a stretch item for the thin version. Documentation only. Checks: `scripts/verify_human_collaboration.py --phase global` passes; no code changed, so engine tests were not run. Still open: none of the four is approved build scope; the founder chooses the framing comparison method and decides each gap from AW-322.
 - **2026-11-15** AW-297: rebuilt the search index in the main checkout and ran the ten-question check live from a worktree session (PR #378). Result: 10 of 10 answered and correct, 7 of 10 citing the owning record, the one known conflict flagged. Reading the decisions log works live (D-120). Also added the missing GitHub issue numbers for AW-291 and AW-296 to AW-317 to `docs/roadmap/index.json`, and recorded D-121. Documentation only; no agent or hook file changed. Open: AW-318.
 - **2026-11-15** PR #352 (AW-296, AW-297): the knowledge-base guard accepts a worktree of the registered checkout, so specialist agents can search and read `docs/` from worktree sessions. Also: the specialist search considers 64 candidates before namespace filtering, `python scripts/roadmap_status.py --task AW-NNN` gives exact task lookup, and the session-start text tells agents how to resolve a task and record a handoff (D-121). Checks: 197 script tests and ruff passed on `5ab3f2a`, checked independently by the reset session.

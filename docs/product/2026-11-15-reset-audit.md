@@ -102,7 +102,7 @@ On one player: the GDD's floor is two. Solo would be its own design, not a setti
 
 ## 4. Is Arcwright already solved elsewhere?
 
-A first pass from one search and four pricing pages. The proper comparison is AW-316.
+A first pass from one search and four pricing pages. The proper comparison was done the same day and corrects this section: [competitor and prior-art comparison](2026-11-15-competitor-and-prior-art.md). In particular, the last paragraph below is wrong: Hidden Door sells something close to "a dungeon master for any world".
 
 | Piece | Who already does it | Position |
 | --- | --- | --- |

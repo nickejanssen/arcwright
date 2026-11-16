@@ -24,6 +24,10 @@ supersedes: []
 
 The reset did one search and read four pricing pages. Do a proper comparison of who already does each part of what Arcwright does, and say plainly where it is not different.
 
+## Result
+
+Done on 2026-11-15, pulled forward at the founder's request: `docs/product/2026-11-15-competitor-and-prior-art.md`. No product was played; that part is AW-323.
+
 ## Why This Matters
 
 The founder's standing instruction is to say when Arcwright's purpose is already solved by existing technology, and to adopt that technology (ADR-0026).

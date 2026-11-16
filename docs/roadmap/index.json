@@ -713,7 +713,8 @@
         "AW-314",
         "AW-315",
         "AW-316",
-        "AW-321"
+        "AW-321",
+        "AW-323"
       ],
       "github": {
         "issue_number": 375,
@@ -2829,6 +2830,18 @@
       },
       "path": "docs/roadmap/tasks/AW-322-prove-a-mini-game-can-be-built-and-played-on-its-own-and-list-the-gaps.md",
       "epic_id": "M7-B"
+    },
+    {
+      "id": "AW-323",
+      "title": "Founder Plays The Two Closest Neighbours And Records What They Do Better",
+      "milestone": "M6",
+      "epic": "M6-D",
+      "size": "XS",
+      "depends_on": [
+        "AW-316"
+      ],
+      "path": "docs/roadmap/tasks/AW-323-founder-plays-the-two-closest-neighbours-and-records-what-they-do-better.md",
+      "epic_id": "M6-D"
     }
   ],
   "superseded_sources": [
