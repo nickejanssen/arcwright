@@ -676,7 +676,11 @@
         "AW-305",
         "AW-306",
         "AW-307",
-        "AW-309"
+        "AW-309",
+        "AW-317",
+        "AW-319",
+        "AW-320",
+        "AW-322"
       ],
       "github": {
         "issue_number": 373,
@@ -709,7 +713,7 @@
         "AW-314",
         "AW-315",
         "AW-316",
-        "AW-317"
+        "AW-321"
       ],
       "github": {
         "issue_number": 375,
@@ -2736,8 +2740,8 @@
     {
       "id": "AW-317",
       "title": "Propose A Minimal Read-Only Viewer Of The Story And The Live Session",
-      "milestone": "M6",
-      "epic": "M6-D",
+      "milestone": "M7",
+      "epic": "M7-B",
       "size": "S",
       "depends_on": [],
       "github": {
@@ -2745,7 +2749,7 @@
         "url": "https://github.com/nickejanssen/arcwright/issues/370"
       },
       "path": "docs/roadmap/tasks/AW-317-propose-a-minimal-read-only-viewer-of-the-story-and-the-live-session.md",
-      "epic_id": "M6-D"
+      "epic_id": "M7-B"
     },
     {
       "id": "AW-318",
@@ -2762,6 +2766,69 @@
       },
       "path": "docs/roadmap/tasks/AW-318-rerun-the-roadmap-questions-in-a-fresh-session-and-close-the-citation-misses.md",
       "epic_id": "M7-A"
+    },
+    {
+      "id": "AW-319",
+      "title": "Try The Detective Agency Framing As A Wrapper On The First Case",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "S",
+      "depends_on": [
+        "AW-305"
+      ],
+      "github": {
+        "issue_number": 379,
+        "url": "https://github.com/nickejanssen/arcwright/issues/379"
+      },
+      "path": "docs/roadmap/tasks/AW-319-try-the-detective-agency-framing-as-a-wrapper-on-the-first-case.md",
+      "epic_id": "M7-B"
+    },
+    {
+      "id": "AW-320",
+      "title": "Friend-Voiced Characters, Recorded Lines First",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-305"
+      ],
+      "github": {
+        "issue_number": 380,
+        "url": "https://github.com/nickejanssen/arcwright/issues/380"
+      },
+      "path": "docs/roadmap/tasks/AW-320-friend-voiced-characters-recorded-lines-first.md",
+      "epic_id": "M7-B"
+    },
+    {
+      "id": "AW-321",
+      "title": "Map A Book Or Film Into The Story Map",
+      "milestone": "M6",
+      "epic": "M6-D",
+      "size": "M",
+      "depends_on": [
+        "AW-314",
+        "AW-317"
+      ],
+      "github": {
+        "issue_number": 381,
+        "url": "https://github.com/nickejanssen/arcwright/issues/381"
+      },
+      "path": "docs/roadmap/tasks/AW-321-map-a-book-or-film-into-the-story-map.md",
+      "epic_id": "M6-D"
+    },
+    {
+      "id": "AW-322",
+      "title": "Prove A Mini-Game Can Be Built And Played On Its Own, And List The Gaps",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "S",
+      "depends_on": [],
+      "github": {
+        "issue_number": 382,
+        "url": "https://github.com/nickejanssen/arcwright/issues/382"
+      },
+      "path": "docs/roadmap/tasks/AW-322-prove-a-mini-game-can-be-built-and-played-on-its-own-and-list-the-gaps.md",
+      "epic_id": "M7-B"
     }
   ],
   "superseded_sources": [

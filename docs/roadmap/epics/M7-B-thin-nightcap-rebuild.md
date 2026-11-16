@@ -35,6 +35,10 @@ The playable build is the superseded Couch Race design. The founder chose a thin
 - [AW-306: Connect One Story-Writing Tool Through An Importer](../tasks/AW-306-connect-one-story-writing-tool-through-an-importer.md)
 - [AW-307: State "Players Want One More Game" As A Goal In The Game Design Document](../tasks/AW-307-state-players-want-one-more-game-as-a-goal-in-the-game-design-document.md)
 - [AW-309: Build-Versus-Adopt Review For The Layers Session 1 Needs](../tasks/AW-309-build-versus-adopt-review-for-the-layers-session-1-needs.md)
+- [AW-317: Propose A Minimal Read-Only Viewer Of The Story And The Live Session](../tasks/AW-317-propose-a-minimal-read-only-viewer-of-the-story-and-the-live-session.md)
+- [AW-319: Try The Detective Agency Framing As A Wrapper On The First Case](../tasks/AW-319-try-the-detective-agency-framing-as-a-wrapper-on-the-first-case.md)
+- [AW-320: Friend-Voiced Characters, Recorded Lines First](../tasks/AW-320-friend-voiced-characters-recorded-lines-first.md)
+- [AW-322: Prove A Mini-Game Can Be Built And Played On Its Own, And List The Gaps](../tasks/AW-322-prove-a-mini-game-can-be-built-and-played-on-its-own-and-list-the-gaps.md)
 - AW-291 (existing task; see `docs/roadmap/index.json`)
 - AW-274 (existing task; see `docs/roadmap/index.json`)
 
