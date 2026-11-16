@@ -2,7 +2,7 @@
 
 > Read `AGENTS.md` first, then this file, before touching code. It is the short start-of-session brief for every agent (Claude, Codex, Copilot) and for the founder. If it disagrees with a current source, investigate before acting, then fix this file. Keep it short and link to the owner of each detail.
 
-Last updated: 2026-11-15, against main `14f12e2`.
+Last updated: 2026-11-15, against main `e2b1471`.
 
 ## System map
 
@@ -38,8 +38,8 @@ Work is never left in chat. If you find work, it becomes a roadmap task record a
 
 | Work | Task | State on 2026-11-15 |
 | --- | --- | --- |
-| Fix the specialist agents in worktree sessions | AW-296 | A separate session is on it |
-| Rebuild the index, score the ten questions | AW-297 | Waits on AW-296 |
+| Rebuild the index, score the ten questions | AW-297 | Scored live: 10 of 10 correct, 7 of 10 citing the owning record. Scores in `docs/conventions/knowledge-base-upkeep.md` |
+| Rerun the roadmap questions in a fresh session; close the three citation misses | AW-318 | Open |
 | Require all checks before merge | AW-298 | Founder action |
 | Finish reconciling the tracker | AW-299 | Open |
 | Approve spec 0092 for the thin version | Issue #303 | Founder decision |
@@ -48,7 +48,8 @@ Work is never left in chat. If you find work, it becomes a roadmap task record a
 
 ## Known issues
 
-- **Specialist agents fail in worktree sessions.** The docs guard takes the repository root from its own file location and refuses the worktree's `docs`. AW-296.
+- **Specialist agents work in worktree sessions again (PR #352), with two catches.** The search index is per checkout and not in git: after pulling, run `python scripts/team_ai_cli.py reindex --root team-ai` in that checkout, or ranked search is stale or missing. A session keeps the agent instructions it loaded when it started, so a change under `.claude/agents/` reaches only sessions started after it merges and the main checkout pulls. Observed 2026-11-15.
+- **The roadmap specialist cites summary pages instead of the owning decision.** Three of ten in the live check of 2026-11-15. Its answers were correct; treat the citation as a lead and open the decisions log yourself. AW-318.
 - **Mini-games never start in a real session.** The runtime is tested, but no product code creates, starts or times a run. AW-303.
 - **Two sets of screen code exist.** The August rehearsal used `dashboard/`. The mini-game kit is in `nightcap-web/`. AW-300 picks one.
 - **The host's written lines have no code that reads them.** AW-291 is the planned reader. Verified 2026-11-15.
@@ -94,6 +95,8 @@ Open the task you were given on GitHub. Confirm its prerequisites against main. 
 
 Add one dated entry per merged pull request: what changed, why, which checks covered it, and what is still open.
 
+- **2026-11-15** AW-297: rebuilt the search index in the main checkout and ran the ten-question check live from a worktree session (PR #378). Result: 10 of 10 answered and correct, 7 of 10 citing the owning record, the one known conflict flagged. Reading the decisions log works live (D-120). Also added the missing GitHub issue numbers for AW-291 and AW-296 to AW-317 to `docs/roadmap/index.json`, and recorded D-121. Documentation only; no agent or hook file changed. Open: AW-318.
+- **2026-11-15** PR #352 (AW-296, AW-297): the knowledge-base guard accepts a worktree of the registered checkout, so specialist agents can search and read `docs/` from worktree sessions. Also: the specialist search considers 64 candidates before namespace filtering, `python scripts/roadmap_status.py --task AW-NNN` gives exact task lookup, and the session-start text tells agents how to resolve a task and record a handoff (D-121). Checks: 197 script tests and ruff passed on `5ab3f2a`, checked independently by the reset session.
 - **2026-11-15** Knowledge-base agents can now read `docs/product/decisions-log.csv` (D-120, a deliberate exception to the tooling freeze). `SHARED_SOURCES` in `scripts/hooks/guard_kb_agents.py` allows Read and Grep content for that one file; the CSV carries no namespace, so the guard had refused it, and specialists answered from derived pages. Checks: hook tests pass except `test_registered_hooks_run_from_a_subdirectory`, which also fails on `main` here because `bash` resolves to the WSL launcher. Each of the 14 agent sources in `team-ai/agents/` now says when and how to open the log, and `.claude/agents/team-ai-*.md` were regenerated with the CI `emit` recipe. Still open: the log is not in the ranked index, so agents reach it by Grep on a decision ID; no live specialist read has been run yet.
 - **2026-11-15** Reset consolidation. Recorded decisions D-112 to D-119 and ADR-0026; added milestone M7 and tasks AW-296 to AW-317 with matching GitHub issues; added the full target stack (technology stack 2.11), the creator roles (architecture 1.7), the reset audit, the knowledge-base upkeep routine, this file and the task issue template; rewrote the Nightcap status page. Documentation only. Open: everything in "Current work".
 - **2026-11-14** Added the dungeon master section and the founder communication style (PR #346). Documentation only.
