@@ -2861,6 +2861,10 @@
       "depends_on": [
         "AW-302"
       ],
+      "github": {
+        "issue_number": 386,
+        "url": "https://github.com/nickejanssen/arcwright/issues/386"
+      },
       "path": "docs/roadmap/tasks/AW-324-build-the-written-case-format-its-fairness-check-and-what-each-player-holds.md",
       "epic_id": "M7-B"
     },
@@ -2874,6 +2878,10 @@
         "AW-302",
         "AW-324"
       ],
+      "github": {
+        "issue_number": 387,
+        "url": "https://github.com/nickejanssen/arcwright/issues/387"
+      },
       "path": "docs/roadmap/tasks/AW-325-make-rounds-move-by-rule-with-a-saved-investigation-budget.md",
       "epic_id": "M7-B"
     }
