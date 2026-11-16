@@ -677,7 +677,8 @@
         "AW-307",
         "AW-309",
         "AW-319",
-        "AW-320"
+        "AW-320",
+        "AW-322"
       ],
       "github": {
         "issue_number": 373,
@@ -2693,6 +2694,16 @@
       ],
       "path": "docs/roadmap/tasks/AW-321-map-a-book-or-film-into-the-story-map.md",
       "epic_id": "M6-D"
+    },
+    {
+      "id": "AW-322",
+      "title": "Prove A Mini-Game Can Be Built And Played On Its Own, And List The Gaps",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "S",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-322-prove-a-mini-game-can-be-built-and-played-on-its-own-and-list-the-gaps.md",
+      "epic_id": "M7-B"
     }
   ],
   "superseded_sources": [
