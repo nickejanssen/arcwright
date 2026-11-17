@@ -64,5 +64,6 @@ This directory contains detailed specs for implementing features and systems. Ea
 - **Playtest Lab Contract**: Homepage/catalog/immutable-route/legacy-alias contract for the Playtest Lab (0088)
 - **Engine Spine For The Thin Version** (0093): written-case format and fairness check, rounds that move by rule, the saved investigation budget, mini-game start and return, play records. Approved 2026-11-16 (D-124)
 - **Endgame For The Thin Version** (0094): Last Call and the private lock, the rule-based theory check, the winner rule, and the closing sequence. Approved 2026-11-16 (D-125)
+- **Screens For The Thin Version** (0095): one client for TV and phone, every screen in play order, the engine reads the screens need, reconnecting, host controls, and a full-game screens proof without a TV. Draft 2026-11-16, not approved
 - **Phase 0 Development Friction** (0090): deployment preflight, tooling freeze record, and Python 3.11 local setup (PR #339)
 
