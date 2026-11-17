@@ -188,7 +188,24 @@ def write_kb_doc(docs, name, namespace, body):
     )
 
 
-def test_search_explains_plain_search_fallback_until_the_index_is_built(tmp_path):
+@pytest.fixture
+def built_knowledge_cli(monkeypatch):
+    """Integration tests must exercise this branch's built runtime, not main's."""
+    runtime = ROOT / "team-ai" / "runtime"
+    cli = runtime / "dist" / "cli.js"
+    if (
+        not shutil.which("node")
+        or not cli.is_file()
+        or not (runtime / "node_modules").is_dir()
+    ):
+        pytest.skip("built knowledge runtime and Node.js are required")
+    monkeypatch.setenv("TEAM_AI_CLI", str(cli))
+    return cli
+
+
+def test_search_explains_plain_search_fallback_until_the_index_is_built(
+    tmp_path, built_knowledge_cli
+):
     instance, docs = kb_instance(tmp_path)
     write_kb_doc(docs, "worktree-proof", "safety", "Quicksilver is a known test term.")
     base = [sys.executable, str(SCRIPT)]
@@ -218,15 +235,18 @@ def test_search_explains_plain_search_fallback_until_the_index_is_built(tmp_path
     assert "Use plain search" not in ranked.stderr
 
 
-def test_specialist_search_returns_owned_hits_when_other_namespaces_dominate(tmp_path):
+def test_specialist_search_returns_owned_hits_when_other_namespaces_dominate(
+    tmp_path, built_knowledge_cli
+):
     instance, docs = kb_instance(tmp_path)
-    for index in range(40):
+    # More high-ranking distractors than the wrapper's widened candidate limit.
+    for index in range(100):
         write_kb_doc(docs, f"noise-{index}", "strategy", "reconstruction " * 12)
     for index in range(10):
         write_kb_doc(
             docs, f"owned-{index}", "safety", "reconstruction and its safeguards"
         )
-    for index in range(70):
+    for index in range(500):
         write_kb_doc(
             docs, f"filler-{index}", "strategy", "Scoring and session controls."
         )

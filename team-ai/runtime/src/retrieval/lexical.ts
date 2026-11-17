@@ -183,31 +183,11 @@ export class LexicalAdapter implements RetrievalAdapter {
       .map((row) => ({ row, meta: parseMeta(row.metadata) }))
       .filter(({ meta }) => passesFilters(meta, opts));
 
-    const queryTerms = new Set(
-      query
-        .toLowerCase()
-        .match(/[a-z0-9]+/g)
-        ?.filter((term) => term.length >= 4 && !STOPWORDS.has(term)) ?? [],
-    );
-    const ranked = filtered.map(({ row, meta }, order) => {
-      const title = typeof meta.title === "string" ? meta.title.toLowerCase() : "";
-      const titleTerms = new Set(title.match(/[a-z0-9]+/g) ?? []);
-      const matched = [...queryTerms].filter((term) => titleTerms.has(term)).length;
-      // Do not elevate a weak body match above the refusal threshold merely
-      // because the document title resembles the query.
-      const boost =
-        namespaces.length === 1 && matched >= 2 && scoreFromBm25(row.bm25, termCount) >= 0.2
-          ? Math.min(matched, 3) * 3
-          : 0;
-      return { row, meta, order, rank: row.bm25 - boost };
-    });
-    ranked.sort((a, b) => a.rank - b.rank || a.order - b.order);
-    return ranked.slice(0, k).map(({ row, meta }) => ({
+    return filtered.slice(0, k).map(({ row, meta }) => ({
       doc_id: row.doc_id,
       chunk_id: row.chunk_id,
       path: row.path,
       heading_path: row.heading_path,
-      // A ranking preference is not evidence of calibrated match confidence.
       score: scoreFromBm25(row.bm25, termCount),
       text: row.text,
       metadata: meta,
