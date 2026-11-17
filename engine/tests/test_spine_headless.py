@@ -1,0 +1,328 @@
+"""A whole game run headless: opening, three rounds, a final beat (AW-325).
+
+Spec 0093, "Whole spine". This is the AW-325 half of the named proof: phases,
+readiness, choices and the clock, with the mini-game phase entered and left by
+the stand-in. AW-303 extends it with a real mini-game run.
+
+No model is called anywhere (the ``no_model_calls`` fixture fails the test if
+one is). Time is passed in.
+"""
+
+from __future__ import annotations
+
+import time
+from collections.abc import AsyncIterator, Callable
+from uuid import UUID
+
+import pytest
+import pytest_asyncio
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
+
+from engine.arc.models import ArcDefinition
+from engine.db.orm import Decision, Event
+from engine.db.orm import Session as OrmSession
+from engine.db.testing import make_sqlite_session_factory
+from engine.events.models import AudienceTarget
+from engine.session.choices import choose, read_menu, remaining_budget
+from engine.session.phases import (
+    PHASE_EVENT,
+    current_phase,
+    finish_mini_game_phase,
+    mark_ready,
+    round_view,
+    tick,
+    tick_active_sessions,
+)
+from engine.tests.rounds_support import (
+    BEATS,
+    BRIDGE_SECONDS,
+    CHOICES_SECONDS,
+    MINI_GAME_SECONDS,
+    SCENE_SECONDS,
+    Recorder,
+    Seated,
+    at,
+    phased_arc,
+    seat_session,
+    where,
+)
+
+EXPECTED_ORDER = [
+    ("opening", "scene"),
+    ("opening", "bridge"),
+    *[
+        (beat, phase)
+        for beat in BEATS[1:4]
+        for phase in ("scene", "choices", "mini_game", "bridge")
+    ],
+    ("finale", "scene"),
+]
+ALL_SECONDS = (
+    SCENE_SECONDS
+    + BRIDGE_SECONDS
+    + 3 * (SCENE_SECONDS + CHOICES_SECONDS + MINI_GAME_SECONDS + BRIDGE_SECONDS)
+    + SCENE_SECONDS
+)
+
+PLAN = {  # what every participant picks, per round, in order
+    "beat_one": ["o_ledger", "o_shed"],
+    "beat_two": ["o_bench", "o_gate"],
+    "beat_three": ["o_attic", "o_cellar"],
+}
+
+
+@pytest_asyncio.fixture()
+async def factory() -> AsyncIterator[async_sessionmaker[AsyncSession]]:
+    engine, session_factory = await make_sqlite_session_factory()
+    try:
+        yield session_factory
+    finally:
+        await engine.dispose()
+
+
+@pytest_asyncio.fixture()
+async def db(
+    factory: async_sessionmaker[AsyncSession],
+) -> AsyncIterator[AsyncSession]:
+    async with factory() as session:
+        try:
+            yield session
+        finally:
+            await session.rollback()
+
+
+async def phase_order(db: AsyncSession, session_id: UUID) -> list[tuple[str, str]]:
+    """Every (beat, phase) entered, in the order it was entered."""
+    result = await db.execute(
+        select(Event.payload).where(
+            Event.session_id == session_id, Event.event_type == PHASE_EVENT
+        )
+    )
+    rows = sorted(result.scalars().all(), key=lambda p: p["seq"])
+    return [(p["beat_id"], p["phase"]) for p in rows if p["status"] == "running"]
+
+
+def entered_once(order: list[tuple[str, str]]) -> list[tuple[str, str]]:
+    deduped: list[tuple[str, str]] = []
+    for item in order:
+        if not deduped or deduped[-1] != item:
+            deduped.append(item)
+    return deduped
+
+
+async def play_a_round(
+    db: AsyncSession, seated: Seated, rec: Recorder, beat: str, now: float
+) -> float:
+    """Everyone ready on the scene, two choices each, ready, the stand-in ends
+    the mini-game, everyone ready on the bridge. Returns the new time."""
+    for participant in seated.participants:
+        await mark_ready(db, seated.session_id, participant, at(now), rec)
+    assert (await where(db, seated.session_id))[:2] == (beat, "choices")
+    now += 5
+    for participant in seated.participants:
+        for opportunity in PLAN[beat]:
+            await choose(
+                db,
+                seated.session_id,
+                participant,
+                f"{participant}-{opportunity}",
+                opportunity,
+                at(now),
+                rec,
+            )
+    for participant in seated.participants:
+        await mark_ready(db, seated.session_id, participant, at(now), rec)
+    assert (await where(db, seated.session_id))[:2] == (beat, "mini_game")
+    now += 5
+    assert await finish_mini_game_phase(db, seated.session_id, at(now), rec)
+    for participant in seated.participants:
+        await mark_ready(db, seated.session_id, participant, at(now), rec)
+    return now
+
+
+class TestFullRun:
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("players", [2, 4])
+    async def test_full_run_reaches_final_beat(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        no_model_calls: None,
+        players: int,
+    ) -> None:
+        arc = phased_arc()
+        registered(arc)
+        seated = await seat_session(db, arc, players=players)
+        rec = Recorder()
+        await tick(db, seated.session_id, at(0), rec)
+
+        now = 0.0
+        for participant in seated.participants:
+            await mark_ready(db, seated.session_id, participant, at(now), rec)
+        for participant in seated.participants:
+            await mark_ready(db, seated.session_id, participant, at(now), rec)
+        for beat in BEATS[1:4]:
+            assert (await where(db, seated.session_id))[:2] == (beat, "scene")
+            now = await play_a_round(db, seated, rec, beat, now + 1)
+        assert await where(db, seated.session_id) == ("finale", "scene", "running")
+
+        assert entered_once(await phase_order(db, seated.session_id)) == EXPECTED_ORDER
+        for participant in seated.participants:
+            assert await remaining_budget(db, seated.session_id, participant) == 0
+        decisions = (
+            (
+                await db.execute(
+                    select(Decision).where(Decision.decision_type == "choice")
+                )
+            )
+            .scalars()
+            .all()
+        )
+        assert len(decisions) == players * 6
+        orm = await db.get(OrmSession, seated.session_id)
+        assert orm is not None and orm.current_beat_id == "finale"
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("players", [2, 4])
+    async def test_a_run_where_nobody_does_anything_reaches_the_final_beat_on_clocks_alone(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        no_model_calls: None,
+        players: int,
+    ) -> None:
+        arc = phased_arc()
+        registered(arc)
+        seated = await seat_session(db, arc, players=players)
+        rec = Recorder()
+        now = 0.0
+        await tick(db, seated.session_id, at(now), rec)
+        for _ in range(len(EXPECTED_ORDER)):
+            view = await round_view(db, seated.session_id, at(now))
+            if view.beat_id == "finale":
+                break
+            assert view.seconds_left is not None
+            now += view.seconds_left
+            await tick(db, seated.session_id, at(now), rec)
+        assert (await where(db, seated.session_id))[:2] == ("finale", "scene")
+        assert entered_once(await phase_order(db, seated.session_id)) == EXPECTED_ORDER
+        final = await tick(db, seated.session_id, at(now + SCENE_SECONDS), rec)
+        assert final
+        assert now == ALL_SECONDS - SCENE_SECONDS
+        assert await where(db, seated.session_id) == ("finale", "scene", "ended")
+        for participant in seated.participants:
+            assert await remaining_budget(db, seated.session_id, participant) == 6
+        assert (
+            await db.scalar(
+                select(Decision.decision_id).where(Decision.decision_type == "choice")
+            )
+        ) is None
+
+
+class TestPrivacyOverAFullRun:
+    @pytest.mark.asyncio
+    async def test_no_shared_or_other_player_event_holds_what_a_choice_returned(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        no_model_calls: None,
+    ) -> None:
+        arc = phased_arc()
+        registered(arc)
+        seated = await seat_session(db, arc, players=3)
+        rec = Recorder()
+        await tick(db, seated.session_id, at(0), rec)
+        now = 0.0
+        for participant in seated.participants:
+            await mark_ready(db, seated.session_id, participant, at(now), rec)
+        for participant in seated.participants:
+            await mark_ready(db, seated.session_id, participant, at(now), rec)
+        for beat in BEATS[1:4]:
+            now = await play_a_round(db, seated, rec, beat, now + 1)
+
+        from engine.case.authored import load_authored_case
+        from engine.tests.rounds_support import VALID_CASE
+
+        case = load_authored_case(VALID_CASE, beat_order=BEATS)
+        contents = [o.content for o in case.opportunities]
+        results = rec.of_type("choice_result")
+        assert len(results) == 3 * 6
+
+        for event in rec.events:
+            if event.event_type == "choice_result":
+                assert event.target_audience is AudienceTarget.specific_player
+                continue
+            dumped = event.model_dump_json()
+            for content in contents:
+                assert content not in dumped, event.event_type
+        for event in rec.events:
+            if event.target_audience is AudienceTarget.specific_player:
+                assert event.target_player_id in seated.participants
+
+
+class TestMenuStaysSmallEachRound:
+    @pytest.mark.asyncio
+    async def test_every_round_offers_a_fresh_player_at_least_two_choices(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+    ) -> None:
+        arc = phased_arc()
+        registered(arc)
+        seated = await seat_session(db, arc, players=2)
+        rec = Recorder()
+        await tick(db, seated.session_id, at(0), rec)
+        for beat in BEATS[1:4]:
+            for _ in range(40):
+                state = await current_phase(db, seated.session_id)
+                assert state is not None
+                if (state.beat_id, state.phase) == (beat, "choices"):
+                    break
+                await tick(db, seated.session_id, at(10_000 * (1 + _)), rec)
+            menu = await read_menu(db, seated.session_id, seated.participants[1])
+            assert len([i for i in menu.items]) >= 2
+
+
+class TestTheTickLoopBody:
+    @pytest.mark.asyncio
+    async def test_the_loop_body_ticks_every_active_phased_session_once(
+        self,
+        factory: async_sessionmaker[AsyncSession],
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+    ) -> None:
+        arc = phased_arc()
+        registered(arc)
+        first = await seat_session(db, arc)
+        second = await seat_session(db, arc)
+        idle = await seat_session(db, arc, start=False)
+        await db.commit()
+        rec = Recorder()
+        ticked = await tick_active_sessions(factory, at(0), lambda _sid: rec)
+        assert ticked == 2
+        async with factory() as fresh:
+            assert (await where(fresh, first.session_id))[:2] == ("opening", "scene")
+            assert (await where(fresh, second.session_id))[:2] == ("opening", "scene")
+            assert await current_phase(fresh, idle.session_id) is None
+        assert len(rec.of_type("phase_changed")) == 2
+
+    @pytest.mark.asyncio
+    async def test_twenty_sessions_tick_in_under_two_hundred_milliseconds(
+        self,
+        factory: async_sessionmaker[AsyncSession],
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+    ) -> None:
+        arc = phased_arc()
+        registered(arc)
+        for _ in range(20):
+            await seat_session(db, arc)
+        await db.commit()
+        rec = Recorder()
+        await tick_active_sessions(factory, at(0), lambda _sid: rec)  # enters phases
+        started = time.perf_counter()
+        ticked = await tick_active_sessions(factory, at(1), lambda _sid: rec)
+        elapsed = time.perf_counter() - started
+        assert ticked == 20
+        assert elapsed < 0.2

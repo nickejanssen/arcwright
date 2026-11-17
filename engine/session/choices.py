@@ -1,0 +1,452 @@
+"""The investigation menu, the saved budget and what a participant holds
+(spec 0093, Part D).
+
+Each choice is one ``decisions`` row: the choice ID the phone sent, the menu it
+was made from, what it cost and what it gave. The budget is never stored; it is
+worked out from those rows in one place (``remaining_budget``), so extra budget
+from a later reward is a saved grant and one added term, not a new rule.
+
+Privacy: the written content of a choice goes to that player only. The shared
+screen and every other player receive nothing from it; the host hears only that
+a choice was made.
+"""
+
+from __future__ import annotations
+
+from collections.abc import Iterable
+from dataclasses import dataclass
+from datetime import datetime
+from typing import Any
+from uuid import UUID
+
+from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from engine.arc.models import ArcDefinition, PhaseKind
+from engine.arc.registry import load_arc_definition
+from engine.case.authored import AuthoredCase, AuthoredOpportunity
+from engine.db.orm import Decision, SessionParticipant
+from engine.db.orm import Session as OrmSession
+from engine.events.models import AudienceTarget, EventCategory
+from engine.knowledge.holdings import concepts_held, grant_concept
+from engine.session.case_seating import cached_arc_case
+from engine.session.models import SessionStatus
+from engine.session.phases import (
+    Publish,
+    RoundError,
+    content_event,
+    current_phase,
+    emit,
+    human_player_ids,
+    session_lock,
+)
+
+CHOICE_DECISION = "choice"
+BUDGET_GRANT_DECISION = "budget_grant"
+
+
+@dataclass(frozen=True)
+class MenuItem:
+    opportunity_id: str
+    subject_id: str
+    subject_kind: str
+    subject_label: str
+    label: str
+    cost: int
+    taken: bool
+
+
+@dataclass(frozen=True)
+class Menu:
+    open: bool
+    remaining_budget: int
+    items: tuple[MenuItem, ...]
+
+
+@dataclass(frozen=True)
+class ChoiceResult:
+    choice_id: str
+    opportunity_id: str
+    content: str
+    gave: list[str]
+    cost: int
+    first_time: bool
+    replayed: bool
+    remaining_budget: int
+
+
+@dataclass(frozen=True)
+class HeldConcept:
+    """What a player sees of something they hold. Deliberately has no field for
+    whether it is true or misleading."""
+
+    concept_id: str
+    label: str
+    text: str
+    found_from: str | None = None
+    """The label of the subject it came from; None for what they held at the start."""
+    found_in_beat: str | None = None
+    """The beat it was found in; None for what they held at the start."""
+
+
+# --- the budget, worked out in one place ----------------------------------------
+
+
+def budget_allowance(arc: ArcDefinition, *, granted: Iterable[int]) -> int:
+    """What a participant may spend over the whole game: the arc's base budget
+    plus every saved grant (a mini-game reward, AW-328, is one more grant)."""
+    return arc.choice_config.budget + sum(granted)
+
+
+@dataclass(frozen=True)
+class _Ledger:
+    choices: list[Decision]
+    granted: list[int]
+
+    @property
+    def spent(self) -> int:
+        return sum(int(row.outcome.get("cost", 0)) for row in self.choices)
+
+    @property
+    def taken(self) -> set[str]:
+        return {
+            str(row.context["opportunity_id"])
+            for row in self.choices
+            if row.outcome.get("first_time")
+        }
+
+
+async def _ledger(db: AsyncSession, session_id: UUID, participant_id: UUID) -> _Ledger:
+    result = await db.execute(
+        select(Decision)
+        .where(
+            Decision.session_id == session_id,
+            Decision.decision_type.in_([CHOICE_DECISION, BUDGET_GRANT_DECISION]),
+        )
+        .order_by(Decision.timestamp)
+    )
+    mine = [
+        row
+        for row in result.scalars().all()
+        if row.context.get("participant_id") == str(participant_id)
+    ]
+    return _Ledger(
+        choices=[r for r in mine if r.decision_type == CHOICE_DECISION],
+        granted=[
+            int(r.outcome.get("amount", 0))
+            for r in mine
+            if r.decision_type == BUDGET_GRANT_DECISION
+        ],
+    )
+
+
+async def remaining_budget(
+    db: AsyncSession, session_id: UUID, participant_id: UUID
+) -> int:
+    orm = await db.get(OrmSession, session_id)
+    if orm is None:
+        raise RoundError("session_not_found")
+    arc = load_arc_definition(orm.arc_id)
+    if arc is None:
+        raise RoundError("not_phased")
+    ledger = await _ledger(db, session_id, participant_id)
+    return budget_allowance(arc, granted=ledger.granted) - ledger.spent
+
+
+# --- shared checks --------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class _Context:
+    orm: OrmSession
+    arc: ArcDefinition
+    case: AuthoredCase
+    character_id: UUID
+
+
+async def _context(
+    db: AsyncSession, orm: OrmSession | None, participant_id: UUID
+) -> _Context:
+    if orm is None:
+        raise RoundError("session_not_found")
+    result = await db.execute(
+        select(SessionParticipant.character_id).where(
+            SessionParticipant.session_id == orm.session_id,
+            SessionParticipant.participant_id == participant_id,
+        )
+    )
+    character_id = result.scalar_one_or_none()
+    if character_id is None or participant_id not in await human_player_ids(
+        db, orm.session_id
+    ):
+        raise RoundError("not_a_participant")
+    arc = load_arc_definition(orm.arc_id)
+    if arc is None or not arc.is_phased:
+        raise RoundError("not_phased", "this game does not run by phases")
+    case = cached_arc_case(arc)
+    if case is None:
+        raise RoundError("no_written_case", "this game has no written case")
+    return _Context(orm, arc, case, character_id)
+
+
+async def _held_with_opening(
+    db: AsyncSession, ctx: _Context, *, locked: bool
+) -> frozenset[str]:
+    """What the participant holds, giving them the opening first if they have
+    not been given it (a player who joined after the start)."""
+    session_id = ctx.orm.session_id
+    held = await concepts_held(db, session_id=session_id, character_id=ctx.character_id)
+    if set(ctx.case.opening) <= held:
+        return held
+    if locked:
+        await _grant_opening(db, ctx)
+    else:
+        async with session_lock(db, session_id):
+            await _grant_opening(db, ctx)
+    return await concepts_held(db, session_id=session_id, character_id=ctx.character_id)
+
+
+async def _grant_opening(db: AsyncSession, ctx: _Context) -> None:
+    texts = {c.concept_id: c.text for c in ctx.case.concepts}
+    for concept_id in ctx.case.opening:
+        await grant_concept(
+            db,
+            session_id=ctx.orm.session_id,
+            character_id=ctx.character_id,
+            concept_id=concept_id,
+            text=texts[concept_id],
+        )
+
+
+def _menu_items(
+    case: AuthoredCase, beat_id: str, held: frozenset[str], taken: set[str]
+) -> list[MenuItem]:
+    subjects = {s.subject_id: s for s in case.subjects}
+    return [
+        MenuItem(
+            opportunity_id=o.opportunity_id,
+            subject_id=o.subject_id,
+            subject_kind=subjects[o.subject_id].kind,
+            subject_label=subjects[o.subject_id].label,
+            label=o.label,
+            cost=o.cost,
+            taken=o.opportunity_id in taken,
+        )
+        for o in case.opportunities
+        if beat_id in o.beats and set(o.requires) <= held
+    ]
+
+
+async def _choices_open(db: AsyncSession, orm: OrmSession) -> bool:
+    if orm.status != SessionStatus.active.value:
+        return False
+    state = await current_phase(db, orm.session_id)
+    return (
+        state is not None
+        and state.status == "running"
+        and state.phase == PhaseKind.choices.value
+        and state.beat_id == orm.current_beat_id
+    )
+
+
+# --- public engine functions ----------------------------------------------------
+
+
+async def read_menu(db: AsyncSession, session_id: UUID, participant_id: UUID) -> Menu:
+    """This participant's menu: every choice available in this beat whose
+    prerequisites they hold, marked new or already taken, with their budget.
+    Closed (no items) outside a choices phase."""
+    orm = await db.get(OrmSession, session_id)
+    ctx = await _context(db, orm, participant_id)
+    ledger = await _ledger(db, session_id, participant_id)
+    left = budget_allowance(ctx.arc, granted=ledger.granted) - ledger.spent
+    if not await _choices_open(db, ctx.orm):
+        return Menu(open=False, remaining_budget=left, items=())
+    held = await _held_with_opening(db, ctx, locked=False)
+    items = _menu_items(ctx.case, ctx.orm.current_beat_id, held, ledger.taken)
+    return Menu(open=True, remaining_budget=left, items=tuple(items))
+
+
+async def read_holdings(
+    db: AsyncSession, session_id: UUID, participant_id: UUID
+) -> list[HeldConcept]:
+    """What this participant found for themselves, with its written text."""
+    orm = await db.get(OrmSession, session_id)
+    ctx = await _context(db, orm, participant_id)
+    held = await _held_with_opening(db, ctx, locked=False)
+    ledger = await _ledger(db, session_id, participant_id)
+    subjects = {s.subject_id: s.label for s in ctx.case.subjects}
+    found: dict[str, tuple[str, str]] = {}
+    for row in ledger.choices:
+        if not row.outcome.get("first_time"):
+            continue
+        opportunity = _opportunity(ctx.case, str(row.context["opportunity_id"]))
+        for concept_id in row.outcome.get("gave", []):
+            found.setdefault(
+                concept_id,
+                (subjects[opportunity.subject_id], str(row.context["beat_id"])),
+            )
+    return [
+        HeldConcept(
+            c.concept_id,
+            c.label,
+            c.text,
+            *found.get(c.concept_id, (None, None)),
+        )
+        for c in ctx.case.concepts
+        if c.concept_id in held
+    ]
+
+
+def _result_from_row(
+    case: AuthoredCase, row: Decision, left: int, *, replayed: bool
+) -> ChoiceResult:
+    opportunity = _opportunity(case, str(row.context["opportunity_id"]))
+    return ChoiceResult(
+        choice_id=str(row.context["choice_id"]),
+        opportunity_id=opportunity.opportunity_id,
+        content=opportunity.content,
+        gave=list(row.outcome.get("gave", [])),
+        cost=int(row.outcome.get("cost", 0)),
+        first_time=bool(row.outcome.get("first_time")),
+        replayed=replayed,
+        remaining_budget=left,
+    )
+
+
+def _opportunity(case: AuthoredCase, opportunity_id: str) -> AuthoredOpportunity:
+    for opportunity in case.opportunities:
+        if opportunity.opportunity_id == opportunity_id:
+            return opportunity
+    raise RoundError("not_on_menu")
+
+
+async def choose(
+    db: AsyncSession,
+    session_id: UUID,
+    participant_id: UUID,
+    choice_id: str,
+    opportunity_id: str,
+    now: datetime,
+    publish: Publish = None,
+) -> ChoiceResult:
+    """Make a choice from the menu.
+
+    Order of checks (spec 0093, Part D): the phase is open; the opportunity is
+    on this player's menu; the budget covers it. Then it is saved, the concepts
+    are given, and the content goes to this player only. Something already
+    taken costs nothing and shows the same content again. The same ``choice_id``
+    from the same player has one effect and returns the same answer.
+    """
+    async with session_lock(db, session_id) as orm:
+        ctx = await _context(db, orm, participant_id)
+        ledger = await _ledger(db, session_id, participant_id)
+        left = budget_allowance(ctx.arc, granted=ledger.granted) - ledger.spent
+
+        for row in ledger.choices:
+            if row.context.get("choice_id") == choice_id:
+                return _result_from_row(ctx.case, row, left, replayed=True)
+
+        if ctx.orm.status != SessionStatus.active.value:
+            raise RoundError("session_not_active", f"session is {ctx.orm.status}")
+        if not await _choices_open(db, ctx.orm):
+            raise RoundError("not_in_choices_phase")
+
+        held = await _held_with_opening(db, ctx, locked=True)
+        beat_id = ctx.orm.current_beat_id
+        taken = ledger.taken
+        menu = _menu_items(ctx.case, beat_id, held, taken)
+        if opportunity_id not in {item.opportunity_id for item in menu}:
+            raise RoundError("not_on_menu")
+        opportunity = _opportunity(ctx.case, opportunity_id)
+
+        first_time = opportunity_id not in taken
+        cost = opportunity.cost if first_time else 0
+        if cost > left:
+            raise RoundError("budget_exhausted")
+
+        state = await current_phase(db, session_id)
+        gave = list(opportunity.gives) if first_time else []
+        db.add(
+            Decision(
+                session_id=session_id,
+                timestamp=now,
+                decision_type=CHOICE_DECISION,
+                context={
+                    "choice_id": choice_id,
+                    "participant_id": str(participant_id),
+                    "beat_id": beat_id,
+                    "phase_entry": state.entry if state else None,
+                    "offered": [item.opportunity_id for item in menu],
+                    "opportunity_id": opportunity_id,
+                },
+                outcome={"cost": cost, "gave": gave, "first_time": first_time},
+            )
+        )
+        await db.flush()
+        if first_time:
+            texts = {c.concept_id: c.text for c in ctx.case.concepts}
+            for concept_id in gave:
+                await grant_concept(
+                    db,
+                    session_id=session_id,
+                    character_id=ctx.character_id,
+                    concept_id=concept_id,
+                    text=texts[concept_id],
+                )
+        left -= cost
+        result = ChoiceResult(
+            choice_id=choice_id,
+            opportunity_id=opportunity_id,
+            content=opportunity.content,
+            gave=gave,
+            cost=cost,
+            first_time=first_time,
+            replayed=False,
+            remaining_budget=left,
+        )
+        await _announce(publish, session_id, participant_id, beat_id, result, now)
+        return result
+
+
+async def _announce(
+    publish: Publish,
+    session_id: UUID,
+    participant_id: UUID,
+    beat_id: str,
+    result: ChoiceResult,
+    now: datetime,
+) -> None:
+    payload: dict[str, Any] = {
+        "choice_id": result.choice_id,
+        "opportunity_id": result.opportunity_id,
+        "content": result.content,
+        "gave": result.gave,
+        "cost": result.cost,
+        "first_time": result.first_time,
+        "remaining_budget": result.remaining_budget,
+    }
+    await emit(
+        publish,
+        content_event(
+            session_id,
+            now,
+            category=EventCategory.private_delivery,
+            event_type="choice_result",
+            audience=AudienceTarget.specific_player,
+            target_player_id=participant_id,
+            payload=payload,
+        ),
+    )
+    if result.first_time:
+        await emit(
+            publish,
+            content_event(
+                session_id,
+                now,
+                category=EventCategory.state_transition,
+                event_type="choice_made",
+                audience=AudienceTarget.host_only,
+                payload={"participant_id": str(participant_id), "beat_id": beat_id},
+            ),
+        )

@@ -76,3 +76,15 @@ Make a round run by itself: show its written scene, open the investigation menu,
 ## Kickoff Prompt
 
 > Read `AGENTS.md`, `HANDOVER.md` and `docs/specs/0093-engine-spine-for-the-thin-version.md`. Confirm on issue #355 that the spec is approved and that AW-324 is merged; if not, stop. Task AW-325: build Parts C and D. Write the tests first from the spec's acceptance criteria, with a controlled clock. After every transition read the state back, because a refused transition does not raise. Write a plan and stop for founder approval, because this crosses engine modules.
+
+## What Was Built (for AW-303 and AW-328)
+
+Built on 2026-11-16 under spec 0093, Parts C and D. The founder approved the plan the same day.
+
+- **Phases.** `engine/arc/models.py`: `PhaseDefinition` on a beat (`scene`, `choices`, `mini_game`, `bridge`, in that order, each at most once, each with required `seconds`), `ChoiceConfig.budget` (default 6) on the arc. Phases on every beat or on none. The old arc files have none and run as before.
+- **The rules and the tick.** `engine/session/phases.py`. Saved state is one `phase_state` event per change; readiness is a `decisions` row of type `ready`, keyed to the phase's `entry` number (one visit to a phase; pause and resume keep it). `POST /me/ready` carries the `phase_entry` the player saw (from `GET /round`); if the round has moved on, it changes nothing and returns the current state. `tick`, `mark_ready`, `host_move_on`, `freeze_phase`, `thaw_phase`, `round_view`, `tick_active_sessions`. The API loop is `api/tick_loop.py`, started by the app's lifespan.
+- **Choices.** `engine/session/choices.py`. A choice is a `decisions` row of type `choice`. The budget is worked out only in `remaining_budget` / `budget_allowance`.
+- **For AW-303.** Call `finish_mini_game_phase(db, session_id, now, publish)` when a run reaches any end state. It ends the phase, or changes nothing if the phase is not a running `mini_game`. The phase's `seconds` is the outer time limit until a run's own deadline replaces it. Pausing the run is not done here: `freeze_phase` and `thaw_phase` only keep the phase clock.
+- **For AW-328.** Save a `decisions` row with `decision_type = "budget_grant"`, `context = {"participant_id": "<id>"}` and `outcome = {"amount": n}`. It is added to that participant's allowance. Nothing else changes.
+- **Checked at session start.** The fairness check now takes the budget from the arc file, and an arc whose case offers choices in a beat with no `choices` phase is refused.
+- **Not changed.** No table, no migration, no dependency, no model call, nothing under `engine/interactions/`, `sdk/`, `dashboard/` or `nightcap-web/`.
