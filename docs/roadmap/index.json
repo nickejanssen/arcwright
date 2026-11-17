@@ -2972,6 +2972,23 @@
       },
       "path": "docs/roadmap/tasks/AW-337-give-small-groups-a-mini-game-that-fits.md",
       "epic_id": "M7-B"
+    },
+    {
+      "id": "AW-338",
+      "title": "Tighten Four Round Rules Found In The AW-325 Review",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "S",
+      "depends_on": [
+        "AW-325",
+        "AW-303"
+      ],
+      "github": {
+        "issue_number": 399,
+        "url": "https://github.com/nickejanssen/arcwright/issues/399"
+      },
+      "path": "docs/roadmap/tasks/AW-338-tighten-four-round-rules-found-in-the-aw-325-review.md",
+      "epic_id": "M7-B"
     }
   ],
   "superseded_sources": [

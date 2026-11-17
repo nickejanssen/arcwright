@@ -32,7 +32,8 @@ Verified in code on 14 November 2026: outside tests, nothing calls `create_run`,
 
 - Start a bound mini-game when its beat is reached.
 - Fire the deadline from the engine's clock, with no submission needed.
-- Let the finished result satisfy the beat's exit condition.
+- Let the finished result satisfy the beat's exit condition. AW-325 left the hook: call `finish_mini_game_phase(db, session_id, now, publish)` in `engine/session/phases.py` when a run reaches any end state.
+- Pausing the session also pauses the active run and keeps its time left; resuming restarts it (spec 0093, Part C). AW-325 kept only the phase clock: `freeze_phase` and `thaw_phase` do not touch a run. Found by the review of pull request #397 on 2026-11-17 and carried here under D-119.
 - All timing, validation and scoring stay in Python.
 
 ## Human Collaboration Contract
@@ -45,6 +46,7 @@ Verified in code on 14 November 2026: outside tests, nothing calls `create_run`,
 - [ ] With no submissions at all, the run ends when its deadline passes.
 - [ ] Duplicate and late submissions behave as the existing tests require.
 - [ ] When the run ends, the beat can end.
+- [ ] Pausing during a run stops the run's clock; resuming keeps the time that was left.
 - [ ] Passes at two and at four players with no AI call.
 - [ ] Seen once on a real TV and two phones, recorded on the issue.
 
@@ -55,7 +57,7 @@ Verified in code on 14 November 2026: outside tests, nothing calls `create_run`,
 ## Dependencies
 
 - AW-302: spec 0093 approved. This task is Part E of `docs/specs/0093-engine-spine-for-the-thin-version.md`.
-- AW-325, which builds the phases and the clock this task connects the run to.
+- AW-325, which builds the phases and the clock this task connects the run to. Merged 2026-11-17 (pull request #397); read its task file's "What Was Built" section first.
 - Findings and evidence: `docs/product/2026-11-15-reset-audit.md`
 
 ## Must Not Do

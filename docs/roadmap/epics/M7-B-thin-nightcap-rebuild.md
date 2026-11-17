@@ -45,6 +45,7 @@ The playable build is the superseded Couch Race design. The founder chose a thin
 - [AW-327: Build The Closing Sequence And Prove A Full Game Headless](../tasks/AW-327-build-the-closing-sequence-and-prove-a-full-game-headless.md)
 - [AW-328: Give The Mini-Game Winner One Extra Investigation](../tasks/AW-328-give-the-mini-game-winner-one-extra-investigation.md)
 - [AW-337: Give Small Groups A Mini-Game That Fits](../tasks/AW-337-give-small-groups-a-mini-game-that-fits.md)
+- [AW-338: Tighten Four Round Rules Found In The AW-325 Review](../tasks/AW-338-tighten-four-round-rules-found-in-the-aw-325-review.md)
 - AW-291 (existing task; see `docs/roadmap/index.json`)
 - AW-274 (existing task; see `docs/roadmap/index.json`)
 

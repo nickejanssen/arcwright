@@ -44,15 +44,17 @@ Make a round run by itself: show its written scene, open the investigation menu,
 
 **Interaction profile:** Independent execution after plan approval. The change crosses engine modules (`arc`, `session`, `interactions`, `characters`, `events`) and adds API routes, which is a hard rule in `AGENTS.md`.
 
-- Spec 0093 was approved on 2026-11-16 (D-124, issue #355). Still blocked until AW-324 is merged.
+- Spec 0093 was approved on 2026-11-16 (D-124, issue #355). AW-324 merged on 2026-11-16 (pull request #391).
 - The build session writes a plan and stops for the founder's approval before code.
 
 ## Acceptance Criteria
 
-- [ ] The "Part C" and "Part D" acceptance criteria of spec 0093 pass.
-- [ ] Both registered arc files load and run unchanged; no existing test is edited to make it pass.
-- [ ] No table change, no new dependency, and no change under `sdk/`, `dashboard/` or `nightcap-web/`.
-- [ ] No murder-mystery word is added to `engine/`.
+- [x] The "Part C" and "Part D" acceptance criteria of spec 0093 pass, except pausing an active run, which is AW-303's.
+- [x] Both registered arc files load and run unchanged; no existing test is edited to make it pass.
+- [x] No table change, no new dependency, and no change under `sdk/`, `dashboard/` or `nightcap-web/`.
+- [x] No murder-mystery word is added to `engine/`.
+
+Checked 2026-11-17 on pull request #397 (merged that day): CI with every Python test, Codex review of the final code (no findings), and a Reviewer session that read and ran the code. The one part of Part C left out by design, pausing an active mini-game run, moved to AW-303.
 
 ## Tests/Verification
 
@@ -88,3 +90,4 @@ Built on 2026-11-16 under spec 0093, Parts C and D. The founder approved the pla
 - **For AW-328.** Save a `decisions` row with `decision_type = "budget_grant"`, `context = {"participant_id": "<id>"}` and `outcome = {"amount": n}`. It is added to that participant's allowance. Nothing else changes.
 - **Checked at session start.** The fairness check now takes the budget from the arc file, and an arc whose case offers choices in a beat with no `choices` phase is refused.
 - **Not changed.** No table, no migration, no dependency, no model call, nothing under `engine/interactions/`, `sdk/`, `dashboard/` or `nightcap-web/`.
+- **Follow-ups from the review (2026-11-17).** Four small round-rule fixes are AW-338. Still unverified: the database row lock that keeps two simultaneous choices from both spending budget has not run on Postgres; check it before the TV walkthrough (AW-301).
