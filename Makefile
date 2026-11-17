@@ -9,7 +9,7 @@ type:
 	$(PYTHON) -m mypy --config-file pyproject.toml engine api
 
 test:
-	$(PYTHON) -c "import sys, pytest; code = pytest.main(['-c', 'pyproject.toml', 'tests']); sys.exit(0 if code == 5 else code)"
+	$(PYTHON) -m pytest -c pyproject.toml tests engine/tests api/tests
 
 migrate:
 	$(PYTHON) -m alembic upgrade head

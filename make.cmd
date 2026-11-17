@@ -26,7 +26,7 @@ exit /b %ERRORLEVEL%
 exit /b %ERRORLEVEL%
 
 :test
-%PYTHON% -c "import sys, pytest; code = pytest.main(['-c', 'pyproject.toml', 'tests']); sys.exit(0 if code == 5 else code)"
+%PYTHON% -m pytest -c pyproject.toml tests engine/tests api/tests
 exit /b %ERRORLEVEL%
 
 :migrate
