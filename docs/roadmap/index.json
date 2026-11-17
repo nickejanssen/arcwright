@@ -656,7 +656,8 @@
         "AW-298",
         "AW-299",
         "AW-318",
-        "AW-336"
+        "AW-336",
+        "AW-339"
       ],
       "github": {
         "issue_number": 372,
@@ -2989,6 +2990,22 @@
       },
       "path": "docs/roadmap/tasks/AW-338-tighten-four-round-rules-found-in-the-aw-325-review.md",
       "epic_id": "M7-B"
+    },
+    {
+      "id": "AW-339",
+      "title": "Remove Duplicate Python CI Checks",
+      "milestone": "M7",
+      "epic": "M7-A",
+      "size": "S",
+      "depends_on": [
+        "AW-298"
+      ],
+      "path": "docs/roadmap/tasks/AW-339-remove-duplicate-python-ci-checks.md",
+      "epic_id": "M7-A",
+      "github": {
+        "issue_number": 402,
+        "url": "https://github.com/nickejanssen/arcwright/issues/402"
+      }
     }
   ],
   "superseded_sources": [
