@@ -11,6 +11,11 @@ import { slug } from "../kb/slugify.js";
 const SCORE_THRESHOLD = 0.2;
 const SNIPPET_CHARS = 80;
 
+// Text-mode CLI output omits weak results before the wrapper truncates lines.
+export function visibleHits(hits: Hit[]): Hit[] {
+  return hits.filter((hit) => hit.score >= SCORE_THRESHOLD);
+}
+
 export interface SearchCommandOptions {
   root?: string;
   k?: number;
@@ -58,7 +63,7 @@ export async function run(query: string, opts: SearchCommandOptions): Promise<nu
     return 0;
   }
 
-  const above = hits.filter((hit) => hit.score >= SCORE_THRESHOLD);
+  const above = visibleHits(hits);
   if (above.length === 0) {
     console.log("no results above threshold");
     return 0;

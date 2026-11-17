@@ -5,7 +5,7 @@ import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { run as reindex } from "./reindex.js";
-import { run as search } from "./search.js";
+import { run as search, visibleHits } from "./search.js";
 import type { Hit } from "../retrieval/types.js";
 
 const log = vi.spyOn(console, "log").mockImplementation(() => undefined);
@@ -34,6 +34,17 @@ afterEach(() => {
 });
 
 describe("search", () => {
+  it("filters low scores before the wrapper's eight-line limit even when scores are unordered", () => {
+    const hits = [
+      { score: 0.1, path: "low.md" },
+      ...Array.from({ length: 8 }, (_, i) => ({ score: 0.2, path: `${i}.md` })),
+    ] as Hit[];
+    expect(
+      visibleHits(hits)
+        .slice(0, 8)
+        .map((hit) => hit.path),
+    ).toEqual(Array.from({ length: 8 }, (_, i) => `${i}.md`));
+  });
   it("returns 1 with a hint when the index is not built", async () => {
     const root = makeInstance();
     const code = await search("429 rate limit errors", { root });

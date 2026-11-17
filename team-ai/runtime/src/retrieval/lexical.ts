@@ -18,7 +18,7 @@ import type { Document, Hit, IndexStats, RetrievalAdapter, SearchOpts } from "./
 const DEFAULT_DB_PATH = ".team-ai/index.sqlite";
 const DEFAULT_K = 8;
 const MAX_K = 20;
-// SQL over-fetch multiplier so post-filtering has candidates to work with.
+// SQL over-fetch multiplier so the remaining filters have candidates to work with.
 const CANDIDATE_MULTIPLIER = 4;
 const CANDIDATE_CAP = 80;
 
@@ -153,14 +153,23 @@ export class LexicalAdapter implements RetrievalAdapter {
     const limit = Math.min(k * CANDIDATE_MULTIPLIER, CANDIDATE_CAP);
     const db = this.db();
 
+    const namespaces =
+      opts.namespace === undefined
+        ? []
+        : Array.isArray(opts.namespace)
+          ? opts.namespace
+          : [opts.namespace];
+    const namespaceFilter = namespaces.length
+      ? ` AND json_extract(metadata, '$.namespace') IN (${namespaces.map(() => "?").join(", ")})`
+      : "";
     let rows: ChunkRow[];
     try {
       rows = db
         .prepare(
           "SELECT text, doc_id, chunk_id, path, heading_path, metadata, bm25(chunks) AS bm25 " +
-            "FROM chunks WHERE chunks MATCH ? ORDER BY bm25 LIMIT ?",
+            `FROM chunks WHERE chunks MATCH ?${namespaceFilter} ORDER BY bm25 LIMIT ?`,
         )
-        .all(match, limit) as ChunkRow[];
+        .all(match, ...namespaces, limit) as ChunkRow[];
     } catch (err) {
       if (err instanceof Error && /no such table/.test(err.message)) {
         throw new Error("index not built — run reindex() first");
@@ -168,17 +177,37 @@ export class LexicalAdapter implements RetrievalAdapter {
       throw err;
     }
 
-    // Post-filter on parsed metadata, then take the top k. Filtering happens
-    // after the SQL LIMIT (k*4, capped 80) so filters never widen the search.
+    // Namespace is filtered before the candidate limit. Other metadata filters
+    // are applied afterward, so they do not widen the search.
     const filtered = rows
       .map((row) => ({ row, meta: parseMeta(row.metadata) }))
       .filter(({ meta }) => passesFilters(meta, opts));
 
-    return filtered.slice(0, k).map(({ row, meta }) => ({
+    const queryTerms = new Set(
+      query
+        .toLowerCase()
+        .match(/[a-z0-9]+/g)
+        ?.filter((term) => term.length >= 4 && !STOPWORDS.has(term)) ?? [],
+    );
+    const ranked = filtered.map(({ row, meta }, order) => {
+      const title = typeof meta.title === "string" ? meta.title.toLowerCase() : "";
+      const titleTerms = new Set(title.match(/[a-z0-9]+/g) ?? []);
+      const matched = [...queryTerms].filter((term) => titleTerms.has(term)).length;
+      // Do not elevate a weak body match above the refusal threshold merely
+      // because the document title resembles the query.
+      const boost =
+        namespaces.length === 1 && matched >= 2 && scoreFromBm25(row.bm25, termCount) >= 0.2
+          ? Math.min(matched, 3) * 3
+          : 0;
+      return { row, meta, order, rank: row.bm25 - boost };
+    });
+    ranked.sort((a, b) => a.rank - b.rank || a.order - b.order);
+    return ranked.slice(0, k).map(({ row, meta }) => ({
       doc_id: row.doc_id,
       chunk_id: row.chunk_id,
       path: row.path,
       heading_path: row.heading_path,
+      // A ranking preference is not evidence of calibrated match confidence.
       score: scoreFromBm25(row.bm25, termCount),
       text: row.text,
       metadata: meta,
