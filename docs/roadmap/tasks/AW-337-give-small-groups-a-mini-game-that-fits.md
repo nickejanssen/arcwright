@@ -22,33 +22,34 @@ supersedes: []
 
 ## Plain-English Summary
 
-No mini-game in the repository can be played by two or three people. Decide how many players session 1 and the TV walkthrough will have, then make sure one mini-game fits that number.
+No mini-game in the repository can be played by two or three people. Session 1 is planned for two to four friends and the founder TV run for two phones, so make sure one mini-game fits two to four players.
 
 ## Why This Matters
 
 - Verified on 2026-11-16 at commit `83795a5`, from each package's definition file under `nightcap/mini_games/`: Crime Scene Smash, Scene Sweep and Tell Me Something True each need 4 to 8 players. Evidence Locker 402 needs exactly 1.
 - The walkthrough of the current build (AW-301) uses a TV and two phones. With two players, no mini-game can start.
 - Reported by the screens spec session (pull request #393), not checked by the parent session: only Tell Me Something True has a working screen, and it is still a draft.
-- Unknown: how many players session 1 will have. If it is four or more, the gap only affects the walkthrough and small test runs.
+- Corrected 2026-11-16: the player counts are known. `docs/product/nightcap-status.md` plans the founder TV run for a TV and two phones and session 1 for two to four friends. So today a mini-game can start at session 1 only if exactly four people come. An earlier version of this task called the count unknown; that was wrong.
+- The choice of how many mini-games session 1 needs is question Q4 of the draft screens spec (`docs/specs/0095-screens-for-the-thin-version.md`). Its recommended default is one mini-game that works at two to four players, reused with different story wrappers.
 - Filed under D-119 on 2026-11-16.
 
 ## Technical Scope
 
-- Record the player count for session 1 and for the walkthrough.
-- If either is below four: choose one mini-game and make it work at that count, or state that the walkthrough skips the mini-game and say what that leaves unseen.
+- After the founder answers Q4 of spec 0095: choose one mini-game and make it work at two to four players.
+- If that cannot be ready for the walkthrough (AW-301), state that the walkthrough skips the mini-game and say what that leaves unseen.
 - Any change to a mini-game's rules for a smaller group is a design change and needs the founder's approval before code.
 
 ## Human Collaboration Contract
 
 **Interaction profile:** Decision interview, then independent execution after plan approval.
 
-- The founder answers one question first: how many players at session 1, and how many at the walkthrough.
+- The founder answers one question first: Q4 of spec 0095, how many different mini-games session 1 needs.
 - A mini-game's feel at a new player count is a matter of founder taste. The session proposes one low-cost option and stops.
 
 ## Acceptance Criteria
 
-- [ ] The session 1 player count and the walkthrough player count are recorded in `docs/product/nightcap-status.md` or a decision row.
-- [ ] One mini-game starts, runs and returns to the story at the walkthrough's player count, or the walkthrough plan says plainly that it skips the mini-game.
+- [ ] The founder's answer to Q4 of spec 0095 is recorded.
+- [ ] One mini-game starts, runs and returns to the story at two, three and four players.
 - [ ] No mini-game releases case information (D-126).
 
 ## Tests/Verification
@@ -69,4 +70,4 @@ No mini-game in the repository can be played by two or three people. Decide how 
 
 ## Kickoff Prompt
 
-> Read `AGENTS.md`, `HANDOVER.md` and this task. Task AW-337: first ask the founder how many players session 1 and the walkthrough will have, one question, with options and a recommendation. Then propose the cheapest way for one mini-game to fit that count. Write a plan and stop for founder approval.
+> Read `AGENTS.md`, `HANDOVER.md`, this task and question Q4 of `docs/specs/0095-screens-for-the-thin-version.md`. Task AW-337: confirm the founder has answered Q4; if not, ask it, one question, with the spec's options and recommendation. Then propose the cheapest way for one mini-game to work at two to four players. Write a plan and stop for founder approval.
