@@ -8,7 +8,7 @@ Endpoints (base path /v1/sessions/{session_id}):
   GET  /round            optional JWT     Current beat, phase and deadline (public facts)
   GET  /me/menu          player JWT       This player's menu and budget
   POST /me/choices       player JWT       Make a choice (repeat-safe on choice_id)
-  POST /me/ready         player JWT       Mark ready for the current phase
+  POST /me/ready         player JWT       Mark ready for the phase the player saw
   GET  /me/holdings      player JWT       What this player found for themselves
   POST /round/move-on    host JWT         End the current phase by hand
 """
@@ -33,6 +33,7 @@ from api.schemas import (
     MenuItemResponse,
     MenuResponse,
     PhaseStateResponse,
+    ReadyRequest,
     RoundStateResponse,
 )
 from engine.db import get_async_session
@@ -78,6 +79,7 @@ def _require_session_match(session_id: UUID, claims: JwtClaims) -> None:
 def _phase_state_response(state: phases.PhaseState) -> PhaseStateResponse:
     return PhaseStateResponse(
         beat_id=state.beat_id,
+        phase_entry=state.entry,
         phase=state.phase,
         status=state.status,
         deadline_at=state.deadline_at,
@@ -102,6 +104,7 @@ async def get_round(
         session_status=view.session_status,
         beat_id=view.beat_id,
         beat_name=view.beat_name,
+        phase_entry=view.phase_entry,
         phase=view.phase,
         phase_index=view.phase_index,
         status=view.status,
@@ -180,14 +183,21 @@ async def make_choice(
 @router.post("/{session_id}/me/ready", response_model=PhaseStateResponse)
 async def mark_ready(
     session_id: UUID,
+    body: ReadyRequest,
     who: ParticipantContext = Depends(require_valid_participant),
     db: AsyncSession = Depends(get_async_session),
 ) -> PhaseStateResponse:
-    """Mark this player ready for the current phase."""
+    """Mark this player ready for the phase they saw. If the round has moved
+    on since, nothing is saved and the current state comes back."""
     assert who.claims.player_id is not None
     try:
         state = await phases.mark_ready(
-            db, session_id, who.claims.player_id, _now(), _publisher(session_id)
+            db,
+            session_id,
+            who.claims.player_id,
+            _now(),
+            _publisher(session_id),
+            phase_entry=body.phase_entry,
         )
     except RoundError as error:
         raise _refuse(error)

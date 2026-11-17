@@ -12,6 +12,7 @@ from __future__ import annotations
 import asyncio
 from collections.abc import AsyncIterator, Iterator
 from datetime import datetime, timezone
+from typing import Any
 from uuid import UUID, uuid4
 
 import pytest
@@ -139,6 +140,13 @@ async def seed(
 
 def url(who: Who, path: str) -> str:
     return f"/v1/sessions/{who.session_id}{path}"
+
+
+def ready(client: TestClient, who: Who, entry: int | None = None) -> Any:
+    """Mark ready for the phase the screen shows (or for ``entry``)."""
+    if entry is None:
+        entry = client.get(url(who, "/round")).json()["phase_entry"]
+    return client.post(url(who, "/me/ready"), json={"phase_entry": entry})
 
 
 class TestRoundState:
@@ -288,10 +296,10 @@ class TestReadyAndMoveOn:
         self, client: TestClient, db_factory: async_sessionmaker[AsyncSession], who: Who
     ) -> None:
         ids = await seed(db_factory, who)
-        first = client.post(url(who, "/me/ready"))
+        first = ready(client, who)
         assert first.status_code == 200 and first.json()["phase"] == "scene"
         who.player_id = ids[1]
-        second = client.post(url(who, "/me/ready"))
+        second = ready(client, who)
         assert second.status_code == 200
         assert (second.json()["beat_id"], second.json()["phase"]) == (
             "opening",
@@ -304,9 +312,43 @@ class TestReadyAndMoveOn:
         self, client: TestClient, db_factory: async_sessionmaker[AsyncSession], who: Who
     ) -> None:
         await seed(db_factory, who)
-        assert client.post(url(who, "/me/ready")).status_code == 200
-        assert client.post(url(who, "/me/ready")).status_code == 200
+        assert ready(client, who).status_code == 200
+        assert ready(client, who).status_code == 200
         assert client.get(url(who, "/round")).json()["ready_count"] == 1
+
+    @pytest.mark.asyncio
+    async def test_the_round_route_exposes_the_phase_entry_ready_must_name(
+        self, client: TestClient, db_factory: async_sessionmaker[AsyncSession], who: Who
+    ) -> None:
+        await seed(db_factory, who)
+        before = client.get(url(who, "/round")).json()["phase_entry"]
+        assert isinstance(before, int)
+        assert client.post(url(who, "/round/move-on")).status_code == 200
+        assert client.get(url(who, "/round")).json()["phase_entry"] != before
+
+    @pytest.mark.asyncio
+    async def test_a_late_ready_for_an_earlier_phase_changes_nothing(
+        self, client: TestClient, db_factory: async_sessionmaker[AsyncSession], who: Who
+    ) -> None:
+        ids = await seed(db_factory, who)
+        seen = client.get(url(who, "/round")).json()["phase_entry"]
+        assert client.post(url(who, "/round/move-on")).status_code == 200
+        late = ready(client, who, entry=seen)
+        assert late.status_code == 200
+        assert late.json()["phase"] == "bridge"
+        assert late.json()["phase_entry"] != seen
+        assert client.get(url(who, "/round")).json()["ready_count"] == 0
+        who.player_id = ids[1]
+        assert ready(client, who, entry=seen).status_code == 200
+        assert client.get(url(who, "/round")).json()["ready_count"] == 0
+
+    @pytest.mark.asyncio
+    async def test_ready_without_a_phase_entry_is_refused(
+        self, client: TestClient, db_factory: async_sessionmaker[AsyncSession], who: Who
+    ) -> None:
+        await seed(db_factory, who)
+        assert client.post(url(who, "/me/ready")).status_code == 422
+        assert client.get(url(who, "/round")).json()["ready_count"] == 0
 
     @pytest.mark.asyncio
     async def test_the_host_move_on_route_ends_the_phase(
@@ -341,7 +383,7 @@ class TestReadyAndMoveOn:
         self, client: TestClient, db_factory: async_sessionmaker[AsyncSession], who: Who
     ) -> None:
         await seed(db_factory, who, phase="mini_game")
-        response = client.post(url(who, "/me/ready"))
+        response = ready(client, who)
         assert response.status_code == 409
         assert response.json()["detail"]["code"] == "phase_not_ready_able"
 

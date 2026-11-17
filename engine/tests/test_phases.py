@@ -489,6 +489,21 @@ class TestPauseAndResume:
         assert (await where(db, seated.session_id))[:2] == ("opening", "bridge")
 
     @pytest.mark.asyncio
+    async def test_a_player_ready_before_a_pause_is_still_ready_after_resume(
+        self, started: tuple[Seated, Recorder], db: AsyncSession
+    ) -> None:
+        seated, rec = started
+        first, second = seated.participants[0], seated.participants[1]
+        await mark_ready(db, seated.session_id, first, at(1), rec)
+        svc = SessionService()
+        await svc.pause_session(db, seated.session_id, now=at(7))
+        await svc.resume_session(db, seated.session_id, now=at(500))
+        view = await round_view(db, seated.session_id, at(500))
+        assert view.ready_count == 1
+        await mark_ready(db, seated.session_id, second, at(501), rec)
+        assert (await where(db, seated.session_id))[:2] == ("opening", "bridge")
+
+    @pytest.mark.asyncio
     async def test_actions_are_refused_while_paused(
         self, started: tuple[Seated, Recorder], db: AsyncSession
     ) -> None:
@@ -506,6 +521,50 @@ class TestPauseAndResume:
 
 
 class TestReadiness:
+    @pytest.mark.asyncio
+    async def test_a_ready_for_a_phase_that_has_moved_on_is_ignored(
+        self, started: tuple[Seated, Recorder], db: AsyncSession
+    ) -> None:
+        seated, rec = started
+        seen = await current_phase(db, seated.session_id)
+        assert seen is not None
+        await host_move_on(db, seated.session_id, at(5), rec)
+        assert (await where(db, seated.session_id))[:2] == ("opening", "bridge")
+        state = await mark_ready(
+            db,
+            seated.session_id,
+            seated.participants[0],
+            at(6),
+            rec,
+            phase_entry=seen.entry,
+        )
+        assert (state.phase, state.status) == ("bridge", "running")
+        assert state.entry != seen.entry
+        assert (await round_view(db, seated.session_id, at(6))).ready_count == 0
+        count = await db.scalar(
+            select(func.count())
+            .select_from(Decision)
+            .where(Decision.decision_type == "ready")
+        )
+        assert count == 0
+
+    @pytest.mark.asyncio
+    async def test_a_ready_for_the_current_phase_counts(
+        self, started: tuple[Seated, Recorder], db: AsyncSession
+    ) -> None:
+        seated, rec = started
+        seen = await current_phase(db, seated.session_id)
+        assert seen is not None
+        await mark_ready(
+            db,
+            seated.session_id,
+            seated.participants[0],
+            at(1),
+            rec,
+            phase_entry=seen.entry,
+        )
+        assert (await round_view(db, seated.session_id, at(1))).ready_count == 1
+
     @pytest.mark.asyncio
     async def test_a_stranger_cannot_mark_ready(
         self, started: tuple[Seated, Recorder], db: AsyncSession

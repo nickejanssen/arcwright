@@ -369,6 +369,7 @@ class RoundStateResponse(BaseModel):
     session_status: str
     beat_id: str
     beat_name: Optional[str] = None
+    phase_entry: Optional[int] = None
     phase: Optional[str] = None
     phase_index: Optional[int] = None
     status: Optional[Literal["running", "paused", "ended"]] = None
@@ -379,8 +380,16 @@ class RoundStateResponse(BaseModel):
     lines: list[dict[str, Any]] = Field(default_factory=list)
 
 
+class ReadyRequest(BaseModel):
+    """Names the visit to a phase the player saw (``phase_entry`` from the
+    round view). If the round has moved on, the request changes nothing."""
+
+    phase_entry: int = Field(ge=1)
+
+
 class PhaseStateResponse(BaseModel):
     beat_id: str
+    phase_entry: int
     phase: str
     status: Literal["running", "paused", "ended"]
     deadline_at: Optional[datetime] = None

@@ -72,6 +72,7 @@ class RoundError(Exception):
 @dataclass(frozen=True)
 class PhaseState:
     seq: int
+    entry: int
     status: Status
     beat_id: str
     phase_index: int
@@ -89,6 +90,7 @@ class RoundView:
     session_status: str
     beat_id: str
     beat_name: str | None
+    phase_entry: int | None
     phase: str | None
     phase_index: int | None
     status: Status | None
@@ -145,6 +147,7 @@ def _parse_time(raw: str | None) -> datetime | None:
 def _state_from(payload: dict[str, Any]) -> PhaseState:
     return PhaseState(
         seq=int(payload["seq"]),
+        entry=int(payload["entry"]),
         status=payload["status"],
         beat_id=payload["beat_id"],
         phase_index=int(payload["phase_index"]),
@@ -181,9 +184,19 @@ async def _save(
     deadline_at: datetime | None = None,
     remaining_seconds: float | None = None,
     reason: str | None = None,
+    new_entry: bool = False,
 ) -> PhaseState:
+    """Save the next state. ``entry`` names one visit to a phase: a new
+    visit (``new_entry``) takes the next number; ending, pausing and resuming
+    the same visit carry it forward, so readiness survives a pause and a late
+    request can tell which visit it was meant for."""
+    if previous is None:
+        entry = 1
+    else:
+        entry = previous.entry + 1 if new_entry else previous.entry
     payload: dict[str, Any] = {
         "seq": (previous.seq + 1) if previous else 1,
+        "entry": entry,
         "status": status,
         "beat_id": beat_id,
         "phase_index": phase_index,
@@ -219,7 +232,7 @@ async def human_player_ids(db: AsyncSession, session_id: UUID) -> list[UUID]:
     return list(result.scalars().all())
 
 
-async def _ready_ids(db: AsyncSession, session_id: UUID, phase_seq: int) -> set[str]:
+async def _ready_ids(db: AsyncSession, session_id: UUID, phase_entry: int) -> set[str]:
     result = await db.execute(
         select(Decision.context).where(
             Decision.session_id == session_id,
@@ -230,7 +243,7 @@ async def _ready_ids(db: AsyncSession, session_id: UUID, phase_seq: int) -> set[
     return {
         str(ctx["participant_id"])
         for ctx in contexts
-        if ctx.get("phase_seq") == phase_seq
+        if ctx.get("phase_entry") == phase_entry
     }
 
 
@@ -240,7 +253,7 @@ async def _everyone_ready(
     humans = {str(pid) for pid in await human_player_ids(db, session_id)}
     if not humans:
         return False
-    return humans <= await _ready_ids(db, session_id, state.seq)
+    return humans <= await _ready_ids(db, session_id, state.entry)
 
 
 # --- publishing -----------------------------------------------------------------
@@ -311,6 +324,7 @@ async def _enter(
         phase_index=index,
         phase=definition.kind.value,
         deadline_at=now + timedelta(seconds=definition.seconds),
+        new_entry=True,
     )
     await emit(
         publish,
@@ -324,6 +338,7 @@ async def _enter(
                 "beat_id": beat_id,
                 "phase": definition.kind.value,
                 "phase_index": index,
+                "phase_entry": state.entry,
                 "seconds": definition.seconds,
                 "deadline_at": state.deadline_at.isoformat()
                 if state.deadline_at
@@ -517,9 +532,16 @@ async def mark_ready(
     participant_id: UUID,
     now: datetime,
     publish: Publish = None,
+    phase_entry: int | None = None,
 ) -> PhaseState:
     """A player says they are done with this phase. Ends it when every player
-    has. Marking twice saves once."""
+    has. Marking twice saves once.
+
+    ``phase_entry`` is the visit the player saw (from the round view). If the
+    round has since moved on, the request is stale: nothing is saved and the
+    current state comes back, so a retry or a late tap cannot mark the player
+    ready for a phase they never saw. ``None`` means "the current one", for
+    callers inside the engine."""
     async with session_lock(db, session_id) as locked:
         orm, arc = _require_active_phased(locked)
         if participant_id not in await human_player_ids(db, session_id):
@@ -527,9 +549,11 @@ async def mark_ready(
         state = await current_phase(db, session_id)
         if state is None or state.status != "running":
             raise RoundError("phase_not_running")
+        if phase_entry is not None and phase_entry != state.entry:
+            return state
         if PhaseKind(state.phase) not in _READY_PHASES:
             raise RoundError("phase_not_ready_able", f"{state.phase} ends on its own")
-        if str(participant_id) not in await _ready_ids(db, session_id, state.seq):
+        if str(participant_id) not in await _ready_ids(db, session_id, state.entry):
             db.add(
                 Decision(
                     session_id=session_id,
@@ -539,7 +563,7 @@ async def mark_ready(
                         "participant_id": str(participant_id),
                         "beat_id": state.beat_id,
                         "phase": state.phase,
-                        "phase_seq": state.seq,
+                        "phase_entry": state.entry,
                     },
                     outcome={},
                 )
@@ -654,6 +678,7 @@ async def round_view(db: AsyncSession, session_id: UUID, now: datetime) -> Round
             session_status=orm.status,
             beat_id=orm.current_beat_id,
             beat_name=_beat_name(arc, orm.current_beat_id),
+            phase_entry=None,
             phase=None,
             phase_index=None,
             status=None,
@@ -680,11 +705,12 @@ async def round_view(db: AsyncSession, session_id: UUID, now: datetime) -> Round
                 }
                 for line in definition.lines
             )
-    ready = await _ready_ids(db, session_id, state.seq)
+    ready = await _ready_ids(db, session_id, state.entry)
     return RoundView(
         session_status=orm.status,
         beat_id=state.beat_id,
         beat_name=_beat_name(arc, state.beat_id),
+        phase_entry=state.entry,
         phase=state.phase,
         phase_index=state.phase_index,
         status=state.status,

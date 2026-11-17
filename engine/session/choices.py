@@ -376,7 +376,7 @@ async def choose(
                     "choice_id": choice_id,
                     "participant_id": str(participant_id),
                     "beat_id": beat_id,
-                    "phase_seq": state.seq if state else None,
+                    "phase_entry": state.entry if state else None,
                     "offered": [item.opportunity_id for item in menu],
                     "opportunity_id": opportunity_id,
                 },
