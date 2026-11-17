@@ -1,7 +1,10 @@
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
+
+import pytest
 
 from scripts import team_ai_cli
 
@@ -70,6 +73,42 @@ def test_unresolved_linked_worktree_does_not_trust_its_local_runtime(
     )
     monkeypatch.setattr(team_ai_cli, "_main_checkout", lambda: None)
     assert team_ai_cli.find_cli() is None
+
+
+@pytest.mark.skipif(
+    not shutil.which("git") or not shutil.which("node"), reason="needs git and node"
+)
+def test_worktree_search_executes_trusted_runtime_not_worktree_runtime(tmp_path):
+    main = tmp_path / "main"
+    main.mkdir()
+    git = ["git", "-c", "user.name=Test", "-c", "user.email=test@example.com"]
+    subprocess.run([*git, "init", "-q"], cwd=main, check=True)
+    (main / "scripts").mkdir()
+    shutil.copyfile(SCRIPT, main / "scripts" / "team_ai_cli.py")
+    subprocess.run([*git, "add", "scripts/team_ai_cli.py"], cwd=main, check=True)
+    subprocess.run([*git, "commit", "-qm", "setup"], cwd=main, check=True)
+    worktree = tmp_path / "worktree"
+    subprocess.run(
+        [*git, "worktree", "add", "-qb", "test", str(worktree)],
+        cwd=main,
+        check=True,
+    )
+    for root, output in ((main, "trusted"), (worktree, "worktree-secret")):
+        cli = root / "team-ai" / "runtime" / "dist" / "cli.js"
+        cli.parent.mkdir(parents=True)
+        cli.write_text(f"console.log('{output}');\n", encoding="utf-8")
+    env = os.environ.copy()
+    env.pop("TEAM_AI_CLI", None)
+    result = subprocess.run(
+        [sys.executable, "scripts/team_ai_cli.py", "search", "x", "--root", "team-ai"],
+        cwd=worktree,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert result.stdout.strip() == "trusted"
+    assert "worktree-secret" not in result.stdout
 
 
 def test_resolves_from_this_checkout():
