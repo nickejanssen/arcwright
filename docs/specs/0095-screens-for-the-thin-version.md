@@ -28,7 +28,7 @@ When this is built, the whole thin game can be played on one TV and two to four 
 
 The screens show what the engine has already decided. They hold no game rules. Specs 0093 (rounds, investigations, mini-games) and 0094 (Last Call and the ending) build the rules; this spec builds what you see and tap.
 
-**How the founder's feelings answer shapes it.** On 2026-11-16 you chose "I outsmarted you" as the feeling the screens protect first (founder interview; the decision row is in pull request #392 and not on main yet). So where the phone and the TV compete for attention, the phone wins during thinking time and the TV wins at the reveal. Section "How the feelings answer shapes the layout" says exactly where.
+**How the founder's feelings answer shapes it.** On 2026-11-16 you chose "I outsmarted you" as the feeling the screens protect first (D-128). So where the phone and the TV compete for attention, the phone wins during thinking time and the TV wins at the reveal. Section "How the feelings answer shapes the layout" says exactly where.
 
 ## What is fixed, what is open, how to review
 
@@ -85,7 +85,7 @@ The screens show what the engine has already decided. They hold no game rules. S
 - Builds on: [spec 0093](0093-engine-spine-for-the-thin-version.md) (phases `scene`, `choices`, `mini_game`, `bridge`; routes for the menu, a choice, ready, holdings, host move-on, and the current beat, phase and deadline) and [spec 0094](0094-endgame-for-the-thin-version.md) (phases `commit`, `reveal`, `result`, `recap`; routes for the theory form, draft, lock and result).
 - GDD: [current design state](../gdd/nightcap/00-governance/02-current-design-state.md), [notebook and memory](../gdd/nightcap/01-authoritative-gdd/03-case-board-memory.md), [minigames](../gdd/nightcap/01-authoritative-gdd/04-minigame-competitive-pulse.md), [Last Call and Case File](../gdd/nightcap/01-authoritative-gdd/05-last-call-case-file.md), [Truth, Verdict, Postmortem](../gdd/nightcap/01-authoritative-gdd/08-truth-verdict-postmortem.md), [difficulty and accessibility](../gdd/nightcap/01-authoritative-gdd/10-difficulty-accessibility.md), [content boundaries](../gdd/nightcap/01-authoritative-gdd/12-experience-world-content-boundaries.md) (no internal names on screen).
 - Stack: [technology stack 2.11.7](../architecture/02-technology-stack.md) (AW-309), [ADR-0026](../decisions/0026-build-what-is-unique-adopt-the-rest.md).
-- Scope: [Nightcap status page](../product/nightcap-status.md). Decisions D-070, D-112, D-113, D-118, D-123, D-124, D-125, D-126, D-127. The founder's feelings answer of 2026-11-16 (pull request #392).
+- Scope: [Nightcap status page](../product/nightcap-status.md). Decisions D-070, D-112, D-113, D-118, D-123, D-124, D-125, D-126, D-127. D-128.
 - Related specs: 0069 (visual design system, approved July 2026), 0049 (mini-game API and SDK).
 
 **x-scope-evidence**: `D-112`, `D-118`, `D-123`. This spec adds no product scope beyond the thin version's must-have list. The survey and the reconnect rule are on that list.
@@ -667,7 +667,7 @@ Every Python test runs without a network, without a real database server, and wi
 **Part O and the whole client**
 - [ ] **Named full-game proof, Python half:** `api/tests/test_screens_feed.py::test_full_game_screen_feeds`, at 2 and at 4 players, on AW-327's fixture arc and case. It records every read and event per role, fails on any privacy marker in the wrong place, fails if the committed recording differs, and asserts the model router was never called.
 - [ ] **Named full-game proof, TypeScript half:** `dashboard/tests/full-game-screens.test.tsx`, test "full game screens at 2 and 4 players". It replays the recording through the real screen components and asserts, for the TV and each phone, the screen sequence from Room to Survey, the privacy markers, and no internal IDs.
-- [ ] Both halves run in CI on every pull request. Today `api/tests` runs nowhere in CI, so AW-334 adds it to `.github/workflows/ci.yml` beside a `npm test --prefix dashboard` step.
+- [ ] Both halves run in CI on every pull request. Today `api/tests` runs nowhere in CI, so AW-334 adds it to `.github/workflows/ci.yml` beside a `npm test --prefix dashboard` step. AW-336 (issue #394) was filed on 2026-11-16 to run `api/tests` in CI; if it merges first, AW-334 adds only the dashboard step.
 - [ ] `npm run typecheck --prefix dashboard` and `npm run build --prefix dashboard` pass. `pytest engine/tests api/tests`, `python -m ruff check engine api` and the type check pass.
 - [ ] `scripts/checks/provider_leak_check.py` passes.
 
@@ -764,3 +764,4 @@ Not numbered here: one small task per mini-game renderer that Q4's answer needs,
 # Changelog
 
 - 2026-11-16: First draft (AW-302, the screens spec of three).
+- 2026-11-16: Merged to main as a draft in pull request #393; still not approved. Cited D-128 now that pull request #392 has merged. Noted the two tasks filed from this draft's findings: AW-336 (API tests in CI, issue #394) and AW-337 (no mini-game fits two or three players, issue #395, linked to Q4).
