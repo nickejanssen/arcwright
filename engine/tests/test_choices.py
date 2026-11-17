@@ -540,6 +540,21 @@ class TestHoldings:
         assert {h.concept_id for h in theirs} == {"c_open_a", "c_open_b"}
 
     @pytest.mark.asyncio
+    async def test_holdings_say_where_and_when_each_was_found(
+        self, db: AsyncSession, registered: Callable[[ArcDefinition], None]
+    ) -> None:
+        seated, rec, _ = await open_choices(db, registered)
+        await pick(db, seated, 0, "o_ledger", rec)
+        mine = {
+            h.concept_id: h
+            for h in await read_holdings(db, seated.session_id, seated.participants[0])
+        }
+        assert mine["c_open_a"].found_from is None
+        assert mine["c_open_a"].found_in_beat is None
+        assert mine["c_ledger"].found_in_beat == "beat_one"
+        assert mine["c_ledger"].found_from
+
+    @pytest.mark.asyncio
     async def test_holdings_do_not_say_which_concepts_are_misleading(
         self, db: AsyncSession, registered: Callable[[ArcDefinition], None]
     ) -> None:

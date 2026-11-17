@@ -83,6 +83,10 @@ class HeldConcept:
     concept_id: str
     label: str
     text: str
+    found_from: str | None = None
+    """The label of the subject it came from; None for what they held at the start."""
+    found_in_beat: str | None = None
+    """The beat it was found in; None for what they held at the start."""
 
 
 # --- the budget, worked out in one place ----------------------------------------
@@ -270,8 +274,25 @@ async def read_holdings(
     orm = await db.get(OrmSession, session_id)
     ctx = await _context(db, orm, participant_id)
     held = await _held_with_opening(db, ctx, locked=False)
+    ledger = await _ledger(db, session_id, participant_id)
+    subjects = {s.subject_id: s.label for s in ctx.case.subjects}
+    found: dict[str, tuple[str, str]] = {}
+    for row in ledger.choices:
+        if not row.outcome.get("first_time"):
+            continue
+        opportunity = _opportunity(ctx.case, str(row.context["opportunity_id"]))
+        for concept_id in row.outcome.get("gave", []):
+            found.setdefault(
+                concept_id,
+                (subjects[opportunity.subject_id], str(row.context["beat_id"])),
+            )
     return [
-        HeldConcept(c.concept_id, c.label, c.text)
+        HeldConcept(
+            c.concept_id,
+            c.label,
+            c.text,
+            *found.get(c.concept_id, (None, None)),
+        )
         for c in ctx.case.concepts
         if c.concept_id in held
     ]

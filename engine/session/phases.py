@@ -88,6 +88,7 @@ class RoundView:
 
     session_status: str
     beat_id: str
+    beat_name: str | None
     phase: str | None
     phase_index: int | None
     status: Status | None
@@ -631,6 +632,12 @@ async def thaw_phase(db: AsyncSession, session_id: UUID, now: datetime) -> None:
         )
 
 
+def _beat_name(arc: ArcDefinition | None, beat_id: str) -> str | None:
+    if arc is None:
+        return None
+    return next((b.beat_name for b in arc.beats if b.beat_id == beat_id), None)
+
+
 async def round_view(db: AsyncSession, session_id: UUID, now: datetime) -> RoundView:
     """The current beat, phase and deadline, for a screen rebuilding itself."""
     orm = await db.get(OrmSession, session_id)
@@ -639,10 +646,12 @@ async def round_view(db: AsyncSession, session_id: UUID, now: datetime) -> Round
     await db.refresh(orm)
     humans = await human_player_ids(db, session_id)
     state = await current_phase(db, session_id)
+    arc = load_arc_definition(orm.arc_id)
     if state is None:
         return RoundView(
             session_status=orm.status,
             beat_id=orm.current_beat_id,
+            beat_name=_beat_name(arc, orm.current_beat_id),
             phase=None,
             phase_index=None,
             status=None,
@@ -658,18 +667,22 @@ async def round_view(db: AsyncSession, session_id: UUID, now: datetime) -> Round
     elif state.status == "paused":
         seconds_left = state.remaining_seconds
     lines: tuple[dict[str, Any], ...] = ()
-    arc = load_arc_definition(orm.arc_id)
     if arc is not None and arc.is_phased:
         definition = _phases(_beat(arc, state.beat_id))[state.phase_index]
         if definition.audience in _PUBLIC_AUDIENCES:
             lines = tuple(
-                {"text": line.text, "speaker": line.speaker}
+                {
+                    "text": line.text,
+                    "speaker": line.speaker,
+                    "hints": line.hints.model_dump(),
+                }
                 for line in definition.lines
             )
     ready = await _ready_ids(db, session_id, state.seq)
     return RoundView(
         session_status=orm.status,
         beat_id=state.beat_id,
+        beat_name=_beat_name(arc, state.beat_id),
         phase=state.phase,
         phase_index=state.phase_index,
         status=state.status,

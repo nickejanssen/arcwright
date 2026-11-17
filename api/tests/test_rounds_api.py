@@ -158,6 +158,7 @@ class TestRoundState:
         assert body["deadline_at"] and 0 < body["seconds_left"] <= 20
         assert [line["text"] for line in body["lines"]] == ["Welcome to the house."]
         assert body["player_count"] == 2 and body["ready_count"] == 0
+        assert body["beat_name"] == "opening"
 
     @pytest.mark.asyncio
     async def test_the_round_route_for_an_unknown_session_is_404(
@@ -359,6 +360,9 @@ class TestHoldings:
         assert response.status_code == 200
         ids = {c["concept_id"] for c in response.json()["concepts"]}
         assert ids == {"c_open_a", "c_open_b", "c_ledger"}
+        found = {c["concept_id"]: c for c in response.json()["concepts"]}
+        assert found["c_ledger"]["found_in_beat"] == "beat_one"
+        assert found["c_open_a"]["found_from"] is None
         assert "standing" not in response.text and "misleading" not in response.text
 
 

@@ -599,6 +599,8 @@ class TestRoundView:
         assert view.seconds_left == SCENE_SECONDS - 5
         assert (view.ready_count, view.player_count) == (1, 2)
         assert [line["text"] for line in view.lines] == ["Welcome to the house."]
+        assert view.beat_name == "opening"
+        assert view.lines[0]["hints"]["pause_before_ms"] == 0
 
     @pytest.mark.asyncio
     async def test_the_view_of_a_session_with_no_phase_yet(

@@ -368,6 +368,7 @@ class RoundStateResponse(BaseModel):
 
     session_status: str
     beat_id: str
+    beat_name: Optional[str] = None
     phase: Optional[str] = None
     phase_index: Optional[int] = None
     status: Optional[Literal["running", "paused", "ended"]] = None
@@ -421,6 +422,8 @@ class HeldConceptResponse(BaseModel):
     concept_id: str
     label: str
     text: str
+    found_from: Optional[str] = None
+    found_in_beat: Optional[str] = None
 
 
 class HoldingsResponse(BaseModel):

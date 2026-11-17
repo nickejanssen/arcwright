@@ -101,6 +101,7 @@ async def get_round(
     return RoundStateResponse(
         session_status=view.session_status,
         beat_id=view.beat_id,
+        beat_name=view.beat_name,
         phase=view.phase,
         phase_index=view.phase_index,
         status=view.status,
@@ -207,7 +208,13 @@ async def get_holdings(
         raise _refuse(error)
     return HoldingsResponse(
         concepts=[
-            HeldConceptResponse(concept_id=h.concept_id, label=h.label, text=h.text)
+            HeldConceptResponse(
+                concept_id=h.concept_id,
+                label=h.label,
+                text=h.text,
+                found_from=h.found_from,
+                found_in_beat=h.found_in_beat,
+            )
             for h in held
         ]
     )
