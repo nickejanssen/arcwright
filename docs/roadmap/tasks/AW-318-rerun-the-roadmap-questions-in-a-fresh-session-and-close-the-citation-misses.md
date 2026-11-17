@@ -54,6 +54,12 @@ A correct answer with the wrong source cannot be trusted next month, when the su
 - `python scripts/team_ai_cli.py search --root team-ai --namespace product-roadmap --k 8 "reset audit findings owner"` output pasted into the pull request.
 - The `team-ai` check passes on the pull request.
 
+## Investigation update, 2026-11-17
+
+On main at `07c1985`, a fresh index returned no reset audit in the first eight results for the specified search. Removing the repeated dependency reference from 27 roadmap documents in a local experiment placed the audit fourth; the first three results were sections of this task itself. Shortening the references left the audit outside the first eight. Both changes were discarded because neither met the top-three criterion and removing references also loses useful context.
+
+The live specialist rerun has not been performed, so there is no new citation score or count of refused calls. Next, investigate a retrieval improvement that preserves useful source links and check it against additional queries, then rerun the four questions in a fresh specialist session. The task remains open.
+
 ## Dependencies
 
 - AW-297
