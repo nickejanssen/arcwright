@@ -162,7 +162,7 @@ async def current_phase(db: AsyncSession, session_id: UUID) -> PhaseState | None
             Event.session_id == session_id, Event.event_type == PHASE_EVENT
         )
     )
-    payloads = list(result.scalars().all())
+    payloads: list[dict[str, Any]] = list(result.scalars().all())
     if not payloads:
         return None
     return _state_from(max(payloads, key=lambda p: int(p["seq"])))
@@ -226,9 +226,10 @@ async def _ready_ids(db: AsyncSession, session_id: UUID, phase_seq: int) -> set[
             Decision.decision_type == READY_DECISION,
         )
     )
+    contexts: list[dict[str, Any]] = list(result.scalars().all())
     return {
         str(ctx["participant_id"])
-        for ctx in result.scalars().all()
+        for ctx in contexts
         if ctx.get("phase_seq") == phase_seq
     }
 
@@ -388,7 +389,8 @@ async def _count_choices(db: AsyncSession, session_id: UUID, beat_id: str) -> in
             Decision.session_id == session_id, Decision.decision_type == "choice"
         )
     )
-    return sum(1 for ctx in result.scalars().all() if ctx.get("beat_id") == beat_id)
+    contexts: list[dict[str, Any]] = list(result.scalars().all())
+    return len([ctx for ctx in contexts if ctx.get("beat_id") == beat_id])
 
 
 async def _end(
