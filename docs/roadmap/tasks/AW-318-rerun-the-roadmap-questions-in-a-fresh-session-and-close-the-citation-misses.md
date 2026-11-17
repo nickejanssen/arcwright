@@ -58,7 +58,7 @@ A correct answer with the wrong source cannot be trusted next month, when the su
 
 On main at `07c1985`, a fresh index returned no reset audit in the first eight results for the specified search. Removing the repeated dependency reference from 27 roadmap documents in a local experiment placed the audit fourth; the first three results were sections of this task itself. Shortening the references left the audit outside the first eight. Both changes were discarded because neither met the top-three criterion and removing references also loses useful context.
 
-The live specialist rerun has not been performed, so there is no new citation score or count of refused calls. Next, investigate a retrieval improvement that preserves useful source links and check it against additional queries, then rerun the four questions in a fresh specialist session. The task remains open.
+A further run with the original references retained and `--k 64` did not return the owning audit at all. The lexical retriever ranks sections using BM25 and applies the namespace filter after limiting candidates; the Arcwright wrapper then truncates the widened results to eight lines. Deduplicating sections alone would still leave many distinct task documents ahead of the audit. Adding a descriptive heading to the audit did not put it in the first eight. These are diagnostics, not a validated remedy.\n\nThe live specialist rerun has not been performed, so there is no new citation score or count of refused calls. Next, investigate a retrieval improvement that preserves useful source links and check it against additional queries, then rerun the four questions in a fresh specialist session. The task remains open.
 
 ## Dependencies
 
