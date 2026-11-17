@@ -38,6 +38,40 @@ def test_override_is_preferred_over_local_cli(tmp_path, monkeypatch):
     assert team_ai_cli.find_cli() == override
 
 
+def test_linked_worktree_cannot_override_main_checkout_runtime(tmp_path, monkeypatch):
+    main = tmp_path / "main"
+    worktree = tmp_path / "worktree"
+    trusted = main / "team-ai" / "runtime" / "dist" / "cli.js"
+    untrusted = worktree / "team-ai" / "runtime" / "dist" / "cli.js"
+    for path in (trusted, untrusted):
+        path.parent.mkdir(parents=True)
+        path.write_text("", encoding="utf-8")
+    monkeypatch.delenv("TEAM_AI_CLI", raising=False)
+    monkeypatch.setattr(
+        team_ai_cli, "__file__", str(worktree / "scripts" / "team_ai_cli.py")
+    )
+    monkeypatch.setattr(team_ai_cli, "_main_checkout", lambda: main)
+    assert team_ai_cli.find_cli() == trusted
+    trusted.unlink()
+    assert team_ai_cli.find_cli() is None
+
+
+def test_unresolved_linked_worktree_does_not_trust_its_local_runtime(
+    tmp_path, monkeypatch
+):
+    worktree = tmp_path / "worktree"
+    local = worktree / "team-ai" / "runtime" / "dist" / "cli.js"
+    local.parent.mkdir(parents=True)
+    local.write_text("", encoding="utf-8")
+    (worktree / ".git").write_text("gitdir: missing", encoding="utf-8")
+    monkeypatch.delenv("TEAM_AI_CLI", raising=False)
+    monkeypatch.setattr(
+        team_ai_cli, "__file__", str(worktree / "scripts" / "team_ai_cli.py")
+    )
+    monkeypatch.setattr(team_ai_cli, "_main_checkout", lambda: None)
+    assert team_ai_cli.find_cli() is None
+
+
 def test_resolves_from_this_checkout():
     out = subprocess.run(
         [sys.executable, str(SCRIPT), "--path"],

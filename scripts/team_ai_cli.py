@@ -1,6 +1,6 @@
 """Locate the knowledge CLI, and optionally run it.
 
-Prefer an Arcwright-owned runtime inside the active checkout when present.
+Prefer an Arcwright-owned runtime in the main checkout when present.
 The framework may also live outside the active checkout. Every agent session here
 runs in a git worktree, where the repository's parent is the worktree container
 rather than the checkout's parent. `git rev-parse --git-common-dir` points at
@@ -62,11 +62,12 @@ def find_cli() -> Path | None:
         return candidate if candidate.is_file() else None
 
     here = Path(__file__).resolve().parents[1]
-    local = here / "team-ai" / "runtime" / "dist" / "cli.js"
-    if local.is_file():
-        return local
-
     main = _main_checkout()
+    if main is not None or not (here / ".git").is_file():
+        local = (main or here) / "team-ai" / "runtime" / "dist" / "cli.js"
+        if local.is_file():
+            return local
+
     roots = [main.parent] if main is not None else [here.parent, here.parent.parent]
 
     for root in roots:
