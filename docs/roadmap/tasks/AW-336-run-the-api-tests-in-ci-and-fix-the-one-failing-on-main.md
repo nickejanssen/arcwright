@@ -26,7 +26,8 @@ The automatic checks on a pull request never run the server's own tests. Make th
 
 ## Why This Matters
 
-- Verified on 2026-11-16 at commit `83795a5`: no workflow runs `api/tests`. `.github/workflows/ci.yml` runs `pytest engine/tests` only. The required check `verify` runs `make test`, which looks in a top-level `tests` folder and counts "no tests found" as a pass.
+- Verified on 2026-11-16 at commit `83795a5`: no workflow runs `api/tests`. `.github/workflows/ci.yml` runs `pytest engine/tests` only. The required check `verify` is the job in `.github/workflows/verify-tasks.yml`. It runs `make test`, which ran only the top-level `tests` folder (14 tests) and counted "no tests found" as a pass. Corrected 2026-11-17: `engine/tests` also ran only in the `ci.yml` job, which is not a required check, so engine tests did not block a merge either.
+- Cause found 2026-11-17: the beat now advances only after every player has submitted input in it (commit `00c2c9a`, #265, 2026-07-26); the batch test sent one input per beat. The test had failed since that commit because nothing ran it. The engine rule is unchanged; the test now sends one input per player.
 - Verified on 2026-11-16 on the founder's machine (Python 3.14.6): `python -m pytest api/tests -q` gives 114 passed and 1 failed. The failure is `api/tests/test_batch_harness.py::test_batch_session_completes`, at the line `assert all(record["passed"] is True for record in records)`. Unknown: whether it also fails on the Python version CI uses, and when it started failing.
 - AW-325 adds server routes and tests for them under `api/tests`. Until this task is done, those tests protect nothing at merge time.
 - Filed under D-119. Reported by the AW-325 build session and the screens spec session on 2026-11-16, then checked by the parent session.
@@ -45,10 +46,14 @@ The automatic checks on a pull request never run the server's own tests. Make th
 
 ## Acceptance Criteria
 
-- [ ] A pull request that breaks a test under `api/tests` shows a failed check.
-- [ ] `python -m pytest api/tests -q` passes on `main` in CI.
-- [ ] The cause of the failing test is written in the pull request, with the commit that introduced it if it can be found.
-- [ ] No test is deleted or skipped to make the run pass.
+- [x] A pull request that breaks a test under `api/tests` shows a failed check. Proved on PR #398: a deliberately failing API test made `verify` fail (`1 failed, 1110 passed`), then was reverted.
+- [x] `python -m pytest api/tests -q` passes on `main` in CI. It passes in the `verify` job on Python 3.11 on the pull request (all 115 API tests); it counts as done on `main` once the pull request merges and the push run is green.
+- [x] The cause of the failing test is written in the pull request, with the commit that introduced it: `00c2c9a` (#265).
+- [x] No test is deleted or skipped to make the run pass. The stale test was corrected, not skipped.
+
+## Follow-up left open
+
+- `verify` is the only required check. `ci.yml` (web checks, secret scan) and `team-ai` are still not required. That is AW-298 and needs the founder's admin rights.
 
 ## Tests/Verification
 

@@ -232,24 +232,28 @@ def test_batch_session_completes(
 
         for index, source_beat in enumerate(_BEAT_SEQUENCE[:-1]):
             target_beat = _BEAT_SEQUENCE[index + 1]
-            participant = player_participants[index % len(player_participants)]
-            _set_player_claims(
-                auth_state,
-                session_id=session_id,
-                participant_id=participant.participant_id,
-            )
-            input_resp = client.post(
-                f"/v1/sessions/{session_id}/characters/{participant.character_id}/input",
-                json={
-                    "kind": "dialogue",
-                    "content": f"seed {seed}: advance from {source_beat} to {target_beat}.",
-                },
-            )
-            assert input_resp.status_code == 201, input_resp.text
+            # The beat moves only once every player has submitted input in it
+            # (commit 00c2c9a), so each beat takes one input per player.
+            for turn, participant in enumerate(player_participants):
+                _set_player_claims(
+                    auth_state,
+                    session_id=session_id,
+                    participant_id=participant.participant_id,
+                )
+                input_resp = client.post(
+                    f"/v1/sessions/{session_id}/characters/{participant.character_id}/input",
+                    json={
+                        "kind": "dialogue",
+                        "content": f"seed {seed}: advance from {source_beat} to {target_beat}.",
+                    },
+                )
+                assert input_resp.status_code == 201, input_resp.text
 
-            state_resp = client.get(f"/v1/sessions/{session_id}")
-            assert state_resp.status_code == 200, state_resp.text
-            assert state_resp.json()["current_beat_id"] == target_beat
+                state_resp = client.get(f"/v1/sessions/{session_id}")
+                assert state_resp.status_code == 200, state_resp.text
+                is_last_player = turn == len(player_participants) - 1
+                expected_beat = target_beat if is_last_player else source_beat
+                assert state_resp.json()["current_beat_id"] == expected_beat
 
         end_resp = client.post(f"/v1/sessions/{session_id}/end")
         assert end_resp.status_code == 200, end_resp.text
