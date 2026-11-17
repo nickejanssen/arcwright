@@ -22,7 +22,7 @@ Keep them apart. Nothing in `engine/` may name Nightcap or assume a murder myste
 - Target: a thin, complete game played by friends at the founder's house on 12 or 13 December 2026 (D-112). Plan, scope and cut order: `docs/product/nightcap-status.md`.
 - Nothing is deployed to the cloud. The game runs from the founder's PC through a tunnel.
 - The online paper test is paused (D-111). Do not restart it.
-- AI tooling is frozen to break-fixes until the rebuild's first TV session (D-110, D-111).
+- AI tooling is frozen to break-fixes until the rebuild's first TV session (D-110, D-111), with targeted exceptions for AW-318 retrieval (D-131) and the Arcwright-owned harness migration (D-132).
 
 ## Where work lives
 
@@ -123,6 +123,8 @@ Work the list top to bottom. Building starts only at step 7. Whether a step is d
 **What needs the founder's approval before a build task starts:** its spec, and separately anything on the hard-rule list in `AGENTS.md` (database changes, changes across engine modules, new dependencies, prompts). The inventory found that most of the rebuild is wiring across engine modules, so expect one hard-rule approval per spec.
 
 ## Log
+
+- **2026-11-17** PR #406 merged: the wrapper prefers an Arcwright-owned CLI built in the trusted main checkout, with explicit override and sibling fallback. PRs #404 and #405 merged: expanded the infrastructure plan and corrected setup documentation. AW-318 remains open pending retrieval and live citation evaluation.
 
 Add one dated entry per merged pull request: what changed, why, which checks covered it, and what is still open.
 

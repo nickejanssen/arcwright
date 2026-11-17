@@ -1,0 +1,12 @@
+name: sales-engineer
+summary: Runs technical discovery and demos for prospects/partners
+default_namespaces:
+  - operating
+  - platform
+  - patterns
+  - playbooks
+default_skills:
+  - kb-answer
+  - discovery-prep
+model_tier: small
+persona_default: partner-facing

@@ -1,0 +1,18 @@
+# team-ai agnostic denylist
+# The framework ships structure and questions, never a team's content.
+# `team-ai check-agnostic` flags any of these tokens appearing in shipped
+# source (src/ non-test non-fixture, schemas/, catalog/, templates/, questions.yaml, bin/).
+# Add tokens as needed. Prefix a line with ! to allowlist an exception.
+#
+# Proper nouns from the companion design docs that must never leak into framework code:
+arcwright
+nightcap
+monster rpg
+vesper
+upside
+acme
+globex
+# Allowlisted exceptions (structural names / the framework's own repo):
+!generic-partner-facing
+!nickejanssen/team-ai
+!nickejanssen

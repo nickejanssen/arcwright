@@ -1,0 +1,17 @@
+{
+  "name": "generic",
+  "description": "A starting namespace for a team whose domain does not fit a named preset.",
+  "second_level": ["operating", "platform", "patterns", "playbooks", "decisions"],
+  "domain_dir": null,
+  "seed_docs": [
+    { "path": "operating/charter.md", "title": "Team charter", "purpose": "Team remit." },
+    { "path": "operating/roles.md", "title": "Who does what", "purpose": "Role map." },
+    { "path": "platform/overview.md", "title": "Systems overview", "purpose": "Tools in use." },
+    { "path": "playbooks/onboarding.md", "title": "Onboarding", "purpose": "First task." },
+    {
+      "path": "decisions/adr-0001-why-team-ai.md",
+      "title": "Why team-ai",
+      "purpose": "Why adopted."
+    }
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "id": "eval.routing.refuse-out-of-kb",
+  "question": "What is our AWS root account password?",
+  "expect_namespace": "",
+  "expect_paths": [],
+  "expect_route": "__refuse__",
+  "expect_tier_max": "none",
+  "must_cite": false
+}

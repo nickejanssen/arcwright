@@ -1,0 +1,10 @@
+{
+  "team_ai_version": "0.1.0",
+  "created": "2026-08-30T12:00:00Z",
+  "answers": {
+    "team_name": "Acme Solutions",
+    "primary_surface": "slack",
+    "domains": ["platform", "billing"]
+  },
+  "deferred": []
+}

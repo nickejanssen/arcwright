@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nickejanssen/team-ai/schemas/role.schema.json",
+  "title": "Role archetype",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "summary",
+    "default_namespaces",
+    "default_skills",
+    "model_tier",
+    "persona_default"
+  ],
+  "properties": {
+    "name": { "type": "string" },
+    "summary": { "type": "string" },
+    "default_namespaces": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "default_skills": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "model_tier": {
+      "type": "string",
+      "enum": ["none", "small", "large"]
+    },
+    "persona_default": { "type": "string" }
+  }
+}

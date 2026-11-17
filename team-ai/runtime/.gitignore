@@ -1,0 +1,11 @@
+node_modules/
+dist/
+emitted/
+*.sqlite
+*.sqlite-*
+.DS_Store
+coverage/
+*.tsbuildinfo
+.tmp-dogfood/
+.tmp-test/
+.team-ai/

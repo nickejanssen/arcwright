@@ -1,0 +1,28 @@
+# Fixture manifest for the eval-harness tests. Two domains, two namespaces.
+domains:
+  - id: platform
+    description: Platform APIs, rate limits, authentication, and webhooks.
+    keywords:
+      - api
+      - rate limit
+      - "429"
+      - webhook
+      - authentication
+      - token
+    kb_namespace: platform
+    subagent: platform-sme
+    model_tier: small
+    owner: solutions-architect
+  - id: handbook
+    description: Team handbook — onboarding, PTO, expenses, and benefits.
+    keywords:
+      - onboarding
+      - pto
+      - vacation
+      - expense
+      - handbook
+      - benefits
+    kb_namespace: handbook
+    subagent: handbook-sme
+    model_tier: small
+    owner: chief-of-staff

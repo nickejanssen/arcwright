@@ -1,0 +1,11 @@
+name: pm
+summary: Owns scope, sequencing, and stakeholder updates
+default_namespaces:
+  - operating
+  - patterns
+  - decisions
+  - playbooks
+default_skills:
+  - kb-answer
+model_tier: small
+persona_default: executive-brief

@@ -1,0 +1,65 @@
+{
+  "name": "team-ai",
+  "version": "0.6.6",
+  "description": "A forkable framework for standing up a team's AI capability: an owned knowledge base, scoped agents, deterministic scripts, and an eval harness.",
+  "license": "Apache-2.0",
+  "author": "nickejanssen",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nickejanssen/team-ai.git"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "bin": {
+    "team-ai": "bin/team-ai.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "schemas",
+    "catalog",
+    "templates",
+    "skills",
+    "src/interview/questions.yaml",
+    "src/interview/gates",
+    "src/interview/doc-templates",
+    "src/adopt/plan-doc.hbs"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "format": "prettier --check .",
+    "format:write": "prettier --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run lint && npm run typecheck && npm run test"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.2.1",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "better-sqlite3": "^13.0.3",
+    "commander": "^13.0.0",
+    "gray-matter": "^4.0.3",
+    "handlebars": "^4.7.8",
+    "yaml": "^2.6.1"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.6.1",
+    "@commitlint/config-conventional": "^19.6.0",
+    "@eslint/js": "^9.39.5",
+    "@types/better-sqlite3": "^9.6.0",
+    "@types/node": "^22.10.5",
+    "@typescript-eslint/eslint-plugin": "^8.19.1",
+    "@typescript-eslint/parser": "^8.19.1",
+    "eslint": "^9.17.0",
+    "eslint-config-prettier": "^9.1.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.68.0",
+    "vitest": "^2.1.8"
+  }
+}

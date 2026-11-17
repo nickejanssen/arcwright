@@ -1,0 +1,11 @@
+{
+  "name": "hub-router",
+  "kind": "router",
+  "description": "Routes incoming questions to the correct domain subagent.",
+  "model_tier": "large",
+  "kb_namespaces": ["platform", "support/billing"],
+  "tools": ["kb_search", "manifest_lookup"],
+  "max_hops": 3,
+  "instructions_file": "agents/hub-router.md",
+  "escalate_to": "human-oncall"
+}

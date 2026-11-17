@@ -1,0 +1,10 @@
+name: engineering
+description: Fixture engineering namespace.
+second_level: ["operating", "platform", "patterns", "playbooks", "decisions"]
+domain_dir: "services/<name>"
+seed_docs:
+  - { path: operating/charter.md, title: Team charter, purpose: a }
+  - { path: operating/roles.md, title: Who does what, purpose: b }
+  - { path: platform/overview.md, title: Systems overview, purpose: c }
+  - { path: playbooks/onboarding.md, title: Onboarding, purpose: d }
+  - { path: decisions/adr-0001-why-team-ai.md, title: Why team-ai, purpose: e }

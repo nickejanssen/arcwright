@@ -3,13 +3,19 @@
 Use an existing Arcwright checkout. Read `../AGENTS.md`, `../HANDOVER.md`
 and `../docs/conventions/knowledge-base-upkeep.md` first.
 
-The current CI and specialist search rely on the team-ai CLI. Until the
-Arcwright-owned replacement is implemented, clone the framework beside the
-main Arcwright checkout, check out the version pinned in
-`../.github/workflows/team-ai.yml`, and run `npm ci` and `npm run build`
-there with Node 22 or later. A worktree resolves the sibling relative to its
-main checkout. To use another built CLI, set `TEAM_AI_CLI` to its
-`dist/cli.js` path.
+The runtime lives in `runtime/` and is built from the main Arcwright checkout
+with Node 22 or later. From the main checkout, run:
+
+```bash
+cd team-ai/runtime
+npm ci
+npm run build
+```
+
+A linked worktree uses the built runtime from the main checkout, while its
+index remains local to that worktree. `TEAM_AI_CLI` can explicitly select
+another built CLI; only use a path you trust. See `runtime/ARCWRIGHT.md`
+for the snapshot provenance and maintenance boundaries.
 
 From the Arcwright checkout root:
 

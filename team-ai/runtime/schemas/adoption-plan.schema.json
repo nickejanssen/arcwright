@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nickejanssen/team-ai/schemas/adoption-plan.schema.json",
+  "title": "Adoption plan",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "generated_by",
+    "root",
+    "created",
+    "namespace_map",
+    "backfill",
+    "relabels",
+    "gap",
+    "collisions",
+    "archived_skipped"
+  ],
+  "properties": {
+    "generated_by": { "type": "string" },
+    "root": { "type": "string" },
+    "created": { "type": "string", "format": "date-time" },
+    "namespace_map": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["matched", "decisions"],
+      "properties": {
+        "matched": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["folder", "namespace"],
+            "properties": {
+              "folder": { "type": "string" },
+              "namespace": { "type": "string" }
+            }
+          }
+        },
+        "decisions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["folder", "candidates", "chosen"],
+            "properties": {
+              "folder": { "type": "string" },
+              "candidates": { "type": "array", "items": { "type": "string" } },
+              "chosen": { "type": ["string", "null"] }
+            }
+          }
+        }
+      }
+    },
+    "backfill": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "namespace", "frontmatter", "approved", "conflict"],
+        "properties": {
+          "path": { "type": "string" },
+          "namespace": { "type": "string" },
+          "frontmatter": { "type": "object" },
+          "approved": { "type": "boolean" },
+          "conflict": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "relabels": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "current_source", "proposed_source", "approved"],
+        "properties": {
+          "path": { "type": "string" },
+          "current_source": { "type": ["string", "null"] },
+          "proposed_source": { "type": "string" },
+          "approved": { "type": "boolean" }
+        }
+      }
+    },
+    "gap": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "satisfied", "evidence", "closesWith"],
+        "properties": {
+          "id": { "type": "string" },
+          "satisfied": { "type": "boolean" },
+          "evidence": { "type": "string" },
+          "closesWith": { "type": "string" }
+        }
+      }
+    },
+    "collisions": { "type": "array", "items": { "type": "string" } },
+    "archived_skipped": { "type": "integer", "minimum": 0 }
+  }
+}

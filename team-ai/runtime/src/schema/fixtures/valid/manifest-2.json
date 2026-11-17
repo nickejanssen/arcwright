@@ -1,0 +1,24 @@
+{
+  "domains": [
+    {
+      "id": "billing",
+      "description": "Billing, invoicing, and refund policy.",
+      "keywords": ["invoice", "refund", "chargeback"],
+      "kb_namespace": "support/billing",
+      "subagent": "billing-sme",
+      "model_tier": "large",
+      "owner": "support-lead",
+      "repo": "github.com/acme/billing-docs",
+      "escalate_to": "finance-oncall"
+    },
+    {
+      "id": "security",
+      "description": "Security posture and compliance answers.",
+      "keywords": ["soc2", "pentest"],
+      "kb_namespace": "security",
+      "subagent": "security-sme",
+      "model_tier": "none",
+      "owner": "ciso"
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "name": "architect",
+  "summary": "Owns technical design and integration decisions",
+  "default_namespaces": ["operating", "platform", "patterns", "decisions"],
+  "default_skills": ["kb-answer", "integration-review"],
+  "model_tier": "large",
+  "persona_default": "internal-technical"
+}

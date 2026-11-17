@@ -1,0 +1,54 @@
+# Ordered answer list for `team-ai init --answers` — dogfood Run B (Partner Solutions).
+# Built by walking `new Engine(loadBank())` and recording the token for each
+# step in order (see docs/dogfood-notes.md).
+#
+# Profile: coexist as a separate system, generic-partner-facing preset,
+# team of 1-3 (so agents.roles is SUPPRESSED — there is NO entry for it),
+# coding-agent + chat-apps + read-only-stakeholders surfaces, external
+# consumers, md-git substrate, lexical index, no server.
+
+# Act 0 — preflight
+- coexist # pre.assessment
+- decide-later # pre.overlap
+- continue # pre.probe_result
+
+# Act 1 — mode and team context
+- instance # mode
+- nickejanssen # ctx.org_path
+- partnersolutions # team.name (one lowercase token)
+- Partners integrate our API to reach their users # team.mission
+- 1-3 # team.size
+- coding-agent,chat-apps,read-only-stakeholders # team.surfaces
+- github # team.sources
+- customer-partner-facing,outside-company # team.consumers
+
+# Act 2 — knowledge model
+- md-git # kb.substrate
+- generic-partner-facing # kb.namespaces
+- use-preset # kb.catalog_override
+- link-only # kb.sources_strategy
+- three-tiers # kb.sensitivity
+- pr-only # kb.write_back
+
+- confirm # Gate 1
+
+# Act 3 — architecture and cost
+- lexical # arch.index_driver
+- no-server # arch.hosting
+- typescript # arch.language
+- github-actions # arch.ci
+- single-repo # arch.topology
+- balanced # arch.model_tiers
+- "yes" # arch.cache
+
+- confirm # Gate 2
+
+# Act 4 — agents, subagents, personas, skills
+# (no agents.roles entry — team.size 1-3 suppresses that question)
+- widgets api, payments api # agents.domains
+- partner-facing # agents.personas
+- "" # agents.skills (core skills are always included; no extras)
+- refuse-log-gap # agents.strictness
+- yes-5-starter-docs # agents.seed
+
+- confirm # Gate 3

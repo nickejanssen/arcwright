@@ -1,0 +1,53 @@
+# Ordered answer list for `team-ai init --answers` — dogfood Run A (Arcwright).
+# Built by walking `new Engine(loadBank())` and recording the token for each
+# step in order (see docs/dogfood-notes.md). One entry per question the
+# interview reaches, plus "confirm" at each of the three gates.
+#
+# Profile: extend an existing harness, engineering preset, team of 4-8,
+# coding-agent surface only, md-git substrate, lexical index, no server.
+
+# Act 0 — preflight
+- extend # pre.assessment
+- decide-later # pre.overlap
+- continue # pre.probe_result
+
+# Act 1 — mode and team context
+- instance # mode
+- nickejanssen # ctx.org_path
+- arcwright # team.name (one lowercase token)
+- Layer 2 narrative runtime middleware # team.mission
+- 4-8 # team.size
+- coding-agent # team.surfaces
+- github # team.sources
+- engineers # team.consumers
+
+# Act 2 — knowledge model
+- md-git # kb.substrate
+- engineering # kb.namespaces
+- use-preset # kb.catalog_override
+- link-only # kb.sources_strategy
+- three-tiers # kb.sensitivity
+- pr-only # kb.write_back
+
+- confirm # Gate 1
+
+# Act 3 — architecture and cost
+- lexical # arch.index_driver
+- no-server # arch.hosting
+- typescript # arch.language
+- github-actions # arch.ci
+- single-repo # arch.topology
+- balanced # arch.model_tiers
+- "yes" # arch.cache
+
+- confirm # Gate 2
+
+# Act 4 — agents, subagents, personas, skills
+- architect,build-engineer # agents.roles
+- engine, nightcap # agents.domains
+- internal-technical # agents.personas
+- "" # agents.skills (core skills are always included; no extras)
+- refuse-log-gap # agents.strictness
+- yes-5-starter-docs # agents.seed
+
+- confirm # Gate 3

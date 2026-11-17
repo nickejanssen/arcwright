@@ -1,0 +1,5 @@
+name: discovery-prep
+tier: small
+summary: Prepare technical discovery questions and a demo outline for a prospect or partner.
+presets:
+  - generic-partner-facing

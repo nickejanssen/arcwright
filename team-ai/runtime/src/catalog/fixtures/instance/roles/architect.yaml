@@ -1,0 +1,6 @@
+name: architect
+summary: Instance override of the architect role
+default_namespaces: ["platform", "patterns", "decisions"]
+default_skills: ["kb-answer", "integration-review"]
+model_tier: large
+persona_default: internal-technical

@@ -1,0 +1,12 @@
+{
+  "id": "x.a.b",
+  "namespace": "a",
+  "title": "t",
+  "owner": "o",
+  "status": "archived",
+  "review_by": "2026-12-01",
+  "sensitivity": "internal",
+  "source": "authored",
+  "tags": [],
+  "supersedes": []
+}

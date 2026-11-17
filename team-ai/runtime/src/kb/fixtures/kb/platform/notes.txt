@@ -1,0 +1,1 @@
+Not a markdown file. The loader must ignore this.

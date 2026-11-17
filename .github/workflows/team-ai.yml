@@ -12,27 +12,36 @@ jobs:
   team-ai:
     runs-on: ubuntu-latest
     env:
-      # CI checks the framework out to .team-ai-cli/, not beside the repository,
-      # so the resolver's sibling search cannot find it. TEAM_AI_CLI is the
-      # documented override and exercising it here keeps that path tested.
-      TEAM_AI_CLI: .team-ai-cli/dist/cli.js
+      # Explicitly select the runtime built from this checkout for PR validation.
+      TEAM_AI_CLI: team-ai/runtime/dist/cli.js
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: actions/checkout@v4
-        with:
-          repository: nickejanssen/team-ai
-          ref: v0.6.6
-          path: .team-ai-cli
       - uses: actions/setup-node@v4
         with:
           node-version: "22"
       - run: npm ci && npm run build
-        working-directory: .team-ai-cli
-      - run: node .team-ai-cli/dist/cli.js validate-kb --instance team-ai
-      - run: node .team-ai-cli/dist/cli.js validate-manifest --root team-ai
-      - run: node .team-ai-cli/dist/cli.js assemble-manifest --root team-ai --check
+        working-directory: team-ai/runtime
+      - name: Check whether runtime source changed
+        id: runtime-changes
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          if [ -z "$BASE_SHA" ] || ! git cat-file -e "$BASE_SHA^{commit}" 2>/dev/null; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          elif git diff --quiet "$BASE_SHA" "$GITHUB_SHA" -- team-ai/runtime/ .github/workflows/team-ai.yml; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Runtime lint, types and tests
+        if: steps.runtime-changes.outputs.changed == 'true'
+        run: npm run check
+        working-directory: team-ai/runtime
+      - run: node team-ai/runtime/dist/cli.js validate-kb --instance team-ai
+      - run: node team-ai/runtime/dist/cli.js validate-manifest --root team-ai
+      - run: node team-ai/runtime/dist/cli.js assemble-manifest --root team-ai --check
       - name: emitted subagents match regeneration
         run: |
           # --search-command must match what the committed agents were emitted with,
@@ -40,12 +49,12 @@ jobs:
           # Delete first: emit only writes, so an agent the framework stopped
           # emitting would otherwise survive in the repository unnoticed.
           rm -f .claude/agents/team-ai-*.md
-          node .team-ai-cli/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked --search-command "python scripts/team_ai_cli.py"
+          node team-ai/runtime/dist/cli.js emit --target claude-code --dir team-ai --out .. --file-prefix team-ai- --no-plugin-manifest --builtin-search --allow-tracked --search-command "python scripts/team_ai_cli.py"
           git status --porcelain -- .claude/agents
           test -z "$(git status --porcelain -- .claude/agents)"
       - name: no prior-namespace ids survive
         run: |
-          ! git grep -n -E '^[[:space:]]*id:[[:space:]]*"?(operating|patterns|playbooks|custom|decisions|platform|unmapped)\.' -- . ':!docs/archive' ':!adoption-plan.yaml' ':!docs/adoption-plan.md' ':!team-ai/remap-proposal.yaml' ':!team-ai/inventory.txt' ':!.team-ai-cli'
+          ! git grep -n -E '^[[:space:]]*id:[[:space:]]*"?(operating|patterns|playbooks|custom|decisions|platform|unmapped)\.' -- . ':!docs/archive' ':!adoption-plan.yaml' ':!docs/adoption-plan.md' ':!team-ai/remap-proposal.yaml' ':!team-ai/inventory.txt' ':!team-ai/runtime'
       - uses: actions/setup-python@v6
         with:
           python-version: "3.11"
@@ -62,4 +71,4 @@ jobs:
       - name: scope-evidence-check
         run: python scripts/checks/scope_evidence_check.py --base origin/${{ github.base_ref || 'main' }}
       - name: eval gate
-        run: node .team-ai-cli/dist/cli.js run-evals --root team-ai
+        run: node team-ai/runtime/dist/cli.js run-evals --root team-ai

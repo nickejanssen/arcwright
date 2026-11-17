@@ -1,0 +1,11 @@
+{
+  "team_ai_version": "0.1.0",
+  "created": "2026-08-30T12:00:00Z",
+  "answers": {},
+  "deferred": [
+    {
+      "question": "Which model tier for the router?",
+      "applied_default": "small"
+    }
+  ]
+}

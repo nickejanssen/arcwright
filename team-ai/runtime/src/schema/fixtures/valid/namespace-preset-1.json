@@ -1,0 +1,21 @@
+{
+  "name": "engineering",
+  "description": "Knowledge for a team that builds and operates software services.",
+  "second_level": ["operating", "platform", "patterns", "playbooks", "decisions"],
+  "domain_dir": "services/<name>",
+  "seed_docs": [
+    { "path": "operating/charter.md", "title": "Team charter", "purpose": "What this team owns." },
+    { "path": "operating/roles.md", "title": "Who does what", "purpose": "Role to ownership map." },
+    {
+      "path": "platform/overview.md",
+      "title": "Systems overview",
+      "purpose": "Systems this team runs."
+    },
+    { "path": "playbooks/onboarding.md", "title": "Onboarding", "purpose": "How to get started." },
+    {
+      "path": "decisions/adr-0001-why-team-ai.md",
+      "title": "Why team-ai",
+      "purpose": "Adoption rationale."
+    }
+  ]
+}

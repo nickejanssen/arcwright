@@ -1,0 +1,455 @@
+{
+  "planPath": "docs/plans/2026-08-30-team-ai-framework.md",
+  "note": "Native Task tools were unavailable in the authoring session; this file is the manual persistence fallback. Full Goal/Files/Acceptance/Verify/Steps for each task live in the plan .md under the matching heading. Execute with /superpowers-extended-cc:executing-plans docs/plans/2026-08-30-team-ai-framework.md",
+  "lastUpdated": "2026-09-01T13:19:29.735Z",
+  "tasks": [
+    {
+      "id": 0,
+      "subject": "Task 0: Repo skeleton, TypeScript, LF normalization",
+      "status": "completed",
+      "description": "**Goal:** A buildable empty TypeScript package with strict config and LF line endings, committed.\n\n**Files:** Create package.json, tsconfig.json, tsconfig.build.json, .gitattributes, .editorconfig, .nvmrc, src/index.ts, src/version.ts; extend .gitignore; Test src/version.test.ts.\n\n**Acceptance Criteria:** npm install on Node 22 succeeds; `tsc --noEmit` zero errors; git reports LF after re-add; `vitest run src/version.test.ts` passes.\n\n**Verify:** `node -v` v22.x; `npx tsc --noEmit && npx vitest run` all pass.\n\n**Steps:** See plan Task 0 (gitattributes eol=lf, package.json with deps, strict tsconfig, version.ts + failing test, .gitignore extend, commit).\n\n```json:metadata\n{\"files\": [\"package.json\", \"tsconfig.json\", \".gitattributes\", \".nvmrc\", \".editorconfig\", \"src/version.ts\", \"src/version.test.ts\"], \"verifyCommand\": \"npx tsc --noEmit && npx vitest run src/version.test.ts\", \"acceptanceCriteria\": [\"npm install succeeds on Node 22\", \"tsc --noEmit passes\", \"LF line endings, no CRLF warnings\", \"version.test.ts passes\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 1,
+      "subject": "Task 1: Lint, format, test tooling and git hooks",
+      "status": "completed",
+      "blockedBy": [
+        0
+      ],
+      "description": "**Goal:** ESLint flat config, Prettier, Vitest config, lefthook + commitlint wired and enforced locally.\n\n**Files:** Create eslint.config.js, .prettierrc.json, .prettierignore, vitest.config.ts, lefthook.yml, commitlint.config.js; Test src/tooling.test.ts.\n\n**Acceptance Criteria:** `npm run lint` / `format` / `test` pass; non-conventional commit message rejected by commit-msg hook; eslint bans no-explicit-any and no-floating-promises.\n\n**Verify:** `npm run check` all pass; `git commit -m \"bad\"` on a dummy change rejected.\n\n**Steps:** See plan Task 1.\n\n```json:metadata\n{\"files\": [\"eslint.config.js\", \".prettierrc.json\", \"vitest.config.ts\", \"lefthook.yml\", \"commitlint.config.js\", \"src/tooling.test.ts\"], \"verifyCommand\": \"npm run check\", \"acceptanceCriteria\": [\"lint/format/test pass\", \"commit-msg hook rejects non-conventional messages\", \"eslint bans explicit any and floating promises\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 2,
+      "subject": "Task 2: Community health files",
+      "status": "completed",
+      "blockedBy": [
+        0
+      ],
+      "description": "**Goal:** Apache-2.0 license and standard OSS governance files present and accurate.\n\n**Files:** Create LICENSE, NOTICE, SECURITY.md, CHANGELOG.md, CONTRIBUTING.md, CODEOWNERS, .github/PULL_REQUEST_TEMPLATE.md, .github/ISSUE_TEMPLATE/{bug_report,feature_request,coverage_gap}.md; Test src/governance.test.ts.\n\n**Acceptance Criteria:** LICENSE is verbatim Apache-2.0; CHANGELOG Keep-a-Changelog with [0.1.0]; CONTRIBUTING embeds quality-bar reference + 'no team content in framework code' rule; CODEOWNERS `* @nickejanssen`.\n\n**Verify:** `npx vitest run src/governance.test.ts` pass.\n\n**Steps:** See plan Task 2.\n\n```json:metadata\n{\"files\": [\"LICENSE\", \"NOTICE\", \"SECURITY.md\", \"CHANGELOG.md\", \"CONTRIBUTING.md\", \"CODEOWNERS\", \".github/PULL_REQUEST_TEMPLATE.md\", \"src/governance.test.ts\"], \"verifyCommand\": \"npx vitest run src/governance.test.ts\", \"acceptanceCriteria\": [\"LICENSE is Apache-2.0 verbatim\", \"CHANGELOG has [0.1.0]\", \"CONTRIBUTING forbids team content in framework code\", \"CODEOWNERS assigns @nickejanssen\"], \"modelTier\": \"mechanical\"}\n```"
+    },
+    {
+      "id": 3,
+      "subject": "Task 3: Framework CI workflow",
+      "status": "completed",
+      "blockedBy": [
+        1
+      ],
+      "description": "**Goal:** GitHub Actions runs lint, typecheck, test, validate, and secret scan on PRs and pushes to main.\n\n**Files:** Create .github/workflows/ci.yml, .github/workflows/.gitleaks.toml; Test src/ci-config.test.ts.\n\n**Acceptance Criteria:** jobs lint-typecheck-test, validate, secret-scan; Node 22 + cache npm; validate job runs build then placeholder `npm run test` (becomes check-agnostic + doctor --self in Task 17); secret-scan uses gitleaks-action; `permissions: contents: read`.\n\n**Verify:** `npx vitest run src/ci-config.test.ts` pass; YAML parses.\n\n**Steps:** See plan Task 3.\n\n```json:metadata\n{\"files\": [\".github/workflows/ci.yml\", \"src/ci-config.test.ts\"], \"verifyCommand\": \"npx vitest run src/ci-config.test.ts\", \"acceptanceCriteria\": [\"ci.yml has lint-typecheck-test, validate, secret-scan jobs\", \"Node 22 with npm cache\", \"gitleaks secret scan\", \"permissions contents:read\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 4,
+      "subject": "Task 4: JSON Schemas and Ajv validator",
+      "status": "completed",
+      "blockedBy": [
+        0
+      ],
+      "description": "**Goal:** Five JSON Schemas plus a typed Ajv wrapper returning readable errors.\n\n**Files:** Create schemas/{frontmatter,agent,manifest,spoke,team-profile}.schema.json, src/schema/{load,validate,types}.ts, src/schema/fixtures/{valid,invalid}/*; Test src/schema/validate.test.ts.\n\n**Acceptance Criteria:** Draft 2020-12, $id set, additionalProperties:false at top; frontmatter matches architecture 8.1 exactly incl relations; agent matches architecture 7 (model_tier none|small|large, max_hops>=0); `validate<T>` returns ok/errors with instancePath messages; all valid fixtures pass, invalid fail with expected first error.\n\n**Verify:** `npx vitest run src/schema/validate.test.ts` pass.\n\n**Steps:** See plan Task 4.\n\n```json:metadata\n{\"files\": [\"schemas/frontmatter.schema.json\", \"schemas/agent.schema.json\", \"schemas/manifest.schema.json\", \"schemas/spoke.schema.json\", \"schemas/team-profile.schema.json\", \"src/schema/load.ts\", \"src/schema/validate.ts\", \"src/schema/validate.test.ts\"], \"verifyCommand\": \"npx vitest run src/schema/\", \"acceptanceCriteria\": [\"5 schemas Draft 2020-12 with $id and additionalProperties:false\", \"frontmatter matches architecture 8.1 incl relations\", \"agent enforces model_tier enum and max_hops>=0\", \"validate() returns path-anchored errors\", \"all fixtures behave as expected\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 5,
+      "subject": "Task 5: KB front matter parse/serialize and loader",
+      "status": "completed",
+      "blockedBy": [
+        4
+      ],
+      "description": "**Goal:** Load every markdown file under a kb/ root into typed KbDoc objects with parsed, schema-valid front matter.\n\n**Files:** Create src/kb/{frontmatter,loader,types}.ts, src/kb/fixtures/kb/**, src/kb/fixtures/kb-broken/**; Test src/kb/frontmatter.test.ts, src/kb/loader.test.ts.\n\n**Acceptance Criteria:** parseFrontmatter round-trips via serializeFrontmatter with schema key order; loadKb returns KbDoc[] sorted by path with {id,path,frontmatter,body,headings}; loadKb throws KbValidationError listing EVERY invalid file; non-.md ignored; _backlog/ loaded but flagged isBacklog.\n\n**Verify:** `npx vitest run src/kb/frontmatter.test.ts src/kb/loader.test.ts` pass.\n\n**Steps:** See plan Task 5.\n\n```json:metadata\n{\"files\": [\"src/kb/frontmatter.ts\", \"src/kb/loader.ts\", \"src/kb/types.ts\", \"src/kb/loader.test.ts\"], \"verifyCommand\": \"npx vitest run src/kb/\", \"acceptanceCriteria\": [\"parseFrontmatter/serializeFrontmatter round-trip with stable key order\", \"loadKb returns sorted KbDoc[]\", \"loadKb reports all invalid docs at once\", \"non-md ignored, _backlog flagged\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 6,
+      "subject": "Task 6: KB chunker",
+      "status": "completed",
+      "blockedBy": [
+        5
+      ],
+      "description": "**Goal:** Split each doc into retrieval chunks on H2/H3 with a deterministic token estimate, carrying heading path and full front matter.\n\n**Files:** Create src/kb/chunk.ts; Test src/kb/chunk.test.ts.\n\n**Acceptance Criteria:** chunkDoc splits at every ## and ###; pre-first-H2 content is its own chunk (heading_path=title); estimateTokens=ceil(words*1.3) documented approximate; sections over hard cap 1200 split at paragraph boundaries, target 800; Chunk={doc_id,chunk_id,path,heading_path,text,metadata(full front matter)}; chunk_id stable `${doc_id}::${slug(heading_path)}::${ordinal}`.\n\n**Verify:** `npx vitest run src/kb/chunk.test.ts` pass.\n\n**Steps:** See plan Task 6.\n\n```json:metadata\n{\"files\": [\"src/kb/chunk.ts\", \"src/kb/chunk.test.ts\"], \"verifyCommand\": \"npx vitest run src/kb/chunk.test.ts\", \"acceptanceCriteria\": [\"splits on H2/H3 with preamble chunk\", \"estimateTokens = ceil(words*1.3)\", \"oversize sections split at paragraphs\", \"chunk carries full front matter and stable chunk_id\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 7,
+      "subject": "Task 7: KB citations and relations resolution",
+      "status": "completed",
+      "blockedBy": [
+        5
+      ],
+      "description": "**Goal:** Resolve path#heading citation targets and validate relations targets against loaded doc ids.\n\n**Files:** Create src/kb/citations.ts, src/kb/relations.ts; Test src/kb/citations.test.ts, src/kb/relations.test.ts.\n\n**Acceptance Criteria:** resolveCitation returns matching KbDoc+heading or {ok:false,reason}; heading match slug-insensitive; checkRelations returns RelationError[] for relation values not a known doc id, SKIPPING used_by_partner (partner slugs, architecture 8.1); owned_by_role validated against known role-name set, not doc ids.\n\n**Verify:** `npx vitest run src/kb/citations.test.ts src/kb/relations.test.ts` pass.\n\n**Steps:** See plan Task 7.\n\n```json:metadata\n{\"files\": [\"src/kb/citations.ts\", \"src/kb/relations.ts\", \"src/kb/citations.test.ts\", \"src/kb/relations.test.ts\"], \"verifyCommand\": \"npx vitest run src/kb/citations.test.ts src/kb/relations.test.ts\", \"acceptanceCriteria\": [\"resolveCitation handles resolvable/missing-file/missing-heading\", \"heading match is slug-insensitive\", \"checkRelations flags bad depends_on ids, skips used_by_partner\", \"owned_by_role checked against role names\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 8,
+      "subject": "Task 8: Retrieval interface, types, and index.lock",
+      "status": "completed",
+      "blockedBy": [
+        6
+      ],
+      "description": "**Goal:** The exact RetrievalAdapter interface from architecture 9 plus a typed index.lock reader/writer.\n\n**Files:** Create src/retrieval/types.ts, src/retrieval/index-lock.ts; Test src/retrieval/index-lock.test.ts.\n\n**Acceptance Criteria:** types.ts declares RetrievalAdapter, Hit, Document, IndexStats, SearchOpts matching architecture 9 verbatim (k default 8 / cap 20 documented, mode union lexical|vector|graph|hybrid); IndexLock={driver,chunk{split_on,target_tokens,hard_cap},embedding{provider,model,version}|null}; readIndexLock returns parsed or documented default (lexical, H2/H3/800/1200, embedding null); lockChanged true if driver/any chunk field/embedding differs.\n\n**Verify:** `npx vitest run src/retrieval/index-lock.test.ts` pass.\n\n**Steps:** See plan Task 8.\n\n```json:metadata\n{\"files\": [\"src/retrieval/types.ts\", \"src/retrieval/index-lock.ts\", \"src/retrieval/index-lock.test.ts\"], \"verifyCommand\": \"npx vitest run src/retrieval/index-lock.test.ts\", \"acceptanceCriteria\": [\"RetrievalAdapter/Hit/Document/IndexStats/SearchOpts match architecture 9\", \"IndexLock shape correct\", \"readIndexLock default when file absent\", \"lockChanged detects driver/chunk/embedding changes\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 9,
+      "subject": "Task 9: Lexical driver (SQLite FTS5)",
+      "status": "completed",
+      "blockedBy": [
+        8,
+        7
+      ],
+      "description": "**Goal:** A working lexical RetrievalAdapter over the chunked KB using better-sqlite3 FTS5, BM25 scores normalized to 0..1.\n\n**Files:** Create src/retrieval/lexical.ts; Test src/retrieval/lexical.test.ts.\n\n**Acceptance Criteria:** new LexicalAdapter({kbRoot,dbPath}); reindex() builds FTS5 chunks table with UNINDEXED metadata cols; search(q,{k}) returns Hit[] by relevance, score=1/(1+bm25) then min-max normalized, clamped [0,1]; k default 8 hard cap 20; namespace + filters.status/sensitivity post-filtered on chunk metadata; get(idOrPath,section?) returns Document or heading slice; reindex idempotent (identical counts + results); DB at dbPath default .team-ai/index.sqlite gitignored.\n\n**Verify:** `npx vitest run src/retrieval/lexical.test.ts` pass incl. a query ranking a known doc first.\n\n**Steps:** See plan Task 9.\n\n```json:metadata\n{\"files\": [\"src/retrieval/lexical.ts\", \"src/retrieval/lexical.test.ts\"], \"verifyCommand\": \"npx vitest run src/retrieval/lexical.test.ts\", \"acceptanceCriteria\": [\"reindex builds FTS5 table, chunks>0\", \"search ranks expected doc first, score in (0.5,1]\", \"k capped at 20\", \"reindex idempotent\", \"namespace/status/sensitivity post-filters work\", \"get returns Document and section slice\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 10,
+      "subject": "Task 10: Honest stubs and driver factory",
+      "status": "completed",
+      "blockedBy": [
+        9
+      ],
+      "description": "**Goal:** The other five drivers exist, implement the interface, and fail loudly; a factory returns the driver named in index.lock.\n\n**Files:** Create src/retrieval/{stubs,not-implemented,factory}.ts; Test src/retrieval/stubs.test.ts, src/retrieval/factory.test.ts.\n\n**Acceptance Criteria:** NotImplementedError names the driver + points at 'phase-8 index checkpoint (docs/architecture.md 19)'; vector-embedded, vector-pgvector, vector-hosted, graph, hybrid each implement RetrievalAdapter, every method rejects; createAdapter(dir) reads index.lock -> lexical->LexicalAdapter, five->matching stub, unknown->throws with valid-driver list; compiles with no any / no ts-expect-error.\n\n**Verify:** `npx vitest run src/retrieval/stubs.test.ts src/retrieval/factory.test.ts` pass.\n\n**Steps:** See plan Task 10.\n\n```json:metadata\n{\"files\": [\"src/retrieval/stubs.ts\", \"src/retrieval/not-implemented.ts\", \"src/retrieval/factory.ts\", \"src/retrieval/stubs.test.ts\", \"src/retrieval/factory.test.ts\"], \"verifyCommand\": \"npx vitest run src/retrieval/stubs.test.ts src/retrieval/factory.test.ts\", \"acceptanceCriteria\": [\"NotImplementedError names driver + checkpoint\", \"5 stubs implement RetrievalAdapter, all methods reject\", \"createAdapter maps lexical and stubs, throws on unknown\", \"no any, compiles\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 11,
+      "subject": "Task 11: CLI shell + validate-kb + validate-citations",
+      "status": "completed",
+      "blockedBy": [
+        7,
+        4
+      ],
+      "description": "**Goal:** The team-ai binary exists and runs two validation commands used by CI.\n\n**Files:** Create bin/team-ai.js, src/cli.ts, src/commands/validate-kb.ts, src/commands/validate-citations.ts; Test src/commands/*.test.ts, src/cli.test.ts.\n\n**Acceptance Criteria:** bin is env-node shim importing dist/cli.js; `--help` lists all commands, `--version` prints packageVersion(); validate-kb [--root][--schema-only] exits non-zero on any front matter failure with per-file report, without --schema-only also runs checkRelations; validate-citations [--root] scans kb/**/*.md and agents/**/*.md for links and reports unresolved, non-zero if any; both print OK+counts on success.\n\n**Verify:** `npm run build && node dist/cli.js validate-kb --root src/kb/fixtures/kb --schema-only` -> exit 0, `OK 3 documents`.\n\n**Steps:** See plan Task 11.\n\n```json:metadata\n{\"files\": [\"bin/team-ai.js\", \"src/cli.ts\", \"src/commands/validate-kb.ts\", \"src/commands/validate-citations.ts\", \"src/cli.test.ts\"], \"verifyCommand\": \"npm run build && node dist/cli.js validate-kb --root src/kb/fixtures/kb --schema-only && npx vitest run src/commands/ src/cli.test.ts\", \"acceptanceCriteria\": [\"team-ai --help / --version work\", \"validate-kb --schema-only exits non-zero on bad front matter with per-file report\", \"validate-citations reports unresolved links, non-zero if any\", \"success prints OK + counts\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 12,
+      "subject": "Task 12: reindex + search commands",
+      "status": "completed",
+      "blockedBy": [
+        11,
+        10
+      ],
+      "description": "**Goal:** Rebuild the index from disk and query it from the CLI with cited output.\n\n**Files:** Create src/commands/reindex.ts, src/commands/search.ts; Test src/commands/reindex.test.ts, src/commands/search.test.ts.\n\n**Acceptance Criteria:** reindex [--root] calls createAdapter(root).reindex(), writes/refreshes index.lock if absent, prints IndexStats; search \"<q>\" [--k 8][--namespace][--json] prints ranked `score  path#heading` lines or JSON Hit[]; search exits 0 with 'no results above threshold' line when nothing >= 0.2 (deterministic refuse signal); no model output.\n\n**Verify:** `node dist/cli.js reindex --root src/kb/fixtures/kb && node dist/cli.js search \"429\" --root src/kb/fixtures/kb` -> ranked lines.\n\n**Steps:** See plan Task 12.\n\n```json:metadata\n{\"files\": [\"src/commands/reindex.ts\", \"src/commands/search.ts\", \"src/commands/search.test.ts\"], \"verifyCommand\": \"npx vitest run src/commands/reindex.test.ts src/commands/search.test.ts\", \"acceptanceCriteria\": [\"reindex prints IndexStats, writes index.lock if absent\", \"search prints ranked lines or --json Hit[]\", \"empty/no-match search prints 'no results above threshold', exit 0\", \"no model calls\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 13,
+      "subject": "Task 13: assemble-manifest command",
+      "status": "completed",
+      "blockedBy": [
+        11
+      ],
+      "description": "**Goal:** Merge the instance manifest fragment and any spoke spoke.yaml files into a validated manifest.yaml.\n\n**Files:** Create src/commands/assemble-manifest.ts, src/manifest/assemble.ts; Test src/manifest/assemble.test.ts.\n\n**Acceptance Criteria:** reads agents/manifest.fragment.yaml + every spokes/*/spoke.yaml domains block; output validates against manifest schema; duplicate domain ids hard error; deterministic ordering (domains sorted by id); --check compares fresh assembly to committed manifest.yaml, non-zero if differ.\n\n**Verify:** `npx vitest run src/manifest/assemble.test.ts` pass.\n\n**Steps:** See plan Task 13.\n\n```json:metadata\n{\"files\": [\"src/commands/assemble-manifest.ts\", \"src/manifest/assemble.ts\", \"src/manifest/assemble.test.ts\"], \"verifyCommand\": \"npx vitest run src/manifest/assemble.test.ts\", \"acceptanceCriteria\": [\"merges instance fragment + spoke domains\", \"output validates against manifest schema\", \"duplicate ids error\", \"domains sorted by id\", \"--check exits non-zero on drift\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 14,
+      "subject": "Task 14: freshness-audit command",
+      "status": "completed",
+      "blockedBy": [
+        7
+      ],
+      "description": "**Goal:** Report stale, orphaned, and unowned docs as JSON; optionally open GitHub issues behind a flag.\n\n**Files:** Create src/commands/freshness-audit.ts, src/audit/freshness.ts; Test src/audit/freshness.test.ts.\n\n**Acceptance Criteria:** stale=review_by<today; orphaned=unreferenced + not a namespace index doc; unowned=owner missing/unknown; default JSON to stdout {stale,orphaned,unowned,summary} exit 0; --fail-on-stale exits non-zero if stale non-empty; --open-issues without GITHUB_TOKEN+--repo prints 'would open N issues' and does nothing (no network default); today injectable for tests.\n\n**Verify:** `npx vitest run src/audit/freshness.test.ts` pass with a past-due fixture doc.\n\n**Steps:** See plan Task 14.\n\n```json:metadata\n{\"files\": [\"src/commands/freshness-audit.ts\", \"src/audit/freshness.ts\", \"src/audit/freshness.test.ts\"], \"verifyCommand\": \"npx vitest run src/audit/freshness.test.ts\", \"acceptanceCriteria\": [\"stale/orphaned/unowned computed correctly\", \"default JSON output exit 0\", \"--fail-on-stale exits non-zero\", \"--open-issues is dry by default, no network\", \"today injectable\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 15,
+      "subject": "Task 15: Eval harness - schema, runner, example",
+      "status": "completed",
+      "blockedBy": [
+        12,
+        13
+      ],
+      "description": "**Goal:** A golden-question schema, a deterministic run-evals command computing architecture 16 metrics, and one clearly-marked example file.\n\n**Files:** Create schemas/golden.schema.json, src/commands/run-evals.ts, src/evals/run.ts, src/evals/metrics.ts, evals/golden/example.golden.yaml; Test src/evals/run.test.ts, src/evals/metrics.test.ts.\n\n**Acceptance Criteria:** golden.schema matches architecture 16 (id, question, expect_namespace, expect_paths[], expect_route, expect_tier_max none|small|large, must_cite); run-evals loads *.golden.yaml, validates, runs each through lexical search + deterministic routing (keyword/namespace vs manifest.yaml), reports hit rate @8, citation validity, routing accuracy, refusal correctness (expect_route __refuse__ => no hit >=0.2), tier ceiling; exit non-zero if any metric below its gate (evals/gates.yaml, defaults architecture 16); example.golden.yaml has EXAMPLE header comment, excluded from framework run-evals; NO real golden questions ship.\n\n**Verify:** `npx vitest run src/evals/` pass against fixtures.\n\n**Steps:** See plan Task 15.\n\n```json:metadata\n{\"files\": [\"schemas/golden.schema.json\", \"src/commands/run-evals.ts\", \"src/evals/run.ts\", \"src/evals/metrics.ts\", \"evals/golden/example.golden.yaml\", \"src/evals/run.test.ts\", \"src/evals/metrics.test.ts\"], \"verifyCommand\": \"npx vitest run src/evals/\", \"acceptanceCriteria\": [\"golden schema matches architecture 16\", \"run-evals computes hit-rate/citation/routing/refusal/tier metrics deterministically\", \"exits non-zero below gate\", \"example.golden.yaml marked EXAMPLE and excluded\", \"no real golden questions ship\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 16,
+      "subject": "Task 16: validate-spoke command",
+      "status": "completed",
+      "blockedBy": [
+        11
+      ],
+      "description": "**Goal:** Check a spoke repo against the architecture 13 contract.\n\n**Files:** Create src/commands/validate-spoke.ts, src/spoke/validate.ts; Test src/spoke/validate.test.ts.\n\n**Acceptance Criteria:** requires spoke.yaml (valid vs spoke schema), a kb/ passing validate-kb, and if present agents/ valid vs agent schema; fails if spoke contains server/, retrieval adapter code, or index.lock (architecture 13); reports 'core edits' a fixture spoke would need to attach (should be 0) for the adversarial review.\n\n**Verify:** `npx vitest run src/spoke/validate.test.ts` pass on good fixture, fail on one with server/.\n\n**Steps:** See plan Task 16.\n\n```json:metadata\n{\"files\": [\"src/commands/validate-spoke.ts\", \"src/spoke/validate.ts\", \"src/spoke/validate.test.ts\"], \"verifyCommand\": \"npx vitest run src/spoke/validate.test.ts\", \"acceptanceCriteria\": [\"requires valid spoke.yaml + kb/ passing validate-kb\", \"fails on server/ or adapter code or index.lock\", \"reports core-edit count (0 for good fixture)\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 17,
+      "subject": "Task 17: doctor + check-agnostic",
+      "status": "completed",
+      "blockedBy": [
+        13,
+        12,
+        3
+      ],
+      "description": "**Goal:** doctor reports what's still missing in an instance; check-agnostic guards the framework against team-specific tokens.\n\n**Files:** Create src/commands/doctor.ts, src/commands/check-agnostic.ts, src/doctor/checks.ts, agnostic-denylist.txt; Test src/doctor/checks.test.ts, src/commands/check-agnostic.test.ts. Modify .github/workflows/ci.yml (replace validate-job placeholders).\n\n**Acceptance Criteria:** doctor [--root] runs interview-spec 12 checklist printing check/cross lines + 'N items remaining. See SETUP.md.', exit 0 unless --strict; doctor --self runs reduced framework self-check for CI; check-agnostic greps src/**, schemas/**, catalog/**, src/interview/questions.yaml for denylist entries (case-insensitive, word-boundary), exits non-zero with file:line per hit; agnostic-denylist.txt seeded with arcwright, nightcap, upside, acme, globex, monster rpg, vesper + how-to-extend comment; generic-partner-facing and nickejanssen/team-ai allowlisted; check-agnostic passes on current tree.\n\n**Verify:** `npm run build && node dist/cli.js check-agnostic` -> exit 0; adding `// acme` to a src file -> exit 1 pointing at it.\n\n**Steps:** See plan Task 17 (incl. Step 5: swap ci.yml validate-job `npm run test` lines for `node dist/cli.js check-agnostic` and `node dist/cli.js doctor --self`).\n\n```json:metadata\n{\"files\": [\"src/commands/doctor.ts\", \"src/commands/check-agnostic.ts\", \"src/doctor/checks.ts\", \"agnostic-denylist.txt\", \".github/workflows/ci.yml\", \"src/commands/check-agnostic.test.ts\", \"src/doctor/checks.test.ts\"], \"verifyCommand\": \"npm run build && node dist/cli.js check-agnostic && npx vitest run src/doctor/ src/commands/check-agnostic.test.ts\", \"acceptanceCriteria\": [\"doctor prints interview-spec 12 checklist + remaining count, exit 0 unless --strict\", \"doctor --self self-check for CI\", \"check-agnostic scans src/schemas/catalog/questions.yaml, non-zero with file:line on hit\", \"denylist seeded from companion-doc proper nouns; allowlist for generic-partner-facing + repo slug\", \"ci.yml validate job calls check-agnostic and doctor --self\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 18,
+      "subject": "Task 18: Catalog model and 3-level resolution",
+      "status": "completed",
+      "blockedBy": [
+        4
+      ],
+      "description": "**Goal:** Load catalog entries with the architecture 15 resolution order: toolkit defaults -> org catalog repo (if configured) -> instance catalog/.\n\n**Files:** Create src/catalog/types.ts, src/catalog/resolve.ts, catalog/README.md; Test src/catalog/resolve.test.ts.\n\n**Acceptance Criteria:** resolveCatalog({toolkitDir,orgDir?,instanceDir?}) returns {namespaces,roles,skills,personas} where a later layer overrides earlier by filename key; missing org/instance dirs skipped; instance-only custom entry returned with origin:'instance'; overridden toolkit entry replaced not merged; never throws on unknown custom entry.\n\n**Verify:** `npx vitest run src/catalog/resolve.test.ts` pass with a 3-layer fixture.\n\n**Steps:** See plan Task 18.\n\n```json:metadata\n{\"files\": [\"src/catalog/types.ts\", \"src/catalog/resolve.ts\", \"src/catalog/resolve.test.ts\"], \"verifyCommand\": \"npx vitest run src/catalog/resolve.test.ts\", \"acceptanceCriteria\": [\"3-layer override by filename key\", \"missing org/instance dirs skipped\", \"origin tracked\", \"replace not merge\", \"no throw on unknown custom entry\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 19,
+      "subject": "Task 19: Ship the preset catalog files",
+      "status": "completed",
+      "blockedBy": [
+        18
+      ],
+      "description": "**Goal:** The four namespace presets, five roles, core + preset skills, and three personas - all team-agnostic - plus custom-entry TODO stubs.\n\n**Files:** Create catalog/namespaces/{engineering,support,generic,generic-partner-facing}.yaml, catalog/roles/{architect,sales-engineer,build-engineer,support-engineer,pm}.yaml, catalog/skills/{kb-answer,kb-contribute,audit-summary,sme-route + preset extras}.yaml, catalog/personas/{internal-technical,partner-facing,executive-brief}.md, src/catalog/stub.ts, schemas/namespace-preset.schema.json, schemas/role.schema.json; Test src/catalog/stub.test.ts, src/catalog/presets.test.ts.\n\n**Acceptance Criteria:** every namespace preset uses architecture 8.2 shape (operating/platform/patterns/playbooks/decisions + preset domain dir: generic-partner-facing->partners/<name>/, engineering->services/<name>/, support->queues/<name>/, generic->none); each preset lists exactly 5 seed docs with titles+purposes; role files are archetypes (name, summary, default_namespaces, default_skills, model_tier, persona_default) no team names; generateStub(name,kind) returns YAML with every field + `# TODO:` per value; check-agnostic passes over catalog/; presets.test validates all namespace files vs namespace-preset schema and roles vs role schema.\n\n**Verify:** `npx vitest run src/catalog/` pass; `node dist/cli.js check-agnostic` exit 0.\n\n**Steps:** See plan Task 19.\n\n```json:metadata\n{\"files\": [\"catalog/namespaces/engineering.yaml\", \"catalog/namespaces/support.yaml\", \"catalog/namespaces/generic.yaml\", \"catalog/namespaces/generic-partner-facing.yaml\", \"catalog/roles/architect.yaml\", \"catalog/roles/sales-engineer.yaml\", \"catalog/roles/build-engineer.yaml\", \"catalog/roles/support-engineer.yaml\", \"catalog/roles/pm.yaml\", \"catalog/personas/internal-technical.md\", \"catalog/personas/partner-facing.md\", \"catalog/personas/executive-brief.md\", \"src/catalog/stub.ts\", \"schemas/namespace-preset.schema.json\", \"schemas/role.schema.json\", \"src/catalog/presets.test.ts\", \"src/catalog/stub.test.ts\"], \"verifyCommand\": \"npx vitest run src/catalog/ && node dist/cli.js check-agnostic\", \"acceptanceCriteria\": [\"4 namespace presets use architecture 8.2 shape + preset domain dir\", \"each preset lists exactly 5 seed docs\", \"roles are agnostic archetypes\", \"generateStub emits all-TODO YAML\", \"check-agnostic passes over catalog/\", \"presets validate against new schemas\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 20,
+      "subject": "Task 20: Question-bank schema + questions.yaml Acts 0-2 + Gate 1",
+      "status": "completed",
+      "blockedBy": [
+        4
+      ],
+      "description": "**Goal:** The machine-checkable question-bank schema and the first half of the bank, faithful to interview-spec 3-7.\n\n**Files:** Create schemas/questions.schema.json, src/interview/questions.yaml (Acts 0,1,2 + Gate 1 metadata), src/interview/bank.ts; Test src/interview/bank.test.ts.\n\n**Acceptance Criteria:** questions.schema encodes interview-spec 3 (id, act 0-5, type single_select|multi_select|text|confirm|rank, prompt, why, options[value,label,tradeoff,implies], default, recommend, recommend_why, allow_defer, ask_if); every question has non-empty why; bank.test asserts each why references a docs/quality-bar.md anchor (#q1..#q17) by regex; Acts 0-2 ids exactly: pre.assessment, pre.overlap, pre.probe_result, mode, team.name, team.mission, team.size, team.surfaces, team.sources, team.consumers, ctx.org_path (FLAGGED new), kb.substrate, kb.namespaces, kb.catalog_override, kb.sources_strategy, kb.sensitivity, kb.write_back, kb.graph_questions; ask_if mini-syntax (==,!=,in,&&,||,has(x)) validated as string; loadBank throws with all schema errors if invalid.\n\n**Verify:** `npx vitest run src/interview/bank.test.ts` pass.\n\n**Steps:** See plan Task 20.\n\n```json:metadata\n{\"files\": [\"schemas/questions.schema.json\", \"src/interview/questions.yaml\", \"src/interview/bank.ts\", \"src/interview/bank.test.ts\"], \"verifyCommand\": \"npx vitest run src/interview/bank.test.ts\", \"acceptanceCriteria\": [\"questions.schema encodes interview-spec 3 fields\", \"every why cites an existing quality-bar anchor\", \"Acts 0-2 ids match interview-spec exactly plus flagged ctx.org_path\", \"ask_if mini-syntax documented\", \"loadBank throws on invalid bank\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 21,
+      "subject": "Task 21: questions.yaml Acts 3-5 + Gates 2-3",
+      "status": "completed",
+      "blockedBy": [
+        20
+      ],
+      "description": "**Goal:** The rest of the bank - architecture/cost, agents/skills, dry-run - matching interview-spec 8-12.\n\n**Files:** Modify src/interview/questions.yaml; Test src/interview/bank.test.ts (extend).\n\n**Acceptance Criteria:** Act 3 ids: arch.index_driver, arch.hosting (default no-server + both gate-condition notes in why/tradeoff), arch.language, arch.ci, arch.topology, arch.model_tiers, arch.cache; Act 4 ids: agents.roles (ask_if: team.size != \"1-3\"), agents.domains, agents.personas, agents.skills, agents.strictness (default refuse-log-gap; non-refuse options imply warn:true), agents.seed; total bank 24-28 askable questions; every implies key references a real later question id or 'warn'.\n\n**Verify:** `npx vitest run src/interview/bank.test.ts` pass.\n\n**Steps:** See plan Task 21.\n\n```json:metadata\n{\"files\": [\"src/interview/questions.yaml\", \"src/interview/bank.test.ts\"], \"verifyCommand\": \"npx vitest run src/interview/bank.test.ts\", \"acceptanceCriteria\": [\"Act 3/4 ids match interview-spec 8/10\", \"arch.hosting defaults no-server with gate notes\", \"agents.roles gated on team.size != 1-3\", \"agents.strictness default refuse-log-gap\", \"bank has 24-28 askable questions\", \"every implies key is a real question id or warn\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 22,
+      "subject": "Task 22: Interview engine (pure state machine)",
+      "status": "completed",
+      "blockedBy": [
+        21
+      ],
+      "description": "**Goal:** A deterministic engine that yields the next question, applies implies, evaluates ask_if, and handles the controls.\n\n**Files:** Create src/interview/ask-if.ts, src/interview/engine.ts; Test src/interview/ask-if.test.ts, src/interview/engine.test.ts.\n\n**Acceptance Criteria:** evalAskIf(expr,answers) supports always, ==, !=, in, has(x), &&, ||, parens; unknown identifiers -> undefined never throw; NO eval; Engine API next()/answer(id,value)/back()/skip()/why(id)/save()/load(state); answer applies chosen option implies to derived map, later explicit answer overrides + marks overridden; skip on allow_defer:false rejected; defer + recommend accepted as answer values, recommend records {value,via:'recommend',why}; back past first is no-op, back unwinds one answered question; engine never emits a question whose ask_if is false, changing earlier answer recomputes downstream; gates emitted as pseudo-steps kind:'gate', next past gate requires confirmGate(n); engine is PURE, writes nothing.\n\n**Verify:** `npx vitest run src/interview/ask-if.test.ts src/interview/engine.test.ts` pass; scripted default run reaches Gate 3.\n\n**Steps:** See plan Task 22.\n\n```json:metadata\n{\"files\": [\"src/interview/ask-if.ts\", \"src/interview/engine.ts\", \"src/interview/ask-if.test.ts\", \"src/interview/engine.test.ts\"], \"verifyCommand\": \"npx vitest run src/interview/ask-if.test.ts src/interview/engine.test.ts\", \"acceptanceCriteria\": [\"evalAskIf supports full mini-syntax, never throws, no eval\", \"answer applies + allows override of implies\", \"skip rejected when allow_defer false\", \"defer/recommend are first-class answer values\", \"back unwinds; ask_if recomputed on change\", \"gates require confirmGate\", \"engine is pure - no disk writes\"], \"modelTier\": \"complex\"}\n```"
+    },
+    {
+      "id": 23,
+      "subject": "Task 23: Preflight scan + connector probe",
+      "status": "completed",
+      "blockedBy": [
+        20
+      ],
+      "description": "**Goal:** Detect existing AI infrastructure and produce the interview-spec 4 assessment; report hand-authored assets to preserve; detect connectors and prepare/record the probe (never call a model).\n\n**Files:** Create src/interview/preflight.ts, src/interview/preflight-report.ts, src/interview/preflight-signals.ts; Test src/interview/preflight.test.ts.\n\n**Acceptance Criteria:** scanPreflight(dir) reports MCP servers (.mcp.json, .cursor/mcp.json, .vscode/mcp.json), agent config (CLAUDE.md, AGENTS.md, .claude/, .github/copilot-instructions.md), vector-store env hints (PINECONE_*, WEAVIATE_*, QDRANT_*, PGVECTOR, LANCEDB*), org-search hints (configurable list), skills/plugins dirs; ALSO returns existingAssets {agentConfigFile?, routerAgent?, agents[], kbDocCount, skills[]} - routerAgent = any agents/*.yaml or .claude/agents/* with kind:router or name matching /sme|router/i (design 18); produces extend|coexist|stand-down with interview-spec 4 rationale text; when extend + existingAssets.agentConfigFile set, report states 'adopt <file>, do not create a parallel config' (architecture 4); prepareConnectorProbe(dir) - if GitHub/Drive connector detected, returns the 5 sample questions + exact manual steps + a result slot, performs NO retrieval and NO model call (top-of-function comment cites design 3); renderPreflight(report) returns the docs/preflight.md body.\n\n**Verify:** `npx vitest run src/interview/preflight.test.ts` pass; fixture with AGENTS.md + .mcp.json -> extend + existingAssets.agentConfigFile set.\n\n**Steps:** See plan Task 23 (add a fixture dir with AGENTS.md + agents/sme.yaml to exercise existingAssets).\n\n```json:metadata\n{\"files\": [\"src/interview/preflight.ts\", \"src/interview/preflight-report.ts\", \"src/interview/preflight-signals.ts\", \"src/interview/preflight.test.ts\"], \"verifyCommand\": \"npx vitest run src/interview/preflight.test.ts\", \"acceptanceCriteria\": [\"scanPreflight detects servers/agent-config/vector-hints/org-search/skills\", \"scanPreflight returns existingAssets incl routerAgent detection\", \"assessment extend|coexist|stand-down with rationale\", \"extend + agentConfigFile -> report says adopt, do not parallel\", \"prepareConnectorProbe does NO model/retrieval call, only prepares+records\", \"renderPreflight emits docs/preflight.md body\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 24,
+      "subject": "Task 24: Gate renderers",
+      "status": "completed",
+      "blockedBy": [
+        22,
+        23
+      ],
+      "description": "**Goal:** Render Gates 1-3 as one-screen readable summaries from engine state.\n\n**Files:** Create src/interview/gates.ts, src/interview/gates/{strategy,architecture,agent-plan}.hbs; Test src/interview/gates.test.ts.\n\n**Acceptance Criteria:** renderGate(1|2|3,state) matches interview-spec 7/9/11 layouts; Gate 1 lists DEFERRED section (every defer/recommend answer + applied default + revisit checkpoint); Gate 2 cost preview is the illustrative per-100-questions mix (marked estimated, replaced by telemetry at phase 4); Gate 3 renders router + domain subagents + role subagents + personas + skills + scripts + eval stub counts with tiers and hops; each rendered gate <= 45 lines (interview-spec 16 'one screen'), asserted.\n\n**Verify:** `npx vitest run src/interview/gates.test.ts` pass with a fixture state.\n\n**Steps:** See plan Task 24.\n\n```json:metadata\n{\"files\": [\"src/interview/gates.ts\", \"src/interview/gates/strategy.hbs\", \"src/interview/gates/architecture.hbs\", \"src/interview/gates/agent-plan.hbs\", \"src/interview/gates.test.ts\"], \"verifyCommand\": \"npx vitest run src/interview/gates.test.ts\", \"acceptanceCriteria\": [\"3 gates match interview-spec 7/9/11 layouts\", \"Gate 1 shows deferred section with checkpoints\", \"Gate 2 shows illustrative cost mix\", \"Gate 3 shows tiers + hops for every agent\", \"each gate <= 45 lines\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 25,
+      "subject": "Task 25: Interview outputs writer",
+      "status": "completed",
+      "blockedBy": [
+        24
+      ],
+      "description": "**Goal:** After Gate 3 confirmation, write every interview-spec 13 output - and nothing before.\n\n**Files:** Create src/interview/outputs.ts, src/interview/doc-templates/*.hbs; Test src/interview/outputs.test.ts.\n\n**Acceptance Criteria:** writeOutputs(state,destDir) writes team-profile.yaml (every answer, timestamped, deferred:[]), docs/preflight.md, docs/strategy.md, docs/architecture.md, docs/agent-plan.md, docs/decisions/adr-0001-scaffold-choices.md, index.lock; team-profile.yaml validates against schema; writeOutputs refuses unless state.phase==='done' (Gate 3 confirmed) - throws otherwise (the 'nothing written until last gate' guarantee); index.lock reflects arch.index_driver (or lexical if deferred) + standard chunk config; ADR-0001 lists each non-default choice with tradeoff; idempotent - rewrites only these files.\n\n**Verify:** `npx vitest run src/interview/outputs.test.ts` pass; pre-Gate-3 state -> throws.\n\n**Steps:** See plan Task 25.\n\n```json:metadata\n{\"files\": [\"src/interview/outputs.ts\", \"src/interview/outputs.test.ts\"], \"verifyCommand\": \"npx vitest run src/interview/outputs.test.ts\", \"acceptanceCriteria\": [\"writes all 7 interview-spec 13 targets\", \"team-profile.yaml validates against schema\", \"throws unless phase==='done'\", \"index.lock reflects driver + chunk config\", \"ADR-0001 lists non-default choices with tradeoffs\", \"idempotent\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 26,
+      "subject": "Task 26: CLI interview runtime",
+      "status": "completed",
+      "blockedBy": [
+        24
+      ],
+      "description": "**Goal:** Drive the engine in a terminal with @inquirer/prompts, honoring back/skip/why/save.\n\n**Files:** Create src/interview/cli-runtime.ts; Test src/interview/cli-runtime.test.ts.\n\n**Acceptance Criteria:** runInterviewCli({input,output,cwd}) accepts an injectable async answer source so tests script a full run without a TTY; renders why on demand (a ? choice) without advancing; back/skip/save always-available meta-choices; on save writes .team-ai-interview-state.json to cwd, exit 0 with resume hint; at each gate prints renderGate(n,state) and requires explicit confirm; multi-select and rank types render; never writes outputs itself - returns final EngineState.\n\n**Verify:** `npx vitest run src/interview/cli-runtime.test.ts` pass; scripted default run returns a done state.\n\n**Steps:** See plan Task 26.\n\n```json:metadata\n{\"files\": [\"src/interview/cli-runtime.ts\", \"src/interview/cli-runtime.test.ts\"], \"verifyCommand\": \"npx vitest run src/interview/cli-runtime.test.ts\", \"acceptanceCriteria\": [\"injectable answer source for headless tests\", \"why renders without advancing\", \"back/skip/save meta-choices always available\", \"save writes interview-state.json + resume hint\", \"gates require explicit confirm\", \"returns EngineState, writes no outputs\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 27,
+      "subject": "Task 27: Non-destructive idempotent template renderer",
+      "status": "completed",
+      "blockedBy": [
+        22
+      ],
+      "description": "**Goal:** Render a Handlebars template tree into a target dir, classifying every target, never overwriting hand-authored files, never deleting, with a real --dry-run.\n\n**Files:** Create src/generator/render.ts, src/generator/context.ts, src/generator/generated-manifest.ts; Test src/generator/render.test.ts, src/generator/generated-manifest.test.ts.\n\n**Acceptance Criteria:** renderTree({templateDir,destDir,context,dryRun,priorManifest,onCollision}) walks templateDir, strips one .hbs suffix, renders; classifies each target: created (absent->write), unchanged (present & byte-identical->no write), updated (present, differs, AND priorManifest entry sha256 == on-disk hash i.e. prior team-ai render not hand-edited -> write), collision (present, differs, NOT a matching prior render -> NEVER written; per onCollision: report(default)|siblings(write <path>.team-ai-new)|skip); returns {created,unchanged,updated,collisions,siblingsWritten}; renderTree NEVER deletes a file, never writes outside destDir; dryRun:true no writes, returns report incl collisions; writeGeneratedManifest(destDir,entries) records {path,sha256} per written file, merged into team-profile.yaml generated_paths:; readGeneratedManifest(destDir) loads it (empty when absent); binary/.keep copied verbatim, still classified; buildContext(state) maps EngineState -> flat context (team name, slug, mission, namespaces, org path, driver, hosting, roles, domains, personas, skills, seed flag, reviewByDate); Handlebars noEscape:true + helpers kebab/snake/json/yamlList; missing keys -> empty + warnings, never undefined.\n\n**Verify:** `npx vitest run src/generator/render.test.ts src/generator/generated-manifest.test.ts` pass.\n\n**Steps:** See plan Task 27 (tests: first render all-created + manifest written; identical re-render all-unchanged; edited template + matching priorManifest -> updated; hand-edited output -> collision not written, original intact; onCollision siblings -> .team-ai-new written, original untouched; dryRun with collision -> zero writes report lists it; assert no rm/unlink code path).\n\n```json:metadata\n{\"files\": [\"src/generator/render.ts\", \"src/generator/context.ts\", \"src/generator/generated-manifest.ts\", \"src/generator/render.test.ts\", \"src/generator/generated-manifest.test.ts\"], \"verifyCommand\": \"npx vitest run src/generator/render.test.ts src/generator/generated-manifest.test.ts\", \"acceptanceCriteria\": [\"classifies created/unchanged/updated/collision correctly\", \"collision is NEVER written; onCollision report|siblings|skip\", \"renderTree never deletes, never writes outside destDir\", \"dryRun writes nothing, still reports collisions\", \"generated manifest {path,sha256} written and read back, merged into team-profile.yaml\", \"buildContext maps EngineState to flat context\", \"missing keys -> empty + warnings, never undefined\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 28,
+      "subject": "Task 28: templates/instance/ tree",
+      "status": "completed",
+      "blockedBy": [
+        27,
+        19,
+        25,
+        11,
+        13
+      ],
+      "description": "**Goal:** The full instance repo as templates, so init produces a repo that validates and has green CI.\n\n**Files:** Create templates/instance/** (README.md.hbs, SETUP.md.hbs, manifest.yaml.hbs, agents/manifest.fragment.yaml.hbs, index.lock.hbs, docs/decisions/.keep, kb/<preset seed docs>.md.hbs, agents/sme.yaml.hbs+sme.md.hbs, agents/roles/.keep, personas/.keep, skills/.keep, catalog/.keep, evals/golden/.keep, evals/gates.yaml.hbs, .mcp.json.hbs, .gitignore.hbs, .github/workflows/{validate,evals,reindex,freshness}.yml.hbs); Test src/generator/instance-template.test.ts.\n\n**Acceptance Criteria:** generated workflows call the framework reusable workflows (nickejanssen/team-ai/.github/workflows/validate-kb.reusable.yml@v0); .gitignore ignores .team-ai/, emitted/, *.sqlite; seed docs carry valid front matter (owner = a role from chosen preset, review_by = init date + 180d, status active); test renders with a fixture context into a temp dir and runs validate-kb --schema-only + assemble-manifest --check + dry render of workflows - all pass.\n\n**Verify:** `npx vitest run src/generator/instance-template.test.ts` pass.\n\n**Steps:** See plan Task 28.\n\n```json:metadata\n{\"files\": [\"templates/instance/README.md.hbs\", \"templates/instance/SETUP.md.hbs\", \"templates/instance/manifest.yaml.hbs\", \"templates/instance/agents/manifest.fragment.yaml.hbs\", \"templates/instance/agents/sme.yaml.hbs\", \"templates/instance/agents/sme.md.hbs\", \"templates/instance/.mcp.json.hbs\", \"templates/instance/.gitignore.hbs\", \"templates/instance/.github/workflows/validate.yml.hbs\", \"src/generator/instance-template.test.ts\"], \"verifyCommand\": \"npx vitest run src/generator/instance-template.test.ts\", \"acceptanceCriteria\": [\"tree includes all listed files\", \"workflows call framework reusable workflows @v0\", \".gitignore ignores .team-ai/emitted/*.sqlite\", \"seed docs have valid front matter with preset owner + review_by +180d\", \"rendered tree passes validate-kb --schema-only + assemble-manifest --check\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 29,
+      "subject": "Task 29: Agent, skill, and persona templates",
+      "status": "completed",
+      "blockedBy": [
+        28,
+        29
+      ],
+      "description": "**Goal:** Neutral YAML+markdown templates for domain subagents, role subagents, the four core skills, and three personas.\n\n**Files:** Create templates/instance/agents/_domain-sme.yaml.hbs+.md.hbs, templates/instance/agents/roles/_role.yaml.hbs+.md.hbs, templates/instance/skills/{kb-answer,kb-contribute,audit-summary,sme-route}/SKILL.md.hbs, templates/instance/personas/{internal-technical,partner-facing,executive-brief}.md.hbs; Test src/generator/agent-templates.test.ts.\n\n**Acceptance Criteria:** rendered agent YAML validates against agent schema (model_tier + max_hops present; subagents max_hops:0 architecture 12.3); domain subagent namespace-scoped from agents.domains; role subagent cross-namespace from agents.roles skill-scoped; skill SKILL.md templates describe fixed tool sequences (architecture 12.1) and declare tier in front matter; kb-answer = 'search -> answer strictly from hits -> cite -> log a gap on failure'; personas grant no tools/namespaces (kind:persona, grants:none); generator writes one file per agents.domains/agents.roles/agents.personas entry by slug; custom domain/role with no catalog match renders the TODO stub variant.\n\n**Verify:** `npx vitest run src/generator/agent-templates.test.ts` pass; rendered YAML validates.\n\n**Steps:** See plan Task 29.\n\n```json:metadata\n{\"files\": [\"templates/instance/agents/_domain-sme.yaml.hbs\", \"templates/instance/agents/roles/_role.yaml.hbs\", \"templates/instance/skills/kb-answer/SKILL.md.hbs\", \"templates/instance/personas/internal-technical.md.hbs\", \"src/generator/agent-templates.test.ts\"], \"verifyCommand\": \"npx vitest run src/generator/agent-templates.test.ts\", \"acceptanceCriteria\": [\"rendered agent YAML validates, subagents max_hops:0\", \"domain vs role scoping correct\", \"skill templates are fixed tool sequences with tier in front matter\", \"personas grant nothing\", \"one file per domain/role/persona entry\", \"custom entry -> TODO stub\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 30,
+      "subject": "Task 30: templates/spoke/ and templates/attach/",
+      "status": "completed",
+      "blockedBy": [
+        27,
+        16
+      ],
+      "description": "**Goal:** Thin templates for the two secondary repo modes.\n\n**Files:** Create templates/spoke/** (spoke.yaml.hbs, kb/.keep, agents/_spoke-sme.yaml.hbs+.md.hbs, skills/.keep, .github/workflows/validate.yml.hbs), templates/attach/.team-ai.yaml.hbs; Test src/generator/spoke-attach-template.test.ts.\n\n**Acceptance Criteria:** rendered spoke.yaml validates against spoke schema and passes validate-spoke; rendered .team-ai.yaml matches architecture 13 attach shape (mode:attach, instance, agents, skills, kb_namespaces) and nothing else; spoke workflow calls reusable validate-spoke workflow; spoke template has no server/, no adapter, no index.lock.\n\n**Verify:** `npx vitest run src/generator/spoke-attach-template.test.ts` pass.\n\n**Steps:** See plan Task 30.\n\n```json:metadata\n{\"files\": [\"templates/spoke/spoke.yaml.hbs\", \"templates/spoke/agents/_spoke-sme.yaml.hbs\", \"templates/spoke/.github/workflows/validate.yml.hbs\", \"templates/attach/.team-ai.yaml.hbs\", \"src/generator/spoke-attach-template.test.ts\"], \"verifyCommand\": \"npx vitest run src/generator/spoke-attach-template.test.ts\", \"acceptanceCriteria\": [\"rendered spoke.yaml validates + passes validate-spoke\", \"rendered .team-ai.yaml matches architecture 13 attach shape exactly\", \"spoke workflow calls reusable validate-spoke\", \"no server/adapter/index.lock in spoke template\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 31,
+      "subject": "Task 31: templates/mcp-server/ (local stdio)",
+      "status": "completed",
+      "blockedBy": [
+        27,
+        12
+      ],
+      "description": "**Goal:** A generated, off-by-default local stdio MCP server that wraps the shared commands - no hosting, no auth, no Docker.\n\n**Files:** Create templates/mcp-server/** (package.json.hbs, server.mjs.hbs, README.md.hbs, .gitignore); Test src/generator/mcp-server-template.test.ts.\n\n**Acceptance Criteria:** generated only when arch.hosting=='local-stdio' (design 11, interview-spec 8), else generator writes docs/architecture.md gate-condition notes and skips the dir; server.mjs uses @modelcontextprotocol/sdk stdio transport, exposes kb_search, kb_get, kb_manifest, kb_coverage_gap, kb_freshness - each a thin shell-out to `team-ai <command> --json`; generated package.json declares its own deps; README says optional + local-only + how to register; nothing in the framework imports this template at runtime; rendered server.mjs passes `node --check`.\n\n**Verify:** `npx vitest run src/generator/mcp-server-template.test.ts` pass incl. node --check.\n\n**Steps:** See plan Task 31.\n\n```json:metadata\n{\"files\": [\"templates/mcp-server/package.json.hbs\", \"templates/mcp-server/server.mjs.hbs\", \"templates/mcp-server/README.md.hbs\", \"src/generator/mcp-server-template.test.ts\"], \"verifyCommand\": \"npx vitest run src/generator/mcp-server-template.test.ts\", \"acceptanceCriteria\": [\"generated only when hosting==local-stdio, else gate notes + skip\", \"server.mjs exposes kb_* tools shelling out to team-ai --json\", \"generated package.json self-contained\", \"framework never imports template at runtime\", \"rendered server.mjs passes node --check\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 32,
+      "subject": "Task 32: init command",
+      "status": "completed",
+      "blockedBy": [
+        26,
+        28,
+        29,
+        31,
+        25,
+        12,
+        13,
+        17
+      ],
+      "description": "**Goal:** Wire preflight -> interview -> gates -> outputs -> generate into a working instance, with --dry-run and non-destructive conflict reconciliation.\n\n**Files:** Create src/generator/init.ts, src/generator/reconcile.ts; Modify src/cli.ts; Test src/generator/init.test.ts, src/generator/reconcile.test.ts.\n\n**Acceptance Criteria:** team-ai init [--dir .][--dry-run][--resume][--on-conflict adopt-existing|siblings|subdir|abort] runs scanPreflight -> print report -> runInterviewCli -> on done writeOutputs -> RECONCILE -> renderTree(templates/instance) (+ conditional mcp-server) -> reindex -> assemble-manifest -> doctor; RECONCILIATION (design 18) before any template write: compute dryRun render plan vs readGeneratedManifest(dir); if collisions>0 OR extend with existingAssets.routerAgent/agentConfigFile present, init HALTS and prompts (unless --on-conflict) with exactly: adopt-existing (write only created targets, no parallel agent config, append coexistence-boundary paragraph to docs/architecture.md naming each adopted file), siblings (colliding paths -> <path>.team-ai-new, originals untouched, doctor lists them), subdir (re-render into <dir>/team-ai/, nothing in root touched), abort (exit 0 with only interview outputs written); init NEVER deletes and never overwrites a hand-authored file under any option; STAND DOWN short-circuits: generate only manifest.yaml, agents/ (absent-only), personas/, skills/, docs/ - no kb/ index, no server; --dry-run prints tree with created/unchanged/updated/collision counts, writes nothing; --resume loads .team-ai-interview-state.json, only asks changed/new; after non-dry run doctor prints remaining items, git NOT auto-run; e2e test: scripted default answers into empty dir -> generated dir passes validate-kb, reindex (chunks>0), search (a hit), assemble-manifest --check; reconciliation test: pre-seed agents/sme.yaml with '# HAND AUTHORED SENTINEL', init --on-conflict siblings -> sme.yaml byte-identical after, sme.yaml.team-ai-new exists, doctor flags it.\n\n**Verify:** `npx vitest run src/generator/init.test.ts src/generator/reconcile.test.ts` pass (automated half of the dogfood).\n\n**Steps:** See plan Task 32.\n\n```json:metadata\n{\"files\": [\"src/generator/init.ts\", \"src/generator/reconcile.ts\", \"src/cli.ts\", \"src/generator/init.test.ts\", \"src/generator/reconcile.test.ts\"], \"verifyCommand\": \"npx vitest run src/generator/init.test.ts src/generator/reconcile.test.ts\", \"acceptanceCriteria\": [\"init runs preflight->interview->outputs->reconcile->render->reindex->assemble->doctor\", \"reconciliation halts+prompts on collisions or extend+existing router/agent-config unless --on-conflict\", \"adopt-existing / siblings / subdir / abort behave as specified; no overwrite option\", \"init never deletes, never overwrites a hand-authored file\", \"STAND DOWN short-circuits to manifest+agents(absent-only)+personas+skills+docs\", \"--dry-run writes nothing, prints created/unchanged/updated/collision counts\", \"e2e empty-dir run passes validate-kb + reindex + search + assemble-manifest --check\", \"sentinel reconciliation test: hand-authored sme.yaml untouched, .team-ai-new written\"], \"modelTier\": \"complex\"}\n```"
+    },
+    {
+      "id": 33,
+      "subject": "Task 33: spoke and attach commands",
+      "status": "completed",
+      "blockedBy": [
+        30,
+        26
+      ],
+      "description": "**Goal:** The two short generators.\n\n**Files:** Create src/generator/spoke.ts, src/generator/attach.ts; Modify src/cli.ts; Test src/generator/spoke.test.ts, src/generator/attach.test.ts.\n\n**Acceptance Criteria:** team-ai spoke [--dir .] asks interview-spec 5 short set (spoke name, namespace, owner, core repo, one domain) and renders templates/spoke; team-ai attach [--dir .] asks <=5 questions (instance URL, agents, skills, namespaces) and writes only .team-ai.yaml; both refuse to overwrite existing files without --force; generated spoke passes validate-spoke; generated attach file validates against schema.\n\n**Verify:** `npx vitest run src/generator/spoke.test.ts src/generator/attach.test.ts` pass.\n\n**Steps:** See plan Task 33.\n\n```json:metadata\n{\"files\": [\"src/generator/spoke.ts\", \"src/generator/attach.ts\", \"src/generator/spoke.test.ts\", \"src/generator/attach.test.ts\"], \"verifyCommand\": \"npx vitest run src/generator/spoke.test.ts src/generator/attach.test.ts\", \"acceptanceCriteria\": [\"spoke asks the short set and renders templates/spoke\", \"attach asks <=5 questions, writes only .team-ai.yaml\", \"both refuse overwrite without --force\", \"generated spoke passes validate-spoke, attach file validates\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 34,
+      "subject": "Task 34: resume, review, upgrade",
+      "status": "completed",
+      "blockedBy": [
+        32
+      ],
+      "description": "**Goal:** The three re-run commands from architecture 14 / interview-spec 13.\n\n**Files:** Create src/generator/resume.ts, src/generator/review.ts, src/generator/upgrade.ts; Modify src/cli.ts; Test src/generator/{resume,review,upgrade}.test.ts.\n\n**Acceptance Criteria:** resume reads team-profile.yaml, re-runs engine seeded with saved answers, asks only questions whose ask_if now differs or unanswered, re-writes outputs + re-renders; review replays the three gates read-only and exits 0, writes nothing; upgrade re-renders plumbing only (.github/workflows/, evals/gates.yaml, index.lock chunk config, SETUP.md), never touches kb/, agents/, personas/, skills/, catalog/, prints a diff summary; upgrade bumps team_ai_version in team-profile.yaml.\n\n**Verify:** `npx vitest run src/generator/resume.test.ts src/generator/review.test.ts src/generator/upgrade.test.ts` pass.\n\n**Steps:** See plan Task 34.\n\n```json:metadata\n{\"files\": [\"src/generator/resume.ts\", \"src/generator/review.ts\", \"src/generator/upgrade.ts\", \"src/generator/resume.test.ts\", \"src/generator/review.test.ts\", \"src/generator/upgrade.test.ts\"], \"verifyCommand\": \"npx vitest run src/generator/resume.test.ts src/generator/review.test.ts src/generator/upgrade.test.ts\", \"acceptanceCriteria\": [\"resume asks only changed/new questions\", \"review writes nothing, exits 0\", \"upgrade re-renders plumbing only, never kb/agents/personas/skills/catalog\", \"upgrade bumps team_ai_version\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 35,
+      "subject": "Task 35: Emitters + emit command",
+      "status": "completed",
+      "blockedBy": [
+        28,
+        29,
+        13
+      ],
+      "description": "**Goal:** Render neutral agent/skill/persona definitions into client-specific, gitignored build artifacts.\n\n**Files:** Create src/emit/{index,claude-code,mcp-only,generic}.ts, src/commands/emit.ts; Modify src/cli.ts; Test src/emit/*.test.ts.\n\n**Acceptance Criteria:** team-ai emit --target <claude-code|mcp-only|generic> [--dir .][--out emitted] reads agents/, skills/, personas/, manifest.yaml, writes to emitted/<target>/; claude-code: .claude/agents/*.md with YAML front matter + .claude-plugin/plugin.json; mcp-only: server-side prompt registry JSON keyed by name; generic: portable bundle (agents.json + prompts/*.md); emitted/ in instance .gitignore, emit refuses to write outside --out and warns if --out is git-tracked; round-trip test: emit generic, re-parse, every agent name + tier survived.\n\n**Verify:** `npx vitest run src/emit/` pass.\n\n**Steps:** See plan Task 35.\n\n```json:metadata\n{\"files\": [\"src/emit/index.ts\", \"src/emit/claude-code.ts\", \"src/emit/mcp-only.ts\", \"src/emit/generic.ts\", \"src/commands/emit.ts\", \"src/emit/generic.test.ts\"], \"verifyCommand\": \"npx vitest run src/emit/\", \"acceptanceCriteria\": [\"emit --target writes to emitted/<target>/\", \"claude-code emits .claude/agents/*.md + plugin.json\", \"mcp-only emits prompt registry JSON\", \"generic emits agents.json + prompts/*.md\", \"refuses to write outside --out, warns if tracked\", \"generic round-trip preserves name + tier\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 36,
+      "subject": "Task 36: skills/scaffold-interview/SKILL.md",
+      "status": "completed",
+      "blockedBy": [
+        22,
+        24
+      ],
+      "description": "**Goal:** The in-Claude interview runtime - same questions.yaml, rendered as chat.\n\n**Files:** Create skills/scaffold-interview/SKILL.md, skills/scaffold-interview/reference/question-flow.md; Test src/interview/skill-doc.test.ts.\n\n**Acceptance Criteria:** SKILL.md front matter name:scaffold-interview + description matching interview-spec 14 trigger phrasing; body instructs read src/interview/questions.yaml (bundled), drive the engine logic manually, ask <=3 questions per turn, render the three gates as text with confirm, then write team-profile.yaml (if fs access) or output it for the operator; explicitly references the same ask_if/implies/defer/recommend semantics as engine.ts (no divergent copy); skill-doc.test asserts file exists, front matter parses, every act 0-5 named in the body.\n\n**Verify:** `npx vitest run src/interview/skill-doc.test.ts` pass.\n\n**Steps:** See plan Task 36.\n\n```json:metadata\n{\"files\": [\"skills/scaffold-interview/SKILL.md\", \"skills/scaffold-interview/reference/question-flow.md\", \"src/interview/skill-doc.test.ts\"], \"verifyCommand\": \"npx vitest run src/interview/skill-doc.test.ts\", \"acceptanceCriteria\": [\"front matter name + trigger description\", \"body: read questions.yaml, <=3 questions/turn, render gates, write/emit team-profile.yaml\", \"references engine.ts semantics, no divergent rule copy\", \"all acts 0-5 named\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 37,
+      "subject": "Task 37: docs/quality-bar.md",
+      "status": "completed",
+      "blockedBy": [
+        20,
+        15,
+        35,
+        17
+      ],
+      "description": "**Goal:** The 17 measurement questions, each with the architecture's answer and the repo path that enforces it - the why source for the interview and the contributor checklist.\n\n**Files:** Create docs/quality-bar.md; Test src/interview/quality-bar.test.ts.\n\n**Acceptance Criteria:** 17 sections with anchors #q1..#q17 matching the prompt's list; each section Question / Answer the architecture gives / Where it's enforced (a real path); a note records the 'sixteen vs seventeen' discrepancy; quality-bar.test asserts 17 anchors exist and every questions.yaml why cites one that exists (closes loop with Task 20); CONTRIBUTING.md links each PR-template checkbox to this file.\n\n**Verify:** `npx vitest run src/interview/quality-bar.test.ts` pass.\n\n**Steps:** See plan Task 37.\n\n```json:metadata\n{\"files\": [\"docs/quality-bar.md\", \"src/interview/quality-bar.test.ts\", \"CONTRIBUTING.md\"], \"verifyCommand\": \"npx vitest run src/interview/quality-bar.test.ts\", \"acceptanceCriteria\": [\"17 sections with #q1..#q17 anchors matching the prompt list\", \"each: question + architecture answer + real enforcement path\", \"records sixteen-vs-seventeen discrepancy\", \"bijection between why citations and anchors\", \"CONTRIBUTING links PR checkboxes here\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 38,
+      "subject": "Task 38: Reusable CI workflows",
+      "status": "completed",
+      "blockedBy": [
+        11,
+        15,
+        16
+      ],
+      "description": "**Goal:** The three workflow_call workflows other repos invoke (architecture 18.1).\n\n**Files:** Create .github/workflows/{validate-kb,validate-spoke,evals}.reusable.yml; Test src/ci-config.test.ts (extend).\n\n**Acceptance Criteria:** each has on:workflow_call with documented inputs (node-version default 22, root default ., team-ai-version default latest); validate-kb.reusable runs `npx team-ai@<ver> validate-kb && validate-citations`; evals.reusable runs `npx team-ai run-evals` with gate thresholds + uploads JSON report artifact; validate-spoke.reusable runs `npx team-ai validate-spoke`; instance/spoke templates reference these by @v0 + CONTRIBUTING notes a v0 branch must track main until 1.0; ci-config.test parses all three, asserts on.workflow_call present.\n\n**Verify:** `npx vitest run src/ci-config.test.ts` pass.\n\n**Steps:** See plan Task 38.\n\n```json:metadata\n{\"files\": [\".github/workflows/validate-kb.reusable.yml\", \".github/workflows/validate-spoke.reusable.yml\", \".github/workflows/evals.reusable.yml\", \"src/ci-config.test.ts\"], \"verifyCommand\": \"npx vitest run src/ci-config.test.ts\", \"acceptanceCriteria\": [\"3 reusable workflows with on:workflow_call + documented inputs\", \"validate-kb runs validate-kb + validate-citations\", \"evals runs run-evals with thresholds + uploads report\", \"validate-spoke runs validate-spoke\", \"CONTRIBUTING notes v0 branch tracks main until 1.0\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 39,
+      "subject": "Task 39: Dogfood against Arcwright, then Partner Solutions",
+      "status": "completed",
+      "blockedBy": [
+        32,
+        33,
+        34,
+        35,
+        36,
+        37,
+        38,
+        41,
+        42,
+        43,
+        44
+      ],
+      "description": "**USER-ORDERED GATE - NON-SKIPPABLE.** This task was requested by the user in the current conversation. It MUST NOT be closed by walking around it, by declaring it 'verified inline', or by substituting a cheaper check. Close only after every item in acceptanceCriteria has been re-validated independently, with output captured.\n\n**Goal:** Run the generator against itself twice - first with the real Arcwright repo as the preflight target, then a Partner Solutions profile - prove the outputs work, capture friction, and fix it.\n\n**Files:** Create docs/dogfood-notes.md, test/fixtures/answers/dogfood-arcwright.yaml, test/fixtures/answers/dogfood-partner-solutions.yaml, test/dogfood.sh; Modify src/generator/init.ts + src/cli.ts (add --answers <file> and --preflight-target <dir>); Modify whichever framework files findings require.\n\n**Acceptance Criteria:** Run A (Arcwright): init --dir .tmp-dogfood/arcwright, preflight target C:/Users/nicke/OneDrive/Desktop/arcwright, preflight MUST report EXTEND naming AGENTS.md/CLAUDE.md/.claude/.mcp.json AND list existingAssets, report captured; engineering preset, size 4-8, surfaces coding-agent only; generated dir passes validate-kb, validate-citations, reindex (chunks>0), search (>=1 cited hit), assemble-manifest --check, doctor (exit 0); generated workflows valid YAML referencing reusable workflows. Run A reconciliation: pre-seed .tmp-dogfood/arcwright with a copy of Arcwright's real AGENTS.md and agents/sme.yaml containing '# HAND AUTHORED SENTINEL'; init --on-conflict adopt-existing -> AGENTS.md + agents/sme.yaml byte-identical (sha256) before/after, no collision path written, docs/architecture.md gained a coexistence-boundary paragraph naming both files; repeat --on-conflict siblings into a clean copy -> agents/sme.yaml.team-ai-new appears, sentinel file untouched. Run B (Partner Solutions): init --dir .tmp-dogfood/partner-solutions, generic-partner-facing preset, size 1-3 (suppresses agents.roles - only domain agents offered), surfaces coding-agent + chat-apps + read-only-stakeholders, external consumers = yes (forces sensitivity tiers + reader scope), arch.hosting default no-server; generated docs/architecture.md MUST contain BOTH server gate-condition notes; passes the same six command checks; Gate 3 render (captured) shows domain subagents only, no role subagents. Both .tmp-dogfood/ trees deleted after verification (gitignored, nothing team-specific committed). docs/dogfood-notes.md records per run: awkward/ambiguous/wrong + fix applied (commit SHA) or explicit won't-fix. Every 'fix' finding has a commit; npm run check passes after fixes; framework CI jobs pass; check-agnostic still exits 0.\n\n**Verify:** npm run build && bash test/dogfood.sh && npm run check && node dist/cli.js check-agnostic ; expect every command exit 0, Run A preflight prints 'Assessment: EXTEND', dogfood-notes.md has findings for both runs, git status shows no .tmp-dogfood and no team tokens in tracked source.\n\n**Steps:** See plan Task 39 (add --answers/--preflight-target with a failing test first; author both answer fixtures; Run A capture+checks; Run B capture+checks incl size-1-3 branch + sensitivity/gate notes; triage findings fix/commit or won't-fix; re-validate independently from clean build; delete .tmp-dogfood; commit docs).\n\n```json:metadata\n{\"userGate\": true, \"tags\": [\"user-gate\"], \"requireEvidenceTokens\": [[\"run-a\", \"arcwright\", \"EXTEND\"], [\"run-b\", \"partner-solutions\", \"no-server\"]], \"verifyCommand\": \"npm run build && bash test/dogfood.sh && npm run check && node dist/cli.js check-agnostic\", \"acceptanceCriteria\": [\"Run A preflight reports EXTEND naming AGENTS.md/CLAUDE.md/.claude/.mcp.json and lists existingAssets\", \"Run A generated dir passes validate-kb, validate-citations, reindex (chunks>0), search (cited hit), assemble-manifest --check, doctor\", \"Run A reconciliation: hand-authored AGENTS.md + agents/sme.yaml byte-identical before/after under adopt-existing; siblings mode writes .team-ai-new without touching originals; coexistence-boundary paragraph added to docs/architecture.md\", \"Run A-adopt: team-ai adopt against real Arcwright writes only adoption-plan.md + adoption-plan.yaml, Arcwright tree byte-for-byte unchanged (git status --porcelain empty), plan lists front-matter backfill + synced:notion relabels + namespace_decisions for prd/story-bibles/product/conventions + 17-line gap table\", \"Run A-adopt apply on src/adopt/fixtures/legacy-repo: only the 2 approved files change, validate-kb passes on them, re-run reports already-applied\", \"Run B uses generic-partner-facing preset, size 1-3 suppresses role subagents, external consumers forces sensitivity tiers\", \"Run B docs/architecture.md has both server gate-condition notes\", \"Both .tmp-dogfood trees deleted; nothing team-specific committed\", \"docs/dogfood-notes.md records findings + fix SHAs for all runs\", \"npm run check and framework CI jobs pass after fixes\", \"check-agnostic exits 0\"], \"modelTier\": \"complex\"}\n```"
+    },
+    {
+      "id": 40,
+      "subject": "Task 40: Release 0.1.0",
+      "status": "completed",
+      "blockedBy": [
+        39
+      ],
+      "description": "**USER-ORDERED GATE - NON-SKIPPABLE.** This task was requested by the user in the current conversation. It MUST NOT be closed by walking around it, by declaring it 'verified inline', or by substituting a cheaper check. Close only after every item in acceptanceCriteria has been re-validated independently, with output captured.\n\n**Goal:** Verify the Definition of Done line by line, finalize the changelog, tag v0.1.0, and create the v0 branch the reusable workflows pin to.\n\n**Files:** Modify CHANGELOG.md, README.md (root - adapt from docs/README.source.md); Create docs/definition-of-done.md.\n\n**Acceptance Criteria:** root README exists adapted from docs/README.source.md with real install command (npx team-ai init) + links to architecture.md/interview-spec.md/quality-bar.md; docs/definition-of-done.md walks each build-prompt 'Definition of done' clause + the Dogfood section with a check + evidence (command + output snippet or file path): fork->npm install->init->answer->validated instance; generated instance CI green (Task 39 capture); search returns cited results from seed content; doctor accurately reports what's missing; quality-bar has an honest answer for every line; every build-prompt numbered item 1-11 maps to shipped paths in the DoD doc; npm run check passes; npm run build produces dist/; team-ai --help lists all 8 top-level commands + validation/eval commands; CHANGELOG [0.1.0] dated, [Unreleased] emptied; git tag v0.1.0 + v0 branch at same commit; check-agnostic exits 0 on final tree.\n\n**Verify:** npm ci && npm run check && npm run build && node bin/team-ai.js --help && node bin/team-ai.js check-agnostic ; then git tag v0.1.0 && git branch v0. Expect all green, help lists every command, tag + branch created.\n\n**Steps:** See plan Task 40.\n\n```json:metadata\n{\"userGate\": true, \"tags\": [\"user-gate\"], \"verifyCommand\": \"npm ci && npm run check && npm run build && node bin/team-ai.js --help && node bin/team-ai.js check-agnostic\", \"acceptanceCriteria\": [\"Root README adapted from docs/README.source.md with real install command\", \"docs/definition-of-done.md walks every DoD clause with command+output evidence\", \"All 11 build-prompt items mapped to shipped paths\", \"npm run check passes; dist/ builds; team-ai --help lists all 9 top-level commands (init adopt spoke attach doctor resume review upgrade emit)\", \"CHANGELOG [0.1.0] dated and [Unreleased] emptied\", \"git tag v0.1.0 and branch v0 created\", \"check-agnostic exits 0 on final tree\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 41,
+      "subject": "Task 41: Front-matter inference and backfill transform",
+      "status": "completed",
+      "blockedBy": [
+        5,
+        4
+      ],
+      "description": "**Goal:** Given a doc with no team-ai front matter, deterministically propose a schema-valid front-matter block and insert it without merging into an existing header. NO model calls (design 18.1).\n\n**Files:** Create src/adopt/infer.ts, src/adopt/backfill.ts, src/adopt/types.ts, src/adopt/git-owner.ts; Test src/adopt/infer.test.ts, src/adopt/backfill.test.ts.\n\n**Acceptance Criteria:** inferFrontmatter({relPath,body,namespace,gitAuthors,horizonDays,today}) returns FrontMatter: id=`${namespace}.${relPath-no-ext, segments slugified, joined by '.'}`; title=first ^# heading else title-cased basename; owner=most frequent gitAuthors entry (ties->first alphabetical; empty->'unknown'); review_by=today+horizonDays YYYY-MM-DD; sensitivity='internal'; status='active'; source=`synced:${system}` when body head (first 8 lines) matches /do not edit|edit in (\\w+) and re-?sync|^> Source:/i (system=captured word lowercased or 'external') else 'authored'; tags from ^\\*\\*Tags:\\*\\* line split on comma else []; supersedes=[]; returned object passes validate('frontmatter',...); getGitAuthors(path,root) shells `git -C <root> log --format=%an -- <path>` returns string[] (empty on error/untracked, never throws); applyFrontmatter(absPath,fm,{dryRun}) -> if file starts with '---\\n' return {ok:false,reason:'existing front matter'} no write, else prepend serializeFrontmatter(fm,body); dryRun returns would-be content; no deletes, only prepends to files with no front matter.\n\n**Verify:** `npx vitest run src/adopt/infer.test.ts src/adopt/backfill.test.ts` pass.\n\n**Steps:** See plan Task 41.\n\n```json:metadata\n{\"files\": [\"src/adopt/infer.ts\", \"src/adopt/backfill.ts\", \"src/adopt/types.ts\", \"src/adopt/git-owner.ts\", \"src/adopt/infer.test.ts\", \"src/adopt/backfill.test.ts\"], \"verifyCommand\": \"npx vitest run src/adopt/infer.test.ts src/adopt/backfill.test.ts\", \"acceptanceCriteria\": [\"inferFrontmatter derives id from path, title from H1, owner from git authors, review_by from horizon\", \"source detected as synced:<system> from an 'edit in X' header, else authored\", \"returned object passes validate('frontmatter')\", \"getGitAuthors never throws, empty on untracked\", \"applyFrontmatter refuses files that already have front matter, only prepends, dryRun writes nothing\", \"no deletes\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 42,
+      "subject": "Task 42: Namespace mapping candidate matcher",
+      "status": "completed",
+      "blockedBy": [
+        19
+      ],
+      "description": "**Goal:** Map a repo's top-level docs folders to framework namespaces deterministically; surface unmatched folders as human decisions with ranked candidates. NO model calls.\n\n**Files:** Create src/adopt/namespaces.ts; Test src/adopt/namespaces.test.ts.\n\n**Acceptance Criteria:** proposeNamespaceMap(folders,presetShape) returns {matched:{folder,namespace}[], unmatched:{folder,candidates:string[]}[]}; match order: exact, singular/plural (decisions<->decision), fixed synonym table (arch->architecture, adr/adrs->decisions, runbooks->playbooks, examples->patterns, charter/team->operating, guides->playbooks); unmatched get 3 closest presetShape names by Levenshtein + 'custom' always last; pure function, matched sorted by folder.\n\n**Verify:** `npx vitest run src/adopt/namespaces.test.ts` pass incl. an Arcwright-shaped input.\n\n**Steps:** See plan Task 42.\n\n```json:metadata\n{\"files\": [\"src/adopt/namespaces.ts\", \"src/adopt/namespaces.test.ts\"], \"verifyCommand\": \"npx vitest run src/adopt/namespaces.test.ts\", \"acceptanceCriteria\": [\"exact + singular/plural + synonym matching\", \"unmatched folders get 3 Levenshtein candidates + 'custom' last\", \"pure, deterministic ordering\", \"Arcwright-shaped input: architecture+decisions matched, prd/story-bibles flagged\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 43,
+      "subject": "Task 43: team-ai adopt - adoption plan generation",
+      "status": "completed",
+      "blockedBy": [
+        41,
+        42,
+        23,
+        37,
+        28,
+        11
+      ],
+      "description": "**Goal:** Measure an existing repo against the framework standard and write a reviewable plan. Change nothing else. NO model calls (top-of-file comment on plan.ts states this).\n\n**Files:** Create src/commands/adopt.ts, src/adopt/plan.ts, src/adopt/gap.ts, schemas/adoption-plan.schema.json, src/adopt/plan-doc.hbs, src/adopt/fixtures/legacy-repo/**; Modify src/cli.ts, src/schema/load.ts (add adoption-plan to SchemaName); Test src/adopt/plan.test.ts, src/adopt/gap.test.ts.\n\n**Acceptance Criteria:** team-ai adopt [--root .][--out .][--horizon-days 180][--namespace-map <file>] runs scanPreflight(root) -> proposeNamespaceMap(topLevelDocFolders,presetShape) -> for every *.md under <root>/docs with no front matter, inferFrontmatter (namespace from matched map or 'unmapped' placeholder) -> gapVsQualityBar(root) -> collision list (dry renderTree(templates/instance) vs root); gapVsQualityBar(root) returns for each #q1..#q17 {id,satisfied,evidence,closesWith} using a fixed rule table in src/adopt/gap.ts (unit-tested); writes <out>/docs/adoption-plan.md (from plan-doc.hbs) + <out>/adoption-plan.yaml (schema-valid, every backfill/relabel item approved:false, every unmatched folder under namespace_decisions with candidates); adopt writes ONLY those two files (test snapshots file list before/after); --namespace-map <file> (folder: namespace YAML) pre-resolves matches.\n\n**Verify:** `npx vitest run src/adopt/plan.test.ts src/adopt/gap.test.ts` pass against src/adopt/fixtures/legacy-repo.\n\n**Steps:** See plan Task 43.\n\n```json:metadata\n{\"files\": [\"src/commands/adopt.ts\", \"src/adopt/plan.ts\", \"src/adopt/gap.ts\", \"schemas/adoption-plan.schema.json\", \"src/adopt/plan-doc.hbs\", \"src/adopt/plan.test.ts\", \"src/adopt/gap.test.ts\"], \"verifyCommand\": \"npx vitest run src/adopt/plan.test.ts src/adopt/gap.test.ts\", \"acceptanceCriteria\": [\"adopt runs preflight + namespace map + per-doc infer + gap table + collision list\", \"gapVsQualityBar returns 17 entries each with satisfied bool + non-empty closesWith\", \"writes ONLY adoption-plan.md + adoption-plan.yaml (schema-valid), fixture repo unchanged\", \"backfill/relabel items approved:false; namespace_decisions lists unmatched folders + candidates\", \"no model call; --namespace-map pre-resolves\"], \"modelTier\": \"standard\"}\n```"
+    },
+    {
+      "id": 44,
+      "subject": "Task 44: team-ai adopt --interactive and --apply",
+      "status": "completed",
+      "blockedBy": [
+        43
+      ],
+      "description": "**Goal:** Collect per-item approvals, then apply only approved items as deterministic transforms. Never touch an unapproved or conflicting file. NO model calls.\n\n**Files:** Create src/adopt/interactive.ts, src/adopt/apply.ts; Modify src/commands/adopt.ts, src/cli.ts; Test src/adopt/apply.test.ts, src/adopt/interactive.test.ts.\n\n**Acceptance Criteria:** adopt --interactive [--root .] loads adoption-plan.yaml, per backfill/relabel item prompts approve/skip/edit (edit opens block in $EDITOR or injectable inline text), per namespace_decisions entry prompts pick from candidates; writes choices back to adoption-plan.yaml (approved:true|false, namespace:<chosen>); injectable answer source for headless tests; adopt --apply [--root .] applies ONLY approved:true items: backfill->applyFrontmatter (skips+reports now-conflicting), relabel->add/replace source: key only via serializeFrontmatter on files the tool adds front matter to (never rewrites a hand-authored header - conflict instead), resolved namespace_decisions->write/extend catalog/namespaces/<repo>.yaml, optional move: items->fs.rename + append to moved: log; --apply idempotent (already-has-front-matter -> reported already-applied not re-written); after applying runs validate-kb and prints result; prints summary applied N/skipped M/conflicts K; exit non-zero only if a conflict on an approved item; never deletes; never writes a file not named in an approved plan item.\n\n**Verify:** `npx vitest run src/adopt/apply.test.ts src/adopt/interactive.test.ts` pass.\n\n**Steps:** See plan Task 44.\n\n```json:metadata\n{\"files\": [\"src/adopt/interactive.ts\", \"src/adopt/apply.ts\", \"src/commands/adopt.ts\", \"src/cli.ts\", \"src/adopt/apply.test.ts\", \"src/adopt/interactive.test.ts\"], \"verifyCommand\": \"npx vitest run src/adopt/apply.test.ts src/adopt/interactive.test.ts\", \"acceptanceCriteria\": [\"--interactive walks items approve/skip/edit + namespace picks, writes choices back to yaml, injectable answers\", \"--apply applies ONLY approved:true items as deterministic transforms\", \"conflicting/hand-authored headers are reported not rewritten\", \"idempotent: re-run reports already-applied\", \"runs validate-kb after, prints applied/skipped/conflicts summary\", \"never deletes, never writes a file not in an approved plan item\"], \"modelTier\": \"standard\"}\n```"
+    }
+  ]
+}

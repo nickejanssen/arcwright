@@ -1,0 +1,10 @@
+name: acme-widgets-sme
+kind: subagent
+description: Subject-matter expert for Acme Widgets integration and support questions.
+model_tier: large
+kb_namespaces:
+  - partners/acme-widgets
+tools:
+  - kb_search
+max_hops: 2
+instructions_file: agents/instructions/acme-widgets-sme.md

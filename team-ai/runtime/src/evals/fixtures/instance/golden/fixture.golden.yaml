@@ -1,0 +1,29 @@
+# Fixture golden set for the eval-harness tests. Authored to pass its own gates.
+- id: eval.fixture.rate-limit-429
+  question: What should a caller do when they hit a 429 rate limit error?
+  expect_namespace: platform
+  expect_paths: [kb/platform/rate-limits.md]
+  expect_route: platform-sme
+  expect_tier_max: none
+  must_cite: true
+- id: eval.fixture.pto-accrual
+  question: How much PTO do employees accrue each year?
+  expect_namespace: handbook
+  expect_paths: [kb/handbook/pto.md]
+  expect_route: handbook-sme
+  expect_tier_max: none
+  must_cite: true
+- id: eval.fixture.new-hire-first-week
+  question: What happens during a new hire's first week with their buddy?
+  expect_namespace: handbook
+  expect_paths: [kb/handbook/onboarding.md]
+  expect_route: handbook-sme
+  expect_tier_max: small
+  must_cite: true
+- id: eval.fixture.refuse-out-of-kb
+  question: Which quantum computing frameworks support GraphQL subscriptions?
+  expect_namespace: ""
+  expect_paths: []
+  expect_route: __refuse__
+  expect_tier_max: none
+  must_cite: false

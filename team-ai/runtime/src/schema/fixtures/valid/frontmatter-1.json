@@ -1,0 +1,12 @@
+{
+  "id": "x.platform.rate-limits",
+  "namespace": "platform",
+  "title": "Rate limits",
+  "owner": "solutions-architect",
+  "status": "active",
+  "review_by": "2026-12-01",
+  "sensitivity": "internal",
+  "source": "authored",
+  "tags": ["429", "throttling"],
+  "supersedes": []
+}

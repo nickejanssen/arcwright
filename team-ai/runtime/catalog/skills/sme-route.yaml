@@ -1,0 +1,4 @@
+name: sme-route
+tier: none
+summary: Classify an incoming question and route it to the right domain subagent.
+presets: all

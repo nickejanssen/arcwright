@@ -1,0 +1,14 @@
+dist
+coverage
+node_modules
+package-lock.json
+templates
+src/generator/fixtures
+src/interview/gates/**
+src/interview/doc-templates/**
+docs/plans
+*.md
+LICENSE
+NOTICE
+CODEOWNERS
+*.toml

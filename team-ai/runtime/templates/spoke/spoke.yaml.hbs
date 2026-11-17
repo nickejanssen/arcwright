@@ -1,0 +1,14 @@
+name: {{name}}
+kb_namespace: {{namespace}}
+owner: {{owner}}
+core_repo: {{core_repo}}
+toolkit_version: ">=0.1"
+domains:
+  - id: {{domain.id}}
+    description: "{{domain.description}}"
+    keywords: []
+    subagent: {{domain.subagent}}
+    model_tier: small
+exports:
+  skills: []
+  agents: [{{domain.subagent}}]

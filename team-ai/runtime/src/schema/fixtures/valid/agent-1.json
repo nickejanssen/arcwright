@@ -1,0 +1,10 @@
+{
+  "name": "platform-sme",
+  "kind": "subagent",
+  "description": "Answers platform and API questions from the platform KB.",
+  "model_tier": "small",
+  "kb_namespaces": ["platform"],
+  "tools": ["kb_search"],
+  "max_hops": 0,
+  "instructions_file": "agents/platform-sme.md"
+}

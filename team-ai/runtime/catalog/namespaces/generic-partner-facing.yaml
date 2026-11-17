@@ -1,0 +1,25 @@
+name: generic-partner-facing
+description: A starting namespace for a team that works directly with external partners.
+second_level:
+  - operating
+  - platform
+  - patterns
+  - playbooks
+  - decisions
+domain_dir: "partners/<name>"
+seed_docs:
+  - path: operating/charter.md
+    title: Team charter
+    purpose: States what this team commits to for partners and what stays internal.
+  - path: operating/roles.md
+    title: Who does what
+    purpose: Maps each role to the partner-facing decisions and relationships it owns.
+  - path: platform/overview.md
+    title: The systems this team owns or integrates
+    purpose: Lists the systems this team exposes to partners and the internal systems behind them.
+  - path: playbooks/onboarding.md
+    title: How a new person or partner gets started
+    purpose: Walks a new partner through access, first integration, and who to contact.
+  - path: decisions/adr-0001-why-team-ai.md
+    title: Why this team stood up team-ai
+    purpose: Records why this team adopted team-ai to keep partner answers consistent and sourced.

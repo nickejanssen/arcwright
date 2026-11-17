@@ -1,0 +1,11 @@
+name: build-engineer
+summary: Implements and ships changes to the team's systems
+default_namespaces:
+  - platform
+  - patterns
+  - decisions
+default_skills:
+  - kb-answer
+  - task-runner
+model_tier: small
+persona_default: internal-technical

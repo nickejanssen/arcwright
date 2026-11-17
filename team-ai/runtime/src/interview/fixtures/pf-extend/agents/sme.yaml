@@ -1,0 +1,8 @@
+kind: router
+name: sme
+description: Existing top-level SME router for this repo.
+model_tier: none
+kb_namespaces: []
+tools: []
+max_hops: 1
+instructions_file: agents/sme.md

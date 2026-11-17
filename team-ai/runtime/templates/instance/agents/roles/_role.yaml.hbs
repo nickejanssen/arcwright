@@ -1,0 +1,8 @@
+name: {{name}}
+kind: subagent
+description: "{{summary}}"
+model_tier: {{default model_tier "small"}}
+kb_namespaces: {{yamlList default_namespaces}}
+tools: [kb_search, kb_get, kb_list]
+max_hops: 0
+instructions_file: agents/roles/{{name}}.md

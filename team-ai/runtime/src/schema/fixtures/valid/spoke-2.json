@@ -1,0 +1,21 @@
+{
+  "name": "apac-support",
+  "kb_namespace": "spoke/apac-support",
+  "owner": "apac-lead",
+  "core_repo": "github.com/acme/team-ai",
+  "toolkit_version": "0.2.1",
+  "domains": [
+    {
+      "id": "onboarding",
+      "description": "Customer onboarding steps for APAC.",
+      "keywords": ["onboarding", "setup"],
+      "subagent": "onboarding-sme",
+      "model_tier": "large",
+      "escalate_to": "apac-lead"
+    }
+  ],
+  "exports": {
+    "skills": ["apac-greeting"],
+    "agents": ["onboarding-sme"]
+  }
+}

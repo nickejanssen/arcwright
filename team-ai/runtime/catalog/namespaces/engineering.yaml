@@ -1,0 +1,25 @@
+name: engineering
+description: Knowledge for a team that builds and operates software services.
+second_level:
+  - operating
+  - platform
+  - patterns
+  - playbooks
+  - decisions
+domain_dir: "services/<name>"
+seed_docs:
+  - path: operating/charter.md
+    title: Team charter
+    purpose: States what this engineering team is responsible for and what it is not.
+  - path: operating/roles.md
+    title: Who does what
+    purpose: Maps each engineering role to the decisions and systems it owns.
+  - path: platform/overview.md
+    title: The systems this team owns or integrates
+    purpose: Lists the services this team runs and the upstream and downstream systems it depends on.
+  - path: playbooks/onboarding.md
+    title: How a new person or partner gets started
+    purpose: Walks a new engineer through first environment setup, access, and first change.
+  - path: decisions/adr-0001-why-team-ai.md
+    title: Why this team stood up team-ai
+    purpose: Records the reasoning for adopting team-ai to run this team's AI capability.

@@ -1,0 +1,24 @@
+AGENT PLAN
+
+ROUTER
+  sme  tier: none → small on ambiguity  refuses + logs a gap
+
+DOMAIN SUBAGENTS
+{{domainBlock}}
+
+ROLE SUBAGENTS
+{{roleBlock}}
+
+PERSONAS
+  {{personas}} — tone only, grant no access
+
+SKILLS
+  {{skills}}
+
+SCRIPTS
+  reindex, validate-kb, validate-citations, freshness-audit,
+  assemble-manifest, run-evals, validate-spoke, emit, doctor
+
+EVALS
+  20 golden questions stubbed across {{evalNamespaces}} namespaces —
+  fill in before the CI gate turns on

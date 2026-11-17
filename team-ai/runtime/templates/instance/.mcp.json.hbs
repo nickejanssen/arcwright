@@ -1,0 +1,15 @@
+{{#if server}}
+{
+  "mcpServers": {
+    "team-ai-kb": {
+      "command": "node",
+      "args": ["./mcp-server/server.mjs"],
+      "env": {}
+    }
+  }
+}
+{{else}}
+{
+  "mcpServers": {}
+}
+{{/if}}

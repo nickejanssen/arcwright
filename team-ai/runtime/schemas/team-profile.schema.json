@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nickejanssen/team-ai/schemas/team-profile.schema.json",
+  "title": "Team AI profile",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["team_ai_version", "created", "answers", "deferred"],
+  "properties": {
+    "team_ai_version": { "type": "string" },
+    "created": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "answers": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "deferred": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/deferred" }
+    },
+    "generated_paths": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/generatedPath" }
+    }
+  },
+  "$defs": {
+    "deferred": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["question", "applied_default", "revisit"],
+      "properties": {
+        "question": { "type": "string" },
+        "applied_default": {},
+        "revisit": { "type": "string" }
+      }
+    },
+    "generatedPath": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    }
+  }
+}

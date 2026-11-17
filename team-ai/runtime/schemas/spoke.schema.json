@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nickejanssen/team-ai/schemas/spoke.schema.json",
+  "title": "Spoke configuration",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "kb_namespace", "owner", "core_repo", "toolkit_version", "domains"],
+  "properties": {
+    "name": { "type": "string" },
+    "kb_namespace": { "type": "string" },
+    "owner": { "type": "string" },
+    "core_repo": { "type": "string" },
+    "toolkit_version": { "type": "string" },
+    "domains": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/spokeDomain" }
+    },
+    "exports": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "skills": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "agents": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "spokeDomain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "description", "keywords", "subagent", "model_tier"],
+      "properties": {
+        "id": { "type": "string" },
+        "description": { "type": "string" },
+        "keywords": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "subagent": { "type": "string" },
+        "model_tier": {
+          "type": "string",
+          "enum": ["none", "small", "large"]
+        },
+        "escalate_to": { "type": "string" }
+      }
+    }
+  }
+}
