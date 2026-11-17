@@ -8,6 +8,7 @@ from typing import Any, Dict, List, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
+from engine.events.models import AudienceTarget, PresentationHints
 from engine.interactions.models import InteractionDefinition
 from engine.mini_games.models import MiniGameBinding
 from engine.resources.models import EffectDefinition
@@ -156,6 +157,67 @@ class NarratorConfig(BaseModel):
         return self
 
 
+class PhaseKind(str, Enum):
+    """The fixed set of steps a beat may be divided into (spec 0093, Part C).
+
+    The order here is the only order a beat may list them in.
+    """
+
+    scene = "scene"
+    choices = "choices"
+    mini_game = "mini_game"
+    bridge = "bridge"
+
+
+PHASE_ORDER: tuple[PhaseKind, ...] = tuple(PhaseKind)
+_LINE_PHASES = frozenset({PhaseKind.scene, PhaseKind.bridge})
+_LINE_AUDIENCES = frozenset(
+    {AudienceTarget.all, AudienceTarget.shared_display, AudienceTarget.host_only}
+)
+
+
+class PhaseLine(BaseModel):
+    """One written line shown when a scene or bridge phase begins."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    text: str = Field(min_length=1)
+    speaker: Optional[str] = None
+    hints: PresentationHints = Field(default_factory=PresentationHints)
+
+
+class PhaseDefinition(BaseModel):
+    """One step of a beat. ``seconds`` is the authored time limit and is
+    required, so no room can wait forever on a phase."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    kind: PhaseKind
+    seconds: int = Field(gt=0)
+    audience: AudienceTarget = AudienceTarget.shared_display
+    lines: List[PhaseLine] = Field(default_factory=list)
+
+    @model_validator(mode="after")
+    def validate_lines_and_audience(self) -> "PhaseDefinition":
+        if self.lines and self.kind not in _LINE_PHASES:
+            msg = f"a {self.kind.value} phase cannot carry written lines"
+            raise ValueError(msg)
+        if self.audience not in _LINE_AUDIENCES:
+            msg = "phase lines cannot be addressed to one player"
+            raise ValueError(msg)
+        return self
+
+
+class ChoiceConfig(BaseModel):
+    """Per-game settings for the choices phase. Values are configuration,
+    never constants in code."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    budget: int = Field(default=6, ge=0)
+    """Paid choices each participant may make over the whole game."""
+
+
 class BeatDefinition(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
@@ -177,6 +239,24 @@ class BeatDefinition(BaseModel):
     audience_targets: List[str] = Field(default_factory=list)
     mini_games: Optional[List[MiniGameBinding]] = None
     interaction_ids: List[str] = Field(default_factory=list)
+    phases: Optional[List[PhaseDefinition]] = None
+    """Ordered steps of this beat. None keeps the old behaviour (spec 0093)."""
+
+    @model_validator(mode="after")
+    def validate_phase_order(self) -> "BeatDefinition":
+        if self.phases is None:
+            return self
+        if not self.phases:
+            msg = f"beat {self.beat_id} lists phases but none"
+            raise ValueError(msg)
+        positions = [PHASE_ORDER.index(phase.kind) for phase in self.phases]
+        if positions != sorted(set(positions)):
+            msg = (
+                f"beat {self.beat_id} phases must follow the order "
+                f"{', '.join(kind.value for kind in PHASE_ORDER)}, each at most once"
+            )
+            raise ValueError(msg)
+        return self
 
     @model_validator(mode="after")
     def validate_mini_game_binding_ids(self) -> "BeatDefinition":
@@ -271,6 +351,24 @@ class ArcDefinition(BaseModel):
     obligations: List[ObligationConfig] = Field(default_factory=list)
     case_file: Optional[str] = None
     """Path, from the repository root, to a written case (spec 0093, Part A)."""
+    choice_config: ChoiceConfig = Field(default_factory=ChoiceConfig)
+
+    @property
+    def is_phased(self) -> bool:
+        """True when beats are divided into phases that move by rule."""
+        return any(beat.phases is not None for beat in self.beats)
+
+    @model_validator(mode="after")
+    def validate_phases_on_every_beat_or_none(self) -> "ArcDefinition":
+        flags = {beat.phases is not None for beat in self.beats}
+        if len(flags) > 1:
+            missing = [b.beat_id for b in self.beats if b.phases is None]
+            msg = (
+                "phases must be listed on every beat or on none; missing on: "
+                f"{', '.join(missing)}"
+            )
+            raise ValueError(msg)
+        return self
 
     @model_validator(mode="before")
     @classmethod

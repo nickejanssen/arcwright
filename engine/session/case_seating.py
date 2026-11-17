@@ -11,6 +11,7 @@ in one saved event, and holdings are knowledge-graph facts.
 
 from __future__ import annotations
 
+from functools import lru_cache
 from pathlib import Path
 from uuid import UUID
 
@@ -38,13 +39,57 @@ def load_arc_case(arc: ArcDefinition) -> AuthoredCase | None:
     if not arc.case_file:
         return None
     try:
-        return load_authored_case(
+        case = load_authored_case(
             _REPO_ROOT / arc.case_file,
             beat_order=[beat.beat_id for beat in arc.beats],
+            budget=arc.choice_config.budget,
         )
     except AuthoredCaseRefused as refused:
         msg = f"case refused: {refused.name}"
         raise CaseRefusedAtStartError(msg) from refused
+    if arc.is_phased:
+        with_choices = {
+            beat.beat_id
+            for beat in arc.beats
+            if any(phase.kind.value == "choices" for phase in beat.phases or [])
+        }
+        offered_in = {b for opp in case.opportunities for b in opp.beats}
+        missing = sorted(
+            beat_id
+            for beat_id in offered_in
+            if beat_id in {beat.beat_id for beat in arc.beats}
+            and beat_id not in with_choices
+        )
+        if missing:
+            msg = "case offers choices in beats with no choices phase: " + ", ".join(
+                missing
+            )
+            raise CaseRefusedAtStartError(msg)
+    return case
+
+
+@lru_cache(maxsize=16)
+def _checked_case(
+    case_file: str, beat_order: tuple[str, ...], budget: int
+) -> AuthoredCase:
+    return load_authored_case(
+        _REPO_ROOT / case_file, beat_order=beat_order, budget=budget
+    )
+
+
+def cached_arc_case(arc: ArcDefinition) -> AuthoredCase | None:
+    """The arc's case, read and checked once per file, beat order and budget.
+
+    For reads during play (menu, holdings): ``load_arc_case`` already refused
+    an unfair case when the session started.
+    """
+    if not arc.case_file:
+        return None
+    return _checked_case(
+        arc.case_file,
+        tuple(beat.beat_id for beat in arc.beats),
+        arc.choice_config.budget,
+    )
 
 
 async def seat_authored_case(

@@ -185,6 +185,7 @@ class SessionService:
         beat_id: str | None = None,
         statemachine_config: dict[str, Any] | None = None,
         transition_history: list[Any] | None = None,
+        now: datetime | None = None,
     ) -> Session:
         """Pause the arc and snapshot state at the current beat boundary.
 
@@ -202,6 +203,10 @@ class SessionService:
         orm = await self._require_session(db, session_id)
         if orm.status != SessionStatus.active.value:
             raise SessionStateError(f"Cannot pause session in status {orm.status!r}")
+        from engine.session.phases import freeze_phase
+
+        # A phased game keeps the time left in its current phase (spec 0093, C).
+        await freeze_phase(db, session_id, now or datetime.now(tz=timezone.utc))
         snapshot_beat = beat_id or orm.current_beat_id
         config = statemachine_config or {
             "beat_id": snapshot_beat,
@@ -228,7 +233,11 @@ class SessionService:
         return _orm_session_to_pydantic(orm)
 
     async def resume_session(
-        self, db: AsyncSession, session_id: UUID
+        self,
+        db: AsyncSession,
+        session_id: UUID,
+        *,
+        now: datetime | None = None,
     ) -> tuple[Session, ArcBeatState | None]:
         """Resume the arc from the nearest beat snapshot.
 
@@ -249,6 +258,9 @@ class SessionService:
         # (the initial beat derived from beats[0] at session creation). AC3 exception.
         orm.status = SessionStatus.active.value
         await db.flush()
+        from engine.session.phases import thaw_phase
+
+        await thaw_phase(db, session_id, now or datetime.now(tz=timezone.utc))
         return _orm_session_to_pydantic(orm), snapshot
 
     async def end_session(
@@ -349,6 +361,7 @@ class SessionService:
         player_action_count: int = 1,
         transition_cause: str = "normal_completion",
         ready_to_advance: bool = True,
+        by_rule: bool = False,
     ) -> Session:
         """Advance arc beat state after validated REST player input.
 
@@ -356,6 +369,10 @@ class SessionService:
         stay thin. When the session is not active, or its arc is not in the
         arc registry, the method is a no-op and returns the current session
         state.
+
+        An arc whose beats have phases moves only by rule (spec 0093, Part C):
+        typed input never advances it. ``by_rule=True`` is passed only by
+        ``engine.session.phases`` when a rule has ended a beat's last phase.
         """
         orm = await self._require_session(db, session_id)
         if orm.status != SessionStatus.active.value or not ready_to_advance:
@@ -363,6 +380,8 @@ class SessionService:
 
         arc_definition = load_arc_definition(orm.arc_id)
         if arc_definition is None:
+            return _orm_session_to_pydantic(orm)
+        if arc_definition.is_phased and not by_rule:
             return _orm_session_to_pydantic(orm)
 
         from engine.arc.arc_state import ArcStateChart, transition_name_for

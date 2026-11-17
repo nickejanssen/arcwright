@@ -360,3 +360,68 @@ class LobbyJoinResponse(BaseModel):
     display_name: str
     character_id: UUID
     player_token: str
+
+
+class RoundStateResponse(BaseModel):
+    """The current beat, phase and deadline (spec 0093, Part C). Public facts
+    only: no choice content, nothing private."""
+
+    session_status: str
+    beat_id: str
+    phase: Optional[str] = None
+    phase_index: Optional[int] = None
+    status: Optional[Literal["running", "paused", "ended"]] = None
+    deadline_at: Optional[datetime] = None
+    seconds_left: Optional[float] = None
+    ready_count: int = 0
+    player_count: int = 0
+    lines: list[dict[str, Any]] = Field(default_factory=list)
+
+
+class PhaseStateResponse(BaseModel):
+    beat_id: str
+    phase: str
+    status: Literal["running", "paused", "ended"]
+    deadline_at: Optional[datetime] = None
+
+
+class MenuItemResponse(BaseModel):
+    opportunity_id: str
+    subject_id: str
+    subject_kind: str
+    subject_label: str
+    label: str
+    cost: int
+    taken: bool
+
+
+class MenuResponse(BaseModel):
+    open: bool
+    remaining_budget: int
+    items: list[MenuItemResponse]
+
+
+class ChoiceRequest(BaseModel):
+    choice_id: str = Field(min_length=1, max_length=128)
+    opportunity_id: str = Field(min_length=1, max_length=128)
+
+
+class ChoiceResponse(BaseModel):
+    choice_id: str
+    opportunity_id: str
+    content: str
+    gave: list[str]
+    cost: int
+    first_time: bool
+    replayed: bool
+    remaining_budget: int
+
+
+class HeldConceptResponse(BaseModel):
+    concept_id: str
+    label: str
+    text: str
+
+
+class HoldingsResponse(BaseModel):
+    concepts: list[HeldConceptResponse]
