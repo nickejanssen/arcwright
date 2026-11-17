@@ -1,10 +1,114 @@
 import os
+import shutil
 import subprocess
 import sys
 from pathlib import Path
 
+import pytest
+
+from scripts import team_ai_cli
+
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "team_ai_cli.py"
+
+
+def test_local_cli_is_preferred_over_sibling_checkout(tmp_path, monkeypatch):
+    checkout = tmp_path / "arcwright"
+    local = checkout / "team-ai" / "runtime" / "dist" / "cli.js"
+    sibling = tmp_path / "team-ai" / "dist" / "cli.js"
+    for path in (local, sibling):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("", encoding="utf-8")
+    monkeypatch.delenv("TEAM_AI_CLI", raising=False)
+    monkeypatch.setattr(
+        team_ai_cli, "__file__", str(checkout / "scripts" / "team_ai_cli.py")
+    )
+    monkeypatch.setattr(team_ai_cli, "_main_checkout", lambda: checkout)
+    assert team_ai_cli.find_cli() == local
+
+
+def test_override_is_preferred_over_local_cli(tmp_path, monkeypatch):
+    checkout = tmp_path / "arcwright"
+    local = checkout / "team-ai" / "runtime" / "dist" / "cli.js"
+    local.parent.mkdir(parents=True)
+    local.write_text("", encoding="utf-8")
+    override = tmp_path / "override.js"
+    override.write_text("", encoding="utf-8")
+    monkeypatch.setenv("TEAM_AI_CLI", str(override))
+    monkeypatch.setattr(
+        team_ai_cli, "__file__", str(checkout / "scripts" / "team_ai_cli.py")
+    )
+    assert team_ai_cli.find_cli() == override
+
+
+def test_linked_worktree_cannot_override_main_checkout_runtime(tmp_path, monkeypatch):
+    main = tmp_path / "main"
+    worktree = tmp_path / "worktree"
+    trusted = main / "team-ai" / "runtime" / "dist" / "cli.js"
+    untrusted = worktree / "team-ai" / "runtime" / "dist" / "cli.js"
+    for path in (trusted, untrusted):
+        path.parent.mkdir(parents=True)
+        path.write_text("", encoding="utf-8")
+    monkeypatch.delenv("TEAM_AI_CLI", raising=False)
+    monkeypatch.setattr(
+        team_ai_cli, "__file__", str(worktree / "scripts" / "team_ai_cli.py")
+    )
+    monkeypatch.setattr(team_ai_cli, "_main_checkout", lambda: main)
+    assert team_ai_cli.find_cli() == trusted
+    trusted.unlink()
+    assert team_ai_cli.find_cli() is None
+
+
+def test_unresolved_linked_worktree_does_not_trust_its_local_runtime(
+    tmp_path, monkeypatch
+):
+    worktree = tmp_path / "worktree"
+    local = worktree / "team-ai" / "runtime" / "dist" / "cli.js"
+    local.parent.mkdir(parents=True)
+    local.write_text("", encoding="utf-8")
+    (worktree / ".git").write_text("gitdir: missing", encoding="utf-8")
+    monkeypatch.delenv("TEAM_AI_CLI", raising=False)
+    monkeypatch.setattr(
+        team_ai_cli, "__file__", str(worktree / "scripts" / "team_ai_cli.py")
+    )
+    monkeypatch.setattr(team_ai_cli, "_main_checkout", lambda: None)
+    assert team_ai_cli.find_cli() is None
+
+
+@pytest.mark.skipif(
+    not shutil.which("git") or not shutil.which("node"), reason="needs git and node"
+)
+def test_worktree_search_executes_trusted_runtime_not_worktree_runtime(tmp_path):
+    main = tmp_path / "main"
+    main.mkdir()
+    git = ["git", "-c", "user.name=Test", "-c", "user.email=test@example.com"]
+    subprocess.run([*git, "init", "-q"], cwd=main, check=True)
+    (main / "scripts").mkdir()
+    shutil.copyfile(SCRIPT, main / "scripts" / "team_ai_cli.py")
+    subprocess.run([*git, "add", "scripts/team_ai_cli.py"], cwd=main, check=True)
+    subprocess.run([*git, "commit", "-qm", "setup"], cwd=main, check=True)
+    worktree = tmp_path / "worktree"
+    subprocess.run(
+        [*git, "worktree", "add", "-qb", "test", str(worktree)],
+        cwd=main,
+        check=True,
+    )
+    for root, output in ((main, "trusted"), (worktree, "worktree-secret")):
+        cli = root / "team-ai" / "runtime" / "dist" / "cli.js"
+        cli.parent.mkdir(parents=True)
+        cli.write_text(f"console.log('{output}');\n", encoding="utf-8")
+    env = os.environ.copy()
+    env.pop("TEAM_AI_CLI", None)
+    result = subprocess.run(
+        [sys.executable, "scripts/team_ai_cli.py", "search", "x", "--root", "team-ai"],
+        cwd=worktree,
+        env=env,
+        capture_output=True,
+        text=True,
+        check=True,
+    )
+    assert result.stdout.strip() == "trusted"
+    assert "worktree-secret" not in result.stdout
 
 
 def test_resolves_from_this_checkout():
