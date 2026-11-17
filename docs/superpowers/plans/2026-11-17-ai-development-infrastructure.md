@@ -59,6 +59,15 @@ Recent successful final-head PR workflow durations in seconds, measured from run
 
 Use the same workflow timings, plus first-result queue delay and billed job minutes where available, during the CI comparison. Treat the sample as descriptive: PR #398 changed which suites `verify` runs, so split before/after data when evaluating the proposed consolidation.
 
+### Measured team-ai baseline
+
+Run against main `fb5382b` with the same framework release CI uses, team-ai v0.6.6.
+
+- `team-ai validate-kb --instance team-ai` validated 520 documents. A clean reindex produced 5,121 chunks.
+- `team-ai run-evals --root team-ai` passed the configured thresholds across 37 questions: hit rate 48.5% (45% floor), citation validity 100%, and coverage 100%. The harness listed 33 questions whose source documents changed. Its diagnostic routing accuracy was 21.6% and refusal rate 0%; treat those as deterministic replay diagnostics, distinct from live SME performance. Prefer explicit manifest routing and evaluate live citations independently before using AI review findings.
+- `team-ai freshness-audit --instance team-ai` reported 0 overdue, 0 unowned and 508 flagged as orphaned by its relationship rules out of 520. Review new or relevant orphan signals rather than gating all existing documents; an unchanged review date does not prove the advice is current. Use `--instance team-ai` so the audit and validator share the indexed KB root and exclusions.
+- Reproduced AW-318's search issue: the reset audit was absent from the first eight results for `reset audit findings owner` in the `product-roadmap` namespace. Two results were the task's own text and the other six were task dependency references. The live four-question SME citation rerun is still outstanding.
+
 ## 2. Delivery sequence
 
 ### A. Baseline and protect main (existing tasks + GitHub settings)
