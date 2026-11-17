@@ -18,7 +18,7 @@ import type { Document, Hit, IndexStats, RetrievalAdapter, SearchOpts } from "./
 const DEFAULT_DB_PATH = ".team-ai/index.sqlite";
 const DEFAULT_K = 8;
 const MAX_K = 20;
-// SQL over-fetch multiplier so post-filtering has candidates to work with.
+// SQL over-fetch multiplier so the remaining filters have candidates to work with.
 const CANDIDATE_MULTIPLIER = 4;
 const CANDIDATE_CAP = 80;
 
@@ -153,14 +153,23 @@ export class LexicalAdapter implements RetrievalAdapter {
     const limit = Math.min(k * CANDIDATE_MULTIPLIER, CANDIDATE_CAP);
     const db = this.db();
 
+    const namespaces =
+      opts.namespace === undefined
+        ? []
+        : Array.isArray(opts.namespace)
+          ? opts.namespace
+          : [opts.namespace];
+    const namespaceFilter = namespaces.length
+      ? ` AND json_extract(metadata, '$.namespace') IN (${namespaces.map(() => "?").join(", ")})`
+      : "";
     let rows: ChunkRow[];
     try {
       rows = db
         .prepare(
           "SELECT text, doc_id, chunk_id, path, heading_path, metadata, bm25(chunks) AS bm25 " +
-            "FROM chunks WHERE chunks MATCH ? ORDER BY bm25 LIMIT ?",
+            `FROM chunks WHERE chunks MATCH ?${namespaceFilter} ORDER BY bm25 LIMIT ?`,
         )
-        .all(match, limit) as ChunkRow[];
+        .all(match, ...namespaces, limit) as ChunkRow[];
     } catch (err) {
       if (err instanceof Error && /no such table/.test(err.message)) {
         throw new Error("index not built — run reindex() first");
@@ -168,8 +177,8 @@ export class LexicalAdapter implements RetrievalAdapter {
       throw err;
     }
 
-    // Post-filter on parsed metadata, then take the top k. Filtering happens
-    // after the SQL LIMIT (k*4, capped 80) so filters never widen the search.
+    // Namespace is filtered before the candidate limit. Other metadata filters
+    // are applied afterward, so they do not widen the search.
     const filtered = rows
       .map((row) => ({ row, meta: parseMeta(row.metadata) }))
       .filter(({ meta }) => passesFilters(meta, opts));
