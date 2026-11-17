@@ -42,7 +42,7 @@ Spec 0092 asks for an approved spec per work package. On 10 to 15 founder hours 
 ## Progress
 
 - **Engine spine: approved 2026-11-16** (D-124, issue #355). `docs/specs/0093-engine-spine-for-the-thin-version.md`. It needed two build tasks that did not exist: AW-324 and AW-325.
-- **Screens: not started.** Needs the two interview answers and is better after the walkthrough (AW-301).
+- **Screens: not started.** The two interview answers were recorded on 2026-11-16 (D-128: the screens protect "I outsmarted you" first; D-129: the first outside creator is a writer who cannot code). Better after the walkthrough (AW-301).
 - **Endgame: approved 2026-11-16** (D-125, issue #355). `docs/specs/0094-endgame-for-the-thin-version.md`. Build tasks: AW-326 and AW-327.
 - **Mini-game reward (spec 0093, Q1): answered 2026-11-16** (D-126). The top-ranked get one extra investigation. Build task: AW-328.
 

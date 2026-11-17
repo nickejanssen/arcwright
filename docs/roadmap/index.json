@@ -655,7 +655,8 @@
         "AW-297",
         "AW-298",
         "AW-299",
-        "AW-318"
+        "AW-318",
+        "AW-336"
       ],
       "github": {
         "issue_number": 372,
@@ -685,7 +686,8 @@
         "AW-325",
         "AW-326",
         "AW-327",
-        "AW-328"
+        "AW-328",
+        "AW-337"
       ],
       "github": {
         "issue_number": 373,
@@ -2939,6 +2941,36 @@
         "url": "https://github.com/nickejanssen/arcwright/issues/390"
       },
       "path": "docs/roadmap/tasks/AW-328-give-the-mini-game-winner-one-extra-investigation.md",
+      "epic_id": "M7-B"
+    },
+    {
+      "id": "AW-336",
+      "title": "Run The API Tests In CI And Fix The One Failing On Main",
+      "milestone": "M7",
+      "epic": "M7-A",
+      "size": "S",
+      "depends_on": [],
+      "github": {
+        "issue_number": 394,
+        "url": "https://github.com/nickejanssen/arcwright/issues/394"
+      },
+      "path": "docs/roadmap/tasks/AW-336-run-the-api-tests-in-ci-and-fix-the-one-failing-on-main.md",
+      "epic_id": "M7-A"
+    },
+    {
+      "id": "AW-337",
+      "title": "Give Small Groups A Mini-Game That Fits",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "S",
+      "depends_on": [
+        "AW-303"
+      ],
+      "github": {
+        "issue_number": 395,
+        "url": "https://github.com/nickejanssen/arcwright/issues/395"
+      },
+      "path": "docs/roadmap/tasks/AW-337-give-small-groups-a-mini-game-that-fits.md",
       "epic_id": "M7-B"
     }
   ],
