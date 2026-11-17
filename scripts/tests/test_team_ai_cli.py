@@ -3,8 +3,39 @@ import subprocess
 import sys
 from pathlib import Path
 
+from scripts import team_ai_cli
+
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts" / "team_ai_cli.py"
+
+
+def test_local_cli_is_preferred_over_sibling_checkout(tmp_path, monkeypatch):
+    checkout = tmp_path / "arcwright"
+    local = checkout / "team-ai" / "runtime" / "dist" / "cli.js"
+    sibling = tmp_path / "team-ai" / "dist" / "cli.js"
+    for path in (local, sibling):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_text("", encoding="utf-8")
+    monkeypatch.delenv("TEAM_AI_CLI", raising=False)
+    monkeypatch.setattr(
+        team_ai_cli, "__file__", str(checkout / "scripts" / "team_ai_cli.py")
+    )
+    monkeypatch.setattr(team_ai_cli, "_main_checkout", lambda: checkout)
+    assert team_ai_cli.find_cli() == local
+
+
+def test_override_is_preferred_over_local_cli(tmp_path, monkeypatch):
+    checkout = tmp_path / "arcwright"
+    local = checkout / "team-ai" / "runtime" / "dist" / "cli.js"
+    local.parent.mkdir(parents=True)
+    local.write_text("", encoding="utf-8")
+    override = tmp_path / "override.js"
+    override.write_text("", encoding="utf-8")
+    monkeypatch.setenv("TEAM_AI_CLI", str(override))
+    monkeypatch.setattr(
+        team_ai_cli, "__file__", str(checkout / "scripts" / "team_ai_cli.py")
+    )
+    assert team_ai_cli.find_cli() == override
 
 
 def test_resolves_from_this_checkout():
