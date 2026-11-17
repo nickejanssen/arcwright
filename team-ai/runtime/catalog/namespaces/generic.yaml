@@ -1,0 +1,25 @@
+name: generic
+description: A starting namespace for a team whose domain does not fit a named preset.
+second_level:
+  - operating
+  - platform
+  - patterns
+  - playbooks
+  - decisions
+domain_dir: null
+seed_docs:
+  - path: operating/charter.md
+    title: Team charter
+    purpose: States this team's remit and the boundaries of what it owns.
+  - path: operating/roles.md
+    title: Who does what
+    purpose: Maps each role on this team to the decisions and areas it owns.
+  - path: platform/overview.md
+    title: The systems this team owns or integrates
+    purpose: Lists the tools and systems this team runs or depends on.
+  - path: playbooks/onboarding.md
+    title: How a new person or partner gets started
+    purpose: Walks a new team member through access, context, and a first task.
+  - path: decisions/adr-0001-why-team-ai.md
+    title: Why this team stood up team-ai
+    purpose: Records why this team adopted team-ai for its AI capability.

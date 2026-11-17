@@ -1,0 +1,10 @@
+{
+  "name": "p",
+  "kind": "subagent",
+  "description": "d",
+  "model_tier": "medium",
+  "kb_namespaces": [],
+  "tools": [],
+  "max_hops": 0,
+  "instructions_file": "a.md"
+}

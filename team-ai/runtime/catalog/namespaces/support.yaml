@@ -1,0 +1,25 @@
+name: support
+description: Knowledge for a team that resolves inbound issues and escalations.
+second_level:
+  - operating
+  - platform
+  - patterns
+  - playbooks
+  - decisions
+domain_dir: "queues/<name>"
+seed_docs:
+  - path: operating/charter.md
+    title: Team charter
+    purpose: States which queues and severities this support team owns and its response targets.
+  - path: operating/roles.md
+    title: Who does what
+    purpose: Maps each support role to the queues, escalation paths, and on-call duties it holds.
+  - path: platform/overview.md
+    title: The systems this team owns or integrates
+    purpose: Lists the ticketing, monitoring, and product systems support relies on day to day.
+  - path: playbooks/onboarding.md
+    title: How a new person or partner gets started
+    purpose: Walks a new agent through queue access, tooling, and shadowing before taking tickets.
+  - path: decisions/adr-0001-why-team-ai.md
+    title: Why this team stood up team-ai
+    purpose: Records why this support team adopted team-ai to answer from an owned knowledge base.

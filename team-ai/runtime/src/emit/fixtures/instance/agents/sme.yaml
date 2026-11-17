@@ -1,0 +1,8 @@
+name: sme
+kind: router
+description: "Routes a question to the domain subagent that owns it, or refuses."
+model_tier: none
+kb_namespaces: []
+tools: [kb_manifest, kb_search, kb_coverage_gap]
+max_hops: 1
+instructions_file: agents/sme.md

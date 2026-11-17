@@ -1,0 +1,12 @@
+{
+  "name": "engineering",
+  "description": "Only four seed docs, schema requires exactly five.",
+  "second_level": ["operating", "platform"],
+  "domain_dir": "services/<name>",
+  "seed_docs": [
+    { "path": "operating/charter.md", "title": "Team charter", "purpose": "a" },
+    { "path": "operating/roles.md", "title": "Who does what", "purpose": "b" },
+    { "path": "platform/overview.md", "title": "Systems overview", "purpose": "c" },
+    { "path": "playbooks/onboarding.md", "title": "Onboarding", "purpose": "d" }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "name": "kb-answer",
+  "tier": "small",
+  "summary": "presets must be \"all\" or an array of strings.",
+  "presets": "some"
+}

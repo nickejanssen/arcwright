@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nickejanssen/team-ai/schemas/skill-catalog.schema.json",
+  "title": "Skill catalog entry",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "tier", "summary", "presets"],
+  "properties": {
+    "name": { "type": "string" },
+    "tier": {
+      "type": "string",
+      "enum": ["none", "small", "large"]
+    },
+    "summary": { "type": "string" },
+    "presets": {
+      "oneOf": [
+        { "type": "string", "const": "all" },
+        { "type": "array", "items": { "type": "string" } }
+      ]
+    }
+  }
+}

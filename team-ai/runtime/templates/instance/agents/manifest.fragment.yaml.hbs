@@ -1,0 +1,17 @@
+# This instance's domains. `team-ai assemble-manifest` merges this file (plus any
+# spoke configs) into manifest.yaml. Edit here, never in manifest.yaml.
+{{#if domains}}
+domains:
+{{#each domains}}
+  - id: {{slug}}
+    description: "TODO: what questions does the {{name}} domain own?"
+    keywords: []
+    kb_namespace: {{#if namespace}}{{namespace}}{{else}}{{#if ../namespaces}}{{../namespaces.[0]}}{{else}}operating{{/if}}{{/if}}
+    subagent: {{slug}}-sme
+    model_tier: small
+    owner: {{default ../roles.[0].name "unassigned"}}
+    escalate_to: "unassigned"
+{{/each}}
+{{else}}
+domains: []
+{{/if}}

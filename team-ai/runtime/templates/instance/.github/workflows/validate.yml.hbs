@@ -1,0 +1,10 @@
+name: validate
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  validate-kb:
+    uses: nickejanssen/team-ai/.github/workflows/validate-kb.reusable.yml@v0

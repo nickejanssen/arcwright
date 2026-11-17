@@ -1,0 +1,19 @@
+{
+  "id": "kb.support.refund-policy",
+  "namespace": "support/billing",
+  "title": "Refund policy",
+  "owner": "support-lead",
+  "status": "draft",
+  "review_by": "2027-03-15",
+  "sensitivity": "confidential",
+  "source": "synced:zendesk-kb",
+  "source_url": "https://example.com/kb/refund-policy",
+  "tags": ["refunds"],
+  "supersedes": ["kb.support.old-refunds"],
+  "relations": {
+    "depends_on": ["kb.support.billing-basics"],
+    "used_by_partner": ["acme"],
+    "owned_by_role": "support-lead",
+    "informs": ["kb.support.chargebacks"]
+  }
+}

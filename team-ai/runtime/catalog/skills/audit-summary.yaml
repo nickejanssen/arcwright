@@ -1,0 +1,4 @@
+name: audit-summary
+tier: small
+summary: Summarize a freshness or coverage audit into an owner-ready action list.
+presets: all

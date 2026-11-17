@@ -1,0 +1,9 @@
+title = "team-ai gitleaks config"
+[extend]
+useDefault = true
+[allowlist]
+description = "framework docs and license"
+paths = [
+  '''LICENSE''',
+  '''docs/.*''',
+]

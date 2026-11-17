@@ -1,0 +1,16 @@
+{
+  "name": "emea-sales",
+  "kb_namespace": "spoke/emea-sales",
+  "owner": "emea-lead",
+  "core_repo": "github.com/acme/team-ai",
+  "toolkit_version": "0.1.0",
+  "domains": [
+    {
+      "id": "pricing",
+      "description": "Regional pricing.",
+      "keywords": ["price"],
+      "subagent": "pricing-sme",
+      "model_tier": "medium"
+    }
+  ]
+}

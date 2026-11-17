@@ -1,0 +1,9 @@
+name: billing-sme
+kind: subagent
+description: "Answers billing questions from the operating namespace, with citations."
+model_tier: small
+kb_namespaces: [operating]
+tools: [kb_search, kb_get, kb_coverage_gap]
+max_hops: 0
+instructions_file: agents/billing-sme.md
+escalate_to: unassigned

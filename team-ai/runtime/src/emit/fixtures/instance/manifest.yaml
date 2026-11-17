@@ -1,0 +1,8 @@
+domains:
+  - id: billing
+    description: "Billing and invoicing questions."
+    keywords: [billing, invoice, payment]
+    kb_namespace: operating
+    subagent: billing-sme
+    model_tier: small
+    owner: unassigned

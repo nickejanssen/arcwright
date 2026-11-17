@@ -1,0 +1,17 @@
+# EXAMPLE ONLY — replace with your team's real golden questions.
+# This file is skipped by `team-ai run-evals` (the first line contains EXAMPLE).
+# See docs/architecture.md §16.
+- id: eval.example.widget-overview
+  question: What does the EXAMPLE widget do?
+  expect_namespace: platform
+  expect_paths: [kb/platform/example-widget.md]
+  expect_route: platform-sme
+  expect_tier_max: small
+  must_cite: true
+- id: eval.example.refuse-unknown
+  question: What is the EXAMPLE company's stock price?
+  expect_namespace: ""
+  expect_paths: []
+  expect_route: __refuse__
+  expect_tier_max: none
+  must_cite: false

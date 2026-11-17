@@ -1,0 +1,14 @@
+{
+  "domains": [
+    {
+      "id": "platform",
+      "description": "Platform APIs.",
+      "keywords": ["api"],
+      "kb_namespace": "platform",
+      "subagent": "platform-sme",
+      "model_tier": "small",
+      "owner": "solutions-architect",
+      "unexpected": true
+    }
+  ]
+}

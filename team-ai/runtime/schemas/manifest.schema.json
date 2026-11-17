@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nickejanssen/team-ai/schemas/manifest.schema.json",
+  "title": "Hub domain manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["domains"],
+  "properties": {
+    "domains": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/manifestDomain" }
+    },
+    "agents": { "type": "array", "items": { "$ref": "#/$defs/manifestAgent" } },
+    "skills": { "type": "array", "items": { "$ref": "#/$defs/manifestSkill" } }
+  },
+  "$defs": {
+    "manifestDomain": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "description",
+        "keywords",
+        "kb_namespace",
+        "subagent",
+        "model_tier",
+        "owner"
+      ],
+      "properties": {
+        "id": { "type": "string" },
+        "description": { "type": "string" },
+        "keywords": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "kb_namespace": { "type": "string" },
+        "subagent": { "type": "string" },
+        "model_tier": {
+          "type": "string",
+          "enum": ["none", "small", "large"]
+        },
+        "owner": { "type": "string" },
+        "repo": { "type": "string" },
+        "escalate_to": { "type": "string" },
+        "group": { "type": "string" },
+        "authority": { "type": "string", "enum": ["canonical", "provisional", "archived"] },
+        "not_owned": { "type": "array", "items": { "type": "string" } },
+        "depends_on": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "manifestAgent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["name", "tier", "kind", "max_hops", "kb_namespaces"],
+      "properties": {
+        "name": { "type": "string" },
+        "tier": { "type": "integer", "minimum": 1, "maximum": 3 },
+        "kind": { "type": "string", "enum": ["router", "subagent", "persona"] },
+        "group": { "type": "string" },
+        "max_hops": { "type": "integer", "minimum": 0 },
+        "kb_namespaces": { "type": "array", "items": { "type": "string" } },
+        "skills": { "type": "array", "items": { "type": "string" } },
+        "escalate_to": { "type": "string" },
+        "source": { "type": "string", "enum": ["generated", "authored"] },
+        "path": { "type": "string" }
+      }
+    },
+    "manifestSkill": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "deterministic"],
+      "properties": {
+        "id": { "type": "string" },
+        "description": { "type": "string" },
+        "deterministic": { "type": "boolean" },
+        "script": { "type": "string" },
+        "used_by": { "type": "array", "items": { "type": "string" } },
+        "path": { "type": "string" },
+        "source": { "type": "string", "enum": ["generated", "authored"] }
+      }
+    }
+  }
+}

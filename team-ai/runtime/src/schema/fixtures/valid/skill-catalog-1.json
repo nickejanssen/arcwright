@@ -1,0 +1,6 @@
+{
+  "name": "kb-answer",
+  "tier": "small",
+  "summary": "Answer a question from the knowledge base with citations.",
+  "presets": "all"
+}

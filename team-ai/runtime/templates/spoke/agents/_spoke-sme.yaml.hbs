@@ -1,0 +1,9 @@
+name: {{domain.subagent}}
+kind: subagent
+description: "Answers {{name}} questions strictly from the {{namespace}} namespace, with citations."
+model_tier: small
+kb_namespaces: [{{namespace}}]
+tools: [kb_search, kb_get, kb_list, kb_coverage_gap]
+max_hops: 0
+escalate_to: {{default owner "unassigned"}}
+instructions_file: agents/{{domain.subagent}}.md

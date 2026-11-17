@@ -1,0 +1,17 @@
+{
+  "name": "{{team.slug}}-kb-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Optional local stdio MCP server exposing this instance's team-ai knowledge tools to a second coding client.",
+  "type": "module",
+  "bin": {
+    "{{team.slug}}-kb-mcp": "server.mjs"
+  },
+  "files": ["server.mjs"],
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  }
+}

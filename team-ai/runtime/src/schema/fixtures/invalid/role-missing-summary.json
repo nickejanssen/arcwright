@@ -1,0 +1,7 @@
+{
+  "name": "architect",
+  "default_namespaces": ["platform"],
+  "default_skills": ["kb-answer"],
+  "model_tier": "large",
+  "persona_default": "internal-technical"
+}

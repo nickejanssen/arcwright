@@ -1,0 +1,39 @@
+name: evals (reusable)
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        description: Node.js version to run under
+        type: string
+        default: "22"
+      root:
+        description: Instance root directory to run evals in
+        type: string
+        default: "."
+      team-ai-ref:
+        description: team-ai git ref (tag or branch) to build and run
+        type: string
+        default: "v0"
+permissions:
+  contents: read
+jobs:
+  evals:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          repository: nickejanssen/team-ai
+          ref: ${{ inputs.team-ai-ref }}
+          path: .team-ai-cli
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+      - run: npm ci && npm run build
+        working-directory: .team-ai-cli
+      - run: node .team-ai-cli/dist/cli.js run-evals --root ${{ inputs.root }} --json | tee eval-report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: eval-report
+          path: eval-report.json

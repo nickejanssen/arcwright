@@ -1,0 +1,5 @@
+name: triage
+tier: small
+summary: Classify an inbound issue by severity and area and propose a first response.
+presets:
+  - support

@@ -1,0 +1,6 @@
+name: partner-escalation
+tier: small
+summary: Package a partner-reported issue with context and route it to the owning team.
+presets:
+  - generic-partner-facing
+  - support

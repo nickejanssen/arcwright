@@ -1,0 +1,29 @@
+# {{team.slug}}-kb-mcp — optional local stdio MCP server
+
+This server is **optional and local-only**. Your primary coding client reads
+this repo directly and does not need it. Enable it only if a **second** coding
+client needs the same knowledge tools (`kb_search`, `kb_get`, `kb_manifest`,
+`kb_coverage_gap`, `kb_freshness`).
+
+## Enable it
+
+1. `cd mcp-server && npm install`
+2. Register it in your client's MCP config as a **stdio** server pointing at
+   this `server.mjs`:
+
+   ```json
+   {
+     "mcpServers": {
+       "{{team.slug}}-kb": {
+         "command": "node",
+         "args": ["./mcp-server/server.mjs"]
+       }
+     }
+   }
+   ```
+
+3. Restart the client. The five `kb_*` tools become available.
+
+Every tool shells out to the `team-ai` CLI against this repo and is read-only.
+The server imports none of the framework internals. Delete this directory if you
+never add a second client.

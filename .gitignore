@@ -45,3 +45,7 @@ docs-bundles/
 
 # Per-session observation log written by the PostToolUse hook; machine state.
 team-ai/graph/observations/
+
+# Arcwright-owned knowledge CLI build artifacts
+team-ai/runtime/dist/
+team-ai/runtime/coverage/

@@ -1,0 +1,692 @@
+# team-ai interview question bank — single source of truth for both runtimes
+# (the CLI prompts and the in-Claude scaffold-interview skill). Never fork this.
+#
+# Loaded and validated by src/interview/bank.ts against
+# schemas/questions.schema.json. Every question needs a real branching
+# consequence; if an answer changes nothing generated, delete the question.
+#
+# Field notes:
+#   why           must cite docs/quality-bar.md#q<N> (N in 1..17) — the quality
+#                 bar item the question exists to protect.
+#   options       required and non-empty for single_select / multi_select / rank;
+#                 absent (or empty) for text / confirm.
+#   implies       pre-fills a later answer, keyed by question id, or the pseudo
+#                 key "warn" which surfaces a downside once then respects the
+#                 choice. Values are scalars.
+#   recommend     when present, recommend_why is required and always prints.
+#   allow_defer   true means "decide later" is offered: records a TODO, applies
+#                 the default, moves on.
+#   ask_if        gate expression, evaluated by the runtime, not here.
+#
+# ask_if grammar (string; not evaluated at load time):
+#   always
+#   <id> == "value"
+#   <id> != "value"
+#   <id> in ["a", "b"]
+#   has(<id>, "value")        -> true when a multi_select answer contains "value"
+#   ( <expr> )                -> grouping
+#   <expr> && <expr>          -> logical and
+#   <expr> || <expr>          -> logical or
+
+questions:
+  # ─────────────────────────────── Act 0: Preflight ───────────────────────────
+  - id: pre.assessment
+    act: 0
+    type: single_select
+    prompt: How should this setup relate to the AI infrastructure already in your repo?
+    why: >-
+      Preflight found existing infrastructure. Extending it instead of standing
+      up a parallel stack is the difference between one owned system and two
+      that compete. See docs/quality-bar.md#q17 for the preflight bar.
+    options:
+      - value: extend
+        label: Extend the existing harness (adopt its config, register alongside it)
+        tradeoff: >-
+          Reuses the agent config and connectors already in place. Nothing new
+          to maintain beyond the knowledge layer.
+      - value: coexist
+        label: Coexist as a separate system with its own config
+        tradeoff: >-
+          Clean separation, but two configs and two mental models for anyone
+          who touches both.
+      - value: stand-down
+        label: Stand down the knowledge server; wire agents and skills to the existing search
+        tradeoff: >-
+          The cheapest outcome. You get scoped agents, personas, and skills with
+          no index to maintain, as long as the existing search already answers
+          "where is the doc".
+      - value: explain
+        label: Explain the difference before I choose
+    allow_defer: false
+    ask_if: always
+
+  - id: pre.overlap
+    act: 0
+    type: single_select
+    prompt: Existing search already covers some of these sources. What do you want to do?
+    why: >-
+      When an org-wide search already indexes the same pages, a second index can
+      be pure duplication of cost and freshness risk. See docs/quality-bar.md#q12.
+    options:
+      - value: build-anyway
+        label: Build the index anyway (you need ranked retrieval, scoping, or enforced citations)
+      - value: contribute-and-skip-index
+        label: Contribute to the existing search and skip building an index
+      - value: decide-later
+        label: Decide later
+    default: decide-later
+    allow_defer: true
+    # Runtime only shows this when preflight actually detects an overlap.
+    ask_if: always
+
+  - id: pre.probe_result
+    act: 0
+    type: single_select
+    prompt: The connector probe answered most sample questions. Continue building?
+    why: >-
+      If a connector you already have returns findable, sourced answers, the
+      marginal value of this build is smaller and worth naming out loud. See
+      docs/quality-bar.md#q17.
+    options:
+      - value: continue
+        label: Continue with the full build
+      - value: scale-back-to-docs
+        label: Scale back to documents and agents only, no index
+      - value: stop-here
+        label: Stop here; what you have is enough
+    default: continue
+    allow_defer: true
+    # Runtime only shows this when the probe scores well.
+    ask_if: always
+
+  # ────────────────────────── Act 1: Mode and team context ────────────────────
+  - id: mode
+    act: 1
+    type: single_select
+    prompt: What are you setting up?
+    why: >-
+      Mode decides how much of the stack gets generated. This bank is the new
+      instance flow; `team-ai spoke` and `team-ai attach` run their own short
+      prompt sequences (built in a later task) and do not walk this bank. See
+      docs/quality-bar.md#q3.
+    options:
+      - value: instance
+        label: A new team instance
+      - value: spoke
+        label: A spoke for an existing instance
+      - value: attach
+        label: Attach an existing repo to an instance
+      - value: not-sure
+        label: Not sure yet
+    default: instance
+    allow_defer: false
+    ask_if: always
+
+  - id: ctx.org_path
+    act: 1
+    type: text
+    prompt: What is the path or URL of the org instance this connects to?
+    why: >-
+      An instance or spoke inherits its catalog and knowledge root from an org
+      instance. Naming it now avoids a wrong default that later rewrites every
+      doc id. See docs/quality-bar.md#q15.
+    allow_defer: true
+    ask_if: mode != "attach"
+
+  - id: team.name
+    act: 1
+    type: text
+    prompt: What is the team called?
+    why: >-
+      Every generated file, id prefix, and agent name derives from this, and the
+      names are cheap to change only before the first write. See
+      docs/quality-bar.md#q15.
+    allow_defer: false
+    ask_if: always
+
+  - id: team.mission
+    act: 1
+    type: text
+    prompt: "One line: what does this team do?"
+    why: >-
+      The mission line seeds agent instructions and the first starter docs, so
+      the first search returns something real instead of nothing. See
+      docs/quality-bar.md#q8.
+    allow_defer: true
+    ask_if: always
+
+  - id: team.size
+    act: 1
+    type: single_select
+    prompt: How many people?
+    why: >-
+      Team size gates whether role subagents are worth the overhead. Below four
+      people, domain agents alone are the honest choice. See
+      docs/quality-bar.md#q4.
+    options:
+      - value: "1-3"
+        label: 1 to 3 people
+      - value: "4-8"
+        label: 4 to 8 people
+      - value: "9-20"
+        label: 9 to 20 people
+      - value: "20+"
+        label: More than 20 people
+    default: "4-8"
+    allow_defer: false
+    ask_if: always
+
+  - id: team.surfaces
+    act: 1
+    type: multi_select
+    prompt: Where will people use this?
+    why: >-
+      Where people ask from decides which MCP surfaces and per-surface scopes get
+      generated, and it records the hosting gate conditions. See
+      docs/quality-bar.md#q10.
+    options:
+      - value: coding-agent
+        label: A coding agent
+      - value: chat-apps
+        label: Chat apps
+      - value: read-only-stakeholders
+        label: Read-only stakeholders
+      - value: other-mcp
+        label: Other MCP clients
+    allow_defer: true
+    ask_if: always
+
+  - id: team.sources
+    act: 1
+    type: multi_select
+    prompt: Where does knowledge live today?
+    why: >-
+      Where knowledge lives today decides link-versus-sync and whether the
+      substrate should import anything at all. See docs/quality-bar.md#q12.
+    options:
+      - value: confluence
+        label: Confluence
+      - value: jira
+        label: Jira
+      - value: github
+        label: GitHub
+      - value: drive
+        label: Drive
+      - value: notion
+        label: Notion
+      - value: slack
+        label: Slack
+      - value: peoples-heads
+        label: Mostly in people's heads
+    allow_defer: true
+    ask_if: always
+
+  - id: team.consumers
+    act: 1
+    type: multi_select
+    prompt: Who asks this system questions?
+    why: >-
+      External consumers force sensitivity tiers on and enable the read-only
+      scope, so this cannot be inferred later. See docs/quality-bar.md#q7.
+    options:
+      - value: engineers
+        label: Engineers
+      - value: customer-partner-facing
+        label: Customer or partner facing
+      - value: leadership
+        label: Leadership
+      - value: outside-company
+        label: People outside the company
+    allow_defer: true
+    ask_if: always
+
+  # ───────────────────────────── Act 2: Knowledge model ───────────────────────
+  - id: kb.substrate
+    act: 2
+    type: single_select
+    prompt: Where should the knowledge itself live?
+    why: >-
+      This is the storage decision. It sets what kinds of questions the system
+      answers well and how much maintenance it costs. See docs/quality-bar.md#q1.
+    options:
+      - value: md-git
+        label: Markdown in git, index derived from it
+        tradeoff: >-
+          Simplest. Diffable, reviewable, human-editable. Any index can be
+          rebuilt or swapped later with no migration.
+        implies:
+          arch.index_driver: lexical
+          kb.write_back: pr-only
+      - value: db-native
+        label: A database as the source of truth
+        tradeoff: >-
+          Only worth it if your knowledge is already structured records rather
+          than documents. You lose git history, review, and human editing, and
+          index changes become migrations.
+        implies:
+          warn: true
+    default: md-git
+    recommend: md-git
+    recommend_why: >-
+      Keep documents as the source of truth and treat every index as disposable.
+      Lexical, vector, and graph all become reversible config choices instead of
+      migrations.
+    allow_defer: true
+    ask_if: always
+
+  - id: kb.namespaces
+    act: 2
+    type: single_select
+    prompt: Pick a starting knowledge layout.
+    why: >-
+      Namespaces are the top-level layout. Cheap to rename, but the names touch
+      every doc id, so a deliberate pick now saves churn. See
+      docs/quality-bar.md#q7.
+    options:
+      - value: engineering
+        label: Engineering preset
+      - value: support
+        label: Support preset
+      - value: generic
+        label: Generic preset
+      - value: generic-partner-facing
+        label: Generic partner-facing preset
+      - value: custom
+        label: Define my own
+    default: generic
+    allow_defer: true
+    ask_if: always
+
+  - id: kb.catalog_override
+    act: 2
+    type: single_select
+    prompt: Do you want to customize the roles and skills on offer?
+    why: >-
+      Whether the offered roles and skills come straight from a preset, get
+      edited now, or come from an org catalog repo. See docs/quality-bar.md#q4.
+    options:
+      - value: use-preset
+        label: Use the preset as-is
+      - value: review-and-edit
+        label: Review and edit the roles and skills now
+      - value: org-catalog-repo
+        label: Point at an org catalog repo
+    default: use-preset
+    allow_defer: true
+    ask_if: always
+
+  - id: kb.sources_strategy
+    act: 2
+    type: single_select
+    prompt: How do we treat the systems knowledge already lives in?
+    why: >-
+      Referenced, mirrored read-only, or copied in and owned. Each import is a
+      sync pipeline you then have to maintain and trust. See
+      docs/quality-bar.md#q12.
+    options:
+      - value: link-only
+        label: Link only, never copy
+      - value: sync-read-only
+        label: Sync read-only mirrors
+      - value: import-and-own
+        label: Import the content and own it
+      - value: mixed
+        label: Mixed, decided per source
+    default: link-only
+    recommend: link-only
+    recommend_why: >-
+      Linking keeps one source of truth and avoids a sync pipeline. Import only
+      the documents your team will actually edit.
+    allow_defer: true
+    ask_if: always
+
+  - id: kb.sensitivity
+    act: 2
+    type: single_select
+    prompt: Do you need sensitivity tiers?
+    why: >-
+      Sensitivity tiers gate what each persona and scope can retrieve. Forced on
+      when external consumers were selected. See docs/quality-bar.md#q7.
+    options:
+      - value: three-tiers
+        label: Three standard tiers (public, internal, confidential)
+      - value: custom-tiers
+        label: Custom tiers
+      - value: none
+        label: No tiers
+    default: three-tiers
+    allow_defer: true
+    ask_if: always
+
+  - id: kb.write_back
+    act: 2
+    type: single_select
+    prompt: Can agents change the knowledge base?
+    why: >-
+      Whether agents can write, and how much review stands between a draft and a
+      merge into the knowledge other agents cite. See docs/quality-bar.md#q9.
+    options:
+      - value: pr-only
+        label: Propose via pull request
+      - value: direct-with-review
+        label: Direct write, reviewed after
+      - value: read-only
+        label: Read only, humans write everything
+    default: pr-only
+    recommend: pr-only
+    recommend_why: >-
+      A PR is the cheapest place to catch a wrong or uncited change before it
+      becomes the knowledge base other agents cite.
+    allow_defer: true
+    ask_if: always
+
+  # ───────────────────────── Act 3: Architecture and cost ─────────────────────
+  - id: arch.index_driver
+    act: 3
+    type: single_select
+    prompt: Which retrieval driver first?
+    why: >-
+      The driver decides answer quality and running cost per query. Lexical first
+      keeps every later change a config swap, not a migration. See
+      docs/quality-bar.md#q11.
+    options:
+      - value: lexical
+        label: Lexical (keyword) index
+      - value: vector-embedded
+        label: Vector, embedded in-process
+      - value: vector-pgvector
+        label: Vector on Postgres (pgvector)
+      - value: vector-hosted
+        label: Vector, hosted service
+      - value: graph
+        label: Graph index
+      - value: decide-later
+        label: Decide later
+    default: lexical
+    allow_defer: true
+    ask_if: always
+
+  - id: kb.graph_questions
+    act: 3
+    type: text
+    prompt: Name two questions you want answered that keyword or vector search cannot handle.
+    why: >-
+      Graph is only worth its cost for genuinely relational answers. Naming the
+      questions is the honest test of whether you have them. See
+      docs/quality-bar.md#q11.
+    allow_defer: true
+    ask_if: arch.index_driver == "graph"
+
+  - id: arch.hosting
+    act: 3
+    type: single_select
+    prompt: Do you need a server?
+    why: >-
+      A server is the largest single line item, and the two audiences that would
+      justify one — a second coding client, and people who cannot clone a repo —
+      are gate conditions, not present demand. Both gates get recorded so the
+      deferral is deliberate. See docs/quality-bar.md#q10.
+    options:
+      - value: no-server
+        label: No server for now
+        tradeoff: >-
+          Scripts and a repo. Local stdio is gated on a second coding client;
+          remote is gated on two real asks from people who cannot clone the repo.
+      - value: local-stdio
+        label: Local stdio server
+      - value: remote
+        label: Remote server
+        tradeoff: >-
+          The largest single line item in the plan, and it is being bought
+          before the demand is observed.
+    default: no-server
+    recommend: no-server
+    recommend_why: >-
+      Selecting chat apps or stakeholders records a gate condition rather than
+      triggering a build. Ship the repo now; add a server when a real second
+      client or non-repo ask appears.
+    allow_defer: true
+    ask_if: always
+
+  - id: arch.language
+    act: 3
+    type: single_select
+    prompt: TypeScript or Python?
+    why: >-
+      Language decides which SDK and which deterministic script set gets
+      generated. See docs/quality-bar.md#q13.
+    options:
+      - value: typescript
+        label: TypeScript
+      - value: python
+        label: Python
+      - value: na
+        label: Not applicable, docs only
+    default: typescript
+    allow_defer: true
+    ask_if: always
+
+  - id: arch.ci
+    act: 3
+    type: single_select
+    prompt: CI provider?
+    why: >-
+      Without CI the eval gates and freshness audits do not run. Choosing none
+      prints that tradeoff once, then respects it. See docs/quality-bar.md#q13.
+    options:
+      - value: github-actions
+        label: GitHub Actions
+      - value: other
+        label: Other CI provider
+      - value: none-for-now
+        label: None for now
+    default: github-actions
+    allow_defer: true
+    ask_if: always
+
+  - id: arch.topology
+    act: 3
+    type: single_select
+    prompt: Repo layout?
+    why: >-
+      Splitting the toolkit from the instance later is a move, not a rewrite,
+      only if the spoke and attach contract files exist from day one. See
+      docs/quality-bar.md#q4.
+    options:
+      - value: toolkit-plus-instance
+        label: Toolkit plus a separate instance repo
+      - value: single-repo
+        label: Single repo for now
+    default: toolkit-plus-instance
+    recommend: toolkit-plus-instance
+    recommend_why: >-
+      Keeping the toolkit and the instance separate keeps upgrades clean and lets
+      another team fork the toolkit without inheriting your knowledge base.
+    allow_defer: true
+    ask_if: always
+
+  - id: arch.model_tiers
+    act: 3
+    type: single_select
+    prompt: How aggressive on cost?
+    why: >-
+      Tier policy is the single largest driver of running cost. Unbounded tier
+      selection prints the tradeoff once. See docs/quality-bar.md#q6 and
+      docs/quality-bar.md#q16.
+    options:
+      - value: strict
+        label: Strict (prefer no model, then small)
+      - value: balanced
+        label: Balanced
+      - value: no-constraints
+        label: No constraints
+        tradeoff: >-
+          Unbounded tier selection is the single largest driver of running cost.
+        implies:
+          warn: true
+    default: balanced
+    allow_defer: true
+    ask_if: always
+
+  - id: arch.cache
+    act: 3
+    type: single_select
+    prompt: Enable the answer cache?
+    why: >-
+      The answer cache turns repeat and near-repeat questions into a no-model
+      path. Disabling it forfeits the cheapest tier. See docs/quality-bar.md#q16.
+    options:
+      - value: "yes"
+        label: Enable the answer cache
+      - value: "no"
+        label: No cache
+    default: "yes"
+    recommend: "yes"
+    recommend_why: >-
+      Repeat and near-repeat questions are a large share of real traffic; serving
+      them from cache is free and fast.
+    allow_defer: true
+    ask_if: always
+
+  # ────────────────── Act 4: Agents, subagents, personas, skills ──────────────
+  - id: agents.roles
+    act: 4
+    type: multi_select
+    prompt: Which role hats does this team wear?
+    why: >-
+      Each role becomes a subagent with its own namespaces and skills. Suppressed
+      for teams of 1 to 3, where domain agents alone are the honest choice. See
+      docs/quality-bar.md#q4.
+    options:
+      - value: architect
+        label: Architect
+      - value: build-engineer
+        label: Build engineer
+      - value: pm
+        label: Product manager
+      - value: sales-engineer
+        label: Sales engineer
+      - value: support-engineer
+        label: Support engineer
+      - value: custom
+        label: Add a custom role
+    allow_defer: true
+    ask_if: team.size != "1-3"
+
+  - id: agents.domains
+    act: 4
+    type: text
+    prompt: Name 1 to 3 starting domains.
+    why: >-
+      Each domain becomes a manifest entry and a domain subagent. Custom domains
+      generate a stub with a TODO block, never a guess. See
+      docs/quality-bar.md#q11.
+    allow_defer: true
+    ask_if: always
+
+  - id: agents.personas
+    act: 4
+    type: multi_select
+    prompt: Which audiences do you write for?
+    why: >-
+      Personas set tone only and grant no access. Unlabeled tone drift about
+      your own systems is a fast way to lose trust in the answers. See
+      docs/quality-bar.md#q2.
+    options:
+      - value: internal-technical
+        label: Internal technical
+      - value: partner-facing
+        label: Partner or customer facing
+      - value: executive-brief
+        label: Executive brief
+      - value: custom
+        label: Add a custom persona
+    default:
+      - internal-technical
+    allow_defer: true
+    ask_if: always
+
+  - id: agents.skills
+    act: 4
+    type: multi_select
+    prompt: Pick the starting skills.
+    why: >-
+      The catalog is filtered by the chosen preset. Core knowledge-base skills
+      are pre-checked and cannot be removed. See docs/quality-bar.md#q8.
+    options:
+      - value: kb-answer
+        label: Answer from the KB with citations
+      - value: kb-contribute
+        label: Draft a KB document with valid front matter
+      - value: sme-route
+        label: Route a question to the right domain subagent
+      - value: audit-summary
+        label: Summarize a freshness or coverage audit
+      - value: discovery-prep
+        label: Prepare technical discovery for a prospect or partner
+      - value: integration-review
+        label: Review an integration or API change
+      - value: partner-escalation
+        label: Package and route a partner-reported issue
+      - value: task-runner
+        label: Take a scoped change to a reviewable diff
+      - value: triage
+        label: Classify an inbound issue by severity and area
+    default:
+      - kb-answer
+      - kb-contribute
+      - sme-route
+      - audit-summary
+    allow_defer: true
+    ask_if: always
+
+  - id: agents.strictness
+    act: 4
+    type: single_select
+    prompt: What happens when the KB has no answer?
+    why: >-
+      Anything other than refuse prints the tradeoff once: unlabeled improvisation
+      about your own systems is the main way these setups lose trust. See
+      docs/quality-bar.md#q9.
+    options:
+      - value: refuse-log-gap
+        label: Refuse and log a coverage gap
+      - value: answer-labeled
+        label: Answer from general knowledge, labeled as such
+        implies:
+          warn: true
+      - value: answer-freely
+        label: Answer freely
+        implies:
+          warn: true
+    default: refuse-log-gap
+    recommend: refuse-log-gap
+    recommend_why: >-
+      A logged gap turns every unanswerable question into a backlog item.
+      Improvised answers about your own systems quietly erode trust in the ones
+      that are real.
+    allow_defer: true
+    ask_if: always
+
+  - id: agents.seed
+    act: 4
+    type: single_select
+    prompt: Seed the knowledge base so the first search works?
+    why: >-
+      An empty knowledge base on day one is how these die in week one. Seeding
+      makes the first search return a real, cited answer. See
+      docs/quality-bar.md#q8.
+    options:
+      - value: yes-5-starter-docs
+        label: Yes, 5 starter docs from the preset
+      - value: "no"
+        label: "No"
+      - value: write-my-own
+        label: No, I will write my own
+    default: yes-5-starter-docs
+    recommend: yes-5-starter-docs
+    recommend_why: >-
+      The first search returning a real, cited answer is what gets a team to come
+      back on day two.
+    allow_defer: true
+    ask_if: always

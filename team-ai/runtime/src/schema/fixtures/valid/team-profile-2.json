@@ -1,0 +1,27 @@
+{
+  "team_ai_version": "0.3.0",
+  "created": "2026-09-01T09:30:00+02:00",
+  "answers": {
+    "team_name": "Globex",
+    "eval_enabled": true,
+    "reviewers": 2
+  },
+  "deferred": [
+    {
+      "question": "Which model tier for the router?",
+      "applied_default": "small",
+      "revisit": "after first 100 sessions"
+    },
+    {
+      "question": "Enable partner-scoped namespaces?",
+      "applied_default": false,
+      "revisit": "2027-01-01"
+    }
+  ],
+  "generated_paths": [
+    {
+      "path": "agents/hub-router.md",
+      "sha256": "492528022cc303ce589bfc65a67adbd41f7fe265052181f729b9a2c4669c1a97"
+    }
+  ]
+}

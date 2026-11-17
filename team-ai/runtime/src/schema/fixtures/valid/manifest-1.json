@@ -1,0 +1,13 @@
+{
+  "domains": [
+    {
+      "id": "platform",
+      "description": "Platform APIs, limits, and integration guidance.",
+      "keywords": ["api", "rate limit", "webhook"],
+      "kb_namespace": "platform",
+      "subagent": "platform-sme",
+      "model_tier": "small",
+      "owner": "solutions-architect"
+    }
+  ]
+}

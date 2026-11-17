@@ -1,0 +1,12 @@
+name: support-engineer
+summary: Resolves inbound issues and escalations
+default_namespaces:
+  - operating
+  - platform
+  - playbooks
+default_skills:
+  - kb-answer
+  - triage
+  - partner-escalation
+model_tier: small
+persona_default: partner-facing

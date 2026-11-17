@@ -1,0 +1,9 @@
+{
+  "id": "eval.platform.bad-tier",
+  "question": "What does a partner do when they start getting 429s?",
+  "expect_namespace": "platform",
+  "expect_paths": ["kb/platform/rate-limits.md"],
+  "expect_route": "platform-sme",
+  "expect_tier_max": "medium",
+  "must_cite": true
+}

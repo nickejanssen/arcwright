@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nickejanssen/team-ai/schemas/frontmatter.schema.json",
+  "title": "Knowledge document front matter",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id",
+    "namespace",
+    "title",
+    "owner",
+    "status",
+    "review_by",
+    "sensitivity",
+    "source",
+    "tags",
+    "supersedes"
+  ],
+  "patternProperties": {
+    "^x-[a-z0-9-]+$": {}
+  },
+  "properties": {
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(\\.[a-z0-9-]+)+$"
+    },
+    "namespace": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9/-]*$"
+    },
+    "title": { "type": "string" },
+    "owner": { "type": "string" },
+    "status": {
+      "type": "string",
+      "enum": ["draft", "active", "deprecated"]
+    },
+    "review_by": {
+      "type": "string",
+      "format": "date"
+    },
+    "sensitivity": {
+      "type": "string",
+      "enum": ["public", "internal", "confidential"]
+    },
+    "source": {
+      "type": "string",
+      "pattern": "^(authored|synced:[a-z0-9-]+)$"
+    },
+    "tags": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "supersedes": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "source_url": {
+      "type": ["string", "null"],
+      "format": "uri"
+    },
+    "relations": {
+      "type": "object",
+      "properties": {
+        "depends_on": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "used_by_partner": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "owned_by_role": { "type": "string" }
+      },
+      "additionalProperties": {
+        "type": "array",
+        "items": { "type": "string" }
+      }
+    }
+  }
+}

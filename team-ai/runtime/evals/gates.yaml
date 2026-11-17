@@ -1,0 +1,7 @@
+# Reference copy of the built-in eval gate thresholds. The authoritative values
+# live in DEFAULT_GATES in src/evals/run.ts; this file is not loaded by the
+# framework. Copy it to <instance>/evals/gates.yaml and edit to override any key
+# for that instance.
+hitRate: 0.8
+citationValidity: 1.0
+coverage: 0.8

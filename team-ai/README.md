@@ -7,6 +7,7 @@ exclusions in `index.lock`. See `../docs/README.md` for source authority and
 
 | Path | Purpose |
 |---|---|
+| `runtime/` | Arcwright-owned knowledge CLI source and its dependencies. |
 | `agents/` | Domain specialist definitions and manifest fragment. |
 | `manifest.yaml` | Generated domain and agent manifest. |
 | `skills/` | Instance skills and routing procedures. |
@@ -14,6 +15,5 @@ exclusions in `index.lock`. See `../docs/README.md` for source authority and
 | `evals/gates.yaml` | Existing evaluation thresholds. |
 | `index.lock` | Retrieval configuration and knowledge-base scope. |
 
-The current CLI is built from the separate team-ai repository. The approved
-migration in `../docs/superpowers/plans/2026-11-17-ai-development-infrastructure.md`
-aims to remove that runtime dependency; until it lands, follow `SETUP.md`.
+The CLI source is maintained in `runtime/`. Follow `SETUP.md` to build it;
+`runtime/ARCWRIGHT.md` records its origin and compatibility scope.

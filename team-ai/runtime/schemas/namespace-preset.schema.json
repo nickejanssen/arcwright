@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nickejanssen/team-ai/schemas/namespace-preset.schema.json",
+  "title": "Knowledge namespace preset",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "description", "second_level", "domain_dir", "seed_docs"],
+  "properties": {
+    "name": { "type": "string" },
+    "description": { "type": "string" },
+    "second_level": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "type": "string" }
+    },
+    "domain_dir": {
+      "type": ["string", "null"]
+    },
+    "seed_docs": {
+      "type": "array",
+      "minItems": 5,
+      "maxItems": 5,
+      "items": { "$ref": "#/$defs/seedDoc" }
+    }
+  },
+  "$defs": {
+    "seedDoc": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "title", "purpose"],
+      "properties": {
+        "path": { "type": "string" },
+        "title": { "type": "string" },
+        "purpose": { "type": "string" }
+      }
+    }
+  }
+}

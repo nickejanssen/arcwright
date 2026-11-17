@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/nickejanssen/team-ai/schemas/agent.schema.json",
+  "title": "Agent definition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "name",
+    "kind",
+    "description",
+    "model_tier",
+    "kb_namespaces",
+    "tools",
+    "max_hops",
+    "instructions_file"
+  ],
+  "properties": {
+    "name": { "type": "string" },
+    "kind": {
+      "type": "string",
+      "enum": ["router", "subagent", "persona"]
+    },
+    "description": { "type": "string" },
+    "model_tier": {
+      "type": "string",
+      "enum": ["none", "small", "large"]
+    },
+    "kb_namespaces": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "tools": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "max_hops": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "instructions_file": { "type": "string" },
+    "escalate_to": { "type": "string" }
+  }
+}

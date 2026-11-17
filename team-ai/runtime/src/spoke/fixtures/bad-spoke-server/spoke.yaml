@@ -1,0 +1,14 @@
+name: acme-widgets-spoke
+kb_namespace: partners/acme-widgets
+owner: partner-lead
+core_repo: github.com/your-org/ps-ai-core
+toolkit_version: ">=0.1"
+domains:
+  - id: acme-widgets-support
+    description: Integration and support questions about Acme Widgets.
+    keywords:
+      - acme
+      - widgets
+      - integration
+    subagent: acme-widgets-sme
+    model_tier: large

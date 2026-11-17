@@ -1,0 +1,4 @@
+name: kb-contribute
+tier: small
+summary: Draft a new or updated knowledge-base document with valid front matter.
+presets: all
