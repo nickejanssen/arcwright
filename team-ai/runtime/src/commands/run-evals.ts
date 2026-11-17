@@ -120,7 +120,10 @@ interface MetricRow {
   pass: boolean;
 }
 
-function printReport(report: EvalReport): void {
+function printReport(
+  report: EvalReport,
+  multiPath: Array<{ id: string; allFound: boolean }>,
+): void {
   const { metrics, gates } = report;
   const gateRow = (name: string, value: number): MetricRow => {
     const gate = gates[name];
@@ -148,6 +151,20 @@ function printReport(report: EvalReport): void {
     );
   }
 
+  console.log("");
+  console.log("citationValidity checks fixture paths, not agent citations");
+  console.log("coverage checks literal text in the namespace, not answer correctness");
+  console.log(
+    "source-change warnings omit uncommitted edits and may miss unknown or same-day changes",
+  );
+  if (multiPath.length > 0) {
+    console.log(
+      `all listed paths found in top 8: ${multiPath.filter((entry) => entry.allFound).length}/${multiPath.length} (diagnostic only; paths may be alternatives)`,
+    );
+    for (const entry of multiPath.filter((item) => !item.allFound)) {
+      console.log(`  not all listed paths found: ${entry.id}`);
+    }
+  }
   console.log("");
   console.log("coverage by namespace:");
   for (const [namespace, value] of Object.entries(report.coverageByNamespace).sort()) {
@@ -203,7 +220,11 @@ export async function run(opts: RunEvalsCommandOptions): Promise<number> {
     return 0;
   }
 
-  const outcomes = await runGoldenFile(questions, { instanceDir: root });
+  const multiPath: Array<{ id: string; allFound: boolean }> = [];
+  const outcomes = await runGoldenFile(questions, {
+    instanceDir: root,
+    onMultiPath: (entry) => multiPath.push(entry),
+  });
   const report = computeReport(outcomes, loadGates(root));
 
   if (opts.json === true) {
@@ -211,6 +232,6 @@ export async function run(opts: RunEvalsCommandOptions): Promise<number> {
     return report.pass ? 0 : 1;
   }
 
-  printReport(report);
+  printReport(report, multiPath);
   return report.pass ? 0 : 1;
 }

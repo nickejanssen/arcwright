@@ -12,7 +12,7 @@ supersedes: []
 ---
 
 > Current version: v1.1
-> Last updated: 2026-11-15
+> Last updated: 2026-11-17
 > Status: Current
 > Canonical path: docs/conventions/knowledge-base-upkeep.md
 
@@ -102,6 +102,12 @@ What the run showed beyond the scores:
 - **Agents lose tool calls to path guesses.** The roadmap specialist had five calls refused: two Reads at the main checkout's path instead of the session's worktree, and three Grep or Glob calls with the wrong path or output mode. Each agent recovered. AW-318 counts these and proposes a fix; any change to the guard needs a founder exception to the freeze.
 - **Time to a cited answer:** 14 to 50 seconds per agent, four agents in parallel.
 - **Ranked search has a noise problem of our own making.** The line "Findings and evidence: `docs/product/2026-11-15-reset-audit.md`" is repeated in 26 task and epic files, so a search for the reset audit returns eight task files and not the audit. AW-318.
+
+### Experimental Codex role probe, 2026-11-17
+
+A separately dispatched Codex session used the `product-roadmap-sme` role and was asked questions 2, 3, 6 and 9 without answer hints, against main `dff9f0f` with a rebuilt index. This was **not** the Claude specialist or a hook-enforced session, and the raw transcript was not retained. It is not the official AW-318 rerun or a reproducible live-harness score.
+
+The session opened the decisions log unprompted. The four answers were scored correct; three cited the owning records: Q2 D-111, Q3 D-111, and Q6 D-109. Q9 flagged the Daily Case/Monster RPG conflict and cited the reset audit and AW-235, but did not cite D-056; count that citation as a miss. There were zero observed command failures. Guard refusals were **not measured** because the guard was inactive. AW-318 remains open for the guarded specialist rerun and its recorded evidence.
 
 ## Measures
 
