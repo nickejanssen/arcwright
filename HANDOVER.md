@@ -2,7 +2,7 @@
 
 > Read `AGENTS.md` first, then this file, before touching code. It is the short start-of-session brief for every agent (Claude, Codex, Copilot) and for the founder. If it disagrees with a current source, investigate before acting, then fix this file. Keep it short and link to the owner of each detail.
 
-Last updated: 2026-11-17, against main `dff9f0f`.
+Last updated: 2026-11-18, against main `c0a58ed`.
 
 ## System map
 
@@ -34,6 +34,7 @@ Keep them apart. Nothing in `engine/` may name Nightcap or assume a murder myste
 | Decisions | `docs/product/decisions-log.csv` and `docs/decisions/` |
 | The stack and what we adopt | `docs/architecture/02-technology-stack.md` section 2.11, ADR-0026 |
 | How work flows | `docs/roadmap/operations/working-model.md` |
+| Taking over as orchestrator | `docs/roadmap/operations/orchestrator-handoff.md` (the prompt for a fresh orchestrator session) |
 
 Work is never left in chat. If you find work, it becomes a roadmap task record and a GitHub issue in the same session (D-119).
 
@@ -50,7 +51,7 @@ Work is never left in chat. If you find work, it becomes a roadmap task record a
 | Engine-spine spec | AW-302 | Approved 2026-11-16 (D-124, issue #355): `docs/specs/0093-engine-spine-for-the-thin-version.md` |
 | Endgame spec | AW-302 | Approved 2026-11-16 (D-125, issue #355): `docs/specs/0094-endgame-for-the-thin-version.md` |
 | Screens spec | AW-302 | Drafted 2026-11-16 (spec 0095, on main as a draft), not approved; five open questions for the founder |
-| Build tasks under those specs, in order | AW-324, AW-325, AW-303, AW-304, AW-328, AW-326, AW-327 | AW-324 and AW-325 done (pull requests #391, #397). AW-303 and AW-304 may start: each writes a plan and stops for approval. The rest wait on the task before them. AW-328 is the mini-game reward (D-126). AW-338 (four round-rule fixes from the AW-325 review) starts after AW-303 |
+| Build tasks under those specs, in order | AW-324, AW-325, AW-303, AW-304, AW-328, AW-326, AW-327 | AW-324 and AW-325 done (pull requests #391, #397). AW-303 and AW-304 plans approved 2026-11-17 (issues #356, #357); their build sessions may start side by side, AW-303 merges first. The rest wait on the task before them. AW-328 is the mini-game reward (D-126). AW-338 (four round-rule fixes from the AW-325 review) starts after AW-303 |
 | Screen walkthrough on a TV and two phones | AW-301 | Open; needs the founder, Docker, a TV and two phones |
 | Build-versus-adopt review | AW-309 | Done 2026-11-15: section 2.11.7 of the technology stack. Session 1 needs no paid plan and no new tool |
 | Competitor comparison | AW-316, AW-323 | Done by reading: `docs/product/2026-11-15-competitor-and-prior-art.md`. Playing the two closest is AW-323 (founder) |
@@ -115,7 +116,7 @@ Work the list top to bottom. Building starts only at step 7. Whether a step is d
 | 4 | Done 2026-11-16: the two interview questions are answered (D-128: the screens protect "I outsmarted you" first; D-129: the first outside creator is a writer who cannot code) | Founder with any session | Done |
 | 5 | Drafted 2026-11-16 (spec 0093). Also send the case-writing session the message under "Owner actions" in that spec | Founder, 2 minutes | Now |
 | 6 | Read the draft screens spec (`docs/specs/0095-screens-for-the-thin-version.md`), answer its five questions, then reply "approve 0095" on issue #355 or say what to change. Walk the current build on a TV and two phones (AW-301, #354) to check the twelve claims the spec lists | Founder, about 30 minutes for the spec; founder starts Docker for the walkthrough | Now |
-| 7 | Build, one task per session, in this order: AW-324 (done), AW-325 (done), then AW-303 beside AW-304, then AW-328, AW-326, AW-327; AW-306, then AW-308. AW-336 (API tests in CI) done. AW-338 after AW-303. Screen tasks AW-329 to AW-334 start after spec 0095 is approved | Build sessions, at most two at once | When the spec that covers the task is approved |
+| 7 | Build, one task per session, in this order: AW-324 (done), AW-325 (done), then AW-303 beside AW-304 (plans approved; AW-303 merges first, AW-328 and AW-338 after AW-304 because it changes `engine/session/choices.py`), then AW-328, AW-326, AW-327; AW-306, then AW-308. AW-336 (API tests in CI) done. AW-338 after AW-303. Screen tasks AW-329 to AW-334 start after spec 0095 is approved | Build sessions, at most two at once | When the spec that covers the task is approved |
 | Any time | AW-318 (fresh session only), AW-299, AW-322's TV half | One session each | Now |
 
 **To start any task in a fresh session, type:** `/implement AW-NNN`. To check a pull request before merging, type `/review-pr`. A session that is not Claude Code is given this instead: "Read `AGENTS.md` and `HANDOVER.md`. Run `python scripts/roadmap_status.py --task AW-NNN`. Do that task as its task file says, and stop at the first founder gate."
@@ -124,6 +125,7 @@ Work the list top to bottom. Building starts only at step 7. Whether a step is d
 
 ## Log
 
+- **2026-11-18** Orchestrator handoff. The founder approved the AW-303 and AW-304 plans on 2026-11-17 (recorded on issues #356 and #357); no build has started. Their file lists do not overlap: AW-303 merges first, AW-304 rebases. The prompt for the next orchestrator session is `docs/roadmap/operations/orchestrator-handoff.md`, with links, the status of the 14 November reset work, the next build order and the open founder actions. Checks: knowledge-base validators; no code changed.
 - **2026-11-17** PR #408 merged: scoped retrieval filters namespaces before the candidate limit; runtime and checker suites passed in GitHub. AW-318 remains open: the reset-audit query still misses, unscoped retrieval is below 80%, and guarded specialist citation evaluation remains outstanding.
 
 - **2026-11-17** PR #407 merged: Arcwright now maintains the pinned knowledge CLI and builds it in CI. AW-318 remains open for retrieval and live owning-citation evaluation.
