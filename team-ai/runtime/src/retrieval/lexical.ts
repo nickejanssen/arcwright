@@ -13,6 +13,13 @@ import type { Chunk } from "../kb/chunk.js";
 import { chunkDoc } from "../kb/chunk.js";
 import { loadKb } from "../kb/loader.js";
 import { slug } from "../kb/slugify.js";
+import {
+  fingerprintCurrent,
+  fingerprintSources,
+  runtimeInputs,
+  type SourceEntry,
+} from "./fingerprint.js";
+import { readIndexLock } from "./index-lock.js";
 import type { Document, Hit, IndexStats, RetrievalAdapter, SearchOpts } from "./types.js";
 
 const DEFAULT_DB_PATH = ".team-ai/index.sqlite";
@@ -47,18 +54,24 @@ export interface LexicalAdapterOpts {
   kbRoot: string;
   dbPath?: string;
   exclude?: string[];
+  indexLockDir?: string;
+  indexLockSnapshot?: string;
 }
 
 export class LexicalAdapter implements RetrievalAdapter {
   private readonly kbRoot: string;
   private readonly dbPath: string;
   private readonly exclude: string[];
+  private readonly indexLockDir: string | undefined;
+  private readonly indexLockSnapshot: string;
   private handle: Database.Database | null = null;
 
   constructor(opts: LexicalAdapterOpts) {
     this.kbRoot = opts.kbRoot;
     this.dbPath = opts.dbPath ?? DEFAULT_DB_PATH;
     this.exclude = opts.exclude ?? [];
+    this.indexLockDir = opts.indexLockDir;
+    this.indexLockSnapshot = opts.indexLockSnapshot ?? "";
   }
 
   private db(): Database.Database {
@@ -77,6 +90,38 @@ export class LexicalAdapter implements RetrievalAdapter {
     }
   }
 
+  private lockSignature(): string {
+    if (this.indexLockDir === undefined) return this.indexLockSnapshot;
+    const current = JSON.stringify(readIndexLock(this.indexLockDir));
+    if (current !== this.indexLockSnapshot) {
+      throw new Error("index stale — configuration changed; restart and run reindex() first");
+    }
+    return current;
+  }
+
+  private assertFresh(db: Database.Database): void {
+    let stored: { fingerprint: string } | undefined;
+    try {
+      stored = db.prepare("SELECT fingerprint FROM index_provenance WHERE id = 1").get() as
+        { fingerprint: string } | undefined;
+    } catch {
+      throw new Error("index freshness unknown — run reindex() first");
+    }
+    if (typeof stored?.fingerprint !== "string" || !/^[a-f0-9]{64}$/.test(stored.fingerprint)) {
+      throw new Error("index freshness unknown — run reindex() first");
+    }
+    let current: string;
+    try {
+      current = fingerprintCurrent(this.kbRoot, this.exclude, this.lockSignature());
+    } catch (error) {
+      if (error instanceof Error && error.message.startsWith("index stale")) throw error;
+      throw new Error("index freshness unknown — cannot read index inputs; run reindex() first");
+    }
+    if (current !== stored.fingerprint) {
+      throw new Error("index stale — source or configuration changed; run reindex() first");
+    }
+  }
+
   // `paths` is accepted for API stability but ignored: every call is a full
   // drop/recreate reindex. Incremental reindex is future work.
   async reindex(paths?: string[]): Promise<IndexStats> {
@@ -84,8 +129,18 @@ export class LexicalAdapter implements RetrievalAdapter {
     const start = performance.now();
     const db = this.db();
 
-    const docs = await loadKb(this.kbRoot, { exclude: this.exclude });
+    const entries: SourceEntry[] = [];
+    const lock = this.lockSignature();
+    const runtime = runtimeInputs();
+    const docs = await loadKb(this.kbRoot, {
+      exclude: this.exclude,
+      onSource: (path, raw) => entries.push({ path, raw }),
+    });
     const chunks = docs.flatMap((doc) => chunkDoc(doc));
+    const fingerprint = fingerprintSources(this.kbRoot, this.exclude, lock, entries, runtime);
+    if (fingerprint !== fingerprintCurrent(this.kbRoot, this.exclude, this.lockSignature())) {
+      throw new Error("index source changed while rebuilding — retry reindex()");
+    }
 
     // DROP + CREATE + all inserts run in ONE transaction (SQLite DDL is
     // transactional): a mid-reindex failure rolls back to the prior index
@@ -94,6 +149,12 @@ export class LexicalAdapter implements RetrievalAdapter {
     // and byte-identical search output.
     const rebuild = db.transaction((rows: Chunk[]) => {
       db.exec("DROP TABLE IF EXISTS chunks");
+      db.exec(
+        "CREATE TABLE IF NOT EXISTS index_provenance (id INTEGER PRIMARY KEY, fingerprint TEXT NOT NULL)",
+      );
+      db.prepare("INSERT OR REPLACE INTO index_provenance (id, fingerprint) VALUES (1, ?)").run(
+        fingerprint,
+      );
       db.exec(
         "CREATE VIRTUAL TABLE chunks USING fts5(" +
           "text, " +
@@ -128,30 +189,57 @@ export class LexicalAdapter implements RetrievalAdapter {
     };
   }
 
-  // Not `async`: all work is synchronous (better-sqlite3 is sync). The Promise
-  // return type keeps the RetrievalAdapter contract uniform across drivers.
-  search(query: string, opts: SearchOpts = {}): Promise<Hit[]> {
-    try {
-      return Promise.resolve(this.searchSync(query, opts));
-    } catch (err) {
-      return Promise.reject(err instanceof Error ? err : new Error(String(err)));
-    }
-  }
-
-  private searchSync(query: string, opts: SearchOpts): Hit[] {
-    const match = sanitizeQuery(query);
-    if (match === null) return [];
-    const termCount = match.split(" OR ").length;
-
-    // Fail clearly (and without creating a stray empty db file) when search runs
-    // before the first reindex.
+  private searchDb(): Database.Database {
     if (this.handle === null && !existsSync(this.dbPath)) {
       throw new Error("index not built — run reindex() first");
     }
+    try {
+      return this.db();
+    } catch {
+      throw new Error("index freshness unknown — index unreadable; repair or rebuild it");
+    }
+  }
 
+  // The index read and provenance reads share one SQLite snapshot. Rechecking
+  // source inputs after querying ensures a mid-query edit yields no results.
+  search(query: string, opts: SearchOpts = {}): Promise<Hit[]> {
+    try {
+      const db = this.searchDb();
+      const results = db.transaction(() => {
+        this.assertFresh(db);
+        const hits = this.searchSync(query, opts, db);
+        this.assertFresh(db);
+        return hits;
+      })();
+      return Promise.resolve(results);
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+    }
+  }
+
+  // A synchronous batch shares one verified snapshot. Nothing is returned
+  // until the corpus is verified again after the last query.
+  searchBatch(queries: string[], opts: SearchOpts = {}): Promise<Hit[][]> {
+    try {
+      const db = this.searchDb();
+      const results = db.transaction(() => {
+        this.assertFresh(db);
+        const hits = queries.map((query) => this.searchSync(query, opts, db));
+        this.assertFresh(db);
+        return hits;
+      })();
+      return Promise.resolve(results);
+    } catch (error) {
+      return Promise.reject(error instanceof Error ? error : new Error(String(error)));
+    }
+  }
+
+  private searchSync(query: string, opts: SearchOpts, db: Database.Database): Hit[] {
+    const match = sanitizeQuery(query);
+    if (match === null) return [];
+    const termCount = match.split(" OR ").length;
     const k = clampK(opts.k);
     const limit = Math.min(k * CANDIDATE_MULTIPLIER, CANDIDATE_CAP);
-    const db = this.db();
 
     const namespaces =
       opts.namespace === undefined

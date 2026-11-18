@@ -27,8 +27,22 @@ python scripts/team_ai_cli.py run-evals --root team-ai
 python scripts/team_ai_cli.py freshness-audit --instance team-ai
 ```
 
-The index is local to the checkout. Rebuild it after pulling changes before
-relying on ranked search. The committed golden questions are in
+The index is local to the checkout. Search verifies indexed Markdown contents,
+paths, effective `index.lock`, and the tracked indexer/parser/chunker code and
+schema against the last successful rebuild. An old, changed, or unverifiable
+index is refused rather than searched silently. Run the reindex command above
+once in each checkout after this update and again when search reports a stale
+index. If an index is corrupt, stop processes using it, remove that checkout's
+rebuildable `team-ai/.team-ai/index.sqlite` and SQLite sidecars, then reindex.
+The wrapper supplies a plain-search fallback when ranked search is unavailable.
+Excluded documents do not require a rebuild; the roadmap ID map is read live.
+
+The fingerprint is a local drift check, not a tamper-proof attestation. It
+tracks an audited list of runtime modules and `package-lock.json`, but does not
+prove installed dependencies match the lock or automatically discover future
+transitive imports. A file can change after the final check. Maintain the
+module list when indexing dependencies change and use source authority checks
+for consequential decisions. The committed golden questions are in
 `team-ai/evals/golden/`; the knowledge-base root and exclusions are in
 `team-ai/index.lock`. Existing eval thresholds and their limits are documented
 in the infrastructure plan and knowledge-base upkeep guide.

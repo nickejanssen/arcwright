@@ -42,6 +42,7 @@ async function listMarkdown(root: string): Promise<string[]> {
 
 export interface LoadKbOptions {
   exclude?: string[];
+  onSource?: (path: string, raw: string) => void;
 }
 
 export function isExcluded(relPath: string, exclude: string[]): boolean {
@@ -63,6 +64,7 @@ export async function loadKb(root: string, opts: LoadKbOptions = {}): Promise<Kb
 
   for (const relPath of markdown) {
     const raw = await readFile(join(root, relPath), "utf8");
+    opts.onSource?.(relPath, raw);
     let parsed: ReturnType<typeof parseFrontmatter>;
     try {
       parsed = parseFrontmatter(raw);

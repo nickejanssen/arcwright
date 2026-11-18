@@ -216,11 +216,18 @@ export async function runGoldenFile(
   const adapter = createAdapter(ctx.instanceDir);
   try {
     await adapter.reindex();
-    const search: SearchFn = (query) => adapter.search(query, { k: TOP_K });
+    const batches = adapter.searchBatch
+      ? await adapter.searchBatch(
+          questions.map((question) => question.question),
+          { k: TOP_K },
+        )
+      : undefined;
 
     const outcomes: EvalOutcome[] = [];
-    for (const question of questions) {
-      const hits = await search(question.question);
+    for (const [index, question] of questions.entries()) {
+      const hits = batches?.[index] ?? (await adapter.search(question.question, { k: TOP_K }));
+      const search: SearchFn = (query) =>
+        query === question.question ? Promise.resolve(hits) : adapter.search(query, { k: TOP_K });
       if (question.expect_route !== REFUSE_ROUTE && question.expect_paths.length > 1) {
         ctx.onMultiPath?.({
           id: question.id,
