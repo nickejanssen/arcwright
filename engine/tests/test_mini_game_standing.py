@@ -172,3 +172,31 @@ class TestSavedOnTheRun:
         run = await the_run(db, seated.session_id)
         assert run.status == "cancelled"
         assert not (run.outcome or {}).get("standing")
+
+
+class TestEveryShippedGame:
+    """A game that can finish a run must say how it ranks its players, or knowingly
+    tie everyone. This fails when a stub game gets its scoring, so whoever finishes
+    it decides, and does not inherit "everyone tied" by accident."""
+
+    STUBS = {"match-3-clue-race", "evidence-locker-breach"}
+
+    def test_each_game_ranks_its_players_or_is_a_stub_that_cannot_finish(self) -> None:
+        from engine.mini_games.plugins import default_registry
+
+        registry = default_registry()
+        for mechanic_type in (
+            "match-3-clue-race",
+            "evidence-locker-breach",
+            "social-truth-bluff",
+            "evidence-search-race",
+        ):
+            plugin = registry.get(mechanic_type)
+            if hasattr(plugin, "standing"):
+                assert mechanic_type not in self.STUBS
+                continue
+            assert mechanic_type in self.STUBS, (
+                f"{mechanic_type} has no standing(): add one"
+            )
+            with pytest.raises(NotImplementedError):
+                plugin.score(NO_SNAPSHOT, [])  # a stub: cannot finish a run yet
