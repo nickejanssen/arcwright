@@ -33,6 +33,7 @@ The first case is the most likely thing to move the session 1 date, and the foun
 - The case exists in the authored case format from the engine-spine spec.
 - It passes the case-graph invariants named in spec 0092.
 - A reviewer session that did not write the case reports pass or fail per invariant, using counts only.
+- The real session 1 arc file sets `release_content: false` on its mini-game bindings, so a mini-game hands out no case information (AW-328, D-126; spec 0093, Q1 Answered). The setting and its test exist; this task only turns it on.
 - The case-writing session commits and pushes its work; on 15 November 2026 its spec edit and case folder were still unsaved on branch `claude/lido-case-and-spec-followups`.
 
 ## Human Collaboration Contract

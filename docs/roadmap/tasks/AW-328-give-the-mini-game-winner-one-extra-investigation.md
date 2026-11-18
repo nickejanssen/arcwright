@@ -48,15 +48,15 @@ When a mini-game ends, the player or players who placed first get one more inves
 
 ## Acceptance Criteria
 
-- [ ] Headless test: after a mini-game ends, each top-ranked participant has one more investigation left than before, and every other participant's budget is unchanged.
-- [ ] A tie at the top rewards each tied participant.
-- [ ] Every finished run of each of the four mechanics records a standing that names every eligible player once.
-- [ ] The reward is given once when the end of the run is processed twice, and is still there after the session is loaded again from saved records.
-- [ ] An arc file with no reward setting behaves as before; both registered arc files run unchanged and no existing test is edited to make it pass.
-- [ ] With releases switched off in the test arc, no participant receives case content when the mini-game ends.
-- [ ] Changing the amount in the test arc file changes the reward with no code change.
-- [ ] No table change, no new dependency, no model call. If one is needed, the session stops and asks.
-- [ ] No murder-mystery word is added to `engine/`.
+- [x] Headless test: after a mini-game ends, each top-ranked participant has one more investigation left than before, and every other participant's budget is unchanged.
+- [x] A tie at the top rewards each tied participant.
+- [x] Every finished run of each of the four mechanics records a standing that names every eligible player once.
+- [x] The reward is given once when the end of the run is processed twice, and is still there after the session is loaded again from saved records.
+- [x] An arc file with no reward setting behaves as before; both registered arc files run unchanged and no existing test is edited to make it pass.
+- [x] With releases switched off in the test arc, no participant receives case content when the mini-game ends.
+- [x] Changing the amount in the test arc file changes the reward with no code change.
+- [x] No table change, no new dependency, no model call. If one is needed, the session stops and asks.
+- [x] No murder-mystery word is added to `engine/`.
 
 ## Tests/Verification
 
@@ -79,3 +79,19 @@ When a mini-game ends, the player or players who placed first get one more inves
 ## Kickoff Prompt
 
 > Read `AGENTS.md`, `HANDOVER.md`, "Q1 Answered" in `docs/specs/0093-engine-spine-for-the-thin-version.md` and Part I of `docs/specs/0094-endgame-for-the-thin-version.md`. Confirm that AW-303 and AW-325 are merged; if not, stop. Task AW-328: record a standing on every finished mini-game run, and give each top-ranked participant the reward set in the arc file. Write the tests first from the acceptance criteria. Write a plan and stop for founder approval, because this crosses engine modules.
+
+## What Was Built
+
+Built on 2026-11-18 under spec 0093 "Q1 Answered" and spec 0094 Part I. The founder approved the plan (with the full-tie rule) on 2026-11-18; the record is the comment on issue #390.
+
+- **Standing.** One key, `standing`, in the run's saved outcome: tiers of participant IDs, best first, ties share a tier. `build_standing` in `engine/mini_games/runtime.py` turns a game's optional `standing(snapshot, submissions, outcome)` (tiers of character IDs) into participant IDs, drops names that are not players or are repeated, and puts everyone the game did not name in a last tier. A game with no ranking ties everyone. It ranks the players a round waits for: not the host, not an AI seat. Evidence search race: the finder alone first. Social truth bluff: by score. The two stub games cannot finish a run yet and take the default.
+- **Setting.** `reward {kind: "investigation", amount, to: "top_ranked"}` and `release_content` (default true) on a beat's mini-game binding. Both are copied into the run's `RunBinding` when it starts.
+- **Giving it.** `engine/session/mini_game_reward.py`, called from `mini_game_phase.stop_open_run` (which `phases._end` already calls). One `budget_grant` decisions row per top-tier player, with `run_id`, `beat_id` and `binding_id` in its context; a repeat finds the row and does nothing. When every player is in the top tier nothing is given (D-127). A cancelled run has no standing and gives nothing. A private `mini_game_reward_granted` event goes to each rewarded player only, through the `publish` callable. Each grant row records `told`, which means queued for delivery, not seen. Grant, flag and message are saved or rolled back together; with the Outbox from AW-338 (#419), `publish` only queues and delivery after the commit, including retries, belongs to its pending queue. A rolled-back tick grants and queues again from scratch (review finding on #417).
+- **Releases off.** `release_content: false` stops the run asserting knowledge or sending content when it ends, by score or by time. The host's manual override is unchanged. Setting it on the real session 1 arc belongs to AW-305.
+- **Not changed.** No table, migration, dependency or model call; `choices.py`, `phases.py`, `engine/scoring/`, `api/` and both registered arc files are untouched. `engine/arc/models.py` gained one validator, `validate_settings_only_on_the_first_mini_game` (see "Still open", approved on #390). One test-support edit: `rounds_support.py` widened a type annotation.
+- **Still open, and where each is tracked.**
+  - The Postgres row lock. Spec 0093 (Risks) and the AW-325 follow-up already schedule one Postgres run before the TV check (AW-301). The reward's once-only check relies on the same session lock, so that run includes "two simultaneous ends of one mini-game" (line added to AW-301's task file). It cannot run here: no Postgres server is available and CI has none.
+  - Only the first binding on a beat is run (AW-303). A `reward` or `release_content: false` on a later binding is therefore ignored without an error. Fixed in this pull request, with the founder's approval on 2026-11-18: `engine/arc/models.py` now refuses such a setting when the arc loads.
+  - The evidence locker and match-3 games cannot finish a run yet (their scoring raises "not yet implemented"), so they take the everyone-tied default. `test_mini_game_standing.py` now fails when either one gets scoring without a `standing`, so the person finishing it decides.
+  - Setting `release_content: false` on the real session 1 arc belongs to AW-305 (spec 0093, Out of Scope). AW-305's task file now says so (added here with the founder's approval on 2026-11-18), and AW-301's task file carries the Postgres run.
+

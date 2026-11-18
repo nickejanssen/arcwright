@@ -157,6 +157,19 @@ class MiniGameDefinition(BaseModel):
         return self
 
 
+class MiniGameReward(BaseModel):
+    """What the top-ranked players of a finished run are given (AW-328, D-126).
+
+    ``kind`` and ``to`` each have one value today; a new prize is a new value.
+    """
+
+    model_config = ConfigDict(extra="forbid")
+
+    kind: Literal["investigation"]
+    amount: int = Field(ge=1)
+    to: Literal["top_ranked"]
+
+
 class MiniGameBinding(BaseModel):
     """Version-pinned placement of a mini-game within an arc beat."""
 
@@ -165,6 +178,11 @@ class MiniGameBinding(BaseModel):
     binding_id: str = Field(pattern=_SLUG_PATTERN)
     game_id: str = Field(pattern=_SLUG_PATTERN)
     version: str = Field(pattern=_SEMVER_PATTERN)
+    reward: MiniGameReward | None = None
+    """Given when the run finishes. None gives nothing (AW-328)."""
+    release_content: bool = True
+    """False stops the run handing out the game's authored content, whether it
+    ends by score or by its time limit (AW-328)."""
 
 
 def _validate_relative_package_path(value: str) -> str:

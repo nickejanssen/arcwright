@@ -17,6 +17,7 @@ from engine.mini_games.models import (
     ContentMode,
     DelayedClueFallback,
     MiniGameDefinition,
+    MiniGameReward,
 )
 from engine.routing import generate
 from engine.safety import (
@@ -45,6 +46,12 @@ class RunBinding(BaseModel):
     beat_id: str
     binding_id: str
     phase_entry: int
+    release_content: bool = True
+    """Copied from the arc's binding. False: the run hands out no authored
+    content when it ends (AW-328)."""
+    reward: MiniGameReward | None = None
+    """Copied from the arc's binding, so the run keeps the reward it started
+    with (AW-328)."""
 
 
 class ResolvedMiniGameSnapshot(BaseModel):

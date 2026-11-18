@@ -228,6 +228,8 @@ async def begin(
                     beat_id=beat_id,
                     binding_id=binding.binding_id,
                     phase_entry=phase_entry,
+                    release_content=binding.release_content,
+                    reward=binding.reward,
                 )
             }
         )
@@ -339,11 +341,31 @@ async def stop_open_run(
     now: datetime,
     publish: Publish,
 ) -> None:
-    """The phase is ending without the run's own end: cancel it, so no run is
-    left open to block the next round."""
+    """The phase is ending: leave no run open to block the next round, and give
+    the reward of a run that finished.
+
+    A run still going is cancelled (no standing, no reward). A run that is over
+    is left as it is, and the reward set on its binding is given once
+    (a repeat finds the saved rows and does nothing). ``phases._end`` calls this
+    at every mini-game phase end, under the session lock."""
     run = await bound_run(db, session_id, beat_id, phase_entry)
     if run is not None and run.status not in TERMINAL_STATUSES:
         await _runtime(db, now, publish).cancel_run(run.run_id)
+        return
+    from engine.session import mini_game_reward  # at call time: avoids a cycle
+
+    try:
+        await mini_game_reward.grant(db, session_id, beat_id, phase_entry, now)
+    except SQLAlchemyError:
+        raise
+    except Exception:
+        # A reward that cannot be worked out must not fail the tick every second.
+        logger.exception("mini-game reward for beat %s was not given", beat_id)
+        return
+    # Messages go through ``publish``; in the API tick that is an Outbox, which
+    # queues them for delivery after the commit (AW-338). A failure here is not
+    # swallowed: the tick rolls back and the next tick starts the phase end again.
+    await mini_game_reward.notify(db, session_id, beat_id, phase_entry, now, publish)
 
 
 # --- pause and resume ----------------------------------------------------------------

@@ -270,6 +270,19 @@ class BeatDefinition(BaseModel):
         return self
 
     @model_validator(mode="after")
+    def validate_settings_only_on_the_first_mini_game(self) -> "BeatDefinition":
+        """Only the first mini-game on a beat runs (AW-303). A reward or a switched
+        off release on a later one would be ignored with no error anywhere."""
+        for binding in (self.mini_games or [])[1:]:
+            if binding.reward is not None or not binding.release_content:
+                msg = (
+                    f"beat {self.beat_id} sets a reward or release_content on "
+                    f"{binding.binding_id}, but only the first mini-game on a beat runs"
+                )
+                raise ValueError(msg)
+        return self
+
+    @model_validator(mode="after")
     def validate_mini_game_binding_ids(self) -> "BeatDefinition":
         if not self.mini_games:
             return self

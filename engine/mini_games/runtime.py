@@ -691,12 +691,25 @@ class MiniGameRuntime:
 
         now = self._clock()
         eligible_participants = await self._eligible_participants(run.session_id)
+        outcome = {
+            **outcome,
+            "standing": build_standing(
+                plugin,
+                snapshot,
+                submissions,
+                outcome,
+                await self._ranked_participants(run.session_id),
+            ),
+        }
         eligible_character_ids = [char_id for char_id, _ in eligible_participants]
 
         clues_to_unlock: list[dict[str, Any]] = []
         release_type: str
 
-        if status == "timed_out":
+        releases = snapshot.binding is None or snapshot.binding.release_content
+        if not releases:
+            release_type = "switched_off"
+        elif status == "timed_out":
             fallback: DelayedClueFallback = snapshot.clue_fallback
             authored_clues = _extract_authored_clues(snapshot, fallback.clue_variant)
             clues_to_unlock = authored_clues
@@ -936,6 +949,22 @@ class MiniGameRuntime:
         )
         return [(row[0], row[1]) for row in result.all()]
 
+    async def _ranked_participants(self, session_id: UUID) -> list[tuple[UUID, UUID]]:
+        """(character_id, participant_id) of the players a standing ranks: not
+        the host, not an AI seat (the same people a round waits for)."""
+        from engine.db.orm import SessionParticipant
+
+        result = await self._db.execute(
+            select(
+                SessionParticipant.character_id, SessionParticipant.participant_id
+            ).where(
+                SessionParticipant.session_id == session_id,
+                SessionParticipant.surface_type != "host",
+                SessionParticipant.is_ai_controlled.is_(False),
+            )
+        )
+        return [(row[0], row[1]) for row in result.all()]
+
     async def _publish(
         self,
         run: MiniGameRun,
@@ -1114,6 +1143,43 @@ def _extract_authored_clues(
         elif clue_variant == "reduced":
             result.append(clue)
     return result
+
+
+def build_standing(
+    plugin: object,
+    snapshot: ResolvedMiniGameSnapshot | None,
+    submissions: list[MiniGameSubmission],
+    outcome: dict[str, Any],
+    eligible: Sequence[tuple[UUID, UUID]],
+) -> list[list[str]]:
+    """The players in order, best first, ties sharing a tier (AW-328).
+
+    A game may offer ``standing(snapshot, submissions, outcome)``, returning
+    tiers of character IDs for the players it can rank. This turns them into
+    participant IDs, drops names that are not eligible or are repeated, and puts
+    every eligible player the game did not name in one last tier. A game with no
+    ranking ties everyone. Each eligible player appears exactly once.
+    """
+    by_character = {str(char_id): str(part_id) for char_id, part_id in eligible}
+    ranker = getattr(plugin, "standing", None)
+    ranked: list[list[Any]] = (
+        ranker(snapshot, submissions, outcome) if callable(ranker) else []
+    )
+    seen: set[str] = set()
+    tiers: list[list[str]] = []
+    for tier in ranked:
+        members: list[str] = []
+        for character_id in tier:
+            participant = by_character.get(str(character_id))
+            if participant is not None and participant not in seen:
+                seen.add(participant)
+                members.append(participant)
+        if members:
+            tiers.append(sorted(members))
+    unranked = sorted(p for p in by_character.values() if p not in seen)
+    if unranked:
+        tiers.append(unranked)
+    return tiers
 
 
 # ---------------------------------------------------------------------------

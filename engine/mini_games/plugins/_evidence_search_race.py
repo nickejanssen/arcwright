@@ -97,6 +97,17 @@ class EvidenceSearchRacePlugin:
             "claimed-object-ids": list(claims.keys()),
         }
 
+    def standing(
+        self,
+        snapshot: ResolvedMiniGameSnapshot,
+        submissions: list[MiniGameSubmission],
+        outcome: dict[str, Any],
+    ) -> list[list[str]]:
+        """The finder of the real object first. Nobody else is ranked: the
+        game's own rule decides one winner and nothing between the rest."""
+        finder = outcome.get("finder-character-id")
+        return [[str(finder)]] if finder else []
+
     def initialize_state(
         self,
         snapshot: ResolvedMiniGameSnapshot,
