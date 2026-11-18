@@ -16,7 +16,7 @@ supersedes: []
 
 The prompt the founder gives a fresh orchestrator session. One orchestrator session runs a batch of work, then hands over with this file updated, so no session runs long enough to lose detail. Update the "In flight" and "Next build order" sections at every handoff; git keeps the earlier versions.
 
-Last updated: 2026-11-18 02:30 UTC, by the orchestrator session of 14 to 18 November 2026.
+Last updated: 2026-11-18 03:00 UTC, by the orchestrator session of 14 to 18 November 2026, after AW-303 and AW-304 merged.
 
 ## The prompt
 
@@ -49,17 +49,20 @@ Done and on main:
 - D-130: the TV reads `GET /v1/sessions/{session_id}/round` without signing in, for the thin version.
 - AW-298 done: `verify`, `Lint, Typecheck, Test, Build, and Scan` and `team-ai` are required to merge.
 
-In flight at handoff (updated 18 November 2026, 02:30 UTC). The two plan sessions went on to build after the founder approved their plans, so both builds already exist. Do not start new AW-303 or AW-304 build sessions.
-- AW-303 (#356): pull request #413, branch `claude/aw-303-mini-game-phase`, built by the session "AW-303: plan mini-games inside a session". At handoff it was fixing review findings from `/code-review` and `/review-pr`. Plan: https://github.com/nickejanssen/arcwright/issues/356#issuecomment-6966065044 . Approval and its limits: https://github.com/nickejanssen/arcwright/issues/356#issuecomment-6966308145 . Check against the plan: it also changes `api/tests/test_rounds_api.py`, which the plan's file list did not name.
-- AW-304 (#357): pull request #412, branch `claude/aw-304-plan-6be878`, built by the session "AW-304: plan game-agnostic play records". At handoff it had added edge-case tests and filed the follow-up AW-340 (issue #414, give saved event names and payload keys generic names); CI on its last commits had not reported. Plan: https://github.com/nickejanssen/arcwright/issues/357#issuecomment-6966070750 . Approval and its limits: https://github.com/nickejanssen/arcwright/issues/357#issuecomment-6966310769 .
-- The two pull requests share no file. #413 edits `HANDOVER.md`; #412 adds a roadmap index entry.
-- Nine Codex pull requests on the knowledge tooling merged on 17 November (#401, #403 to #410); none touch `engine/` or `api/`. Codex code review stopped running on 18 November: the Codex account is out of review credits, so a Reviewer session is the only review until the founder decides otherwise.
+Also built and merged on 18 November 2026:
+- AW-304 (#357, closed): play records game-agnostic, pull request #412 (`1ae7485`). Follow-up AW-340 (#414): give the game-worded saved event names generic names.
+- AW-303 (#356): a beat's mini-game starts, times out, pauses and returns to the story, pull request #413 (`8ed8e82`). Merged after #412; #413 was rebased onto it and adapted #412's play-record test to the real bound run. Issue #356 stays open only for acceptance criterion 7, one round seen on a real TV and two phones, done with the walkthrough (AW-301).
+- On #413, `verify` ran 1299 tests and passed. A Reviewer session passed each pull request with no blocker.
+
+In flight at handoff (18 November 2026, main `8ed8e82` plus this docs pull request): nothing. No pull request is open and no build session is working.
+
+Codex code review stopped running on 18 November: the Codex account is out of review credits. Until the founder decides otherwise, a read-only Reviewer session is the only review before merge.
 
 ## Next build order
 
-1. Finish #413 (AW-303) and #412 (AW-304): wait for their sessions to report, read every check, run a read-only Reviewer session on each, then bring each to the founder to merge. Merge #413 first; #412 then rebases and reruns its tests, because #413 changes the shared test fixture `engine/tests/rounds_support.py`. #412 changes `engine/session/choices.py`, so AW-328 and AW-338 start after it merges. AW-340 (#414) comes later, after session 1 unless the founder says otherwise.
-2. Then AW-328 (mini-game winner gets one extra investigation, D-126), AW-326 (Last Call, lock, theory check, winner), AW-327 (closing sequence, full game headless).
-3. AW-338 (#399, four round-rule fixes) after AW-303 merges.
+1. Now: AW-328 (#390, mini-game winner gets one extra investigation, D-126), a plan session that stops for founder approval. AW-338 (#399, four round-rule fixes) may plan beside it, but builds after AW-328 unless the two plans name no shared file (both are likely to touch `engine/session/phases.py` or `choices.py`).
+2. Then AW-326 (#388, Last Call, lock, theory check, winner; needs AW-328), then AW-327 (#389, closing sequence and a full game headless).
+3. AW-340 (#414) after session 1, unless the founder says otherwise.
 4. AW-306 (story tool importer), then AW-308 (session 1 preflight).
 5. Screen tasks AW-329 to AW-334 only after the founder approves spec 0095; create their task files and issues at that point.
 6. AW-337 (#395, a mini-game for two to four players) after the founder answers Q4 of spec 0095.
@@ -76,7 +79,8 @@ In flight at handoff (updated 18 November 2026, 02:30 UTC). The two plan session
 ## How to run the work
 
 - Start each build or plan as its own session on Sonnet, in its own worktree, with: the task file, the spec part, the files it owns, "write the plan and stop for approval", and "wait for CI `verify` before reporting done". At most two build sessions at once.
-- Before each merge: read every check, then run a read-only Reviewer session (`/review-pr`, Sonnet) and ask Codex to re-review any fix commits. Merge with `gh pr merge N --squash --match-head-commit <full sha>`, after the founder says so.
+- Before each merge: read every check, then run a read-only Reviewer session (`/review-pr`, Sonnet) (Codex review is out of credits; ask it to re-review fix commits only if the founder restores it). Merge with `gh pr merge N --squash --match-head-commit <full sha>`, after the founder says so.
+- Main requires a branch to be up to date before merging, so the second of two pull requests always reruns CI on the combined code. Still run the full Python suite locally on the combined code first when one pull request adds tests that use a helper the other changes: on 18 November #412 and #413 each passed alone and failed together (22 errors), caught before merge.
 - When two pull requests touch the same file, merge the one that strengthens checks first, rebase the other, keep both changes, confirm with `git diff` that only the expected files differ, wait for CI again.
 - After each merge: a HANDOVER log entry, task file updates, issue updates (close with evidence, remove `blocked` when unblocked), and fast-forward the main checkout at `C:\Users\nicke\OneDrive\Desktop\arcwright`. Do bookkeeping in one docs pull request from the latest main.
 - Codex also merges pull requests in this repository (tooling and knowledge base). Only one orchestrator assigns build work. A task number is taken only once its GitHub issue exists. Fetch before every bookkeeping change.
@@ -102,4 +106,4 @@ Conclusion first. Plain words, no invented shorthand. Label claims verified, inf
 
 ## Your first reply
 
-Confirm what you read, the open pull requests and the state of #413 and #412. Do not start new build sessions for AW-303 or AW-304. Then tell the founder the one decision he needs to make next.
+Confirm what you read and that no pull request is open. Propose starting the AW-328 plan session (and AW-338's beside it), then tell the founder the one decision he needs to make next.
