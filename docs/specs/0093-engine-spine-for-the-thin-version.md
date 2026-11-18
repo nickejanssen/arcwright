@@ -184,7 +184,7 @@ Every session, for any game, saves these six facts. No table is renamed.
 | Story units entered and left, with times | `arc_beat_states`, plus a saved event for each phase change |
 | Who learned what, and from whom | `knowledge_states` |
 | What each participant chose from what was offered | `decisions` (new rows from Part D), `mini_game_submissions` |
-| What each character said | `claims`, generation logs, and typed input, which is now saved as events |
+| What each character said | `claims`, generation logs, `dialogue` events, and typed input saved as `player_input` events (AW-304; before AW-304 typed input was kept only in memory) |
 | Tension against the author's target | The existing intent-fidelity events |
 | Cost | The existing generation logs and cost summary |
 
@@ -200,7 +200,7 @@ Every session, for any game, saves these six facts. No table is renamed.
 | Budget left | Worked out from the saved choices | No |
 | Phase, its deadline, and the time left while paused | `events` | No |
 | Which beat a mini-game run belongs to | The run's stored definition | No |
-| Typed input | `events` | No |
+| Typed input | `events`, type `player_input` (AW-304) | No |
 
 ---
 
