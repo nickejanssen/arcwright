@@ -46,9 +46,18 @@ Found by a Reviewer session on pull request #397 on 2026-11-17, rated nits (not 
 
 ## Acceptance Criteria
 
-- [ ] A failing test for each of the four gaps, written first, then passing.
-- [ ] No existing test is weakened, skipped or deleted.
+- [x] A failing test for each of the four gaps, written first, then passing.
+- [x] No existing test is weakened, skipped or deleted.
 - [ ] `verify` passes; it runs every Python test since AW-336.
+
+## What Was Built
+
+Plan approved by the founder on 2026-11-18 (issue #399). All four gaps were still true on `c7b4073`.
+
+1. **Deadline:** `choose()` refuses with `phase_time_up` at or after the phase deadline, using the same comparison as the tick. A replay of an earlier choice is still answered after the deadline. The menu may still read "open" for up to a second after the deadline (approved default).
+2. **Replay:** a `choice_id` reused for a different opportunity is refused with `choice_id_reused`. A true replay reports the budget as it was at the first answer, read from the saved `allowance` and `spent_after`, so it needs no schema change.
+3. **Publish after commit:** a new `Outbox` in `phases.py` holds events. `tick_active_sessions` and the choice, ready and move-on routes commit first and flush after; a failed commit sends nothing. `_enter` and `choose` are unchanged. The session and character routes have the same gap and moved to AW-341 (#418).
+4. **Tick loop logging:** the first failure logs at once, then at most one line per 30 seconds with the count skipped, and one line on recovery. Per-session failure logging in `phases.py` stays unthrottled (approved default). The single-process assumption is written in `api/tick_loop.py` and the multi-process needs are noted in the AW-269 task. Session 1 runs one process: `scripts/rehearsal.py` starts `uvicorn` without `--workers`.
 
 ## Tests/Verification
 

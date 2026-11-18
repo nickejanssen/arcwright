@@ -43,7 +43,7 @@ async def _run(
 
     monkeypatch.setattr(tick_loop, "tick_active_sessions", fake_pass)
     monkeypatch.setattr(tick_loop, "get_session_factory", lambda: None)
-    monkeypatch.setattr(tick_loop.asyncio, "sleep", fake_sleep)
+    monkeypatch.setattr(asyncio, "sleep", fake_sleep)
     monkeypatch.setattr(tick_loop, "_monotonic", clock)
     with pytest.raises(asyncio.CancelledError):
         await tick_loop.run_tick_loop(0)
