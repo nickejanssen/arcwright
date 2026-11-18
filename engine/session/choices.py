@@ -398,7 +398,9 @@ async def choose(
     on this player's menu; the budget covers it. Then it is saved, the concepts
     are given, and the content goes to this player only. Something already
     taken costs nothing and shows the same content again. The same ``choice_id``
-    from the same player has one effect and returns the same answer.
+    from the same player has one effect and returns the same answer, with the
+    budget as it was then. Choices are refused once the phase deadline has
+    passed, even before the tick has ended the phase.
     """
     async with session_lock(db, session_id) as orm:
         ctx = await _context(db, orm, participant_id)
@@ -407,12 +409,28 @@ async def choose(
 
         for row in ledger.choices:
             if row.context.get("choice_id") == choice_id:
-                return _result_from_row(ctx.case, row, left, replayed=True)
+                if row.context.get("opportunity_id") != opportunity_id:
+                    raise RoundError(
+                        "choice_id_reused",
+                        "that choice_id was already used for a different choice",
+                    )
+                # A replay repeats the first answer, budget included.
+                then = int(row.outcome.get("allowance", 0)) - int(
+                    row.outcome.get("spent_after", 0)
+                )
+                return _result_from_row(ctx.case, row, then, replayed=True)
 
         if ctx.orm.status != SessionStatus.active.value:
             raise RoundError("session_not_active", f"session is {ctx.orm.status}")
         if not await _choices_open(db, ctx.orm):
             raise RoundError("not_in_choices_phase")
+        state = await current_phase(db, session_id)
+        if (
+            state is not None
+            and state.deadline_at is not None
+            and now >= state.deadline_at
+        ):
+            raise RoundError("phase_time_up", "the time for this phase is up")
 
         held = await _held_with_opening(db, ctx, locked=True)
         beat_id = ctx.orm.current_beat_id
@@ -427,7 +445,6 @@ async def choose(
         if cost > left:
             raise RoundError("budget_exhausted")
 
-        state = await current_phase(db, session_id)
         gave = list(opportunity.gives) if first_time else []
         db.add(
             Decision(
