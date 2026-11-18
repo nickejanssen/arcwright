@@ -189,6 +189,32 @@ describe("routeQuestion", () => {
 });
 
 describe("runGoldenFile", () => {
+  it("reports partial multi-path retrieval without changing the existing hit", async () => {
+    const dir = makeInstance();
+    const path = join(dir, "kb/platform/rate-limits.md");
+    writeFileSync(path, readFileSync(path, "utf8") + "\nultrarareword\n");
+    const question = {
+      ...readGolden(dir)[0]!,
+      question: "ultrarareword",
+      expect_paths: ["kb/platform/rate-limits.md", "kb/handbook/onboarding.md"],
+    };
+    const diagnostics: Array<{ id: string; allFound: boolean }> = [];
+    const [outcome] = await runGoldenFile([question], {
+      instanceDir: dir,
+      onMultiPath: (entry) => diagnostics.push(entry),
+    });
+    expect(outcome?.hit).toBe(true);
+    expect(diagnostics).toEqual([{ id: question.id, allFound: false }]);
+    const secondPath = join(dir, "kb/handbook/onboarding.md");
+    writeFileSync(secondPath, readFileSync(secondPath, "utf8") + "\nultrarareword\n");
+    diagnostics.length = 0;
+    await runGoldenFile([question], {
+      instanceDir: dir,
+      onMultiPath: (entry) => diagnostics.push(entry),
+    });
+    expect(diagnostics).toEqual([{ id: question.id, allFound: true }]);
+  });
+
   it("produces one sane outcome per question", async () => {
     const dir = makeInstance();
     const outcomes = await runGoldenFile(readGolden(dir), { instanceDir: dir });
@@ -308,6 +334,19 @@ describe("run-evals command", () => {
     expect(code).toBe(0);
     const payload: unknown = JSON.parse(log.mock.calls.map((c) => String(c[0])).join(""));
     expect(payload).toMatchObject({ pass: true });
+  });
+
+  it("explains that citation and coverage metrics do not grade generated answers", async () => {
+    const dir = makeInstance();
+    await runEvals({ root: dir, golden: "golden" });
+    const output = log.mock.calls.map((c) => String(c[0])).join("\n");
+    expect(output).toContain("citationValidity checks fixture paths, not agent citations");
+    expect(output).toContain(
+      "coverage checks literal text in the namespace, not answer correctness",
+    );
+    expect(output).toContain(
+      "source-change warnings omit uncommitted edits and may miss unknown or same-day changes",
+    );
   });
 
   it("prints 'no golden questions found' and exits 0 when only the example file is present", async () => {

@@ -2,7 +2,7 @@
 
 > Read `AGENTS.md` first, then this file, before touching code. It is the short start-of-session brief for every agent (Claude, Codex, Copilot) and for the founder. If it disagrees with a current source, investigate before acting, then fix this file. Keep it short and link to the owner of each detail.
 
-Last updated: 2026-11-17, against main `3f20389`.
+Last updated: 2026-11-17, against main `dff9f0f`.
 
 ## System map
 
@@ -123,6 +123,8 @@ Work the list top to bottom. Building starts only at step 7. Whether a step is d
 **What needs the founder's approval before a build task starts:** its spec, and separately anything on the hard-rule list in `AGENTS.md` (database changes, changes across engine modules, new dependencies, prompts). The inventory found that most of the rebuild is wiring across engine modules, so expect one hard-rule approval per spec.
 
 ## Log
+
+- **2026-11-17** PR #408 merged: scoped retrieval filters namespaces before the candidate limit; runtime and checker suites passed in GitHub. AW-318 remains open: the reset-audit query still misses, unscoped retrieval is below 80%, and guarded specialist citation evaluation remains outstanding.
 
 - **2026-11-17** PR #407 merged: Arcwright now maintains the pinned knowledge CLI and builds it in CI. AW-318 remains open for retrieval and live owning-citation evaluation.
 
