@@ -7,6 +7,7 @@ status: active
 review_by: "2026-12-18"
 sensitivity: internal
 source: authored
+x-scope-evidence: none
 tags: []
 supersedes: []
 ---
