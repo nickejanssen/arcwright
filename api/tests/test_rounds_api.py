@@ -513,3 +513,141 @@ class TestTheClockLoopIsWired:
         with TestClient(app):
             pass
         assert events == ["started", "cancelled"]
+
+
+class _Events:
+    """Stands in for the session's event bus and notes who was told what."""
+
+    def __init__(self) -> None:
+        self.types: list[str] = []
+        self.at_commit: list[int] = []
+
+    async def __call__(self, event: Any) -> Any:
+        self.types.append(event.event_type)
+        return event
+
+
+@pytest.fixture()
+def events(monkeypatch: pytest.MonkeyPatch) -> _Events:
+    seen = _Events()
+    monkeypatch.setattr("api.routers.rounds._publisher", lambda _sid: seen)
+    return seen
+
+
+class TestEventsWaitForTheCommit:
+    """AW-338: a route tells the screens only after its changes are saved."""
+
+    @pytest.mark.asyncio
+    async def test_a_choice_whose_commit_fails_tells_nobody(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+        who: Who,
+        events: _Events,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        await seed(db_factory, who, phase="choices")
+
+        async def refuse(self: AsyncSession) -> None:
+            raise RuntimeError("commit failed")
+
+        monkeypatch.setattr(AsyncSession, "commit", refuse)
+        with pytest.raises(RuntimeError):
+            client.post(
+                url(who, "/me/choices"),
+                json={"choice_id": "tap-1", "opportunity_id": "o_ledger"},
+            )
+        assert "choice_result" not in events.types
+        assert "choice_made" not in events.types
+
+    @pytest.mark.asyncio
+    async def test_a_ready_mark_whose_commit_fails_tells_nobody(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+        who: Who,
+        events: _Events,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        await seed(db_factory, who, players=1)
+        entry = client.get(url(who, "/round")).json()["phase_entry"]
+
+        async def refuse(self: AsyncSession) -> None:
+            raise RuntimeError("commit failed")
+
+        monkeypatch.setattr(AsyncSession, "commit", refuse)
+        with pytest.raises(RuntimeError):
+            client.post(url(who, "/me/ready"), json={"phase_entry": entry})
+        assert events.types == []
+
+    @pytest.mark.asyncio
+    async def test_a_saved_choice_tells_the_screens_after_the_commit(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+        who: Who,
+        events: _Events,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        await seed(db_factory, who, phase="choices")
+        real_commit = AsyncSession.commit
+
+        async def spy(self: AsyncSession) -> None:
+            events.at_commit.append(len(events.types))
+            await real_commit(self)
+
+        monkeypatch.setattr(AsyncSession, "commit", spy)
+        response = client.post(
+            url(who, "/me/choices"),
+            json={"choice_id": "tap-1", "opportunity_id": "o_ledger"},
+        )
+        assert response.status_code == 200
+        assert events.at_commit[0] == 0
+        assert "choice_result" in events.types
+        assert "choice_made" in events.types
+
+
+class TestRoutesDeliverInStateChangeOrder:
+    """AW-338 review: a slow commit in one request cannot let a later request's
+    events reach the bus first."""
+
+    @pytest.mark.asyncio
+    async def test_a_host_move_on_cannot_overtake_a_ready_mark_paused_after_commit(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+        who: Who,
+        events: _Events,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        import threading
+        import time
+
+        await seed(db_factory, who, players=1)
+        entry = client.get(url(who, "/round")).json()["phase_entry"]
+        real_commit = AsyncSession.commit
+        state = {"first": True}
+
+        async def slow_first(self: AsyncSession) -> None:
+            await real_commit(self)
+            if state["first"]:
+                state["first"] = False
+                await asyncio.sleep(0.4)
+
+        monkeypatch.setattr(AsyncSession, "commit", slow_first)
+        entries: list[int] = []
+
+        async def note(event: Any) -> Any:
+            if event.event_type == "phase_changed":
+                entries.append(event.payload["phase_entry"])
+            return event
+
+        monkeypatch.setattr("api.routers.rounds._publisher", lambda _sid: note)
+
+        first = threading.Thread(target=lambda: ready(client, who, entry))
+        first.start()
+        time.sleep(0.15)
+        client.post(url(who, "/round/move-on"))
+        first.join()
+        assert len(entries) >= 2
+        assert entries == sorted(entries)

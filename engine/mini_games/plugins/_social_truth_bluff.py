@@ -64,6 +64,18 @@ class SocialTruthBluffPlugin:
     ) -> bool:
         return False
 
+    def standing(
+        self,
+        snapshot: ResolvedMiniGameSnapshot,
+        submissions: list[MiniGameSubmission],
+        outcome: dict[str, Any],
+    ) -> list[list[str]]:
+        """Highest score first; players on the same score share a tier."""
+        by_score: dict[int, list[str]] = defaultdict(list)
+        for player, points in outcome.get("scores", {}).items():
+            by_score[int(points)].append(str(player))
+        return [by_score[points] for points in sorted(by_score, reverse=True)]
+
     def score(
         self,
         snapshot: ResolvedMiniGameSnapshot,
