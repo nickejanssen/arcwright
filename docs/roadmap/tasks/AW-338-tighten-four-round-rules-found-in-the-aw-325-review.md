@@ -48,7 +48,7 @@ Found by a Reviewer session on pull request #397 on 2026-11-17, rated nits (not 
 
 - [x] A failing test for each of the four gaps, written first, then passing.
 - [x] No existing test is weakened, skipped or deleted.
-- [ ] `verify` passes; it runs every Python test since AW-336.
+- [x] `verify` passes; it runs every Python test since AW-336. (Passed on head `c6b8989`; merged as `21afcf3`, pull request #419, 2026-11-18.)
 
 ## What Was Built
 

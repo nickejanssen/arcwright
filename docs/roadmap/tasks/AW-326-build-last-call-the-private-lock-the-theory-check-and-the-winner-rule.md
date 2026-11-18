@@ -42,7 +42,7 @@ After the last round, start a countdown, let each player privately build and loc
 
 **Interaction profile:** Independent execution after plan approval. The change crosses engine modules (`session`, `case`, `interactions`, `mini_games`), which is a hard rule in `AGENTS.md`.
 
-- Specs 0093 and 0094 are approved (D-124, D-125, issue #355). Still blocked until AW-325, AW-303 and AW-328 are merged.
+- Specs 0093 and 0094 are approved (D-124, D-125, issue #355). Unblocked 2026-11-18: AW-325 (#397), AW-303 (#413) and AW-328 (#417, `8ea4bc1`) are merged. AW-328 put a `standing` in every finished run's saved outcome (`engine/mini_games/runtime.py`, `build_standing`), which Part I reads. A build session writes a plan and stops for founder approval.
 - The build session writes a plan and stops for the founder's approval before code.
 
 ## Acceptance Criteria
