@@ -346,7 +346,7 @@ async def stop_open_run(
 
     A run still going is cancelled (no standing, no reward). A run that is over
     is left as it is, and the reward set on its binding is given once
-    (``mini_game_reward.give`` finds a repeat itself). ``phases._end`` calls this
+    (a repeat finds the saved rows and does nothing). ``phases._end`` calls this
     at every mini-game phase end, under the session lock."""
     run = await bound_run(db, session_id, beat_id, phase_entry)
     if run is not None and run.status not in TERMINAL_STATUSES:
@@ -355,12 +355,16 @@ async def stop_open_run(
     from engine.session import mini_game_reward  # at call time: avoids a cycle
 
     try:
-        await mini_game_reward.give(db, session_id, beat_id, phase_entry, now, publish)
+        await mini_game_reward.grant(db, session_id, beat_id, phase_entry, now)
     except SQLAlchemyError:
         raise
     except Exception:
-        # A reward that cannot be given must not fail the tick every second.
+        # A reward that cannot be worked out must not fail the tick every second.
         logger.exception("mini-game reward for beat %s was not given", beat_id)
+        return
+    # A message that fails to send is not swallowed: the phase stays open and the
+    # next tick sends the ones still owed (each grant records that it was told).
+    await mini_game_reward.notify(db, session_id, beat_id, phase_entry, now, publish)
 
 
 # --- pause and resume ----------------------------------------------------------------

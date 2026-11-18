@@ -255,6 +255,43 @@ class TestWhoIsTold:
             }
 
 
+class TestAFailedMessage:
+    """A message that fails to send must not be lost, and must not be sent twice."""
+
+    @pytest.mark.asyncio
+    async def test_a_failure_telling_one_winner_is_retried_for_the_rest_only(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+        no_model_calls: None,
+    ) -> None:
+        seated, rec = await in_mini_game(db, registered, monkeypatch, reward_arc(1))
+        await place_players(db, seated, [1, 1, 2])
+        sent: list[str] = []
+        fail = {"on": True}
+
+        async def publish(event: Any) -> Any:
+            if event.event_type == "mini_game_reward_granted":
+                if fail["on"] and len(sent) == 1:
+                    raise RuntimeError("the publisher failed")
+                sent.append(str(event.target_player_id))
+            return event
+
+        with pytest.raises(RuntimeError):
+            await tick(db, seated.session_id, at(AFTER_DEADLINE), publish)
+        assert (await where(db, seated.session_id))[:2] == ("beat_one", "mini_game")
+        assert len(sent) == 1
+        fail["on"] = False
+        await tick(db, seated.session_id, at(AFTER_DEADLINE + 1), publish)
+        assert (await where(db, seated.session_id))[:2] == ("beat_one", "bridge")
+        assert sorted(sent) == sorted(str(p) for p in seated.participants[:2])
+        assert len(await grants(db, seated.session_id)) == 2
+        assert await budgets(db, seated) == [BASE + 1, BASE + 1, BASE]
+        await tick(db, seated.session_id, at(AFTER_DEADLINE + 2), publish)
+        assert len(sent) == 2
+
+
 class TestWhenNothingIsGiven:
     @pytest.mark.asyncio
     async def test_a_run_the_host_moves_past_is_cancelled_and_gives_nothing(

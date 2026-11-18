@@ -9,7 +9,9 @@ same after a reload.
 
 Called with the session lock held (``mini_game_phase.stop_open_run``, from
 ``phases._end``). It reads saved state first, so a second call for the same run
-finds the rows and does nothing: no second row, no second message.
+finds the rows and does nothing: no second row, no second message. Each row
+records whether its player has been told; a message that fails to send stops the
+phase from ending, and the next tick sends only the ones still owed.
 
 When every eligible player is in the top tier, the run separated nobody and
 nothing is given (D-127; approved in the AW-328 plan).
@@ -72,8 +74,23 @@ async def give(
     now: datetime,
     publish: Publish,
 ) -> list[UUID]:
-    """Give the reward for this visit's run. Returns who was given it now."""
-    from engine.session.choices import BUDGET_GRANT_DECISION, remaining_budget
+    """Save the reward for this visit's run, then tell each winner. Returns who
+    was given it now. See ``grant`` and ``notify``."""
+    newly = await grant(db, session_id, beat_id, phase_entry, now)
+    await notify(db, session_id, beat_id, phase_entry, now, publish)
+    return newly
+
+
+async def grant(
+    db: AsyncSession,
+    session_id: UUID,
+    beat_id: str,
+    phase_entry: int,
+    now: datetime,
+) -> list[UUID]:
+    """Save one ``budget_grant`` row for each top-tier player who has none for
+    this run. Each row starts marked as not yet told."""
+    from engine.session.choices import BUDGET_GRANT_DECISION
 
     run = await mini_game_phase.bound_run(db, session_id, beat_id, phase_entry)
     if run is None or run.status not in ("completed", "timed_out"):
@@ -103,26 +120,64 @@ async def give(
                     "binding_id": binding_id,
                     "source": REWARD_SOURCE,
                 },
-                outcome={"amount": reward.amount, "kind": reward.kind},
+                outcome={
+                    "amount": reward.amount,
+                    "kind": reward.kind,
+                    "told": False,
+                },
             )
         )
         newly.append(UUID(participant))
     await db.flush()
-    for participant_id in newly:
+    return newly
+
+
+async def notify(
+    db: AsyncSession,
+    session_id: UUID,
+    beat_id: str,
+    phase_entry: int,
+    now: datetime,
+    publish: Publish,
+) -> None:
+    """Tell each winner whose grant is not yet marked told, marking each one
+    after its message is sent. A failure propagates, so the phase does not end
+    and the next tick tries again for the winners still not told; those already
+    told are not told twice."""
+    from engine.session.choices import BUDGET_GRANT_DECISION, remaining_budget
+
+    run = await mini_game_phase.bound_run(db, session_id, beat_id, phase_entry)
+    if run is None:
+        return
+    result = await db.execute(
+        select(Decision)
+        .where(
+            Decision.session_id == session_id,
+            Decision.decision_type == BUDGET_GRANT_DECISION,
+        )
+        .order_by(Decision.timestamp)
+    )
+    for row in result.scalars().all():
+        if row.context.get("run_id") != str(run.run_id):
+            continue
+        if row.context.get("source") != REWARD_SOURCE or row.outcome.get("told"):
+            continue
+        participant_id = UUID(str(row.context["participant_id"]))
         await _tell(
             publish,
             session_id,
             now,
             participant_id,
             {
-                "amount": reward.amount,
-                "kind": reward.kind,
+                "amount": row.outcome["amount"],
+                "kind": row.outcome["kind"],
                 "remaining_budget": await remaining_budget(
                     db, session_id, participant_id
                 ),
             },
         )
-    return newly
+        row.outcome = {**row.outcome, "told": True}
+        await db.flush()
 
 
 async def _tell(
