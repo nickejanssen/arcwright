@@ -25,6 +25,7 @@ from uuid import UUID, uuid4
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from engine.db.orm import Event
 from engine.resources.models import EffectActivation
 from engine.session.service import SessionService, SessionStateError, _session_service
 
@@ -57,6 +58,7 @@ class CharacterDetail:
 
 
 InputKind = Literal["action", "dialogue"]
+PLAYER_INPUT_EVENT = "player_input"
 
 
 @dataclass(frozen=True)
@@ -154,6 +156,22 @@ class CharacterService:
             submitted_at=datetime.now(tz=timezone.utc),
             beat_id=session.current_beat_id,
         )
+        db.add(
+            Event(
+                session_id=session_id,
+                timestamp=record.submitted_at,
+                actor_char_id=character_id,
+                event_type=PLAYER_INPUT_EVENT,
+                payload={
+                    "input_id": str(record.input_id),
+                    "participant_id": str(record.participant_id),
+                    "kind": kind,
+                    "beat_id": record.beat_id,
+                },
+                content_text=content,
+            )
+        )
+        await db.flush()
         session_inputs = self._inputs.setdefault(session_id, [])
         session_inputs.append(record)
         submitted_player_ids = {

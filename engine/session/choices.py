@@ -43,6 +43,7 @@ from engine.session.phases import (
 
 CHOICE_DECISION = "choice"
 BUDGET_GRANT_DECISION = "budget_grant"
+MENU_SHOWN_DECISION = "menu_shown"
 
 
 @dataclass(frozen=True)
@@ -252,10 +253,19 @@ async def _choices_open(db: AsyncSession, orm: OrmSession) -> bool:
 # --- public engine functions ----------------------------------------------------
 
 
-async def read_menu(db: AsyncSession, session_id: UUID, participant_id: UUID) -> Menu:
+async def read_menu(
+    db: AsyncSession,
+    session_id: UUID,
+    participant_id: UUID,
+    now: datetime | None = None,
+) -> Menu:
     """This participant's menu: every choice available in this beat whose
     prerequisites they hold, marked new or already taken, with their budget.
-    Closed (no items) outside a choices phase."""
+    Closed (no items) outside a choices phase.
+
+    The first read in each visit to the choices phase saves what was offered
+    (a ``menu_shown`` row), so the record shows the menu of a player who then
+    chose nothing."""
     orm = await db.get(OrmSession, session_id)
     ctx = await _context(db, orm, participant_id)
     ledger = await _ledger(db, session_id, participant_id)
@@ -264,7 +274,52 @@ async def read_menu(db: AsyncSession, session_id: UUID, participant_id: UUID) ->
         return Menu(open=False, remaining_budget=left, items=())
     held = await _held_with_opening(db, ctx, locked=False)
     items = _menu_items(ctx.case, ctx.orm.current_beat_id, held, ledger.taken)
+    await _save_menu_shown(db, ctx, participant_id, items, now)
     return Menu(open=True, remaining_budget=left, items=tuple(items))
+
+
+async def _save_menu_shown(
+    db: AsyncSession,
+    ctx: _Context,
+    participant_id: UUID,
+    items: list[MenuItem],
+    now: datetime | None,
+) -> None:
+    state = await current_phase(db, ctx.orm.session_id)
+    if state is None:
+        return
+    result = await db.execute(
+        select(Decision.context).where(
+            Decision.session_id == ctx.orm.session_id,
+            Decision.decision_type == MENU_SHOWN_DECISION,
+        )
+    )
+    contexts: list[dict[str, Any]] = list(result.scalars().all())
+    if any(
+        c.get("participant_id") == str(participant_id)
+        and c.get("phase_entry") == state.entry
+        for c in contexts
+    ):
+        return
+    row = Decision(
+        session_id=ctx.orm.session_id,
+        decision_type=MENU_SHOWN_DECISION,
+        context={
+            "participant_id": str(participant_id),
+            "beat_id": ctx.orm.current_beat_id,
+            "phase_entry": state.entry,
+            "offered": [item.opportunity_id for item in items],
+            "subjects": {
+                item.opportunity_id: [item.subject_id, item.subject_kind]
+                for item in items
+            },
+        },
+        outcome={},
+    )
+    if now is not None:
+        row.timestamp = now
+    db.add(row)
+    await db.flush()
 
 
 async def read_holdings(
@@ -312,6 +367,13 @@ def _result_from_row(
         replayed=replayed,
         remaining_budget=left,
     )
+
+
+def _subject_kind(case: AuthoredCase, subject_id: str) -> str:
+    for subject in case.subjects:
+        if subject.subject_id == subject_id:
+            return subject.kind
+    return ""
 
 
 def _opportunity(case: AuthoredCase, opportunity_id: str) -> AuthoredOpportunity:
@@ -379,8 +441,16 @@ async def choose(
                     "phase_entry": state.entry if state else None,
                     "offered": [item.opportunity_id for item in menu],
                     "opportunity_id": opportunity_id,
+                    "subject_id": opportunity.subject_id,
+                    "subject_kind": _subject_kind(ctx.case, opportunity.subject_id),
                 },
-                outcome={"cost": cost, "gave": gave, "first_time": first_time},
+                outcome={
+                    "cost": cost,
+                    "gave": gave,
+                    "first_time": first_time,
+                    "allowance": budget_allowance(ctx.arc, granted=ledger.granted),
+                    "spent_after": ledger.spent + cost,
+                },
             )
         )
         await db.flush()

@@ -221,6 +221,38 @@ class TestSubmitInput:
         assert body["kind"] == "dialogue"
         assert body["character_id"] == str(char_a)
 
+    def test_typed_input_is_saved_as_an_event(
+        self,
+        host_session: tuple[UUID, UUID, UUID, UUID],
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        import asyncio
+
+        session_id, player_a, char_a, _ = host_session
+        for c in _client_for_role("player", session_id, player_a, db_factory):
+            resp = c.post(
+                f"/v1/sessions/{session_id}/characters/{char_a}/input",
+                json={"kind": "action", "content": "Check the shed."},
+            )
+        assert resp.status_code == 201
+
+        async def _saved() -> list[Event]:
+            async with db_factory() as db:
+                result = await db.execute(
+                    select(Event).where(
+                        Event.session_id == session_id,
+                        Event.event_type == "player_input",
+                    )
+                )
+                return list(result.scalars().all())
+
+        (event,) = asyncio.run(_saved())
+        assert event.content_text == "Check the shed."
+        assert event.actor_char_id == char_a
+        assert event.payload["participant_id"] == str(player_a)
+        assert event.payload["kind"] == "action"
+        assert event.payload["input_id"] == resp.json()["input_id"]
+
     def test_player_cannot_submit_as_another_character(
         self,
         host_session: tuple[UUID, UUID, UUID, UUID],
