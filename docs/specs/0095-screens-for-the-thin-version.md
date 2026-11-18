@@ -74,7 +74,7 @@ The screens show what the engine has already decided. They hold no game rules. S
 | Changes across engine modules | **Yes, small** | `engine/session` (room view, seat rule, survey answers) and thin API routes. Reads, not new rules |
 | Database tables or migrations | **No** | Survey answers are events. The room view reads what specs 0093 and 0094 save |
 | Prompts or evaluation suites | **No** | No model call |
-| Secrets or sign-in | **Yes** | Decision 3 changes where a phone keeps its sign-in. Decision 6 closes an address that hands out a player's private mini-game view without a sign-in |
+| Secrets or sign-in | **Yes** | Decision 3 changes where a phone keeps its sign-in. Decision 6 closes an address that hands out a player's private mini-game view without a sign-in. The Q1 answer (D-133) lets a player's sign-in pause and resume and moves the host role to a player's seat (Part M, M6) |
 
 ---
 
@@ -122,7 +122,7 @@ Checked by reading code on 2026-11-16. Nothing was run. Line numbers will drift.
 
 - **TV**: the shared screen, 1920 by 1080, read from the sofa. Never signed in as a player.
 - **Phone**: one per player, 375 by 812. Two tabs on every in-game screen: **Now** (what to do in this phase) and **Notebook** (what you found). A header shows your name, the round, the time left and, when it matters, your investigations left.
-- **Host**: whoever started the game. Their controls are a small strip that is folded away by default (where it lives is Q1). It shows only room-safe facts: phase, time left, who is ready or locked. Never case content. This also keeps a host who is playing unspoiled and without an advantage.
+- **Host**: the first player to join, who can hand the role to another seated player (Q1, D-133). The host plays on their own phone like everyone else. Every phone has a **Start menu** (Pause, Resume, Settings); the host's Start menu also holds the host controls. It shows only room-safe facts: phase, time left, who is ready or locked. Never case content. This also keeps a host who is playing unspoiled and without an advantage. The TV has no controls.
 
 **Phase kinds and their screens.** Every in-game screen is chosen by the phase kind the engine reports. The screens add no order of their own.
 
@@ -159,7 +159,7 @@ Checked by reading code on 2026-11-16. Nothing was run. Line numbers will drift.
 ```
 
 - **Shows:** the room code in large type, the join address, a QR code, who has sat down, the player range.
-- **Can do:** nothing for players. The host strip has **Start** (enabled at two or more players).
+- **Can do:** nothing on the TV. The host starts the game from **Start game** in their phone's Start menu (enabled at two or more players).
 - **Feeds:** `GET /v1/sessions/{id}/lobby` (exists); host **Start** is `POST /v1/sessions/{id}/start` (exists).
 - **Never on the TV:** the host's sign-in or any player's sign-in. Today the host's sign-in is in the address bar fragment, which is not drawn on the page; the build keeps it that way.
 
@@ -465,7 +465,7 @@ Checked by reading code on 2026-11-16. Nothing was run. Line numbers will drift.
 ## 21. TV: Thanks
 
 - **Shows:** "Thanks for playing. Answer three quick questions on your phone." and who has answered.
-- **Can do:** the host strip offers **End game** (exists, `POST /v1/sessions/{id}/end`), with a confirm.
+- **Can do:** nothing on the TV. The host's phone Start menu offers **End game** (exists, `POST /v1/sessions/{id}/end`), with a confirm.
 - **Feeds:** the room view, which carries who has answered (gap, Part M).
 
 ## 22. Phone: Survey
@@ -514,7 +514,7 @@ You chose "I outsmarted you": players feel clever and competitive, and the best 
 
 ## Part K. One client
 
-- `dashboard/` is the one client. The TV page, the join page, the phone page and the host strip live there.
+- `dashboard/` is the one client. The TV page, the join page, the phone page and the phone's Start menu (with the host's controls) live there.
 - Copied from `nightcap-web/` into `dashboard/src/`: the mini-game kit (`mini-game-kit/`) and the package screen loader (`mini-games/`), adapted to the dashboard's types and the connection kit. Package screens import the kit by the name `@arcwright/mini-game-kit` (verified in the Tell Me Something True renderer), so the dashboard's Vite config maps that name to its copy. No package's screen code changes.
 - The dashboard's hand-written Tell Me Something True screens (`dashboard/src/screens/tmst/`) stop being used once the package's own renderer runs through the loader. They are not deleted by this spec.
 - Privacy tests in `dashboard/tests/`: the role-against-audience matrix rewritten for the dashboard, and the kit's mini-game privacy test copied across. They run with Node's own test runner.
@@ -540,8 +540,9 @@ Specs 0093 and 0094 do not provide these. Each is a read or a small rule, with t
 | M3. Survey answers | Save one player's answers as an event on the play record; one answer per player, a repeat replaces it; private to that player | Decision 7. The only route today is host-reported replay intent |
 | M4. Private mini-game view needs a sign-in | The display address returns a player's personalised view only to that player's sign-in; without one it returns the shared view | Decision 6 |
 | M5. Notebook fields | Read what I hold returns each item's subject (or "at the start") and the round it was found | Screen 9. Only if AW-325's route lacks them |
+| M6. Start menu sign-in (Q1, D-133) | Pause and resume accept a player's sign-in; the host role belongs to a player's seat (the first to join); a route lets the host hand it to another seated player; the host controls accept that seat's sign-in | Q1. Sign-in change, a hard rule: needs explicit approval in AW-331's plan |
 
-All of M1 to M5 are game-agnostic. They use no murder-mystery word (inventory section 7).
+All of M1 to M6 are game-agnostic. They use no murder-mystery word (inventory section 7).
 
 ## Part N. Reconnecting and host controls
 
@@ -558,24 +559,26 @@ All of M1 to M5 are game-agnostic. They use no murder-mystery word (inventory se
 | A different phone, or the browser's data was cleared | "This game has started. Use the phone you joined with." | Decision 4. Not recoverable in session 1; the host cheat sheet (AW-308) says what to do |
 | A player never comes back | The game goes on by its clocks; at Last Call their saved draft is locked or they have no theory | Specs 0093 and 0094 |
 
-**Host controls.** In the host strip, folded away by default (where it lives is Q1).
+**The Start menu and host controls (Q1, D-133).** Every phone has a Start menu, opened from a fixed button on every in-game screen. Every player's menu has Pause, Resume and Settings. The host's menu also has the host controls below. The host is the first player to join and can hand the role to another seated player.
 
-| Control | When | Route |
-| --- | --- | --- |
-| Start | Room, two or more seated | Exists |
-| Pause, Resume | Any in-game phase | Exist; spec 0093 makes pause freeze the phase clock and the mini-game |
-| Move on | Any phase | Spec 0093, host move-on. In Last Call it confirms first: "This locks every saved theory now" |
-| Mini-game: Resolve, Cancel | During a mini-game | Exist (`api/routers/mini_games.py`) |
-| End game | Any time, with a confirm | Exists |
-| Show room code | Any time | The lobby route |
+| Control | Who | When | Route |
+| --- | --- | --- | --- |
+| Pause, Resume | Every player | Any in-game phase | Exist, host-only today; AW-331 lets a player's sign-in call them. Spec 0093 makes pause freeze the phase clock and the mini-game |
+| Settings | Every player | Any time | None; contents proposed in AW-330's plan |
+| Start game | Host | Room, two or more seated | Exists |
+| Move on | Host | Any phase | Spec 0093, host move-on. In Last Call it confirms first: "This locks every saved theory now" |
+| Mini-game: Resolve, Cancel | Host | During a mini-game | Exist (`api/routers/mini_games.py`) |
+| End game | Host | Any time, with a confirm | Exists |
+| Hand the host role on | Host | Any time | Gap; AW-331 |
+| Show room code | Every player | Any time | The lobby route |
 
-The host strip shows the phase, the time left, and who is ready, locked or has answered. It never shows a menu, a finding, a draft or a result before the TV does. A host who is also a player sees nothing more than the room.
+The host's Start menu shows the phase, the time left, and who is ready, locked or has answered. It never shows a menu item, a finding, a draft or a result that the host's own seat could not see as a player. A host who is also a player sees nothing more than the room.
 
 ## Part O. The proof
 
 A full game's screens are proven without a TV in two halves.
 
-1. **Python half: a scripted client.** It drives the API in-process, as the existing API tests do, through a full game on the fixture arc and case that AW-327's headless proof uses, at 2 and at 4 players, with a controlled clock. At every phase it reads what each screen reads: the room view and the shared mini-game view as the TV, the host strip's reads as the host, and every player route as each player. It records those answers and every event per audience into a file. The fixture case's private texts carry marker words, and the test fails if any marker reaches a TV or host read, or one player's marker reaches another player.
+1. **Python half: a scripted client.** It drives the API in-process, as the existing API tests do, through a full game on the fixture arc and case that AW-327's headless proof uses, at 2 and at 4 players, with a controlled clock. At every phase it reads what each screen reads: the room view and the shared mini-game view as the TV, the host Start menu's reads as the host, and every player route as each player. It records those answers and every event per audience into a file. The fixture case's private texts carry marker words, and the test fails if any marker reaches a TV or host read, or one player's marker reaches another player.
 2. **TypeScript half: the screens replay that file.** Each recorded step is rendered through the dashboard's real screen components with the server renderer already inside `react-dom`, and the test checks the screen sequence, the privacy markers again on the rendered text, and that no internal ID appears.
 
 The recorded file is committed. The Python half fails if a fresh run differs from it, so a change in the engine cannot silently leave the screens behind.
@@ -662,7 +665,8 @@ Every Python test runs without a network, without a real database server, and wi
 - [ ] A choice sent twice with the same ID after a simulated reconnect is spent once. Test through the routes.
 - [ ] After a simulated API restart (event numbers start again from zero), the screens reread their routes and show the current phase. Test in the TypeScript replay.
 - [ ] Each host control calls its route; Move on in Last Call and End game ask to confirm first. Component tests.
-- [ ] The host strip renders no menu, finding, draft or result before the TV does, at any step of the proof. Test.
+- [ ] The host's Start menu renders no other player's menu, finding, draft or result, and no result before the TV does, at any step of the proof. Test.
+- [ ] A player's Start menu offers Pause, Resume and Settings only; the host's adds the host controls; after the host hands the role on, the menus swap. Component tests.
 
 **Part O and the whole client**
 - [ ] **Named full-game proof, Python half:** `api/tests/test_screens_feed.py::test_full_game_screen_feeds`, at 2 and at 4 players, on AW-327's fixture arc and case. It records every read and event per role, fails on any privacy marker in the wrong place, fails if the committed recording differs, and asserts the model router was never called.
@@ -683,7 +687,7 @@ Every Python test runs without a network, without a real database server, and wi
 
 # Test Plan
 
-- **Unit and component tests (TypeScript):** each screen with fixture data; the loader; the sign-in storage; the phase-to-screen table; the host strip; the reconnect reset.
+- **Unit and component tests (TypeScript):** each screen with fixture data; the loader; the sign-in storage; the phase-to-screen table; the Start menu for a player and for the host; the reconnect reset.
 - **API tests (Python):** each Part M route's happy path, wrong role, wrong session, and repeat request.
 - **Integration:** the two-half full-game proof at 2 and 4 players, including an idle run where nobody taps anything and every screen still reaches the Survey on clocks alone.
 - **Privacy:** marker scans in both halves; the copied mini-game privacy test; the rewritten role matrix.
@@ -751,7 +755,7 @@ Proposal only. These IDs are reserved for this spec; no task files, index entrie
 | Order | Task | Size | Depends on | Owns | Can run beside |
 | --- | --- | --- | --- | --- | --- |
 | 1 | **AW-329: Bring the mini-game kit, the package loader and the test setup into the dashboard.** Copy the kit and loader, map `@arcwright/mini-game-kit` in the Vite config, mount the Tell Me Something True package renderer through the loader, add the `test` script, copy the kit's privacy test | M | This spec approved | `dashboard/src/mini-game-kit/`, `dashboard/src/mini-games/`, `dashboard/tests/` (setup and the kit test only), `dashboard/package.json`, `dashboard/package-lock.json`, `dashboard/tsconfig.json`, `dashboard/tsconfig.node.json`, `dashboard/vite.config.ts` | Any engine task (AW-325, AW-303, AW-328, AW-326, AW-327) |
-| 2 | **AW-330: Build the screen shell: pages, sign-in storage, room and join screens, host strip.** Pages for TV, join and phone; the phase-to-screen table with empty slots for round and endgame screens; reading routes on load and on reconnect; sign-in kept per session; screens 1, 2, 3 and 23; the host strip with the controls that exist today | M | AW-329 merged. The phase-aware parts need AW-325 merged | `dashboard/src/App.tsx`, `dashboard/src/main.tsx`, `dashboard/src/index.css`, `dashboard/src/api/`, `dashboard/src/shell/` (new), `dashboard/src/screens/DisplayScreen.tsx`, `dashboard/src/screens/JoinScreen.tsx`, `dashboard/src/screens/WaitingScreen.tsx`, `dashboard/src/screens/round/index.tsx` and `dashboard/src/screens/endgame/index.tsx` (empty slots, handed over) | Any engine task |
+| 2 | **AW-330: Build the screen shell: pages, sign-in storage, room and join screens, the phone Start menu.** Pages for TV, join and phone; the phase-to-screen table with empty slots for round and endgame screens; reading routes on load and on reconnect; sign-in kept per session; screens 1, 2, 3 and 23; the phone Start menu with Settings, and the host's controls that exist today (Q1, D-133) | M | AW-329 merged. The phase-aware parts need AW-325 merged | `dashboard/src/App.tsx`, `dashboard/src/main.tsx`, `dashboard/src/index.css`, `dashboard/src/api/`, `dashboard/src/shell/` (new), `dashboard/src/screens/DisplayScreen.tsx`, `dashboard/src/screens/JoinScreen.tsx`, `dashboard/src/screens/WaitingScreen.tsx`, `dashboard/src/screens/round/index.tsx` and `dashboard/src/screens/endgame/index.tsx` (empty slots, handed over) | Any engine task |
 | 3 | **AW-331: Add the room view, the seat rule, survey answers and the signed-in mini-game view (Part M).** | M | AW-327 merged, because the engine tasks before it change `engine/session/` and `api/main.py` | `engine/session/room_view.py` (new), `engine/session/survey.py` (new), `engine/session/service.py` (the join rule only), `api/routers/room.py` (new), `api/schemas/room.py` (new), `api/main.py` (one line), `api/routers/mini_games.py` (the display address only), `api/routers/lobby.py`, matching new tests in `engine/tests/` and `api/tests/` | AW-329, AW-330 |
 | 4 | **AW-332: Build the round screens: story, thinking time, investigate, finding, notebook, mini-game and its result.** Screens 4 to 12 | L | AW-330, AW-331, AW-303 and AW-328 merged | `dashboard/src/screens/round/`, `dashboard/src/screens/notebook/` | AW-333 |
 | 5 | **AW-333: Build the endgame screens: Last Call, your theory, the accused, the Verdict, the Postmortem, the survey.** Screens 13 to 22 | M | AW-330 and AW-331 merged; AW-326 and AW-327 merged | `dashboard/src/screens/endgame/`, `dashboard/src/screens/survey/` | AW-332 |
@@ -771,7 +775,7 @@ Not numbered here: one small task per mini-game renderer that Q4's answer needs,
 
 # Q1 Answered: Host Controls Live In A Start Menu On The Phones (2026-11-18)
 
-Recorded by the orchestrator session from the founder's answers in session on 2026-11-18. Also recorded on issue #355. This answers Q1 only. It does not approve this spec; "approve 0095" on issue #355 is still needed.
+Recorded from the founder's answers in session on 2026-11-18. Decision row: D-133. Also recorded on issue #355. This answers Q1 only. It does not approve this spec; "approve 0095" on issue #355 is still needed.
 
 **Founder's words**, in order:
 1. Choosing among the three options: "A separate host page on a phone. Easy to reach from the sofa. ... Just desinate a host that has the controls on their phone or add game pause on the phones similar to how video game controllers have a start menu."
@@ -803,7 +807,7 @@ Recorded by the orchestrator session from the founder's answers in session on 20
 - **Abuse of pause.** Any player can pause. Proposal: the TV shows who paused ("Paused by [Name]"), and anyone can resume. Changing this to host-only resume is a setting in the screens, cheap to change (D-127).
 - **What happens to the host role if the host's phone drops.** Proposal: the role stays with that seat, and the seat's reconnect (decision 3) brings it back; the host cheat sheet (AW-308) covers a phone that never returns.
 
-**What this changes above.** Where earlier text in this spec says the host's controls are a strip on the TV page (screen 1 "Can do", screen 21 "Can do", Part N "Host controls", the "Host" bullet under "Two surfaces and one role"), this section is the later record. The controls and routes listed in Part N are unchanged; only where they appear changes.
+**What this changed above.** The "Host" bullet under "Two surfaces and one role", screens 1 and 21, Part K, Part N (now "The Start menu and host controls"), Part M (new row M6), the Part N and Part O acceptance criteria, the test plan and the AW-330 row of the build order were rewritten on 2026-11-18 to match this answer. Decision row: D-133.
 
 - **Sign-in (a hard rule).** Today pause, resume, start, move-on and end accept only the host sign-in that is made when the session is created (`api/routers/sessions.py`, `require_host_jwt`). Letting every player pause, giving the host role to a player's seat, and handing it on need sign-in changes. They belong in AW-331 (Part M), whose plan needs the founder's explicit approval. AW-330 builds the menu.
 - **Size.** Inferred: this adds the Start menu, Settings and the hand-over to AW-330 and AW-331, and removes the TV host strip. Net, about one more build day; not measured.
