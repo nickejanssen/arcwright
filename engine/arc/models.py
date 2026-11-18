@@ -259,6 +259,17 @@ class BeatDefinition(BaseModel):
         return self
 
     @model_validator(mode="after")
+    def validate_binding_has_a_mini_game_phase(self) -> "BeatDefinition":
+        """A binding on a phased beat that has no ``mini_game`` phase would
+        never run, with no error anywhere. Beats without phases are unchanged."""
+        if self.phases is None or not self.mini_games:
+            return self
+        if not any(phase.kind is PhaseKind.mini_game for phase in self.phases):
+            msg = f"beat {self.beat_id} binds a mini-game but has no mini_game phase"
+            raise ValueError(msg)
+        return self
+
+    @model_validator(mode="after")
     def validate_mini_game_binding_ids(self) -> "BeatDefinition":
         if not self.mini_games:
             return self
@@ -351,6 +362,10 @@ class ArcDefinition(BaseModel):
     obligations: List[ObligationConfig] = Field(default_factory=list)
     case_file: Optional[str] = None
     """Path, from the repository root, to a written case (spec 0093, Part A)."""
+    mini_game_root: Optional[str] = None
+    """Folder, from the repository root, holding the mini-game packages this
+    arc's beats are bound to (spec 0093, Part E). One folder per game, named by
+    its game ID."""
     choice_config: ChoiceConfig = Field(default_factory=ChoiceConfig)
 
     @property

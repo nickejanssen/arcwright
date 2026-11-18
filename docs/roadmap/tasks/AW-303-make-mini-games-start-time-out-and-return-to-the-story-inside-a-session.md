@@ -42,12 +42,12 @@ Verified in code on 14 November 2026: outside tests, nothing calls `create_run`,
 
 ## Acceptance Criteria
 
-- [ ] Headless test: entering a beat with a bound mini-game creates and starts a run.
-- [ ] With no submissions at all, the run ends when its deadline passes.
-- [ ] Duplicate and late submissions behave as the existing tests require.
-- [ ] When the run ends, the beat can end.
-- [ ] Pausing during a run stops the run's clock; resuming keeps the time that was left.
-- [ ] Passes at two and at four players with no AI call.
+- [x] Headless test: entering a beat with a bound mini-game creates and starts a run.
+- [x] With no submissions at all, the run ends when its deadline passes.
+- [x] Duplicate and late submissions behave as the existing tests require.
+- [x] When the run ends, the beat can end.
+- [x] Pausing during a run stops the run's clock; resuming keeps the time that was left.
+- [x] Passes at two and at four players with no AI call.
 - [ ] Seen once on a real TV and two phones, recorded on the issue.
 
 ## Tests/Verification
@@ -68,3 +68,14 @@ Verified in code on 14 November 2026: outside tests, nothing calls `create_run`,
 ## Kickoff Prompt
 
 > Read `AGENTS.md`, `HANDOVER.md`, the approved engine-spine spec and `engine/mini_games/runtime.py`. Confirm the spec is approved; if not, stop. Task AW-303: wire the existing mini-game runtime into session flow. Write tests first, including a run that times out with zero submissions. Write a plan and stop for founder approval, because this crosses engine modules.
+
+## What Was Built
+
+Built on 2026-11-18 under spec 0093, Part E. The founder approved the plan on 2026-11-17 (issue #356).
+
+- **Where.** New `engine/session/mini_game_phase.py` (begin, advance, stop, pause, resume), called from `engine/session/phases.py`. `engine/mini_games/resolver.py` gained `RunBinding` (beat, binding, phase visit) on the snapshot; `engine/arc/models.py` gained the optional `mini_game_root` on the arc. `engine/mini_games/runtime.py` is unchanged.
+- **Rules.** The tick asks the run whether its time is up and reads its state back. Any end state ends the phase (`mini_game_ended`). The phase's `seconds` is a hard cap (`time`) that cancels a run still going. A phase ended any other way (host move-on) cancels the open run. No binding: the phase is skipped (`mini_game_skipped`). A binding that cannot run (`no_root`, `package_missing`, `version_mismatch`, `unknown_mechanic`, `invalid_definition`, `resolution_failed`, `run_not_started`) or a missing run (`run_missing`), or a game rule that raises while starting or ending the run (`run_not_started`, `run_failed`): the phase ends with `mini_game_error:<code>` and a host-only `mini_game_unavailable` event, so the round never hangs. A phase whose limit is not longer than the game's length sends a host-only `mini_game_warning`. The arc file refuses a phased beat that binds a mini-game but has no `mini_game` phase. Database errors are not turned into game errors. Pause and resume keep the run's time left to the second.
+- **The hook.** The tick reaches the end rule from inside the session lock. `finish_mini_game_phase` is the same rule for a caller outside the tick (a route could call it to avoid up to one second of wait); it changes nothing while the run is still going.
+- **Tests.** `engine/tests/test_mini_game_phase.py`, and real runs in `test_spine_headless.py` at 2 and 4 players. A test-only package and game rule stand in for a game that allows 2 or 3 players; no shipped game changed.
+- **Not changed.** No table, migration, dependency or model call; nothing under `api/` (except one test fixture), `sdk/`, `dashboard/`, `nightcap-web/` or `nightcap/`.
+- **Left open.** Criterion 7, the TV and two phones. The round view's countdown shows the phase's time, not the run's. The resume event is not delivered to screens. A hybrid or generative game calls the model when its phase starts, inside the session lock, so it can briefly block that session's other writers (resolving before the lock is a follow-up for when the first real game is wired). Only the first binding on a beat is used. A game's own length must be shorter than its phase's `seconds`. Player counts are not checked (AW-337).

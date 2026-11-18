@@ -516,6 +516,7 @@ class TestArcAndCaseAgree:
     ) -> None:
         arc = phased_arc(
             phases={"beat_two": [{"kind": "scene", "seconds": 5}]},
+            mini_games={"beat_two": []},  # no mini_game phase, so no binding
         )
         registered(arc)
         svc = SessionService()

@@ -35,6 +35,18 @@ class MiniGameContentResolutionError(ValueError):
     """Raised when mini-game content cannot be resolved safely."""
 
 
+class RunBinding(BaseModel):
+    """Which beat, binding and visit to a phase a run belongs to (spec 0093, E).
+
+    Kept inside the stored definition so no table changes."""
+
+    model_config = ConfigDict(extra="forbid", frozen=True)
+
+    beat_id: str
+    binding_id: str
+    phase_entry: int
+
+
 class ResolvedMiniGameSnapshot(BaseModel):
     """One versioned contract consumed by future deterministic runtime work."""
 
@@ -54,6 +66,7 @@ class ResolvedMiniGameSnapshot(BaseModel):
     clue_fallback: DelayedClueFallback
     resolved_content: dict[str, Any]
     presentation: dict[str, Any] = Field(default_factory=dict)
+    binding: RunBinding | None = None
 
 
 class _GeneratedMiniGamePayload(BaseModel):
