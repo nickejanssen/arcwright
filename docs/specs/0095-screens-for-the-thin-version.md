@@ -415,7 +415,7 @@ Checked by reading code on 2026-11-16. Nothing was run. Line numbers will drift.
 +--------------------------------------------------------------+
 ```
 
-- **Shows:** for each player, only the answer in the slot the case shows first (in Nightcap, who they accused). One player at a time, then all side by side (staging is Q3).
+- **Shows:** for each player, only the answer in the slot the case shows first (in Nightcap, who they accused). One player at a time, then all side by side (Q3, D-135). The staging and the order are Nightcap's, set in Nightcap's files and performed by Nightcap's screens; the order never depends on who is right.
 - **Feeds:** the `reveal` event (spec 0094, Part J); the room view for a reload (gap, Part M).
 - **Never on the TV:** any other slot of any theory, and anything about right or wrong.
 
@@ -742,7 +742,7 @@ Each has a recommended default you can accept with "agree". None blocks AW-329.
 
 - **Q1. Where do the host's controls live?** **Answered 2026-11-18: on the phones, in a Start menu. See "Q1 Answered" at the end.** (1) On the TV page, folded into a corner, opened with the PC's mouse or keyboard. Recommended: it is where the host's sign-in already is, it needs no second link, and everything it shows is room-safe, so a host who is playing stays unspoiled. (2) On a separate host page opened on any phone with its own link; easier to reach from the sofa, but one more link to handle and one more device. (3) Both. Option 1 is cheap to change to 2 or 3 later. Blocks: AW-330's plan.
 - **Q2. What does the TV show during thinking time?** **Answered 2026-11-18: option 1, quiet (D-134). See "Q2 Answered" at the end.** (1) Quiet: round title, clock, who is ready. Recommended, because private thinking wins (your feelings answer). (2) Quiet, plus the round's scene lines left on screen for anyone who wants to reread. (3) Quiet, plus a light line when someone investigates ("[Name] is looking into something"); this is the if-it-fits rival feed and needs engine work. Blocks: AW-332's plan.
-- **Q3. How is "The accused" staged on the TV?** (1) One player at a time with a short hold, then all side by side; the host can skip ahead. Recommended: it builds to the groan. (2) Everyone at once. (3) The host taps for each player. All three use the same engine event; this is a screen setting. Blocks: AW-333's plan.
+- **Q3. How is "The accused" staged on the TV?** **Answered 2026-11-18: option 1, owned by Nightcap, order never by right or wrong (D-135). See "Q3 Answered" at the end.** (1) One player at a time with a short hold, then all side by side; the host can skip ahead. Recommended: it builds to the groan. (2) Everyone at once. (3) The host taps for each player. All three use the same engine event; this is a screen setting. Blocks: AW-333's plan.
 - **Q4. How many different mini-games does session 1 need screens for?** Facts: only Tell Me Something True has a working package screen, and it is a draft written for 4 to 8 players; no package is written for 2 or 3 players (verified). (1) One mini-game that works at 2 to 4 players, reused in all three rounds with three different story wrappers; add a second only if it fits. Recommended: cheapest, and the status page's cut order already allows fewer mini-games. (2) Two different mini-games. (3) Three. Which mini-game and its story wrappers are chosen with the case's author. Blocks: the mini-game renderer tasks, not AW-329 to AW-334.
 - **Q5. Two documents disagree on the final theory, and the screens follow the later one unless you say otherwise.** The status page says "arrange a short causal chain" (`docs/product/nightcap-status.md`, "What session 1 contains"). Spec 0094, approved later the same week, has the player fill the case's slots in the case's fixed order; the player does not choose the order (Part G). (1) Fill the case's slots in order, as spec 0094 builds. Recommended: no engine change, and the GDD's own example reads in a fixed order. The status page wording is then updated to match. (2) Let players put the pieces in their own order. That changes spec 0094's check and needs your approval there. Blocks: AW-333's plan.
 
@@ -771,6 +771,7 @@ Not numbered here: one small task per mini-game renderer that Q4's answer needs,
 - 2026-11-16: Merged to main as a draft in pull request #393; still not approved. Cited D-128 now that pull request #392 has merged. Noted the two tasks filed from this draft's findings: AW-336 (API tests in CI, issue #394) and AW-337 (no mini-game fits two or three players, issue #395, linked to Q4).
 - 2026-11-18: Q1 answered by the founder (host controls in a Start menu on the phones). The spec as a whole is still a draft and not approved.
 - 2026-11-18: Q2 answered by the founder (a quiet TV during thinking time, D-134). Still a draft.
+- 2026-11-18: Q3 answered by the founder (the accused shown one at a time, staged by Nightcap, D-135). Still a draft.
 
 ---
 
@@ -828,3 +829,19 @@ Recorded from the founder's answer in session on 2026-11-18. Decision row: D-134
 **What this does not decide.** Options 2 (scene lines left on screen) and 3 (a rival activity line) are not built for session 1. The rival feed stays item 4 of the if-it-fits list. Whether a quiet TV feels tense or dead is a session 1 question; changing it later is a screen setting, cheap to change (D-127).
 
 **What this changes above.** Screen 6 and the Unknowns line now cite this answer. Q2 no longer blocks AW-332's plan.
+
+---
+
+# Q3 Answered: The Accused Shown One At A Time, Staged By Nightcap (2026-11-18)
+
+Recorded from the founder's answers in session on 2026-11-18. Decision row: D-135. Also recorded on issue #355. This answers Q3 only; it does not approve this spec.
+
+**Founder's words.** Asked how "The accused" is staged, he answered: "I want to make sure this is not part of the Arcwright engine and is part of the nightcap game. As long as that is certain, one at a time works because it can be used to make the order more suspenseful, misleading, or mysterious." Shown the summary below, with the order guard, he chose "Yes, with the guard (Recommended)".
+
+**What was decided.**
+- Option 1: each player's accused appears in turn with a short hold, then all side by side. The host can skip ahead from the Start menu on their phone (D-133).
+- **It belongs to Nightcap, not the engine.** The Arcwright engine sends one generic `reveal` event holding each player's shown-first answer (spec 0094, Part J). It has no idea what an accusation is, and it does not stage, order or time anything for the room. The one-at-a-time staging, the hold between players and the order are set in Nightcap's own files (the Nightcap arc file's presentation hints for the `reveal` phase, D-070, or Nightcap's screen settings) and performed by Nightcap's screens. The engine passes presentation hints through without reading them.
+- **The order is a storytelling tool,** for suspense or misdirection: an authored order, seat order, or a random order the case writer chooses.
+- **Guard: the order never depends on who is right.** Ordering by right or wrong would give the Verdict away before it is shown. This is already required by spec 0094 Part H (no event carries right-or-wrong information before the `result` phase); this answer makes it explicit for the staging. The engine's `reveal` event lists players in a neutral order (AW-327).
+
+**What this changes above.** Screen 16 cites this answer. Q3 no longer blocks AW-333's plan. AW-327's task file carries the neutral-order rule.

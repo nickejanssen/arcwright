@@ -42,8 +42,8 @@ You run in the Claude desktop app on the founder's Windows PC, in or beside the 
    - 0092 rebuild plan, thin version approved (D-123);
    - 0093 engine spine, approved (D-124);
    - 0094 endgame, approved (D-125);
-   - 0095 screens, DRAFT and not approved; Q1 and Q2 answered (D-133, D-134).
-7. Decisions D-112 to D-134: https://github.com/nickejanssen/arcwright/blob/main/docs/product/decisions-log.csv
+   - 0095 screens, DRAFT and not approved; Q1 to Q3 answered (D-133, D-134, D-135).
+7. Decisions D-112 to D-135: https://github.com/nickejanssen/arcwright/blob/main/docs/product/decisions-log.csv
 8. Where the reset came from: https://github.com/nickejanssen/arcwright/blob/main/docs/product/2026-11-15-reset-audit.md
 
 Then, in the main checkout:
@@ -75,13 +75,13 @@ Critical path to the founder TV run, with sizes from the task files. The build-d
 | Session readiness | none | AW-306 importer (cut-able), AW-308 preflight, AW-301 walkthrough | 2 to 3 |
 
 Progress: 6 of about 20 critical-path tasks are merged, roughly 30 percent (inferred). Remaining build work is about 17 to 21 build days against 17 calendar days. It fits only if screens start almost at once and run beside the engine work. **The date is at risk.** The three biggest risks, in order:
-1. **Spec 0095 is not approved, so no screen task can start.** About half the remaining work waits on it, and the founder has Q3 to Q5 open.
+1. **Spec 0095 is not approved, so no screen task can start.** About half the remaining work waits on it, and the founder has Q4 and Q5 open.
 2. **The first case's state is unknown here.** Branch `claude/lido-case-and-spec-followups` had unpushed work on 15 November. AW-305 waits on it.
 3. **No mini-game fits two players** (AW-337), and the founder TV run has two phones.
 
 ## In flight at handoff
 
-- **AW-343 (#423).** A phone reads back its mini-game rewards, so a missed "you earned one more investigation" message can never be lost; the founder chose this fix on 18 November. A plan session is running in the cloud: https://claude.ai/code/session_01BpvnxtVGat2r3kNPnRf18C, branch `task/AW-343-reward-readback`. Its plan was approved by the founder on 2026-11-18 (#423) and it is building; it opens a pull request and does not merge.
+- **AW-343 (#423).** A phone reads back its mini-game rewards, so a missed "you earned one more investigation" message can never be lost; the founder chose this fix on 18 November. A plan session is running in the cloud: https://claude.ai/code/session_01BpvnxtVGat2r3kNPnRf18C, branch `task/AW-343-reward-readback`. Its plan was approved by the founder on 2026-11-18, but the session will build only on an approval the founder types in that session himself (it refused the one posted on #423 for him). Ask him to type "approved" there if he has not; then it builds, opens a pull request and does not merge.
 - **Open pull requests: none,** once this handoff's pull request has merged.
 - **Main is `ab759f6`, or later if the handoff pull request below has merged.**
 
@@ -99,8 +99,8 @@ Progress: 6 of about 20 critical-path tasks are merged, roughly 30 percent (infe
 
 ## Waiting on the founder (ask one at a time, with a recommendation)
 
-1. AW-343: plan approved on 2026-11-18 (#423); merge its pull request when it is reviewed and green.
-2. Spec 0095: answer Q3 to Q5, then reply "approve 0095" on issue #355. Most urgent, because the screens are half the remaining work.
+1. AW-343: the founder types "approved" in its session (https://claude.ai/code/session_01BpvnxtVGat2r3kNPnRf18C) if he has not yet; then merge its pull request when it is reviewed and green.
+2. Spec 0095: answer Q4 and Q5, then reply "approve 0095" on issue #355. Most urgent, because the screens are half the remaining work.
 3. The session on branch `claude/lido-case-and-spec-followups`: ask the founder to tell it to commit, push and open a pull request. AW-305 waits on it.
 4. Send the case-writing session the message under "Owner actions" in spec 0093.
 5. AW-301 (#354): walk the current build on a TV and two phones. Include the Postgres choice-lock check.
@@ -111,6 +111,7 @@ Progress: 6 of about 20 critical-path tasks are merged, roughly 30 percent (infe
 
 **Approvals**
 - Plan approval, merge approval and decision recording are separate. Silence, a merged pull request or a general "go" is none of them (human-collaboration contract).
+- **Push nothing to a pull request's branch after asking the founder to merge it.** On 18 November #424 merged at 15:42 before a later commit (D-134) reached it, so that record missed main. Before pushing more to a branch, check whether its pull request has merged; if it has, start a new branch from main.
 - **Build sessions refuse an approval relayed by the orchestrator, and they are right.** Ask the founder to approve in the build session itself or by a comment on the task's issue, and say which in your question. If the founder asks you to post a comment for him, its first line says it was posted by the orchestrator at his direction, quoting his words.
 - **A change outside an approved file list is surfaced, not waved through.** On 18 November AW-328 added a validator to `engine/arc/models.py`. The orchestrator asked the founder and recorded his acceptance on #390.
 - **Never record a founder decision he has not made.** Write "recommendation: X; the founder's call", then ask.
@@ -189,4 +190,4 @@ Conclusion first. Plain words, no invented shorthand, no em dashes. Label claims
 2. Report AW-343's state (building, pull request open, reviewed, merged), checked on #423 and GitHub rather than assumed.
 3. Propose starting the AW-326 plan session, with AW-342 beside it.
 4. Give the progress block.
-5. Ask the founder the one decision he needs to make next. Unless something more urgent has appeared, that is spec 0095 Q3 (how "The accused" is staged on the TV).
+5. Ask the founder the one decision he needs to make next. Unless something more urgent has appeared, that is spec 0095 Q4 (how many different mini-games session 1 needs; it also unblocks AW-337).
