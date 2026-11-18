@@ -14,6 +14,7 @@ import asyncio
 import time
 from collections.abc import AsyncIterator, Callable
 from datetime import datetime
+from typing import Any
 from uuid import UUID, uuid4
 
 import pytest
@@ -595,3 +596,35 @@ class TestDeliveryKeepsStateChangeOrder:
             await outbox.flush(picky)
         assert sent == ["good"]
         assert any("dropping bad" in r.getMessage() for r in caplog.records)
+
+    @pytest.mark.asyncio
+    async def test_a_failure_after_the_commit_still_sends_that_sessions_events(
+        self,
+        factory: async_sessionmaker[AsyncSession],
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+    ) -> None:
+        arc = phased_arc()
+        registered(arc)
+        await seat_session(db, arc)
+        await seat_session(db, arc)
+        await db.commit()
+        rec = Recorder()
+        calls = {"n": 0}
+
+        class _ClosingFails:
+            def __init__(self) -> None:
+                calls["n"] += 1
+                self._first = calls["n"] == 1
+                self._cm = factory()
+
+            async def __aenter__(self) -> AsyncSession:
+                return await self._cm.__aenter__()
+
+            async def __aexit__(self, *exc: Any) -> None:
+                await self._cm.__aexit__(*exc)
+                if not self._first:
+                    raise RuntimeError("closing the session failed")
+
+        await tick_active_sessions(_ClosingFails, at(0), lambda _sid: rec)  # type: ignore[arg-type]
+        assert len(rec.of_type("phase_changed")) == 2
