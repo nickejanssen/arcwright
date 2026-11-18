@@ -736,7 +736,7 @@ The walkthrough cannot confirm anything about the new screens, which do not exis
 
 Each has a recommended default you can accept with "agree". None blocks AW-329.
 
-- **Q1. Where do the host's controls live?** (1) On the TV page, folded into a corner, opened with the PC's mouse or keyboard. Recommended: it is where the host's sign-in already is, it needs no second link, and everything it shows is room-safe, so a host who is playing stays unspoiled. (2) On a separate host page opened on any phone with its own link; easier to reach from the sofa, but one more link to handle and one more device. (3) Both. Option 1 is cheap to change to 2 or 3 later. Blocks: AW-330's plan.
+- **Q1. Where do the host's controls live?** **Answered 2026-11-18: on the phones, in a Start menu. See "Q1 Answered" at the end.** (1) On the TV page, folded into a corner, opened with the PC's mouse or keyboard. Recommended: it is where the host's sign-in already is, it needs no second link, and everything it shows is room-safe, so a host who is playing stays unspoiled. (2) On a separate host page opened on any phone with its own link; easier to reach from the sofa, but one more link to handle and one more device. (3) Both. Option 1 is cheap to change to 2 or 3 later. Blocks: AW-330's plan.
 - **Q2. What does the TV show during thinking time?** (1) Quiet: round title, clock, who is ready. Recommended, because private thinking wins (your feelings answer). (2) Quiet, plus the round's scene lines left on screen for anyone who wants to reread. (3) Quiet, plus a light line when someone investigates ("[Name] is looking into something"); this is the if-it-fits rival feed and needs engine work. Blocks: AW-332's plan.
 - **Q3. How is "The accused" staged on the TV?** (1) One player at a time with a short hold, then all side by side; the host can skip ahead. Recommended: it builds to the groan. (2) Everyone at once. (3) The host taps for each player. All three use the same engine event; this is a screen setting. Blocks: AW-333's plan.
 - **Q4. How many different mini-games does session 1 need screens for?** Facts: only Tell Me Something True has a working package screen, and it is a draft written for 4 to 8 players; no package is written for 2 or 3 players (verified). (1) One mini-game that works at 2 to 4 players, reused in all three rounds with three different story wrappers; add a second only if it fits. Recommended: cheapest, and the status page's cut order already allows fewer mini-games. (2) Two different mini-games. (3) Three. Which mini-game and its story wrappers are chosen with the case's author. Blocks: the mini-game renderer tasks, not AW-329 to AW-334.
@@ -765,3 +765,45 @@ Not numbered here: one small task per mini-game renderer that Q4's answer needs,
 
 - 2026-11-16: First draft (AW-302, the screens spec of three).
 - 2026-11-16: Merged to main as a draft in pull request #393; still not approved. Cited D-128 now that pull request #392 has merged. Noted the two tasks filed from this draft's findings: AW-336 (API tests in CI, issue #394) and AW-337 (no mini-game fits two or three players, issue #395, linked to Q4).
+- 2026-11-18: Q1 answered by the founder (host controls in a Start menu on the phones). The spec as a whole is still a draft and not approved.
+
+---
+
+# Q1 Answered: Host Controls Live In A Start Menu On The Phones (2026-11-18)
+
+Recorded by the orchestrator session from the founder's answers in session on 2026-11-18. Also recorded on issue #355. This answers Q1 only. It does not approve this spec; "approve 0095" on issue #355 is still needed.
+
+**Founder's words**, in order:
+1. Choosing among the three options: "A separate host page on a phone. Easy to reach from the sofa. ... Just desinate a host that has the controls on their phone or add game pause on the phones similar to how video game controllers have a start menu."
+2. Asked who may pause: "Everyone can pause (Recommended)".
+3. Asked to confirm the summary: "Yes, but host can be reassigned by the first to join too. Also there should be a start menu and settings on the phones for everyone and the start menu actions depend on if youre host or regular player. The rest looks correct".
+
+**What was decided**
+
+- There is no host strip on the TV and no separate host link. The TV shows only the room.
+- Every phone has a Start menu, opened from a fixed button on every in-game screen, like a game controller's Start button. It also holds Settings, for everyone.
+- What the Start menu offers depends on the phone's role:
+
+| Action | Every player | Host only |
+| --- | --- | --- |
+| Pause, Resume | Yes | Yes |
+| Settings | Yes | Yes |
+| Start game (in the room, two or more seated) | | Yes |
+| Move on (confirms first in Last Call: "This locks every saved theory now") | | Yes |
+| Mini-game Resolve, Cancel | | Yes |
+| End game (with a confirm) | | Yes |
+| Hand the host role to another seated player | | Yes |
+
+- The host is the first player to join the room. The host can hand the role to another seated player. Read by the orchestrator as "the current host can reassign it"; if the founder meant something else, this line changes.
+- The host's menu shows only what the whole room may see (phase, time left, who is ready, locked or has answered), so a host who is also playing stays unspoiled and has no advantage.
+
+**What is not decided yet (proposals for the build plans, each shown to the founder)**
+
+- **What Settings holds.** Proposal for AW-330's plan: text size, reduced motion, the room code and rejoin link, and "leave game". Nothing that changes the rules. The screen-copy sample (Part L) shows it.
+- **Abuse of pause.** Any player can pause. Proposal: the TV shows who paused ("Paused by [Name]"), and anyone can resume. Changing this to host-only resume is a setting in the screens, cheap to change (D-127).
+- **What happens to the host role if the host's phone drops.** Proposal: the role stays with that seat, and the seat's reconnect (decision 3) brings it back; the host cheat sheet (AW-308) covers a phone that never returns.
+
+**What this changes above.** Where earlier text in this spec says the host's controls are a strip on the TV page (screen 1 "Can do", screen 21 "Can do", Part N "Host controls", the "Host" bullet under "Two surfaces and one role"), this section is the later record. The controls and routes listed in Part N are unchanged; only where they appear changes.
+
+- **Sign-in (a hard rule).** Today pause, resume, start, move-on and end accept only the host sign-in that is made when the session is created (`api/routers/sessions.py`, `require_host_jwt`). Letting every player pause, giving the host role to a player's seat, and handing it on need sign-in changes. They belong in AW-331 (Part M), whose plan needs the founder's explicit approval. AW-330 builds the menu.
+- **Size.** Inferred: this adds the Start menu, Settings and the hand-over to AW-330 and AW-331, and removes the TV host strip. Net, about one more build day; not measured.
