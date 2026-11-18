@@ -249,7 +249,7 @@ Checked by reading code on 2026-11-16. Nothing was run. Line numbers will drift.
 +--------------------------------------------------------------+
 ```
 
-- **Shows:** the round title, a large clock, who is ready. Nothing moves except the clock (see "How the feelings answer shapes the layout"; what else the TV may show here is Q2).
+- **Shows:** the round title, a large clock, who is ready. Nothing moves except the clock (see "How the feelings answer shapes the layout"). Nothing else is shown here: Q2 answered, option 1 (D-134).
 - **Feeds:** the room view (gap, Part M) and phase events (spec 0093).
 - **Never on the TV:** what anyone chose, how many investigations anyone has spent or has left, what anyone found, or any menu item. Spec 0093 already sends the TV no content from a choice; this spec adds that the TV draws no count either. A rival activity feed is item 4 of the if-it-fits list and is not in this spec.
 
@@ -731,7 +731,7 @@ The walkthrough cannot confirm anything about the new screens, which do not exis
 
 **Unknowns**
 - How the founder's TV and phones behave (W1 to W12).
-- Whether a quiet TV during thinking time feels tense or dead in the room. Q2 sets a default; session 1 answers it.
+- Whether a quiet TV during thinking time feels tense or dead in the room. Q2 is answered with the quiet TV (D-134); session 1 tests it.
 - How long each staged reveal step should hold. Configuration, tuned at the founder TV run.
 
 ---
@@ -741,7 +741,7 @@ The walkthrough cannot confirm anything about the new screens, which do not exis
 Each has a recommended default you can accept with "agree". None blocks AW-329.
 
 - **Q1. Where do the host's controls live?** **Answered 2026-11-18: on the phones, in a Start menu. See "Q1 Answered" at the end.** (1) On the TV page, folded into a corner, opened with the PC's mouse or keyboard. Recommended: it is where the host's sign-in already is, it needs no second link, and everything it shows is room-safe, so a host who is playing stays unspoiled. (2) On a separate host page opened on any phone with its own link; easier to reach from the sofa, but one more link to handle and one more device. (3) Both. Option 1 is cheap to change to 2 or 3 later. Blocks: AW-330's plan.
-- **Q2. What does the TV show during thinking time?** (1) Quiet: round title, clock, who is ready. Recommended, because private thinking wins (your feelings answer). (2) Quiet, plus the round's scene lines left on screen for anyone who wants to reread. (3) Quiet, plus a light line when someone investigates ("[Name] is looking into something"); this is the if-it-fits rival feed and needs engine work. Blocks: AW-332's plan.
+- **Q2. What does the TV show during thinking time?** **Answered 2026-11-18: option 1, quiet (D-134). See "Q2 Answered" at the end.** (1) Quiet: round title, clock, who is ready. Recommended, because private thinking wins (your feelings answer). (2) Quiet, plus the round's scene lines left on screen for anyone who wants to reread. (3) Quiet, plus a light line when someone investigates ("[Name] is looking into something"); this is the if-it-fits rival feed and needs engine work. Blocks: AW-332's plan.
 - **Q3. How is "The accused" staged on the TV?** (1) One player at a time with a short hold, then all side by side; the host can skip ahead. Recommended: it builds to the groan. (2) Everyone at once. (3) The host taps for each player. All three use the same engine event; this is a screen setting. Blocks: AW-333's plan.
 - **Q4. How many different mini-games does session 1 need screens for?** Facts: only Tell Me Something True has a working package screen, and it is a draft written for 4 to 8 players; no package is written for 2 or 3 players (verified). (1) One mini-game that works at 2 to 4 players, reused in all three rounds with three different story wrappers; add a second only if it fits. Recommended: cheapest, and the status page's cut order already allows fewer mini-games. (2) Two different mini-games. (3) Three. Which mini-game and its story wrappers are chosen with the case's author. Blocks: the mini-game renderer tasks, not AW-329 to AW-334.
 - **Q5. Two documents disagree on the final theory, and the screens follow the later one unless you say otherwise.** The status page says "arrange a short causal chain" (`docs/product/nightcap-status.md`, "What session 1 contains"). Spec 0094, approved later the same week, has the player fill the case's slots in the case's fixed order; the player does not choose the order (Part G). (1) Fill the case's slots in order, as spec 0094 builds. Recommended: no engine change, and the GDD's own example reads in a fixed order. The status page wording is then updated to match. (2) Let players put the pieces in their own order. That changes spec 0094's check and needs your approval there. Blocks: AW-333's plan.
@@ -770,6 +770,7 @@ Not numbered here: one small task per mini-game renderer that Q4's answer needs,
 - 2026-11-16: First draft (AW-302, the screens spec of three).
 - 2026-11-16: Merged to main as a draft in pull request #393; still not approved. Cited D-128 now that pull request #392 has merged. Noted the two tasks filed from this draft's findings: AW-336 (API tests in CI, issue #394) and AW-337 (no mini-game fits two or three players, issue #395, linked to Q4).
 - 2026-11-18: Q1 answered by the founder (host controls in a Start menu on the phones). The spec as a whole is still a draft and not approved.
+- 2026-11-18: Q2 answered by the founder (a quiet TV during thinking time, D-134). Still a draft.
 
 ---
 
@@ -811,3 +812,19 @@ Recorded from the founder's answers in session on 2026-11-18. Decision row: D-13
 
 - **Sign-in (a hard rule).** Today pause, resume, start, move-on and end accept only the host sign-in that is made when the session is created (`api/routers/sessions.py`, `require_host_jwt`). Letting every player pause, giving the host role to a player's seat, and handing it on need sign-in changes. They belong in AW-331 (Part M), whose plan needs the founder's explicit approval. AW-330 builds the menu.
 - **Size.** Inferred: this adds the Start menu, Settings and the hand-over to AW-330 and AW-331, and removes the TV host strip. Net, about one more build day; not measured.
+
+---
+
+# Q2 Answered: A Quiet TV During Thinking Time (2026-11-18)
+
+Recorded from the founder's answer in session on 2026-11-18. Decision row: D-134. Also recorded on issue #355. This answers Q2 only; it does not approve this spec.
+
+**Question as put to the founder:** "the next question is spec 0095 Q2: what the TV shows while players investigate. I recommend keeping it quiet, showing only the round title, the clock and who is ready."
+
+**Founder's words:** "I agree with your recommendation."
+
+**What was decided.** Option 1. During a `choices` phase the TV shows only the round title, a large clock and who has marked ready. No scene lines left on screen, no rival activity line, no sound, no new text and no animation except the clock. This matches screen 6 and the "Thinking time" row of "How the feelings answer shapes the layout" (D-128: private thinking wins).
+
+**What this does not decide.** Options 2 (scene lines left on screen) and 3 (a rival activity line) are not built for session 1. The rival feed stays item 4 of the if-it-fits list. Whether a quiet TV feels tense or dead is a session 1 question; changing it later is a screen setting, cheap to change (D-127).
+
+**What this changes above.** Screen 6 and the Unknowns line now cite this answer. Q2 no longer blocks AW-332's plan.

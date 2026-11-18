@@ -42,8 +42,8 @@ You run in the Claude desktop app on the founder's Windows PC, in or beside the 
    - 0092 rebuild plan, thin version approved (D-123);
    - 0093 engine spine, approved (D-124);
    - 0094 endgame, approved (D-125);
-   - 0095 screens, DRAFT and not approved; Q1 answered (D-133).
-7. Decisions D-112 to D-133: https://github.com/nickejanssen/arcwright/blob/main/docs/product/decisions-log.csv
+   - 0095 screens, DRAFT and not approved; Q1 and Q2 answered (D-133, D-134).
+7. Decisions D-112 to D-134: https://github.com/nickejanssen/arcwright/blob/main/docs/product/decisions-log.csv
 8. Where the reset came from: https://github.com/nickejanssen/arcwright/blob/main/docs/product/2026-11-15-reset-audit.md
 
 Then, in the main checkout:
@@ -75,13 +75,13 @@ Critical path to the founder TV run, with sizes from the task files. The build-d
 | Session readiness | none | AW-306 importer (cut-able), AW-308 preflight, AW-301 walkthrough | 2 to 3 |
 
 Progress: 6 of about 20 critical-path tasks are merged, roughly 30 percent (inferred). Remaining build work is about 17 to 21 build days against 17 calendar days. It fits only if screens start almost at once and run beside the engine work. **The date is at risk.** The three biggest risks, in order:
-1. **Spec 0095 is not approved, so no screen task can start.** About half the remaining work waits on it, and the founder has Q2 to Q5 open.
+1. **Spec 0095 is not approved, so no screen task can start.** About half the remaining work waits on it, and the founder has Q3 to Q5 open.
 2. **The first case's state is unknown here.** Branch `claude/lido-case-and-spec-followups` had unpushed work on 15 November. AW-305 waits on it.
 3. **No mini-game fits two players** (AW-337), and the founder TV run has two phones.
 
 ## In flight at handoff
 
-- **AW-343 (#423).** A phone reads back its mini-game rewards, so a missed "you earned one more investigation" message can never be lost; the founder chose this fix on 18 November. A plan session is running in the cloud: https://claude.ai/code/session_01BpvnxtVGat2r3kNPnRf18C, branch `task/AW-343-reward-readback`. It posts its plan on #423 and stops. The founder approves in that session or on #423.
+- **AW-343 (#423).** A phone reads back its mini-game rewards, so a missed "you earned one more investigation" message can never be lost; the founder chose this fix on 18 November. A plan session is running in the cloud: https://claude.ai/code/session_01BpvnxtVGat2r3kNPnRf18C, branch `task/AW-343-reward-readback`. Its plan was approved by the founder on 2026-11-18 (#423) and it is building; it opens a pull request and does not merge.
 - **Open pull requests: none,** once this handoff's pull request has merged.
 - **Main is `ab759f6`, or later if the handoff pull request below has merged.**
 
@@ -99,8 +99,8 @@ Progress: 6 of about 20 critical-path tasks are merged, roughly 30 percent (infe
 
 ## Waiting on the founder (ask one at a time, with a recommendation)
 
-1. Approve the AW-343 plan, in its session or on #423.
-2. Spec 0095: answer Q2 to Q5, then reply "approve 0095" on issue #355. Most urgent, because the screens are half the remaining work.
+1. AW-343: plan approved on 2026-11-18 (#423); merge its pull request when it is reviewed and green.
+2. Spec 0095: answer Q3 to Q5, then reply "approve 0095" on issue #355. Most urgent, because the screens are half the remaining work.
 3. The session on branch `claude/lido-case-and-spec-followups`: ask the founder to tell it to commit, push and open a pull request. AW-305 waits on it.
 4. Send the case-writing session the message under "Owner actions" in spec 0093.
 5. AW-301 (#354): walk the current build on a TV and two phones. Include the Postgres choice-lock check.
@@ -186,7 +186,7 @@ Conclusion first. Plain words, no invented shorthand, no em dashes. Label claims
 ## Your first reply
 
 1. Confirm what you read, that main is pulled and reindexed in the main checkout, and which pull requests are open.
-2. Report the AW-343 plan session's state (posted, approved, building or opened a pull request), checked on #423 rather than assumed.
+2. Report AW-343's state (building, pull request open, reviewed, merged), checked on #423 and GitHub rather than assumed.
 3. Propose starting the AW-326 plan session, with AW-342 beside it.
 4. Give the progress block.
-5. Ask the founder the one decision he needs to make next. Unless something more urgent has appeared, that is spec 0095 Q2.
+5. Ask the founder the one decision he needs to make next. Unless something more urgent has appeared, that is spec 0095 Q3 (how "The accused" is staged on the TV).
