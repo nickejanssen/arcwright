@@ -7,7 +7,8 @@ players ``a`` and ``b`` (a third and fourth idle when there are four):
 - ``beat_one`` scene: only ``a`` marks ready, so the scene ends on time (stall).
 - ``beat_one`` choices: both open their menu; ``a`` takes the ledger, the
   porter and the shed, ``b`` takes nothing.
-- ``mini_game``: a finished run is saved, started inside the phase.
+- ``mini_game``: the run the phase started is ended by one player's submission
+  and given its placings.
 - ``beat_two`` choices: each is given one extra budget (a reward); ``a`` spends
   past the base budget of four (and leaves the free note), ``b`` does not.
 
@@ -19,6 +20,7 @@ from __future__ import annotations
 import ast
 from collections.abc import AsyncIterator, Callable
 from dataclasses import dataclass
+from datetime import timezone
 from pathlib import Path
 from uuid import UUID, uuid4
 
@@ -33,9 +35,10 @@ from engine.db.orm import (
     Decision,
     Event,
     MiniGameRun,
-    MiniGameSubmission,
 )
 from engine.db.testing import make_sqlite_session_factory
+from engine.events.bus import SessionEventBus
+from engine.mini_games.runtime import MiniGameRuntime
 from engine.routing import log_generation
 from engine.routing.router import RouteResult, resolve_model_key
 from engine.session.choices import choose, read_menu
@@ -54,6 +57,7 @@ from engine.tests.rounds_support import (
     at,
     phased_arc,
     seat_session,
+    timer_race_registry,
     where,
 )
 
@@ -161,28 +165,18 @@ async def played(
     await choose(db, sid, a, "a-2b", "o_shed", at(32), rec)
 
     await ticks_until(db, seated, "beat_one", "mini_game", 86, rec)
-    run = MiniGameRun(
-        run_id=uuid4(),
-        session_id=sid,
-        game_id="fixture-game",
-        definition_version="1",
-        definition_snapshot={},
-        status="completed",
-        started_at=at(90),
-        completed_at=at(99),
-        outcome={"placings": [str(a), str(b)]},
+    # The phase started a real run bound to this beat. One player submits, which
+    # completes it (at 95), and the run is given placings; the phase then ends.
+    runtime = MiniGameRuntime(
+        db, SessionEventBus(), timer_race_registry(), clock=lambda: at(95)
     )
-    db.add(run)
-    db.add(
-        MiniGameSubmission(
-            run_id=run.run_id,
-            submission_id="s-1",
-            character_id=seated.characters[0],
-            submitted_at=at(95),
-            payload={"answer": 1},
-            is_accepted=True,
-        )
-    )
+    run = await runtime.get_active_run(sid)
+    assert run is not None and run.started_at is not None
+    if run.deadline is not None and run.deadline.tzinfo is None:
+        run.deadline = run.deadline.replace(tzinfo=timezone.utc)  # SQLite drops it
+    await runtime.submit_action(run.run_id, "s-1", seated.characters[0], {"done": True})
+    assert run.status == "completed"
+    run.outcome = {"placings": [str(a), str(b)]}  # this test game does not rank
     await db.flush()
     assert await finish_mini_game_phase(db, sid, at(100), rec)
 

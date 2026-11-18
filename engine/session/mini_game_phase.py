@@ -307,7 +307,7 @@ async def advance(
         except (RevisionConflictError, SQLAlchemyError):
             raise  # a concurrent writer or a database fault: fail and retry
         except Exception:
-            # The game's own end-of-run work raised (scoring, a clue release).
+            # The game's own end-of-run work raised (scoring, a content release).
             # Left alone the tick would fail again every second and the phase's
             # time limit would never apply.
             logger.exception("mini-game run %s failed while ending", run.run_id)
