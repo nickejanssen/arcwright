@@ -48,6 +48,15 @@ Unblocks Rehearsal 2 and all M6 qualifying-session work.
 - Configure CI/CD for both deploy targets.
 - Document the deploy runbook at
   `docs/roadmap/operations/cloud-deploy-runbook.md`.
+- Before more than one API process runs (AW-338 finding): each session's event
+  bus and the once-a-second tick loop live in memory in one process
+  (`api/routers/events.py`, `api/tick_loop.py`), and the in-process lock is per
+  process. Two processes would keep saved state correct on Postgres but send a
+  tick's events only to the screens connected to the process that ran it. A
+  multi-process deploy needs a shared event bus (or routing each session to
+  one process), exactly one tick-loop owner, and the Postgres run of the
+  locking tests named in spec 0093 Risks. Session 1 runs one process
+  (`scripts/rehearsal.py` starts `uvicorn` without `--workers`).
 
 ## Human Collaboration Contract
 

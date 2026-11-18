@@ -3022,6 +3022,23 @@
         "issue_number": 414,
         "url": "https://github.com/nickejanssen/arcwright/issues/414"
       }
+    },
+    {
+      "id": "AW-341",
+      "title": "Send Events After The Save In The Session And Character Routes",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "S",
+      "depends_on": [
+        "AW-338",
+        "AW-328"
+      ],
+      "path": "docs/roadmap/tasks/AW-341-send-events-after-the-save-in-the-session-and-character-routes.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 418,
+        "url": "https://github.com/nickejanssen/arcwright/issues/418"
+      }
     }
   ],
   "superseded_sources": [

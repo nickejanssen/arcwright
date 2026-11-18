@@ -25,6 +25,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import weakref
+from collections import deque
 from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from dataclasses import dataclass
@@ -56,11 +57,112 @@ PHASE_CHANGED_EVENT = "phase_changed"
 PHASE_LINE_EVENT = "phase_line"
 
 Publish = Callable[[ContentEvent], Awaitable[Any]] | None
+"""Where engine functions send events. They publish as they go, inside the
+caller's open transaction, so a caller that commits afterwards must pass an
+``Outbox`` and flush it after the commit (AW-338). A plain publisher gets each
+event at once, which is only safe where nothing can fail after the call."""
 Status = Literal["running", "paused", "ended"]
 
 _READY_PHASES = frozenset({PhaseKind.scene, PhaseKind.choices, PhaseKind.bridge})
 _PUBLIC_AUDIENCES = frozenset({AudienceTarget.all, AudienceTarget.shared_display})
 _MAX_STEPS = 8
+
+
+MAX_PUBLISH_ATTEMPTS = 10
+_PENDING: dict[UUID, deque[list[Any]]] = {}
+_DELIVERY_LOCKS: weakref.WeakValueDictionary[tuple[int, UUID], asyncio.Lock] = (
+    weakref.WeakValueDictionary()
+)
+
+
+@asynccontextmanager
+async def delivery_lock(session_id: UUID) -> AsyncIterator[None]:
+    """One change-and-delivery at a time per session.
+
+    Take it before calling an engine function, and release it after the commit
+    and the flush. The database lock ends at commit, so without this a later
+    change could commit and publish while an earlier one is between its commit
+    and its flush, and screens would see the phases out of order. Taken before
+    ``session_lock``, never inside it. In-process only, like ``session_lock``.
+    """
+    key = (id(asyncio.get_running_loop()), session_id)
+    lock = _DELIVERY_LOCKS.get(key)
+    if lock is None:
+        lock = asyncio.Lock()
+        _DELIVERY_LOCKS[key] = lock
+    async with lock:
+        yield
+
+
+async def drain_pending(session_id: UUID, publish: Publish) -> None:
+    """Send the session's saved-but-unsent events, oldest first. Call it with
+    the delivery lock held.
+
+    An event that fails stays at the front with everything behind it, so order
+    is kept and the next call retries it: the tick loop calls this every pass.
+    After ``MAX_PUBLISH_ATTEMPTS`` failures it is dropped and logged as an
+    error, so one bad event cannot block the session for good."""
+    queue = _PENDING.get(session_id)
+    if queue is None or publish is None:
+        return
+    while queue:
+        item = queue[0]
+        event: ContentEvent = item[0]
+        try:
+            await publish(event)
+        except Exception:
+            item[1] += 1
+            if item[1] < MAX_PUBLISH_ATTEMPTS:
+                logger.warning(
+                    "publishing %s for session %s failed (attempt %d); will retry",
+                    event.event_type,
+                    session_id,
+                    item[1],
+                    exc_info=True,
+                )
+                return
+            logger.error(
+                "dropping %s for session %s after %d failed attempts",
+                event.event_type,
+                session_id,
+                item[1],
+                exc_info=True,
+            )
+        queue.popleft()
+    del _PENDING[session_id]
+
+
+class Outbox:
+    """Holds a session's events until the caller's transaction has committed.
+
+    Pass it as ``publish``; hold ``delivery_lock`` around the engine call, the
+    commit and ``flush``. After a successful commit ``flush`` queues the events
+    behind any still waiting from an earlier failure and sends them in order. A
+    rollback calls ``discard``, so a rolled-back change tells nobody anything
+    and the next tick sends its lines exactly once. A send that fails is kept
+    and retried (see ``drain_pending``) rather than lost.
+    """
+
+    def __init__(self, session_id: UUID) -> None:
+        self._session_id = session_id
+        self._held: list[ContentEvent] = []
+
+    async def __call__(self, event: ContentEvent) -> ContentEvent:
+        self._held.append(event)
+        return event
+
+    def __len__(self) -> int:
+        return len(self._held)
+
+    def discard(self) -> None:
+        self._held.clear()
+
+    async def flush(self, publish: Publish) -> None:
+        held, self._held = self._held, []
+        if publish is not None and held:
+            queue = _PENDING.setdefault(self._session_id, deque())
+            queue.extend([event, 0] for event in held)
+        await drain_pending(self._session_id, publish)
 
 
 class RoundError(Exception):
@@ -625,6 +727,10 @@ async def finish_mini_game_phase(
     the lock it already holds). Returns False, changing nothing, when the
     session is not in a running mini-game phase, or its run is not over (a
     repeated, late or early call).
+
+    It publishes inside the caller's open transaction. There is no production
+    caller yet; any caller must run under ``delivery_lock`` with an ``Outbox``
+    as ``publish``, commit, and then flush it, as the round routes do.
     """
     async with session_lock(db, session_id) as orm:
         if orm is None or orm.status != SessionStatus.active.value:
@@ -764,7 +870,9 @@ async def tick_active_sessions(
 ) -> int:
     """One pass of the API's once-a-second loop: tick every active session whose
     arc has phases, each in its own transaction. Returns how many were ticked.
-    One session failing is logged and does not stop the others."""
+    One session failing is logged and does not stop the others. Events are held
+    until that session's commit succeeds, then sent in order; any that failed
+    to send earlier are retried first, including for sessions no longer active."""
     async with factory() as db:
         result = await db.execute(
             select(OrmSession.session_id, OrmSession.arc_id).where(
@@ -773,17 +881,40 @@ async def tick_active_sessions(
         )
         active = list(result.all())
     ticked = 0
+    seen: set[UUID] = set()
     for session_id, arc_id in active:
+        seen.add(session_id)
         arc = load_arc_definition(arc_id)
         if arc is None or not arc.is_phased:
             continue
-        async with factory() as db:
+        async with delivery_lock(session_id):
+            outbox = Outbox(session_id)
+            committed = False
             try:
-                await tick(db, session_id, now, publisher_for(session_id))
-                await db.commit()
+                async with factory() as db:
+                    try:
+                        publisher = publisher_for(session_id)
+                        await tick(db, session_id, now, outbox)
+                        await db.commit()
+                        committed = True
+                    except Exception:
+                        await db.rollback()
+                        outbox.discard()
+                        logger.exception("tick failed for session %s", session_id)
             except Exception:
-                await db.rollback()
-                logger.exception("tick failed for session %s", session_id)
+                # Only the session's close can fail here. If the commit went
+                # through, the state is saved and its events must still go out.
+                logger.exception(
+                    "closing the database session failed for %s", session_id
+                )
+            if not committed:
                 continue
+            await outbox.flush(publisher)
         ticked += 1
+    for session_id in [sid for sid in _PENDING if sid not in seen]:
+        async with delivery_lock(session_id):
+            try:
+                await drain_pending(session_id, publisher_for(session_id))
+            except Exception:
+                logger.exception("retrying events failed for session %s", session_id)
     return ticked

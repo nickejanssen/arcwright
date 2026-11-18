@@ -10,9 +10,12 @@ one is). Time is passed in.
 
 from __future__ import annotations
 
+import asyncio
 import time
 from collections.abc import AsyncIterator, Callable
-from uuid import UUID
+from datetime import datetime
+from typing import Any
+from uuid import UUID, uuid4
 
 import pytest
 import pytest_asyncio
@@ -23,11 +26,17 @@ from engine.arc.models import ArcDefinition
 from engine.db.orm import Decision, Event, MiniGameRun
 from engine.db.orm import Session as OrmSession
 from engine.db.testing import make_sqlite_session_factory
-from engine.events.models import AudienceTarget
+from engine.events.bus import SessionEventBus
+from engine.events.models import AudienceTarget, ContentEvent, EventCategory
 from engine.session.choices import choose, read_menu, remaining_budget
 from engine.session.phases import (
+    MAX_PUBLISH_ATTEMPTS,
     PHASE_EVENT,
+    Outbox,
+    Publish,
+    content_event,
     current_phase,
+    emit,
     mark_ready,
     round_view,
     tick,
@@ -44,6 +53,7 @@ from engine.tests.rounds_support import (
     at,
     phased_arc,
     play_mini_game,
+    reach_phase,
     seat_session,
     where,
 )
@@ -340,3 +350,281 @@ class TestTheTickLoopBody:
         elapsed = time.perf_counter() - started
         assert ticked == 20
         assert elapsed < 0.2
+
+
+class TestEventsWaitForTheCommit:
+    """AW-338: events leave the engine only after the transaction is saved."""
+
+    @pytest.mark.asyncio
+    async def test_a_failed_commit_publishes_nothing_and_the_retry_publishes_once(
+        self,
+        factory: async_sessionmaker[AsyncSession],
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        arc = phased_arc()
+        registered(arc)
+        seated = await seat_session(db, arc)
+        await db.commit()
+        rec = Recorder()
+
+        async def refuse(self: AsyncSession) -> None:
+            raise RuntimeError("commit failed")
+
+        with monkeypatch.context() as broken:
+            broken.setattr(AsyncSession, "commit", refuse)
+            await tick_active_sessions(factory, at(0), lambda _sid: rec)
+        assert rec.events == []
+        async with factory() as fresh:
+            assert await current_phase(fresh, seated.session_id) is None
+
+        await tick_active_sessions(factory, at(1), lambda _sid: rec)
+        assert len(rec.of_type("phase_changed")) == 1
+        assert len(rec.of_type("phase_line")) == 1
+
+    @pytest.mark.asyncio
+    async def test_events_are_published_after_the_commit_not_before(
+        self,
+        factory: async_sessionmaker[AsyncSession],
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        arc = phased_arc()
+        registered(arc)
+        await seat_session(db, arc)
+        await db.commit()
+        rec = Recorder()
+        seen_at_commit: list[int] = []
+        real_commit = AsyncSession.commit
+
+        async def spy(self: AsyncSession) -> None:
+            seen_at_commit.append(len(rec.events))
+            await real_commit(self)
+
+        monkeypatch.setattr(AsyncSession, "commit", spy)
+        await tick_active_sessions(factory, at(0), lambda _sid: rec)
+        assert seen_at_commit == [0]
+        assert len(rec.events) > 0
+
+    @pytest.mark.asyncio
+    async def test_an_event_published_when_a_mini_game_phase_ends_waits_too(
+        self,
+        factory: async_sessionmaker[AsyncSession],
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        arc = phased_arc()
+        registered(arc)
+        seated = await seat_session(db, arc)
+        await tick(db, seated.session_id, at(0))
+        await reach_phase(db, seated, "beat_one", "mini_game", at(100))
+        await db.commit()
+        rec = Recorder()
+        seen_at_commit: list[int] = []
+        real_commit = AsyncSession.commit
+
+        async def spy(self: AsyncSession) -> None:
+            seen_at_commit.append(len(rec.of_type("reward_like")))
+            await real_commit(self)
+
+        async def end_with_event(
+            _db: AsyncSession,
+            session_id: UUID,
+            _beat: str,
+            _entry: int,
+            now: datetime,
+            publish: Publish,
+        ) -> None:
+            await emit(
+                publish,
+                content_event(
+                    session_id,
+                    now,
+                    category=EventCategory.private_delivery,
+                    event_type="reward_like",
+                    audience=AudienceTarget.host_only,
+                    payload={},
+                ),
+            )
+
+        monkeypatch.setattr(AsyncSession, "commit", spy)
+        monkeypatch.setattr(
+            "engine.session.phases.mini_game_phase.stop_open_run", end_with_event
+        )
+        await tick_active_sessions(
+            factory, at(100 + MINI_GAME_SECONDS + 1), lambda _sid: rec
+        )
+        assert len(rec.of_type("reward_like")) == 1
+        assert seen_at_commit and seen_at_commit[0] == 0
+
+
+class TestDeliveryKeepsStateChangeOrder:
+    """AW-338 review: events reach the bus in the order the changes were saved,
+    and one that fails to send is retried in order rather than lost."""
+
+    @pytest.mark.asyncio
+    async def test_a_later_tick_cannot_overtake_an_earlier_one_paused_after_its_commit(
+        self,
+        factory: async_sessionmaker[AsyncSession],
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        arc = phased_arc()
+        registered(arc)
+        await seat_session(db, arc)
+        await db.commit()
+        rec = Recorder()
+        real_commit = AsyncSession.commit
+        paused, release = asyncio.Event(), asyncio.Event()
+        first = True
+
+        async def slow_first(self: AsyncSession) -> None:
+            nonlocal first
+            await real_commit(self)
+            if first:
+                first = False
+                paused.set()
+                await release.wait()
+
+        monkeypatch.setattr(AsyncSession, "commit", slow_first)
+        one = asyncio.create_task(
+            tick_active_sessions(factory, at(0), lambda _sid: rec)
+        )
+        await paused.wait()
+        two = asyncio.create_task(
+            tick_active_sessions(factory, at(SCENE_SECONDS + 1), lambda _sid: rec)
+        )
+        await asyncio.sleep(0.1)
+        release.set()
+        await asyncio.gather(one, two)
+        entries = [e.payload["phase_entry"] for e in rec.of_type("phase_changed")]
+        assert len(entries) >= 2
+        assert entries == sorted(entries)
+
+    @pytest.mark.asyncio
+    async def test_a_failed_publish_is_retried_in_order_for_a_connected_client(
+        self,
+        factory: async_sessionmaker[AsyncSession],
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        arc = phased_arc()
+        registered(arc)
+        seated = await seat_session(db, arc)
+        await tick(db, seated.session_id, at(0))
+        await reach_phase(db, seated, "beat_one", "mini_game", at(100))
+        await db.commit()
+
+        async def end_with_private_event(
+            _db: AsyncSession,
+            session_id: UUID,
+            _beat: str,
+            _entry: int,
+            now: datetime,
+            publish: Publish,
+        ) -> None:
+            await emit(
+                publish,
+                content_event(
+                    session_id,
+                    now,
+                    category=EventCategory.private_delivery,
+                    event_type="reward_like",
+                    audience=AudienceTarget.specific_player,
+                    target_player_id=seated.participants[0],
+                    payload={},
+                ),
+            )
+
+        monkeypatch.setattr(
+            "engine.session.phases.mini_game_phase.stop_open_run",
+            end_with_private_event,
+        )
+        bus = SessionEventBus()
+        connected = bus.subscribe()
+        failures = {"left": 1}
+
+        async def flaky(event: ContentEvent) -> ContentEvent:
+            if event.event_type == "reward_like" and failures["left"]:
+                failures["left"] -= 1
+                raise RuntimeError("bus hiccup")
+            return await bus.publish(event)
+
+        end = at(100 + MINI_GAME_SECONDS + 1)
+        await tick_active_sessions(factory, end, lambda _sid: flaky)
+        # only what came before the failing event; nothing jumped ahead of it
+        assert [e.event_type for e in bus.replay_since(0)] == ["mini_game_finalized"]
+        await tick_active_sessions(factory, end, lambda _sid: flaky)
+        types = [e.event_type for e in bus.replay_since(0)]
+        assert types[:2] == ["mini_game_finalized", "reward_like"]
+        assert types.count("reward_like") == 1
+        assert types.index("phase_changed") > types.index("reward_like")
+        await connected.aclose()
+
+    @pytest.mark.asyncio
+    async def test_an_event_that_never_sends_is_dropped_so_it_cannot_block_the_session(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        session_id = uuid4()
+        outbox = Outbox(session_id)
+        for kind in ("bad", "good"):
+            await outbox(
+                content_event(
+                    session_id,
+                    at(0),
+                    category=EventCategory.state_transition,
+                    event_type=kind,
+                    audience=AudienceTarget.all,
+                    payload={},
+                )
+            )
+        sent: list[str] = []
+
+        async def picky(event: ContentEvent) -> ContentEvent:
+            if event.event_type == "bad":
+                raise RuntimeError("never works")
+            sent.append(event.event_type)
+            return event
+
+        for _ in range(MAX_PUBLISH_ATTEMPTS):
+            assert sent == []
+            await outbox.flush(picky)
+        assert sent == ["good"]
+        assert any("dropping bad" in r.getMessage() for r in caplog.records)
+
+    @pytest.mark.asyncio
+    async def test_a_failure_after_the_commit_still_sends_that_sessions_events(
+        self,
+        factory: async_sessionmaker[AsyncSession],
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+    ) -> None:
+        arc = phased_arc()
+        registered(arc)
+        await seat_session(db, arc)
+        await seat_session(db, arc)
+        await db.commit()
+        rec = Recorder()
+        calls = {"n": 0}
+
+        class _ClosingFails:
+            def __init__(self) -> None:
+                calls["n"] += 1
+                self._first = calls["n"] == 1
+                self._cm = factory()
+
+            async def __aenter__(self) -> AsyncSession:
+                return await self._cm.__aenter__()
+
+            async def __aexit__(self, *exc: Any) -> None:
+                await self._cm.__aexit__(*exc)
+                if not self._first:
+                    raise RuntimeError("closing the session failed")
+
+        await tick_active_sessions(_ClosingFails, at(0), lambda _sid: rec)  # type: ignore[arg-type]
+        assert len(rec.of_type("phase_changed")) == 2

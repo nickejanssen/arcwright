@@ -56,6 +56,16 @@ def _publisher(session_id: UUID) -> Callable[[ContentEvent], Awaitable[ContentEv
     return bus.publish
 
 
+async def _commit_then_tell(
+    db: AsyncSession, outbox: phases.Outbox, session_id: UUID
+) -> None:
+    """Save, and only then send what the engine queued. If the save fails
+    nothing is sent. The request's own commit afterwards has nothing left.
+    Call it with ``phases.delivery_lock`` held, taken before the engine call."""
+    await db.commit()
+    await outbox.flush(_publisher(session_id))
+
+
 def _refuse(error: RoundError) -> HTTPException:
     if error.code in _NOT_FOUND:
         status = 404
@@ -156,18 +166,21 @@ async def make_choice(
     """Choose from the menu. Sending the same choice_id twice has one effect
     and returns the same answer."""
     assert who.claims.player_id is not None
-    try:
-        result = await choices.choose(
-            db,
-            session_id,
-            who.claims.player_id,
-            body.choice_id,
-            body.opportunity_id,
-            _now(),
-            _publisher(session_id),
-        )
-    except RoundError as error:
-        raise _refuse(error)
+    outbox = phases.Outbox(session_id)
+    async with phases.delivery_lock(session_id):
+        try:
+            result = await choices.choose(
+                db,
+                session_id,
+                who.claims.player_id,
+                body.choice_id,
+                body.opportunity_id,
+                _now(),
+                outbox,
+            )
+        except RoundError as error:
+            raise _refuse(error)
+        await _commit_then_tell(db, outbox, session_id)
     return ChoiceResponse(
         choice_id=result.choice_id,
         opportunity_id=result.opportunity_id,
@@ -190,17 +203,20 @@ async def mark_ready(
     """Mark this player ready for the phase they saw. If the round has moved
     on since, nothing is saved and the current state comes back."""
     assert who.claims.player_id is not None
-    try:
-        state = await phases.mark_ready(
-            db,
-            session_id,
-            who.claims.player_id,
-            _now(),
-            _publisher(session_id),
-            phase_entry=body.phase_entry,
-        )
-    except RoundError as error:
-        raise _refuse(error)
+    outbox = phases.Outbox(session_id)
+    async with phases.delivery_lock(session_id):
+        try:
+            state = await phases.mark_ready(
+                db,
+                session_id,
+                who.claims.player_id,
+                _now(),
+                outbox,
+                phase_entry=body.phase_entry,
+            )
+        except RoundError as error:
+            raise _refuse(error)
+        await _commit_then_tell(db, outbox, session_id)
     return _phase_state_response(state)
 
 
@@ -238,10 +254,11 @@ async def move_on(
 ) -> PhaseStateResponse:
     """The host ends the current phase by hand."""
     _require_session_match(session_id, claims)
-    try:
-        state = await phases.host_move_on(
-            db, session_id, _now(), _publisher(session_id)
-        )
-    except RoundError as error:
-        raise _refuse(error)
+    outbox = phases.Outbox(session_id)
+    async with phases.delivery_lock(session_id):
+        try:
+            state = await phases.host_move_on(db, session_id, _now(), outbox)
+        except RoundError as error:
+            raise _refuse(error)
+        await _commit_then_tell(db, outbox, session_id)
     return _phase_state_response(state)
