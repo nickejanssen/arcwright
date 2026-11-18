@@ -29,6 +29,7 @@ from engine.tests.mini_game_reward_support import (
     in_mini_game,
     place_players,
     reward_arc,
+    reward_binding,
     runtime,
     the_run,
 )
@@ -161,6 +162,24 @@ class TestTheSetting:
             }
             with pytest.raises(ValidationError):
                 phased_arc(mini_games={"beat_one": [binding]})
+
+    @pytest.mark.parametrize(
+        "setting",
+        [
+            {"reward": {"kind": "investigation", "amount": 1, "to": "top_ranked"}},
+            {"release_content": False},
+        ],
+    )
+    def test_a_setting_on_a_mini_game_that_never_runs_is_refused(
+        self, setting: dict[str, Any]
+    ) -> None:
+        """Only the first mini-game on a beat runs (AW-303), so a setting on a
+        later one would be ignored without an error."""
+        later = {"binding_id": "second", "game_id": "g", "version": "0.1.0", **setting}
+        with pytest.raises(ValidationError, match="only the first mini-game"):
+            phased_arc(mini_games={"beat_one": [reward_binding(1), later]})
+        plain = {"binding_id": "second", "game_id": "g", "version": "0.1.0"}
+        phased_arc(mini_games={"beat_one": [reward_binding(1), plain]})
 
     def test_the_registered_arc_files_set_no_reward_and_still_load(self) -> None:
         from pathlib import Path

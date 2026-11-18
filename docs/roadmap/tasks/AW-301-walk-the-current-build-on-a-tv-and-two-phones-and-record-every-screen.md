@@ -33,6 +33,7 @@ Nobody has looked at the running build since the 1 August rehearsal. The invento
 - Start the build with `make rehearsal`.
 - Capture each screen at 1920 by 1080 (TV) and 375 by 812 (phone) for the host, one player and a second player, from join to the end of the session.
 - Do the same for the `nightcap-web/` client if it can be started.
+- Before the TV check, run the Postgres-only checks that SQLite skips (spec 0093, Risks): two simultaneous choices by one player cannot both spend budget, and two simultaneous ends of one mini-game give its reward once (AW-325, AW-328).
 - For each screen record: what it shows, what a player can do, what is broken, and whether private information appears on the TV.
 
 ## Human Collaboration Contract
