@@ -3006,6 +3006,18 @@
         "issue_number": 402,
         "url": "https://github.com/nickejanssen/arcwright/issues/402"
       }
+    },
+    {
+      "id": "AW-340",
+      "title": "Give Saved Event Names And Payload Keys Generic Names",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-304"
+      ],
+      "path": "docs/roadmap/tasks/AW-340-give-saved-event-names-and-payload-keys-generic-names.md",
+      "epic_id": "M7-B"
     }
   ],
   "superseded_sources": [

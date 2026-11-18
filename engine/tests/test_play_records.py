@@ -39,7 +39,13 @@ from engine.db.testing import make_sqlite_session_factory
 from engine.routing import log_generation
 from engine.routing.router import RouteResult, resolve_model_key
 from engine.session.choices import choose, read_menu
-from engine.session.phases import finish_mini_game_phase, mark_ready, tick
+from engine.session.phases import (
+    finish_mini_game_phase,
+    freeze_phase,
+    mark_ready,
+    thaw_phase,
+    tick,
+)
 from engine.session.service import SessionService
 from engine.telemetry import play_records as pack
 from engine.tests.rounds_support import (
@@ -438,3 +444,73 @@ class TestTheRecordIsEnoughOnItsOwn:
         report = await pack.reward_use(db, sid)
         assert report.grants == [] and report.runs == []
         assert await pack.stalled_phases(db, sid) == []
+
+
+class TestEdgeCases:
+    @pytest.mark.asyncio
+    async def test_a_paused_phase_does_not_count_the_pause(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        no_model_calls: None,
+    ) -> None:
+        arc = arc_with_targets()
+        registered(arc)
+        seated = await seat_session(db, arc, players=2)
+        sid = seated.session_id
+        rec = Recorder()
+        await tick(db, sid, at(0), rec)
+        await freeze_phase(db, sid, at(5))
+        await thaw_phase(db, sid, at(50))
+        await ticks_until(db, seated, "opening", "bridge", 66, rec)
+        (scene, bridge) = (await pack.story_unit_visits(db, sid))[:2]
+        assert scene.left_at == at(66) and scene.left_reason == "time"
+        assert scene.active_seconds == 5 + 16  # 0 to 5, then 50 to 66
+        assert bridge.active_seconds is None  # still inside it
+
+    @pytest.mark.asyncio
+    async def test_a_run_with_no_start_time_has_no_beat_and_does_not_break(
+        self, db: AsyncSession, registered: Callable[[ArcDefinition], None]
+    ) -> None:
+        arc = arc_with_targets()
+        registered(arc)
+        seated = await seat_session(db, arc, players=2, start=False)
+        db.add(
+            MiniGameRun(
+                run_id=(run_id := uuid4()),
+                session_id=seated.session_id,
+                game_id="fixture-game",
+                definition_version="1",
+                definition_snapshot={},
+                status="pending",
+                started_at=None,
+            )
+        )
+        await db.flush()
+        report = await pack.reward_use(db, seated.session_id)
+        (run,) = report.runs
+        assert run.run_id == run_id and run.beat_id is None
+        assert run.outcome is None and report.grants == []
+
+    @pytest.mark.asyncio
+    async def test_a_grant_with_no_later_choice_is_unused(
+        self, db: AsyncSession, registered: Callable[[ArcDefinition], None]
+    ) -> None:
+        arc = arc_with_targets()
+        registered(arc)
+        seated = await seat_session(db, arc, players=2, start=False)
+        a = seated.participants[0]
+        db.add(
+            Decision(
+                session_id=seated.session_id,
+                timestamp=at(10),
+                decision_type="budget_grant",
+                context={"participant_id": str(a)},
+                outcome={"amount": 1},
+            )
+        )
+        await db.flush()
+        report = await pack.reward_use(db, seated.session_id)
+        assert [
+            (g.participant_id, g.granted, g.extra_spent, g.used) for g in report.grants
+        ] == [(a, 1, 0, False)]
