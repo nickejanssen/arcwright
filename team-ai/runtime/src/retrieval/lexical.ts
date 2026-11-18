@@ -4,7 +4,7 @@
 // index of the chunked knowledge base with better-sqlite3's bundled FTS5 and
 // serves BM25-ranked hits with scores normalized to 0..1.
 
-import { existsSync, mkdirSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync } from "node:fs";
 import { dirname } from "node:path";
 
 import Database from "better-sqlite3";
@@ -183,12 +183,42 @@ export class LexicalAdapter implements RetrievalAdapter {
       .map((row) => ({ row, meta: parseMeta(row.metadata) }))
       .filter(({ meta }) => passesFilters(meta, opts));
 
+    // A standalone task identifier can be resolved against the canonical
+    // roadmap manifest without changing ranking for natural-language queries.
+    // Select content only from the indexed, filtered corpus: the manifest is
+    // a navigation hint, not permission to read an arbitrary file.
+    let exactChunkId: string | undefined;
+    const exactId = /^AW-\d+$/i.test(query.trim()) ? query.trim().toUpperCase() : null;
+    const target = exactId === null ? undefined : roadmapTaskPath(this.kbRoot, exactId);
+    if (target !== undefined) {
+      const exactRows = db
+        .prepare(
+          "SELECT text, doc_id, chunk_id, path, heading_path, metadata, bm25(chunks) AS bm25 " +
+            "FROM chunks WHERE chunks MATCH ? AND path = ? ORDER BY bm25 LIMIT ?",
+        )
+        .all(match, target, limit) as ChunkRow[];
+      const owner = exactRows
+        .map((row) => ({ row, meta: parseMeta(row.metadata) }))
+        .find(
+          ({ meta }) =>
+            passesFilters(meta, opts) &&
+            typeof meta.title === "string" &&
+            meta.title.toUpperCase().startsWith(`${exactId}:`),
+        );
+      if (owner !== undefined) {
+        exactChunkId = owner.row.chunk_id;
+        const rest = filtered.filter(({ row }) => row.chunk_id !== owner.row.chunk_id);
+        filtered.splice(0, filtered.length, owner, ...rest);
+      }
+    }
+
     return filtered.slice(0, k).map(({ row, meta }) => ({
       doc_id: row.doc_id,
       chunk_id: row.chunk_id,
       path: row.path,
       heading_path: row.heading_path,
       score: scoreFromBm25(row.bm25, termCount),
+      ...(row.chunk_id === exactChunkId ? { match_kind: "canonical-roadmap-id" as const } : {}),
       text: row.text,
       metadata: meta,
     }));
@@ -217,6 +247,33 @@ export class LexicalAdapter implements RetrievalAdapter {
 }
 
 // --- helpers -------------------------------------------------------------------
+
+/** Resolve a unique task ID, without following arbitrary paths from the manifest. */
+function roadmapTaskPath(kbRoot: string, id: string): string | undefined {
+  try {
+    const value: unknown = JSON.parse(readFileSync(`${kbRoot}/roadmap/index.json`, "utf8"));
+    if (typeof value !== "object" || value === null || !("tasks" in value)) return undefined;
+    const tasks: unknown = value.tasks;
+    if (!Array.isArray(tasks)) return undefined;
+    const matches: unknown[] = tasks.filter(
+      (task: unknown) =>
+        typeof task === "object" && task !== null && "id" in task && task.id === id,
+    );
+    if (matches.length !== 1) return undefined;
+    const task = matches[0];
+    if (typeof task !== "object" || task === null || !("path" in task)) return undefined;
+    const path: unknown = task.path;
+    if (
+      typeof path !== "string" ||
+      !/^docs\/roadmap\/tasks\/[A-Za-z0-9][A-Za-z0-9._-]*\.md$/.test(path)
+    ) {
+      return undefined;
+    }
+    return path.slice("docs/".length);
+  } catch {
+    return undefined;
+  }
+}
 
 function clampK(k: number | undefined): number {
   if (k === undefined) return DEFAULT_K;

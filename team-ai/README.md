@@ -17,3 +17,8 @@ exclusions in `index.lock`. See `../docs/README.md` for source authority and
 
 The CLI source is maintained in `runtime/`. Follow `SETUP.md` to build it;
 `runtime/ARCWRIGHT.md` records its origin and compatibility scope.
+
+For a standalone `AW-NNN` search, the CLI may identify the indexed task record
+using the roadmap index. A `canonical-roadmap-id` match identifies the record;
+it does not establish that the local index is fresh or that the task is open.
+GitHub owns task status. Rebuild the index as described in `SETUP.md`.

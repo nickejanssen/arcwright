@@ -1,8 +1,9 @@
 // Deterministic. No model calls.
 //
 // Queries the retrieval index for an instance directory and prints ranked hits.
-// A "no results above threshold" line (every hit scoring below 0.2, or none at
-// all) is the deterministic refuse signal a downstream router keys on.
+// A "no results above threshold" line (no eligible exact ID and every hit
+// scoring below 0.2, or none at all) is the deterministic refuse signal a
+// downstream router keys on.
 
 import { createAdapter } from "../retrieval/factory.js";
 import type { Hit, RetrievalAdapter, SearchOpts } from "../retrieval/types.js";
@@ -13,7 +14,11 @@ const SNIPPET_CHARS = 80;
 
 // Text-mode CLI output omits weak results before the wrapper truncates lines.
 export function visibleHits(hits: Hit[]): Hit[] {
-  return hits.filter((hit) => hit.score >= SCORE_THRESHOLD);
+  // A verified canonical ID is an identity match, even when common terms
+  // make its statistical relevance score too low for semantic search.
+  return hits.filter(
+    (hit) => hit.score >= SCORE_THRESHOLD || hit.match_kind === "canonical-roadmap-id",
+  );
 }
 
 export interface SearchCommandOptions {
