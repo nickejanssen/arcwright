@@ -45,6 +45,13 @@ describe("search", () => {
         .map((hit) => hit.path),
     ).toEqual(Array.from({ length: 8 }, (_, i) => `${i}.md`));
   });
+  it("keeps only a verified exact identity below the relevance threshold", () => {
+    const hits = [
+      { score: 0.01, path: "ordinary.md" },
+      { score: 0.01, path: "owner.md", match_kind: "canonical-roadmap-id" },
+    ] as Hit[];
+    expect(visibleHits(hits).map((hit) => hit.path)).toEqual(["owner.md"]);
+  });
   it("returns 1 with a hint when the index is not built", async () => {
     const root = makeInstance();
     const code = await search("429 rate limit errors", { root });

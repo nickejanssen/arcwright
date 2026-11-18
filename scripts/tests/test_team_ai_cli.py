@@ -267,3 +267,73 @@ def test_specialist_search_returns_owned_hits_when_other_namespaces_dominate(
     hits = result.stdout.splitlines()
     assert len(hits) == 8
     assert all("owned-" in hit for hit in hits)
+
+
+def test_exact_task_id_is_visible_below_text_threshold_without_scope_leak(
+    tmp_path, built_knowledge_cli
+):
+    import json
+
+    instance, docs = kb_instance(tmp_path)
+    tasks = docs / "roadmap" / "tasks"
+    tasks.mkdir(parents=True)
+    owner = tasks / "owner.md"
+    owner.write_text(
+        "---\nid: product.owner\nnamespace: product\ntitle: 'AW-216: Owner'\n"
+        "owner: test\nstatus: active\nreview_by: '2027-01-01'\n"
+        "sensitivity: internal\nsource: authored\ntags: []\nsupersedes: []\n---\n"
+        "# AW-216: Owner\n\nCanonical task.\n",
+        encoding="utf-8",
+    )
+    (docs / "roadmap" / "index.json").write_text(
+        json.dumps({"tasks": [{"id": "AW-216", "path": "docs/roadmap/tasks/owner.md"}]}),
+        encoding="utf-8",
+    )
+    for i in range(45):
+        write_kb_doc(docs, f"noise-{i}", "engineering", "AW-216 appears here.")
+    # User-controlled metadata cannot claim the internal match kind.
+    spoof = docs / "noise-0.md"
+    spoof.write_text(
+        spoof.read_text(encoding="utf-8").replace(
+            "tags: []", "tags: [canonical-roadmap-id]"
+        ),
+        encoding="utf-8",
+    )
+    base = [sys.executable, str(SCRIPT)]
+    root = ["--root", str(instance)]
+    build = subprocess.run([*base, "reindex", *root], cwd=ROOT, capture_output=True, text=True)
+    assert build.returncode == 0, build.stderr
+    common = [*base, "search", "AW-216", *root, "--namespace", "product", "--k", "8"]
+    raw = subprocess.run([*common, "--json"], cwd=ROOT, capture_output=True, text=True)
+    assert raw.returncode == 0, raw.stderr
+    hits = json.loads(raw.stdout)
+    owner_hit = next(h for h in hits if h["path"] == "roadmap/tasks/owner.md")
+    assert owner_hit["score"] < 0.2
+    visible = subprocess.run(common, cwd=ROOT, capture_output=True, text=True)
+    assert visible.returncode == 0, visible.stderr
+    assert "roadmap/tasks/owner.md" in visible.stdout
+    disallowed = subprocess.run(
+        [*base, "search", "AW-216", *root, "--namespace", "engineering", "--k", "8"],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    assert disallowed.returncode == 0, disallowed.stderr
+    assert "roadmap/tasks/owner.md" not in disallowed.stdout
+    assert "no results above threshold" in disallowed.stdout
+    # Duplicate IDs are ambiguous, so neither the owner nor spoofed metadata
+    # can grant an exemption from the text-mode threshold.
+    (docs / "roadmap" / "index.json").write_text(
+        json.dumps({"tasks": [
+            {"id": "AW-216", "path": "docs/roadmap/tasks/owner.md"},
+            {"id": "AW-216", "path": "docs/roadmap/tasks/other.md"},
+        ]}),
+        encoding="utf-8",
+    )
+    ambiguous = subprocess.run(common, cwd=ROOT, capture_output=True, text=True)
+    assert ambiguous.returncode == 0, ambiguous.stderr
+    assert "no results above threshold" in ambiguous.stdout
+    ambiguous_json = subprocess.run([*common, "--json"], cwd=ROOT, capture_output=True, text=True)
+    assert ambiguous_json.returncode == 0, ambiguous_json.stderr
+    ambiguous_hits = json.loads(ambiguous_json.stdout)
+    same_owner = next(h for h in ambiguous_hits if h["path"] == "roadmap/tasks/owner.md")
+    assert same_owner["score"] == owner_hit["score"]
+    assert all("match_kind" not in hit for hit in ambiguous_hits)

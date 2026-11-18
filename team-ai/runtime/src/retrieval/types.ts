@@ -19,6 +19,8 @@ export interface Hit {
   path: string; // repo-relative, citation target
   heading_path: string;
   score: number; // normalized 0..1 across all drivers
+  // Verified exact roadmap identity, separate from statistical relevance.
+  match_kind?: "canonical-roadmap-id";
   text: string;
   metadata: Record<string, unknown>; // front matter
 }
