@@ -20,9 +20,13 @@ import pytest
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from engine.arc.models import ArcDefinition
+from engine.db.orm import MiniGameRun, MiniGameSubmission
 from engine.db.orm import Session as OrmSession
+from engine.events.bus import SessionEventBus
 from engine.events.models import AudienceTarget, ContentEvent
-from engine.session.phases import current_phase, host_move_on
+from engine.mini_games.resolver import ResolvedMiniGameSnapshot
+from engine.mini_games.runtime import MechanicRegistry, MiniGameRuntime
+from engine.session.phases import current_phase, host_move_on, tick
 from engine.session.service import SessionService
 
 ENGINE_DIR = Path(__file__).resolve().parent.parent
@@ -36,6 +40,67 @@ CHOICES_SECONDS = 60
 MINI_GAME_SECONDS = 30
 BRIDGE_SECONDS = 10
 SCENE_TEXT = "The lamp flickers over the {beat} table."
+
+# The test-only mini-game (AW-303): a hand-written package that allows two to
+# eight players and lasts 20 seconds, shorter than the phase that holds it.
+MINI_GAME_ROOT = "engine/tests/fixtures/mini_game_packages"
+MINI_GAME_DURATION = 20
+TIMER_RACE_BINDING: dict[str, str] = {
+    "binding_id": "timer-race-round",
+    "game_id": "timer-race",
+    "version": "0.1.0",
+}
+
+
+class TimerRacePlugin:
+    """Test-only game rule: the first accepted submission completes the run.
+    It is registered only through ``test_registry``; no shipped game changes."""
+
+    mechanic_type = "timer-race"
+
+    def validate_payload(self, payload: dict[str, Any]) -> None:
+        if payload.get("done") is not True:
+            raise ValueError("payload must carry done=true")
+
+    def is_threshold_met(
+        self,
+        snapshot: ResolvedMiniGameSnapshot,
+        submissions: list[MiniGameSubmission],
+    ) -> bool:
+        return len(submissions) >= 1
+
+    def score(
+        self,
+        snapshot: ResolvedMiniGameSnapshot,
+        submissions: list[MiniGameSubmission],
+    ) -> dict[str, Any]:
+        return {"submissions": len(submissions)}
+
+
+def test_registry() -> MechanicRegistry:
+    return MechanicRegistry([TimerRacePlugin()])
+
+
+async def play_mini_game(
+    db: AsyncSession, seated: "Seated", now: float, publish: "Recorder | None" = None
+) -> MiniGameRun:
+    """One player submits in the round's running mini-game, which completes it,
+    and the tick (not the player) moves the round on. Returns the finished run."""
+    runtime = MiniGameRuntime(
+        db, SessionEventBus(), test_registry(), clock=lambda: at(now)
+    )
+    run = await runtime.get_active_run(seated.session_id)
+    assert run is not None, "no mini-game run is going"
+    run.deadline = (
+        run.deadline.replace(tzinfo=timezone.utc)  # SQLite drops the zone
+        if run.deadline is not None and run.deadline.tzinfo is None
+        else run.deadline
+    )
+    await runtime.submit_action(
+        run.run_id, f"play-{run.run_id}", seated.characters[0], {"done": True}
+    )
+    await tick(db, seated.session_id, at(now + 1), publish)
+    return run
 
 
 def at(seconds: float) -> datetime:
@@ -73,8 +138,12 @@ def phased_arc(
     case_path: Path | None = VALID_CASE,
     budget: int | None = None,
     phases: dict[str, list[dict[str, Any]] | None] | None = None,
+    mini_games: dict[str, list[dict[str, str]]] | None = None,
+    mini_game_root: str | None = MINI_GAME_ROOT,
 ) -> ArcDefinition:
-    """The fixture arc: opening, three rounds, a final beat, all phased."""
+    """The fixture arc: opening, three rounds, a final beat, all phased. Each
+    round is bound to the test-only mini-game unless ``mini_games`` says
+    otherwise (a beat mapped to ``[]`` has no binding)."""
     couch = ArcDefinition.model_validate_json(
         (ENGINE_DIR.parent / "nightcap" / "couch-race.arc.json").read_text("utf-8")
     )
@@ -99,8 +168,19 @@ def phased_arc(
         "finale": [{"kind": "scene", "seconds": SCENE_SECONDS}],
     }
     per_beat.update(phases or {})
+    bound: dict[str, list[dict[str, str]]] = {
+        beat: [TIMER_RACE_BINDING] for beat in ROUND_BEATS
+    }
+    bound.update(mini_games or {})
     beats = [
-        {**template, "beat_id": b, "beat_name": b, "phases": per_beat[b]} for b in BEATS
+        {
+            **template,
+            "beat_id": b,
+            "beat_name": b,
+            "phases": per_beat[b],
+            "mini_games": bound.get(b),
+        }
+        for b in BEATS
     ]
     data = couch.model_dump(mode="json")
     data.update(
@@ -112,6 +192,7 @@ def phased_arc(
         obligations=[],
         authorial_intent=None,
         case_file=str(case_path) if case_path else None,
+        mini_game_root=mini_game_root,
     )
     if budget is not None:
         data["choice_config"] = {"budget": budget}
@@ -146,6 +227,7 @@ def fixture_arc_registered(arc: ArcDefinition) -> Iterator[None]:
         patch("engine.session.service.load_arc_definition", lambda _id: arc),
         patch("engine.session.phases.load_arc_definition", lambda _id: arc),
         patch("engine.session.choices.load_arc_definition", lambda _id: arc),
+        patch("engine.session.mini_game_phase.build_registry", test_registry),
     ):
         yield
 
@@ -159,6 +241,9 @@ def registered(monkeypatch: pytest.MonkeyPatch) -> Callable[[ArcDefinition], Non
             "engine.session.choices.load_arc_definition",
         ):
             monkeypatch.setattr(target, lambda _id, _arc=arc: _arc)
+        monkeypatch.setattr(
+            "engine.session.mini_game_phase.build_registry", test_registry
+        )
 
     return register
 

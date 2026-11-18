@@ -7,7 +7,8 @@ and from the last phase to the next beat, by rule only:
   - every player has marked ready (scene, choices, bridge),
   - the authored time is up,
   - the host moves on,
-  - the mini-game ends (the stand-in call here; AW-303 connects the real run).
+  - the mini-game's run ends, or the phase's time limit passes (see
+    ``engine.session.mini_game_phase``).
 
 Typed input and model calls never decide when a round moves on.
 
@@ -44,6 +45,7 @@ from engine.events.models import (
     EventCategory,
     PresentationHints,
 )
+from engine.session import mini_game_phase
 from engine.session.models import SessionStatus
 
 logger = logging.getLogger(__name__)
@@ -305,7 +307,7 @@ def _phases(beat: BeatDefinition) -> list[PhaseDefinition]:
 
 async def _enter(
     db: AsyncSession,
-    session_id: UUID,
+    orm: OrmSession,
     arc: ArcDefinition,
     previous: PhaseState | None,
     beat_id: str,
@@ -313,6 +315,7 @@ async def _enter(
     now: datetime,
     publish: Publish,
 ) -> PhaseState:
+    session_id = orm.session_id
     definition = _phases(_beat(arc, beat_id))[index]
     state = await _save(
         db,
@@ -366,6 +369,12 @@ async def _enter(
                 hints=line.hints,
             ),
         )
+    if definition.kind is PhaseKind.mini_game:
+        ending = await mini_game_phase.begin(
+            db, orm, arc, beat_id, state.entry, now, publish
+        )
+        if ending is not None:
+            return await _end(db, orm, arc, state, ending, now, publish)
     return state
 
 
@@ -393,9 +402,7 @@ async def _advance_beat(
     await db.refresh(orm)
     if orm.current_beat_id == left:
         return None
-    return await _enter(
-        db, orm.session_id, arc, state, orm.current_beat_id, 0, now, publish
-    )
+    return await _enter(db, orm, arc, state, orm.current_beat_id, 0, now, publish)
 
 
 async def _count_choices(db: AsyncSession, session_id: UUID, beat_id: str) -> int:
@@ -417,6 +424,10 @@ async def _end(
     now: datetime,
     publish: Publish,
 ) -> PhaseState:
+    if state.phase == PhaseKind.mini_game.value:
+        await mini_game_phase.stop_open_run(
+            db, orm.session_id, state.beat_id, state.entry, now, publish
+        )
     ended = await _save(
         db,
         orm.session_id,
@@ -432,7 +443,7 @@ async def _end(
     if state.phase_index + 1 < len(phases):
         return await _enter(
             db,
-            orm.session_id,
+            orm,
             arc,
             ended,
             state.beat_id,
@@ -444,8 +455,22 @@ async def _end(
 
 
 async def _due_reason(
-    db: AsyncSession, session_id: UUID, state: PhaseState, now: datetime
+    db: AsyncSession,
+    session_id: UUID,
+    state: PhaseState,
+    now: datetime,
+    publish: Publish,
 ) -> str | None:
+    if state.phase == PhaseKind.mini_game.value:
+        return await mini_game_phase.advance(
+            db,
+            session_id,
+            state.beat_id,
+            state.entry,
+            state.deadline_at,
+            now,
+            publish,
+        )
     if PhaseKind(state.phase) in _READY_PHASES and await _everyone_ready(
         db, session_id, state
     ):
@@ -472,15 +497,13 @@ async def _settle(
     for _ in range(_MAX_STEPS):
         state = await current_phase(db, orm.session_id)
         if state is None:
-            await _enter(
-                db, orm.session_id, arc, None, orm.current_beat_id, 0, now, publish
-            )
+            await _enter(db, orm, arc, None, orm.current_beat_id, 0, now, publish)
             changes.append("entered")
             continue
         if state.status == "paused":
             break
         if state.status == "running":
-            reason = await _due_reason(db, orm.session_id, state, now)
+            reason = await _due_reason(db, orm.session_id, state, now, publish)
             if reason is None:
                 break
             await _end(db, orm, arc, state, reason, now, publish)
@@ -596,12 +619,12 @@ async def host_move_on(
 async def finish_mini_game_phase(
     db: AsyncSession, session_id: UUID, now: datetime, publish: Publish = None
 ) -> bool:
-    """The mini-game has reached an end state: end its phase and go on.
+    """The mini-game's run has reached an end state: end its phase and go on.
 
-    The stand-in for AW-303, which calls this when a real run completes, times
-    out, or is resolved or cancelled by the host. Returns False, changing
-    nothing, when the session is not in a running mini-game phase (a repeated
-    or late call).
+    For a caller outside the tick (the tick reaches the same rule from inside
+    the lock it already holds). Returns False, changing nothing, when the
+    session is not in a running mini-game phase, or its run is not over (a
+    repeated, late or early call).
     """
     async with session_lock(db, session_id) as orm:
         if orm is None or orm.status != SessionStatus.active.value:
@@ -616,7 +639,11 @@ async def finish_mini_game_phase(
             or state.phase != PhaseKind.mini_game.value
         ):
             return False
-        await _end(db, orm, arc, state, "mini_game_ended", now, publish)
+        if not await mini_game_phase.run_is_over(
+            db, session_id, state.beat_id, state.entry
+        ):
+            return False
+        await _end(db, orm, arc, state, mini_game_phase.ENDED, now, publish)
         return True
 
 
@@ -637,6 +664,10 @@ async def freeze_phase(db: AsyncSession, session_id: UUID, now: datetime) -> Non
             phase=state.phase,
             remaining_seconds=max(0.0, (state.deadline_at - now).total_seconds()),
         )
+        if state.phase == PhaseKind.mini_game.value:
+            await mini_game_phase.pause_bound_run(
+                db, session_id, state.beat_id, state.entry, now
+            )
 
 
 async def thaw_phase(db: AsyncSession, session_id: UUID, now: datetime) -> None:
@@ -656,6 +687,10 @@ async def thaw_phase(db: AsyncSession, session_id: UUID, now: datetime) -> None:
             phase=state.phase,
             deadline_at=now + timedelta(seconds=state.remaining_seconds or 0.0),
         )
+        if state.phase == PhaseKind.mini_game.value:
+            await mini_game_phase.resume_bound_run(
+                db, session_id, state.beat_id, state.entry, now
+            )
 
 
 def _beat_name(arc: ArcDefinition | None, beat_id: str) -> str | None:

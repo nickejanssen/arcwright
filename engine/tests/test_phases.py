@@ -51,6 +51,8 @@ from engine.tests.rounds_support import (
     where,
 )
 
+# The mini-game phase is ended by its run, or by its time limit as a cap; both are
+# tested in test_mini_game_phase.py (AW-303), so it is not in this table.
 SECONDS = {
     "scene": SCENE_SECONDS,
     "choices": CHOICES_SECONDS,
@@ -222,7 +224,7 @@ NEXT_PHASE = {
 
 class TestPhaseEndRules:
     @pytest.mark.asyncio
-    @pytest.mark.parametrize("phase", ["scene", "choices", "mini_game", "bridge"])
+    @pytest.mark.parametrize("phase", ["scene", "choices", "bridge"])
     async def test_the_clock_ends_every_phase(
         self, started: tuple[Seated, Recorder], db: AsyncSession, phase: str
     ) -> None:
@@ -274,16 +276,6 @@ class TestPhaseEndRules:
         assert state.phase == after[1]
         ended = await _ended_reasons(db, seated.session_id)
         assert ended[-1] == "host"
-
-    @pytest.mark.asyncio
-    async def test_the_mini_game_phase_ends_when_the_stand_in_says_so(
-        self, started: tuple[Seated, Recorder], db: AsyncSession
-    ) -> None:
-        seated, rec = started
-        await reach_phase(db, seated, "beat_one", "mini_game", at(100), rec)
-        assert await finish_mini_game_phase(db, seated.session_id, at(110), rec)
-        assert (await where(db, seated.session_id))[:2] == ("beat_one", "bridge")
-        assert (await _ended_reasons(db, seated.session_id))[-1] == "mini_game_ended"
 
     @pytest.mark.asyncio
     async def test_a_stale_mini_game_end_changes_nothing(

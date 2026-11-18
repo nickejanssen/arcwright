@@ -351,6 +351,10 @@ class ArcDefinition(BaseModel):
     obligations: List[ObligationConfig] = Field(default_factory=list)
     case_file: Optional[str] = None
     """Path, from the repository root, to a written case (spec 0093, Part A)."""
+    mini_game_root: Optional[str] = None
+    """Folder, from the repository root, holding the mini-game packages this
+    arc's beats are bound to (spec 0093, Part E). One folder per game, named by
+    its game ID."""
     choice_config: ChoiceConfig = Field(default_factory=ChoiceConfig)
 
     @property

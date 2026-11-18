@@ -1,8 +1,8 @@
 """A whole game run headless: opening, three rounds, a final beat (AW-325).
 
-Spec 0093, "Whole spine". This is the AW-325 half of the named proof: phases,
-readiness, choices and the clock, with the mini-game phase entered and left by
-the stand-in. AW-303 extends it with a real mini-game run.
+Spec 0093, "Whole spine". The named proof: phases, readiness, choices, the clock
+and, since AW-303, one real mini-game run per round (a test-only game, see
+``rounds_support``) that starts on entry and ends by a player or by its clock.
 
 No model is called anywhere (the ``no_model_calls`` fixture fails the test if
 one is). Time is passed in.
@@ -20,7 +20,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from engine.arc.models import ArcDefinition
-from engine.db.orm import Decision, Event
+from engine.db.orm import Decision, Event, MiniGameRun
 from engine.db.orm import Session as OrmSession
 from engine.db.testing import make_sqlite_session_factory
 from engine.events.models import AudienceTarget
@@ -28,7 +28,6 @@ from engine.session.choices import choose, read_menu, remaining_budget
 from engine.session.phases import (
     PHASE_EVENT,
     current_phase,
-    finish_mini_game_phase,
     mark_ready,
     round_view,
     tick,
@@ -44,6 +43,7 @@ from engine.tests.rounds_support import (
     Seated,
     at,
     phased_arc,
+    play_mini_game,
     seat_session,
     where,
 )
@@ -92,6 +92,16 @@ async def db(
             await session.rollback()
 
 
+async def runs_by_beat(db: AsyncSession) -> dict[str, list[str]]:
+    """Each beat's mini-game runs and how they ended, read back from the database."""
+    result = await db.execute(select(MiniGameRun))
+    by_beat: dict[str, list[str]] = {}
+    for run in result.scalars().all():
+        beat = run.definition_snapshot["binding"]["beat_id"]
+        by_beat.setdefault(beat, []).append(run.status)
+    return by_beat
+
+
 async def phase_order(db: AsyncSession, session_id: UUID) -> list[tuple[str, str]]:
     """Every (beat, phase) entered, in the order it was entered."""
     result = await db.execute(
@@ -114,8 +124,9 @@ def entered_once(order: list[tuple[str, str]]) -> list[tuple[str, str]]:
 async def play_a_round(
     db: AsyncSession, seated: Seated, rec: Recorder, beat: str, now: float
 ) -> float:
-    """Everyone ready on the scene, two choices each, ready, the stand-in ends
-    the mini-game, everyone ready on the bridge. Returns the new time."""
+    """Everyone ready on the scene, two choices each, ready, one player finishes
+    the round's real mini-game run, everyone ready on the bridge. Returns the
+    new time."""
     for participant in seated.participants:
         await mark_ready(db, seated.session_id, participant, at(now), rec)
     assert (await where(db, seated.session_id))[:2] == (beat, "choices")
@@ -135,7 +146,8 @@ async def play_a_round(
         await mark_ready(db, seated.session_id, participant, at(now), rec)
     assert (await where(db, seated.session_id))[:2] == (beat, "mini_game")
     now += 5
-    assert await finish_mini_game_phase(db, seated.session_id, at(now), rec)
+    await play_mini_game(db, seated, now, rec)
+    assert (await where(db, seated.session_id))[:2] == (beat, "bridge")
     for participant in seated.participants:
         await mark_ready(db, seated.session_id, participant, at(now), rec)
     return now
@@ -180,6 +192,7 @@ class TestFullRun:
             .all()
         )
         assert len(decisions) == players * 6
+        assert await runs_by_beat(db) == {beat: ["completed"] for beat in BEATS[1:4]}
         orm = await db.get(OrmSession, seated.session_id)
         assert orm is not None and orm.current_beat_id == "finale"
 
@@ -210,6 +223,7 @@ class TestFullRun:
         final = await tick(db, seated.session_id, at(now + SCENE_SECONDS), rec)
         assert final
         assert now == ALL_SECONDS - SCENE_SECONDS
+        assert await runs_by_beat(db) == {beat: ["timed_out"] for beat in BEATS[1:4]}
         assert await where(db, seated.session_id) == ("finale", "scene", "ended")
         for participant in seated.participants:
             assert await remaining_budget(db, seated.session_id, participant) == 6
