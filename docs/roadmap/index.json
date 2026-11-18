@@ -3030,7 +3030,8 @@
       "epic": "M7-B",
       "size": "S",
       "depends_on": [
-        "AW-338"
+        "AW-338",
+        "AW-328"
       ],
       "path": "docs/roadmap/tasks/AW-341-send-events-after-the-save-in-the-session-and-character-routes.md",
       "epic_id": "M7-B",

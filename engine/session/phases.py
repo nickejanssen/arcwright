@@ -727,6 +727,10 @@ async def finish_mini_game_phase(
     the lock it already holds). Returns False, changing nothing, when the
     session is not in a running mini-game phase, or its run is not over (a
     repeated, late or early call).
+
+    It publishes inside the caller's open transaction. There is no production
+    caller yet; any caller must run under ``delivery_lock`` with an ``Outbox``
+    as ``publish``, commit, and then flush it, as the round routes do.
     """
     async with session_lock(db, session_id) as orm:
         if orm is None or orm.status != SessionStatus.active.value:
@@ -885,16 +889,26 @@ async def tick_active_sessions(
             continue
         async with delivery_lock(session_id):
             outbox = Outbox(session_id)
-            async with factory() as db:
-                try:
-                    publisher = publisher_for(session_id)
-                    await tick(db, session_id, now, outbox)
-                    await db.commit()
-                except Exception:
-                    await db.rollback()
-                    outbox.discard()
-                    logger.exception("tick failed for session %s", session_id)
-                    continue
+            committed = False
+            try:
+                async with factory() as db:
+                    try:
+                        publisher = publisher_for(session_id)
+                        await tick(db, session_id, now, outbox)
+                        await db.commit()
+                        committed = True
+                    except Exception:
+                        await db.rollback()
+                        outbox.discard()
+                        logger.exception("tick failed for session %s", session_id)
+            except Exception:
+                # Only the session's close can fail here. If the commit went
+                # through, the state is saved and its events must still go out.
+                logger.exception(
+                    "closing the database session failed for %s", session_id
+                )
+            if not committed:
+                continue
             await outbox.flush(publisher)
         ticked += 1
     for session_id in [sid for sid in _PENDING if sid not in seen]:

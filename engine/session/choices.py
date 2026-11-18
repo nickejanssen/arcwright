@@ -415,8 +415,11 @@ async def choose(
                         "that choice_id was already used for a different choice",
                     )
                 # A replay repeats the first answer, budget included.
-                then = int(row.outcome.get("allowance", 0)) - int(
-                    row.outcome.get("spent_after", 0)
+                saved = row.outcome
+                then = (
+                    int(saved["allowance"]) - int(saved["spent_after"])
+                    if "allowance" in saved and "spent_after" in saved
+                    else left
                 )
                 return _result_from_row(ctx.case, row, then, replayed=True)
 
