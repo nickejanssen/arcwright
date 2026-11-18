@@ -16,7 +16,7 @@ supersedes: []
 
 The prompt the founder gives a fresh orchestrator session. One orchestrator session runs a batch of work, then hands over with this file updated, so no session runs long enough to lose detail. Update the "In flight" and "Next build order" sections at every handoff; git keeps the earlier versions.
 
-Last updated: 2026-11-18, by the orchestrator session of 14 to 18 November 2026.
+Last updated: 2026-11-18 02:30 UTC, by the orchestrator session of 14 to 18 November 2026.
 
 ## The prompt
 
@@ -49,14 +49,15 @@ Done and on main:
 - D-130: the TV reads `GET /v1/sessions/{session_id}/round` without signing in, for the thin version.
 - AW-298 done: `verify`, `Lint, Typecheck, Test, Build, and Scan` and `team-ai` are required to merge.
 
-In flight at handoff (18 November 2026, main `c0a58ed` plus this handoff's docs pull request):
-- AW-303 (#356): plan approved by the founder 2026-11-17. Plan: https://github.com/nickejanssen/arcwright/issues/356#issuecomment-6966065044 . Approval and its limits: https://github.com/nickejanssen/arcwright/issues/356#issuecomment-6966308145 . No build started.
-- AW-304 (#357): plan approved by the founder 2026-11-17, including the `menu_shown` record. Plan: https://github.com/nickejanssen/arcwright/issues/357#issuecomment-6966070750 . Approval and its limits: https://github.com/nickejanssen/arcwright/issues/357#issuecomment-6966310769 . No build started. Still owed: the follow-up issue for the game-worded event names the plan lists; the AW-304 build files it (task file, index entry, issue) once its allow-list is final.
-- No pull request is open. Nine Codex pull requests on the knowledge tooling merged on 17 November (#401, #403 to #410); none touch `engine/` or `api/`.
+In flight at handoff (updated 18 November 2026, 02:30 UTC). The two plan sessions went on to build after the founder approved their plans, so both builds already exist. Do not start new AW-303 or AW-304 build sessions.
+- AW-303 (#356): pull request #413, branch `claude/aw-303-mini-game-phase`, built by the session "AW-303: plan mini-games inside a session". At handoff it was fixing review findings from `/code-review` and `/review-pr`. Plan: https://github.com/nickejanssen/arcwright/issues/356#issuecomment-6966065044 . Approval and its limits: https://github.com/nickejanssen/arcwright/issues/356#issuecomment-6966308145 . Check against the plan: it also changes `api/tests/test_rounds_api.py`, which the plan's file list did not name.
+- AW-304 (#357): pull request #412, branch `claude/aw-304-plan-6be878`, built by the session "AW-304: plan game-agnostic play records". At handoff it had added edge-case tests and filed the follow-up AW-340 (issue #414, give saved event names and payload keys generic names); CI on its last commits had not reported. Plan: https://github.com/nickejanssen/arcwright/issues/357#issuecomment-6966070750 . Approval and its limits: https://github.com/nickejanssen/arcwright/issues/357#issuecomment-6966310769 .
+- The two pull requests share no file. #413 edits `HANDOVER.md`; #412 adds a roadmap index entry.
+- Nine Codex pull requests on the knowledge tooling merged on 17 November (#401, #403 to #410); none touch `engine/` or `api/`. Codex code review stopped running on 18 November: the Codex account is out of review credits, so a Reviewer session is the only review until the founder decides otherwise.
 
 ## Next build order
 
-1. Start now: AW-303 and AW-304 build sessions side by side (`/implement AW-303`, `/implement AW-304`, Sonnet, own worktrees). Their approved file lists do not overlap; `HANDOVER.md` and task files are touched only after merge. Merge AW-303 first; AW-304 then rebases and reruns its headless test, because AW-303 changes the shared test fixture `engine/tests/rounds_support.py`. AW-304 changes `engine/session/choices.py`, so AW-328 and AW-338 start after AW-304 merges.
+1. Finish #413 (AW-303) and #412 (AW-304): wait for their sessions to report, read every check, run a read-only Reviewer session on each, then bring each to the founder to merge. Merge #413 first; #412 then rebases and reruns its tests, because #413 changes the shared test fixture `engine/tests/rounds_support.py`. #412 changes `engine/session/choices.py`, so AW-328 and AW-338 start after it merges. AW-340 (#414) comes later, after session 1 unless the founder says otherwise.
 2. Then AW-328 (mini-game winner gets one extra investigation, D-126), AW-326 (Last Call, lock, theory check, winner), AW-327 (closing sequence, full game headless).
 3. AW-338 (#399, four round-rule fixes) after AW-303 merges.
 4. AW-306 (story tool importer), then AW-308 (session 1 preflight).
@@ -101,4 +102,4 @@ Conclusion first. Plain words, no invented shorthand. Label claims verified, inf
 
 ## Your first reply
 
-Confirm what you read, the open pull requests and the state of AW-303 and AW-304. Then start the two build sessions and tell the founder the one decision he needs to make next.
+Confirm what you read, the open pull requests and the state of #413 and #412. Do not start new build sessions for AW-303 or AW-304. Then tell the founder the one decision he needs to make next.
