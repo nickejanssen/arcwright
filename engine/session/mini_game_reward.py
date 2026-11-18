@@ -9,9 +9,16 @@ same after a reload.
 
 Called with the session lock held (``mini_game_phase.stop_open_run``, from
 ``phases._end``). It reads saved state first, so a second call for the same run
-finds the rows and does nothing: no second row, no second message. Each row
-records whether its player has been told; a message that fails to send stops the
-phase from ending, and the next tick sends only the ones still owed.
+finds the rows and does nothing: no second row, no second message.
+
+Messages go out through the ``publish`` callable the caller gives. In the API
+tick that is an ``Outbox`` (AW-338): ``publish`` only queues, and the grant row,
+its ``told`` flag and the queued message are saved or rolled back together. A
+rollback undoes all three, and the next tick grants and queues again from
+scratch. Delivery after the commit, including retries, belongs to the Outbox's
+pending queue. ``told`` therefore means "queued for delivery", not "seen"; it
+only stops a second message for the same grant when this code runs again over
+rows that were saved.
 
 When every eligible player is in the top tier, the run separated nobody and
 nothing is given (D-127; approved in the AW-328 plan).
@@ -140,10 +147,11 @@ async def notify(
     now: datetime,
     publish: Publish,
 ) -> None:
-    """Tell each winner whose grant is not yet marked told, marking each one
-    after its message is sent. A failure propagates, so the phase does not end
-    and the next tick tries again for the winners still not told; those already
-    told are not told twice."""
+    """Queue a message to each winner whose grant is not yet marked told, and
+    mark it. ``told`` means queued for delivery, not seen. With an ``Outbox`` as
+    ``publish`` this never raises for a delivery problem, and the grant, the flag
+    and the message are saved or rolled back together; the Outbox delivers after
+    the commit and retries from its own queue."""
     from engine.session.choices import BUDGET_GRANT_DECISION, remaining_budget
 
     run = await mini_game_phase.bound_run(db, session_id, beat_id, phase_entry)

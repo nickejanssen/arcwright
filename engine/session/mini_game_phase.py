@@ -362,8 +362,9 @@ async def stop_open_run(
         # A reward that cannot be worked out must not fail the tick every second.
         logger.exception("mini-game reward for beat %s was not given", beat_id)
         return
-    # A message that fails to send is not swallowed: the phase stays open and the
-    # next tick sends the ones still owed (each grant records that it was told).
+    # Messages go through ``publish``; in the API tick that is an Outbox, which
+    # queues them for delivery after the commit (AW-338). A failure here is not
+    # swallowed: the tick rolls back and the next tick starts the phase end again.
     await mini_game_reward.notify(db, session_id, beat_id, phase_entry, now, publish)
 
 
