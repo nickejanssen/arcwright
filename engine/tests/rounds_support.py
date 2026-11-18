@@ -138,7 +138,7 @@ def phased_arc(
     case_path: Path | None = VALID_CASE,
     budget: int | None = None,
     phases: dict[str, list[dict[str, Any]] | None] | None = None,
-    mini_games: dict[str, list[dict[str, str]]] | None = None,
+    mini_games: dict[str, list[dict[str, Any]]] | None = None,
     mini_game_root: str | None = MINI_GAME_ROOT,
 ) -> ArcDefinition:
     """The fixture arc: opening, three rounds, a final beat, all phased. Each
@@ -168,7 +168,7 @@ def phased_arc(
         "finale": [{"kind": "scene", "seconds": SCENE_SECONDS}],
     }
     per_beat.update(phases or {})
-    bound: dict[str, list[dict[str, str]]] = {
+    bound: dict[str, list[dict[str, Any]]] = {
         beat: [TIMER_RACE_BINDING] for beat in ROUND_BEATS
     }
     bound.update(mini_games or {})

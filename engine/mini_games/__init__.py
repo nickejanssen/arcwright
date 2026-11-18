@@ -31,6 +31,7 @@ from engine.mini_games.models import (
     MiniGameDefinition,
     MiniGameLifecycle,
     MiniGameManifest,
+    MiniGameReward,
     ParticipationMode,
 )
 from engine.mini_games.resolver import (
@@ -58,6 +59,7 @@ __all__ = [
     "MiniGameDefinition",
     "MiniGameLifecycle",
     "MiniGameManifest",
+    "MiniGameReward",
     "MiniGameOnboardingRequest",
     "MiniGameOnboardingService",
     "MiniGameOnboardingSession",
