@@ -62,6 +62,7 @@ export interface RoutingResult {
 
 export interface RunContext {
   instanceDir: string;
+  onMultiPath?: (entry: { id: string; allFound: boolean }) => void;
 }
 
 type SearchFn = (query: string) => Promise<Hit[]>;
@@ -220,6 +221,12 @@ export async function runGoldenFile(
     const outcomes: EvalOutcome[] = [];
     for (const question of questions) {
       const hits = await search(question.question);
+      if (question.expect_route !== REFUSE_ROUTE && question.expect_paths.length > 1) {
+        ctx.onMultiPath?.({
+          id: question.id,
+          allFound: question.expect_paths.every((path) => expectedPathHit([path], hits)),
+        });
+      }
       const routing = await routeQuestion(question.question, manifest, search);
       const refuseExpected = question.expect_route === REFUSE_ROUTE;
       const routedTo = routing.route;
