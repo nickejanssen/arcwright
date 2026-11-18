@@ -82,7 +82,7 @@ Progress: 6 of about 20 critical-path tasks are merged, roughly 30 percent (infe
 ## In flight at handoff
 
 - **AW-343 (#423).** A phone reads back its mini-game rewards, so a missed "you earned one more investigation" message can never be lost; the founder chose this fix on 18 November. A plan session is running in the cloud: https://claude.ai/code/session_01BpvnxtVGat2r3kNPnRf18C, branch `task/AW-343-reward-readback`. It posts its plan on #423 and stops. The founder approves in that session or on #423.
-- **Open pull requests: none.**
+- **Open pull requests: none,** once this handoff's pull request has merged.
 - **Main is `ab759f6`, or later if the handoff pull request below has merged.**
 
 ## Next build order
@@ -148,7 +148,7 @@ Progress: 6 of about 20 critical-path tasks are merged, roughly 30 percent (infe
   - "wait for CI `verify` before reporting done";
   - "do not merge".
 - At most two build sessions at once, and never two on the same file.
-- Before each merge, a read-only Reviewer session (`/review-pr`, Sonnet). Codex review is out of credits until the founder restores it.
+- Before each merge, a read-only Reviewer session (`/review-pr`, Sonnet). Codex review is running again: it reviewed #424 on 18 November at 14:43 UTC. Read its findings, fix or answer each one, and resolve the thread. **Main refuses a merge while any review thread is unresolved** ("All comments must be resolved"), even with every check green.
 - Do not poll in a loop or sleep. Use a scheduled check-in or a background wait, and cancel check-ins that are no longer needed.
 - Known flake: about one test run in a few hundred fails in SQLite setup with `'float' object has no attribute 'replace'` (AW-342). Rerun once; if it fails again, it is real.
 
