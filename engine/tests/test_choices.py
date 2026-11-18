@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import AsyncIterator, Callable
+from datetime import timedelta
 from typing import Any
 from uuid import UUID, uuid4
 
@@ -32,7 +33,7 @@ from engine.session.choices import (
     read_menu,
     remaining_budget,
 )
-from engine.session.phases import RoundError, host_move_on, tick
+from engine.session.phases import RoundError, current_phase, host_move_on, tick
 from engine.session.service import SessionService, SessionStateError
 from engine.tests.rounds_support import (
     Recorder,
@@ -619,3 +620,98 @@ class TestRestart:
             )
         assert after == before
         assert before[1] == 4
+
+
+class TestDeadlineAndReplay:
+    """AW-338: a choice is refused at the phase deadline, and a replay is exact."""
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("late", [0.0, 1.0])
+    async def test_a_choice_at_or_after_the_deadline_is_refused_before_the_tick(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        late: float,
+    ) -> None:
+        seated, rec, _ = await open_choices(db, registered)
+        state = await current_phase(db, seated.session_id)
+        assert state is not None and state.deadline_at is not None
+        saved, events = await decision_count(db, seated.session_id), len(rec.events)
+        with pytest.raises(RoundError) as refused:
+            await choose(
+                db,
+                seated.session_id,
+                seated.participants[0],
+                "late-1",
+                "o_ledger",
+                state.deadline_at + timedelta(seconds=late),
+                rec,
+            )
+        assert refused.value.code == "phase_time_up"
+        assert await decision_count(db, seated.session_id) == saved
+        assert len(rec.events) == events
+
+    @pytest.mark.asyncio
+    async def test_a_choice_just_before_the_deadline_is_accepted(
+        self, db: AsyncSession, registered: Callable[[ArcDefinition], None]
+    ) -> None:
+        seated, rec, _ = await open_choices(db, registered)
+        state = await current_phase(db, seated.session_id)
+        assert state is not None and state.deadline_at is not None
+        result = await choose(
+            db,
+            seated.session_id,
+            seated.participants[0],
+            "on-time",
+            "o_ledger",
+            state.deadline_at - timedelta(seconds=1),
+            rec,
+        )
+        assert result.first_time
+
+    @pytest.mark.asyncio
+    async def test_a_replay_after_the_deadline_still_returns_the_saved_answer(
+        self, db: AsyncSession, registered: Callable[[ArcDefinition], None]
+    ) -> None:
+        seated, rec, _ = await open_choices(db, registered)
+        first = await pick(db, seated, 0, "o_ledger", rec, choice_id="tap-1")
+        state = await current_phase(db, seated.session_id)
+        assert state is not None and state.deadline_at is not None
+        again = await choose(
+            db,
+            seated.session_id,
+            seated.participants[0],
+            "tap-1",
+            "o_ledger",
+            state.deadline_at + timedelta(seconds=5),
+            rec,
+        )
+        assert again.replayed and again.content == first.content
+
+    @pytest.mark.asyncio
+    async def test_a_choice_id_reused_for_another_opportunity_is_refused(
+        self, db: AsyncSession, registered: Callable[[ArcDefinition], None]
+    ) -> None:
+        seated, rec, _ = await open_choices(db, registered)
+        await pick(db, seated, 0, "o_ledger", rec, choice_id="tap-1")
+        saved, events = await decision_count(db, seated.session_id), len(rec.events)
+        with pytest.raises(RoundError) as refused:
+            await pick(db, seated, 0, "o_shed", rec, choice_id="tap-1")
+        assert refused.value.code == "choice_id_reused"
+        assert await decision_count(db, seated.session_id) == saved
+        assert len(rec.events) == events
+
+    @pytest.mark.asyncio
+    async def test_a_replay_reports_the_budget_as_it_was_at_the_first_answer(
+        self, db: AsyncSession, registered: Callable[[ArcDefinition], None]
+    ) -> None:
+        seated, rec, _ = await open_choices(db, registered)
+        first = await pick(db, seated, 0, "o_ledger", rec, choice_id="tap-1")
+        await pick(db, seated, 0, "o_shed", rec)
+        assert (
+            await remaining_budget(db, seated.session_id, seated.participants[0])
+            < first.remaining_budget
+        )
+        again = await pick(db, seated, 0, "o_ledger", rec, choice_id="tap-1")
+        assert again.replayed
+        assert again.remaining_budget == first.remaining_budget
