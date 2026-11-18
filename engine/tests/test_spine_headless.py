@@ -10,6 +10,7 @@ one is). Time is passed in.
 
 from __future__ import annotations
 
+import asyncio
 import time
 from collections.abc import AsyncIterator, Callable
 from datetime import datetime
@@ -24,7 +25,8 @@ from engine.arc.models import ArcDefinition
 from engine.db.orm import Decision, Event, MiniGameRun
 from engine.db.orm import Session as OrmSession
 from engine.db.testing import make_sqlite_session_factory
-from engine.events.models import AudienceTarget, EventCategory
+from engine.events.bus import SessionEventBus
+from engine.events.models import AudienceTarget, ContentEvent, EventCategory
 from engine.session.choices import choose, read_menu, remaining_budget
 from engine.session.phases import (
     PHASE_EVENT,
@@ -454,3 +456,108 @@ class TestEventsWaitForTheCommit:
         )
         assert len(rec.of_type("reward_like")) == 1
         assert seen_at_commit and seen_at_commit[0] == 0
+
+
+class TestDeliveryKeepsStateChangeOrder:
+    """AW-338 review: events reach the bus in the order the changes were saved,
+    and one that fails to send is retried in order rather than lost."""
+
+    @pytest.mark.asyncio
+    async def test_a_later_tick_cannot_overtake_an_earlier_one_paused_after_its_commit(
+        self,
+        factory: async_sessionmaker[AsyncSession],
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        arc = phased_arc()
+        registered(arc)
+        await seat_session(db, arc)
+        await db.commit()
+        rec = Recorder()
+        real_commit = AsyncSession.commit
+        paused, release = asyncio.Event(), asyncio.Event()
+        first = True
+
+        async def slow_first(self: AsyncSession) -> None:
+            nonlocal first
+            await real_commit(self)
+            if first:
+                first = False
+                paused.set()
+                await release.wait()
+
+        monkeypatch.setattr(AsyncSession, "commit", slow_first)
+        one = asyncio.create_task(
+            tick_active_sessions(factory, at(0), lambda _sid: rec)
+        )
+        await paused.wait()
+        two = asyncio.create_task(
+            tick_active_sessions(factory, at(SCENE_SECONDS + 1), lambda _sid: rec)
+        )
+        await asyncio.sleep(0.1)
+        release.set()
+        await asyncio.gather(one, two)
+        entries = [e.payload["phase_entry"] for e in rec.of_type("phase_changed")]
+        assert len(entries) >= 2
+        assert entries == sorted(entries)
+
+    @pytest.mark.asyncio
+    async def test_a_failed_publish_is_retried_in_order_for_a_connected_client(
+        self,
+        factory: async_sessionmaker[AsyncSession],
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        arc = phased_arc()
+        registered(arc)
+        seated = await seat_session(db, arc)
+        await tick(db, seated.session_id, at(0))
+        await reach_phase(db, seated, "beat_one", "mini_game", at(100))
+        await db.commit()
+
+        async def end_with_private_event(
+            _db: AsyncSession,
+            session_id: UUID,
+            _beat: str,
+            _entry: int,
+            now: datetime,
+            publish: Publish,
+        ) -> None:
+            await emit(
+                publish,
+                content_event(
+                    session_id,
+                    now,
+                    category=EventCategory.private_delivery,
+                    event_type="reward_like",
+                    audience=AudienceTarget.specific_player,
+                    target_player_id=seated.participants[0],
+                    payload={},
+                ),
+            )
+
+        monkeypatch.setattr(
+            "engine.session.phases.mini_game_phase.stop_open_run",
+            end_with_private_event,
+        )
+        bus = SessionEventBus()
+        connected = bus.subscribe()
+        failures = {"left": 1}
+
+        async def flaky(event: ContentEvent) -> ContentEvent:
+            if event.event_type == "reward_like" and failures["left"]:
+                failures["left"] -= 1
+                raise RuntimeError("bus hiccup")
+            return await bus.publish(event)
+
+        end = at(100 + MINI_GAME_SECONDS + 1)
+        await tick_active_sessions(factory, end, lambda _sid: flaky)
+        assert bus.replay_since(0) == []  # nothing jumped the failed event
+        await tick_active_sessions(factory, end, lambda _sid: flaky)
+        types = [e.event_type for e in bus.replay_since(0)]
+        assert types[0] == "reward_like"
+        assert types.count("reward_like") == 1
+        assert "phase_changed" in types
+        await connected.aclose()

@@ -605,3 +605,49 @@ class TestEventsWaitForTheCommit:
         assert events.at_commit[0] == 0
         assert "choice_result" in events.types
         assert "choice_made" in events.types
+
+
+class TestRoutesDeliverInStateChangeOrder:
+    """AW-338 review: a slow commit in one request cannot let a later request's
+    events reach the bus first."""
+
+    @pytest.mark.asyncio
+    async def test_a_host_move_on_cannot_overtake_a_ready_mark_paused_after_commit(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+        who: Who,
+        events: _Events,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        import threading
+        import time
+
+        await seed(db_factory, who, players=1)
+        entry = client.get(url(who, "/round")).json()["phase_entry"]
+        real_commit = AsyncSession.commit
+        state = {"first": True}
+
+        async def slow_first(self: AsyncSession) -> None:
+            await real_commit(self)
+            if state["first"]:
+                state["first"] = False
+                await asyncio.sleep(0.4)
+
+        monkeypatch.setattr(AsyncSession, "commit", slow_first)
+        entries: list[int] = []
+
+        async def note(event: Any) -> Any:
+            if event.event_type == "phase_changed":
+                entries.append(event.payload["phase_entry"])
+            return event
+
+        monkeypatch.setattr("api.routers.rounds._publisher", lambda _sid: note)
+
+        first = threading.Thread(target=lambda: ready(client, who, entry))
+        first.start()
+        time.sleep(0.15)
+        client.post(url(who, "/round/move-on"))
+        first.join()
+        assert len(entries) >= 2
+        assert entries == sorted(entries)
