@@ -12,12 +12,14 @@ from __future__ import annotations
 from collections.abc import AsyncIterator, Callable
 from datetime import datetime, timezone
 from typing import Any
-from unittest.mock import patch
+from unittest.mock import AsyncMock, patch
 from uuid import UUID
 
 import pytest
 import pytest_asyncio
+from pydantic import ValidationError
 from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from engine.arc.models import ArcDefinition
@@ -29,6 +31,7 @@ from engine.events.models import AudienceTarget
 from engine.mini_games.models import ClueVariant, DelayedClueFallback
 from engine.mini_games.resolver import ResolvedMiniGameSnapshot
 from engine.mini_games.runtime import (
+    DerivedOutputValidationError,
     MechanicRegistry,
     MiniGameRuntime,
     RunStateError,
@@ -52,7 +55,7 @@ from engine.tests.rounds_support import (
     reach_phase,
     round_phases,
     seat_session,
-    test_registry,
+    timer_race_registry,
     where,
 )
 
@@ -106,7 +109,7 @@ async def the_run(db: AsyncSession, session_id: UUID) -> MiniGameRun:
 
 def runtime(db: AsyncSession, now: float) -> MiniGameRuntime:
     return MiniGameRuntime(
-        db, SessionEventBus(), test_registry(), clock=lambda: at(now)
+        db, SessionEventBus(), timer_race_registry(), clock=lambda: at(now)
     )
 
 
@@ -474,7 +477,7 @@ class TestNothingToRun:
         seated, rec = await to_choices(db, registered, arc)
         with patch(
             "engine.session.mini_game_phase.build_registry",
-            (lambda: MechanicRegistry([])) if empty_registry else test_registry,
+            (lambda: MechanicRegistry([])) if empty_registry else timer_race_registry,
         ):
             await host_move_on(db, seated.session_id, at(ENTERED + 1), rec)
         assert await where(db, seated.session_id) == ("beat_one", "bridge", "running")
@@ -484,6 +487,143 @@ class TestNothingToRun:
         assert told[0].target_audience is AudienceTarget.host_only
         assert told[0].payload["code"] == code
         assert await runs(db, seated.session_id) == []
+
+
+class TestAGameThatFails:
+    """A game that breaks must end its phase with a recorded error, not hang
+    the round by failing the tick again every second."""
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("code", "target", "failure"),
+        [
+            (
+                "run_not_started",
+                "engine.session.mini_game_phase.MiniGameRuntime.start_run",
+                ValueError("a rule broke"),
+            ),
+            (
+                "invalid_definition",
+                "engine.session.mini_game_phase.MiniGameRuntime.create_run",
+                DerivedOutputValidationError("bad output"),
+            ),
+            (
+                "resolution_failed",
+                "engine.session.mini_game_phase.resolve_loaded_mini_game_snapshot",
+                RuntimeError("could not resolve"),
+            ),
+        ],
+    )
+    async def test_a_failure_starting_the_run_ends_the_phase_with_a_recorded_error(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        no_model_calls: None,
+        code: str,
+        target: str,
+        failure: Exception,
+    ) -> None:
+        seated, rec = await to_choices(db, registered, phased_arc())
+        with patch(target, AsyncMock(side_effect=failure)):
+            await host_move_on(db, seated.session_id, at(ENTERED + 1), rec)
+        assert await where(db, seated.session_id) == ("beat_one", "bridge", "running")
+        assert (await reasons(db, seated.session_id))[-1] == f"mini_game_error:{code}"
+        assert [e.payload["code"] for e in rec.of_type("mini_game_unavailable")] == [
+            code
+        ]
+        assert all(r.status == "cancelled" for r in await runs(db, seated.session_id))
+
+    @pytest.mark.asyncio
+    async def test_a_database_error_is_not_turned_into_a_game_error(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        no_model_calls: None,
+    ) -> None:
+        seated, rec = await to_choices(db, registered, phased_arc())
+        with (
+            patch(
+                "engine.session.mini_game_phase.resolve_loaded_mini_game_snapshot",
+                AsyncMock(side_effect=SQLAlchemyError("connection lost")),
+            ),
+            pytest.raises(SQLAlchemyError),
+        ):
+            await host_move_on(db, seated.session_id, at(ENTERED + 1), rec)
+
+    @pytest.mark.asyncio
+    async def test_a_failure_while_the_run_ends_cancels_it_and_ends_the_phase(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        no_model_calls: None,
+    ) -> None:
+        seated, rec = await in_mini_game(db, registered)
+        with patch.object(
+            MiniGameRuntime,
+            "check_timeout",
+            AsyncMock(side_effect=ValueError("scoring broke")),
+        ):
+            await tick(db, seated.session_id, at(ENTERED + 5), rec)
+        assert await where(db, seated.session_id) == ("beat_one", "bridge", "running")
+        assert (await reasons(db, seated.session_id))[
+            -1
+        ] == "mini_game_error:run_failed"
+        assert (await the_run(db, seated.session_id)).status == "cancelled"
+        assert [e.payload["code"] for e in rec.of_type("mini_game_unavailable")] == [
+            "run_failed"
+        ]
+
+    @pytest.mark.asyncio
+    async def test_a_running_phase_whose_run_has_gone_ends_with_a_recorded_error(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        no_model_calls: None,
+    ) -> None:
+        seated, rec = await in_mini_game(db, registered)
+        await db.delete(await the_run(db, seated.session_id))
+        await db.flush()
+        await tick(db, seated.session_id, at(ENTERED + 1), rec)
+        assert (await where(db, seated.session_id))[:2] == ("beat_one", "bridge")
+        assert (await reasons(db, seated.session_id))[
+            -1
+        ] == "mini_game_error:run_missing"
+
+
+class TestPhaseLengthAgainstGameLength:
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(
+        ("seconds", "warned"), [(MINI_GAME_DURATION, True), (10, True), (30, False)]
+    )
+    async def test_the_host_is_told_when_the_phase_is_not_longer_than_the_game(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        no_model_calls: None,
+        seconds: int,
+        warned: bool,
+    ) -> None:
+        phases = round_phases("beat_one")
+        phases[2]["seconds"] = seconds
+        arc = phased_arc(phases={"beat_one": phases})
+        _, rec = await in_mini_game(db, registered, arc=arc)
+        told = rec.of_type("mini_game_warning")
+        assert len(told) == (1 if warned else 0)
+        if warned:
+            assert told[0].target_audience is AudienceTarget.host_only
+            assert told[0].payload == {
+                "beat_id": "beat_one",
+                "code": "phase_not_longer_than_game",
+                "phase_seconds": seconds,
+                "game_seconds": MINI_GAME_DURATION,
+            }
+
+
+class TestArcFileBinding:
+    def test_a_binding_on_a_beat_with_no_mini_game_phase_is_refused(self) -> None:
+        without = [p for p in round_phases("beat_one") if p["kind"] != "mini_game"]
+        with pytest.raises(ValidationError, match="mini_game phase"):
+            phased_arc(phases={"beat_one": without})
 
 
 # --- the hook the stand-in used to be ----------------------------------------------

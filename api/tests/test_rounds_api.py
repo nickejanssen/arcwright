@@ -32,7 +32,7 @@ from engine.db import get_async_session
 from engine.db.testing import make_sqlite_session_factory
 from engine.session.phases import host_move_on, tick
 from engine.session.service import SessionService
-from engine.tests.rounds_support import phased_arc, test_registry
+from engine.tests.rounds_support import phased_arc, timer_race_registry
 
 LEDGER_CONTENT = "You read the ledger closely."
 
@@ -77,7 +77,9 @@ def client(
         "engine.session.choices.load_arc_definition",
     ):
         monkeypatch.setattr(target, lambda _id, _arc=arc: _arc)
-    monkeypatch.setattr("engine.session.mini_game_phase.build_registry", test_registry)
+    monkeypatch.setattr(
+        "engine.session.mini_game_phase.build_registry", timer_race_registry
+    )
 
     async def _override_db() -> AsyncIterator[AsyncSession]:
         async with db_factory() as session:

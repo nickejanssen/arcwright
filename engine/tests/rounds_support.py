@@ -54,7 +54,7 @@ TIMER_RACE_BINDING: dict[str, str] = {
 
 class TimerRacePlugin:
     """Test-only game rule: the first accepted submission completes the run.
-    It is registered only through ``test_registry``; no shipped game changes."""
+    It is registered only through ``timer_race_registry``; no shipped game changes."""
 
     mechanic_type = "timer-race"
 
@@ -77,7 +77,7 @@ class TimerRacePlugin:
         return {"submissions": len(submissions)}
 
 
-def test_registry() -> MechanicRegistry:
+def timer_race_registry() -> MechanicRegistry:
     return MechanicRegistry([TimerRacePlugin()])
 
 
@@ -87,7 +87,7 @@ async def play_mini_game(
     """One player submits in the round's running mini-game, which completes it,
     and the tick (not the player) moves the round on. Returns the finished run."""
     runtime = MiniGameRuntime(
-        db, SessionEventBus(), test_registry(), clock=lambda: at(now)
+        db, SessionEventBus(), timer_race_registry(), clock=lambda: at(now)
     )
     run = await runtime.get_active_run(seated.session_id)
     assert run is not None, "no mini-game run is going"
@@ -227,7 +227,7 @@ def fixture_arc_registered(arc: ArcDefinition) -> Iterator[None]:
         patch("engine.session.service.load_arc_definition", lambda _id: arc),
         patch("engine.session.phases.load_arc_definition", lambda _id: arc),
         patch("engine.session.choices.load_arc_definition", lambda _id: arc),
-        patch("engine.session.mini_game_phase.build_registry", test_registry),
+        patch("engine.session.mini_game_phase.build_registry", timer_race_registry),
     ):
         yield
 
@@ -242,7 +242,7 @@ def registered(monkeypatch: pytest.MonkeyPatch) -> Callable[[ArcDefinition], Non
         ):
             monkeypatch.setattr(target, lambda _id, _arc=arc: _arc)
         monkeypatch.setattr(
-            "engine.session.mini_game_phase.build_registry", test_registry
+            "engine.session.mini_game_phase.build_registry", timer_race_registry
         )
 
     return register

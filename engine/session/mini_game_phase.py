@@ -30,9 +30,10 @@ from typing import Any, cast
 from uuid import UUID
 
 from sqlalchemy import select
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from engine.arc.models import ArcDefinition
+from engine.arc.models import ArcDefinition, BeatDefinition, PhaseKind
 from engine.db.orm import MiniGameRun
 from engine.db.orm import Session as OrmSession
 from engine.events.bus import SessionEventBus
@@ -54,7 +55,7 @@ from engine.mini_games.runtime import (
     DerivedOutputValidationError,
     MechanicRegistry,
     MiniGameRuntime,
-    MiniGameRuntimeError,
+    RevisionConflictError,
     UnknownMechanicTypeError,
 )
 
@@ -66,6 +67,7 @@ ENDED = "mini_game_ended"
 SKIPPED = "mini_game_skipped"
 ERROR_PREFIX = "mini_game_error:"
 UNAVAILABLE_EVENT = "mini_game_unavailable"
+WARNING_EVENT = "mini_game_warning"
 
 TERMINAL_STATUSES = frozenset({"completed", "timed_out", "cancelled"})
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -158,13 +160,21 @@ async def _resolve(
             quality_tier=orm.quality_tier,
             content_rails=arc.content_rails,
         )
+    except SQLAlchemyError:
+        raise  # the transaction is in doubt; the tick must fail and retry whole
     except Exception as exc:
+        # Broad on purpose: resolving a generated game calls the model router,
+        # which can fail in many ways, and the round must not hang on any of them.
         logger.exception("mini-game %s could not be resolved", binding.game_id)
         raise _Unavailable("resolution_failed") from exc
 
 
 async def _tell_host(
-    publish: Publish, session_id: UUID, now: datetime, beat_id: str, code: str
+    publish: Publish,
+    session_id: UUID,
+    now: datetime,
+    event_type: str,
+    payload: dict[str, Any],
 ) -> None:
     if publish is None:
         return
@@ -173,11 +183,23 @@ async def _tell_host(
             session_id=session_id,
             timestamp=now,
             category=EventCategory.state_transition,
-            event_type=UNAVAILABLE_EVENT,
+            event_type=event_type,
             target_audience=AudienceTarget.host_only,
-            payload={"beat_id": beat_id, "code": code},
+            payload=payload,
             presentation_hints=PresentationHints(),
         )
+    )
+
+
+async def _tell_host_unavailable(
+    publish: Publish, session_id: UUID, now: datetime, beat_id: str, code: str
+) -> None:
+    await _tell_host(
+        publish,
+        session_id,
+        now,
+        UNAVAILABLE_EVENT,
+        {"beat_id": beat_id, "code": code},
     )
 
 
@@ -211,6 +233,9 @@ async def begin(
         )
         run = await runtime.create_run(orm.session_id, snapshot)
         await runtime.start_run(run.run_id)
+        await _warn_if_phase_is_short(
+            publish, orm.session_id, now, beat, snapshot.duration_seconds
+        )
         return None
     except _Unavailable as exc:
         code = exc.code
@@ -218,13 +243,43 @@ async def begin(
         code = "unknown_mechanic"
     except DerivedOutputValidationError:
         code = "invalid_definition"
-    except MiniGameRuntimeError:
+    except SQLAlchemyError:
+        raise
+    except Exception:
+        # A game's own rule raised while the run was being made or started. Left
+        # alone it would fail the tick again every second and hang the round.
         logger.exception("mini-game run for beat %s did not start", beat_id)
         code = "run_not_started"
         if run is not None:
             await runtime.cancel_run(run.run_id)
-    await _tell_host(publish, orm.session_id, now, beat_id, code)
+    await _tell_host_unavailable(publish, orm.session_id, now, beat_id, code)
     return f"{ERROR_PREFIX}{code}"
+
+
+async def _warn_if_phase_is_short(
+    publish: Publish,
+    session_id: UUID,
+    now: datetime,
+    beat: BeatDefinition,
+    game_seconds: int,
+) -> None:
+    """The phase's time limit is a hard cap. If it is not longer than the game,
+    the run is cancelled at the cap and never reaches its own end: tell the host."""
+    phase = next(p for p in beat.phases or [] if p.kind is PhaseKind.mini_game)
+    if phase.seconds > game_seconds:
+        return
+    await _tell_host(
+        publish,
+        session_id,
+        now,
+        WARNING_EVENT,
+        {
+            "beat_id": beat.beat_id,
+            "code": "phase_not_longer_than_game",
+            "phase_seconds": phase.seconds,
+            "game_seconds": game_seconds,
+        },
+    )
 
 
 # --- each tick -----------------------------------------------------------------------
@@ -247,7 +302,20 @@ async def advance(
         return f"{ERROR_PREFIX}run_missing"
     runtime = _runtime(db, now, publish)
     if run.status == "active":
-        await runtime.check_timeout(run.run_id)  # changes ``run`` in place
+        try:
+            await runtime.check_timeout(run.run_id)  # changes ``run`` in place
+        except (RevisionConflictError, SQLAlchemyError):
+            raise  # a concurrent writer or a database fault: fail and retry
+        except Exception:
+            # The game's own end-of-run work raised (scoring, a clue release).
+            # Left alone the tick would fail again every second and the phase's
+            # time limit would never apply.
+            logger.exception("mini-game run %s failed while ending", run.run_id)
+            await runtime.cancel_run(run.run_id)
+            await _tell_host_unavailable(
+                publish, session_id, now, beat_id, "run_failed"
+            )
+            return f"{ERROR_PREFIX}run_failed"
     if run.status in TERMINAL_STATUSES:
         return ENDED
     if phase_deadline is not None and now >= phase_deadline:
