@@ -40,7 +40,12 @@ Excluded documents do not require a rebuild; the roadmap ID map is read live.
 The fingerprint is a local drift check, not a tamper-proof attestation. It
 tracks an audited list of runtime modules and `package-lock.json`, but does not
 prove installed dependencies match the lock or automatically discover future
-transitive imports. A file can change after the final check. Maintain the
+transitive imports. During rebuild, a source can change after the fingerprint check but before the
+database transaction commits. This can leave an immediately stale index; the
+next search checks the current corpus against that index and refuses mismatches.
+This is accepted for a local, rebuildable cache, not as an atomic filesystem
+snapshot: a change after a search’s final check or a change-and-revert between
+checks may escape detection. Maintain the
 module list when indexing dependencies change and use source authority checks
 for consequential decisions. The committed golden questions are in
 `team-ai/evals/golden/`; the knowledge-base root and exclusions are in
