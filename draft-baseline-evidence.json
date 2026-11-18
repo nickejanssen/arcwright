@@ -1,0 +1,161 @@
+{
+  "timestamp_utc": "2026-11-18T00:31:06.680970+00:00",
+  "repo_sha": "c0a58ede6b5e01abec1ba1218439425777de044c",
+  "draft_commit": "60068f6",
+  "draft_sha256": "7fa011c28b78b1befed58634a4865418c42f366d43a64cf9d0ac61230ae583d3",
+  "index_sha256": "16b420d776f5e938cb23debaefb68b333633278fd7918869644fa0afeb24116e",
+  "limitations": [
+    "provisional non-blind convenience sample",
+    "expected primary file only, alternatives not adjudicated",
+    "scoped results use known namespace",
+    "no answer, citation, guard or refusal assessment",
+    "not independent proof of 80 percent",
+    "index freshness not verified against document contents"
+  ],
+  "results": [
+    {
+      "case": 1,
+      "namespace": "knowledge-graph",
+      "global": {
+        "rank": 4,
+        "elapsed_ms": 598
+      },
+      "scoped": {
+        "rank": 1,
+        "elapsed_ms": 824
+      }
+    },
+    {
+      "case": 2,
+      "namespace": "model-routing",
+      "global": {
+        "rank": 7,
+        "elapsed_ms": 493
+      },
+      "scoped": {
+        "rank": 1,
+        "elapsed_ms": 433
+      }
+    },
+    {
+      "case": 3,
+      "namespace": "model-routing",
+      "global": {
+        "rank": 1,
+        "elapsed_ms": 509
+      },
+      "scoped": {
+        "rank": 1,
+        "elapsed_ms": 436
+      }
+    },
+    {
+      "case": 4,
+      "namespace": "nightcap",
+      "global": {
+        "rank": 4,
+        "elapsed_ms": 514
+      },
+      "scoped": {
+        "rank": 4,
+        "elapsed_ms": 629
+      }
+    },
+    {
+      "case": 5,
+      "namespace": "product-roadmap",
+      "global": {
+        "rank": 1,
+        "elapsed_ms": 481
+      },
+      "scoped": {
+        "rank": 1,
+        "elapsed_ms": 411
+      }
+    },
+    {
+      "case": 6,
+      "namespace": "character-behavior",
+      "global": {
+        "rank": 1,
+        "elapsed_ms": 430
+      },
+      "scoped": {
+        "rank": 1,
+        "elapsed_ms": 460
+      }
+    },
+    {
+      "case": 7,
+      "namespace": "developer-api",
+      "global": {
+        "rank": null,
+        "elapsed_ms": 404
+      },
+      "scoped": {
+        "rank": 1,
+        "elapsed_ms": 497
+      }
+    },
+    {
+      "case": 8,
+      "namespace": "playtest-ops",
+      "global": {
+        "rank": 1,
+        "elapsed_ms": 421
+      },
+      "scoped": {
+        "rank": 1,
+        "elapsed_ms": 423
+      }
+    },
+    {
+      "case": 9,
+      "namespace": "daily-case",
+      "global": {
+        "rank": 1,
+        "elapsed_ms": 437
+      },
+      "scoped": {
+        "rank": 1,
+        "elapsed_ms": 498
+      }
+    },
+    {
+      "case": 10,
+      "namespace": "monster-rpg",
+      "global": {
+        "rank": 1,
+        "elapsed_ms": 420
+      },
+      "scoped": {
+        "rank": 1,
+        "elapsed_ms": 401
+      }
+    },
+    {
+      "case": 11,
+      "namespace": "arc-execution",
+      "global": {
+        "rank": 1,
+        "elapsed_ms": 410
+      },
+      "scoped": {
+        "rank": 1,
+        "elapsed_ms": 567
+      }
+    },
+    {
+      "case": 12,
+      "namespace": "session-runtime",
+      "global": {
+        "rank": 1,
+        "elapsed_ms": 561
+      },
+      "scoped": {
+        "rank": 1,
+        "elapsed_ms": 494
+      }
+    }
+  ]
+}
