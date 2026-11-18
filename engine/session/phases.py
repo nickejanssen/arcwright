@@ -56,11 +56,52 @@ PHASE_CHANGED_EVENT = "phase_changed"
 PHASE_LINE_EVENT = "phase_line"
 
 Publish = Callable[[ContentEvent], Awaitable[Any]] | None
+"""Where engine functions send events. They publish as they go, inside the
+caller's open transaction, so a caller that commits afterwards must pass an
+``Outbox`` and flush it after the commit (AW-338). A plain publisher gets each
+event at once, which is only safe where nothing can fail after the call."""
 Status = Literal["running", "paused", "ended"]
 
 _READY_PHASES = frozenset({PhaseKind.scene, PhaseKind.choices, PhaseKind.bridge})
 _PUBLIC_AUDIENCES = frozenset({AudienceTarget.all, AudienceTarget.shared_display})
 _MAX_STEPS = 8
+
+
+class Outbox:
+    """Holds events until the caller's transaction has committed.
+
+    Pass it as ``publish``; call ``flush`` with the real publisher once the
+    commit succeeds, or ``discard`` after a rollback. A rolled-back change then
+    tells nobody anything, and the next tick sends its lines exactly once. A
+    publisher that fails at flush time is logged and the rest still go out: the
+    state is saved, and screens recover through ``round_view``.
+    """
+
+    def __init__(self) -> None:
+        self._held: list[ContentEvent] = []
+
+    async def __call__(self, event: ContentEvent) -> ContentEvent:
+        self._held.append(event)
+        return event
+
+    def __len__(self) -> int:
+        return len(self._held)
+
+    def discard(self) -> None:
+        self._held.clear()
+
+    async def flush(self, publish: Publish) -> None:
+        held, self._held = self._held, []
+        if publish is None:
+            return
+        for event in held:
+            try:
+                await publish(event)
+            except Exception:
+                logger.exception(
+                    "publishing %s after commit failed; state is saved",
+                    event.event_type,
+                )
 
 
 class RoundError(Exception):
@@ -764,7 +805,8 @@ async def tick_active_sessions(
 ) -> int:
     """One pass of the API's once-a-second loop: tick every active session whose
     arc has phases, each in its own transaction. Returns how many were ticked.
-    One session failing is logged and does not stop the others."""
+    One session failing is logged and does not stop the others. Events are held
+    until that session's commit succeeds, then sent."""
     async with factory() as db:
         result = await db.execute(
             select(OrmSession.session_id, OrmSession.arc_id).where(
@@ -777,13 +819,17 @@ async def tick_active_sessions(
         arc = load_arc_definition(arc_id)
         if arc is None or not arc.is_phased:
             continue
+        outbox = Outbox()
         async with factory() as db:
             try:
-                await tick(db, session_id, now, publisher_for(session_id))
+                publisher = publisher_for(session_id)
+                await tick(db, session_id, now, outbox)
                 await db.commit()
             except Exception:
                 await db.rollback()
+                outbox.discard()
                 logger.exception("tick failed for session %s", session_id)
                 continue
+        await outbox.flush(publisher)
         ticked += 1
     return ticked
