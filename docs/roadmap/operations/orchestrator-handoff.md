@@ -16,7 +16,7 @@ supersedes: []
 
 The prompt the founder gives a fresh orchestrator session. One orchestrator session runs a batch of work, then hands over with this file updated, so no session runs long enough to lose detail. Update the "In flight" and "Next build order" sections at every handoff; git keeps the earlier versions.
 
-Last updated: 2026-11-18 03:00 UTC, by the orchestrator session of 14 to 18 November 2026, after AW-303 and AW-304 merged.
+Last updated: 2026-11-18 14:40 UTC, by the orchestrator session of 18 November 2026, after AW-338, AW-328 and the D-133 record merged.
 
 ## The prompt
 
@@ -53,15 +53,19 @@ Also built and merged on 18 November 2026:
 - AW-304 (#357, closed): play records game-agnostic, pull request #412 (`1ae7485`). Follow-up AW-340 (#414): give the game-worded saved event names generic names.
 - AW-303 (#356): a beat's mini-game starts, times out, pauses and returns to the story, pull request #413 (`8ed8e82`). Merged after #412; #413 was rebased onto it and adapted #412's play-record test to the real bound run. Issue #356 stays open only for acceptance criterion 7, one round seen on a real TV and two phones, done with the walkthrough (AW-301).
 - On #413, `verify` ran 1299 tests and passed. A Reviewer session passed each pull request with no blocker.
+- AW-338 (#399): four round-rule fixes, pull request #419 (`21afcf3`). Events are sent only after the save (`Outbox`, `delivery_lock` and a retry queue in `engine/session/phases.py`). Follow-up AW-341 (#418) for the session, character and mini-game routes.
+- AW-328 (#390): a mini-game's top-ranked player gets one extra investigation, pull request #417 (`8ea4bc1`). Every finished run saves a `standing`. No reward on a full tie (D-127). One extra validator in `engine/arc/models.py`, accepted by the founder on #390.
+- D-133, spec 0095 Q1: host controls live in a Start menu on every phone, pull request #420 (`2c2c26f`). Spec 0095 is still a draft.
+- Merged in the order #419, #417, #420, each updated from main and rechecked; the three combined ran 1363 tests (1 skipped, needs Postgres) before any merge. Found: SQLite test flake AW-342 (#421).
 
-In flight at handoff (18 November 2026, main `8ed8e82` plus this docs pull request): nothing. No pull request is open and no build session is working.
+In flight at handoff (18 November 2026, main `2c2c26f` plus this docs pull request): nothing. No build session is working.
 
 Codex code review stopped running on 18 November: the Codex account is out of review credits. Until the founder decides otherwise, a read-only Reviewer session is the only review before merge.
 
 ## Next build order
 
-1. Now: AW-328 (#390, mini-game winner gets one extra investigation, D-126), a plan session that stops for founder approval. AW-338 (#399, four round-rule fixes) may plan beside it, but builds after AW-328 unless the two plans name no shared file (both are likely to touch `engine/session/phases.py` or `choices.py`).
-2. Then AW-326 (#388, Last Call, lock, theory check, winner; needs AW-328), then AW-327 (#389, closing sequence and a full game headless).
+1. Now: AW-326 (#388, Last Call, lock, theory check, winner), unblocked; a plan session that stops for founder approval. AW-342 (#421, SQLite test flake, small-fix lane) may run beside it; it touches only `engine/db/testing.py` and a new test.
+2. Then AW-327 (#389, closing sequence and a full game headless). AW-341 (#418) after AW-327, or sooner if a screen task needs it.
 3. AW-340 (#414) after session 1, unless the founder says otherwise.
 4. AW-306 (story tool importer), then AW-308 (session 1 preflight).
 5. Screen tasks AW-329 to AW-334 only after the founder approves spec 0095; create their task files and issues at that point.
@@ -70,13 +74,16 @@ Codex code review stopped running on 18 November: the Codex account is out of re
 ## Waiting on the founder (ask one at a time, with a recommendation)
 
 - Approve each build plan above as it arrives.
-- Spec 0095: answer Q1 to Q5, then "approve 0095" on issue #355.
+- Spec 0095: Q1 answered (D-133). Answer Q2 to Q5, then "approve 0095" on issue #355.
+- Whether a lost reward message is acceptable for session 1 (HANDOVER, Known issues). Recommendation: accept as cosmetic.
 - AW-301 (#354): walk the current build on a TV and two phones.
 - The session on branch `claude/lido-case-and-spec-followups` has unpushed work: ask the founder to tell it to commit, push and open a pull request. AW-305 (first case) waits on it.
 - Send the case-writing session the message under "Owner actions" in spec 0093.
 - AW-323: play the two closest competitor games.
 
 ## How to run the work
+
+- Build sessions refuse an approval relayed by the orchestrator, correctly. Ask the founder to approve in the build session itself, or to have his approval posted on the task's issue, and say which in the question.
 
 - Start each build or plan as its own session on Sonnet, in its own worktree, with: the task file, the spec part, the files it owns, "write the plan and stop for approval", and "wait for CI `verify` before reporting done". At most two build sessions at once.
 - Before each merge: read every check, then run a read-only Reviewer session (`/review-pr`, Sonnet) (Codex review is out of credits; ask it to re-review fix commits only if the founder restores it). Merge with `gh pr merge N --squash --match-head-commit <full sha>`, after the founder says so.
