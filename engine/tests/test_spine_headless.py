@@ -14,7 +14,7 @@ import asyncio
 import time
 from collections.abc import AsyncIterator, Callable
 from datetime import datetime
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import pytest
 import pytest_asyncio
@@ -29,7 +29,9 @@ from engine.events.bus import SessionEventBus
 from engine.events.models import AudienceTarget, ContentEvent, EventCategory
 from engine.session.choices import choose, read_menu, remaining_budget
 from engine.session.phases import (
+    MAX_PUBLISH_ATTEMPTS,
     PHASE_EVENT,
+    Outbox,
     Publish,
     content_event,
     current_phase,
@@ -554,10 +556,42 @@ class TestDeliveryKeepsStateChangeOrder:
 
         end = at(100 + MINI_GAME_SECONDS + 1)
         await tick_active_sessions(factory, end, lambda _sid: flaky)
-        assert bus.replay_since(0) == []  # nothing jumped the failed event
+        # only what came before the failing event; nothing jumped ahead of it
+        assert [e.event_type for e in bus.replay_since(0)] == ["mini_game_finalized"]
         await tick_active_sessions(factory, end, lambda _sid: flaky)
         types = [e.event_type for e in bus.replay_since(0)]
-        assert types[0] == "reward_like"
+        assert types[:2] == ["mini_game_finalized", "reward_like"]
         assert types.count("reward_like") == 1
-        assert "phase_changed" in types
+        assert types.index("phase_changed") > types.index("reward_like")
         await connected.aclose()
+
+    @pytest.mark.asyncio
+    async def test_an_event_that_never_sends_is_dropped_so_it_cannot_block_the_session(
+        self, caplog: pytest.LogCaptureFixture
+    ) -> None:
+        session_id = uuid4()
+        outbox = Outbox(session_id)
+        for kind in ("bad", "good"):
+            await outbox(
+                content_event(
+                    session_id,
+                    at(0),
+                    category=EventCategory.state_transition,
+                    event_type=kind,
+                    audience=AudienceTarget.all,
+                    payload={},
+                )
+            )
+        sent: list[str] = []
+
+        async def picky(event: ContentEvent) -> ContentEvent:
+            if event.event_type == "bad":
+                raise RuntimeError("never works")
+            sent.append(event.event_type)
+            return event
+
+        for _ in range(MAX_PUBLISH_ATTEMPTS):
+            assert sent == []
+            await outbox.flush(picky)
+        assert sent == ["good"]
+        assert any("dropping bad" in r.getMessage() for r in caplog.records)
