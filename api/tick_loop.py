@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import time
 from collections.abc import Awaitable, Callable
 from datetime import datetime, timezone
 from uuid import UUID
@@ -22,6 +23,8 @@ from engine.session.phases import tick_active_sessions
 logger = logging.getLogger(__name__)
 
 TICK_SECONDS = 1.0
+LOG_WINDOW_SECONDS = 30.0
+_monotonic = time.monotonic
 
 
 def _publisher_for(
