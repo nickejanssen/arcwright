@@ -3053,6 +3053,23 @@
         "issue_number": 421,
         "url": "https://github.com/nickejanssen/arcwright/issues/421"
       }
+    },
+    {
+      "id": "AW-343",
+      "title": "Let A Phone Read Back Its Mini-Game Rewards",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "S",
+      "depends_on": [
+        "AW-328",
+        "AW-338"
+      ],
+      "path": "docs/roadmap/tasks/AW-343-let-a-phone-read-back-its-mini-game-rewards.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 423,
+        "url": "https://github.com/nickejanssen/arcwright/issues/423"
+      }
     }
   ],
   "superseded_sources": [
