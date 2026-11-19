@@ -48,10 +48,10 @@ After the last round, start a countdown, let each player privately build and loc
 
 ## Acceptance Criteria
 
-- [ ] The "Part G", "Part H" and "Part I" acceptance criteria of spec 0094 pass.
-- [ ] No table change, no new dependency, no model call.
-- [ ] Nothing under `engine/scoring/`, `sdk/`, `dashboard/` or `nightcap-web/` is changed.
-- [ ] No murder-mystery word is added to `engine/`.
+- [x] The "Part G", "Part H" and "Part I" acceptance criteria of spec 0094 pass (PR #446; the standing on each run is AW-328's, merged). The row lock the save and lock routes take has not run on Postgres, the known gap that AW-301 closes.
+- [x] No table change, no new dependency, no model call.
+- [x] Nothing under `engine/scoring/`, `sdk/`, `dashboard/` or `nightcap-web/` is changed.
+- [x] No murder-mystery word is added to `engine/`.
 
 ## Tests/Verification
 

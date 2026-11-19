@@ -450,3 +450,47 @@ class HeldConceptResponse(BaseModel):
 
 class HoldingsResponse(BaseModel):
     concepts: list[HeldConceptResponse]
+
+
+class TheoryOptionResponse(BaseModel):
+    value: str
+    label: str
+    text: Optional[str] = None
+
+
+class TheorySlotResponse(BaseModel):
+    slot_id: str
+    label: str
+    kind: Literal["cast", "concept"]
+    options: list[TheoryOptionResponse]
+
+
+class AccountPartResponse(BaseModel):
+    text: str
+    slot_id: Optional[str] = None
+    """None for written text; the slot's ID for a blank."""
+
+
+class TheoryResponse(BaseModel):
+    """A player's own saved theory. Carries no verdict."""
+
+    state: Literal["none", "drafting", "locked", "no_theory"]
+    answers: dict[str, str]
+    proof: Optional[str] = None
+    revision: int
+
+
+class TheoryFormResponse(BaseModel):
+    open: bool
+    phase_entry: Optional[int] = None
+    deadline_at: Optional[datetime] = None
+    seconds_left: Optional[float] = None
+    slots: list[TheorySlotResponse]
+    account: list[AccountPartResponse]
+    proof_options: list[TheoryOptionResponse]
+    theory: TheoryResponse
+
+
+class TheoryDraftRequest(BaseModel):
+    answers: dict[str, str] = Field(default_factory=dict, max_length=64)
+    proof: Optional[str] = Field(default=None, max_length=128)

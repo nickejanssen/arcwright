@@ -690,7 +690,8 @@
         "AW-328",
         "AW-337",
         "AW-348",
-        "AW-349"
+        "AW-349",
+        "AW-347"
       ],
       "github": {
         "issue_number": 373,
@@ -3126,6 +3127,22 @@
       }
     },
     {
+      "id": "AW-347",
+      "title": "Send Mini-Game Package Screens The State They Read, Safely Per Audience",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-329"
+      ],
+      "path": "docs/roadmap/tasks/AW-347-send-mini-game-renderers-the-state-they-read.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 440,
+        "url": "https://github.com/nickejanssen/arcwright/issues/440"
+      }
+    },
+    {
       "id": "AW-329",
       "title": "Bring The Mini-Game Kit, The Package Loader And The Test Setup Into The Dashboard",
       "milestone": "M7",
@@ -3232,7 +3249,8 @@
       "epic": "M7-B",
       "size": "M",
       "depends_on": [
-        "AW-322"
+        "AW-329",
+        "AW-347"
       ],
       "path": "docs/roadmap/tasks/AW-348-play-a-minigame-live-with-nightcap-offline.md",
       "epic_id": "M7-B",
