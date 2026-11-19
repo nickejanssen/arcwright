@@ -494,3 +494,83 @@ class TheoryFormResponse(BaseModel):
 class TheoryDraftRequest(BaseModel):
     answers: dict[str, str] = Field(default_factory=dict, max_length=64)
     proof: Optional[str] = Field(default=None, max_length=128)
+
+
+class RevealAnswerResponse(BaseModel):
+    value: str
+    label: str
+
+
+class RevealPlayerResponse(BaseModel):
+    participant_id: str
+    answer: Optional[RevealAnswerResponse] = None
+    """None when the player had no theory."""
+
+
+class RevealResponse(BaseModel):
+    """The one answer each player gave in the slot the case shows first, and
+    nothing else from any theory. No sign of right or wrong."""
+
+    slot_id: str
+    slot_label: str
+    players: list[RevealPlayerResponse]
+
+
+class ProofResponse(BaseModel):
+    concept_id: str
+    label: str
+    text: str
+
+
+class WinnerResponse(BaseModel):
+    participant_id: str
+    proof: Optional[ProofResponse] = None
+
+
+class ResultPlayerResponse(BaseModel):
+    participant_id: str
+    solved: bool
+
+
+class ResultResponse(BaseModel):
+    """Who won (nobody, when ``winners`` is empty) and which rule decided it."""
+
+    decided_by: Literal[
+        "no_solver", "only_solver", "mini_game_wins", "mini_game_placings", "shared"
+    ]
+    winners: list[WinnerResponse]
+    players: list[ResultPlayerResponse]
+
+
+class RecapLineResponse(BaseModel):
+    participant_id: str
+    text: str
+    hints: dict[str, Any] = Field(default_factory=dict)
+
+
+class RecapResponse(BaseModel):
+    lines: list[RecapLineResponse]
+
+
+class ClosingResponse(BaseModel):
+    """What the closing sequence has reached. A part is null until its phase
+    has begun; before the result phase there is no right or wrong in it."""
+
+    reveal: Optional[RevealResponse] = None
+    result: Optional[ResultResponse] = None
+    recap: Optional[RecapResponse] = None
+
+
+class PrivateSlotResponse(BaseModel):
+    slot_id: str
+    label: str
+    right: bool
+
+
+class PrivateResultResponse(BaseModel):
+    """A player's own result. Reaches only that player."""
+
+    participant_id: str
+    state: Literal["locked", "no_theory"]
+    solved: bool
+    slots: list[PrivateSlotResponse]

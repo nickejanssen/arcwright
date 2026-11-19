@@ -292,3 +292,23 @@ Recorded from the founder's approval of the AW-326 plan in session, with all fou
 4. **AW-326 stops before the `result` phase.** It builds the check, the winner rule and `resolve_endgame` (`engine/session/endgame.py`), which reads saved rows, saves nothing and sends nothing, and refuses while a commit phase is open. No result event or route exists until AW-327, which also owns the join-to-recap headless proof.
 
 Also settled: the check reads only each slot's accepted values and ignores an answer's `needs`. The shared screen and the host are told only who has locked and how many (`theory_lock_progress`); other players' phones are told nothing. The public round view's `ready_count` is the locked count during a commit phase.
+
+---
+
+# Plan Answers Approved 2026-11-19: AW-327 (issue #389)
+
+Recorded from the founder's approval of the AW-327 plan in the build session ("Approve plan"), with the four recommended answers. The plan is on issue #389.
+
+1. **The recap lines live in the arc file,** on the `recap` phase (`recap.lines`, each with a condition on one measure, and `recap.fallbacks`, at least one). The founder can edit them without being spoiled. A condition names only one of the ten measures the engine counts, so no line can claim what a player thought. The case file holds no recap line.
+2. **The fallback.** The content supplies one or more fallback lines. A player no line fits takes an unused fallback; a fallback repeats only when every fallback has been given. This resolves the clash between "no two players get the same line" and "a player matching no condition gets the fallback".
+3. **One public read, one engine function.** `GET /sessions/{id}/closing` (no sign-in, like `/round`) returns the reveal, the public result and the recap, each only once its phase has begun, and no right or wrong before the `result` phase. All its logic is `closing_view` in `engine/session/closing.py`; the route calls it. The TV's room view (AW-331, spec 0095 Part M) must call the same function, not re-implement it. The private part is `GET /sessions/{id}/me/result`, refused until the `result` phase has begun.
+4. **Ten sample lines.** The founder is asked one open question about the voice first; no sample line is posted before he answers. His review is recorded on #389 before the task closes. The pull request writes no real recap line; its fixture lines are made up.
+
+Also settled in the plan, not in the spec above:
+
+- **The ending is three beats,** because a beat lists its phases in a fixed order, each at most once: one beat for Last Call and the reveal (`commit`, `reveal`), one for the written truth (`scene`), one for the verdict (`result`, `recap`). `PhaseDefinition.source: "case_closing"` on that scene takes its lines from the case's `closing`, so the arc file never holds the truth.
+- **The three result branches** are the three of Part I: one solver wins; several solve and a tie-break or a shared win decides; nobody solves and nobody wins. The named proof runs each at 2 and at 4 players.
+- **Neutral order.** There is no seat-order column, so players are listed in participant-ID order, the same order `resolve_endgame` uses. It carries no meaning. Staging and order for the room stay with Nightcap (D-135).
+- **A recap line tied to "slots right"** would tell the room that player's near miss, while the public result says only solved or not. The measure stays in the engine because this spec lists it; whether any line uses it is content, decided in AW-305 and the sample review.
+- **Player counts** run 1 to 8, with 2 to 4 most common (the founder, 2026-11-19). Nothing in the closing assumes 4 as a ceiling; the closing is tested at 1, 3 and 5 players as well as the 2 and 4 the proof requires.
+- No table, migration, dependency, prompt or model call. Saved: two `decisions` row types (`endgame_result`, `recap_lines`). Sent: four event types (`theory_reveal`, `endgame_result`, `endgame_result_private`, `recap_lines`).

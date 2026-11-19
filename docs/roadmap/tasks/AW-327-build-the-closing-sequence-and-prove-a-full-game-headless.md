@@ -49,8 +49,8 @@ After every theory is locked, show who each player accused, then the written tru
 
 ## Acceptance Criteria
 
-- [ ] The "Part J" and "Whole game" acceptance criteria of spec 0094 pass.
-- [ ] No model call writes or chooses any line.
+- [x] The "Part J" and "Whole game" acceptance criteria of spec 0094 pass. Built under the plan approved on issue #389 (recorded in spec 0094, "Plan Answers Approved 2026-11-19: AW-327").
+- [x] No model call writes or chooses any line. The named proof runs with a model router that fails if called.
 - [ ] The founder's review of ten sample lines is recorded on the issue.
 
 ## Tests/Verification

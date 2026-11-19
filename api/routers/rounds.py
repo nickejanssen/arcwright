@@ -14,6 +14,8 @@ Endpoints (base path /v1/sessions/{session_id}):
   GET  /me/theory        player JWT       This player's theory form and saved draft
   PUT  /me/theory        player JWT       Save (replace) this player's draft
   POST /me/theory/lock   player JWT       Lock the saved draft
+  GET  /closing          optional JWT     Reveal, result and recap, as far as reached
+  GET  /me/result        player JWT       This player's own part of the result
 """
 
 from __future__ import annotations
@@ -32,11 +34,13 @@ from api.schemas import (
     AccountPartResponse,
     ChoiceRequest,
     ChoiceResponse,
+    ClosingResponse,
     HeldConceptResponse,
     HoldingsResponse,
     MenuItemResponse,
     MenuResponse,
     PhaseStateResponse,
+    PrivateResultResponse,
     ReadyRequest,
     RewardGrantResponse,
     RoundStateResponse,
@@ -48,7 +52,7 @@ from api.schemas import (
 )
 from engine.db import get_async_session
 from engine.events.models import ContentEvent
-from engine.session import choices, commit_phase, phases
+from engine.session import choices, closing, commit_phase, phases
 from engine.session.phases import RoundError
 
 router = APIRouter(prefix="/sessions", tags=["rounds"])
@@ -382,3 +386,50 @@ async def lock_theory(
             raise _refuse(error)
         await _commit_then_tell(db, outbox, session_id)
     return _theory_response(theory)
+
+
+@router.get("/{session_id}/closing", response_model=ClosingResponse)
+async def get_closing(
+    session_id: UUID,
+    claims: JwtClaims | None = Depends(optional_player_or_host_jwt),
+    db: AsyncSession = Depends(get_async_session),
+) -> ClosingResponse:
+    """The reveal, the public result and the recap, each once its phase has
+    begun, so a screen can rebuild after a reconnect. Public facts only (a
+    display surface has no token); nothing private and, before the result
+    phase, no right or wrong."""
+    if claims is not None:
+        _require_session_match(session_id, claims)
+    try:
+        view = await closing.closing_view(db, session_id)
+    except RoundError as error:
+        raise _refuse(error)
+    return ClosingResponse(
+        reveal=view.reveal,  # type: ignore[arg-type]
+        result=view.result,  # type: ignore[arg-type]
+        recap=view.recap,  # type: ignore[arg-type]
+    )
+
+
+@router.get("/{session_id}/me/result", response_model=PrivateResultResponse)
+async def get_my_result(
+    session_id: UUID,
+    who: ParticipantContext = Depends(require_valid_participant),
+    db: AsyncSession = Depends(get_async_session),
+) -> PrivateResultResponse:
+    """This player's own slots, right and wrong. Refused until the result phase
+    has begun; never another player's."""
+    assert who.claims.player_id is not None
+    try:
+        view = await closing.closing_view(db, session_id, who.claims.player_id)
+    except RoundError as error:
+        raise _refuse(error)
+    if view.private is None:
+        raise HTTPException(
+            status_code=409,
+            detail={
+                "code": "result_not_ready",
+                "message": "the result has not been worked out",
+            },
+        )
+    return PrivateResultResponse(**view.private)
