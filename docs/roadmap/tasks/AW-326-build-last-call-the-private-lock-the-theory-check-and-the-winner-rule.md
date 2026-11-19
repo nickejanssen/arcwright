@@ -32,6 +32,7 @@ After the last round, start a countdown, let each player privately build and loc
 
 ## Technical Scope
 
+- **D-138 (2026-11-19):** the case format gains a short account text around the solution slots (a generic field in `engine/case/authored/`), and the theory form gains one proof field holding a concept the player holds. The proof is saved and locked with the draft; it is not judged and does not affect the winner. Amends spec 0094 Part G.
 - A `commit` phase on the clock from spec 0093: private drafts, a final lock, and what happens to a player who has not locked when time runs out.
 - A pure function that judges each locked theory against the case file's `solution`.
 - The winner rule: one solver wins; several are split by mini-game results; none means nobody wins.

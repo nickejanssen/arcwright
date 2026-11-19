@@ -30,6 +30,7 @@ The first case is the most likely thing to move the session 1 date, and the foun
 
 ## Technical Scope
 
+- **D-138 (2026-11-19):** write a short account of what happened with one blank per solution slot, in the slots' order, as the text the player fills at Last Call. Keep it in the spoiler file with the solution.
 - The case exists in the authored case format from the engine-spine spec.
 - It passes the case-graph invariants named in spec 0092.
 - A reviewer session that did not write the case reports pass or fail per invariant, using counts only.

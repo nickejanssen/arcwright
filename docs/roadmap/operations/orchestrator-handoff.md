@@ -42,8 +42,8 @@ You run in the Claude desktop app on the founder's Windows PC, in or beside the 
    - 0092 rebuild plan, thin version approved (D-123);
    - 0093 engine spine, approved (D-124);
    - 0094 endgame, approved (D-125);
-   - 0095 screens, DRAFT and not approved; Q1 to Q4 answered (D-133 to D-137).
-7. Decisions D-112 to D-137: https://github.com/nickejanssen/arcwright/blob/main/docs/product/decisions-log.csv
+   - 0095 screens, DRAFT and not approved; all five questions answered (D-133 to D-138); waiting for "approve 0095".
+7. Decisions D-112 to D-138: https://github.com/nickejanssen/arcwright/blob/main/docs/product/decisions-log.csv
 8. Where the reset came from: https://github.com/nickejanssen/arcwright/blob/main/docs/product/2026-11-15-reset-audit.md
 
 Then, in the main checkout:
@@ -75,7 +75,7 @@ Critical path to the founder TV run, with sizes from the task files. The build-d
 | Session readiness | none | AW-306 importer (cut-able), AW-308 preflight, AW-301 walkthrough | 2 to 3 |
 
 Progress: 6 of about 23 critical-path tasks are merged, roughly 25 percent (inferred). Remaining build work is about 23 to 31 build days against 16 calendar days to 5 December. Even with two build sessions at once, that does not fit unless the core variant stays lean and screens and mini-games run beside the engine work. **The 12 or 13 December date is unlikely; 19 or 20 December is the realistic plan unless scope moves** (inferred). Tell the founder this plainly and early. The three biggest risks, in order:
-1. **Spec 0095 is not approved, so no screen task can start.** About half the remaining work waits on it, and the founder has Q5 open.
+1. **Spec 0095 is not approved, so no screen task can start.** About half the remaining work waits on it, and all five questions are answered: it waits only for the founder's "approve 0095".
 2. **The first case's state is unknown here.** Branch `claude/lido-case-and-spec-followups` had unpushed work on 15 November. AW-305 waits on it.
 3. **The mini-games are now a design-and-build job, not a tweak** (D-136): distinct mechanics designed for 2 to 4 players (AW-337, size L), several per round (AW-344) and solo mini-games (AW-345), all wanted in session 1 as A/B variants (D-137, AW-346). This adds an estimated 6 to 10 build days (inferred). The core variant gates the dates; extra variants that are not ready are simply not played.
 
@@ -100,7 +100,7 @@ Progress: 6 of about 23 critical-path tasks are merged, roughly 25 percent (infe
 ## Waiting on the founder (ask one at a time, with a recommendation)
 
 1. AW-343: the founder types "approved" in its session (https://claude.ai/code/session_01BpvnxtVGat2r3kNPnRf18C) if he has not yet; then merge its pull request when it is reviewed and green.
-2. Spec 0095: answer Q5, then reply "approve 0095" on issue #355. Most urgent, because the screens are half the remaining work.
+2. Spec 0095: all questions answered; the founder replies "approve 0095" on issue #355. Most urgent, because the screens are half the remaining work.
 3. The session on branch `claude/lido-case-and-spec-followups`: ask the founder to tell it to commit, push and open a pull request. AW-305 waits on it.
 4. Send the case-writing session the message under "Owner actions" in spec 0093.
 5. AW-301 (#354): walk the current build on a TV and two phones. Include the Postgres choice-lock check.
@@ -194,4 +194,4 @@ Conclusion first. Plain words, no invented shorthand, no em dashes. Label claims
 2. Report AW-343's state (building, pull request open, reviewed, merged), checked on #423 and GitHub rather than assumed.
 3. Propose starting the AW-326 plan session, with AW-342 beside it.
 4. Give the progress block.
-5. Ask the founder the one decision he needs to make next. Unless something more urgent has appeared, that is spec 0095 Q5 (the theory form: fill the case's slots in order, or arrange freely), then "approve 0095".
+5. Ask the founder the one decision he needs to make next. Unless something more urgent has appeared, that is "approve 0095" (all five questions are answered; it unblocks the screen tasks).

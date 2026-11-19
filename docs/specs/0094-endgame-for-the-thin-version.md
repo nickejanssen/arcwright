@@ -268,3 +268,14 @@ Recorded by the Scribe from the founder's message in session on 2026-11-16. Deci
 **Open to change (D-127).** The founder approved this as the current best plan, not as a fixed contract. A build session that finds a better way says so on its task's issue with a recommendation, and the change is recorded here before it is built.
 
 **Changed with this approval.** The standing on each finished mini-game run (Part I) is built by AW-328 instead of AW-326. The mini-game reward (spec 0093, Q1, answered the same day as D-126) needs the standing first. What Part I says is unchanged; only the task that builds that one field moved.
+
+---
+
+# Change Approved 2026-11-19: The Theory Reads As An Account, With One Proof (D-138)
+
+Recorded from the founder's answer in session on 19 November 2026 (spec 0095 Q5). The question's chosen option said: "Spec 0094's Verdict change is approved by this answer."
+
+- **Part G.** The case file gives the solution slots an account text: a short sentence written by the case's author, with one blank per slot, in the slots' order. The form shows that text. The player also chooses one held concept as their **proof**; it is saved with the draft and locked with it. A lock still needs every slot filled; whether the proof is required to lock is settled in AW-326's plan.
+- **Part H and Part I are unchanged.** The proof is not judged and does not change who solved it or who wins.
+- **Part J, `result`.** The public part adds the winner's proof (or each co-winner's). Nobody else's proof is shown publicly. The private part is unchanged.
+- No table change, no model call. Build tasks: AW-326 (account text, proof field), AW-327 (proof at the Verdict).

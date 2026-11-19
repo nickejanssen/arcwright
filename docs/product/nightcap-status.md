@@ -58,7 +58,7 @@ Planning assumption: 10 to 15 founder hours a week, which depends on AI usage li
 - Six investigations per player across the game. Review is free.
 - A simple notebook: a list of what you personally found.
 - Last Call with a countdown and a private lock.
-- Final theory: pick the culprit, then arrange a short causal chain from what you hold.
+- Final theory: fill a short written account of what happened with pieces you found yourself, and pin one proof; the winner's proof is shown on the TV at the Verdict (D-138).
 - The accused reveal, the Truth, the Verdict, and a short Postmortem.
 - The host's lines are written by a person and shown as text.
 - A debrief survey, and a record of what happened in play (D-115).
