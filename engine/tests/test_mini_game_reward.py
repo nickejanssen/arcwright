@@ -478,25 +478,81 @@ class TestReadBack:
             await engine.dispose()
 
     @pytest.mark.asyncio
-    async def test_a_reward_whose_message_never_went_is_still_read(
+    @pytest.mark.parametrize("delivery", ["no_publisher", "queued_never_delivered"])
+    async def test_a_committed_reward_whose_message_never_arrived_is_read_fresh(
+        self,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+        no_model_calls: None,
+        delivery: str,
+    ) -> None:
+        """The grant is committed; delivery (the outbox's job, after the commit)
+        never reaches the phone. A fresh session still reads the reward."""
+        engine, factory = await make_sqlite_session_factory()
+        queued: list[Any] = []
+
+        async def queue_only(event: Any) -> Any:
+            queued.append(event)
+            return event
+
+        try:
+            async with factory() as first:
+                seated, _ = await in_mini_game(
+                    first, registered, monkeypatch, reward_arc(1)
+                )
+                await place_players(first, seated, [1, 2, 3])
+                publish = None if delivery == "no_publisher" else queue_only
+                await tick(first, seated.session_id, at(AFTER_DEADLINE), publish)
+                await first.commit()
+            async with factory() as fresh:
+                winner = seated.participants[0]
+                menu = await read_menu(fresh, seated.session_id, winner)
+                assert [(r.amount, r.kind) for r in menu.rewards] == [
+                    (1, "investigation")
+                ]
+                assert menu.remaining_budget == BASE + 1
+        finally:
+            await engine.dispose()
+
+    @pytest.mark.asyncio
+    async def test_the_list_and_the_balance_come_from_the_same_rows(
         self,
         db: AsyncSession,
         registered: Callable[[ArcDefinition], None],
         monkeypatch: pytest.MonkeyPatch,
         no_model_calls: None,
     ) -> None:
+        """A grant committed right after the budget rows were read (the READ
+        COMMITTED race) must not show in the list while missing from the balance."""
+        from engine.db.orm import Decision
+        from engine.session import choices
+
         seated, _ = await in_mini_game(db, registered, monkeypatch, reward_arc(1))
-        await place_players(db, seated, [1, 2, 3])
+        winner = seated.participants[0]
+        real_ledger = choices._ledger
 
-        async def publish(event: Any) -> Any:
-            if event.event_type == "mini_game_reward_granted":
-                raise RuntimeError("the publisher failed")
-            return event
+        async def ledger_then_a_grant_lands(*args: Any) -> Any:
+            ledger = await real_ledger(*args)
+            db.add(
+                Decision(
+                    session_id=seated.session_id,
+                    timestamp=at(AFTER_DEADLINE),
+                    decision_type="budget_grant",
+                    context={
+                        "participant_id": str(winner),
+                        "run_id": "r",
+                        "beat_id": "beat_one",
+                        "source": "mini_game_reward",
+                    },
+                    outcome={"amount": 1, "kind": "investigation", "told": False},
+                )
+            )
+            await db.flush()
+            return ledger
 
-        with pytest.raises(RuntimeError):
-            await tick(db, seated.session_id, at(AFTER_DEADLINE), publish)
-        menu = await read_menu(db, seated.session_id, seated.participants[0])
-        assert [r.amount for r in menu.rewards] == [1]
+        monkeypatch.setattr(choices, "_ledger", ledger_then_a_grant_lands)
+        menu = await read_menu(db, seated.session_id, winner)
+        assert menu.remaining_budget == BASE + sum(r.amount for r in menu.rewards)
 
     @pytest.mark.asyncio
     async def test_the_live_message_carries_the_id_the_read_returns(

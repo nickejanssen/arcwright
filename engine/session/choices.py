@@ -30,7 +30,7 @@ from engine.db.orm import Session as OrmSession
 from engine.events.models import AudienceTarget, EventCategory
 from engine.knowledge.holdings import concepts_held, grant_concept
 from engine.session.case_seating import cached_arc_case
-from engine.session.mini_game_reward import RewardGrant, read_rewards
+from engine.session.mini_game_reward import RewardGrant, rewards_from_rows
 from engine.session.models import SessionStatus
 from engine.session.phases import (
     Publish,
@@ -105,6 +105,7 @@ def budget_allowance(arc: ArcDefinition, *, granted: Iterable[int]) -> int:
 class _Ledger:
     choices: list[Decision]
     granted: list[int]
+    rewards: tuple[RewardGrant, ...] = ()
 
     @property
     def spent(self) -> int:
@@ -126,7 +127,7 @@ async def _ledger(db: AsyncSession, session_id: UUID, participant_id: UUID) -> _
             Decision.session_id == session_id,
             Decision.decision_type.in_([CHOICE_DECISION, BUDGET_GRANT_DECISION]),
         )
-        .order_by(Decision.timestamp)
+        .order_by(Decision.timestamp, Decision.decision_id)
     )
     mine = [
         row
@@ -140,6 +141,9 @@ async def _ledger(db: AsyncSession, session_id: UUID, participant_id: UUID) -> _
             for r in mine
             if r.decision_type == BUDGET_GRANT_DECISION
         ],
+        rewards=rewards_from_rows(
+            r for r in mine if r.decision_type == BUDGET_GRANT_DECISION
+        ),
     )
 
 
@@ -272,7 +276,7 @@ async def read_menu(
     ctx = await _context(db, orm, participant_id)
     ledger = await _ledger(db, session_id, participant_id)
     left = budget_allowance(ctx.arc, granted=ledger.granted) - ledger.spent
-    rewards = await read_rewards(db, session_id, participant_id)
+    rewards = ledger.rewards
     if not await _choices_open(db, ctx.orm):
         return Menu(open=False, remaining_budget=left, items=(), rewards=rewards)
     held = await _held_with_opening(db, ctx, locked=False)

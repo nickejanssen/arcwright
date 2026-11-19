@@ -18,7 +18,7 @@ rollback undoes all three, and the next tick grants and queues again from
 scratch. Delivery after the commit, including retries, belongs to the Outbox's
 pending queue. ``told`` therefore means "queued for delivery", not "seen"; it
 only stops a second message for the same grant when this code runs again over
-rows that were saved. ``read_rewards`` ignores it: a phone that missed or lost
+rows that were saved. ``rewards_from_rows`` ignores it: a phone that missed or lost
 the message reads the same rewards from the menu route (AW-343).
 
 When every eligible player is in the top tier, the run separated nobody and
@@ -27,6 +27,7 @@ nothing is given (D-127; approved in the AW-328 plan).
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
@@ -65,22 +66,11 @@ class RewardGrant:
     kind: str
 
 
-async def read_rewards(
-    db: AsyncSession, session_id: UUID, participant_id: UUID
-) -> tuple[RewardGrant, ...]:
-    """This player's saved mini-game rewards, oldest first. Read-only. A reward
-    is listed whether or not its message was ever sent or seen: ``told`` is not
-    consulted."""
-    from engine.session.choices import BUDGET_GRANT_DECISION
-
-    result = await db.execute(
-        select(Decision)
-        .where(
-            Decision.session_id == session_id,
-            Decision.decision_type == BUDGET_GRANT_DECISION,
-        )
-        .order_by(Decision.timestamp, Decision.decision_id)
-    )
+def rewards_from_rows(rows: Iterable[Decision]) -> tuple[RewardGrant, ...]:
+    """The mini-game rewards among these saved ``budget_grant`` rows, in the
+    order given. The menu read passes the same rows its budget is worked out
+    from, so the list and the balance always agree. ``told`` is not consulted: a
+    reward is listed whether or not its message was ever sent or seen."""
     return tuple(
         RewardGrant(
             grant_id=str(row.decision_id),
@@ -89,9 +79,8 @@ async def read_rewards(
             amount=int(row.outcome["amount"]),
             kind=str(row.outcome["kind"]),
         )
-        for row in result.scalars().all()
+        for row in rows
         if row.context.get("source") == REWARD_SOURCE
-        and row.context.get("participant_id") == str(participant_id)
     )
 
 
