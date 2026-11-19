@@ -18,7 +18,7 @@ supersedes: []
 **Size:** M  
 **Product:** Shared  
 **Owner:** One implementation session and founder playtest  
-**Target date:** Unscheduled; founder to prioritize after dependency review.
+**Target date:** Before 2026-12-05, the founder TV run (D-141). Order: after AW-348.
 
 ## Plain-English Summary
 
