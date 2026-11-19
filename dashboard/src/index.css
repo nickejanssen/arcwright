@@ -32,3 +32,223 @@ button {
 input {
   font-family: inherit;
 }
+
+/* Phone and TV shell (AW-330). Phone targets are at least 44px; TV body text
+   is at least 40px (spec 0095 Part L). */
+
+html {
+  font-size: 100%;
+}
+html[data-text-size="large"] {
+  font-size: 118%;
+}
+html[data-text-size="xlarge"] {
+  font-size: 140%;
+}
+/* "Always" turns motion off; "Follow my phone" (the default) follows the
+   browser's own reduced-motion setting. */
+html[data-reduce-motion="always"] *,
+html[data-reduce-motion="always"] *::before,
+html[data-reduce-motion="always"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-reduce-motion="system"] *,
+  html[data-reduce-motion="system"] *::before,
+  html[data-reduce-motion="system"] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.sh-phone {
+  min-height: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.sh-phone-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sh-brand {
+  color: var(--accent);
+  letter-spacing: 0.3em;
+  font-size: 1.1rem;
+}
+.sh-phone-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.sh-title {
+  font-size: 1.6rem;
+  line-height: 1.3;
+}
+.sh-heading {
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
+}
+.sh-line {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+.sh-link {
+  font-size: 0.95rem;
+  word-break: break-all;
+}
+.sh-error {
+  color: var(--red);
+  font-size: 1rem;
+}
+.sh-form,
+.sh-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border: 0;
+  margin-bottom: 1rem;
+}
+.sh-label {
+  font-size: 0.95rem;
+  color: var(--text-muted);
+}
+.sh-input {
+  width: 100%;
+  min-height: 44px;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 1.1rem;
+}
+.sh-input-code {
+  letter-spacing: 0.3em;
+  text-align: center;
+}
+.sh-choice {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 44px;
+  font-size: 1.1rem;
+}
+.sh-choice input {
+  width: 24px;
+  height: 24px;
+}
+.sh-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.75rem 1.25rem;
+  margin-bottom: 0.75rem;
+  background: var(--accent);
+  color: #0a0a0f;
+  border: none;
+  border-radius: 6px;
+  font-size: 1.05rem;
+  font-weight: bold;
+  text-decoration: none;
+}
+.sh-button:disabled {
+  opacity: 0.5;
+}
+.sh-button-quiet {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.sh-button-small {
+  margin-bottom: 0;
+}
+.sh-confirm {
+  display: flex;
+  flex-direction: column;
+}
+.sh-confirm-text {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+}
+
+.tv-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 2rem 3rem;
+}
+.tv-header {
+  text-align: center;
+}
+.tv-brand {
+  color: var(--accent);
+  letter-spacing: 0.3em;
+  font-size: 2.5rem;
+}
+.tv-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.tv-room,
+.tv-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  text-align: center;
+  height: 100%;
+}
+.tv-label {
+  color: var(--text-muted);
+  font-size: 2.5rem;
+  letter-spacing: 0.1em;
+}
+.tv-code {
+  color: var(--accent);
+  font-size: var(--code-size);
+  letter-spacing: 0.2em;
+  font-weight: bold;
+}
+.tv-title {
+  color: var(--accent);
+  font-size: 5rem;
+}
+.tv-text {
+  font-size: 2.5rem;
+  line-height: 1.3;
+}
+.tv-qr {
+  width: 300px;
+  height: 300px;
+  border-radius: 8px;
+  border: 2px solid var(--border);
+}
+.tv-names {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem 2rem;
+  font-size: 2.5rem;
+}
+.tv-notice {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 2.5rem;
+}
