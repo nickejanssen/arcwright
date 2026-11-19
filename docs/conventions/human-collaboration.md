@@ -13,8 +13,8 @@ supersedes: []
 
 # Human Collaboration Contract
 
-> Current version: v1.1
-> Last updated: 2026-11-14
+> Current version: v1.2
+> Last updated: 2026-11-19
 > Status: Current
 > Canonical path: docs/conventions/human-collaboration.md
 
@@ -134,6 +134,35 @@ confirmed this style on 2026-11-14 and asked that every agent keep to it.
    decision, and what it costs.
 9. **Change nothing silently.** State what was edited, what is uncommitted, and
    what was left untouched.
+
+Added 2026-11-19 from the orchestrator sessions of 18 and 19 November (D-140):
+
+10. **Define shared words before the question, not after the confusion.** When
+    a choice depends on words such as session, playthrough, round, mechanic or
+    wrapper, give a one-line definition of each in the same message.
+11. **Show what it looks like.** For a gameplay, screen or flow decision, give
+    a short walkthrough or text sketch of what each player does and sees, with
+    an invented example labelled as invented, before asking him to choose.
+12. **Bring prior art.** Ground design options in real games, including his
+    recorded inspirations (`docs/product/2026-11-15-reset-audit.md`, section 3),
+    and in makers' documented reasons. Say which points are documented by the
+    makers and which are your inference.
+13. **Build options from what the game needs, not from what exists.** Do not
+    limit options to the current inventory of code, mini-games or assets. Say
+    what reuse would save, but never make "it already exists" the reason.
+14. **When he is not convinced, go deeper.** Bring real alternatives and
+    sources, and say honestly how the recommendation compares. Do not restate
+    the same recommendation.
+15. **Answer his question first.** When he replies to a question with a
+    question, answer it fully before asking again.
+16. **Do not lead design choices with time estimates.** Length and pacing are
+    found by testing with players and adjusted from feedback (D-136).
+17. **Copy, never recall, identifiers and quotes.** Pull request, issue, task
+    and decision numbers, commit hashes and the founder's words are copied from
+    the tool result or the record, never typed from memory.
+18. **Do delegated actions openly.** When he asks an agent to act for him, such
+    as posting a comment or merging a pull request he has named, do it, and
+    label any comment as posted at his direction, quoting his words.
 
 ## Approval Semantics
 
