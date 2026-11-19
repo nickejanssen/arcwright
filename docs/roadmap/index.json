@@ -3122,6 +3122,106 @@
         "issue_number": 429,
         "url": "https://github.com/nickejanssen/arcwright/issues/429"
       }
+    },
+    {
+      "id": "AW-329",
+      "title": "Bring The Mini-Game Kit, The Package Loader And The Test Setup Into The Dashboard",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-329-bring-the-mini-game-kit-loader-and-test-setup-into-the-dashboard.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 432,
+        "url": "https://github.com/nickejanssen/arcwright/issues/432"
+      }
+    },
+    {
+      "id": "AW-330",
+      "title": "Build The Screen Shell, Sign-In Storage, Room And Join Screens, And The Phone Start Menu",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-329"
+      ],
+      "path": "docs/roadmap/tasks/AW-330-build-the-screen-shell-sign-in-storage-room-and-join-screens-and-the-start-menu.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 433,
+        "url": "https://github.com/nickejanssen/arcwright/issues/433"
+      }
+    },
+    {
+      "id": "AW-331",
+      "title": "Add The Room View, Seat Rule, Survey Answers, Signed-In Mini-Game View And Start Menu Sign-In",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-327"
+      ],
+      "path": "docs/roadmap/tasks/AW-331-add-the-room-view-seat-rule-survey-answers-signed-in-mini-game-view-and-start-menu-sign-in.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 434,
+        "url": "https://github.com/nickejanssen/arcwright/issues/434"
+      }
+    },
+    {
+      "id": "AW-332",
+      "title": "Build The Round Screens: Story, Thinking Time, Investigate, Finding, Notebook, Mini-Game And Its Result",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "L",
+      "depends_on": [
+        "AW-330",
+        "AW-331",
+        "AW-343"
+      ],
+      "path": "docs/roadmap/tasks/AW-332-build-the-round-screens.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 435,
+        "url": "https://github.com/nickejanssen/arcwright/issues/435"
+      }
+    },
+    {
+      "id": "AW-333",
+      "title": "Build The Endgame Screens: Last Call, Your Theory, The Accused, The Verdict, The Postmortem, The Survey",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-330",
+        "AW-331",
+        "AW-326",
+        "AW-327"
+      ],
+      "path": "docs/roadmap/tasks/AW-333-build-the-endgame-screens.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 436,
+        "url": "https://github.com/nickejanssen/arcwright/issues/436"
+      }
+    },
+    {
+      "id": "AW-334",
+      "title": "Prove A Full Game's Screens Without A TV, And Run The Proof In CI",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-332",
+        "AW-333"
+      ],
+      "path": "docs/roadmap/tasks/AW-334-prove-a-full-games-screens-without-a-tv-and-run-it-in-ci.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 437,
+        "url": "https://github.com/nickejanssen/arcwright/issues/437"
+      }
     }
   ],
   "superseded_sources": [

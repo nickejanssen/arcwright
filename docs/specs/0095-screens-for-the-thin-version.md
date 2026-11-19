@@ -14,7 +14,7 @@ supersedes: []
 
 # Spec 0095: Screens For The Thin Version
 
-**Status**: Draft. Not approved. Nothing in this file may be built until the founder approves it. See "Your steps".
+**Status**: Approved by the founder on 2026-11-19 (D-139, issue #355), with the answers to Q1 to Q5 (D-133 to D-138). This permits AW-329 to AW-334 to write their plans. Each plan needs the founder's approval before code. See "Founder Approval" at the end.
 
 **Author**: Claude Code (Spec Author role) | **Date**: 2026-11-16 | **Task**: AW-302, the screens spec of three | **Checked against**: main at `83795a5`
 
@@ -619,7 +619,7 @@ The recorded file is committed. The Python half fails if a fresh run differs fro
 
 **Review package:** this file. The parts to read are "Plain-language goal", "What you are approving", "How the feelings answer shapes the layout" and the open questions.
 
-**Approval evidence:** none yet. Draft.
+**Approval evidence:** approved by the founder on 2026-11-19: decision D-139, issue #355, and "Founder Approval" at the end of this file.
 
 **Owner actions:** none beyond "Your steps".
 
@@ -773,7 +773,8 @@ Not numbered here: one small task per mini-game renderer that Q4's answer needs,
 - 2026-11-18: Q2 answered by the founder (a quiet TV during thinking time, D-134). Still a draft.
 - 2026-11-18: Q3 answered by the founder (the accused shown one at a time, staged by Nightcap, D-135). Still a draft.
 - 2026-11-19: Q4 answered by the founder (D-136, D-137). Still a draft.
-- 2026-11-19: Q5 answered by the founder (D-138). All five questions are answered; the spec still needs "approve 0095".
+- 2026-11-19: Q5 answered by the founder (D-138).
+- 2026-11-19: Approved by the founder (D-139). Task files and issues for AW-329 to AW-334 created.
 
 ---
 
@@ -881,3 +882,17 @@ Recorded from the founder's answers in session on 19 November 2026. Decision row
 - **Screen 17 (Verdict)** adds the winner's proof after their name, for example "[Name] solved it. Their proof: [piece]."
 - **Screen 18 (Your result)** shows the player's own account with each blank marked right or wrong, after the TV's Verdict.
 - Q5's two original options are both replaced: the order is set by the case writer's account, and the player does not rearrange it.
+
+---
+
+# Founder Approval (2026-11-19)
+
+Recorded from the founder's answer in session on 2026-11-19. Decision row: D-139. Also recorded on issue #355.
+
+**Question:** "Approve spec 0095 (the screens for the thin version), with your five answers D-133 to D-138? This unblocks the screen task plans AW-329 to AW-334; each plan, and AW-331's sign-in change, still comes to you separately."
+
+**Founder's words:** "Approve 0095 (Recommended)"
+
+**What this approves.** Phase gate 1 of this spec: Parts K to O, the eight decisions under "What you are approving", and the answers in "Q1 Answered" to "Q5 Answered" (D-133 to D-138). Where an answered section and earlier text disagree, the answered section is the later record. It permits AW-329 to AW-334 to write their plans, in the build order above.
+
+**What this does not approve.** Any plan or code; each plan is shown to the founder first. The hard rules each task touches (AW-329: `package.json`; AW-330 and AW-331: sign-in; AW-331: changes across engine modules) need his explicit approval of that plan. The screen-copy sample (about twenty lines) comes before AW-330's code. The walkthrough (AW-301) still checks W1 to W12; anything it disproves comes back to him before that part is built.

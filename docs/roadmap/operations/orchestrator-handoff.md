@@ -42,8 +42,8 @@ You run in the Claude desktop app on the founder's Windows PC, in or beside the 
    - 0092 rebuild plan, thin version approved (D-123);
    - 0093 engine spine, approved (D-124);
    - 0094 endgame, approved (D-125);
-   - 0095 screens, DRAFT and not approved; all five questions answered (D-133 to D-138); waiting for "approve 0095".
-7. Decisions D-112 to D-138: https://github.com/nickejanssen/arcwright/blob/main/docs/product/decisions-log.csv
+   - 0095 screens, approved (D-139), with the answers D-133 to D-138.
+7. Decisions D-112 to D-139: https://github.com/nickejanssen/arcwright/blob/main/docs/product/decisions-log.csv
 8. Where the reset came from: https://github.com/nickejanssen/arcwright/blob/main/docs/product/2026-11-15-reset-audit.md
 
 Then, in the main checkout:
@@ -70,12 +70,12 @@ Critical path to the founder TV run, with sizes from the task files. The build-d
 | --- | --- | --- | --- |
 | Engine spine and endgame | AW-324 (#391), AW-325 (#397), AW-303 (#413), AW-304 (#412), AW-338 (#419), AW-328 (#417), AW-343 (#430) | AW-326 (M), AW-327 (M), AW-342 (S); D-138 adds a small account-text and proof change to both | 3.5 to 4.5 |
 | Mini-games (D-136, D-137) | none | AW-337 mechanics (L, creative interview first), AW-344 several per round (M), AW-345 solo (M, design first), AW-346 session 1 variants (S) | 7 to 11 |
-| Screens (spec 0095) | none | spec approval, then AW-329 to AW-334 (task files and issues not created yet) | 10 to 12 |
+| Screens (spec 0095, approved D-139) | none | AW-329 (#432), AW-330 (#433), AW-331 (#434), AW-332 (#435), AW-333 (#436), AW-334 (#437) | 10 to 12 |
 | First case | in another session | AW-305 (case loaded and fair), recap lines sample (spec 0094 gate 3) | founder and case session |
 | Session readiness | none | AW-306 importer (cut-able), AW-308 preflight, AW-301 walkthrough | 2 to 3 |
 
 Progress: 7 of about 23 critical-path tasks are merged, roughly 30 percent (inferred). Remaining build work is about 23 to 31 build days against 16 calendar days to 5 December. Even with two build sessions at once, that does not fit unless the core variant stays lean and screens and mini-games run beside the engine work. **The 12 or 13 December date is unlikely; 19 or 20 December is the realistic plan unless scope moves** (inferred). Tell the founder this plainly and early. The three biggest risks, in order:
-1. **Spec 0095 is not approved, so no screen task can start.** About half the remaining work waits on it, and all five questions are answered: it waits only for the founder's "approve 0095".
+1. **The screens are about half the remaining work and have not started.** Spec 0095 was approved on 19 November (D-139); AW-329 and AW-330 can plan at once and run beside the engine work.
 2. **The first case's state is unknown here.** Branch `claude/lido-case-and-spec-followups` had unpushed work on 15 November. AW-305 waits on it.
 3. **The mini-games are now a design-and-build job, not a tweak** (D-136): distinct mechanics designed for 2 to 4 players (AW-337, size L), several per round (AW-344) and solo mini-games (AW-345), all wanted in session 1 as A/B variants (D-137, AW-346). This adds an estimated 6 to 10 build days (inferred). The core variant gates the dates; extra variants that are not ready are simply not played.
 
@@ -89,8 +89,7 @@ Progress: 7 of about 23 critical-path tasks are merged, roughly 30 percent (infe
 
 1. **Now:** start the AW-326 plan (#388: Last Call, lock, theory check, winner); it is unblocked. Beside it, AW-342 (#421, SQLite test flake, small-fix lane) can run, since it touches only `engine/db/testing.py` and a new test. 
 2. **Then** AW-327 (#389, closing sequence and a full game headless at two and four players).
-3. **Screens, as soon as the founder approves spec 0095:**
-   - create task files and issues for AW-329 to AW-334 from its build-order table;
+3. **Screens (spec 0095 approved, D-139; tasks exist):**
    - start AW-329 (copy the mini-game kit into `dashboard/`) and AW-330 (screen shell, phone Start menu, D-133) beside the engine work;
    - then AW-331, which crosses engine modules and changes sign-in (hard rules), followed by AW-332, AW-333 and AW-334.
 4. **Mini-games (D-136):** AW-337 (#395) starts with the founder's creative interview on mechanics; AW-344 (#427, several per round) can plan now (AW-343 has merged); AW-345 (#428, solo) starts with a design interview; AW-346 (#429) plans the session 1 variants. The core variant comes first.
@@ -100,7 +99,7 @@ Progress: 7 of about 23 critical-path tasks are merged, roughly 30 percent (infe
 ## Waiting on the founder (ask one at a time, with a recommendation)
 
 1. AW-326 plan approval when it arrives, in its session or by his own comment on #388.
-2. Spec 0095: all questions answered; the founder replies "approve 0095" on issue #355. Most urgent, because the screens are half the remaining work.
+2. AW-329 and AW-330 plan approvals (screens), and the screen-copy sample of about twenty lines before AW-330's code. Most urgent, because the screens are half the remaining work.
 3. The session on branch `claude/lido-case-and-spec-followups`: ask the founder to tell it to commit, push and open a pull request. AW-305 waits on it.
 4. Send the case-writing session the message under "Owner actions" in spec 0093.
 5. AW-301 (#354): walk the current build on a TV and two phones. Include the Postgres choice-lock check.
@@ -192,6 +191,6 @@ Conclusion first. Plain words, no invented shorthand, no em dashes. Label claims
 
 1. Confirm what you read, that main is pulled and reindexed in the main checkout, and which pull requests are open.
 2. Decide with the founder whether AW-343's open review point (a route-level test through a real mini-game run) needs its own task; if yes, file it (D-119).
-3. Propose starting the AW-326 plan session, with AW-342 beside it.
+3. Propose starting plan sessions for AW-326 and AW-329 (two at once at most), with AW-342 next.
 4. Give the progress block.
-5. Ask the founder the one decision he needs to make next. Unless something more urgent has appeared, that is "approve 0095" (all five questions are answered; it unblocks the screen tasks).
+5. Ask the founder the one decision he needs to make next. Unless something more urgent has appeared, that is approving the first plans: AW-326 (Last Call), AW-329 and AW-330 (screens), and AW-337's creative interview on mini-game mechanics.
