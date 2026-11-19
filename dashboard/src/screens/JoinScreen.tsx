@@ -3,13 +3,13 @@
 // never makes a second player.
 
 import type { FormEvent } from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { exchangePlayerToken } from "../api/auth";
 import type { FirebaseAuthSession } from "../api/auth";
 import { ApiError, JoinError, fetchLobbyState, joinLobby } from "../api/lobby";
 import type { LobbyJoinResult, LobbyState } from "../api/lobby";
 import { seatStore } from "../api/seatStore";
-import type { SeatStore } from "../api/seatStore";
+import type { SeatStore, StoredSeat } from "../api/seatStore";
 import { copy } from "../shell/copy";
 
 export interface JoinDeps {
@@ -51,6 +51,9 @@ export default function JoinScreen({ code: codeFromLink = "", deps }: Props) {
   const [code, setCode] = useState(codeFromLink.toUpperCase());
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  // A seat the engine already made but this browser would not keep. Trying
+  // again saves this one; it never joins a second time.
+  const unsavedSeat = useRef<Omit<StoredSeat, "savedAt"> | null>(null);
   // True while a stored seat is being checked, so the form does not flash.
   const [resuming, setResuming] = useState(
     () =>
@@ -108,16 +111,25 @@ export default function JoinScreen({ code: codeFromLink = "", deps }: Props) {
     setLoading(true);
     setError(null);
     try {
-      const result = await d.join(name.trim(), code.trim());
-      const auth = await d.exchange(result.player_token);
-      d.store.save({
-        gameId: result.session_id,
-        joinCode: code.trim().toUpperCase(),
-        participantId: result.participant_id,
-        characterId: result.character_id,
-        displayName: result.display_name,
-        auth,
-      });
+      if (!unsavedSeat.current) {
+        const result = await d.join(name.trim(), code.trim());
+        const auth = await d.exchange(result.player_token);
+        unsavedSeat.current = {
+          gameId: result.session_id,
+          joinCode: code.trim().toUpperCase(),
+          participantId: result.participant_id,
+          characterId: result.character_id,
+          displayName: result.display_name,
+          auth,
+        };
+      }
+      if (!d.store.save(unsavedSeat.current)) {
+        // Going on would bounce this phone back here with no seat.
+        setError(copy.join.errors.cannotSave);
+        setLoading(false);
+        return;
+      }
+      unsavedSeat.current = null;
       d.navigate("/play");
     } catch (e) {
       setError(failureText(e));

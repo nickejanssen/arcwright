@@ -45,6 +45,8 @@ html[data-text-size="large"] {
 html[data-text-size="xlarge"] {
   font-size: 140%;
 }
+/* "Always" turns motion off; "Follow my phone" (the default) follows the
+   browser's own reduced-motion setting. */
 html[data-reduce-motion="always"] *,
 html[data-reduce-motion="always"] *::before,
 html[data-reduce-motion="always"] *::after {
@@ -52,6 +54,16 @@ html[data-reduce-motion="always"] *::after {
   animation-iteration-count: 1 !important;
   transition-duration: 0.001ms !important;
   scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html[data-reduce-motion="system"] *,
+  html[data-reduce-motion="system"] *::before,
+  html[data-reduce-motion="system"] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 .sh-phone {
@@ -204,7 +216,7 @@ html[data-reduce-motion="always"] *::after {
 }
 .tv-label {
   color: var(--text-muted);
-  font-size: 1.5rem;
+  font-size: 2.5rem;
   letter-spacing: 0.1em;
 }
 .tv-code {
@@ -238,5 +250,5 @@ html[data-reduce-motion="always"] *::after {
 .tv-notice {
   text-align: center;
   color: var(--text-muted);
-  font-size: 1.5rem;
+  font-size: 2.5rem;
 }

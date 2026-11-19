@@ -164,3 +164,34 @@ test("a refused join says why, in plain words", async () => {
     await page.unmount();
   }
 });
+
+test("a browser that will not keep the seat leaves the player on a message, and trying again never joins twice", async () => {
+  const { store, calls, deps } = setup(async () => lobby("created"));
+  let blocked = true;
+  deps.store = {
+    ...store,
+    save: (seat) => (blocked ? false : store.save(seat)),
+  };
+  const page = await mount(createElement(JoinScreen, { code: "K7QP", deps }));
+  await typeInto(
+    page.container.querySelector("#name") as HTMLInputElement,
+    "Jordan",
+  );
+
+  await page.click("Join");
+  assert.equal(calls.join, 1, "the engine made the seat once");
+  assert.deepEqual(calls.navigate, [], "the phone does not go to /play");
+  assert.ok(
+    page.text().includes("This phone would not save your seat."),
+    "a plain message stays on screen",
+  );
+  assert.ok(page.button("Join"), "the form is still there");
+
+  // Storage works again: the same seat is saved, no second join.
+  blocked = false;
+  await page.click("Join");
+  assert.equal(calls.join, 1, "no second seat is made");
+  assert.deepEqual(calls.navigate, ["/play"]);
+  assert.equal(store.get("game-1")?.characterId, "c-new");
+  await page.unmount();
+});

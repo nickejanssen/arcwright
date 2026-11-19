@@ -126,7 +126,7 @@ export function PhoneView(props: PhoneViewProps) {
     const resolved = resolveScreen("phone", lobby, round, props.slots);
     if (resolved.kind === "room") {
       const names = lobby.players
-        .map((p) => p.display_name ?? "Guest")
+        .map((p) => p.display_name ?? copy.unnamedPlayer)
         .join(", ");
       body = (
         <>

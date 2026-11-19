@@ -19,6 +19,7 @@ export function subscribeEvents(options: EventSubscription): () => void {
   let active = true;
   let last = 0;
   let retryTimer: ReturnType<typeof setTimeout> | null = null;
+  let current: AbortController | null = null;
 
   function handleBlock(block: string): void {
     for (const line of block.split("\n")) {
@@ -40,15 +41,23 @@ export function subscribeEvents(options: EventSubscription): () => void {
   }
 
   async function run(): Promise<void> {
+    const controller = new AbortController();
+    current = controller;
     let res: Response | null;
     try {
       res = await fetcher(
         `/v1/sessions/${encodeURIComponent(options.sessionId)}/events?since=${last}`,
+        { signal: controller.signal },
       );
     } catch {
       res = null;
     }
-    if (active && res?.ok && res.body) {
+    if (!active) {
+      // Stopped while the request was out: release the connection.
+      res?.body?.cancel().catch(() => undefined);
+      return;
+    }
+    if (res?.ok && res.body) {
       // The stream is open again: anything that happened while it was down is
       // picked up by asking the routes.
       options.onSignal("reconnect");
@@ -78,5 +87,7 @@ export function subscribeEvents(options: EventSubscription): () => void {
   return () => {
     active = false;
     if (retryTimer) clearTimeout(retryTimer);
+    // Closes the request, and a read waiting on it, at once.
+    current?.abort();
   };
 }

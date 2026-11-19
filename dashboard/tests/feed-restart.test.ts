@@ -210,3 +210,60 @@ test("the event stream gives reconnect, event and restart signals from event num
   assert.deepEqual(signals, ["reconnect", "event", "event", "restart"]);
   assert.equal(urls[0], "/v1/sessions/game-1/events?since=0");
 });
+
+test("stopping aborts the request in flight and releases a stream that arrives late", async () => {
+  let signal: AbortSignal | undefined;
+  let release: (res: Response) => void = () => {};
+  let cancelled = false;
+  const stop = subscribeEvents({
+    sessionId: "game-1",
+    retryMs: 60_000,
+    onSignal: () => undefined,
+    fetcher: ((_input: RequestInfo | URL, init?: RequestInit) => {
+      signal = init?.signal ?? undefined;
+      return new Promise<Response>((done) => {
+        release = done;
+      });
+    }) as typeof fetch,
+  });
+  await flush();
+  assert.ok(signal, "the request carries an abort signal");
+  assert.equal(signal.aborted, false);
+
+  stop();
+  assert.equal(signal.aborted, true, "stopping aborts the open request");
+
+  // A reply that still arrives is closed, not read.
+  release(
+    new Response(
+      new ReadableStream<Uint8Array>({
+        cancel() {
+          cancelled = true;
+        },
+      }),
+      { status: 200 },
+    ),
+  );
+  await flush();
+  assert.equal(cancelled, true);
+});
+
+test("stopping aborts a stream that is open and waiting for its next event", async () => {
+  let signal: AbortSignal | undefined;
+  const signals: EventSignal[] = [];
+  const stop = subscribeEvents({
+    sessionId: "game-1",
+    retryMs: 60_000,
+    onSignal: (s) => void signals.push(s),
+    fetcher: (async (_input: RequestInfo | URL, init?: RequestInit) => {
+      signal = init?.signal ?? undefined;
+      return new Response(new ReadableStream<Uint8Array>({ start() {} }), {
+        status: 200,
+      });
+    }) as typeof fetch,
+  });
+  await flush();
+  assert.deepEqual(signals, ["reconnect"]);
+  stop();
+  assert.equal(signal?.aborted, true);
+});

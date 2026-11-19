@@ -249,3 +249,40 @@ test("Settings: text size, motion, room code and rejoin link; the link is the jo
   assert.deepEqual(changes[0], { textSize: "large", reduceMotion: "system" });
   await page.unmount();
 });
+
+test("a game that vanishes while the Menu is open shows the way back, not an empty phone", async () => {
+  const page = await mount(phone(lobby({ status: "active" }), round()));
+  await page.click("Menu");
+  assert.ok(page.button("Pause"), "the menu is open");
+
+  await page.rerender(phone(null, null, { gone: true }));
+  assert.ok(page.text().includes("This game is no longer running."));
+  assert.equal(
+    page.container.querySelector("a")?.getAttribute("href"),
+    "/join",
+  );
+  await page.unmount();
+
+  // The same when Settings is the open panel.
+  const settings = await mount(phone(lobby({ status: "active" }), round()));
+  await settings.click("Menu");
+  await settings.click("Settings");
+  await settings.rerender(phone(null, null, { gone: true }));
+  assert.ok(settings.text().includes("This game is no longer running."));
+  await settings.unmount();
+});
+
+test("an unnamed player is shown with the shared word from the copy file", async () => {
+  const page = await mount(
+    tv(
+      lobby({
+        players: [
+          { participant_id: "participant-uuid-3333", display_name: null },
+        ],
+      }),
+      null,
+    ),
+  );
+  assert.ok(page.text().includes("Guest"));
+  await page.unmount();
+});

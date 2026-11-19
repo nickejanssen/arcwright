@@ -87,7 +87,9 @@ export function TvView({ sessionId, feed, joinBaseUrl, slots }: TvViewProps) {
     const joinUrl = lobby.join_code
       ? `${joinBaseUrl}/join?code=${encodeURIComponent(lobby.join_code)}`
       : null;
-    const names = lobby.players.map((p) => p.display_name ?? "Guest");
+    const names = lobby.players.map(
+      (p) => p.display_name ?? copy.unnamedPlayer,
+    );
     body = (
       <div className="tv-room">
         <p className="tv-label">{copy.tv.joinOnPhone}</p>

@@ -4,6 +4,8 @@
 
 export const copy = {
   brand: "NIGHTCAP",
+  unnamedPlayer: "Guest",
+  home: "Open /join on a phone or /display/<game> on the TV.",
 
   tv: {
     joinOnPhone: "Join on your phone",
@@ -33,6 +35,8 @@ export const copy = {
       badCode: "That code did not work. Check the TV.",
       started: "This game has started. Use the phone you joined with.",
       failed: "Something went wrong. Try again.",
+      cannotSave:
+        "This phone would not save your seat. Allow this site to store data, then tap Join again.",
     },
     resuming: "Finding your seat...",
   },

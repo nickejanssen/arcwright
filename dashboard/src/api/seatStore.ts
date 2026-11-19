@@ -26,7 +26,8 @@ export interface KeyValueStorage {
 }
 
 export interface SeatStore {
-  save(seat: Omit<StoredSeat, "savedAt">): void;
+  // False when the browser would not keep the seat (blocked or full storage).
+  save(seat: Omit<StoredSeat, "savedAt">): boolean;
   get(gameId: string): StoredSeat | null;
   findByCode(joinCode: string): StoredSeat | null;
   mostRecent(): StoredSeat | null;
@@ -116,19 +117,20 @@ export function createSeatStore(
     return seats;
   }
 
-  function write(seat: StoredSeat): void {
+  function write(seat: StoredSeat): boolean {
     const store = storage();
-    if (!store) return;
+    if (!store) return false;
     try {
       store.setItem(SEAT_KEY_PREFIX + seat.gameId, JSON.stringify(seat));
+      return true;
     } catch {
-      // A full or locked store: the player can still play this tab.
+      return false;
     }
   }
 
   return {
     save(seat) {
-      write({ ...seat, savedAt: now() });
+      return write({ ...seat, savedAt: now() });
     },
     get(gameId) {
       const store = storage();

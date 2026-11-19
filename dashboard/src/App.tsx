@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import DisplayScreen from "./screens/DisplayScreen";
 import JoinScreen from "./screens/JoinScreen";
 import WaitingScreen from "./screens/WaitingScreen";
+import { copy } from "./shell/copy";
 import { parseRoute } from "./shell/routes";
 
 export default function App() {
@@ -22,9 +23,7 @@ export default function App() {
   }
   return (
     <div className="tv-center">
-      <p className="sh-line">
-        Open /join on a phone or /display/&lt;game&gt; on the TV.
-      </p>
+      <p className="sh-line">{copy.home}</p>
     </div>
   );
 }

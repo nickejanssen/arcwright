@@ -21,7 +21,10 @@ type Open = "none" | "menu" | "settings";
 // Every phone screen sits in this frame: the screen, and the Menu button that
 // opens the Start menu (spec 0095 Q1, D-133).
 export default function PhoneFrame(props: PhoneFrameProps) {
-  const [open, setOpen] = useState<Open>("none");
+  const [wanted, setOpen] = useState<Open>("none");
+  // With no menu (the game is gone) nothing stays open, so the screen and its
+  // way back are shown.
+  const open: Open = props.menu ? wanted : "none";
 
   return (
     <div className="sh-phone">
