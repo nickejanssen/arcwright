@@ -46,14 +46,14 @@ When a player wins a mini-game they get one more investigation (D-126). Today th
 
 ## Acceptance Criteria
 
-- [ ] After a mini-game ends, the rewarded player's menu read lists the reward with its amount; other players' reads do not list it.
-- [ ] The list is the same after every service object is rebuilt over the same database (the restart case), and the same when read twice.
-- [ ] A reward whose live message was never sent (publisher that fails, or none) is still in the read.
-- [ ] The live event and the read carry the same grant ID.
-- [ ] A player who won nothing gets an empty list; an arc with no reward setting behaves as before.
-- [ ] No other player's reward, and no case content, appears in any player's read; the shared screen gets nothing new.
-- [ ] Route handlers contain no rule; each calls one engine function.
-- [ ] No table change, no migration, no new dependency, no model call, no murder-mystery word added to `engine/`.
+- [x] After a mini-game ends, the rewarded player's menu read lists the reward with its amount; other players' reads do not list it.
+- [x] The list is the same after every service object is rebuilt over the same database (the restart case), and the same when read twice.
+- [x] A reward whose live message was never sent (publisher that fails, or none) is still in the read.
+- [x] The live event and the read carry the same grant ID.
+- [x] A player who won nothing gets an empty list; an arc with no reward setting behaves as before.
+- [x] No other player's reward, and no case content, appears in any player's read; the shared screen gets nothing new.
+- [x] Route handlers contain no rule; each calls one engine function.
+- [x] No table change, no migration, no new dependency, no model call, no murder-mystery word added to `engine/`.
 
 ## Tests/Verification
 

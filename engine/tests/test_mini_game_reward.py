@@ -8,6 +8,7 @@ back from saved rows. Time is a value passed in. Every test reads saved state.
 from __future__ import annotations
 
 from collections.abc import AsyncIterator, Callable
+from dataclasses import asdict
 from typing import Any
 from unittest.mock import patch
 
@@ -20,7 +21,7 @@ from engine.arc.models import ArcDefinition
 from engine.db.testing import make_sqlite_session_factory
 from engine.events.models import AudienceTarget
 from engine.mini_games.resolver import resolve_loaded_mini_game_snapshot
-from engine.session.choices import remaining_budget
+from engine.session.choices import read_menu, remaining_budget
 from engine.session.phases import finish_mini_game_phase, host_move_on, tick
 from engine.tests.mini_game_reward_support import (
     AFTER_DEADLINE,
@@ -268,6 +269,7 @@ class TestWhoIsTold:
         for event in told:
             assert event.target_audience is AudienceTarget.specific_player
             assert event.payload == {
+                "grant_id": event.payload["grant_id"],
                 "amount": 1,
                 "kind": "investigation",
                 "remaining_budget": BASE + 1,
@@ -403,3 +405,215 @@ class TestReleasesSwitchedOff:
             assert unlocked == []
         # The reward does not depend on releases: it is still given.
         assert await budgets(db, seated) == [BASE + 1, BASE, BASE]
+
+
+class TestReadBack:
+    """A phone that missed the live message, or reloaded, reads its rewards from
+    the menu route instead (AW-343). The read comes from the saved grant rows."""
+
+    @pytest.mark.asyncio
+    async def test_the_winner_reads_the_reward_and_the_others_read_none(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+        no_model_calls: None,
+    ) -> None:
+        seated, rec = await in_mini_game(db, registered, monkeypatch, reward_arc(2))
+        await place_players(db, seated, [1, 2, 3])
+        await tick(db, seated.session_id, at(AFTER_DEADLINE), rec)
+        winner, second, third = seated.participants
+        read = (await read_menu(db, seated.session_id, winner)).rewards
+        assert [(r.amount, r.kind, r.beat_id) for r in read] == [
+            (2, "investigation", "beat_one")
+        ]
+        assert read[0].run_id == str((await the_run(db, seated.session_id)).run_id)
+        assert (await read_menu(db, seated.session_id, second)).rewards == ()
+        assert (await read_menu(db, seated.session_id, third)).rewards == ()
+
+    @pytest.mark.asyncio
+    async def test_it_reads_while_the_menu_is_closed(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+        no_model_calls: None,
+    ) -> None:
+        seated, rec = await in_mini_game(db, registered, monkeypatch, reward_arc(1))
+        await place_players(db, seated, [1, 2, 3])
+        await tick(db, seated.session_id, at(AFTER_DEADLINE), rec)
+        menu = await read_menu(db, seated.session_id, seated.participants[0])
+        assert menu.open is False
+        assert len(menu.rewards) == 1
+
+    @pytest.mark.asyncio
+    async def test_the_same_list_comes_back_twice_and_after_a_reload(
+        self,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+        no_model_calls: None,
+    ) -> None:
+        engine, factory = await make_sqlite_session_factory()
+        try:
+            async with factory() as first:
+                seated, rec = await in_mini_game(
+                    first, registered, monkeypatch, reward_arc(1)
+                )
+                await place_players(first, seated, [1, 2, 3])
+                await tick(first, seated.session_id, at(AFTER_DEADLINE), rec)
+                one = (
+                    await read_menu(first, seated.session_id, seated.participants[0])
+                ).rewards
+                two = (
+                    await read_menu(first, seated.session_id, seated.participants[0])
+                ).rewards
+                await first.commit()
+            async with factory() as second:
+                three = (
+                    await read_menu(second, seated.session_id, seated.participants[0])
+                ).rewards
+            assert len(one) == 1
+            assert one == two == three
+        finally:
+            await engine.dispose()
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("delivery", ["no_publisher", "queued_never_delivered"])
+    async def test_a_committed_reward_whose_message_never_arrived_is_read_fresh(
+        self,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+        no_model_calls: None,
+        delivery: str,
+    ) -> None:
+        """The grant is committed; delivery (the outbox's job, after the commit)
+        never reaches the phone. A fresh session still reads the reward."""
+        engine, factory = await make_sqlite_session_factory()
+        queued: list[Any] = []
+
+        async def queue_only(event: Any) -> Any:
+            queued.append(event)
+            return event
+
+        try:
+            async with factory() as first:
+                seated, _ = await in_mini_game(
+                    first, registered, monkeypatch, reward_arc(1)
+                )
+                await place_players(first, seated, [1, 2, 3])
+                publish = None if delivery == "no_publisher" else queue_only
+                await tick(first, seated.session_id, at(AFTER_DEADLINE), publish)
+                await first.commit()
+            async with factory() as fresh:
+                winner = seated.participants[0]
+                menu = await read_menu(fresh, seated.session_id, winner)
+                assert [(r.amount, r.kind) for r in menu.rewards] == [
+                    (1, "investigation")
+                ]
+                assert menu.remaining_budget == BASE + 1
+        finally:
+            await engine.dispose()
+
+    @pytest.mark.asyncio
+    async def test_the_list_and_the_balance_come_from_the_same_rows(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+        no_model_calls: None,
+    ) -> None:
+        """A grant committed right after the budget rows were read (the READ
+        COMMITTED race) must not show in the list while missing from the balance."""
+        from engine.db.orm import Decision
+        from engine.session import choices
+
+        seated, _ = await in_mini_game(db, registered, monkeypatch, reward_arc(1))
+        winner = seated.participants[0]
+        real_ledger = choices._ledger
+
+        async def ledger_then_a_grant_lands(*args: Any) -> Any:
+            ledger = await real_ledger(*args)
+            db.add(
+                Decision(
+                    session_id=seated.session_id,
+                    timestamp=at(AFTER_DEADLINE),
+                    decision_type="budget_grant",
+                    context={
+                        "participant_id": str(winner),
+                        "run_id": "r",
+                        "beat_id": "beat_one",
+                        "source": "mini_game_reward",
+                    },
+                    outcome={"amount": 1, "kind": "investigation", "told": False},
+                )
+            )
+            await db.flush()
+            return ledger
+
+        monkeypatch.setattr(choices, "_ledger", ledger_then_a_grant_lands)
+        menu = await read_menu(db, seated.session_id, winner)
+        assert menu.remaining_budget == BASE + sum(r.amount for r in menu.rewards)
+
+    @pytest.mark.asyncio
+    async def test_the_live_message_carries_the_id_the_read_returns(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+        no_model_calls: None,
+    ) -> None:
+        seated, rec = await in_mini_game(db, registered, monkeypatch, reward_arc(1))
+        await place_players(db, seated, [1, 1, 2])
+        await tick(db, seated.session_id, at(AFTER_DEADLINE), rec)
+        told = rec.of_type("mini_game_reward_granted")
+        assert len(told) == 2
+        for event in told:
+            read = (
+                await read_menu(db, seated.session_id, event.target_player_id)
+            ).rewards
+            assert [r.grant_id for r in read] == [event.payload["grant_id"]]
+        assert told[0].payload["grant_id"] != told[1].payload["grant_id"]
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("setting", [None, 1])
+    async def test_a_loser_and_an_arc_with_no_setting_read_an_empty_list(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+        no_model_calls: None,
+        setting: int | None,
+    ) -> None:
+        seated, rec = await in_mini_game(
+            db, registered, monkeypatch, reward_arc(setting)
+        )
+        await place_players(db, seated, [1, 2, 3])
+        await tick(db, seated.session_id, at(AFTER_DEADLINE), rec)
+        for who in seated.participants[1:]:
+            assert (await read_menu(db, seated.session_id, who)).rewards == ()
+        if setting is None:
+            winner = seated.participants[0]
+            assert (await read_menu(db, seated.session_id, winner)).rewards == ()
+
+    @pytest.mark.asyncio
+    async def test_a_read_holds_only_the_five_fields_and_nobody_elses_id(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        monkeypatch: pytest.MonkeyPatch,
+        no_model_calls: None,
+    ) -> None:
+        seated, rec = await in_mini_game(db, registered, monkeypatch, reward_arc(1))
+        await place_players(db, seated, [1, 1, 2])
+        await tick(db, seated.session_id, at(AFTER_DEADLINE), rec)
+        mine, other = seated.participants[0], seated.participants[1]
+        read = (await read_menu(db, seated.session_id, mine)).rewards
+        assert len(read) == 1
+        assert set(asdict(read[0])) == {
+            "grant_id",
+            "run_id",
+            "beat_id",
+            "amount",
+            "kind",
+        }
+        assert str(other) not in repr(read)

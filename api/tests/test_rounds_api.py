@@ -29,6 +29,7 @@ from api.auth import (
 )
 from api.main import app
 from engine.db import get_async_session
+from engine.db.orm import Decision
 from engine.db.testing import make_sqlite_session_factory
 from engine.session.phases import host_move_on, tick
 from engine.session.service import SessionService
@@ -204,6 +205,58 @@ class TestMenuAndChoices:
             "o_porter",
         }
         assert LEDGER_CONTENT not in response.text
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("phase", ["choices", "bridge"])
+    async def test_the_menu_route_returns_only_this_players_rewards_open_or_closed(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+        who: Who,
+        phase: str,
+    ) -> None:
+        ids = await seed(db_factory, who, phase=phase)
+        async with db_factory() as db:
+            for player, amount in ((ids[0], 2), (ids[1], 5)):
+                db.add(
+                    Decision(
+                        session_id=who.session_id,
+                        timestamp=_now(),
+                        decision_type="budget_grant",
+                        context={
+                            "participant_id": str(player),
+                            "run_id": str(uuid4()),
+                            "beat_id": "beat_one",
+                            "source": "mini_game_reward",
+                        },
+                        outcome={
+                            "amount": amount,
+                            "kind": "investigation",
+                            "told": False,
+                        },
+                    )
+                )
+            await db.commit()
+        body = client.get(url(who, "/me/menu")).json()
+        assert body["open"] is (phase == "choices")
+        assert [(r["amount"], r["kind"]) for r in body["rewards"]] == [
+            (2, "investigation")
+        ]
+        assert set(body["rewards"][0]) == {
+            "grant_id",
+            "run_id",
+            "beat_id",
+            "amount",
+            "kind",
+        }
+        assert str(ids[1]) not in client.get(url(who, "/me/menu")).text
+
+    @pytest.mark.asyncio
+    async def test_the_menu_route_returns_an_empty_rewards_list_by_default(
+        self, client: TestClient, db_factory: async_sessionmaker[AsyncSession], who: Who
+    ) -> None:
+        await seed(db_factory, who, phase="choices")
+        assert client.get(url(who, "/me/menu")).json()["rewards"] == []
 
     @pytest.mark.asyncio
     async def test_a_choice_returns_its_content_and_a_repeat_returns_the_same(
