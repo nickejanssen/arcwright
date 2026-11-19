@@ -57,6 +57,12 @@ For the creative interview, start with the [ranked standalone minigame idea bank
 - `npm test --prefix dashboard` once the dashboard tests exist (AW-329)
 - Seen in play: the founder TV run (core variant) and session 1 variants (AW-346).
 
+## Recommended prototyping sequence
+
+Use [AW-348](https://github.com/nickejanssen/arcwright/issues/443) to exercise an existing game first. For the first fresh mechanic, propose **The Emergency Seating Committee**: eight guest cards, two seat swaps and immediate consequences. Record time from a fresh brief to the first playable link. Try one rule change and time the next round. After standalone and destination parity, propose **Of Course I Work Here** for private prompts, simultaneous reveal and an uncoached four-player round. **An Entirely Normal Walk** is a later showcase candidate. These are recommendations for the creative interview. The founder selects the games.
+
+Start with current `AGENTS.md` and `HANDOVER.md`, the idea bank and the minigame skill. Use one builder per branch (Codex or Claude) and a second reviewer for difficult rules or boundaries. Use GameGene for a concrete precedent question and Superpowers for design, debugging or verification when useful. Prefer the existing toolchain. Suggested tests are fixed-input Python rules checks and isolated browser players using Playwright or the existing equivalent. Test declared counts, including 1–8 where claimed; record which counts real people played. Observe whether people understand their first move and want another round. [AW-349](https://github.com/nickejanssen/arcwright/issues/444) owns the reusable porting guide.
+
 ## Dependencies
 
 - AW-303, AW-328 (merged); AW-344 for several per round; AW-345 for solo; AW-329 to AW-332 for screens.
