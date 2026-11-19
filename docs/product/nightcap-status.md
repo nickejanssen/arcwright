@@ -100,6 +100,7 @@ Total: about 20 to 29 build days in four weeks, roughly one productive build ses
 - A headless run completes at two and at four players with no AI call deciding anything.
 - One set of screen code is chosen (AW-300).
 - Every mini-game starts, ends on its own clock, and hands back to the story (AW-303).
+- A mini-game can be played on its own, with Nightcap off, on a phone or laptop (AW-348), and one ported browser mini-game is reused in an Arcwright experience (AW-349). Scheduled by D-141; they add an estimated 2 to 6 build days (inferred).
 
 **Before session 1**
 
