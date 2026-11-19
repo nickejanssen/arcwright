@@ -3249,7 +3249,8 @@
       "epic": "M7-B",
       "size": "M",
       "depends_on": [
-        "AW-322"
+        "AW-329",
+        "AW-347"
       ],
       "path": "docs/roadmap/tasks/AW-348-play-a-minigame-live-with-nightcap-offline.md",
       "epic_id": "M7-B",

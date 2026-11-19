@@ -18,7 +18,7 @@ supersedes: []
 **Size:** M  
 **Product:** Shared  
 **Owner:** One implementation session and founder playtest  
-**Target date:** Unscheduled; founder to prioritize after dependency review.
+**Target date:** Before 2026-12-05, the founder TV run (D-141). Order: after AW-347, before AW-349.
 
 ## Plain-English Summary
 
@@ -50,7 +50,7 @@ Record commands and pass/fail evidence in the issue. Report merge, deployment an
 
 ## Dependencies
 
-AW-322 owns discovery and gap sizing. Reconcile the resulting slice with spec 0080 before build. Coordinate audience projections with AW-347 (#440) and renderer work with AW-329 (#432).
+Scheduled by D-141: starts after AW-329 (#432) and AW-347 (#440) merge; it uses AW-322's recorded headless findings and does not wait for AW-322 to close. AW-322 owns discovery and gap sizing. Reconcile the resulting slice with spec 0080 before build. Coordinate audience projections with AW-347 (#440) and renderer work with AW-329 (#432).
 
 ## Must Not Do
 
