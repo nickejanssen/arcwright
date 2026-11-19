@@ -11,6 +11,9 @@ Endpoints (base path /v1/sessions/{session_id}):
   POST /me/ready         player JWT       Mark ready for the phase the player saw
   GET  /me/holdings      player JWT       What this player found for themselves
   POST /round/move-on    host JWT         End the current phase by hand
+  GET  /me/theory        player JWT       This player's theory form and saved draft
+  PUT  /me/theory        player JWT       Save (replace) this player's draft
+  POST /me/theory/lock   player JWT       Lock the saved draft
 """
 
 from __future__ import annotations
@@ -26,6 +29,7 @@ from api.auth import JwtClaims, optional_player_or_host_jwt, require_host_jwt
 from api.routers.events import _get_or_create_session_state
 from api.routers.mini_games import ParticipantContext, require_valid_participant
 from api.schemas import (
+    AccountPartResponse,
     ChoiceRequest,
     ChoiceResponse,
     HeldConceptResponse,
@@ -36,10 +40,15 @@ from api.schemas import (
     ReadyRequest,
     RewardGrantResponse,
     RoundStateResponse,
+    TheoryDraftRequest,
+    TheoryFormResponse,
+    TheoryOptionResponse,
+    TheoryResponse,
+    TheorySlotResponse,
 )
 from engine.db import get_async_session
 from engine.events.models import ContentEvent
-from engine.session import choices, phases
+from engine.session import choices, commit_phase, phases
 from engine.session.phases import RoundError
 
 router = APIRouter(prefix="/sessions", tags=["rounds"])
@@ -273,3 +282,103 @@ async def move_on(
             raise _refuse(error)
         await _commit_then_tell(db, outbox, session_id)
     return _phase_state_response(state)
+
+
+def _theory_response(theory: commit_phase.Theory) -> TheoryResponse:
+    return TheoryResponse(
+        state=theory.state,
+        answers=theory.answers,
+        proof=theory.proof,
+        revision=theory.revision,
+    )
+
+
+def _option(option: commit_phase.FormOption) -> TheoryOptionResponse:
+    return TheoryOptionResponse(
+        value=option.value, label=option.label, text=option.text
+    )
+
+
+@router.get("/{session_id}/me/theory", response_model=TheoryFormResponse)
+async def get_theory(
+    session_id: UUID,
+    who: ParticipantContext = Depends(require_valid_participant),
+    db: AsyncSession = Depends(get_async_session),
+) -> TheoryFormResponse:
+    """This player's theory form and their own saved draft or lock. Private to
+    them; it never says whether anything is right."""
+    assert who.claims.player_id is not None
+    try:
+        form = await phases.read_theory_form(
+            db, session_id, who.claims.player_id, _now()
+        )
+    except RoundError as error:
+        raise _refuse(error)
+    return TheoryFormResponse(
+        open=form.open,
+        phase_entry=form.phase_entry,
+        deadline_at=form.deadline_at,
+        seconds_left=form.seconds_left,
+        slots=[
+            TheorySlotResponse(
+                slot_id=s.slot_id,
+                label=s.label,
+                kind=s.kind,  # type: ignore[arg-type]
+                options=[_option(o) for o in s.options],
+            )
+            for s in form.slots
+        ],
+        account=[
+            AccountPartResponse(text=p.text, slot_id=p.slot_id) for p in form.account
+        ],
+        proof_options=[_option(o) for o in form.proof_options],
+        theory=_theory_response(form.theory),
+    )
+
+
+@router.put("/{session_id}/me/theory", response_model=TheoryResponse)
+async def save_theory(
+    session_id: UUID,
+    body: TheoryDraftRequest,
+    who: ParticipantContext = Depends(require_valid_participant),
+    db: AsyncSession = Depends(get_async_session),
+) -> TheoryResponse:
+    """Save this player's draft, replacing the last. Refused after a lock."""
+    assert who.claims.player_id is not None
+    outbox = phases.Outbox(session_id)
+    async with phases.delivery_lock(session_id):
+        try:
+            theory = await phases.save_theory_draft(
+                db,
+                session_id,
+                who.claims.player_id,
+                body.answers,
+                body.proof,
+                _now(),
+                outbox,
+            )
+        except RoundError as error:
+            raise _refuse(error)
+        await _commit_then_tell(db, outbox, session_id)
+    return _theory_response(theory)
+
+
+@router.post("/{session_id}/me/theory/lock", response_model=TheoryResponse)
+async def lock_theory(
+    session_id: UUID,
+    who: ParticipantContext = Depends(require_valid_participant),
+    db: AsyncSession = Depends(get_async_session),
+) -> TheoryResponse:
+    """Lock this player's saved draft. Final: nothing more is accepted from
+    them, and the shared screen and host learn only that they have locked."""
+    assert who.claims.player_id is not None
+    outbox = phases.Outbox(session_id)
+    async with phases.delivery_lock(session_id):
+        try:
+            theory = await phases.lock_theory(
+                db, session_id, who.claims.player_id, _now(), outbox
+            )
+        except RoundError as error:
+            raise _refuse(error)
+        await _commit_then_tell(db, outbox, session_id)
+    return _theory_response(theory)

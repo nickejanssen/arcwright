@@ -46,6 +46,7 @@ from engine.events.models import (
 from engine.mini_games.models import MiniGameReward
 from engine.session import mini_game_phase
 from engine.session.mini_game_phase import Publish
+from engine.session.winner import run_winners
 
 REWARD_SOURCE = "mini_game_reward"
 REWARD_EVENT = "mini_game_reward_granted"
@@ -82,14 +83,6 @@ def rewards_from_rows(rows: Iterable[Decision]) -> tuple[RewardGrant, ...]:
         for row in rows
         if row.context.get("source") == REWARD_SOURCE
     )
-
-
-def _winners(standing: Any) -> list[str]:
-    """The top tier, or nobody when it holds every player (or there is no tier)."""
-    if not isinstance(standing, list) or len(standing) < 2:
-        return []
-    top = standing[0]
-    return [str(p) for p in top] if isinstance(top, list) else []
 
 
 async def _already_given(db: AsyncSession, session_id: UUID, run_id: UUID) -> set[str]:
@@ -143,7 +136,7 @@ async def grant(
         return []
     reward = MiniGameReward.model_validate(saved["reward"])
     binding_id = saved.get("binding_id")
-    winners = _winners((run.outcome or {}).get("standing"))
+    winners = run_winners((run.outcome or {}).get("standing"))
     if not winners:
         return []
     given = await _already_given(db, session_id, run.run_id)

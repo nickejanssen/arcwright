@@ -24,6 +24,7 @@ from engine.case.authored.models import (
     AuthoredSlot,
     AuthoredSubject,
     AuthoredTruth,
+    split_account,
 )
 from engine.case.authored.reports import full_report, summary_report
 from engine.case.authored.rules import (
@@ -34,6 +35,7 @@ from engine.case.authored.rules import (
     RuleOutcome,
     check_case,
 )
+from engine.case.authored.theory import TheoryCheck, check_theories
 
 __all__ = [
     "DEFAULT_CHOICE_BUDGET",
@@ -57,5 +59,8 @@ __all__ = [
     "full_report",
     "load_authored_case",
     "parse_authored_case",
+    "TheoryCheck",
+    "check_theories",
+    "split_account",
     "summary_report",
 ]
