@@ -6,7 +6,7 @@
 import { useEffect, useRef } from "react";
 
 import type { MiniGameDefinition, Surface } from "../mini-game-kit/index.js";
-import { bootMiniGameStage, type StageController } from "./client.js";
+import { bootMiniGameStage } from "./client.js";
 import type { PerfTransport } from "../mini-game-kit/perf.js";
 import { RendererRegistry } from "./registry.js";
 import { StageStates } from "./stage.js";
@@ -45,8 +45,10 @@ export function MiniGameStage(props: MiniGameStageProps) {
   useEffect(() => {
     const stage = ref.current;
     if (!stage) return;
-    let cancelled = false;
-    let controller: StageController | null = null;
+    // Cleanup aborts the boot, so one still waiting for its first reply never
+    // mounts into the element a newer boot now owns, and a running one
+    // unmounts itself.
+    const abort = new AbortController();
     void bootMiniGameStage(stage, {
       registry,
       baseUrl,
@@ -56,19 +58,15 @@ export function MiniGameStage(props: MiniGameStageProps) {
       participantId,
       characterId,
       loadDefinition,
+      signal: abort.signal,
       ...(fetcher ? { fetcher } : {}),
       ...(perfTransport ? { perfTransport } : {}),
-    }).then(
-      (c) => {
-        if (cancelled) c.unmount();
-        else controller = c;
-      },
-      () => stage.setAttribute("data-mini-game-state", StageStates.BootError),
-    );
-    return () => {
-      cancelled = true;
-      controller?.unmount();
-    };
+    }).catch(() => {
+      if (!abort.signal.aborted) {
+        stage.setAttribute("data-mini-game-state", StageStates.BootError);
+      }
+    });
+    return () => abort.abort();
   }, [
     surface,
     sessionId,

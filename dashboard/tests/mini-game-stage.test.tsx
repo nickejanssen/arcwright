@@ -105,3 +105,90 @@ test("MiniGameStage mounts the registered renderer and unmounts it on leave", as
   });
   assert.equal(host.querySelector("[data-mini-game-stage]"), null);
 });
+
+test("a stage cleaned up before its first reply arrives never mounts, and the next stage stays", async () => {
+  const mounts: string[] = [];
+  const registry = new RendererRegistry();
+  registry.register(
+    defineRenderer({
+      gameId: "fixture-game",
+      sharedDisplay: {
+        mount(root, ctx) {
+          mounts.push(ctx.participantId);
+          root.setAttribute("data-fixture", "mounted");
+          return {
+            update() {},
+            handleEvent() {},
+            unmount() {
+              root.removeAttribute("data-fixture");
+            },
+          };
+        },
+      },
+    }),
+  );
+  // The first reply to "what is active" is held until the test releases it,
+  // as on a slow network; later ones are immediate. This is what React's effect replay and a prop change
+  // both produce: the first boot is cleaned up while it is still waiting.
+  let activeCalls = 0;
+  let releaseFirst: () => void = () => {};
+  const firstReplyGate = new Promise<void>((done) => {
+    releaseFirst = done;
+  });
+  const base = fakeServer();
+  const slowFirst = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    if (String(input).includes("/mini-games/active")) {
+      activeCalls += 1;
+      if (activeCalls === 1) await firstReplyGate;
+    }
+    return base(input, init);
+  }) as typeof fetch;
+  const host = happy.document.createElement("div");
+  happy.document.body.appendChild(host);
+  const root = createRoot(host as unknown as HTMLElement);
+  const props = {
+    surface: "shared_display" as const,
+    sessionId: "session-1",
+    characterId: "c-1",
+    token: "token-x",
+    baseUrl: "https://arcwright.test",
+    registry,
+    loadDefinition: async () => definition,
+    fetcher: slowFirst,
+    perfTransport: "none" as const,
+  };
+
+  await act(async () => {
+    root.render(
+      createElement(MiniGameStage, { ...props, participantId: "first" }),
+    );
+  });
+  await act(async () => {
+    root.render(
+      createElement(MiniGameStage, { ...props, participantId: "second" }),
+    );
+    await new Promise((done) => setTimeout(done, 50));
+  });
+  // Now the cleaned-up first boot gets its reply.
+  releaseFirst();
+  await act(async () => {
+    await new Promise((done) => setTimeout(done, 50));
+  });
+
+  const stage = host.querySelector("[data-mini-game-stage]");
+  assert.ok(stage);
+  assert.equal(
+    stage.getAttribute("data-mini-game-state"),
+    "active:fixture-game",
+  );
+  assert.equal(stage.getAttribute("data-fixture"), "mounted");
+  assert.deepEqual(
+    mounts,
+    ["second"],
+    "only the live boot mounted the renderer",
+  );
+
+  await act(async () => {
+    root.unmount();
+  });
+});

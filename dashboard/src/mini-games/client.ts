@@ -46,6 +46,12 @@ export interface StageBootOptions {
   fetcher?: typeof fetch;
   now?: () => number;
   perfTransport?: PerfTransport;
+  /**
+   * Aborting stops the boot: a boot still waiting for its first reply never
+   * mounts, and a running one unmounts. Added in the dashboard copy (AW-329)
+   * so a React effect cleanup can cancel a pending boot.
+   */
+  signal?: AbortSignal;
   retry?: RetryPolicy;
 }
 
@@ -136,6 +142,8 @@ export async function bootMiniGameStage(
   // checks that no newer refresh has begun. This prevents double-mount on
   // concurrent state_transition events and on the boot/streamLoop overlap.
   let refreshSequence = 0;
+  const isStale = (seq: number): boolean =>
+    seq !== refreshSequence || opts.signal?.aborted === true;
 
   const perfReporterFor = (gameId: string) =>
     createPerfReporter({
@@ -307,11 +315,11 @@ export async function bootMiniGameStage(
         state.definitionVersion,
       );
     } catch {
-      if (mySeq !== refreshSequence) return;
+      if (isStale(mySeq)) return;
       setStageState(stage, StageStates.DefinitionError);
       return;
     }
-    if (mySeq !== refreshSequence) return;
+    if (isStale(mySeq)) return;
 
     const perf = perfReporterFor(state.gameId);
     const startedAt = performanceNow(view);
@@ -352,7 +360,7 @@ export async function bootMiniGameStage(
   const refresh = async (): Promise<void> => {
     const mySeq = ++refreshSequence;
     const state = await fetchActiveState();
-    if (mySeq !== refreshSequence) return;
+    if (isStale(mySeq)) return;
     if (!state) {
       unmountActive();
       setStageState(stage, StageStates.Idle);
@@ -367,7 +375,7 @@ export async function bootMiniGameStage(
       return;
     }
     unmountActive();
-    if (mySeq !== refreshSequence) return;
+    if (isStale(mySeq)) return;
     await mountRenderer(state, mySeq);
   };
 
@@ -434,10 +442,7 @@ export async function bootMiniGameStage(
     }
   };
 
-  await refresh();
-  void streamLoop();
-
-  return {
+  const controller: StageController = {
     refresh,
     unmount: () => {
       stream.cancelled = true;
@@ -451,6 +456,15 @@ export async function bootMiniGameStage(
       setStageState(stage, StageStates.Idle);
     },
   };
+
+  if (opts.signal?.aborted) return controller;
+  opts.signal?.addEventListener("abort", () => controller.unmount(), {
+    once: true,
+  });
+  await refresh();
+  if (opts.signal?.aborted) return controller;
+  void streamLoop();
+  return controller;
 }
 
 function delay(ms: number, view: Window | null): Promise<void> {
