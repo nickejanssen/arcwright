@@ -34,6 +34,7 @@ The founder's idea, 16 November 2026: every Nightcap case starts with the group 
 
 ## Technical Scope
 
+- **Added 2026-11-19 (D-138, the founder moved this here):** Last Call wording for the agency framing to draft and compare: the theory as each agent's "case report" to the boss, the proof as "Exhibit A", the boss reading each accusation aloud with a dry remark, the Verdict as who gets the commission, the Postmortem lines as "performance reviews", and an optional no-score side guess ("who in the agency got it wrong?") for one session 1 variant. Wording only; the rules are D-138's.
 - Wrapper only. No change to mechanics, case structure, scoring, the engine or the case graph.
 - Draft two short intro texts for the first case (AW-305): the current invitation framing and the agency framing. Each is the opening the TV would show, plus two or three sample narrator lines and one end-of-case line.
 - Content lives in `nightcap/` with the first case. Nothing in `engine/` changes.

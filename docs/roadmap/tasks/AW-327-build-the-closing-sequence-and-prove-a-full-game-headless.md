@@ -32,6 +32,7 @@ After every theory is locked, show who each player accused, then the written tru
 
 ## Technical Scope
 
+- **D-138 (2026-11-19):** the public part of the `result` phase adds the winner's proof (or each co-winner's); nobody else's proof is public. Amends spec 0094 Part J.
 - Three phase kinds on the clock from spec 0093: `reveal`, `result`, `recap`. The written truth uses the existing `scene` phase.
 - The measures of what each player did, worked out from saved records only.
 - Choosing one written line per player by rule, with no repeats and a fallback.

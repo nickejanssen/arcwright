@@ -14,7 +14,7 @@ supersedes: []
 
 # Spec 0095: Screens For The Thin Version
 
-**Status**: Draft. Not approved. Nothing in this file may be built until the founder approves it. See "Your steps".
+**Status**: Approved by the founder on 2026-11-19 (D-139, issue #355), with the answers to Q1 to Q5 (D-133 to D-138). This permits AW-329 to AW-334 to write their plans. Each plan needs the founder's approval before code. See "Founder Approval" at the end.
 
 **Author**: Claude Code (Spec Author role) | **Date**: 2026-11-16 | **Task**: AW-302, the screens spec of three | **Checked against**: main at `83795a5`
 
@@ -619,7 +619,7 @@ The recorded file is committed. The Python half fails if a fresh run differs fro
 
 **Review package:** this file. The parts to read are "Plain-language goal", "What you are approving", "How the feelings answer shapes the layout" and the open questions.
 
-**Approval evidence:** none yet. Draft.
+**Approval evidence:** approved by the founder on 2026-11-19: decision D-139, issue #355, and "Founder Approval" at the end of this file.
 
 **Owner actions:** none beyond "Your steps".
 
@@ -744,7 +744,7 @@ Each has a recommended default you can accept with "agree". None blocks AW-329.
 - **Q2. What does the TV show during thinking time?** **Answered 2026-11-18: option 1, quiet (D-134). See "Q2 Answered" at the end.** (1) Quiet: round title, clock, who is ready. Recommended, because private thinking wins (your feelings answer). (2) Quiet, plus the round's scene lines left on screen for anyone who wants to reread. (3) Quiet, plus a light line when someone investigates ("[Name] is looking into something"); this is the if-it-fits rival feed and needs engine work. Blocks: AW-332's plan.
 - **Q3. How is "The accused" staged on the TV?** **Answered 2026-11-18: option 1, owned by Nightcap, order never by right or wrong (D-135). See "Q3 Answered" at the end.** (1) One player at a time with a short hold, then all side by side; the host can skip ahead. Recommended: it builds to the groan. (2) Everyone at once. (3) The host taps for each player. All three use the same engine event; this is a screen setting. Blocks: AW-333's plan.
 - **Q4. How many different mini-games does session 1 need screens for?** **Answered 2026-11-19: not one reused game; distinct mechanics, several per round allowed, solo mini-games, session 1 variants (D-136, D-137). See "Q4 Answered" at the end.** Facts: only Tell Me Something True has a working package screen, and it is a draft written for 4 to 8 players; no package is written for 2 or 3 players (verified). (1) One mini-game that works at 2 to 4 players, reused in all three rounds with three different story wrappers; add a second only if it fits. Recommended: cheapest, and the status page's cut order already allows fewer mini-games. (2) Two different mini-games. (3) Three. Which mini-game and its story wrappers are chosen with the case's author. Blocks: the mini-game renderer tasks, not AW-329 to AW-334.
-- **Q5. Two documents disagree on the final theory, and the screens follow the later one unless you say otherwise.** The status page says "arrange a short causal chain" (`docs/product/nightcap-status.md`, "What session 1 contains"). Spec 0094, approved later the same week, has the player fill the case's slots in the case's fixed order; the player does not choose the order (Part G). (1) Fill the case's slots in order, as spec 0094 builds. Recommended: no engine change, and the GDD's own example reads in a fixed order. The status page wording is then updated to match. (2) Let players put the pieces in their own order. That changes spec 0094's check and needs your approval there. Blocks: AW-333's plan.
+- **Q5. Two documents disagree on the final theory, and the screens follow the later one unless you say otherwise.** **Answered 2026-11-19: fill a short written account and pin one proof (D-138). See "Q5 Answered" at the end.** The status page says "arrange a short causal chain" (`docs/product/nightcap-status.md`, "What session 1 contains"). Spec 0094, approved later the same week, has the player fill the case's slots in the case's fixed order; the player does not choose the order (Part G). (1) Fill the case's slots in order, as spec 0094 builds. Recommended: no engine change, and the GDD's own example reads in a fixed order. The status page wording is then updated to match. (2) Let players put the pieces in their own order. That changes spec 0094's check and needs your approval there. Blocks: AW-333's plan.
 
 ---
 
@@ -773,6 +773,8 @@ Not numbered here: one small task per mini-game renderer that Q4's answer needs,
 - 2026-11-18: Q2 answered by the founder (a quiet TV during thinking time, D-134). Still a draft.
 - 2026-11-18: Q3 answered by the founder (the accused shown one at a time, staged by Nightcap, D-135). Still a draft.
 - 2026-11-19: Q4 answered by the founder (D-136, D-137). Still a draft.
+- 2026-11-19: Q5 answered by the founder (D-138).
+- 2026-11-19: Approved by the founder (D-139). Task files and issues for AW-329 to AW-334 created.
 
 ---
 
@@ -864,3 +866,33 @@ Recorded from the founder's answers in session on 18 and 19 November 2026. Decis
 - **Session 1 runs variants,** 1a to 1d, each a different arc-file setup, to A/B test these structures. The extras are optional; the core variant must be ready for the founder TV run by 5 December (D-137, AW-346).
 
 **What this changes in this spec.** The Q4 recommendation (one game, three wrappers) is withdrawn. Screens 10 to 12 must handle several mini-games in a round and a solo mini-game that runs on one phone only; what the TV and the other phones show while a solo mini-game runs is open and is settled in AW-345's plan, within D-128 (private thinking wins) and D-134 (a quiet TV). Each new mechanic needs its own package renderer, one small task each, as "Out of Scope" already says.
+
+---
+
+# Q5 Answered: Fill The Story, Pin One Proof (2026-11-19)
+
+Recorded from the founder's answers in session on 19 November 2026. Decision row: D-138. Also recorded on issue #355. This answers Q5; it does not approve this spec.
+
+**Founder's words.** Asked about Q5, the founder first asked "What are the bust versions we thought through in the GDD?", then "Knowing what you know about how to creat amazing, fun, engaging, world class, and billion dollar games, is this the best way to do it? Do you have other suggestions?", then "What would be the best version for the dysfunctional detective agency idea I had?", then "I'm feeling better, but what does the gameplay look like? We can skip the skinning for right now and add it to part of the detective agency strategy." Shown a walkthrough, he answered the question "Lock this Last Call gameplay (fill the story from your own pieces, pin one proof, lock; the winner's proof shown on the TV at the Verdict; the proof does not change who wins)?" with "Lock it (Recommended)". The option he chose said: "Spec 0094's Verdict change is approved by this answer."
+
+**What was decided.** The Last Call theory is Structured Reconstruction (the GDD's V1, spec 0092 Q3) presented as a short written account. (1) The case writer writes a short account of what happened with blanks; each blank is one of the case's solution slots (spec 0093 Part A), in the case's order. The player fills each blank by tapping pieces they hold themselves, true and misleading alike, in an order that never hints at the answer (spec 0094 Part G is otherwise unchanged). (2) The player also pins one held piece as their proof. The proof does not change who wins: the theory check and the winner rule (spec 0094 Parts H and I) are unchanged. (3) At the Verdict the TV shows the winner's proof with their name; nobody else's proof is shown publicly. Each phone shows its own blanks marked right or wrong only after the TV's Verdict (D-128). (4) The detective-agency wording (case report, Exhibit A, performance reviews, the side guess) is not part of this decision; it moves to the detective agency strategy, AW-319. Prior art considered (GameGene records): The Case of the Golden Idol judges a completed written account, not a name; Ace Attorney's single moment of presenting the decisive evidence; Return of the Obra Dinn and Golden Idol's partial-correctness feedback was rejected because the GDD forbids incremental correctness feedback.
+
+**What this changes in this spec.**
+- **Screen 14 (Your theory)** becomes the account with blanks: the case writer's sentence, each blank opening the list of the player's own pieces, plus one "Proof" field that opens their notebook. Lock asks once more, as before.
+- **Screen 17 (Verdict)** adds the winner's proof after their name, for example "[Name] solved it. Their proof: [piece]."
+- **Screen 18 (Your result)** shows the player's own account with each blank marked right or wrong, after the TV's Verdict.
+- Q5's two original options are both replaced: the order is set by the case writer's account, and the player does not rearrange it.
+
+---
+
+# Founder Approval (2026-11-19)
+
+Recorded from the founder's answer in session on 2026-11-19. Decision row: D-139. Also recorded on issue #355.
+
+**Question:** "Approve spec 0095 (the screens for the thin version), with your five answers D-133 to D-138? This unblocks the screen task plans AW-329 to AW-334; each plan, and AW-331's sign-in change, still comes to you separately."
+
+**Founder's words:** "Approve 0095 (Recommended)"
+
+**What this approves.** Phase gate 1 of this spec: Parts K to O, the eight decisions under "What you are approving", and the answers in "Q1 Answered" to "Q5 Answered" (D-133 to D-138). Where an answered section and earlier text disagree, the answered section is the later record. It permits AW-329 to AW-334 to write their plans, in the build order above.
+
+**What this does not approve.** Any plan or code; each plan is shown to the founder first. The hard rules each task touches (AW-329: `package.json`; AW-330 and AW-331: sign-in; AW-331: changes across engine modules) need his explicit approval of that plan. The screen-copy sample (about twenty lines) comes before AW-330's code. The walkthrough (AW-301) still checks W1 to W12; anything it disproves comes back to him before that part is built.
