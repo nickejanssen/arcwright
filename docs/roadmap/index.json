@@ -3235,7 +3235,11 @@
         "AW-322"
       ],
       "path": "docs/roadmap/tasks/AW-348-play-a-minigame-live-with-nightcap-offline.md",
-      "epic_id": "M7-B"
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 443,
+        "url": "https://github.com/nickejanssen/arcwright/issues/443"
+      }
     },
     {
       "id": "AW-349",
@@ -3247,7 +3251,11 @@
         "AW-348"
       ],
       "path": "docs/roadmap/tasks/AW-349-prove-browser-minigame-port-and-package-reuse.md",
-      "epic_id": "M7-B"
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 444,
+        "url": "https://github.com/nickejanssen/arcwright/issues/444"
+      }
     }
   ],
   "superseded_sources": [
