@@ -87,3 +87,12 @@ Acceptance for this work is at least 80% on the existing unscoped and specialist
 ### Retrieval candidate, 2026-11-17
 
 On main `3f20389` with the candidate retrieval change, a fresh index and the task’s specified search did not return the owning reset audit in the first eight. The namespace-filter change does not close this task: live specialist answers, owning citations, refused calls, independent evaluation and the unscoped 80% target remain outstanding. The oracle-scoped development replay found 29 of 33 expected documents, compared with 27 of 33 on the baseline; the unscoped development replay found 16 of 33, unchanged from the baseline. These are development results, not live specialist or independent accuracy.
+
+
+### Current-main retrieval check, 2026-11-18
+
+On main `6b389b6`, the Arcwright runtime was rebuilt and the index rebuilt in an isolated checkout: 536 documents and 5,303 chunks. The unchanged golden set produced 16/33 (48.5%) unscoped hits; its green status reflects the historical 45% gate, not the 80% target. The oracle-scoped diagnostic found 29/33 using both direct and wrapper-equivalent results. These are development fixtures, not independent or live-agent accuracy.
+
+With `--namespace product-roadmap --k 8`, the exact query `reset audit findings owner` returned two sections of AW-318 followed by six roadmap task dependency sections; the audit was absent. The query `founder reset audit 2026-11-15` returned the owning audit first, while `reset audit original record` returned it second. These examples diagnose query sensitivity, not general accuracy. The repeated audit references remain useful and the prior removal experiment did not meet the top-three requirement; no speculative ranking or documentation change is claimed as a fix.
+
+The required fresh, guarded `product-roadmap-sme` session could not be run in this environment: the Claude CLI and its active hooks were unavailable. No live citation score or refused-call count was recorded. The prior Codex role probe remains separate evidence and does not satisfy the guarded check. The task and the 80% target remain open.
