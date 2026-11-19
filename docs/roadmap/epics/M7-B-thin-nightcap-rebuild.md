@@ -18,7 +18,7 @@ x-scope-evidence: "D-112, D-113"
 
 ## Plain-English Summary
 
-Build the thin, complete version of the Master GDD game: three beats as rounds, each ending in a story-wrapped mini-game, then Last Call, the final theory and the ending.
+Build the thin, complete version of the Master GDD game: three beats as rounds, each with one or more mini-games, skinned to the story when natural (D-136, D-143), then Last Call, the final theory and the ending.
 
 ## Why This Matters
 
