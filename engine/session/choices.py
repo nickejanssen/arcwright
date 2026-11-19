@@ -30,6 +30,7 @@ from engine.db.orm import Session as OrmSession
 from engine.events.models import AudienceTarget, EventCategory
 from engine.knowledge.holdings import concepts_held, grant_concept
 from engine.session.case_seating import cached_arc_case
+from engine.session.mini_game_reward import RewardGrant, read_rewards
 from engine.session.models import SessionStatus
 from engine.session.phases import (
     Publish,
@@ -62,6 +63,7 @@ class Menu:
     open: bool
     remaining_budget: int
     items: tuple[MenuItem, ...]
+    rewards: tuple[RewardGrant, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -270,12 +272,13 @@ async def read_menu(
     ctx = await _context(db, orm, participant_id)
     ledger = await _ledger(db, session_id, participant_id)
     left = budget_allowance(ctx.arc, granted=ledger.granted) - ledger.spent
+    rewards = await read_rewards(db, session_id, participant_id)
     if not await _choices_open(db, ctx.orm):
-        return Menu(open=False, remaining_budget=left, items=())
+        return Menu(open=False, remaining_budget=left, items=(), rewards=rewards)
     held = await _held_with_opening(db, ctx, locked=False)
     items = _menu_items(ctx.case, ctx.orm.current_beat_id, held, ledger.taken)
     await _save_menu_shown(db, ctx, participant_id, items, now)
-    return Menu(open=True, remaining_budget=left, items=tuple(items))
+    return Menu(open=True, remaining_budget=left, items=tuple(items), rewards=rewards)
 
 
 async def _save_menu_shown(
