@@ -44,8 +44,10 @@ The playable build is the superseded Couch Race design. The founder chose a thin
 - [AW-326: Build Last Call, The Private Lock, The Theory Check And The Winner Rule](../tasks/AW-326-build-last-call-the-private-lock-the-theory-check-and-the-winner-rule.md)
 - [AW-327: Build The Closing Sequence And Prove A Full Game Headless](../tasks/AW-327-build-the-closing-sequence-and-prove-a-full-game-headless.md)
 - [AW-328: Give The Mini-Game Winner One Extra Investigation](../tasks/AW-328-give-the-mini-game-winner-one-extra-investigation.md)
-- [AW-337: Give Small Groups A Mini-Game That Fits](../tasks/AW-337-give-small-groups-a-mini-game-that-fits.md)
+- [AW-337: Design And Build The Mini-Game Mechanics For A Playthrough](../tasks/AW-337-give-small-groups-a-mini-game-that-fits.md)
 - [AW-338: Tighten Four Round Rules Found In The AW-325 Review](../tasks/AW-338-tighten-four-round-rules-found-in-the-aw-325-review.md)
+- [AW-348: Play a minigame live with Nightcap offline](../tasks/AW-348-play-a-minigame-live-with-nightcap-offline.md)
+- [AW-349: Prove a browser minigame port and reuse the same package in an Arcwright experience](../tasks/AW-349-prove-browser-minigame-port-and-package-reuse.md)
 - AW-291 (existing task; see `docs/roadmap/index.json`)
 - AW-274 (existing task; see `docs/roadmap/index.json`)
 
