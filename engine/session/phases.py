@@ -36,7 +36,13 @@ from uuid import UUID
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
-from engine.arc.models import ArcDefinition, BeatDefinition, PhaseDefinition, PhaseKind
+from engine.arc.models import (
+    ArcDefinition,
+    BeatDefinition,
+    PhaseDefinition,
+    PhaseKind,
+    PhaseLine,
+)
 from engine.arc.registry import load_arc_definition
 from engine.case.authored import AuthoredCase
 from engine.db.orm import Decision, Event, SessionParticipant
@@ -65,7 +71,17 @@ caller's open transaction, so a caller that commits afterwards must pass an
 event at once, which is only safe where nothing can fail after the call."""
 Status = Literal["running", "paused", "ended"]
 
-_READY_PHASES = frozenset({PhaseKind.scene, PhaseKind.choices, PhaseKind.bridge})
+_READY_PHASES = frozenset(
+    {
+        PhaseKind.scene,
+        PhaseKind.choices,
+        PhaseKind.bridge,
+        PhaseKind.reveal,
+        PhaseKind.result,
+        PhaseKind.recap,
+    }
+)
+_CLOSING_PHASES = frozenset({PhaseKind.reveal, PhaseKind.result, PhaseKind.recap})
 _PUBLIC_AUDIENCES = frozenset({AudienceTarget.all, AudienceTarget.shared_display})
 _MAX_STEPS = 8
 
@@ -453,7 +469,8 @@ async def _enter(
             },
         ),
     )
-    for line_index, line in enumerate(definition.lines):
+    lines = phase_lines(arc, definition)
+    for line_index, line in enumerate(lines):
         await emit(
             publish,
             content_event(
@@ -466,7 +483,7 @@ async def _enter(
                     "beat_id": beat_id,
                     "phase": definition.kind.value,
                     "line_index": line_index,
-                    "line_count": len(definition.lines),
+                    "line_count": len(lines),
                     "text": line.text,
                     "speaker": line.speaker,
                 },
@@ -475,6 +492,12 @@ async def _enter(
         )
     if definition.kind is PhaseKind.commit:
         await _begin_commit(db, orm, arc)
+    if definition.kind in _CLOSING_PHASES:
+        from engine.session import closing
+
+        await closing.enter(
+            db, arc, session_id, definition.kind, state, now, publish, index
+        )
     if definition.kind is PhaseKind.mini_game:
         ending = await mini_game_phase.begin(
             db, orm, arc, beat_id, state.entry, now, publish
@@ -489,6 +512,14 @@ def _commit_case(arc: ArcDefinition) -> AuthoredCase:
     if case is None:
         raise RoundError("no_written_case", "this game has no written case")
     return case
+
+
+def phase_lines(arc: ArcDefinition, definition: PhaseDefinition) -> list[PhaseLine]:
+    """The written lines of a phase: its own, or for a scene that says so, the
+    case's written ``closing``."""
+    if definition.source == "case_closing":
+        return [PhaseLine(text=text) for text in _commit_case(arc).closing if text]
+    return definition.lines
 
 
 async def _begin_commit(db: AsyncSession, orm: OrmSession, arc: ArcDefinition) -> None:
@@ -1022,7 +1053,7 @@ async def round_view(db: AsyncSession, session_id: UUID, now: datetime) -> Round
                     "speaker": line.speaker,
                     "hints": line.hints.model_dump(),
                 }
-                for line in definition.lines
+                for line in phase_lines(arc, definition)
             )
     if state.phase == PhaseKind.commit.value:
         ready = await commit_phase.locked_ids(db, session_id, state.entry)

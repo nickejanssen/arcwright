@@ -33,6 +33,12 @@ ENGINE_DIR = Path(__file__).resolve().parent.parent
 VALID_CASE = Path(__file__).resolve().parent / "fixtures/authored_case/valid_case.json"
 BEATS = ["opening", "beat_one", "beat_two", "beat_three", "finale"]
 ROUND_BEATS = BEATS[1:4]
+CLOSING_BEATS = ["truth", "verdict"]
+COMMIT_SECONDS = 120
+REVEAL_SECONDS = 15
+TRUTH_SECONDS = 20
+RESULT_SECONDS = 15
+RECAP_SECONDS = 20
 T0 = datetime(2026, 12, 12, 20, 0, 0, tzinfo=timezone.utc)
 
 SCENE_SECONDS = 20
@@ -140,10 +146,13 @@ def phased_arc(
     phases: dict[str, list[dict[str, Any]] | None] | None = None,
     mini_games: dict[str, list[dict[str, Any]]] | None = None,
     mini_game_root: str | None = MINI_GAME_ROOT,
+    extra_beats: list[str] | None = None,
 ) -> ArcDefinition:
     """The fixture arc: opening, three rounds, a final beat, all phased. Each
     round is bound to the test-only mini-game unless ``mini_games`` says
-    otherwise (a beat mapped to ``[]`` has no binding)."""
+    otherwise (a beat mapped to ``[]`` has no binding). ``extra_beats`` are
+    appended after the final beat; their phases come from ``phases``."""
+    beat_ids = BEATS + (extra_beats or [])
     couch = ArcDefinition.model_validate_json(
         (ENGINE_DIR.parent / "nightcap" / "couch-race.arc.json").read_text("utf-8")
     )
@@ -180,13 +189,14 @@ def phased_arc(
             "phases": per_beat[b],
             "mini_games": bound.get(b),
         }
-        for b in BEATS
+        for b in beat_ids
     ]
     data = couch.model_dump(mode="json")
     data.update(
         arc_id="fixture-arc-v1",
         beats=beats,
-        beat_graph={a: [b] for a, b in zip(BEATS, BEATS[1:])} | {BEATS[-1]: []},
+        beat_graph={a: [b] for a, b in zip(beat_ids, beat_ids[1:])}
+        | {beat_ids[-1]: []},
         interactions=[],
         resource_effects=[],
         obligations=[],
@@ -197,6 +207,58 @@ def phased_arc(
     if budget is not None:
         data["choice_config"] = {"budget": budget}
     return ArcDefinition.model_validate(data)
+
+
+# Made-up recap lines for tests. The real lines are the game's content.
+FIXTURE_RECAP: dict[str, Any] = {
+    "lines": [
+        {
+            "text": "Spent every last investigation.",
+            "when": {"measure": "investigations_left", "compare": "equals", "value": 0},
+        },
+        {
+            "text": "Looked into the most places.",
+            "when": {"measure": "subjects_looked_into", "compare": "highest"},
+        },
+        {
+            "text": "Won the most mini-games.",
+            "when": {"measure": "mini_games_won", "compare": "highest"},
+        },
+        {
+            "text": "Never changed a draft.",
+            "when": {"measure": "draft_changes", "compare": "equals", "value": 0},
+        },
+        {
+            "text": "Locked in before the clock ran out.",
+            "when": {"measure": "locked_in_time", "compare": "equals", "value": 1},
+        },
+    ],
+    "fallbacks": [{"text": "Played a quiet game."}, {"text": "Kept to the edges."}],
+}
+
+
+def closing_phases() -> dict[str, list[dict[str, Any]]]:
+    """The arc's ending: Last Call and the reveal, the written truth, then the
+    result and the recap. Pass as ``phases`` with ``extra_beats=CLOSING_BEATS``."""
+    return {
+        "finale": [
+            {"kind": "commit", "seconds": COMMIT_SECONDS},
+            {"kind": "reveal", "seconds": REVEAL_SECONDS},
+        ],
+        "truth": [
+            {"kind": "scene", "seconds": TRUTH_SECONDS, "source": "case_closing"}
+        ],
+        "verdict": [
+            {"kind": "result", "seconds": RESULT_SECONDS},
+            {"kind": "recap", "seconds": RECAP_SECONDS, "recap": FIXTURE_RECAP},
+        ],
+    }
+
+
+def closing_arc(case_path: Path | None = VALID_CASE) -> ArcDefinition:
+    return phased_arc(
+        case_path=case_path, phases=closing_phases(), extra_beats=CLOSING_BEATS
+    )
 
 
 @dataclass

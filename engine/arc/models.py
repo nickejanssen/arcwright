@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from enum import Enum
 from math import isclose
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
@@ -168,6 +168,9 @@ class PhaseKind(str, Enum):
     mini_game = "mini_game"
     bridge = "bridge"
     commit = "commit"
+    reveal = "reveal"
+    result = "result"
+    recap = "recap"
 
 
 PHASE_ORDER: tuple[PhaseKind, ...] = tuple(PhaseKind)
@@ -187,6 +190,76 @@ class PhaseLine(BaseModel):
     hints: PresentationHints = Field(default_factory=PresentationHints)
 
 
+RecapMeasure = Literal[
+    "investigations_used",
+    "investigations_left",
+    "subjects_looked_into",
+    "most_returns_to_one_subject",
+    "reviews",
+    "times_last_to_ready",
+    "mini_games_won",
+    "draft_changes",
+    "locked_in_time",
+    "slots_right",
+]
+"""What the engine counts for each player from saved records (spec 0094,
+Part J). A condition can name only one of these, so no line can be chosen by
+anything the engine did not see happen. ``locked_in_time`` is 1 or 0."""
+
+RecapCompare = Literal["highest", "lowest", "equals", "at_least", "at_most"]
+
+
+class RecapCondition(BaseModel):
+    """When a recap line applies. ``highest`` and ``lowest`` hold for the
+    players at the top or bottom of the room, and only when the room is not
+    level. ``equals``, ``at_least`` and ``at_most`` need a ``value``."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    measure: RecapMeasure
+    compare: RecapCompare
+    value: Optional[int] = Field(default=None, ge=0)
+
+    @model_validator(mode="after")
+    def validate_value(self) -> "RecapCondition":
+        needs_value = self.compare in ("equals", "at_least", "at_most")
+        if needs_value != (self.value is not None):
+            msg = f"compare {self.compare!r} " + (
+                "needs a value" if needs_value else "takes no value"
+            )
+            raise ValueError(msg)
+        return self
+
+
+class RecapLine(BaseModel):
+    """One written line and the condition that earns it."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    text: str = Field(min_length=1)
+    when: RecapCondition
+    hints: PresentationHints = Field(default_factory=PresentationHints)
+
+
+class RecapFallback(BaseModel):
+    """A line for a player no other line fits. It has no condition."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    text: str = Field(min_length=1)
+    hints: PresentationHints = Field(default_factory=PresentationHints)
+
+
+class RecapConfig(BaseModel):
+    """The written lines of a ``recap`` phase, in priority order, and the
+    fallbacks for a player no line fits (spec 0094, Part J)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    lines: List[RecapLine] = Field(default_factory=list)
+    fallbacks: List[RecapFallback] = Field(min_length=1)
+
+
 class PhaseDefinition(BaseModel):
     """One step of a beat. ``seconds`` is the authored time limit and is
     required, so no room can wait forever on a phase."""
@@ -197,6 +270,11 @@ class PhaseDefinition(BaseModel):
     seconds: int = Field(gt=0)
     audience: AudienceTarget = AudienceTarget.shared_display
     lines: List[PhaseLine] = Field(default_factory=list)
+    source: Literal["arc", "case_closing"] = "arc"
+    """``case_closing`` on a ``scene`` phase takes its lines from the case's
+    written ``closing``, so the arc file never holds them."""
+    recap: Optional[RecapConfig] = None
+    """Required on a ``recap`` phase and allowed nowhere else."""
 
     @model_validator(mode="after")
     def validate_lines_and_audience(self) -> "PhaseDefinition":
@@ -205,6 +283,14 @@ class PhaseDefinition(BaseModel):
             raise ValueError(msg)
         if self.audience not in _LINE_AUDIENCES:
             msg = "phase lines cannot be addressed to one player"
+            raise ValueError(msg)
+        if self.source == "case_closing" and (
+            self.kind is not PhaseKind.scene or self.lines
+        ):
+            msg = "source case_closing is for a scene phase with no lines of its own"
+            raise ValueError(msg)
+        if (self.kind is PhaseKind.recap) != (self.recap is not None):
+            msg = "a recap phase needs recap lines, and no other phase may have them"
             raise ValueError(msg)
         return self
 
@@ -390,14 +476,21 @@ class ArcDefinition(BaseModel):
     @model_validator(mode="after")
     def validate_commit_phase_has_a_case(self) -> "ArcDefinition":
         """A ``commit`` phase asks each player for a theory of the case's
-        solution slots, so the arc must name a written case."""
-        has_commit = any(
-            phase.kind is PhaseKind.commit
-            for beat in self.beats
-            for phase in beat.phases or []
+        solution slots, and the closing phases judge those theories, so the
+        arc must name a written case. A closing phase needs a commit phase."""
+        phases = [phase for beat in self.beats for phase in beat.phases or []]
+        kinds = {phase.kind for phase in phases}
+        closing = {PhaseKind.reveal, PhaseKind.result}
+        needs_case = (
+            PhaseKind.commit in kinds
+            or kinds & closing
+            or any(phase.source == "case_closing" for phase in phases)
         )
-        if has_commit and not self.case_file:
-            msg = "an arc with a commit phase must name a case_file"
+        if needs_case and not self.case_file:
+            msg = "an arc with a commit or closing phase must name a case_file"
+            raise ValueError(msg)
+        if kinds & closing and PhaseKind.commit not in kinds:
+            msg = "a reveal or result phase needs a commit phase before it"
             raise ValueError(msg)
         return self
 
