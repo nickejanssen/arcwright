@@ -22,9 +22,17 @@ supersedes: []
 
 ## Plain-English Summary
 
-Decide which mini-game mechanics a Nightcap playthrough needs, then build or adapt each one so it plays well with two to four players. No mechanic repeats in one playthrough. The set is chosen for the game, not from what happens to exist in the repository.
+Decide which mini-game mechanics a Nightcap playthrough needs, then build or adapt each one for the player counts it declares, from 1 to 8, tuned for the common case of two to four (D-142). Mini-games are fun first: skinned to the story when that is natural, openly a game when not (D-143). No mechanic repeats in one playthrough. The set is chosen for the game, not from what happens to exist in the repository.
 
 For the creative interview, start with the [ranked standalone minigame idea bank](../../gdd/nightcap/04-supporting-design/minigame-idea-bank.md). Each candidate includes a case-free fixture, local result, player-count adaptations and a first playtest question. Record selected mechanics on this task’s issue.
+
+## Founder Interview (2026-11-19)
+
+The founder's open answer is recorded word for word on issue #395. In short: two layers of mini-game. Side solo mini-games happen on one phone during investigation while the TV stays quiet and others glance over (lock picking a box only one player found). Group mini-games are events: the TV switches from story to mini-game, everyone sees how it is played and what is at stake, results land on the TV from last place to first with groans and cheers, then the TV says what happens next and returns to the story (a search-and-find scene with pinch and pan on the phone).
+
+Inspirations: Jackbox's murder mystery trivia game (trivia with mini-games to save your life, and the final race before the darkness catches up; in his words "a bit too simple, watered down, and repetitive", with much more potential, "which is what inspired nightcap"), the *Sherlock* and *House* "battle of wits" (timed trivia, logic, math and puzzles), and Mario Party (varied, competitive, creative mini-games everyone looks forward to). His three ideas are in the idea bank under "Founder's ideas".
+
+Decisions from the interview: D-142 (1 to 8 players, 2 to 4 common) and D-143 (fun first; skinned when natural; solo, pair or group). Open questions in `docs/product/open-questions-log.csv`: how a pair mini-game starts (AW-345), and whether a solo run counts against no-repeat.
 
 ## Why This Matters
 

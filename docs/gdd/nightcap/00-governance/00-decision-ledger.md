@@ -121,7 +121,7 @@ The assistant may recommend and challenge. It may not silently decide.
 ### Minigames
 
 - Competitive pulse, not strategic center.
-- Story-wrapped/skinned without sacrificing mechanical fun.
+- Fun first: skinned to the story when natural, openly a game when not; solo, pair or group (D-143, 2026-11-19).
 - Broad eccentric-investigator/spy skill portfolio.
 - Investigator archetype emerges from play rather than preselection.
 - Graduated ranking.

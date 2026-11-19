@@ -24,20 +24,20 @@ They create skill expression, spectacle, rivalry, and volatile tactical swings w
 
 ## Core Laws
 
-- Story-wrapped without sacrificing mechanical fun.
+- Fun first: skinned to the story when that is natural, openly a game when it is not (D-143, 2026-11-19).
 - Broad eccentric-investigator / spy skill portfolio.
 - Same competitive challenge for players in V1; no hidden outcome manipulation.
 - Graduated ranking.
 - **Big swings, short half-life.**
 - Speed is not a standard endgame tie-breaker.
 
-## Diegetic Action Rule
+## Story Fit Rule
 
-A major Nightcap minigame should normally feel like something the detective is **actually doing in the fiction**, for example searching a scene, reconstructing a damaged record, comparing samples, restoring a recording, tracing a timeline, or handling another case-specific investigative problem.
+*Changed by the founder on 2026-11-19 (D-143), replacing the Diegetic Action Rule.* Founder's words: "When natural.and appropriate, do it. When not, don't pretend to be part of the story if it's just for fun. We should expect people to know that it's a game  and breaking the fourth wall is part of it. I say all this because the game must be fun first and foremost."
 
-Do not present a generic abstract mode, tray, meter, or challenge with unexplained system vocabulary when the player lacks a fictional and mechanical reason for why it exists.
+A minigame is fun first. When it fits the story naturally, skin it as something the detective is **actually doing in the fiction**, for example searching a scene, picking a lock, reconstructing a damaged record, comparing samples or tracing a timeline. When it does not, present it openly as a game; breaking the fourth wall is fine, and the story is not bent to make room for it. The same mechanic can run solo, as a pair or as a group, depending on how players reach it (for example a lock one player finds alone, two find together, or everyone can reach).
 
-Before first use, the game should make clear in plain contextual language:
+Either way, never use unexplained system vocabulary. Before first use, the game should make clear in plain contextual language:
 
 - what the player is doing;
 - what success/failure can change;

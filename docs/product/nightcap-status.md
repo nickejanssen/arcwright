@@ -53,7 +53,7 @@ Planning assumption: 10 to 15 founder hours a week, which depends on AI usage li
 
 - Join with a room code, two to four players.
 - Opening: who you are and why you are here.
-- Three beats. Each beat is one round (D-113): watch a scene, investigate, review your notes, play one or more story-wrapped mini-games up to a cap set per round (D-136), see the story react. No mini-game mechanic repeats in a playthrough; an investigation can also lead one player into a solo mini-game (D-136).
+- Three beats. Each beat is one round (D-113): watch a scene, investigate, review your notes, play one or more mini-games up to a cap set per round (D-136), skinned to the story when that is natural and openly a game when not (D-143), see the story react. No mini-game mechanic repeats in a playthrough; an investigation can also lead one player into a solo mini-game (D-136).
 - Session 1 is played as several playthrough variants, 1a to 1d, to A/B test mini-game structures (D-137). The core variant must be ready for the founder TV run; the extras are optional.
 - Six investigations per player across the game. Review is free.
 - A simple notebook: a list of what you personally found.
