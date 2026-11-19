@@ -405,10 +405,23 @@ class MenuItemResponse(BaseModel):
     taken: bool
 
 
+class RewardGrantResponse(BaseModel):
+    """A mini-game reward this player was given. ``grant_id`` is the same ID the
+    live ``mini_game_reward_granted`` message carries, so a phone shows each
+    reward once. ``run_id`` and ``beat_id`` are for bookkeeping, not display."""
+
+    grant_id: str
+    run_id: str
+    beat_id: str
+    amount: int
+    kind: str
+
+
 class MenuResponse(BaseModel):
     open: bool
     remaining_budget: int
     items: list[MenuItemResponse]
+    rewards: list[RewardGrantResponse] = Field(default_factory=list)
 
 
 class ChoiceRequest(BaseModel):

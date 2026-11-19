@@ -140,6 +140,7 @@ class TestMenu:
         }
         assert not any(item.taken for item in menu.items)
         assert all(item.cost == 1 for item in menu.items)
+        assert menu.rewards == ()
 
     @pytest.mark.asyncio
     async def test_the_menu_does_not_carry_the_written_content(
