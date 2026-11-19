@@ -688,7 +688,9 @@
         "AW-326",
         "AW-327",
         "AW-328",
-        "AW-337"
+        "AW-337",
+        "AW-348",
+        "AW-349"
       ],
       "github": {
         "issue_number": 373,
@@ -3221,6 +3223,38 @@
       "github": {
         "issue_number": 437,
         "url": "https://github.com/nickejanssen/arcwright/issues/437"
+      }
+    },
+    {
+      "id": "AW-348",
+      "title": "Play a minigame live with Nightcap offline",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-322"
+      ],
+      "path": "docs/roadmap/tasks/AW-348-play-a-minigame-live-with-nightcap-offline.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 443,
+        "url": "https://github.com/nickejanssen/arcwright/issues/443"
+      }
+    },
+    {
+      "id": "AW-349",
+      "title": "Prove a browser minigame port and reuse the same package in an Arcwright experience",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-348"
+      ],
+      "path": "docs/roadmap/tasks/AW-349-prove-browser-minigame-port-and-package-reuse.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 444,
+        "url": "https://github.com/nickejanssen/arcwright/issues/444"
       }
     }
   ],

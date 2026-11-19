@@ -24,7 +24,7 @@ supersedes: []
 3. `00-governance/02-current-design-state.md`
 4. `02-validation/98-validation-state-and-remaining-plan.md`
 5. Load individual pages in `01-authoritative-gdd/` only as needed.
-6. Use supporting-design material only for adversarial/cohesion work; those files are not canon by themselves.
+6. For minigame ideas, shortlisting or standalone live playtests, use the [ranked minigame idea bank](../04-supporting-design/minigame-idea-bank.md). Other supporting-design material serves adversarial/cohesion work. These files hold proposals and supporting analysis.
 7. Use playtest evidence only as evidence. Test findings do not silently become design decisions.
 8. Use archived checkpoint/source material only for provenance/history unless the current ledger explicitly reopens an older decision.
 
