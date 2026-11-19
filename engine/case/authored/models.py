@@ -8,11 +8,32 @@ the vocabulary of any one game.
 
 from __future__ import annotations
 
+import re
 from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 FORMAT_VERSION = 1
+
+_BLANK = re.compile(r"\{([^{}]*)\}")
+
+
+def split_account(account: str) -> list[tuple[str, str | None]]:
+    """Cut an account text into ordered parts: ``(text, None)`` for written
+    text, ``("", slot_id)`` for a blank. Empty text is left out.
+
+    The blanks are written as ``{slot_id}``.
+    """
+    parts: list[tuple[str, str | None]] = []
+    position = 0
+    for match in _BLANK.finditer(account):
+        if match.start() > position:
+            parts.append((account[position : match.start()], None))
+        parts.append(("", match.group(1)))
+        position = match.end()
+    if position < len(account):
+        parts.append((account[position:], None))
+    return parts
 
 
 class _Strict(BaseModel):
@@ -124,7 +145,23 @@ class AuthoredCase(_Strict):
     essential_truths: list[AuthoredTruth] = Field(min_length=1)
     deceptions: list[AuthoredDeception]
     solution: list[AuthoredSlot] = Field(min_length=1)
+    account: str | None = None
+    """A short written account of what happened, with one ``{slot_id}`` blank
+    per solution slot, in the slots' order (D-138). Optional."""
     closing: list[str]
+
+    @model_validator(mode="after")
+    def _account_has_one_blank_per_slot_in_order(self) -> AuthoredCase:
+        if self.account is None:
+            return self
+        blanks = [slot for _, slot in split_account(self.account) if slot is not None]
+        stray = _BLANK.sub("", self.account)
+        if blanks != [slot.slot_id for slot in self.solution] or re.search(
+            r"[{}]", stray
+        ):
+            msg = "account must hold one {slot_id} blank per solution slot, in order"
+            raise ValueError(msg)
+        return self
 
     @model_validator(mode="after")
     def _one_slot_shown_first(self) -> AuthoredCase:

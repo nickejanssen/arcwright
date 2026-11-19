@@ -279,3 +279,16 @@ Recorded from the founder's answer in session on 19 November 2026 (spec 0095 Q5)
 - **Part H and Part I are unchanged.** The proof is not judged and does not change who solved it or who wins.
 - **Part J, `result`.** The public part adds the winner's proof (or each co-winner's). Nobody else's proof is shown publicly. The private part is unchanged.
 - No table change, no model call. Build tasks: AW-326 (account text, proof field), AW-327 (proof at the Verdict).
+
+---
+
+# Plan Answers Approved 2026-11-18: AW-326 (issue #388)
+
+Recorded from the founder's approval of the AW-326 plan in session, with all four recommended answers.
+
+1. **The proof is optional to lock.** A complete draft with no proof locks, and is auto-locked at time-up. Making it required later is a one-line change.
+2. **The account text** is a case-file field `account`: one string with `{slot_id}` blanks, one per solution slot, in the slots' order. The loader refuses anything else. A case without it still loads. The form route returns it split into text pieces and blanks.
+3. **A placing is the tier number** in a run's standing (best tier 1, ties share a number). A player missing from a run is placed after its last tier. Placings are summed across all finished runs that have a standing. A run is won by its top tier, and by nobody when that tier holds every player.
+4. **AW-326 stops before the `result` phase.** It builds the check, the winner rule and `resolve_endgame` (`engine/session/endgame.py`), which reads saved rows, saves nothing and sends nothing, and refuses while a commit phase is open. No result event or route exists until AW-327, which also owns the join-to-recap headless proof.
+
+Also settled: the check reads only each slot's accepted values and ignores an answer's `needs`. The shared screen and the host are told only who has locked and how many (`theory_lock_progress`); other players' phones are told nothing. The public round view's `ready_count` is the locked count during a commit phase.

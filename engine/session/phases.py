@@ -38,6 +38,7 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from engine.arc.models import ArcDefinition, BeatDefinition, PhaseDefinition, PhaseKind
 from engine.arc.registry import load_arc_definition
+from engine.case.authored import AuthoredCase
 from engine.db.orm import Decision, Event, SessionParticipant
 from engine.db.orm import Session as OrmSession
 from engine.events.models import (
@@ -46,7 +47,8 @@ from engine.events.models import (
     EventCategory,
     PresentationHints,
 )
-from engine.session import mini_game_phase
+from engine.session import commit_phase, mini_game_phase
+from engine.session.case_seating import cached_arc_case
 from engine.session.models import SessionStatus
 
 logger = logging.getLogger(__name__)
@@ -471,6 +473,8 @@ async def _enter(
                 hints=line.hints,
             ),
         )
+    if definition.kind is PhaseKind.commit:
+        await _begin_commit(db, orm, arc)
     if definition.kind is PhaseKind.mini_game:
         ending = await mini_game_phase.begin(
             db, orm, arc, beat_id, state.entry, now, publish
@@ -478,6 +482,42 @@ async def _enter(
         if ending is not None:
             return await _end(db, orm, arc, state, ending, now, publish)
     return state
+
+
+def _commit_case(arc: ArcDefinition) -> AuthoredCase:
+    case = cached_arc_case(arc)
+    if case is None:
+        raise RoundError("no_written_case", "this game has no written case")
+    return case
+
+
+async def _begin_commit(db: AsyncSession, orm: OrmSession, arc: ArcDefinition) -> None:
+    await commit_phase.begin(
+        db,
+        orm.session_id,
+        _commit_case(arc),
+        await human_player_ids(db, orm.session_id),
+    )
+
+
+async def _close_commit(
+    db: AsyncSession,
+    orm: OrmSession,
+    arc: ArcDefinition,
+    state: PhaseState,
+    now: datetime,
+    publish: Publish,
+) -> None:
+    await commit_phase.close(
+        db,
+        orm.session_id,
+        _commit_case(arc),
+        entry=state.entry,
+        beat_id=state.beat_id,
+        humans=await human_player_ids(db, orm.session_id),
+        now=now,
+        publish=publish,
+    )
 
 
 async def _advance_beat(
@@ -530,6 +570,8 @@ async def _end(
         await mini_game_phase.stop_open_run(
             db, orm.session_id, state.beat_id, state.entry, now, publish
         )
+    if state.phase == PhaseKind.commit.value:
+        await _close_commit(db, orm, arc, state, now, publish)
     ended = await _save(
         db,
         orm.session_id,
@@ -573,6 +615,10 @@ async def _due_reason(
             now,
             publish,
         )
+    if state.phase == PhaseKind.commit.value and await commit_phase.everyone_locked(
+        db, session_id, state.entry, await human_player_ids(db, session_id)
+    ):
+        return "locked"
     if PhaseKind(state.phase) in _READY_PHASES and await _everyone_ready(
         db, session_id, state
     ):
@@ -753,6 +799,138 @@ async def finish_mini_game_phase(
         return True
 
 
+def _commit_refusal(refusal: commit_phase.CommitRefusal) -> RoundError:
+    return RoundError(refusal.code, str(refusal))
+
+
+async def _commit_visit(
+    db: AsyncSession,
+    session_id: UUID,
+    participant_id: UUID,
+    now: datetime,
+    *,
+    editing: bool,
+) -> PhaseState:
+    """The running commit phase this player may change, or a refusal."""
+    if participant_id not in await human_player_ids(db, session_id):
+        raise RoundError("not_a_participant")
+    state = await current_phase(db, session_id)
+    if state is None or state.phase != PhaseKind.commit.value:
+        raise RoundError("not_in_commit_phase")
+    if editing:
+        if state.status != "running":
+            raise RoundError("phase_not_running")
+        if state.deadline_at is not None and now >= state.deadline_at:
+            raise RoundError("phase_time_up", "the time for this phase is up")
+    return state
+
+
+async def read_theory_form(
+    db: AsyncSession, session_id: UUID, participant_id: UUID, now: datetime
+) -> commit_phase.TheoryForm:
+    """This player's theory form: the slots, what they may pick, the account
+    text, their own saved draft or lock, and the time left. Private to them. It
+    never says whether anything is right."""
+    async with session_lock(db, session_id) as orm:
+        if orm is None:
+            raise RoundError("session_not_found")
+        if participant_id not in await human_player_ids(db, session_id):
+            raise RoundError("not_a_participant")
+        arc = load_arc_definition(orm.arc_id)
+        if arc is None or not arc.is_phased:
+            raise RoundError("not_phased", "this game does not run by phases")
+        state = await current_phase(db, session_id)
+        building = (
+            state is not None
+            and state.phase == PhaseKind.commit.value
+            and state.status in ("running", "paused")
+        )
+        seconds_left: float | None = None
+        deadline: datetime | None = None
+        open_now = False
+        if state is not None and building:
+            if state.status == "running" and state.deadline_at is not None:
+                deadline = state.deadline_at
+                seconds_left = max(0.0, (deadline - now).total_seconds())
+                open_now = seconds_left > 0
+            elif state.status == "paused":
+                seconds_left = state.remaining_seconds
+        try:
+            return await commit_phase.read_form(
+                db,
+                session_id,
+                _commit_case(arc),
+                participant_id,
+                entry=state.entry if state is not None and building else None,
+                open_now=open_now,
+                deadline_at=deadline,
+                seconds_left=seconds_left,
+            )
+        except commit_phase.CommitRefusal as refusal:
+            raise _commit_refusal(refusal) from refusal
+
+
+async def save_theory_draft(
+    db: AsyncSession,
+    session_id: UUID,
+    participant_id: UUID,
+    answers: dict[str, str],
+    proof: str | None,
+    now: datetime,
+    publish: Publish = None,
+) -> commit_phase.Theory:
+    """Replace this player's draft. The draft goes to this player only."""
+    async with session_lock(db, session_id) as locked:
+        orm, arc = _require_active_phased(locked)
+        state = await _commit_visit(db, session_id, participant_id, now, editing=True)
+        try:
+            return await commit_phase.save_draft(
+                db,
+                session_id,
+                _commit_case(arc),
+                participant_id,
+                entry=state.entry,
+                beat_id=state.beat_id,
+                answers=answers,
+                proof=proof,
+                now=now,
+                publish=publish,
+            )
+        except commit_phase.CommitRefusal as refusal:
+            raise _commit_refusal(refusal) from refusal
+
+
+async def lock_theory(
+    db: AsyncSession,
+    session_id: UUID,
+    participant_id: UUID,
+    now: datetime,
+    publish: Publish = None,
+) -> commit_phase.Theory:
+    """Lock this player's saved draft. When that makes everyone locked, the
+    phase ends in the same call. Publishes inside the caller's transaction, so
+    run it under ``delivery_lock`` with an ``Outbox``, as the round routes do."""
+    async with session_lock(db, session_id) as locked:
+        orm, arc = _require_active_phased(locked)
+        state = await _commit_visit(db, session_id, participant_id, now, editing=True)
+        try:
+            theory = await commit_phase.lock(
+                db,
+                session_id,
+                _commit_case(arc),
+                participant_id,
+                entry=state.entry,
+                beat_id=state.beat_id,
+                humans=await human_player_ids(db, session_id),
+                now=now,
+                publish=publish,
+            )
+        except commit_phase.CommitRefusal as refusal:
+            raise _commit_refusal(refusal) from refusal
+        await _settle(db, orm, arc, now, publish)
+        return theory
+
+
 async def freeze_phase(db: AsyncSession, session_id: UUID, now: datetime) -> None:
     """Pause: keep the time that was left, and stop the clock."""
     async with session_lock(db, session_id):
@@ -846,7 +1024,10 @@ async def round_view(db: AsyncSession, session_id: UUID, now: datetime) -> Round
                 }
                 for line in definition.lines
             )
-    ready = await _ready_ids(db, session_id, state.entry)
+    if state.phase == PhaseKind.commit.value:
+        ready = await commit_phase.locked_ids(db, session_id, state.entry)
+    else:
+        ready = await _ready_ids(db, session_id, state.entry)
     return RoundView(
         session_status=orm.status,
         beat_id=state.beat_id,

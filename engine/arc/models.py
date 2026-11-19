@@ -167,6 +167,7 @@ class PhaseKind(str, Enum):
     choices = "choices"
     mini_game = "mini_game"
     bridge = "bridge"
+    commit = "commit"
 
 
 PHASE_ORDER: tuple[PhaseKind, ...] = tuple(PhaseKind)
@@ -385,6 +386,20 @@ class ArcDefinition(BaseModel):
     def is_phased(self) -> bool:
         """True when beats are divided into phases that move by rule."""
         return any(beat.phases is not None for beat in self.beats)
+
+    @model_validator(mode="after")
+    def validate_commit_phase_has_a_case(self) -> "ArcDefinition":
+        """A ``commit`` phase asks each player for a theory of the case's
+        solution slots, so the arc must name a written case."""
+        has_commit = any(
+            phase.kind is PhaseKind.commit
+            for beat in self.beats
+            for phase in beat.phases or []
+        )
+        if has_commit and not self.case_file:
+            msg = "an arc with a commit phase must name a case_file"
+            raise ValueError(msg)
+        return self
 
     @model_validator(mode="after")
     def validate_phases_on_every_beat_or_none(self) -> "ArcDefinition":
