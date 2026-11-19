@@ -99,7 +99,7 @@ These were learned the hard way and used to live only in one tool's private note
 | The founder stays unspoiled on the first case | Spec 0092, Q7 | The founder says so |
 | Two players is the floor | GDD decision ledger | Play evidence shows it does not work |
 | Earned-only Leverage, six investigations per player | Spec 0092, Q4 and Q5 | Session evidence |
-| In Nightcap a beat is one round, ending in a story-wrapped mini-game. "Round" is not an engine concept | D-113 | Session evidence |
+| In Nightcap a beat is one round, with one or more story-wrapped mini-games up to a cap (D-136 amends D-113), and no mechanic repeats in a playthrough. "Round" is not an engine concept | D-113, D-136 | Session evidence |
 | Adopt existing tools; build only what is unique | D-114, ADR-0026 | A tool lacks a feature, costs too much, or a strong purpose exists |
 | Play data is captured at engine level, in one shape for every game | D-115 | A founder decision |
 
@@ -128,6 +128,7 @@ Work the list top to bottom. Building starts only at step 7. Whether a step is d
 
 ## Log
 
+- **2026-11-19** Founder answered spec 0095's Q4, and it reshaped the mini-games (D-136, D-137). A round may hold more than one mini-game up to a cap; an investigation can lead one player into a solo mini-game; no mechanic repeats in a playthrough; mechanics are designed or adapted for 2 to 4 players rather than taken from inventory. Session 1 runs variants 1a to 1d to A/B test this; the core variant gates the dates. New tasks AW-344, AW-345, AW-346; AW-337 rewritten as the mechanics design task. This adds an estimated 6 to 10 build days to the critical path (inferred). Checks: knowledge-base validators; no code changed.
 - **2026-11-18** Founder answered spec 0095's Q3 (D-135, issue #355): the accused are shown one at a time, with the host able to skip. The staging, hold and order belong to Nightcap (its files and screens), never to the Arcwright engine, which only sends a generic reveal event. The order never depends on who is right. AW-327's task file now says the engine lists players in a neutral order. Also carries D-134, which missed pull request #424 (it was pushed after #424 merged). Checks: knowledge-base validators; no code changed.
 - **2026-11-18** Founder answered spec 0095's Q2 (D-134, issue #355): during thinking time the TV shows only the round title, a large clock and who is ready. Spec 0095 updated where it cited Q2; still a draft. Q2 no longer blocks AW-332's plan. Founder also approved the AW-343 plan (recorded on #423 at his direction). Checks: knowledge-base validators; no code changed.
 - **2026-11-18** Pull request #422 merged (`ab759f6`): the bookkeeping for #419, #417 and #420, new task AW-342 (#421), AW-326 unblocked. Then the founder chose to fix, not accept, the lost reward message, and chose a read from saved rows over resending: new task AW-343 (#423), plan session started. AW-337 (#395) got its missing M7 milestone. The orchestrator handoff was rewritten for a new orchestrator session in the desktop app, with the timeline, a progress table and the lessons of 14 to 18 November. Checks: knowledge-base validators; no code changed.
