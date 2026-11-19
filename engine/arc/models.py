@@ -477,21 +477,38 @@ class ArcDefinition(BaseModel):
     def validate_commit_phase_has_a_case(self) -> "ArcDefinition":
         """A ``commit`` phase asks each player for a theory of the case's
         solution slots, and the closing phases judge those theories, so the
-        arc must name a written case. A closing phase needs a commit phase."""
+        arc must name a written case. Each closing phase needs the one before
+        it earlier in the arc, or the game would start and then never get past
+        it: a ``reveal`` or ``result`` needs a ``commit``, a ``recap`` needs a
+        ``result``."""
         phases = [phase for beat in self.beats for phase in beat.phases or []]
         kinds = {phase.kind for phase in phases}
-        closing = {PhaseKind.reveal, PhaseKind.result}
-        needs_case = (
-            PhaseKind.commit in kinds
-            or kinds & closing
-            or any(phase.source == "case_closing" for phase in phases)
+        closing = {
+            PhaseKind.commit,
+            PhaseKind.reveal,
+            PhaseKind.result,
+            PhaseKind.recap,
+        }
+        needs_case = bool(kinds & closing) or any(
+            phase.source == "case_closing" for phase in phases
         )
         if needs_case and not self.case_file:
             msg = "an arc with a commit or closing phase must name a case_file"
             raise ValueError(msg)
-        if kinds & closing and PhaseKind.commit not in kinds:
-            msg = "a reveal or result phase needs a commit phase before it"
-            raise ValueError(msg)
+        needs = {
+            PhaseKind.reveal: PhaseKind.commit,
+            PhaseKind.result: PhaseKind.commit,
+            PhaseKind.recap: PhaseKind.result,
+        }
+        seen: set[PhaseKind] = set()
+        for phase in phases:
+            before = needs.get(phase.kind)
+            if before is not None and before not in seen:
+                msg = (
+                    f"a {phase.kind.value} phase needs a {before.value} phase before it"
+                )
+                raise ValueError(msg)
+            seen.add(phase.kind)
         return self
 
     @model_validator(mode="after")

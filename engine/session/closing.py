@@ -32,8 +32,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from engine.arc.models import ArcDefinition, PhaseKind
+from engine.arc.registry import load_arc_definition
 from engine.case.authored import AuthoredCase
 from engine.db.orm import Decision, Event
+from engine.db.orm import Session as OrmSession
 from engine.events.models import AudienceTarget, EventCategory
 from engine.session import commit_phase, phases, recap
 from engine.session.case_seating import cached_arc_case
@@ -167,7 +169,9 @@ async def _saved(
         for r in result.scalars().all()
         if entry is None or r.context.get("phase_entry") == entry
     ]
-    return max(rows, key=lambda r: r.context.get("phase_entry", 0), default=None)
+    if not rows:
+        return None
+    return max(rows, key=lambda r: r.context.get("phase_entry", 0))
 
 
 # --- entering a phase -----------------------------------------------------------
@@ -326,7 +330,8 @@ async def _entered(db: AsyncSession, session_id: UUID) -> set[str]:
             Event.session_id == session_id, Event.event_type == phases.PHASE_EVENT
         )
     )
-    return {str(payload["phase"]) for payload in result.scalars().all()}
+    payloads: list[dict[str, Any]] = list(result.scalars().all())
+    return {str(payload["phase"]) for payload in payloads}
 
 
 async def closing_view(
@@ -335,10 +340,10 @@ async def closing_view(
     """Everything the session has reached of the closing sequence, rebuilt from
     saved rows. Before the ``result`` phase it holds no right or wrong. The
     private part is returned only for ``participant_id`` and only that player's."""
-    orm = await db.get(phases.OrmSession, session_id)
+    orm = await db.get(OrmSession, session_id)
     if orm is None:
         raise phases.RoundError("session_not_found")
-    arc = phases.load_arc_definition(orm.arc_id)
+    arc = load_arc_definition(orm.arc_id)
     if arc is None or not arc.is_phased:
         raise phases.RoundError("not_phased", "this game does not run by phases")
     case = _case(arc)

@@ -67,6 +67,7 @@ def client(
         "engine.session.service.load_arc_definition",
         "engine.session.phases.load_arc_definition",
         "engine.session.choices.load_arc_definition",
+        "engine.session.closing.load_arc_definition",
     ):
         monkeypatch.setattr(target, lambda _id, _arc=arc: _arc)
     monkeypatch.setattr(

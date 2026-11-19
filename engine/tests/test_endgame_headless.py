@@ -171,6 +171,12 @@ async def test_full_game_join_to_recap(
     truth = [e for e in rec.of_type("phase_line") if e.payload["beat_id"] == "truth"]
     written = json.loads(VALID_CASE.read_text("utf-8"))["closing"]
     assert [e.payload["text"] for e in truth] == written
+    # Still no right or wrong anywhere, now that the truth has been told.
+    assert not rec.of_type("endgame_result")
+    for event in rec.events:
+        assert not keys_of(event.payload) & VERDICT_KEYS, event.event_type
+    early = await closing.closing_view(db, seated.session_id)
+    assert early.result is None and early.recap is None
 
     now += 1
     await everyone_ready(db, seated, rec, now)

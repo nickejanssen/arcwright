@@ -237,7 +237,7 @@ FIXTURE_RECAP: dict[str, Any] = {
 }
 
 
-def closing_phases() -> dict[str, list[dict[str, Any]]]:
+def closing_phases() -> dict[str, list[dict[str, Any]] | None]:
     """The arc's ending: Last Call and the reveal, the written truth, then the
     result and the recap. Pass as ``phases`` with ``extra_beats=CLOSING_BEATS``."""
     return {
@@ -289,6 +289,7 @@ def fixture_arc_registered(arc: ArcDefinition) -> Iterator[None]:
         patch("engine.session.service.load_arc_definition", lambda _id: arc),
         patch("engine.session.phases.load_arc_definition", lambda _id: arc),
         patch("engine.session.choices.load_arc_definition", lambda _id: arc),
+        patch("engine.session.closing.load_arc_definition", lambda _id: arc),
         patch("engine.session.mini_game_phase.build_registry", timer_race_registry),
     ):
         yield
@@ -301,6 +302,7 @@ def registered(monkeypatch: pytest.MonkeyPatch) -> Callable[[ArcDefinition], Non
             "engine.session.service.load_arc_definition",
             "engine.session.phases.load_arc_definition",
             "engine.session.choices.load_arc_definition",
+            "engine.session.closing.load_arc_definition",
         ):
             monkeypatch.setattr(target, lambda _id, _arc=arc: _arc)
         monkeypatch.setattr(

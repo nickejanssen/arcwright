@@ -176,8 +176,8 @@ def select_lines(
             continue
         index = fallbacks_given % len(config.fallbacks)
         fallbacks_given += 1
-        line = config.fallbacks[index]
+        fallback = config.fallbacks[index]
         chosen.append(
-            ChosenLine(player, line.text, line.hints.model_dump(), True, index)
+            ChosenLine(player, fallback.text, fallback.hints.model_dump(), True, index)
         )
     return chosen

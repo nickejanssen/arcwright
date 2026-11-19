@@ -165,6 +165,40 @@ class TestTheArcFile:
                 phases={"finale": [{"kind": "reveal", "seconds": 5}]},
             )
 
+    def test_a_recap_needs_a_case_and_a_result_before_it(self) -> None:
+        recap = {"kind": "recap", "seconds": 5, "recap": FIXTURE_RECAP}
+        with pytest.raises(ValidationError, match="result phase before"):
+            phased_arc(phases={"finale": [recap]})
+        with pytest.raises(ValidationError, match="result phase before"):
+            phased_arc(
+                phases={
+                    "finale": [{"kind": "commit", "seconds": 5}, recap],
+                }
+            )
+        with pytest.raises(ValidationError, match="case_file"):
+            phased_arc(case_path=None, phases={"finale": [recap]})
+
+    def test_the_prerequisites_must_come_earlier_in_the_arc_not_later(self) -> None:
+        with pytest.raises(ValidationError, match="commit phase before"):
+            phased_arc(
+                mini_games={"beat_one": [], "beat_two": []},
+                phases={
+                    "beat_one": [{"kind": "result", "seconds": 5}],
+                    "finale": [{"kind": "commit", "seconds": 5}],
+                },
+            )
+        with pytest.raises(ValidationError, match="result phase before"):
+            phased_arc(
+                mini_games={"beat_one": [], "beat_two": []},
+                phases={
+                    "beat_one": [{"kind": "commit", "seconds": 5}],
+                    "beat_two": [
+                        {"kind": "recap", "seconds": 5, "recap": FIXTURE_RECAP}
+                    ],
+                    "finale": [{"kind": "result", "seconds": 5}],
+                },
+            )
+
     def test_the_closing_ending_loads(self) -> None:
         arc = closing_arc()
         kinds = [p.kind.value for b in arc.beats[-3:] for p in b.phases or []]
@@ -304,6 +338,34 @@ class TestTheResult:
         )
         assert len(rec.of_type("endgame_result")) == 1
         assert await saved_rows(db, "endgame_result") == 1
+
+    @pytest.mark.asyncio
+    async def test_a_second_entry_to_the_recap_saves_and_sends_nothing_more(
+        self,
+        db: AsyncSession,
+        registered: Callable[[ArcDefinition], None],
+        no_model_calls: None,
+    ) -> None:
+        seated, rec, now = await at_reveal(db, registered, [RIGHT, WRONG])
+        for step in range(3):
+            await everyone_ready(db, seated, rec, now + 1 + step)
+        state = await current_phase(db, seated.session_id)
+        assert isinstance(state, PhaseState) and state.phase == "recap"
+        before = rec.of_type("recap_lines")[0].payload
+        await closing.enter(
+            db,
+            closing_arc(),
+            seated.session_id,
+            PhaseKind.recap,
+            state,
+            at(now + 9),
+            rec,
+            1,
+        )
+        assert len(rec.of_type("recap_lines")) == 1
+        assert await saved_rows(db, "recap_lines") == 1
+        view = await closing.closing_view(db, seated.session_id)
+        assert view.recap == before
 
     @pytest.mark.asyncio
     async def test_the_result_is_refused_for_someone_not_in_the_session(
