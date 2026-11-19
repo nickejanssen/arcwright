@@ -657,7 +657,8 @@
         "AW-299",
         "AW-318",
         "AW-336",
-        "AW-339"
+        "AW-339",
+        "AW-350"
       ],
       "github": {
         "issue_number": 372,
@@ -3273,6 +3274,20 @@
       "github": {
         "issue_number": 444,
         "url": "https://github.com/nickejanssen/arcwright/issues/444"
+      }
+    },
+    {
+      "id": "AW-350",
+      "title": "Make The Two Timing-Sensitive Tests Reliable On A Busy Machine",
+      "milestone": "M7",
+      "epic": "M7-A",
+      "size": "S",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-350-make-the-two-timing-sensitive-tests-reliable.md",
+      "epic_id": "M7-A",
+      "github": {
+        "issue_number": 447,
+        "url": "https://github.com/nickejanssen/arcwright/issues/447"
       }
     }
   ],
