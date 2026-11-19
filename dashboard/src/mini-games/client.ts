@@ -37,7 +37,12 @@ export interface StageBootOptions {
   registry: RendererRegistry;
   baseUrl: string;
   sessionId: string;
-  token: string;
+  /**
+   * The player's sign-in. Left out on the shared display (AW-330, spec 0095
+   * decision 6): the TV holds no sign-in, so it reads the public display route
+   * and the public event stream and sends no Authorization header.
+   */
+  token?: string;
   surface: Surface;
   participantId: string;
   characterId: string;
@@ -149,7 +154,7 @@ export async function bootMiniGameStage(
     createPerfReporter({
       baseUrl,
       sessionId: opts.sessionId,
-      token: opts.token,
+      token: opts.token ?? "",
       surface: opts.surface,
       gameId,
       participantId: opts.participantId,
@@ -188,13 +193,15 @@ export async function bootMiniGameStage(
     };
   };
 
+  // No token means no header at all, and the public display route.
+  const authHeaders = (): Record<string, string> =>
+    opts.token ? { Authorization: `Bearer ${opts.token}` } : {};
+
   const fetchActiveState = async (): Promise<MiniGameState | null> => {
-    const url = `${baseUrl}/v1/sessions/${encodeURIComponent(opts.sessionId)}/mini-games/active`;
+    const url = `${baseUrl}/v1/sessions/${encodeURIComponent(opts.sessionId)}/mini-games/active${opts.token ? "" : "/display"}`;
     let res: Response;
     try {
-      res = await doFetch(url, {
-        headers: { Authorization: `Bearer ${opts.token}` },
-      });
+      res = await doFetch(url, { headers: authHeaders() });
     } catch {
       return null;
     }
@@ -235,6 +242,7 @@ export async function bootMiniGameStage(
     submissionId: string,
     payload: MiniGamePayload,
   ): Promise<MiniGameSubmissionResult> => {
+    if (!opts.token) throw new Error("submission needs a sign-in");
     const url = `${baseUrl}/v1/sessions/${encodeURIComponent(opts.sessionId)}/mini-games/${encodeURIComponent(runId)}/submissions`;
     const res = await doFetch(url, {
       method: "POST",
@@ -392,9 +400,7 @@ export async function bootMiniGameStage(
       const url = `${baseUrl}/v1/sessions/${encodeURIComponent(opts.sessionId)}/events?since=${stream.lastSequence}`;
       let res: Response;
       try {
-        res = await doFetch(url, {
-          headers: { Authorization: `Bearer ${opts.token}` },
-        });
+        res = await doFetch(url, { headers: authHeaders() });
       } catch {
         if (++retries > maxRetries) return;
         await delay(initialDelayMs * 2 ** (retries - 1), view);

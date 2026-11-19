@@ -16,7 +16,8 @@ export interface MiniGameStageProps {
   sessionId: string;
   participantId: string;
   characterId: string;
-  token: string;
+  // Left out on the shared display, which holds no sign-in (AW-330).
+  token?: string;
   baseUrl?: string;
   registry: RendererRegistry;
   loadDefinition: (
@@ -53,7 +54,7 @@ export function MiniGameStage(props: MiniGameStageProps) {
       registry,
       baseUrl,
       sessionId,
-      token,
+      ...(token ? { token } : {}),
       surface,
       participantId,
       characterId,

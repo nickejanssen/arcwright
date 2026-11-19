@@ -1,266 +1,173 @@
-import type { CSSProperties } from "react";
-import { FormEvent, useEffect, useRef, useState } from "react";
-import { ArcwrightClient } from "@arcwright/sdk";
-import type { MiniGameState, PlayerInput } from "@arcwright/sdk";
-import { getValidPlayerToken, loadPlayerAuth } from "../api/auth";
-import { fetchLobbyState } from "../api/lobby";
-import type { LobbyState } from "../api/lobby";
-import { fetchPlayerMiniGameState } from "../api/miniGame";
-import TmstPlayerScreen from "./tmst/TmstPlayerScreen";
+// The phone page (spec 0095 screens 3 and 23). It reads the seat this phone
+// holds, follows the engine through the feed, and draws the screen the phase
+// table names inside the frame with the Menu button. It carries no ID in its
+// address.
 
-const TMST_GAME_ID = "tell-me-something-true";
-
-function readParams(): {
-  name: string;
-  sessionId: string | null;
-  hasPlayerAuth: boolean;
-  characterId: string | null;
-} {
-  const p = new URLSearchParams(window.location.search);
-  return {
-    name: p.get("name") ?? "You",
-    sessionId: p.get("session_id"),
-    hasPlayerAuth: p.get("session_id")
-      ? loadPlayerAuth(p.get("session_id")!) !== null
-      : false,
-    characterId: p.get("character_id"),
-  };
-}
+import { useEffect, useMemo, useState } from "react";
+import { getValidPlayerToken } from "../api/auth";
+import { createControls } from "../api/controls";
+import type { Controls } from "../api/controls";
+import { fetchMyRole, handOverAvailable } from "../api/seam";
+import type { SeatRole } from "../api/seam";
+import { seatStore } from "../api/seatStore";
+import type { StoredSeat } from "../api/seatStore";
+import type { FeedState } from "../shell/feed";
+import { copy } from "../shell/copy";
+import PhoneFrame from "../shell/PhoneFrame";
+import { resolveScreen } from "../shell/phaseScreens";
+import type { SlotTable } from "../shell/phaseScreens";
+import { applySettings, loadSettings, saveSettings } from "../shell/settings";
+import type { Settings } from "../shell/settings";
+import { useFeed } from "../shell/useFeed";
 
 export default function WaitingScreen() {
-  const { name, sessionId, hasPlayerAuth, characterId } = readParams();
-
-  const [miniGameState, setMiniGameState] = useState<MiniGameState | null>(
-    null,
-  );
-  const [lobby, setLobby] = useState<LobbyState | null>(null);
-  const [action, setAction] = useState("Continue investigating.");
-  const [actionStatus, setActionStatus] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const clientRef = useRef<ArcwrightClient | null>(null);
-
-  // The player token is kept in sessionStorage and is only used for
-  // authenticated action submissions.
-  const hasCredentials =
-    sessionId !== null && hasPlayerAuth && characterId !== null;
+  const [seat] = useState<StoredSeat | null>(() => seatStore.mostRecent());
 
   useEffect(() => {
-    if (!hasCredentials) return;
-    clientRef.current = new ArcwrightClient(
-      sessionId!,
-      () => getValidPlayerToken(sessionId!),
-      characterId!,
-      "",
-    );
+    if (seat) seatStore.touch(seat.gameId);
+    else window.location.replace("/join");
+  }, [seat]);
+
+  if (!seat) return null;
+  return <Seated seat={seat} />;
+}
+
+function Seated({ seat }: { seat: StoredSeat }) {
+  const feed = useFeed(seat.gameId);
+  const [role, setRole] = useState<SeatRole>("player");
+  const [settings, setSettings] = useState<Settings>(() => loadSettings());
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchMyRole()
+      .then((value) => {
+        if (!cancelled) setRole(value);
+      })
+      .catch(() => undefined);
     return () => {
-      clientRef.current?.disconnect();
-      clientRef.current = null;
+      cancelled = true;
     };
-  }, [characterId, hasCredentials, sessionId]);
+  }, [seat.gameId]);
 
-  async function submitAction(event: FormEvent) {
-    event.preventDefault();
-    const client = clientRef.current;
-    if (!client) {
-      setActionStatus("Player session is not authenticated yet.");
-      return;
-    }
+  useEffect(() => {
+    applySettings(document.documentElement, settings);
+  }, [settings]);
 
-    setSubmitting(true);
-    setActionStatus(null);
-    const input: PlayerInput = { kind: "action", content: action.trim() };
-    try {
-      await client.submitInput(characterId!, input);
-      setActionStatus("Action submitted. The session advanced.");
-    } catch (error) {
-      setActionStatus(error instanceof Error ? error.message : String(error));
-    } finally {
-      setSubmitting(false);
-    }
+  // The game is gone, so the seat is of no use.
+  useEffect(() => {
+    if (feed.gone) seatStore.clear(seat.gameId);
+  }, [feed.gone, seat.gameId]);
+
+  const controls = useMemo(
+    () => createControls(seat.gameId, () => getValidPlayerToken(seat.gameId)),
+    [seat.gameId],
+  );
+
+  function changeSettings(next: Settings) {
+    setSettings(next);
+    saveSettings(next);
   }
 
-  useEffect(() => {
-    if (!hasCredentials) return;
+  const joinUrl = `${window.location.origin}/join?code=${encodeURIComponent(seat.joinCode)}`;
 
-    async function poll() {
-      try {
-        setLobby(await fetchLobbyState(sessionId!));
-      } catch {
-        // The action form remains usable if the public lobby poll is delayed.
-      }
-      try {
-        const mgState = await fetchPlayerMiniGameState(
-          sessionId!,
-          characterId!,
-        );
-        setMiniGameState(mgState);
-      } catch {
-        // Swallow; TmstPlayerScreen handles disconnected state internally
-      }
-    }
+  return (
+    <PhoneView
+      sessionId={seat.gameId}
+      displayName={seat.displayName}
+      joinCode={seat.joinCode}
+      joinUrl={joinUrl}
+      feed={feed}
+      role={role}
+      controls={controls}
+      settings={settings}
+      onSettingsChange={changeSettings}
+    />
+  );
+}
 
-    poll();
-    const interval = setInterval(poll, 2000);
-    return () => clearInterval(interval);
-  }, [hasCredentials, sessionId, characterId]);
+interface PhoneViewProps {
+  sessionId: string;
+  displayName: string;
+  joinCode: string;
+  joinUrl: string;
+  feed: FeedState;
+  role: SeatRole;
+  controls: Controls;
+  settings: Settings;
+  onSettingsChange: (next: Settings) => void;
+  slots?: SlotTable;
+}
 
-  const isTmstActive =
-    hasCredentials &&
-    miniGameState !== null &&
-    miniGameState.gameId === TMST_GAME_ID &&
-    miniGameState.status === "active";
+export function PhoneView(props: PhoneViewProps) {
+  const { feed } = props;
+  const { lobby, round } = feed;
 
-  const isTerminal = lobby?.is_terminal === true;
-
-  if (isTmstActive) {
+  if (feed.gone) {
     return (
-      <TmstPlayerScreen
-        sessionId={sessionId!}
-        playerToken={() => getValidPlayerToken(sessionId!)}
-        characterId={characterId!}
-      />
+      <PhoneFrame
+        menu={null}
+        settings={props.settings}
+        onSettingsChange={props.onSettingsChange}
+        roomCode={null}
+        joinUrl={null}
+      >
+        <p className="sh-line">{copy.seated.gameGone}</p>
+        <a className="sh-button" href="/join">
+          {copy.seated.joinAgain}
+        </a>
+      </PhoneFrame>
     );
+  }
+
+  let body;
+  if (!lobby) {
+    body = <p className="sh-line">{copy.tv.connecting}</p>;
+  } else {
+    const resolved = resolveScreen("phone", lobby, round, props.slots);
+    if (resolved.kind === "room") {
+      const names = lobby.players
+        .map((p) => p.display_name ?? copy.unnamedPlayer)
+        .join(", ");
+      body = (
+        <>
+          <p className="sh-title">{copy.seated.youAreIn(props.displayName)}</p>
+          <p className="sh-line">{copy.seated.waitingForHost}</p>
+          {names && <p className="sh-line">{copy.seated.atTheTable(names)}</p>}
+        </>
+      );
+    } else if (resolved.kind === "paused") {
+      body = <p className="sh-title">{copy.paused.phone}</p>;
+    } else if (resolved.kind === "ended") {
+      body = <p className="sh-title">{copy.seated.gameOver}</p>;
+    } else if (resolved.kind === "phase" && round) {
+      const Slot = resolved.Slot;
+      body = <Slot sessionId={props.sessionId} lobby={lobby} round={round} />;
+    } else {
+      body = <p className="sh-title">{copy.seated.eyesOnTv}</p>;
+    }
   }
 
   return (
-    <div style={styles.root}>
-      <div style={styles.card}>
-        <h1 style={styles.title}>NIGHTCAP</h1>
-        <p style={styles.subtitle}>A Murder Mystery</p>
-
-        <div style={styles.messageBlock}>
-          <p style={styles.greeting}>You&apos;re in, {name}.</p>
-          <p style={styles.waiting}>
-            {isTerminal
-              ? "The case is complete."
-              : hasCredentials
-                ? "The host will start the case. Then submit an action to advance."
-                : "Waiting for player authentication."}
-          </p>
-        </div>
-
-        {isTerminal ? (
-          <p style={styles.complete}>
-            The case has reached The Truth. Player actions are complete.
-          </p>
-        ) : hasCredentials ? (
-          <form onSubmit={submitAction} style={styles.actionForm}>
-            <label htmlFor="action" style={styles.label}>
-              Action
-            </label>
-            <input
-              id="action"
-              value={action}
-              onChange={(event) => setAction(event.target.value)}
-              disabled={submitting}
-              style={styles.input}
-            />
-            <button type="submit" disabled={submitting} style={styles.button}>
-              {submitting ? "Sending..." : "Submit action"}
-            </button>
-            {actionStatus && <p style={styles.hint}>{actionStatus}</p>}
-          </form>
-        ) : null}
-
-        <p style={styles.hint}>
-          {isTerminal
-            ? "This rehearsal slice stops at the terminal beat; final reveal and scoreboard rendering are not enabled yet."
-            : "Keep this screen open. The game will begin soon."}
-        </p>
-      </div>
-    </div>
+    <PhoneFrame
+      menu={
+        lobby
+          ? {
+              role: props.role,
+              sessionStatus: lobby.status,
+              phase: round?.phase ?? null,
+              playerCount: lobby.player_count,
+              minPlayers: lobby.min_players,
+              controls: props.controls,
+              canHandOver: handOverAvailable(),
+            }
+          : null
+      }
+      settings={props.settings}
+      onSettingsChange={props.onSettingsChange}
+      roomCode={props.joinCode}
+      joinUrl={props.joinUrl}
+    >
+      {body}
+    </PhoneFrame>
   );
 }
-
-const styles: Record<string, CSSProperties> = {
-  root: {
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: "100vh",
-    padding: "1.5rem",
-    background: "var(--bg)",
-  },
-  card: {
-    width: "100%",
-    maxWidth: "420px",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "0.5rem",
-    textAlign: "center",
-  },
-  title: {
-    fontSize: "2.5rem",
-    letterSpacing: "0.3em",
-    color: "var(--accent)",
-  },
-  subtitle: {
-    fontSize: "0.85rem",
-    letterSpacing: "0.2em",
-    color: "var(--text-muted)",
-    textTransform: "uppercase",
-    marginBottom: "2.5rem",
-  },
-  messageBlock: {
-    display: "flex",
-    flexDirection: "column",
-    gap: "1rem",
-    marginBottom: "2rem",
-  },
-  greeting: {
-    fontSize: "1.8rem",
-    color: "var(--text)",
-    lineHeight: 1.3,
-  },
-  waiting: {
-    fontSize: "1.1rem",
-    color: "var(--text-muted)",
-    fontStyle: "italic",
-  },
-  hint: {
-    fontSize: "0.8rem",
-    color: "var(--text-muted)",
-    letterSpacing: "0.05em",
-  },
-  complete: {
-    width: "100%",
-    padding: "1rem",
-    border: "1px solid var(--border)",
-    borderRadius: "6px",
-    color: "var(--accent)",
-    lineHeight: 1.5,
-  },
-  actionForm: {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    gap: "0.75rem",
-  },
-  label: {
-    fontSize: "0.8rem",
-    letterSpacing: "0.1em",
-    color: "var(--text-muted)",
-    textTransform: "uppercase",
-  },
-  input: {
-    width: "100%",
-    padding: "0.9rem 1rem",
-    background: "var(--surface)",
-    border: "1px solid var(--border)",
-    borderRadius: "6px",
-    color: "var(--text)",
-    fontSize: "1.1rem",
-    outline: "none",
-  },
-  button: {
-    padding: "1rem",
-    background: "var(--accent)",
-    color: "#0a0a0f",
-    border: "none",
-    borderRadius: "6px",
-    fontSize: "1rem",
-    fontWeight: "bold",
-    letterSpacing: "0.05em",
-  },
-};
