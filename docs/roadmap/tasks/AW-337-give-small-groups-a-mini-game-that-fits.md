@@ -1,7 +1,7 @@
 ---
 id: productroadmap.roadmap.tasks.aw-337-give-small-groups-a-mini-game-that-fits
 namespace: product-roadmap
-title: "AW-337: Give Small Groups A Mini-Game That Fits"
+title: "AW-337: Design And Build The Mini-Game Mechanics For A Playthrough"
 owner: Nico Janssen
 status: active
 review_by: "2027-02-16"
@@ -12,62 +12,60 @@ tags: []
 supersedes: []
 ---
 
-# AW-337: Give Small Groups A Mini-Game That Fits
+# AW-337: Design And Build The Mini-Game Mechanics For A Playthrough
 
 **Milestone / Epic:** M7 / M7-B  
-**Size:** S  
+**Size:** L  
 **Product:** Nightcap  
-**Owner:** Founder decision first, then one AI build session  
-**Target date:** 2026-11-27
+**Owner:** Founder creative interview first, then one AI build session per mechanic  
+**Target date:** 2026-12-03 for the core variant's mechanics
 
 ## Plain-English Summary
 
-No mini-game in the repository can be played by two or three people. Session 1 is planned for two to four friends and the founder TV run for two phones, so make sure one mini-game fits two to four players.
+Decide which mini-game mechanics a Nightcap playthrough needs, then build or adapt each one so it plays well with two to four players. No mechanic repeats in one playthrough. The set is chosen for the game, not from what happens to exist in the repository.
 
 ## Why This Matters
 
-- Verified on 2026-11-16 at commit `83795a5`, from each package's definition file under `nightcap/mini_games/`: Crime Scene Smash, Scene Sweep and Tell Me Something True each need 4 to 8 players. Evidence Locker 402 needs exactly 1.
-- The walkthrough of the current build (AW-301) uses a TV and two phones. With two players, no mini-game can start.
-- Reported by the screens spec session (pull request #393), not checked by the parent session: only Tell Me Something True has a working screen, and it is still a draft.
-- Corrected 2026-11-16: the player counts are known. `docs/product/nightcap-status.md` plans the founder TV run for a TV and two phones and session 1 for two to four friends. So today a mini-game can start at session 1 only if exactly four people come. An earlier version of this task called the count unknown; that was wrong.
-- The choice of how many mini-games session 1 needs is question Q4 of the draft screens spec (`docs/specs/0095-screens-for-the-thin-version.md`). Its recommended default is one mini-game that works at two to four players, reused with different story wrappers.
-- Filed under D-119 on 2026-11-16.
+- Rewritten on 2026-11-19 after the founder answered spec 0095 Q4 (D-136). His words: "I want the best number fo mini-games to fit a playthrough, not just trying to force in whats possible given our current mini-game inventory. I would rather create more mini-games to make it correct than adjusted for the test." And: "Wrappers can change the style/aesthetic of the game to match the story, but it doesnt change the mechanic, so playing the same game mechanic multiple times in one playthrough of the game seems like what we wouldnt want to do."
+- Prior art he endorsed: It Takes Two's director used most mechanics for one scene only, because repetition is why story games go unfinished (reset audit, section 3).
+- Verified on main `a528cad` from each package's definition file: Scene Sweep (evidence search race, engine rules working, no screen, declared 4 to 8 players); Tell Me Something True (social truth bluff, rules working, the only working screen, 4 to 8); Crime Scene Smash (match-3 clue race, rules a stub, prototype screen, 4 to 8); Evidence Locker #402 (lock-breach puzzle, rules a stub, prototype screen, exactly 1). The founder notes some may already play at two or even one; the declared counts are settings, not tested limits.
+- The first version of this task (2026-11-16) asked for one mini-game reused with wrappers; that is withdrawn.
 
 ## Technical Scope
 
-- After the founder answers Q4 of spec 0095: choose one mini-game and make it work at two to four players.
-- If that cannot be ready for the walkthrough (AW-301), state that the walkthrough skips the mini-game and say what that leaves unseen.
-- Any change to a mini-game's rules for a smaller group is a design change and needs the founder's approval before code.
+- Creative interview with the founder first: what each round's mini-game should make players feel and do, which mechanic families fit a murder mystery for two to four players, and which existing packages are worth adapting. Bring prior art (party and co-op games he named as inspirations) into each option.
+- Propose a set of distinct mechanics for the core session 1 variant (D-137), and optional extras for the A/B variants, including at least one suited to a solo mini-game (AW-345).
+- For each chosen mechanic: Python rules and a `standing` (AW-328), the package definition with real player counts, and a phone and TV renderer (one small renderer task each, spec 0095 "Out of Scope"). Story wrappers come from the case writer (AW-305).
+- No mechanic releases case information (D-126).
 
 ## Human Collaboration Contract
 
-**Interaction profile:** Decision interview, then independent execution after plan approval.
-
-- The founder answers one question first: Q4 of spec 0095, how many different mini-games session 1 needs.
-- A mini-game's feel at a new player count is a matter of founder taste. The session proposes one low-cost option and stops.
+**Interaction profile:** Creative collaboration (mechanics, feel, player counts), then independent execution per mechanic after plan approval. Begin with the founder's open-ended vision, offer two or three advised directions, lock one, then build in reviewable batches. The founder approves each plan in its build session himself or by his own comment on this issue.
 
 ## Acceptance Criteria
 
-- [ ] The founder's answer to Q4 of spec 0095 is recorded.
-- [ ] One mini-game starts, runs and returns to the story at two, three and four players.
+- [ ] The founder has chosen the mechanics for the core variant and the optional variants; the choice is recorded on this issue.
+- [ ] Each chosen mechanic starts, runs, ranks its players and returns to the story at two, three and four players (and one, where it is a solo mechanic).
+- [ ] No mechanic repeats within any one playthrough variant.
 - [ ] No mini-game releases case information (D-126).
 
 ## Tests/Verification
 
-- `python -m pytest engine/tests -q`
-- `python scripts/checks/scope_evidence_check.py`
+- `python -m pytest tests engine/tests api/tests -q`
+- `npm test --prefix dashboard` once the dashboard tests exist (AW-329)
+- Seen in play: the founder TV run (core variant) and session 1 variants (AW-346).
 
 ## Dependencies
 
-- AW-303, which makes a mini-game start, time out and return inside a session.
-- Related: AW-301 (the walkthrough), AW-322 (prove a mini-game can be built and played on its own), spec 0095 open question on how many mini-games need screens.
+- AW-303, AW-328 (merged); AW-344 for several per round; AW-345 for solo; AW-329 to AW-332 for screens.
+- Decisions: D-113, D-126, D-136, D-137. Spec: 0095 "Q4 Answered".
 
 ## Must Not Do
 
+- Do not reuse one mechanic with different wrappers within a playthrough.
+- Do not pick a mechanic only because it already exists; pick it because it fits, then reuse code where that helps.
 - Do not open or read any real case file.
-- Do not change a mini-game's rules without the founder's approval.
-- Do not build a new mini-game when changing a player-count setting on an existing one would do.
 
 ## Kickoff Prompt
 
-> Read `AGENTS.md`, `HANDOVER.md`, this task and question Q4 of `docs/specs/0095-screens-for-the-thin-version.md`. Task AW-337: confirm the founder has answered Q4; if not, ask it, one question, with the spec's options and recommendation. Then propose the cheapest way for one mini-game to work at two to four players. Write a plan and stop for founder approval.
+> Read `AGENTS.md`, `HANDOVER.md`, this task, D-136 and D-137. Start with the founder's open-ended vision for the mini-games, one question at a time. Then propose two or three sets of distinct mechanics with prior art and a recommendation, and stop for his choice.

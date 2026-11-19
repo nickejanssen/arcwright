@@ -67,6 +67,7 @@ After every theory is locked, show who each player accused, then the written tru
 
 - Do not write a line that claims what a player thought. Only what the engine saw happen.
 - Do not send any part of a theory to the room except the one answer the case marks as shown first.
+- Do not order the players in the `reveal` event by whether they are right, or by anything derived from it; use a neutral order such as seat order. Staging and order for the room are Nightcap's, set in its files, not the engine's (D-135).
 - Do not add a prompt or a model call. A generated Postmortem needs its own approval.
 
 ## Kickoff Prompt

@@ -2960,10 +2960,10 @@
     },
     {
       "id": "AW-337",
-      "title": "Give Small Groups A Mini-Game That Fits",
+      "title": "Design And Build The Mini-Game Mechanics For A Playthrough",
       "milestone": "M7",
       "epic": "M7-B",
-      "size": "S",
+      "size": "L",
       "depends_on": [
         "AW-303"
       ],
@@ -3069,6 +3069,58 @@
       "github": {
         "issue_number": 423,
         "url": "https://github.com/nickejanssen/arcwright/issues/423"
+      }
+    },
+    {
+      "id": "AW-344",
+      "title": "Let A Round Run More Than One Mini-Game, Up To A Cap",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-303",
+        "AW-328"
+      ],
+      "path": "docs/roadmap/tasks/AW-344-let-a-round-run-more-than-one-mini-game.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 427,
+        "url": "https://github.com/nickejanssen/arcwright/issues/427"
+      }
+    },
+    {
+      "id": "AW-345",
+      "title": "Let An Investigation Lead One Player Into A Solo Mini-Game",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-303",
+        "AW-325"
+      ],
+      "path": "docs/roadmap/tasks/AW-345-let-an-investigation-lead-one-player-into-a-solo-mini-game.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 428,
+        "url": "https://github.com/nickejanssen/arcwright/issues/428"
+      }
+    },
+    {
+      "id": "AW-346",
+      "title": "Plan The Session 1 Playthrough Variants (1a To 1d)",
+      "milestone": "M7",
+      "epic": "M7-C",
+      "size": "S",
+      "depends_on": [
+        "AW-344",
+        "AW-345",
+        "AW-337"
+      ],
+      "path": "docs/roadmap/tasks/AW-346-plan-the-session-1-playthrough-variants.md",
+      "epic_id": "M7-C",
+      "github": {
+        "issue_number": 429,
+        "url": "https://github.com/nickejanssen/arcwright/issues/429"
       }
     }
   ],

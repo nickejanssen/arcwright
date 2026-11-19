@@ -42,8 +42,8 @@ You run in the Claude desktop app on the founder's Windows PC, in or beside the 
    - 0092 rebuild plan, thin version approved (D-123);
    - 0093 engine spine, approved (D-124);
    - 0094 endgame, approved (D-125);
-   - 0095 screens, DRAFT and not approved; Q1 answered (D-133).
-7. Decisions D-112 to D-133: https://github.com/nickejanssen/arcwright/blob/main/docs/product/decisions-log.csv
+   - 0095 screens, DRAFT and not approved; Q1 to Q4 answered (D-133 to D-137).
+7. Decisions D-112 to D-137: https://github.com/nickejanssen/arcwright/blob/main/docs/product/decisions-log.csv
 8. Where the reset came from: https://github.com/nickejanssen/arcwright/blob/main/docs/product/2026-11-15-reset-audit.md
 
 Then, in the main checkout:
@@ -69,19 +69,19 @@ Critical path to the founder TV run, with sizes from the task files. The build-d
 | Area | Done (merged) | Remaining | Build days left (inferred) |
 | --- | --- | --- | --- |
 | Engine spine and endgame | AW-324 (#391), AW-325 (#397), AW-303 (#413), AW-304 (#412), AW-338 (#419), AW-328 (#417) | AW-343 (S, planning), AW-326 (M), AW-327 (M), AW-342 (S) | 4 to 5 |
-| Mini-game for two to four players | none | AW-337 (S, needs spec 0095 Q4) | 1 |
+| Mini-games (D-136, D-137) | none | AW-337 mechanics (L, creative interview first), AW-344 several per round (M), AW-345 solo (M, design first), AW-346 session 1 variants (S) | 7 to 11 |
 | Screens (spec 0095) | none | spec approval, then AW-329 to AW-334 (task files and issues not created yet) | 10 to 12 |
 | First case | in another session | AW-305 (case loaded and fair), recap lines sample (spec 0094 gate 3) | founder and case session |
 | Session readiness | none | AW-306 importer (cut-able), AW-308 preflight, AW-301 walkthrough | 2 to 3 |
 
-Progress: 6 of about 20 critical-path tasks are merged, roughly 30 percent (inferred). Remaining build work is about 17 to 21 build days against 17 calendar days. It fits only if screens start almost at once and run beside the engine work. **The date is at risk.** The three biggest risks, in order:
-1. **Spec 0095 is not approved, so no screen task can start.** About half the remaining work waits on it, and the founder has Q2 to Q5 open.
+Progress: 6 of about 23 critical-path tasks are merged, roughly 25 percent (inferred). Remaining build work is about 23 to 31 build days against 16 calendar days to 5 December. Even with two build sessions at once, that does not fit unless the core variant stays lean and screens and mini-games run beside the engine work. **The 12 or 13 December date is unlikely; 19 or 20 December is the realistic plan unless scope moves** (inferred). Tell the founder this plainly and early. The three biggest risks, in order:
+1. **Spec 0095 is not approved, so no screen task can start.** About half the remaining work waits on it, and the founder has Q5 open.
 2. **The first case's state is unknown here.** Branch `claude/lido-case-and-spec-followups` had unpushed work on 15 November. AW-305 waits on it.
-3. **No mini-game fits two players** (AW-337), and the founder TV run has two phones.
+3. **The mini-games are now a design-and-build job, not a tweak** (D-136): distinct mechanics designed for 2 to 4 players (AW-337, size L), several per round (AW-344) and solo mini-games (AW-345), all wanted in session 1 as A/B variants (D-137, AW-346). This adds an estimated 6 to 10 build days (inferred). The core variant gates the dates; extra variants that are not ready are simply not played.
 
 ## In flight at handoff
 
-- **AW-343 (#423).** A phone reads back its mini-game rewards, so a missed "you earned one more investigation" message can never be lost; the founder chose this fix on 18 November. A plan session is running in the cloud: https://claude.ai/code/session_01BpvnxtVGat2r3kNPnRf18C, branch `task/AW-343-reward-readback`. It posts its plan on #423 and stops. The founder approves in that session or on #423.
+- **AW-343 (#423).** A phone reads back its mini-game rewards, so a missed "you earned one more investigation" message can never be lost; the founder chose this fix on 18 November. A plan session is running in the cloud: https://claude.ai/code/session_01BpvnxtVGat2r3kNPnRf18C, branch `task/AW-343-reward-readback`. Its plan was approved by the founder on 2026-11-18, but the session will build only on an approval the founder types in that session himself (it refused the one posted on #423 for him). Ask him to type "approved" there if he has not; then it builds, opens a pull request and does not merge.
 - **Open pull requests: none,** once this handoff's pull request has merged.
 - **Main is `ab759f6`, or later if the handoff pull request below has merged.**
 
@@ -93,14 +93,14 @@ Progress: 6 of about 20 critical-path tasks are merged, roughly 30 percent (infe
    - create task files and issues for AW-329 to AW-334 from its build-order table;
    - start AW-329 (copy the mini-game kit into `dashboard/`) and AW-330 (screen shell, phone Start menu, D-133) beside the engine work;
    - then AW-331, which crosses engine modules and changes sign-in (hard rules), followed by AW-332, AW-333 and AW-334.
-4. **AW-337** (#395, a mini-game for two to four players) after the founder answers spec 0095 Q4.
+4. **Mini-games (D-136):** AW-337 (#395) starts with the founder's creative interview on mechanics; AW-344 (#427, several per round) can plan once AW-343 merges; AW-345 (#428, solo) starts with a design interview; AW-346 (#429) plans the session 1 variants. The core variant comes first.
 5. **AW-306** (story-tool importer, first to cut), then **AW-308** (session 1 preflight).
 6. **AW-341** (#418, events after the save in the remaining routes) and **AW-340** (#414) after session 1, unless a screen task needs AW-341 sooner.
 
 ## Waiting on the founder (ask one at a time, with a recommendation)
 
-1. Approve the AW-343 plan, in its session or on #423.
-2. Spec 0095: answer Q2 to Q5, then reply "approve 0095" on issue #355. Most urgent, because the screens are half the remaining work.
+1. AW-343: the founder types "approved" in its session (https://claude.ai/code/session_01BpvnxtVGat2r3kNPnRf18C) if he has not yet; then merge its pull request when it is reviewed and green.
+2. Spec 0095: answer Q5, then reply "approve 0095" on issue #355. Most urgent, because the screens are half the remaining work.
 3. The session on branch `claude/lido-case-and-spec-followups`: ask the founder to tell it to commit, push and open a pull request. AW-305 waits on it.
 4. Send the case-writing session the message under "Owner actions" in spec 0093.
 5. AW-301 (#354): walk the current build on a TV and two phones. Include the Postgres choice-lock check.
@@ -111,6 +111,7 @@ Progress: 6 of about 20 critical-path tasks are merged, roughly 30 percent (infe
 
 **Approvals**
 - Plan approval, merge approval and decision recording are separate. Silence, a merged pull request or a general "go" is none of them (human-collaboration contract).
+- **Push nothing to a pull request's branch after asking the founder to merge it.** On 18 November #424 merged at 15:42 before a later commit (D-134) reached it, so that record missed main. Before pushing more to a branch, check whether its pull request has merged; if it has, start a new branch from main.
 - **Build sessions refuse an approval relayed by the orchestrator, and they are right.** Ask the founder to approve in the build session itself or by a comment on the task's issue, and say which in your question. If the founder asks you to post a comment for him, its first line says it was posted by the orchestrator at his direction, quoting his words.
 - **A change outside an approved file list is surfaced, not waved through.** On 18 November AW-328 added a validator to `engine/arc/models.py`. The orchestrator asked the founder and recorded his acceptance on #390.
 - **Never record a founder decision he has not made.** Write "recommendation: X; the founder's call", then ask.
@@ -152,6 +153,10 @@ Progress: 6 of about 20 critical-path tasks are merged, roughly 30 percent (infe
 - Do not poll in a loop or sleep. Use a scheduled check-in or a background wait, and cancel check-ins that are no longer needed.
 - Known flake: about one test run in a few hundred fails in SQLite setup with `'float' object has no attribute 'replace'` (AW-342). Rerun once; if it fails again, it is real.
 
+**Design input**
+- Bring prior art into every design question: the founder's inspirations (reset audit, section 3) and makers' documented reasons. He asked for this on 19 November after the It Takes Two point helped. Label what is documented by the makers and what is your inference.
+- Do not lead design questions with time estimates; the founder sets length by testing (D-136).
+
 **Reporting to the founder**
 - Every reply opens with the conclusion and ends with a short progress block:
   - what changed since the last report;
@@ -186,7 +191,7 @@ Conclusion first. Plain words, no invented shorthand, no em dashes. Label claims
 ## Your first reply
 
 1. Confirm what you read, that main is pulled and reindexed in the main checkout, and which pull requests are open.
-2. Report the AW-343 plan session's state (posted, approved, building or opened a pull request), checked on #423 rather than assumed.
+2. Report AW-343's state (building, pull request open, reviewed, merged), checked on #423 and GitHub rather than assumed.
 3. Propose starting the AW-326 plan session, with AW-342 beside it.
 4. Give the progress block.
-5. Ask the founder the one decision he needs to make next. Unless something more urgent has appeared, that is spec 0095 Q2.
+5. Ask the founder the one decision he needs to make next. Unless something more urgent has appeared, that is spec 0095 Q5 (the theory form: fill the case's slots in order, or arrange freely), then "approve 0095".
