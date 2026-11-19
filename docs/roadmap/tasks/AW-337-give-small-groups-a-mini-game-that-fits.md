@@ -24,6 +24,8 @@ supersedes: []
 
 Decide which mini-game mechanics a Nightcap playthrough needs, then build or adapt each one so it plays well with two to four players. No mechanic repeats in one playthrough. The set is chosen for the game, not from what happens to exist in the repository.
 
+For the creative interview, start with the [ranked standalone minigame idea bank](../../gdd/nightcap/04-supporting-design/minigame-idea-bank.md). Each candidate includes a case-free fixture, local result, player-count adaptations and a first playtest question. Record selected mechanics on this task’s issue.
+
 ## Why This Matters
 
 - Rewritten on 2026-11-19 after the founder answered spec 0095 Q4 (D-136). His words: "I want the best number fo mini-games to fit a playthrough, not just trying to force in whats possible given our current mini-game inventory. I would rather create more mini-games to make it correct than adjusted for the test." And: "Wrappers can change the style/aesthetic of the game to match the story, but it doesnt change the mechanic, so playing the same game mechanic multiple times in one playthrough of the game seems like what we wouldnt want to do."
@@ -54,6 +56,12 @@ Decide which mini-game mechanics a Nightcap playthrough needs, then build or ada
 - `python -m pytest tests engine/tests api/tests -q`
 - `npm test --prefix dashboard` once the dashboard tests exist (AW-329)
 - Seen in play: the founder TV run (core variant) and session 1 variants (AW-346).
+
+## Recommended prototyping sequence
+
+Use [AW-348](https://github.com/nickejanssen/arcwright/issues/443) to exercise an existing game first. For the first fresh mechanic, propose **The Emergency Seating Committee**: eight guest cards, two seat swaps and immediate consequences. Record time from a fresh brief to the first playable link. Try one rule change and time the next round. After standalone and destination parity, propose **Of Course I Work Here** for private prompts, simultaneous reveal and an uncoached four-player round. **An Entirely Normal Walk** is a later showcase candidate. These are recommendations for the creative interview. The founder selects the games.
+
+Start with current `AGENTS.md` and `HANDOVER.md`, the idea bank and the minigame skill. Use one builder per branch (Codex or Claude) and a second reviewer for difficult rules or boundaries. Use GameGene for a concrete precedent question and Superpowers for design, debugging or verification when useful. Prefer the existing toolchain. Suggested tests are fixed-input Python rules checks and isolated browser players using Playwright or the existing equivalent. Test declared counts, including 1–8 where claimed; record which counts real people played. Observe whether people understand their first move and want another round. [AW-349](https://github.com/nickejanssen/arcwright/issues/444) owns the reusable porting guide.
 
 ## Dependencies
 
