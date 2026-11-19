@@ -44,6 +44,7 @@ Prove a full game's screens without a TV: a Python script plays a whole game thr
 - [ ] Both named proofs pass at 2 and 4 players, and an idle run reaches the survey on clocks alone.
 - [ ] Any privacy marker in the wrong place fails the test.
 - [ ] Both halves run in CI on every pull request.
+- [ ] The Python half reads each player's menu after a real mini-game run with a winner and checks the private `rewards` list matches the saved grant (`grant_id`, amount), closing the open review point from AW-343 (#430). Founder agreed 2026-11-19.
 
 ## Tests/Verification
 

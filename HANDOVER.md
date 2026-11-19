@@ -2,7 +2,7 @@
 
 > Read `AGENTS.md` first, then this file, before touching code. It is the short start-of-session brief for every agent (Claude, Codex, Copilot) and for the founder. If it disagrees with a current source, investigate before acting, then fix this file. Keep it short and link to the owner of each detail.
 
-Last updated: 2026-11-18, against main `ab759f6`.
+Last updated: 2026-11-19, against main `ab763ae`.
 
 ## System map
 
@@ -50,7 +50,7 @@ Work is never left in chat. If you find work, it becomes a roadmap task record a
 | Inventory of the current build | AW-300 | Written 2026-11-15, reviewed by the founder 2026-11-16 (issue #353): `docs/specs/0092-wp0-thin-version-inventory.md`. Still open: a reviewer session's sample check |
 | Engine-spine spec | AW-302 | Approved 2026-11-16 (D-124, issue #355): `docs/specs/0093-engine-spine-for-the-thin-version.md` |
 | Endgame spec | AW-302 | Approved 2026-11-16 (D-125, issue #355): `docs/specs/0094-endgame-for-the-thin-version.md` |
-| Screens spec | AW-302 | Drafted 2026-11-16 (spec 0095, on main as a draft), not approved; five open questions for the founder |
+| Screens spec | AW-302 | Approved 2026-11-19 (D-139, issue #355), with Q1 to Q5 answered (D-133 to D-138). Tasks AW-329 to AW-334 |
 | Build tasks under those specs, in order | AW-324, AW-325, AW-303, AW-304, AW-328, AW-326, AW-327 | AW-324 and AW-325 done (pull requests #391, #397). AW-304 done (pull request #412). AW-303 done (pull request #413); its TV check (acceptance criterion 7) is still open. AW-338 (four round-rule fixes) done (pull request #419). AW-328 (the mini-game reward, D-126) done (pull request #417). AW-326 is next and unblocked; AW-327 waits on it. AW-343 (a phone reads back its mini-game rewards, #423) is done (pull request #430) |
 | Screen walkthrough on a TV and two phones | AW-301 | Open; needs the founder, Docker, a TV and two phones |
 | Build-versus-adopt review | AW-309 | Done 2026-11-15: section 2.11.7 of the technology stack. Session 1 needs no paid plan and no new tool |
@@ -128,6 +128,9 @@ Work the list top to bottom. Building starts only at step 7. Whether a step is d
 
 ## Log
 
+- **2026-11-19** Orchestrator: the founder approved the AW-326 plan (#388) and the AW-329 plan (#432) in their build sessions, with every recommendation; both are building. Filed AW-347 (#440): the API's mini-game reply lacks the state package screens read (AW-329 plan, finding 2); it blocks AW-332 screens 10 to 12. AW-343's open review point (no route test through a real run) is now an AW-334 acceptance line, at the founder's word. Checks: knowledge-base validator; no code changed.
+- **2026-11-19** Pull request #438 merged (`ab763ae`): recorded current retrieval measurements for AW-318 (unscoped hit rate 16 of 33; the reset-audit query still misses). AW-318 stays open. Documentation only.
+- **2026-11-19** Pull request #425 merged (`0407588`): the knowledge search checks indexed sources for changes before returning cached results and says when the index is stale. AW-318 stays open. Checks: CI, team-ai and CodeQL on the review head.
 - **2026-11-19** Founder chose that the lessons about working with him apply to every agent (D-140): `docs/conventions/human-collaboration.md` v1.2 adds items 10 to 18 to the Founder Communication Style. No new orchestrator roles: the harness already defines the System Architect and the Planner, so the orchestrator handoff now maps which existing role to use and narrows merge authority to pull requests the founder has named. Checks: knowledge-base validators; no code changed.
 - **2026-11-19** Founder approved spec 0095, the screens (D-139, issue #355), with the answers D-133 to D-138. All three rebuild specs are now approved (0093, 0094, 0095), so AW-302 is done. Task files and issues created for the six screen tasks: AW-329 (#432), AW-330 (#433), AW-331 (#434), AW-332 (#435), AW-333 (#436), AW-334 (#437). AW-331's scope includes row M6 (Start menu sign-in, D-133). Each plan needs founder approval; AW-329 (package.json), AW-330 and AW-331 (sign-in) and AW-331 (engine modules) touch hard rules. Checks: knowledge-base validators; no code changed.
 - **2026-11-19** Founder answered spec 0095's Q5 (D-138): at Last Call a player fills a short written account of what happened with pieces they found, and pins one proof; the winner's proof is shown on the TV at the Verdict; the proof does not change who wins. Spec 0094 Parts G and J amended with his approval; AW-326, AW-327 and AW-305 carry the changes; the detective-agency wording moved to AW-319. All five spec 0095 questions are answered; it still needs "approve 0095". Checks: knowledge-base validators; no code changed.
