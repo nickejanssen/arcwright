@@ -350,3 +350,127 @@ class TestLock:
             uid="p", session_id=uuid4(), player_id=who.player_id, role="player"
         )
         assert client.post(url(who, "/me/theory/lock")).status_code == 403
+
+
+THEORY_CALLS = [
+    ("get", "/me/theory", {}),
+    ("put", "/me/theory", {"json": {"answers": {"slot_who": "marlowe"}}}),
+    ("post", "/me/theory/lock", {}),
+]
+
+
+async def locked_theory_for_first_player(
+    client: TestClient, factory: async_sessionmaker[AsyncSession], who: Who
+) -> None:
+    _, characters = await seed(factory, who)
+    await hold(factory, who, characters[0], "c_how_true")
+    client.put(url(who, "/me/theory"), json={"answers": RIGHT, "proof": "c_how_true"})
+    client.post(url(who, "/me/theory/lock"))
+
+
+class TestEveryRole:
+    """The routes are called as the host, as the shared screen and with no token.
+    The real token check runs; only the token decoding is replaced."""
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(("method", "path", "kwargs"), THEORY_CALLS)
+    @pytest.mark.parametrize("role", ["host", "display"])
+    async def test_a_host_or_shared_screen_token_is_refused_and_sees_nothing(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+        who: Who,
+        monkeypatch: pytest.MonkeyPatch,
+        method: str,
+        path: str,
+        kwargs: dict[str, Any],
+        role: str,
+    ) -> None:
+        await locked_theory_for_first_player(client, db_factory, who)
+        del app.dependency_overrides[require_player_jwt]
+        monkeypatch.setattr(
+            "api.auth._decode_bearer",
+            lambda _token: {
+                "uid": "x",
+                "arcwright_role": role,
+                "arcwright_session_id": str(who.session_id),
+                "arcwright_player_id": str(who.host_id),
+            },
+        )
+        response = getattr(client, method)(
+            url(who, path), headers={"Authorization": "Bearer made-up"}, **kwargs
+        )
+        assert response.status_code == 403
+        for secret in ("marlowe", "c_how_true", "locked", "answers"):
+            assert secret not in response.text
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(("method", "path", "kwargs"), THEORY_CALLS)
+    async def test_no_token_is_refused_and_sees_nothing(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+        who: Who,
+        method: str,
+        path: str,
+        kwargs: dict[str, Any],
+    ) -> None:
+        await locked_theory_for_first_player(client, db_factory, who)
+        del app.dependency_overrides[require_player_jwt]
+        response = getattr(client, method)(url(who, path), **kwargs)
+        assert response.status_code == 401
+        for secret in ("marlowe", "c_how_true", "locked", "answers"):
+            assert secret not in response.text
+
+
+class _Heard:
+    def __init__(self) -> None:
+        self.events: list[Any] = []
+
+    async def publish(self, event: Any) -> Any:
+        self.events.append(event)
+        return event
+
+
+class TestAFailedSaveTellsNobody:
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("route", ["save", "lock"])
+    async def test_nothing_is_sent_when_the_commit_fails(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+        who: Who,
+        monkeypatch: pytest.MonkeyPatch,
+        route: str,
+    ) -> None:
+        _, characters = await seed(db_factory, who)
+        await hold(db_factory, who, characters[0], "c_how_true")
+        heard = _Heard()
+        monkeypatch.setattr("api.routers.rounds._publisher", lambda _sid: heard.publish)
+        if route == "lock":
+            client.put(url(who, "/me/theory"), json={"answers": RIGHT})
+        heard.events.clear()
+
+        async def failing_commit(self: AsyncSession) -> None:
+            raise RuntimeError("the save failed")
+
+        with monkeypatch.context() as broken:
+            broken.setattr(AsyncSession, "commit", failing_commit)
+            with pytest.raises(RuntimeError):
+                if route == "save":
+                    client.put(url(who, "/me/theory"), json={"answers": RIGHT})
+                else:
+                    client.post(url(who, "/me/theory/lock"))
+        assert heard.events == []
+
+        # The change was rolled back, and a working save then tells its owner.
+        theory = client.get(url(who, "/me/theory")).json()["theory"]
+        assert theory["state"] == ("none" if route == "save" else "drafting")
+        if route == "save":
+            sent = client.put(url(who, "/me/theory"), json={"answers": RIGHT})
+            expected = "theory_draft_saved"
+        else:
+            sent = client.post(url(who, "/me/theory/lock"))
+            expected = "theory_locked"
+        assert sent.status_code == 200
+        assert expected in {e.event_type for e in heard.events}
