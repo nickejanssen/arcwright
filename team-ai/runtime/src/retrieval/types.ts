@@ -41,6 +41,7 @@ export interface IndexStats {
 
 export interface RetrievalAdapter {
   search(query: string, opts?: SearchOpts): Promise<Hit[]>;
+  searchBatch?(queries: string[], opts?: SearchOpts): Promise<Hit[][]>;
   get(idOrPath: string, section?: string): Promise<Document>;
   neighbors?(id: string, relation?: string, depth?: number): Promise<Hit[]>;
   reindex(paths?: string[]): Promise<IndexStats>;
