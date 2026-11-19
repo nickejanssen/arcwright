@@ -337,3 +337,26 @@ def test_exact_task_id_is_visible_below_text_threshold_without_scope_leak(
     same_owner = next(h for h in ambiguous_hits if h["path"] == "roadmap/tasks/owner.md")
     assert same_owner["score"] == owner_hit["score"]
     assert all("match_kind" not in hit for hit in ambiguous_hits)
+
+
+def test_stale_search_refuses_results_and_explains_plain_search_fallback(
+    tmp_path, built_knowledge_cli
+):
+    instance, docs = kb_instance(tmp_path)
+    write_kb_doc(docs, "updated", "safety", "Original text about security.")
+    base = [sys.executable, str(SCRIPT)]
+    root = ["--root", str(instance)]
+    built = subprocess.run(
+        [*base, "reindex", *root], cwd=ROOT, capture_output=True, text=True
+    )
+    assert built.returncode == 0, built.stderr
+    path = docs / "updated.md"
+    path.write_text(path.read_text(encoding="utf-8") + "\nnewfreshnessevidence\n", encoding="utf-8")
+    result = subprocess.run(
+        [*base, "search", "newfreshnessevidence", *root, "--namespace", "safety", "--k", "8"],
+        cwd=ROOT, capture_output=True, text=True,
+    )
+    assert result.returncode != 0
+    assert result.stdout == ""
+    assert "index stale" in result.stderr.lower()
+    assert "Use plain search" in result.stderr

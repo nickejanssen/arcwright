@@ -168,8 +168,10 @@ export function writeIndexLock(dir: string, lock: IndexLock): void {
   writeFileSync(join(dir, LOCK_FILE), `${HEADER}\n${body}`, "utf8");
 }
 
-export function resolveKbScope(instanceDir: string): { root: string; exclude: string[] } {
-  const lock = readIndexLock(instanceDir);
+export function resolveKbScope(
+  instanceDir: string,
+  lock: IndexLock = readIndexLock(instanceDir),
+): { root: string; exclude: string[] } {
   if (lock.kb === undefined) return { root: join(instanceDir, "kb"), exclude: [] };
   return { root: resolve(instanceDir, lock.kb.root), exclude: [...lock.kb.exclude] };
 }

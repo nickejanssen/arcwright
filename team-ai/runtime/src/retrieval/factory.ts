@@ -30,15 +30,18 @@ export function createAdapter(
   dir: string,
   opts?: { kbRoot?: string; dbPath?: string },
 ): RetrievalAdapter {
-  const driver = readIndexLock(dir).driver;
+  const lock = readIndexLock(dir);
+  const driver = lock.driver;
 
   switch (driver) {
     case "lexical": {
       const scope =
-        opts?.kbRoot === undefined ? resolveKbScope(dir) : { root: opts.kbRoot, exclude: [] };
+        opts?.kbRoot === undefined ? resolveKbScope(dir, lock) : { root: opts.kbRoot, exclude: [] };
       const lexicalOpts: LexicalAdapterOpts = {
         kbRoot: scope.root,
         exclude: scope.exclude,
+        indexLockDir: dir,
+        indexLockSnapshot: JSON.stringify(lock),
         // The index belongs to the instance directory, not the process cwd, so
         // that concurrent instances never share one SQLite file.
         dbPath: opts?.dbPath ?? join(dir, ".team-ai", "index.sqlite"),

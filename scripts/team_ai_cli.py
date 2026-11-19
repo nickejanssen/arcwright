@@ -100,8 +100,8 @@ def main() -> int:
 
     options = args[2:]
     flags = options[::2]
-    # The pinned CLI filters namespaces after its global candidate limit. Give
-    # specialist searches more candidates while keeping their eight-result limit.
+    # Scoped searches use a wider candidate pool while keeping the
+    # specialist-facing eight-result limit.
     widen = (
         options[-2:] == ["--k", "8"]
         and len(options) % 2 == 0
@@ -120,7 +120,9 @@ def main() -> int:
             output = b"".join(output.splitlines(keepends=True)[:8])
         sys.stdout.buffer.write(output)
     sys.stderr.buffer.write(result.stderr)
-    if result.returncode and result.stderr.startswith(b"index not built"):
+    if result.returncode and result.stderr.startswith(
+        (b"index not built", b"index stale", b"index freshness unknown")
+    ):
         print(
             "Ranked search is unavailable in this checkout. Use plain search with "
             "Grep or Glob under docs/, then Read the matches in your namespace. "
