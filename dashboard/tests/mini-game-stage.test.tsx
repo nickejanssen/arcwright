@@ -40,10 +40,11 @@ function fakeServer(): typeof fetch {
       );
     }
     if (url.includes("/events?since=")) {
-      return new Response(
-        new ReadableStream<Uint8Array>({ start: (c) => c.close() }),
-        { status: 200 },
-      );
+      // An open stream, as the real one is. One that ends at once makes the
+      // loader reconnect in a tight loop that never lets a timer run.
+      return new Response(new ReadableStream<Uint8Array>({ start() {} }), {
+        status: 200,
+      });
     }
     return new Response("not found", { status: 404 });
   }) as typeof fetch;
@@ -84,6 +85,7 @@ test("MiniGameStage mounts the registered renderer and unmounts it on leave", as
         registry,
         loadDefinition: async () => definition,
         fetcher: fakeServer(),
+        perfTransport: "none",
       }),
     );
     await new Promise((done) => setTimeout(done, 50));

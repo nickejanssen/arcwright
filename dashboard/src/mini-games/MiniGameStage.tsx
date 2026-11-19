@@ -7,6 +7,7 @@ import { useEffect, useRef } from "react";
 
 import type { MiniGameDefinition, Surface } from "../mini-game-kit/index.js";
 import { bootMiniGameStage, type StageController } from "./client.js";
+import type { PerfTransport } from "../mini-game-kit/perf.js";
 import { RendererRegistry } from "./registry.js";
 import { StageStates } from "./stage.js";
 
@@ -23,6 +24,7 @@ export interface MiniGameStageProps {
     version: string,
   ) => Promise<MiniGameDefinition>;
   fetcher?: typeof fetch;
+  perfTransport?: PerfTransport;
 }
 
 export function MiniGameStage(props: MiniGameStageProps) {
@@ -37,6 +39,7 @@ export function MiniGameStage(props: MiniGameStageProps) {
     registry,
     loadDefinition,
     fetcher,
+    perfTransport,
   } = props;
 
   useEffect(() => {
@@ -54,6 +57,7 @@ export function MiniGameStage(props: MiniGameStageProps) {
       characterId,
       loadDefinition,
       ...(fetcher ? { fetcher } : {}),
+      ...(perfTransport ? { perfTransport } : {}),
     }).then(
       (c) => {
         if (cancelled) c.unmount();
@@ -75,6 +79,7 @@ export function MiniGameStage(props: MiniGameStageProps) {
     registry,
     loadDefinition,
     fetcher,
+    perfTransport,
   ]);
 
   return (
