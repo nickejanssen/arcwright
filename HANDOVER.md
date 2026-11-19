@@ -55,7 +55,7 @@ Work is never left in chat. If you find work, it becomes a roadmap task record a
 | Screen walkthrough on a TV and two phones | AW-301 | Open; needs the founder, Docker, a TV and two phones |
 | Build-versus-adopt review | AW-309 | Done 2026-11-15: section 2.11.7 of the technology stack. Session 1 needs no paid plan and no new tool |
 | Competitor comparison | AW-316, AW-323 | Done by reading: `docs/product/2026-11-15-competitor-and-prior-art.md`. Playing the two closest is AW-323 (founder) |
-| Mini-game on its own | AW-322 | Headless half done; findings in the task file. TV run and the trial mini-game are open |
+| Standalone minigames and porting | [AW-322](https://github.com/nickejanssen/arcwright/issues/382), [AW-348](https://github.com/nickejanssen/arcwright/issues/443), [AW-349](https://github.com/nickejanssen/arcwright/issues/444) | AW-322 records the headless preview and gaps. AW-348 tracks live phone/desktop play with Nightcap offline. AW-349 tracks porting and running the same package in a destination. Check the issues for priority and approval. [AW-337](https://github.com/nickejanssen/arcwright/issues/395) owns mechanic selection. |
 | First case | AW-305 | In progress in another session; spoiler rules apply |
 
 ## Known issues

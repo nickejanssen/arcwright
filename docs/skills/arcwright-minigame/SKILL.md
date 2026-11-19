@@ -143,6 +143,8 @@ experience tree on your own; cross-experience sharing and any third-party studio
 packaging story are unbuilt and out of MVP scope. If the user asks for that,
 name it as out of scope and ask whether to proceed single-experience for now.
 
+For candidate ideas, mechanic selection, or a standalone mobile/desktop browser playtest, consult the [standalone minigame idea bank](../../gdd/nightcap/04-supporting-design/minigame-idea-bank.md). Use its example fixture and first playtest question. A live standalone run starts the minigame itself with Nightcap offline. Check AW-322 for what the current tooling can actually exercise.
+
 ## Phase 0: Design Intake and Lock
 
 Goal: turn a concept or sample game into a locked mini-game brief before files

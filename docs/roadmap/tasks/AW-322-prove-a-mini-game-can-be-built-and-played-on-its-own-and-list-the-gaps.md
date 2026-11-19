@@ -71,6 +71,10 @@ Still to do: the TV and two phones run, the trivial new mini-game with its time,
 
 - `python -m pytest engine/tests -q` for the mini-game tests, and the standalone run seen on a real TV and two phones. Say separately what was run headless and what was seen in play.
 
+## Standalone follow-through
+
+Use a direct mobile or desktop browser launch with Nightcap offline as the founder’s live target. Keep the existing TV check as a surface-specific observation. Record what the current tools can establish, the missing step and its owner; close discovery on documented gaps without waiting for downstream implementation. [AW-348](https://github.com/nickejanssen/arcwright/issues/443) owns the live player; [AW-349](https://github.com/nickejanssen/arcwright/issues/444) owns the port and cross-experience proof.
+
 ## Dependencies
 
 - None. Related: AW-300 (inventory), AW-303 (mini-games inside a session).
