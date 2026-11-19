@@ -18,7 +18,8 @@ rollback undoes all three, and the next tick grants and queues again from
 scratch. Delivery after the commit, including retries, belongs to the Outbox's
 pending queue. ``told`` therefore means "queued for delivery", not "seen"; it
 only stops a second message for the same grant when this code runs again over
-rows that were saved.
+rows that were saved. ``rewards_from_rows`` ignores it: a phone that missed or lost
+the message reads the same rewards from the menu route (AW-343).
 
 When every eligible player is in the top tier, the run separated nobody and
 nothing is given (D-127; approved in the AW-328 plan).
@@ -26,6 +27,8 @@ nothing is given (D-127; approved in the AW-328 plan).
 
 from __future__ import annotations
 
+from collections.abc import Iterable
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 from uuid import UUID
@@ -46,6 +49,39 @@ from engine.session.mini_game_phase import Publish
 
 REWARD_SOURCE = "mini_game_reward"
 REWARD_EVENT = "mini_game_reward_granted"
+
+
+@dataclass(frozen=True)
+class RewardGrant:
+    """One reward a player was given, as the menu read returns it.
+
+    ``grant_id`` is the saved row's own ID, so it never changes and the live
+    message carries the same one. ``run_id`` and ``beat_id`` are for the phone's
+    bookkeeping; no screen shows them."""
+
+    grant_id: str
+    run_id: str
+    beat_id: str
+    amount: int
+    kind: str
+
+
+def rewards_from_rows(rows: Iterable[Decision]) -> tuple[RewardGrant, ...]:
+    """The mini-game rewards among these saved ``budget_grant`` rows, in the
+    order given. The menu read passes the same rows its budget is worked out
+    from, so the list and the balance always agree. ``told`` is not consulted: a
+    reward is listed whether or not its message was ever sent or seen."""
+    return tuple(
+        RewardGrant(
+            grant_id=str(row.decision_id),
+            run_id=str(row.context.get("run_id")),
+            beat_id=str(row.context.get("beat_id")),
+            amount=int(row.outcome["amount"]),
+            kind=str(row.outcome["kind"]),
+        )
+        for row in rows
+        if row.context.get("source") == REWARD_SOURCE
+    )
 
 
 def _winners(standing: Any) -> list[str]:
@@ -177,6 +213,7 @@ async def notify(
             now,
             participant_id,
             {
+                "grant_id": str(row.decision_id),
                 "amount": row.outcome["amount"],
                 "kind": row.outcome["kind"],
                 "remaining_budget": await remaining_budget(

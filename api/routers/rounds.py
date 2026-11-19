@@ -34,6 +34,7 @@ from api.schemas import (
     MenuResponse,
     PhaseStateResponse,
     ReadyRequest,
+    RewardGrantResponse,
     RoundStateResponse,
 )
 from engine.db import get_async_session
@@ -152,6 +153,16 @@ async def get_menu(
                 taken=i.taken,
             )
             for i in menu.items
+        ],
+        rewards=[
+            RewardGrantResponse(
+                grant_id=r.grant_id,
+                run_id=r.run_id,
+                beat_id=r.beat_id,
+                amount=r.amount,
+                kind=r.kind,
+            )
+            for r in menu.rewards
         ],
     )
 
