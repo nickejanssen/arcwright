@@ -22,7 +22,7 @@ Part of [the version overview](README.md). Proposed, not approved. Written becau
 | --- | --- |
 | Control game | The one mini-game every version plays with identical rules. Search and Find, provisionally. It is a role inside a version, not a version |
 | Main game | A group mini-game that belongs to a version's cohort and fills a round slot |
-| Side game | A mini-game outside the round slots: a solo find (one player's investigation leads to it), a pair find, or an "anytime" game. "Anytime" is the founder's word (D-145); my reading, to confirm, is a game a player can start whenever they like, for example during thinking time |
+| Side game | A mini-game outside the round slots: a solo find (one player's investigation leads to it) or a pair find. The founder also used the word "anytime games" (D-144); it has no definition in the record, so it is **not defined here**. The orchestrator session has been asked for the original conversation (issue #429) |
 | Standalone | Playable on its own, on a phone or laptop, with Nightcap off (AW-348) |
 
 ## The candidate list: 14 games
@@ -50,7 +50,7 @@ The idea cards' ranking in the bank reflects predicted appeal and has not been t
 
 ## Where each version would use them
 
-C is the control, M a main game, S a side game, A an alternate if a slot needs filling, and a dash means not used.
+C is the control, M a main game, S a side game (solo find), A an alternate if a slot needs filling, and a dash means not used.
 
 | # | Game | 1a Agency race | 1b Newcomers | 1c Story and intrigue | 1d Deduction and puzzles |
 | --- | --- | --- | --- | --- | --- |
@@ -82,8 +82,8 @@ Three games carry every version in December: Search and Find, Battle of Wits and
 
 Inference, not measured: waves 1 and 2 are the work that can fit before 15 December. The standalone path for each is AW-348 (play it with Nightcap off) and AW-349 (port and reuse); the mechanic design and build is AW-337.
 
-## Decisions for the founder (none recorded yet)
+## Decisions for the founder (none recorded yet; question 1 was answered "Right list, move on" on issue #429)
 
 1. Is this the right candidate list, and what is missing or should go?
 2. Should the paper trials in the table run before any of the 'later' games are built?
-3. What does "anytime game" mean to you, and is my reading (a game a player starts whenever they like) right?
+3. "Anytime games" is open until the orchestrator session sends the original question and reply; then the founder says what he meant.
