@@ -57,14 +57,15 @@ from engine.tests.rounds_support import (
     seat_session,
     where,
 )
-from engine.tests.timing_support import machine_slowdown
 
 TIMED_TICKS = 5
-# Spec 0093 sets the target at 0.2 s. On the AW-350 machine the best of five
-# ticks is about 0.085 s when calm and 0.12 to 0.22 s with 16 busy processes on
-# 8 cores, while the speed check read only about 1.2. So the check keeps 0.4 s,
-# 2x the target. A tenfold slowdown (about 0.9 s) still fails.
-TICK_CALM_BUDGET_SECONDS = 0.4
+# Spec 0093: the tick over twenty sessions takes under 200 ms. The limit is on
+# the CPU time the tick uses (time.process_time, all threads), not the clock on
+# the wall, so a busy machine cannot fail it by making the tick wait for a
+# processor (AW-350). The wall-clock backstop is ten times the target: it only
+# catches a tick that stalls on something other than the processor.
+TICK_CPU_LIMIT_SECONDS = 0.2
+TICK_WALL_BACKSTOP_SECONDS = 2.0
 
 EXPECTED_ORDER = [
     ("opening", "scene"),
@@ -346,7 +347,6 @@ class TestTheTickLoopBody:
         db: AsyncSession,
         registered: Callable[[ArcDefinition], None],
     ) -> None:
-        slowdown_before = machine_slowdown()
         arc = phased_arc()
         registered(arc)
         for _ in range(20):
@@ -354,14 +354,17 @@ class TestTheTickLoopBody:
         await db.commit()
         rec = Recorder()
         await tick_active_sessions(factory, at(0), lambda _sid: rec)  # enters phases
-        timings: list[float] = []
+        cpu_timings: list[float] = []
+        wall_timings: list[float] = []
         for _ in range(TIMED_TICKS):
+            cpu_started = time.process_time()
             started = time.perf_counter()
             ticked = await tick_active_sessions(factory, at(1), lambda _sid: rec)
-            timings.append(time.perf_counter() - started)
+            wall_timings.append(time.perf_counter() - started)
+            cpu_timings.append(time.process_time() - cpu_started)
             assert ticked == 20
-        budget = TICK_CALM_BUDGET_SECONDS * max(slowdown_before, machine_slowdown())
-        assert min(timings) < budget
+        assert min(cpu_timings) < TICK_CPU_LIMIT_SECONDS
+        assert min(wall_timings) < TICK_WALL_BACKSTOP_SECONDS
 
 
 class TestEventsWaitForTheCommit:
