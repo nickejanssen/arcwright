@@ -692,7 +692,8 @@
         "AW-337",
         "AW-348",
         "AW-349",
-        "AW-347"
+        "AW-347",
+        "AW-351"
       ],
       "github": {
         "issue_number": 373,
@@ -3288,6 +3289,38 @@
       "github": {
         "issue_number": 447,
         "url": "https://github.com/nickejanssen/arcwright/issues/447"
+      }
+    },
+    {
+      "id": "AW-351",
+      "title": "Make The Tell Me Something True Screen And The Engine Agree On The Step And The Spotlight",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "S",
+      "depends_on": [
+        "AW-347"
+      ],
+      "path": "docs/roadmap/tasks/AW-351-make-the-tell-me-something-true-screen-and-engine-agree.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 457,
+        "url": "https://github.com/nickejanssen/arcwright/issues/457"
+      }
+    },
+    {
+      "id": "AW-357",
+      "title": "Watch The Engine's Step Time Live, And Load-Test It Before Many Games Share A Server",
+      "milestone": "M7",
+      "epic": "M7-A",
+      "size": "M",
+      "depends_on": [
+        "AW-350"
+      ],
+      "path": "docs/roadmap/tasks/AW-357-watch-step-time-live-and-load-test-before-scaling.md",
+      "epic_id": "M7-A",
+      "github": {
+        "issue_number": 467,
+        "url": "https://github.com/nickejanssen/arcwright/issues/467"
       }
     }
   ],
