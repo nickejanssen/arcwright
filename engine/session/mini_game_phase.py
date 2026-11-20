@@ -3,13 +3,15 @@
 ``engine.session.phases`` moves a round from phase to phase. This module is
 what it calls when the phase is a ``mini_game``:
 
-  - ``begin``: find the beat's bound game, resolve it, create the run and start
-    it. A beat with no binding skips the phase. A binding that cannot run ends
-    the phase at once with a recorded error and a note to the host, so the game
-    never hangs.
+  - ``begin``: pick the game for this slot, resolve it, create the run and start
+    it. A beat lists as many ``mini_game`` phases (slots) as it allows, and each
+    slot is its own phase visit with its own run. A slot with no game to run is
+    skipped. A binding that cannot run ends the phase at once with a recorded
+    error and a note to the host, so the game never hangs.
   - ``advance``: on each tick, ask the run whether its time is up, then read its
     saved state back. Any end state ends the phase. The phase's own time limit
     is a hard cap: a run still going at the cap is cancelled.
+  - ``choose_binding``: the rule that picks a slot's game (AW-344, D-145).
   - ``stop_open_run``: a phase that ends any other way leaves no run open.
   - ``pause_bound_run`` / ``resume_bound_run``: pausing the session keeps the
     run's time left, and resuming restarts it.
@@ -67,6 +69,7 @@ ENDED = "mini_game_ended"
 SKIPPED = "mini_game_skipped"
 ERROR_PREFIX = "mini_game_error:"
 UNAVAILABLE_EVENT = "mini_game_unavailable"
+NONE_FIT = "none_fit"
 WARNING_EVENT = "mini_game_warning"
 
 TERMINAL_STATUSES = frozenset({"completed", "timed_out", "cancelled"})
@@ -203,6 +206,64 @@ async def _tell_host_unavailable(
     )
 
 
+def _package_range_and_mechanic(
+    arc: ArcDefinition, binding: MiniGameBinding
+) -> tuple[int, int, str] | None:
+    """The player range and mechanic the binding's package declares, or None
+    when the package cannot be read (that binding is then not a fit)."""
+    if not arc.mini_game_root:
+        return None
+    try:
+        loaded = load_mini_game_package(
+            _REPO_ROOT / arc.mini_game_root / binding.game_id
+        )
+    except MiniGamePackageError:
+        return None
+    definition = loaded.definition
+    return definition.min_players, definition.max_players, definition.mechanic_type
+
+
+async def _started_mechanics(db: AsyncSession, session_id: UUID) -> set[str]:
+    """Every mechanic with a run in this session, in any state: a run that was
+    cancelled or timed out still counts as played (D-136)."""
+    result = await db.execute(
+        select(MiniGameRun).where(MiniGameRun.session_id == session_id)
+    )
+    return {
+        str(mechanic)
+        for run in result.scalars().all()
+        if (mechanic := (run.definition_snapshot or {}).get("mechanic_type"))
+    }
+
+
+async def choose_binding(
+    db: AsyncSession,
+    arc: ArcDefinition,
+    beat: BeatDefinition,
+    session_id: UUID,
+    slot: int,
+    player_count: int,
+) -> MiniGameBinding | None:
+    """The game for slot ``slot`` (counted from 0) of ``beat``, or None to skip it.
+
+    ``listed``: the binding in the same position. ``fitting``: the first binding,
+    in arc-file order, whose package allows ``player_count`` players and whose
+    mechanic has not been started in this session. Saved state and the arc file
+    decide; nothing is random and no model is asked."""
+    bindings = beat.mini_games or []
+    if beat.mini_game_pick == "listed":
+        return bindings[slot] if slot < len(bindings) else None
+    started = await _started_mechanics(db, session_id)
+    for binding in bindings:
+        declared = _package_range_and_mechanic(arc, binding)
+        if declared is None:
+            continue
+        low, high, mechanic = declared
+        if low <= player_count <= high and mechanic not in started:
+            return binding
+    return None
+
+
 async def begin(
     db: AsyncSession,
     orm: OrmSession,
@@ -211,13 +272,21 @@ async def begin(
     phase_entry: int,
     now: datetime,
     publish: Publish,
+    *,
+    slot: int = 0,
+    player_count: int = 0,
 ) -> str | None:
-    """Create and start the beat's run. Returns None when the run is going, or
-    the reason the phase must end at once (nothing to run, or it cannot run)."""
+    """Create and start the run for slot ``slot`` of the beat. Returns None when
+    the run is going, or the reason the phase must end at once (nothing to run,
+    or it cannot run)."""
     beat = next(b for b in arc.beats if b.beat_id == beat_id)
-    if not beat.mini_games:
+    binding = await choose_binding(db, arc, beat, orm.session_id, slot, player_count)
+    if binding is None:
+        if beat.mini_games and beat.mini_game_pick == "fitting":
+            await _tell_host_unavailable(
+                publish, orm.session_id, now, beat_id, NONE_FIT
+            )
         return SKIPPED
-    binding = beat.mini_games[0]
     runtime = _runtime(db, now, publish)
     run: MiniGameRun | None = None
     try:
@@ -236,7 +305,7 @@ async def begin(
         run = await runtime.create_run(orm.session_id, snapshot)
         await runtime.start_run(run.run_id)
         await _warn_if_phase_is_short(
-            publish, orm.session_id, now, beat, snapshot.duration_seconds
+            publish, orm.session_id, now, beat, slot, snapshot.duration_seconds
         )
         return None
     except _Unavailable as exc:
@@ -263,11 +332,12 @@ async def _warn_if_phase_is_short(
     session_id: UUID,
     now: datetime,
     beat: BeatDefinition,
+    slot: int,
     game_seconds: int,
 ) -> None:
     """The phase's time limit is a hard cap. If it is not longer than the game,
     the run is cancelled at the cap and never reaches its own end: tell the host."""
-    phase = next(p for p in beat.phases or [] if p.kind is PhaseKind.mini_game)
+    phase = [p for p in beat.phases or [] if p.kind is PhaseKind.mini_game][slot]
     if phase.seconds > game_seconds:
         return
     await _tell_host(

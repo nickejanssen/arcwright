@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0",
+  "game_id": "quick-race",
+  "version": "0.1.0",
+  "mechanic_type": "quick-race",
+  "participation_mode": "individual",
+  "content_mode": "authored",
+  "min_players": 2,
+  "max_players": 8,
+  "duration_seconds": 20,
+  "rules": {"note": "Test-only definition. Written by hand, so resolving it makes no model call."},
+  "authored_content": {"clues": []},
+  "generation_constraints": null,
+  "behavioral_outputs": [],
+  "clue_fallback": {"delay_seconds": 5, "clue_variant": "reduced", "host_override": true}
+}

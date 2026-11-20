@@ -328,6 +328,12 @@ class BeatDefinition(BaseModel):
     interaction_ids: List[str] = Field(default_factory=list)
     phases: Optional[List[PhaseDefinition]] = None
     """Ordered steps of this beat. None keeps the old behaviour (spec 0093)."""
+    mini_game_pick: Literal["listed", "fitting"] = "listed"
+    """How each ``mini_game`` phase of this beat picks its game (AW-344, D-145).
+    ``listed``: the Nth phase runs the Nth entry of ``mini_games``. ``fitting``:
+    ``mini_games`` is a pool, and each phase runs the first entry, in this order,
+    that allows the session's player count and whose mechanic has not been
+    started in the session; none left skips the phase."""
 
     @model_validator(mode="after")
     def validate_phase_order(self) -> "BeatDefinition":
@@ -336,14 +342,26 @@ class BeatDefinition(BaseModel):
         if not self.phases:
             msg = f"beat {self.beat_id} lists phases but none"
             raise ValueError(msg)
-        positions = [PHASE_ORDER.index(phase.kind) for phase in self.phases]
-        if positions != sorted(set(positions)):
+        kinds = [phase.kind for phase in self.phases]
+        positions = [PHASE_ORDER.index(kind) for kind in kinds]
+        distinct = sorted(set(positions))
+        if positions != sorted(positions) or any(
+            positions.count(position) > 1
+            and PHASE_ORDER[position] is not PhaseKind.mini_game
+            for position in distinct
+        ):
             msg = (
                 f"beat {self.beat_id} phases must follow the order "
-                f"{', '.join(kind.value for kind in PHASE_ORDER)}, each at most once"
+                f"{', '.join(kind.value for kind in PHASE_ORDER)}, each at most once "
+                "(mini_game may repeat, one after another)"
             )
             raise ValueError(msg)
         return self
+
+    @property
+    def mini_game_slots(self) -> int:
+        """How many mini-games this beat may run: its ``mini_game`` phases."""
+        return sum(1 for p in self.phases or [] if p.kind is PhaseKind.mini_game)
 
     @model_validator(mode="after")
     def validate_binding_has_a_mini_game_phase(self) -> "BeatDefinition":
@@ -357,14 +375,33 @@ class BeatDefinition(BaseModel):
         return self
 
     @model_validator(mode="after")
-    def validate_settings_only_on_the_first_mini_game(self) -> "BeatDefinition":
-        """Only the first mini-game on a beat runs (AW-303). A reward or a switched
-        off release on a later one would be ignored with no error anywhere."""
-        for binding in (self.mini_games or [])[1:]:
+    def validate_slots_match_the_listed_mini_games(self) -> "BeatDefinition":
+        """With ``listed`` picking, slot N runs the Nth binding. A binding past the
+        last slot can never run, so a reward or a switched off release on it would
+        be ignored with no error anywhere; a slot with no binding left to run is a
+        mistake in the arc file. ``fitting`` picks from the whole list, so it has
+        neither problem."""
+        if self.mini_game_pick != "listed" or not self.mini_games:
+            return self
+        slots = self.mini_game_slots
+        if slots > len(self.mini_games):
+            msg = (
+                f"beat {self.beat_id} has {slots} mini_game phases but lists "
+                f"{len(self.mini_games)} mini-games; each phase needs one"
+            )
+            raise ValueError(msg)
+        runnable = max(slots, 1)
+        for binding in self.mini_games[runnable:]:
             if binding.reward is not None or not binding.release_content:
+                shown = (
+                    "the first mini-game"
+                    if runnable == 1
+                    else f"the first {runnable} mini-games"
+                )
                 msg = (
                     f"beat {self.beat_id} sets a reward or release_content on "
-                    f"{binding.binding_id}, but only the first mini-game on a beat runs"
+                    f"{binding.binding_id}, but it can never run: only {shown} "
+                    f"on a beat {'runs' if runnable == 1 else 'run'}"
                 )
                 raise ValueError(msg)
         return self

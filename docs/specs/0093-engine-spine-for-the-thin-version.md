@@ -138,7 +138,7 @@ One JSON file per written case, in the game's own folder. The arc file names it.
 
 ## Part C. Rounds that move by rule
 
-- A beat in an arc file may list ordered **phases** from a fixed set: `scene`, `choices`, `mini_game`, `bridge`. An arc file lists phases on every beat or on none. A beat without phases behaves exactly as today, so both registered arc files load and run unchanged.
+- A beat in an arc file may list ordered **phases** from a fixed set: `scene`, `choices`, `mini_game`, `bridge`. An arc file lists phases on every beat or on none. Each kind appears once, except `mini_game`, which may repeat one after another (Part E, D-147). A beat without phases behaves exactly as today, so both registered arc files load and run unchanged.
 - The engine moves from phase to phase, and from the last phase to the next beat, by these rules only:
 
 | Phase | On entry | Ends when |
@@ -174,6 +174,11 @@ One JSON file per written case, in the game's own folder. The arc file names it.
 - When a run reaches any end state (completed, timed out, resolved or cancelled by the host), the session is told, the phase ends and the round continues.
 - A beat with no binding skips the phase. A binding that cannot be resolved ends the phase at once with a recorded error, and the host is told; the game does not hang.
 - Existing behaviour for duplicate and late submissions, scoring and what a package releases is not changed.
+
+**Several mini-games in a beat (AW-344, D-145, D-147).** Each `mini_game` phase is one slot, with its own clock and its own run; the number of slots a beat lists is its cap, read from the arc file, and zero is allowed. Every rule above applies to each slot on its own, because a run is found by its beat and its phase visit. The beat's `mini_game_pick` says how a slot gets its game:
+
+- `listed` (default): slot N runs the Nth binding. A beat with one slot and one binding is exactly as before. A beat that lists more slots than bindings is refused at load, and a reward or release setting on a binding past the last slot is refused, because it could never run.
+- `fitting`: the beat's bindings are a pool. A slot runs the first binding, in arc-file order, whose package declares a player range holding the session's player count and whose mechanic has not been started in this session (D-136; a cancelled or timed-out run counts as started). None left skips the slot, records it, and tells the host (`none_fit`). Rules decide, never a model.
 
 ## Part F. Play records
 
