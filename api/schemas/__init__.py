@@ -285,6 +285,8 @@ class MiniGameRunResponse(BaseModel):
     mechanic_type: Optional[str] = None
     deadline_at: Optional[datetime] = None
     phase_state: Optional[MiniGamePhaseState] = None
+    runtime_state: dict[str, Any] = Field(default_factory=dict)
+    presentation: dict[str, Any] = Field(default_factory=dict)
     my_submissions: list[MiniGameSubmissionResponse]
 
 

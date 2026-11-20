@@ -54,6 +54,7 @@ from api.schemas import (
 )
 from engine.db import get_async_session
 from engine.db.orm import MiniGameRun, MiniGameSubmission, SessionParticipant
+from engine.mini_games.audience_view import Audience, RunView, Viewer, build_run_view
 from engine.mini_games.plugins import default_registry
 from engine.mini_games.runtime import MiniGameRuntime, MiniGameRuntimeError
 
@@ -342,6 +343,19 @@ async def _character_id_for_claims(
     return result.scalar_one_or_none()
 
 
+def _run_view_for(
+    run: MiniGameRun, *, claims: JwtClaims, character_id: UUID | None
+) -> RunView:
+    """Ask the engine what this caller may read of the run's state (AW-347)."""
+    if claims.role == "host":
+        viewer = Viewer(Audience.host)
+    elif claims.role == "player" and character_id is not None:
+        viewer = Viewer(Audience.player, str(character_id))
+    else:
+        viewer = Viewer(Audience.shared_display)
+    return build_run_view(default_registry(), run, viewer)
+
+
 async def _load_run_or_404(
     db: AsyncSession,
     *,
@@ -428,6 +442,8 @@ async def get_active_mini_game(
     else:
         visible_submissions = list(run.submissions)
 
+    view = _run_view_for(run, claims=claims, character_id=character_id)
+
     return MiniGameRunResponse(
         run_id=run.run_id,
         game_id=run.game_id,
@@ -443,6 +459,8 @@ async def get_active_mini_game(
             character_id=character_id,
             participant_character_ids=participant_character_ids,
         ),
+        runtime_state=view.runtime_state,
+        presentation=view.presentation,
         my_submissions=[
             MiniGameSubmissionResponse(
                 submission_id=s.submission_id,
@@ -501,6 +519,10 @@ async def get_active_mini_game_display(
             role="display",
         )
 
+    # The shared screen's view, whatever character_id says: that address needs
+    # no sign-in, so it must never carry a player's private entries.
+    view = build_run_view(default_registry(), run, Viewer(Audience.shared_display))
+
     return MiniGameRunResponse(
         run_id=run.run_id,
         game_id=run.game_id,
@@ -516,6 +538,8 @@ async def get_active_mini_game_display(
             character_id=character_id,
             participant_character_ids=participant_character_ids,
         ),
+        runtime_state=view.runtime_state,
+        presentation=view.presentation,
         my_submissions=[],
     )
 

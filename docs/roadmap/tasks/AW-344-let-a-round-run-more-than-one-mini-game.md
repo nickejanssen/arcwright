@@ -45,9 +45,10 @@ Today a round runs only the first mini-game bound to it. Let Nightcap's arc file
 ## Acceptance Criteria
 
 - [ ] An arc with two mini-games in a round runs both, in order, then moves on; an arc with one behaves as today.
-- [ ] The cap is read from the arc file; a list longer than its cap is refused at load with a named reason.
+- [ ] The cap is the number of `mini_game` phases the arc file lists for the beat (zero allowed). In `listed` mode more phases than games is refused at load with a named reason; in `fitting` mode a pool may be longer or shorter than the slots (D-145, D-147).
 - [ ] Every run in the round records its binding; each can time out, be paused and resumed, and give its own reward once.
 - [ ] Both registered arc files load and run unchanged; no existing test is edited to make it pass.
+- [ ] In `fitting` mode each slot runs the first game, in arc-file order, that fits the player count and repeats no mechanic; none left skips the slot, records it and tells the host (D-147).
 - [ ] No table change, dependency or model call; no game word added to `engine/`.
 
 ## Tests/Verification
