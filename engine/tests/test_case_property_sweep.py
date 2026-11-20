@@ -23,6 +23,13 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 ARC_PATH = REPO_ROOT / "nightcap" / "couch-race.arc.json"
 
 SEEDS_PER_SKELETON = 1000
+# CPU time, not wall-clock time: the sweep is plain single-threaded Python, so
+# waiting for a busy processor does not count, including load that starts and
+# stops part-way through (AW-350). Per case type it used 5.7 to 6.7 s idle, 8.1
+# to 10.0 s with 12 to 16 busy processes, and 20.5 s with the laptop's processor
+# throttled to about 1 GHz. 30 s is about 5x idle and above all of those; a
+# tenfold slowdown (62.5 s measured) still fails. It was 15 s of wall-clock time.
+SWEEP_CPU_LIMIT_SECONDS = 30.0
 SKELETON_IDS = ("locked_room_poisoning", "alibi_collapse", "pre_conspiracy_fall")
 
 
@@ -36,7 +43,7 @@ def arc() -> ArcDefinition:
 def test_sweep_invariants_hold_for_exactly_1000_seeds(
     arc: ArcDefinition, skeleton_id: str
 ) -> None:
-    start = time.perf_counter()
+    start = time.process_time()
     failures: list[str] = []
     count = 0
     for seed in range(SEEDS_PER_SKELETON):
@@ -66,17 +73,18 @@ def test_sweep_invariants_hold_for_exactly_1000_seeds(
             failures.append(
                 f"seed={seed}: fact predicates {predicates} != {expected_predicates}"
             )
-    elapsed = time.perf_counter() - start
+    elapsed = time.process_time() - start
     assert not failures, (
         f"{len(failures)} failures out of {SEEDS_PER_SKELETON} seeds "
         f"(skeleton={skeleton_id}); first 5: {failures[:5]}"
     )
     assert count == SEEDS_PER_SKELETON
-    # Throughput sanity: fail if we cannot resolve 100 cases/second on this
-    # machine for a single skeleton's share of the sweep.
-    if elapsed > 15:
+    # Throughput sanity: fail if the sweep uses more CPU time than a calm machine
+    # needs for a single skeleton's share of the sweep.
+    if elapsed > SWEEP_CPU_LIMIT_SECONDS:
         pytest.fail(
-            f"sweep for skeleton={skeleton_id} took {elapsed:.1f}s > 15s; "
+            f"sweep for skeleton={skeleton_id} used {elapsed:.1f}s of CPU time "
+            f"> {SWEEP_CPU_LIMIT_SECONDS:.0f}s; "
             "either the resolver has regressed on perf or "
             "SEEDS_PER_SKELETON was raised without a matching throughput budget."
         )
