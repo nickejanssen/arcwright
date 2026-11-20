@@ -58,7 +58,7 @@ The founder interview ran in a planning session. His answers are on issue #429, 
 - A solo mini-game run does not count against the no-repeat rule. The final race runs back to back with Last Call.
 - The founder accepts being spoiled on both cases.
 
-New tasks filed from this plan: AW-354 (per-mini-game rating, version tags, extra survey questions), AW-355 (Battle of Wits questions and host lines), AW-356 (version arc setups and the group run sheet).
+New tasks filed from this plan: AW-354 (#463, per-mini-game rating, version tags, extra survey questions), AW-355 (#464, Battle of Wits questions and host lines), AW-356 (#465, version arc setups and the group run sheet).
 
 ## Acceptance Criteria
 

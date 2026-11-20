@@ -3319,7 +3319,11 @@
         "AW-346"
       ],
       "path": "docs/roadmap/tasks/AW-354-add-per-mini-game-rating-and-version-tags-to-the-survey.md",
-      "epic_id": "M7-C"
+      "epic_id": "M7-C",
+      "github": {
+        "issue_number": 463,
+        "url": "https://github.com/nickejanssen/arcwright/issues/463"
+      }
     },
     {
       "id": "AW-355",
@@ -3333,7 +3337,11 @@
         "AW-319"
       ],
       "path": "docs/roadmap/tasks/AW-355-write-the-battle-of-wits-questions-and-version-host-lines.md",
-      "epic_id": "M7-C"
+      "epic_id": "M7-C",
+      "github": {
+        "issue_number": 464,
+        "url": "https://github.com/nickejanssen/arcwright/issues/464"
+      }
     },
     {
       "id": "AW-356",
@@ -3349,7 +3357,11 @@
         "AW-355"
       ],
       "path": "docs/roadmap/tasks/AW-356-build-the-version-arc-setups-and-the-group-run-sheet.md",
-      "epic_id": "M7-C"
+      "epic_id": "M7-C",
+      "github": {
+        "issue_number": 465,
+        "url": "https://github.com/nickejanssen/arcwright/issues/465"
+      }
     }
   ],
   "superseded_sources": [
