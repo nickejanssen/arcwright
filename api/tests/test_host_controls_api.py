@@ -20,7 +20,9 @@ from starlette.testclient import TestClient
 
 from api.auth import JwtClaims, require_player_jwt, require_player_or_host_jwt
 from api.main import app
+from api.tests.test_mini_games_api import _make_snapshot_dict
 from engine.db import get_async_session
+from engine.db.orm import MiniGameRun
 from engine.db.testing import make_sqlite_session_factory
 from engine.session.phases import tick
 from engine.session.service import SessionService
@@ -153,6 +155,54 @@ def url(signed: Signed, path: str) -> str:
     return f"/v1/sessions/{signed.session_id}{path}"
 
 
+async def tick_now(factory: async_sessionmaker[AsyncSession], session_id: UUID) -> None:
+    """Enter the first phase of a started session, as the once-a-second loop does."""
+    async with factory() as db:
+        await tick(db, session_id, _now())
+        await db.commit()
+
+
+async def add_run(factory: async_sessionmaker[AsyncSession], session_id: UUID) -> UUID:
+    """A real, active mini-game run row owned by ``session_id``."""
+    run_id = uuid4()
+    async with factory() as db:
+        db.add(
+            MiniGameRun(
+                run_id=run_id,
+                session_id=session_id,
+                game_id="test-game",
+                definition_version="0.1.0",
+                definition_snapshot=_make_snapshot_dict(),
+                status="active",
+                revision=0,
+                started_at=_now(),
+                deadline=None,
+                clue_unlock_record={},
+            )
+        )
+        await db.commit()
+    return run_id
+
+
+async def run_status(factory: async_sessionmaker[AsyncSession], run_id: UUID) -> str:
+    async with factory() as db:
+        run = await db.get(MiniGameRun, run_id)
+        assert run is not None
+        return run.status
+
+
+COMMANDS: list[tuple[str, dict[str, object], str]] = [
+    ("cancel", {}, "cancelled"),
+    ("resolve", {}, "completed"),
+    (
+        "release_fallback",
+        {"clues": [{"clue_id": "c1", "variant": "full", "content": {"text": "x"}}]},
+        "active",
+    ),
+]
+SCORE = "engine.mini_games.plugins._match_3_clue_race.Match3ClueRacePlugin.score"
+
+
 HOST_ONLY = ["/start", "/end", "/round/move-on"]
 
 
@@ -260,7 +310,11 @@ class TestTheHostSeat:
         started = client.post(url(signed, "/start"))
         assert started.status_code == 200, started.text
         assert started.json()["status"] == "active"
-        assert client.post(url(signed, "/round/move-on")).status_code in (200, 409)
+        await tick_now(db_factory, signed.session_id)
+        before = client.get(url(signed, "/room")).json()["phase"]
+        moved = client.post(url(signed, "/round/move-on"))
+        assert moved.status_code == 200, moved.text
+        assert moved.json()["phase"] != before
 
     @pytest.mark.asyncio
     async def test_the_host_seat_can_end_the_game(
@@ -275,19 +329,63 @@ class TestTheHostSeat:
         assert client.get(url(signed, "/room")).json()["over"] is True
 
     @pytest.mark.asyncio
-    async def test_the_host_seat_reaches_host_commands(
+    @pytest.mark.parametrize(("command", "params", "expected"), COMMANDS)
+    async def test_the_host_seat_runs_each_host_command_on_its_own_run(
         self,
         client: TestClient,
         db_factory: async_sessionmaker[AsyncSession],
         signed: Signed,
+        command: str,
+        params: dict[str, object],
+        expected: str,
     ) -> None:
         await seed(db_factory, signed)
-        response = client.post(
-            url(signed, f"/mini-games/{uuid4()}/host-commands"),
-            json={"command": "cancel", "params": {}},
-        )
-        # Past the seat check: the run does not exist, so the engine says so.
-        assert response.status_code in (404, 409), response.text
+        run_id = await add_run(db_factory, signed.session_id)
+        with patch(SCORE, return_value={}):
+            response = client.post(
+                url(signed, f"/mini-games/{run_id}/host-commands"),
+                json={"command": command, "params": params},
+            )
+        assert response.status_code == 200, response.text
+        assert response.json()["run_id"] == str(run_id)
+        assert response.json()["status"] == expected
+        assert await run_status(db_factory, run_id) == expected
+
+
+class TestAnotherSessionsRun:
+    """The run id is checked against the path session: a host seat of one game
+    can never command another game's run, even with its id."""
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize(("command", "params", "expected"), COMMANDS)
+    @pytest.mark.parametrize("role", ["player", "host"])
+    async def test_a_run_of_another_session_is_404_and_untouched(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+        signed: Signed,
+        command: str,
+        params: dict[str, object],
+        expected: str,
+        role: str,
+    ) -> None:
+        await seed(db_factory, signed)  # session A: the sign-in is its host seat
+        mine = signed.session_id
+        my_seat = signed.participant_id
+        await seed(db_factory, signed)  # session B
+        others_run = await add_run(db_factory, signed.session_id)
+        signed.session_id = mine
+        signed.participant_id = my_seat
+        if role == "host":
+            signed.role = "host"
+            signed.participant_id = uuid4()
+        with patch(SCORE, return_value={}):
+            response = client.post(
+                url(signed, f"/mini-games/{others_run}/host-commands"),
+                json={"command": command, "params": params},
+            )
+        assert response.status_code == 404, response.text
+        assert await run_status(db_factory, others_run) == "active"
 
 
 class TestTheOperatorKey:
@@ -302,9 +400,10 @@ class TestTheOperatorKey:
         signed.role = "host"
         signed.participant_id = uuid4()
         assert client.post(url(signed, "/start")).status_code == 200
+        await tick_now(db_factory, signed.session_id)
         assert client.post(url(signed, "/pause")).status_code == 200
         assert client.post(url(signed, "/resume")).status_code == 200
-        assert client.post(url(signed, "/round/move-on")).status_code in (200, 409)
+        assert client.post(url(signed, "/round/move-on")).status_code == 200
         assert client.post(url(signed, "/end")).status_code == 200
 
 
@@ -327,7 +426,7 @@ class TestAfterAHandOver:
         client.post(url(signed, "/resume"))
         # The new host holds a sign-in minted before the hand-over.
         signed.participant_id = ids[1]
-        assert client.post(url(signed, "/round/move-on")).status_code in (200, 409)
+        assert client.post(url(signed, "/round/move-on")).status_code == 200
         back = client.post(
             url(signed, "/host/hand-over"), json={"to_participant_id": str(ids[0])}
         )

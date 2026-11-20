@@ -636,6 +636,9 @@ async def send_host_command(
     release_fallback → override_clue_release: release clues immediately.
     """
     _require_session_match(session_id, claims)
+    # The runtime loads a run by its id alone, so the run must be checked to
+    # belong to this session here, before any command reaches it.
+    await _load_run_or_404(db, session_id=session_id, run_id=run_id)
 
     runtime = _make_runtime(db, session_id)
     try:

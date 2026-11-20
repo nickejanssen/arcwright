@@ -130,8 +130,17 @@ class TestAfterTheStart:
 
 
 class TestAJoinRacingTheStart:
+    """A smoke test of the in-process half of choice H only.
+
+    On SQLite the in-process session lock makes either order safe, and this test
+    passes with or without the row lock, so it does NOT prove that ``FOR UPDATE``
+    stops a join in flight from leaving a seat behind a start on Postgres. That
+    proof needs a real Postgres and is AW-301. It does check the invariant any
+    order must keep: no refused join leaves a seat, and the saved count matches.
+    """
+
     @pytest.mark.asyncio
-    async def test_a_join_and_a_start_at_once_never_leave_a_seat_after_the_start(
+    async def test_a_join_and_a_start_at_once_keep_the_seat_count_consistent(
         self,
         factory: async_sessionmaker[AsyncSession],
         registered: Callable[[ArcDefinition], None],
