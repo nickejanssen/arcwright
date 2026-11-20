@@ -19,6 +19,7 @@ from uuid import UUID, uuid4
 
 import pytest
 import pytest_asyncio
+from sqlalchemy import event as sa_event
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
@@ -62,10 +63,21 @@ TIMED_TICKS = 5
 # Spec 0093: the tick over twenty sessions takes under 200 ms. The limit is on
 # the CPU time the tick uses (time.process_time, all threads), not the clock on
 # the wall, so a busy machine cannot fail it by making the tick wait for a
-# processor (AW-350). The wall-clock backstop is ten times the target: it only
-# catches a tick that stalls on something other than the processor.
-TICK_CPU_LIMIT_SECONDS = 0.2
+# processor (AW-350). It is 0.25 s, not 0.2 s: the founder allowed up to 0.25 s
+# on 2026-11-20 because CPU time also rises under load (best of five ticks:
+# 0.08 to 0.16 s idle or lightly busy, up to 0.36 s with 8 busy processes). The
+# query budget below is the exact check. The wall-clock backstop is ten times
+# the target: it only catches a tick that stalls on something other than the
+# processor.
+TICK_CPU_LIMIT_SECONDS = 0.25
 TICK_WALL_BACKSTOP_SECONDS = 2.0
+# The engine's own work, counted instead of timed (AW-350, founder decision on
+# PR 455): the database statements one 20-session tick runs. Extra queries fail
+# whatever the machine is doing. Measured on 2026-11-20: 81 on every tick (one
+# to list the active sessions, then 4 per session). The budget is 93, about 15%
+# above that, so one extra query per session (101) fails it. Raise it only on
+# purpose, with a reason.
+TICK_QUERY_BUDGET = 93
 
 EXPECTED_ORDER = [
     ("opening", "scene"),
@@ -354,15 +366,30 @@ class TestTheTickLoopBody:
         await db.commit()
         rec = Recorder()
         await tick_active_sessions(factory, at(0), lambda _sid: rec)  # enters phases
+        statements = 0
+
+        def count_statement(*_args: object) -> None:
+            nonlocal statements
+            statements += 1
+
+        sync_engine = factory.kw["bind"].sync_engine
         cpu_timings: list[float] = []
         wall_timings: list[float] = []
+        queries_per_tick: list[int] = []
         for _ in range(TIMED_TICKS):
-            cpu_started = time.process_time()
-            started = time.perf_counter()
-            ticked = await tick_active_sessions(factory, at(1), lambda _sid: rec)
-            wall_timings.append(time.perf_counter() - started)
-            cpu_timings.append(time.process_time() - cpu_started)
+            statements = 0
+            sa_event.listen(sync_engine, "before_cursor_execute", count_statement)
+            try:
+                cpu_started = time.process_time()
+                started = time.perf_counter()
+                ticked = await tick_active_sessions(factory, at(1), lambda _sid: rec)
+                wall_timings.append(time.perf_counter() - started)
+                cpu_timings.append(time.process_time() - cpu_started)
+            finally:
+                sa_event.remove(sync_engine, "before_cursor_execute", count_statement)
+            queries_per_tick.append(statements)
             assert ticked == 20
+        assert max(queries_per_tick) <= TICK_QUERY_BUDGET
         assert min(cpu_timings) < TICK_CPU_LIMIT_SECONDS
         assert min(wall_timings) < TICK_WALL_BACKSTOP_SECONDS
 

@@ -42,8 +42,9 @@ Two engine tests fail now and then because they measure how fast the code runs, 
 
 ## Acceptance Criteria
 
-- [ ] Neither test can fail only because the machine is busy; each correctness assertion is unchanged.
-- [ ] A real slowdown (for example, ten times slower) still fails a check somewhere that runs in CI.
+- [ ] Neither test can fail only because the machine is busy; each correctness assertion is unchanged. Both tests measure CPU time (`time.process_time()`), not the wall clock, because a busy machine makes code wait for a processor.
+- [ ] The 20-session tick test also counts the database statements one tick runs and fails above a fixed budget (81 measured, budget 93), so extra queries fail whatever the machine is doing. Founder decision, 2026-11-20, relayed on pull request #455: "tell the AW-350 session to add the query count to #455, and file one task for the later monitoring and load test".
+- [ ] A real slowdown (for example, ten times slower) still fails a check somewhere that runs in CI; one extra query per session fails the query budget.
 - [ ] `verify` passes.
 
 ## Tests/Verification
