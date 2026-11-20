@@ -425,6 +425,11 @@ def _phases(beat: BeatDefinition) -> list[PhaseDefinition]:
     return beat.phases
 
 
+def _mini_game_slot(beat: BeatDefinition, index: int) -> int:
+    """Which mini-game slot of the beat the phase at ``index`` is, from 0."""
+    return sum(1 for p in _phases(beat)[:index] if p.kind is PhaseKind.mini_game)
+
+
 async def _enter(
     db: AsyncSession,
     orm: OrmSession,
@@ -500,7 +505,15 @@ async def _enter(
         )
     if definition.kind is PhaseKind.mini_game:
         ending = await mini_game_phase.begin(
-            db, orm, arc, beat_id, state.entry, now, publish
+            db,
+            orm,
+            arc,
+            beat_id,
+            state.entry,
+            now,
+            publish,
+            slot=_mini_game_slot(_beat(arc, beat_id), index),
+            player_count=len(await human_player_ids(db, session_id)),
         )
         if ending is not None:
             return await _end(db, orm, arc, state, ending, now, publish)

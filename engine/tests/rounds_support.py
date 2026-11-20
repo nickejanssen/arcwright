@@ -147,11 +147,13 @@ def phased_arc(
     mini_games: dict[str, list[dict[str, Any]]] | None = None,
     mini_game_root: str | None = MINI_GAME_ROOT,
     extra_beats: list[str] | None = None,
+    mini_game_pick: str | None = None,
 ) -> ArcDefinition:
     """The fixture arc: opening, three rounds, a final beat, all phased. Each
     round is bound to the test-only mini-game unless ``mini_games`` says
     otherwise (a beat mapped to ``[]`` has no binding). ``extra_beats`` are
-    appended after the final beat; their phases come from ``phases``."""
+    appended after the final beat; their phases come from ``phases``.
+    ``mini_game_pick`` is set on every round beat when given (AW-344)."""
     beat_ids = BEATS + (extra_beats or [])
     couch = ArcDefinition.model_validate_json(
         (ENGINE_DIR.parent / "nightcap" / "couch-race.arc.json").read_text("utf-8")
@@ -188,6 +190,11 @@ def phased_arc(
             "beat_name": b,
             "phases": per_beat[b],
             "mini_games": bound.get(b),
+            **(
+                {"mini_game_pick": mini_game_pick}
+                if mini_game_pick and b in ROUND_BEATS
+                else {}
+            ),
         }
         for b in beat_ids
     ]
