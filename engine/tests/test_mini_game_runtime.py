@@ -704,6 +704,34 @@ async def test_host_override_logs_and_asserts_knowledge(db: AsyncSession) -> Non
     assert override_entries[0]["host_account_id"] == str(host_account_id)
 
 
+async def test_a_seat_host_override_is_logged_as_a_participant_not_an_account(
+    db: AsyncSession,
+) -> None:
+    session_id, char_id, host_account_id = await _setup_session_with_participant(db)
+    seat = uuid4()
+    rt = make_runtime(db)
+    run = await rt.create_run(session_id, make_snapshot())
+    await rt.start_run(run.run_id)
+    clues = [{"clue_id": "override-clue", "variant": "full", "content": {"text": "x"}}]
+
+    with patch("engine.mini_games.runtime.assert_knowledge", new_callable=AsyncMock):
+        run = await rt.override_clue_release(
+            run.run_id, clues, host_participant_id=seat
+        )
+
+    entry = run.clue_unlock_record["overrides"][0]
+    assert entry["host_participant_id"] == str(seat)
+    assert "host_account_id" not in entry
+
+
+async def test_host_override_needs_to_say_who_did_it(db: AsyncSession) -> None:
+    session_id, _, _ = await _setup_session_with_participant(db)
+    rt = make_runtime(db)
+    run = await rt.create_run(session_id, make_snapshot())
+    with pytest.raises(ValueError, match="who"):
+        await rt.override_clue_release(run.run_id, [])
+
+
 async def test_host_override_rejected_on_cancelled_run(db: AsyncSession) -> None:
     session_id, _, host_account_id = await _setup_session_with_participant(db)
     rt = make_runtime(db)

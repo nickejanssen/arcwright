@@ -352,6 +352,40 @@ class TestTheHostSeat:
         assert await run_status(db_factory, run_id) == expected
 
 
+class TestWhoReleasedTheClues:
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("role", ["player", "host"])
+    async def test_the_log_names_a_seat_or_an_account_honestly(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+        signed: Signed,
+        role: str,
+    ) -> None:
+        await seed(db_factory, signed)
+        run_id = await add_run(db_factory, signed.session_id)
+        caller = signed.participant_id
+        if role == "host":
+            signed.role = "host"
+            caller = signed.participant_id = uuid4()
+        response = client.post(
+            url(signed, f"/mini-games/{run_id}/host-commands"),
+            json={"command": "release_fallback", "params": COMMANDS[2][1]},
+        )
+        assert response.status_code == 200, response.text
+        async with db_factory() as db:
+            run = await db.get(MiniGameRun, run_id)
+            assert run is not None
+            entry = run.clue_unlock_record["overrides"][0]
+        key, other = (
+            ("host_participant_id", "host_account_id")
+            if role == "player"
+            else ("host_account_id", "host_participant_id")
+        )
+        assert entry[key] == str(caller)
+        assert other not in entry
+
+
 class TestAnotherSessionsRun:
     """The run id is checked against the path session: a host seat of one game
     can never command another game's run, even with its id."""

@@ -652,13 +652,21 @@ async def send_host_command(
                 raise HTTPException(
                     status_code=422, detail="params.clues must be a list"
                 )
-            host_account_id = claims.player_id
-            if host_account_id is None:
+            if claims.player_id is None:
                 raise HTTPException(
                     status_code=400,
                     detail="Host token missing arcwright_player_id claim",
                 )
-            run = await runtime.override_clue_release(run_id, clues, host_account_id)
+            # A player token's id is a seat (participant) id, not an account id,
+            # so it is logged under its own name.
+            if claims.role == "player":
+                run = await runtime.override_clue_release(
+                    run_id, clues, host_participant_id=claims.player_id
+                )
+            else:
+                run = await runtime.override_clue_release(
+                    run_id, clues, claims.player_id
+                )
     except MiniGameRuntimeError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
     except NotImplementedError as exc:
