@@ -60,16 +60,17 @@ from engine.tests.rounds_support import (
 )
 
 TIMED_TICKS = 5
-# Spec 0093: the tick over twenty sessions takes under 200 ms. The limit is on
+# Spec 0093 sets the tick over twenty sessions at under 200 ms. That target is
+# now held by the query budget below plus live monitoring (AW-357, #467), not by
+# a timer in this test (AW-350; founder decision, 2026-11-20: "accept 0.5 s").
+# The CPU limit is a backstop for a big slowdown that adds no queries. It is on
 # the CPU time the tick uses (time.process_time, all threads), not the clock on
-# the wall, so a busy machine cannot fail it by making the tick wait for a
-# processor (AW-350). It is 0.25 s, not 0.2 s: the founder allowed up to 0.25 s
-# on 2026-11-20 because CPU time also rises under load (best of five ticks:
-# 0.08 to 0.16 s idle or lightly busy, up to 0.36 s with 8 busy processes). The
-# query budget below is the exact check. The wall-clock backstop is ten times
-# the target: it only catches a tick that stalls on something other than the
-# processor.
-TICK_CPU_LIMIT_SECONDS = 0.25
+# the wall, so waiting for a busy processor cannot fail it. Best of five ticks:
+# 0.08 to 0.16 s idle or lightly busy, up to 0.36 s with 8 busy processes; about
+# 5x the idle reading, above the worst busy one, and a tenfold slowdown (about
+# 0.94 s) still fails. The wall-clock backstop is ten times the old 0.2 s target
+# and only catches a tick that stalls on something other than the processor.
+TICK_CPU_LIMIT_SECONDS = 0.5
 TICK_WALL_BACKSTOP_SECONDS = 2.0
 # The engine's own work, counted instead of timed (AW-350, founder decision on
 # PR 455): the database statements one 20-session tick runs. Extra queries fail

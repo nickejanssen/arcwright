@@ -24,9 +24,12 @@ ARC_PATH = REPO_ROOT / "nightcap" / "couch-race.arc.json"
 
 SEEDS_PER_SKELETON = 1000
 # CPU time, not wall-clock time: the sweep is plain single-threaded Python, so
-# the CPU time it uses is the same however busy the machine is, including load
-# that starts and stops part-way through (AW-350). 15 s is the original limit.
-SWEEP_CPU_LIMIT_SECONDS = 15.0
+# waiting for a busy processor does not count, including load that starts and
+# stops part-way through (AW-350). Per case type it used 5.7 to 6.7 s idle, 8.1
+# to 10.0 s with 12 to 16 busy processes, and 20.5 s with the laptop's processor
+# throttled to about 1 GHz. 30 s is about 5x idle and above all of those; a
+# tenfold slowdown (62.5 s measured) still fails. It was 15 s of wall-clock time.
+SWEEP_CPU_LIMIT_SECONDS = 30.0
 SKELETON_IDS = ("locked_room_poisoning", "alibi_collapse", "pre_conspiracy_fall")
 
 
