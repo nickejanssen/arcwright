@@ -54,33 +54,34 @@ The idea cards' ranking in the bank reflects predicted appeal and has not been t
 
 C is the control, M a main game, S a side game (an anytime game), A an alternate if a slot needs filling, and a dash means not used.
 
-| # | Game | 1a Agency race | 1b Newcomers | 1c Story and intrigue | 1d Deduction and puzzles |
-| --- | --- | --- | --- | --- | --- |
-| 1 | Search and Find | C | C | C | C |
-| 2 | Battle of Wits | M, repeated | M, easy questions | A | M, logic only |
-| 3 | Lock Picking | A | - | S (solo find) | M (everyone), S |
-| 4 | Crime Scene Smash | A | - | - | - |
-| 5 | Tell Me Something True | - | - | A | - |
-| 6 | The Emergency Seating Committee | - | A | - | A |
-| 7 | The Counterfeit Concierge | - | - | - | A |
-| 8 | The Séance Has Been Double-Booked | - | - | - | A |
-| 9 | Switchboard After Midnight | - | - | - | A |
-| 10 | The Clockmaker Pleads the Fifth | - | - | - | A |
-| 11 | Of Course I Work Here | - | - | A (deferred) | - |
-| 12 | An Entirely Normal Walk | - | - | A | - |
-| 13 | The Witness Protection Sketch Artist | - | A | - | - |
-| 14 | Room Service Roulette | A | - | - | - |
+| # | Game | 1a Agency race | 1b Newcomers | 1c Story and intrigue | 1d Deduction and puzzles | 1e Variety |
+| --- | --- | --- | --- | --- | --- | --- |
+| 1 | Search and Find | C | C | C | C | C |
+| 2 | Battle of Wits | M, repeated | M, easy questions | A | M, logic only | M (mixed) |
+| 3 | Lock Picking | A | - | S (solo find) | M (everyone), S | S (anytime) |
+| 4 | Crime Scene Smash | A | - | - | - | - |
+| 5 | Tell Me Something True | - | - | A | - | M (bluffing) |
+| 6 | The Emergency Seating Committee | - | A | - | A | - |
+| 7 | The Counterfeit Concierge | - | - | - | A | - |
+| 8 | The Séance Has Been Double-Booked | - | - | - | A | - |
+| 9 | Switchboard After Midnight | - | - | - | A | - |
+| 10 | The Clockmaker Pleads the Fifth | - | - | - | A | - |
+| 11 | Of Course I Work Here | - | - | A (deferred) | - | A |
+| 12 | An Entirely Normal Walk | - | - | A | - | - |
+| 13 | The Witness Protection Sketch Artist | - | A | - | - | - |
+| 14 | Room Service Roulette | A | - | - | - | - |
 
 ## What this means for building and testing
 
-Three games carry every version in December: Search and Find, Battle of Wits and Lock Picking. Everything else is an alternate, so the others can wait without breaking a version.
+Three games carry versions 1a to 1d in December: Search and Find, Battle of Wits and Lock Picking. Version 1e adds a fourth, the bluffing game (Tell Me Something True adapted to 2 to 4 players). Everything else is an alternate, so the others can wait without breaking a version.
 
 | Wave | Games | Why | Standalone test first? |
 | --- | --- | --- | --- |
-| 1 (needed for 1 December, 1a) | Battle of Wits, Search and Find | They carry 1a, and Search and Find is the control in all four | Yes. The founder said Battle of Wits "must" be playtested on its own first |
+| 1 (needed for 1 December, 1a) | Battle of Wits, Search and Find | They carry 1a, and Search and Find is the control in every version | Yes. The founder said Battle of Wits "must" be playtested on its own first |
 | 2 (needed for 15 December, 1c and 1d) | Lock Picking, adapted from Evidence Locker #402 | It is the solo side game and 1d's puzzle; a built game exists to start from | Yes |
 | Paper trials (no build) | The Emergency Seating Committee, The Counterfeit Concierge, The Séance Has Been Double-Booked | The idea bank calls the seating game the cheapest paper trial; these three are the best candidates to give 1d more puzzles | Paper, then decide whether to build |
-| Later | Bluffing games (Tell Me Something True at 2 to 3 players, Of Course I Work Here), Crime Scene Smash at 2 to 4, An Entirely Normal Walk, Room Service Roulette, Switchboard, The Clockmaker, The Sketch Artist | They need a new range, new rules or art, and no version needs them | After the first group sessions |
+| 2 (1e only) | Bluffing game: Tell Me Something True adapted to 2 to 4 players | 1e needs it; built, so a starting point exists | Yes |
+| Later | Of Course I Work Here, Crime Scene Smash at 2 to 4, An Entirely Normal Walk, Room Service Roulette, Switchboard, The Clockmaker, The Sketch Artist | They need a new range, new rules or art, and no version needs them | After the first group sessions |
 
 Inference, not measured: waves 1 and 2 are the work that can fit before 15 December. The standalone path for each is AW-348 (play it with Nightcap off) and AW-349 (port and reuse); the mechanic design and build is AW-337.
 

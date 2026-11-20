@@ -54,6 +54,7 @@ The founder interview ran in a planning session. His answers are on issue #429, 
 - The fourth version is for newcomers. The agency race (1a) is the core version, and may repeat Battle of Wits; Battle of Wits is played on its own first (AW-348).
 - The control mini-game is Search and Find, for now.
 - A second case is written for replays. Targets: 1 December (end-to-end test of case 1), 5 December (feedback fixed, case 2 written, beta-test capable), 15 December (cases 1 and 2 with versions a to d testable). This replaces the 12 or 13 December session 1 of D-112; the orchestrator amends D-112, D-137 and the status page when he confirms.
+- Version 1e, "Variety" (Direction 1, a different skill each round), is a fifth version at the founder's word: "Make it a fifth version".
 - Two groups of 2 to 4 friends, each playing two versions on the two cases in a counterbalanced order.
 - A solo mini-game run does not count against the no-repeat rule. The final race runs back to back with Last Call.
 - The founder accepts being spoiled on both cases.
@@ -62,8 +63,8 @@ New tasks filed from this plan: AW-354 (#463, per-mini-game rating, version tags
 
 ## Acceptance Criteria
 
-- [x] Each version (1a to 1d) is written down with its arc setup and what it tests (`docs/design/session-1-variants/`).
-- [ ] The founder has approved the list of versions (his approval is recorded on this issue; not yet given).
+- [x] Each version (1a to 1e) is written down with its arc setup and what it tests (`docs/design/session-1-variants/`).
+- [ ] The founder has approved the list of five versions (his approval is recorded on this issue; not yet given).
 - [x] The replay-spoiler approach is decided: a second case for replays, and two groups playing two versions in a counterbalanced order (founder's answers on issue #429; recorded as a decision when he approves the sheets).
 - [x] The survey or debrief can tell the versions apart: the overview's survey table, with the build in AW-354 and a printed-card fallback.
 - [x] The core variant is named: 1a, the agency race, played by the founder's 1 December end-to-end test (the date changed from the 5 December TV run; see above).

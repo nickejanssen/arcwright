@@ -22,7 +22,7 @@ The same case with the mini-games turned into evidence work. Each game is a puzz
 
 ## Who it targets
 
-Players who like working things out: the *Murdle* and escape-room crowd. Played only if a fourth group is found (run order, group 4 on case 1, then group 3 plays it on case 2).
+Players who like working things out: the *Murdle* and escape-room crowd. Played only if a fourth group is found; 1e needs a fifth (run order, group 4 on case 1, then group 3 plays it on case 2).
 
 ## How it is composed
 

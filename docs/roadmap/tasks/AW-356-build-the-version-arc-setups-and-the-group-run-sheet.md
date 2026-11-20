@@ -1,7 +1,7 @@
 ---
 id: productroadmap.roadmap.tasks.aw-356-build-the-version-arc-setups-and-the-group-run-sheet
 namespace: product-roadmap
-title: "AW-356: Build The Version Arc Setups (1a To 1d) And The Group Run Sheet"
+title: "AW-356: Build The Version Arc Setups (1a To 1e) And The Group Run Sheet"
 owner: Nico Janssen
 status: active
 review_by: "2027-02-20"
@@ -12,13 +12,13 @@ tags: []
 supersedes: []
 ---
 
-# AW-356: Build The Version Arc Setups (1a To 1d) And The Group Run Sheet
+# AW-356: Build The Version Arc Setups (1a To 1e) And The Group Run Sheet
 
 **Milestone / Epic:** M7 / M7-C  
 **Size:** M  
 **Product:** Nightcap (arc file and playtest operations)  
 **Owner:** A build session for the arc setups; the founder and an orchestrator for the run sheet  
-**Target date:** 1a by 2026-12-01, 1b by 2026-12-05, 1c and 1d by 2026-12-15
+**Target date:** 1a by 2026-12-01, 1b by 2026-12-05, 1c, 1d and 1e by 2026-12-15
 
 ## Plain-English Summary
 
@@ -31,7 +31,7 @@ Turn each version sheet into a real arc setup (which mini-games run in which rou
 
 ## Technical Scope
 
-- One arc setup per version, in Nightcap's arc folder (Nightcap configuration only; nothing in `engine/` names a version). 1a uses `listed`; 1b to 1d use `fitting`.
+- One arc setup per version (1a to 1e), in Nightcap's arc folder (Nightcap configuration only; nothing in `engine/` names a version). 1a uses `listed`; 1b to 1e use `fitting`.
 - 1a's final race runs back to back with Last Call: a last `mini_game` phase before the `commit` phase (arc file only).
 - A solo run does not count against no-repeat (founder answer 9): confirm AW-345 implements this; if it does not, raise it there.
 - The run sheet and screener: a plain page for the founder under `docs/design/session-1-variants/`, plus the one-page host cheat card (shared with AW-308).
@@ -50,7 +50,7 @@ Turn each version sheet into a real arc setup (which mini-games run in which rou
 ## Acceptance Criteria
 
 - [ ] Each version has an arc setup that loads and runs a headless game at 2 and at 4 players, with no model call deciding anything.
-- [ ] 1a repeats Battle of Wits; 1b to 1d never repeat a mechanic.
+- [ ] 1a repeats Battle of Wits; 1b to 1e never repeat a mechanic.
 - [ ] 1a's final race runs immediately before Last Call, and its standing feeds the existing tie-break.
 - [ ] The run sheet names the group, case and version for each playthrough, and the screener is approved.
 
