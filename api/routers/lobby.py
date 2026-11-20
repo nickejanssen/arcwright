@@ -26,6 +26,7 @@ from engine.db import get_async_session
 from engine.db.orm import Session as OrmSession
 from engine.db.orm import SessionParticipant as OrmParticipant
 from engine.session.service import (
+    SeatClosedError,
     SessionNotFoundError,
     SessionStateError,
     _session_service,
@@ -89,6 +90,10 @@ async def lobby_join(
         )
     except SessionNotFoundError:
         raise HTTPException(status_code=404, detail="Invalid join code")
+    except SeatClosedError as exc:
+        raise HTTPException(
+            status_code=409, detail={"code": exc.code, "message": str(exc)}
+        )
     except SessionStateError as exc:
         raise HTTPException(status_code=409, detail=str(exc))
 

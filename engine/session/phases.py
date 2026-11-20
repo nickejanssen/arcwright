@@ -369,6 +369,12 @@ async def _ready_ids(db: AsyncSession, session_id: UUID, phase_entry: int) -> se
     }
 
 
+async def ready_ids(db: AsyncSession, session_id: UUID, phase_entry: int) -> set[str]:
+    """Who has marked ready in this visit to a phase, for a read that is not
+    part of the rounds code (the room view)."""
+    return await _ready_ids(db, session_id, phase_entry)
+
+
 async def _everyone_ready(
     db: AsyncSession, session_id: UUID, state: PhaseState
 ) -> bool:

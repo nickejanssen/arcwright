@@ -27,6 +27,7 @@ from api.auth import (
     require_host_jwt,
     require_player_jwt,
 )
+from api.auth.seat import require_host_control, require_seated_or_host
 from api.main import app
 from engine.db import get_async_session
 from engine.db.orm import Decision
@@ -95,6 +96,12 @@ def client(
         uid="p", session_id=who.session_id, player_id=who.player_id, role="player"
     )
     app.dependency_overrides[require_host_jwt] = lambda: JwtClaims(
+        uid="h", session_id=who.session_id, player_id=who.host_id, role="host"
+    )
+    app.dependency_overrides[require_host_control] = lambda: JwtClaims(
+        uid="h", session_id=who.session_id, player_id=who.host_id, role="host"
+    )
+    app.dependency_overrides[require_seated_or_host] = lambda: JwtClaims(
         uid="h", session_id=who.session_id, player_id=who.host_id, role="host"
     )
     app.dependency_overrides[optional_player_or_host_jwt] = lambda: None
@@ -421,6 +428,7 @@ class TestReadyAndMoveOn:
     ) -> None:
         await seed(db_factory, who)
         app.dependency_overrides.pop(require_host_jwt)
+        app.dependency_overrides.pop(require_host_control)
         assert client.post(url(who, "/round/move-on")).status_code == 401
         assert client.get(url(who, "/round")).json()["phase"] == "scene"
 
@@ -430,6 +438,12 @@ class TestReadyAndMoveOn:
     ) -> None:
         await seed(db_factory, who)
         app.dependency_overrides[require_host_jwt] = lambda: JwtClaims(
+            uid="h", session_id=uuid4(), player_id=uuid4(), role="host"
+        )
+        app.dependency_overrides[require_host_control] = lambda: JwtClaims(
+            uid="h", session_id=uuid4(), player_id=uuid4(), role="host"
+        )
+        app.dependency_overrides[require_seated_or_host] = lambda: JwtClaims(
             uid="h", session_id=uuid4(), player_id=uuid4(), role="host"
         )
         assert client.post(url(who, "/round/move-on")).status_code == 403
@@ -460,6 +474,10 @@ class TestHoldings:
         assert ids == {"c_open_a", "c_open_b", "c_ledger"}
         found = {c["concept_id"]: c for c in response.json()["concepts"]}
         assert found["c_ledger"]["found_in_beat"] == "beat_one"
+        assert found["c_ledger"]["found_in_round_title"] == "beat_one"
+        assert found["c_ledger"]["found_in_round_number"] == 1
+        assert found["c_open_a"]["found_in_round_title"] is None
+        assert found["c_open_a"]["found_in_round_number"] is None
         assert found["c_open_a"]["found_from"] is None
         assert "standing" not in response.text and "misleading" not in response.text
 
@@ -541,6 +559,8 @@ class TestWhoMayCall:
         await seed(db_factory, who)
         app.dependency_overrides.pop(require_player_jwt)
         app.dependency_overrides.pop(require_host_jwt)
+        app.dependency_overrides.pop(require_host_control)
+        app.dependency_overrides.pop(require_seated_or_host)
         kwargs = {"json": {"choice_id": "a", "opportunity_id": "o_ledger"}}
         response = getattr(client, method)(
             url(who, path), **(kwargs if method == "post" else {})

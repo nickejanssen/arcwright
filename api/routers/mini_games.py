@@ -29,10 +29,11 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from api.auth import (
     JwtClaims,
-    require_host_jwt,
+    optional_player_or_host_jwt,
     require_player_jwt,
     require_player_or_host_jwt,
 )
+from api.auth.seat import require_host_control
 from api.routers.events import _get_or_create_session_state
 from api.schemas import (
     SCENE_SWEEP_SUBMISSION_PAYLOAD_ADAPTER,
@@ -57,6 +58,8 @@ from engine.db.orm import MiniGameRun, MiniGameSubmission, SessionParticipant
 from engine.mini_games.audience_view import Audience, RunView, Viewer, build_run_view
 from engine.mini_games.plugins import default_registry
 from engine.mini_games.runtime import MiniGameRuntime, MiniGameRuntimeError
+from engine.session.phases import RoundError
+from engine.session.room_view import display_subject
 
 router = APIRouter(prefix="/sessions", tags=["mini-games"])
 _TMST_GAME_ID = "tell-me-something-true"
@@ -480,30 +483,51 @@ async def get_active_mini_game_display(
     character_id: Optional[UUID] = Query(
         default=None,
         description=(
-            "Player character UUID for a personalized view. "
-            "Omit for a shared-display view. "
-            "M4 pre-auth path — production auth via JWT at M5 (AW-269)."
+            "Player character UUID for a personalized view. Honoured only "
+            "for a sign-in whose seat owns that character; with no sign-in "
+            "the shared view comes back (AW-331, M4)."
         ),
     ),
+    claims: Optional[JwtClaims] = Depends(optional_player_or_host_jwt),
     db: AsyncSession = Depends(get_async_session),
 ) -> MiniGameRunResponse:
-    """Return active mini-game state for unauthenticated display surfaces.
+    """Return active mini-game state for the shared display and for phones.
 
-    Shared display surfaces call this without character_id. Player devices
-    call it with their character_id to receive a personalized phase state
-    (is_spotlighted_player, can_vote, has_voted, submitted). No auth is
-    required because production auth is deferred to M5 (AW-269).
-    Private submissions are never included in this response.
+    The shared display calls this with no sign-in and gets the shared view. A
+    player's phone sends its sign-in and its character_id and gets a
+    personalized phase state (is_spotlighted_player, can_vote, has_voted,
+    submitted). A sign-in that names a character it does not own is refused
+    with 403. Private submissions are never included in this response.
     """
+    if claims is not None:
+        _require_session_match(session_id, claims)
     runtime = _make_runtime(db, session_id)
     run = await runtime.get_active_run(session_id)
     if run is None:
         raise HTTPException(status_code=404, detail="No active mini-game")
 
+    try:
+        subject = await display_subject(
+            db,
+            session_id,
+            character_id=character_id,
+            signed_in=claims is not None,
+            participant_id=(
+                claims.player_id
+                if claims is not None and claims.role == "player"
+                else None
+            ),
+        )
+    except RoundError as error:
+        raise HTTPException(
+            status_code=403, detail={"code": error.code, "message": str(error)}
+        )
+    character_id = subject
+
     participant_character_ids = await _participant_character_ids(db, session_id)
 
     if character_id is not None:
-        # Player-device path: personalized phase state with no JWT.
+        # The player's own phone, signed in as the seat that owns the character.
         display_claims = JwtClaims(
             uid=f"display:{character_id}",
             session_id=session_id,
@@ -602,7 +626,7 @@ async def send_host_command(
     session_id: UUID,
     run_id: UUID,
     body: HostCommandRequest,
-    claims: JwtClaims = Depends(require_host_jwt),
+    claims: JwtClaims = Depends(require_host_control),
     db: AsyncSession = Depends(get_async_session),
 ) -> HostCommandResponse:
     """Dispatch a host command to the runtime (AC1).

@@ -36,6 +36,7 @@ from api.auth import (
     require_host_jwt,
     require_player_or_host_jwt,
 )
+from api.auth.seat import require_host_control, require_seated_or_host
 from api.main import app
 from engine.db import get_async_session
 from engine.db.orm import ArcBeatState, Base, Event, GenerationLog
@@ -86,6 +87,12 @@ def client(
             api_key="test-key"
         )
         app.dependency_overrides[require_host_jwt] = lambda: JwtClaims(
+            uid="host-uid", session_id=None, player_id=uuid4(), role="host"
+        )
+        app.dependency_overrides[require_host_control] = lambda: JwtClaims(
+            uid="host-uid", session_id=None, player_id=uuid4(), role="host"
+        )
+        app.dependency_overrides[require_seated_or_host] = lambda: JwtClaims(
             uid="host-uid", session_id=None, player_id=uuid4(), role="host"
         )
         app.dependency_overrides[require_api_key_or_host_jwt] = lambda: ApiCaller(
@@ -321,11 +328,29 @@ class TestCreateHostSession:
             player_id=uuid4(),
             role="host",
         )
+        app.dependency_overrides[require_host_control] = lambda: JwtClaims(
+            uid="firebase-host-default",
+            session_id=own_session_id,
+            player_id=uuid4(),
+            role="host",
+        )
+        app.dependency_overrides[require_seated_or_host] = lambda: JwtClaims(
+            uid="firebase-host-default",
+            session_id=own_session_id,
+            player_id=uuid4(),
+            role="host",
+        )
         try:
             resp = client.post(f"/v1/sessions/{other_session_id}/start")
             assert resp.status_code == 403
         finally:
             app.dependency_overrides[require_host_jwt] = lambda: JwtClaims(
+                uid="host-uid", session_id=None, player_id=uuid4(), role="host"
+            )
+            app.dependency_overrides[require_host_control] = lambda: JwtClaims(
+                uid="host-uid", session_id=None, player_id=uuid4(), role="host"
+            )
+            app.dependency_overrides[require_seated_or_host] = lambda: JwtClaims(
                 uid="host-uid", session_id=None, player_id=uuid4(), role="host"
             )
 
@@ -765,3 +790,46 @@ class TestJoinSession:
 # lives in the DB.
 assert _session_service is not None
 assert SessionStatus is not None
+
+
+class TestJoinAfterTheStart:
+    """AW-331, spec 0095 M2: no new seat once the game has started."""
+
+    def test_a_join_after_the_start_is_409_with_game_started(
+        self, client: TestClient
+    ) -> None:
+        created = client.post("/v1/sessions", json={"arc_id": "nightcap-couch-race-v1"})
+        session_id = created.json()["session_id"]
+        join_code = client.get(f"/v1/sessions/{session_id}/lobby").json()["join_code"]
+        with patch("firebase_admin.auth.create_custom_token") as create_token:
+            create_token.return_value = _FAKE_TOKEN
+            first = client.post(
+                "/v1/lobby-join", json={"name": "One", "join_code": join_code}
+            )
+            assert first.status_code == 201, first.text
+            started = client.post(f"/v1/sessions/{session_id}/start")
+            assert started.status_code == 200, started.text
+            late = client.post(
+                "/v1/lobby-join", json={"name": "Late", "join_code": join_code}
+            )
+        assert late.status_code == 409
+        assert late.json()["detail"]["code"] == "game_started"
+        lobby = client.get(f"/v1/sessions/{session_id}/lobby").json()
+        assert lobby["player_count"] == 1
+        assert [p["display_name"] for p in lobby["players"]] == ["One"]
+
+    def test_a_join_to_a_finished_game_is_409_with_game_over(
+        self, client: TestClient
+    ) -> None:
+        created = client.post("/v1/sessions", json={"arc_id": "nightcap-couch-race-v1"})
+        session_id = created.json()["session_id"]
+        join_code = client.get(f"/v1/sessions/{session_id}/lobby").json()["join_code"]
+        assert client.post(f"/v1/sessions/{session_id}/start").status_code == 200
+        assert client.post(f"/v1/sessions/{session_id}/end").status_code == 200
+        with patch("firebase_admin.auth.create_custom_token") as create_token:
+            create_token.return_value = _FAKE_TOKEN
+            late = client.post(
+                "/v1/lobby-join", json={"name": "Late", "join_code": join_code}
+            )
+        assert late.status_code == 409
+        assert late.json()["detail"]["code"] == "game_over"

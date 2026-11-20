@@ -10,7 +10,7 @@ Endpoints (base path /v1/sessions/{session_id}):
   POST /me/choices       player JWT       Make a choice (repeat-safe on choice_id)
   POST /me/ready         player JWT       Mark ready for the phase the player saw
   GET  /me/holdings      player JWT       What this player found for themselves
-  POST /round/move-on    host JWT         End the current phase by hand
+  POST /round/move-on    host seat|host JWT  End the current phase by hand
   GET  /me/theory        player JWT       This player's theory form and saved draft
   PUT  /me/theory        player JWT       Save (replace) this player's draft
   POST /me/theory/lock   player JWT       Lock the saved draft
@@ -27,7 +27,8 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from api.auth import JwtClaims, optional_player_or_host_jwt, require_host_jwt
+from api.auth import JwtClaims, optional_player_or_host_jwt
+from api.auth.seat import require_host_control
 from api.routers.events import _get_or_create_session_state
 from api.routers.mini_games import ParticipantContext, require_valid_participant
 from api.schemas import (
@@ -264,6 +265,8 @@ async def get_holdings(
                 text=h.text,
                 found_from=h.found_from,
                 found_in_beat=h.found_in_beat,
+                found_in_round_title=h.found_in_round_title,
+                found_in_round_number=h.found_in_round_number,
             )
             for h in held
         ]
@@ -273,7 +276,7 @@ async def get_holdings(
 @router.post("/{session_id}/round/move-on", response_model=PhaseStateResponse)
 async def move_on(
     session_id: UUID,
-    claims: JwtClaims = Depends(require_host_jwt),
+    claims: JwtClaims = Depends(require_host_control),
     db: AsyncSession = Depends(get_async_session),
 ) -> PhaseStateResponse:
     """The host ends the current phase by hand."""

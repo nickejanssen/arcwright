@@ -8,10 +8,10 @@ Endpoint summary (base path /v1/sessions):
   POST   /                      API key          Create session
   POST   /host                   Firebase account Create session (authenticated host)
   GET    /{id}                   API key|host JWT Session state
-  POST   /{id}/start             host JWT         Start arc
-  POST   /{id}/pause             host JWT         Pause arc + snapshot
-  POST   /{id}/resume            host JWT         Resume arc from snapshot
-  POST   /{id}/end               host JWT         End session
+  POST   /{id}/start             host seat|host JWT   Start arc
+  POST   /{id}/pause             seated player|host JWT  Pause arc + snapshot
+  POST   /{id}/resume            seated player|host JWT  Resume arc from snapshot
+  POST   /{id}/end               host seat|host JWT   End session
   POST   /{id}/replay-intent     host JWT         Record post-session replay intent
   GET    /{id}/join              public           Exchange join token for player JWT
   POST   /{id}/join              public           Same as above (nightcap-web sends POST)
@@ -35,6 +35,7 @@ from api.auth import (
     require_firebase_account,
     require_host_jwt,
 )
+from api.auth.seat import require_host_control, require_seated_or_host
 from api.routers.events import _get_or_create_session_state
 from api.schemas import (
     AddPlayerResponse,
@@ -140,7 +141,7 @@ async def get_session(
 @router.post("/{session_id}/start", response_model=SessionStateResponse)
 async def start_session(
     session_id: UUID,
-    claims: JwtClaims = Depends(require_host_jwt),
+    claims: JwtClaims = Depends(require_host_control),
     db: AsyncSession = Depends(get_async_session),
 ) -> SessionStateResponse:
     """Start the session arc; triggers the introduction beat."""
@@ -157,13 +158,17 @@ async def start_session(
 @router.post("/{session_id}/pause", response_model=SessionStateResponse)
 async def pause_session(
     session_id: UUID,
-    claims: JwtClaims = Depends(require_host_jwt),
+    claims: JwtClaims = Depends(require_seated_or_host),
     db: AsyncSession = Depends(get_async_session),
 ) -> SessionStateResponse:
     """Pause the arc and snapshot state at the current beat boundary."""
     _require_session_claim_match(session_id, claims)
     try:
-        session = await _session_service.pause_session(db, session_id)
+        session = await _session_service.pause_session(
+            db,
+            session_id,
+            paused_by=claims.player_id if claims.role == "player" else None,
+        )
     except SessionNotFoundError:
         raise HTTPException(status_code=404, detail="Session not found")
     except SessionStateError as exc:
@@ -174,7 +179,7 @@ async def pause_session(
 @router.post("/{session_id}/resume", response_model=SessionStateResponse)
 async def resume_session(
     session_id: UUID,
-    claims: JwtClaims = Depends(require_host_jwt),
+    claims: JwtClaims = Depends(require_seated_or_host),
     db: AsyncSession = Depends(get_async_session),
 ) -> SessionStateResponse:
     """Resume the arc from the nearest beat snapshot."""
@@ -196,7 +201,7 @@ async def resume_session(
 @router.post("/{session_id}/end", response_model=SessionStateResponse)
 async def end_session(
     session_id: UUID,
-    claims: JwtClaims = Depends(require_host_jwt),
+    claims: JwtClaims = Depends(require_host_control),
     db: AsyncSession = Depends(get_async_session),
     body: EndSessionRequest | None = None,
 ) -> SessionStateResponse:

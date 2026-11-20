@@ -567,6 +567,22 @@ class TestHoldings:
         assert mine["c_ledger"].found_from
 
     @pytest.mark.asyncio
+    async def test_holdings_carry_the_round_title_and_its_order_number(
+        self, db: AsyncSession, registered: Callable[[ArcDefinition], None]
+    ) -> None:
+        seated, rec, _ = await open_choices(db, registered)
+        await pick(db, seated, 0, "o_ledger", rec)
+        mine = {
+            h.concept_id: h
+            for h in await read_holdings(db, seated.session_id, seated.participants[0])
+        }
+        found = mine["c_ledger"]
+        assert found.found_in_round_title == "beat_one"  # the fixture's beat_name
+        assert found.found_in_round_number == 1
+        assert mine["c_open_a"].found_in_round_title is None
+        assert mine["c_open_a"].found_in_round_number is None
+
+    @pytest.mark.asyncio
     async def test_holdings_do_not_say_which_concepts_are_misleading(
         self, db: AsyncSession, registered: Callable[[ArcDefinition], None]
     ) -> None:

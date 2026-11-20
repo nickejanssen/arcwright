@@ -29,10 +29,12 @@ from starlette.testclient import TestClient
 
 from api.auth import (
     JwtClaims,
+    optional_player_or_host_jwt,
     require_host_jwt,
     require_player_jwt,
     require_player_or_host_jwt,
 )
+from api.auth.seat import require_host_control, require_seated_or_host
 from api.main import app
 from api.schemas import TmstInputPhaseState, TmstSpotlightPhaseState
 from engine.db import get_async_session
@@ -110,6 +112,8 @@ def client(db_factory: async_sessionmaker[AsyncSession]) -> Iterator[TestClient]
     app.dependency_overrides[require_player_jwt] = lambda: _player_claims()
     app.dependency_overrides[require_player_or_host_jwt] = lambda: _player_claims()
     app.dependency_overrides[require_host_jwt] = lambda: _host_claims()
+    app.dependency_overrides[require_host_control] = lambda: _host_claims()
+    app.dependency_overrides[require_seated_or_host] = lambda: _host_claims()
     app.dependency_overrides[get_async_session] = _override_db
 
     with TestClient(app) as c:
@@ -760,6 +764,18 @@ class TestHostCommands:
                 status_code=403, detail="Host token required"
             )
         )
+        app.dependency_overrides[require_host_control] = lambda: (_ for _ in ()).throw(
+            __import__("fastapi").HTTPException(
+                status_code=403, detail="Host token required"
+            )
+        )
+        app.dependency_overrides[require_seated_or_host] = lambda: (
+            _ for _ in ()
+        ).throw(
+            __import__("fastapi").HTTPException(
+                status_code=403, detail="Host token required"
+            )
+        )
         try:
             resp = client.post(
                 f"/v1/sessions/{_SESSION_ID}/mini-games/{run_id}/host-commands",
@@ -768,6 +784,8 @@ class TestHostCommands:
             assert resp.status_code == 403
         finally:
             app.dependency_overrides[require_host_jwt] = lambda: _host_claims()
+            app.dependency_overrides[require_host_control] = lambda: _host_claims()
+            app.dependency_overrides[require_seated_or_host] = lambda: _host_claims()
 
     def test_resolve_returns_501_when_scoring_not_implemented(
         self,
@@ -882,12 +900,13 @@ class TestGetActiveMiniGameDisplay:
         assert ps.prompt_ready is False
         assert ps.submitted is False
 
-    def test_player_device_input_phase_state_with_character_id(
+    def test_character_id_with_no_sign_in_gets_the_shared_view(
         self,
         client: TestClient,
         db_factory: async_sessionmaker[AsyncSession],
     ) -> None:
-        """Player device sees prompt_ready=True when character_id is supplied."""
+        """AW-331 (M4): naming a character without a sign-in no longer returns
+        that player's own view. It returns the shared view, as if none was named."""
         asyncio.run(
             _seed_tmst_session_and_run(
                 db_factory,
@@ -901,8 +920,89 @@ class TestGetActiveMiniGameDisplay:
         assert resp.status_code == 200
         ps = TmstInputPhaseState.model_validate(resp.json()["phase_state"])
         assert ps.phase == "input"
+        assert ps.prompt_ready is False
+        assert ps.submitted is False
+
+    def test_signed_in_player_device_input_phase_state_with_character_id(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        """A player's own sign-in and character_id get prompt_ready=True."""
+        asyncio.run(
+            _seed_tmst_session_and_run(
+                db_factory,
+                runtime_state={"phase": "input", "presence": {}, "input_closed": False},
+            )
+        )
+        app.dependency_overrides[optional_player_or_host_jwt] = lambda: _player_claims()
+        resp = client.get(
+            f"/v1/sessions/{_SESSION_ID}/mini-games/active/display"
+            f"?character_id={_CHAR_ID}"
+        )
+        assert resp.status_code == 200
+        ps = TmstInputPhaseState.model_validate(resp.json()["phase_state"])
+        assert ps.phase == "input"
         assert ps.prompt_ready is True
         assert ps.submitted is False
+
+    def test_another_players_sign_in_cannot_ask_for_this_view(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        asyncio.run(
+            _seed_tmst_session_and_run(
+                db_factory,
+                runtime_state={"phase": "input", "presence": {}, "input_closed": False},
+            )
+        )
+        app.dependency_overrides[optional_player_or_host_jwt] = lambda: _player_claims(
+            player_id=_OTHER_PART_ID
+        )
+        resp = client.get(
+            f"/v1/sessions/{_SESSION_ID}/mini-games/active/display"
+            f"?character_id={_CHAR_ID}"
+        )
+        assert resp.status_code == 403
+        assert resp.json()["detail"]["code"] == "not_your_character"
+
+    def test_a_host_token_naming_a_character_is_refused_but_may_read_shared(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        asyncio.run(
+            _seed_tmst_session_and_run(
+                db_factory,
+                runtime_state={"phase": "input", "presence": {}, "input_closed": False},
+            )
+        )
+        app.dependency_overrides[optional_player_or_host_jwt] = lambda: _host_claims()
+        named = client.get(
+            f"/v1/sessions/{_SESSION_ID}/mini-games/active/display"
+            f"?character_id={_CHAR_ID}"
+        )
+        assert named.status_code == 403
+        shared = client.get(f"/v1/sessions/{_SESSION_ID}/mini-games/active/display")
+        assert shared.status_code == 200
+
+    def test_a_sign_in_for_another_session_is_refused(
+        self,
+        client: TestClient,
+        db_factory: async_sessionmaker[AsyncSession],
+    ) -> None:
+        asyncio.run(
+            _seed_tmst_session_and_run(
+                db_factory,
+                runtime_state={"phase": "input", "presence": {}, "input_closed": False},
+            )
+        )
+        app.dependency_overrides[optional_player_or_host_jwt] = lambda: _player_claims(
+            session_id=uuid4()
+        )
+        resp = client.get(f"/v1/sessions/{_SESSION_ID}/mini-games/active/display")
+        assert resp.status_code == 403
 
     def test_player_device_submitted_flag_reflects_accepted_submission(
         self,
@@ -928,6 +1028,7 @@ class TestGetActiveMiniGameDisplay:
                 ],
             )
         )
+        app.dependency_overrides[optional_player_or_host_jwt] = lambda: _player_claims()
         resp = client.get(
             f"/v1/sessions/{_SESSION_ID}/mini-games/active/display"
             f"?character_id={_CHAR_ID}"
@@ -935,6 +1036,15 @@ class TestGetActiveMiniGameDisplay:
         assert resp.status_code == 200
         ps = TmstInputPhaseState.model_validate(resp.json()["phase_state"])
         assert ps.submitted is True
+
+        # With no sign-in the same address gives the shared view: no flag.
+        app.dependency_overrides.pop(optional_player_or_host_jwt)
+        shared = client.get(
+            f"/v1/sessions/{_SESSION_ID}/mini-games/active/display"
+            f"?character_id={_CHAR_ID}"
+        )
+        shared_ps = TmstInputPhaseState.model_validate(shared.json()["phase_state"])
+        assert shared_ps.submitted is False
 
     def test_display_spotlight_phase_state_no_personalization(
         self,
