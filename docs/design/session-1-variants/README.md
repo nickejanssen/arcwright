@@ -56,6 +56,7 @@ The bluffing game (idea bank card 4) is in no version. The founder chose Newcome
 | Control game | The one mini-game every version plays with identical rules, so ratings can be compared |
 | Cohort | A kind of player (competitive, newcomer, story lover, puzzle lover) |
 | Group | The 2 to 4 people in one sitting |
+| Anytime game | A mini-game that can occur at any time in a session, like Lock Picking when a player finds a locked box, as opposed to a game at a fixed point such as the slot after a round (founder, 20 November 2026). The sheets call a solo or pair anytime game a side game |
 
 ## What the founder decided in the interview
 

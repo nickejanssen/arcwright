@@ -22,7 +22,9 @@ Part of [the version overview](README.md). Proposed, not approved. Written becau
 | --- | --- |
 | Control game | The one mini-game every version plays with identical rules. Search and Find, provisionally. It is a role inside a version, not a version |
 | Main game | A group mini-game that belongs to a version's cohort and fills a round slot |
-| Side game | A mini-game outside the round slots: a solo find (one player's investigation leads to it) or a pair find. The founder also used the word "anytime games" (D-144); it has no definition in the record, so it is **not defined here**. The orchestrator session has been asked for the original conversation (issue #429) |
+| Anytime game | A mini-game that can occur at any time during a session, not at a fixed point. Example: Lock Picking when a player finds a locked box. Founder, 20 November 2026, word for word: "Any time game referred to games like lock picking that could occur at any time as opposed to the other mini games that have fixes points during the play of Nightcap session." |
+| Fixed-point game | A mini-game at a fixed point in a session, such as the slot after a round |
+| Side game | The version sheets' name for an anytime game that one player or a pair finds (solo or pair), outside a round slot |
 | Standalone | Playable on its own, on a phone or laptop, with Nightcap off (AW-348) |
 
 ## The candidate list: 14 games
@@ -50,7 +52,7 @@ The idea cards' ranking in the bank reflects predicted appeal and has not been t
 
 ## Where each version would use them
 
-C is the control, M a main game, S a side game (solo find), A an alternate if a slot needs filling, and a dash means not used.
+C is the control, M a main game, S a side game (an anytime game), A an alternate if a slot needs filling, and a dash means not used.
 
 | # | Game | 1a Agency race | 1b Newcomers | 1c Story and intrigue | 1d Deduction and puzzles |
 | --- | --- | --- | --- | --- | --- |
@@ -86,4 +88,4 @@ Inference, not measured: waves 1 and 2 are the work that can fit before 15 Decem
 
 1. Is this the right candidate list, and what is missing or should go?
 2. Should the paper trials in the table run before any of the 'later' games are built?
-3. "Anytime games" is open until the orchestrator session sends the original question and reply; then the founder says what he meant.
+3. Answered: see the definition of anytime game above.
