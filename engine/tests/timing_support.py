@@ -8,6 +8,13 @@ raises the limit and the check still fails when the code itself gets slower.
 
 The work is pure Python that never touches the engine, so a real slowdown in
 the engine never inflates the factor and cannot excuse itself.
+
+The factor is a rough guide, not a precise one. It tracks plain CPU work and
+reads high or low depending on how the system shares the processor. With 16
+busy processes on 8 cores it read between 1.2 and 9 while the tick test really
+ran about 2.4 times slower and the sweep about 2 to 3 times slower. A version
+that also timed thread handoffs read only 1.2 under the same load, so it was
+not adopted. Each test therefore keeps its own room above the calm figure.
 """
 
 from __future__ import annotations
@@ -15,7 +22,8 @@ from __future__ import annotations
 import time
 
 CALM_SECONDS = 0.037
-"""Fastest time of ``_calibration_work`` on an idle machine."""
+"""Fastest time of ``_calibration_work`` seen on an idle machine (AW-350, a
+Windows 11 laptop with 8 logical cores); a slower machine just reads higher."""
 
 _ROUNDS = 7
 

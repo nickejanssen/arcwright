@@ -60,6 +60,10 @@ from engine.tests.rounds_support import (
 from engine.tests.timing_support import machine_slowdown
 
 TIMED_TICKS = 5
+# Spec 0093 sets the target at 0.2 s. On the AW-350 machine the best of five
+# ticks is about 0.085 s when calm and 0.12 to 0.22 s with 16 busy processes on
+# 8 cores, while the speed check read only about 1.2. So the check keeps 0.4 s,
+# 2x the target. A tenfold slowdown (about 0.9 s) still fails.
 TICK_CALM_BUDGET_SECONDS = 0.4
 
 EXPECTED_ORDER = [
