@@ -37,14 +37,14 @@ Status is **built** (a package exists in `nightcap/mini_games/`, verified by rea
 | 2 | **Battle of Wits** | Timed trivia, logic, mental math and case questions; fastest correct ranks first | New | Target 1 to 8 | Text only, plus written questions | Deduction | Expertise |
 | 3 | **Lock Picking** | Pick a lock on your phone; solo, pair or group | New. Nearest built: Evidence Locker #402 (clue-gated lock breach, 1 player, 60 s, active) | Built: 1. Target 1 to 8 | Adapt the built game; a group start | Tradecraft | - |
 | 4 | **Crime Scene Smash** | Match-3 clue race with a shared leaderboard | Built, active | 4 to 8, 90 s | Needs a 2 to 4 range | Observation | - |
-| 5 | **Tell Me Something True** | Truth-and-lie bluffing with a spotlight on one player | Built, draft | 4 to 8, 240 s | Needs a 2 to 4 range; a screen mismatch is filed as AW-351 | Interrogation | Deduction |
+| 5 | **Tell Me Something True** | Truth-and-lie bluffing with a spotlight on one player | Built, draft | 4 to 8, 240 s | Needs a 2 to 4 range; a screen mismatch is filed as AW-351 | Interrogation | Undercover |
 | 6 | The Emergency Seating Committee | Two swaps to satisfy as many seating demands as possible | Idea (card 6) | Solo to 8 as written | Paper first; light screen | Deduction | - |
 | 7 | The Counterfeit Concierge | Spend limited checks to spot forged guest credentials | Idea (card 12) | Solo to 8 as written | Text and small cards | Deduction | Observation |
 | 8 | The Séance Has Been Double-Booked | Untangle two spirits' clues and reunite objects | Idea (card 8) | Solo to 8 as written | Illustrated deck | Deduction | Observation |
 | 9 | Switchboard After Midnight | Connect hotel calls from partial descriptions | Idea (card 9) | Solo to 8 as written | Text and routing | Deduction | Observation |
 | 10 | The Clockmaker Pleads the Fifth | Watch four disagreeing clocks and find the one that skips | Idea (card 14) | Solo to 8 as written | A small animation | Observation | Deduction |
-| 11 | Of Course I Work Here | Hidden-role bluff: who missed the staff briefing | Idea (card 4) | Best from 4 players; solo and 2 as written | Hidden-role logic; the hardest | Interrogation | Deduction |
-| 12 | An Entirely Normal Walk | Tail a bellhop across a lobby; choose cover or shortcut | Idea (card 1) | Solo to 8 as written | A route screen | Tradecraft | Interrogation |
+| 11 | Of Course I Work Here | Hidden-role bluff: who missed the staff briefing | Idea (card 4) | Best from 4 players; solo and 2 as written | Hidden-role logic; the hardest | Undercover | Interrogation |
+| 12 | An Entirely Normal Walk | Tail a bellhop across a lobby; choose cover or shortcut | Idea (card 1) | Solo to 8 as written | A route screen | Infiltration | Observation |
 | 13 | The Witness Protection Sketch Artist | Build a funny portrait from a tray of faces and accessories | Idea (card 17) | Solo to 8 as written | Art tray | Observation | - |
 | 14 | Room Service Roulette | Everyone secretly picks lift, stairs or corridor; congestion decides | Idea (card 13) | Solo to 8 as written | Simultaneous-choice rules | Interrogation | Deduction |
 
@@ -52,22 +52,33 @@ The idea cards' ranking in the bank reflects predicted appeal and has not been t
 
 ## Skill labels
 
-Each game has a **primary skill** (what mainly decides who does well) and an **also uses** skill, named for what an investigator actually does. The labels are my first pass from each game's description. No game has been played, so none is validated, and the founder can change any label. A dash means no second skill.
+Each game has a **primary skill** (what mainly decides who does well) and an **also uses** skill. The vocabulary has two families, because the founder said both Sherlock Holmes and James Bond skills are needed to play the games (20 November 2026): the detective's skills for working a case out, and the spy's skills for getting at it. The labels are my first pass from each game's description. No game has been played, so none is validated, and the founder can change any label or add one. A dash means no second skill.
 
-| Skill | What an investigator does | Games where it is primary |
+**Detective skills (Holmes)**
+
+| Skill | What the person does | Games where it is primary |
 | --- | --- | --- |
 | Observation | Notices details at a scene and spots what does not belong | 1 Search and Find, 4 Crime Scene Smash, 10 The Clockmaker, 13 The Sketch Artist |
 | Deduction | Reasons from evidence to a conclusion, by logic and elimination | 2 Battle of Wits, 6 The Emergency Seating Committee, 7 The Counterfeit Concierge, 8 The Séance, 9 Switchboard |
-| Interrogation | Reads people, spots lies and anticipates what others will do | 5 Tell Me Something True, 11 Of Course I Work Here, 14 Room Service Roulette |
-| Tradecraft | Practical field skills: picking a lock, tailing a suspect | 3 Lock Picking, 12 An Entirely Normal Walk |
+| Interrogation | Reads people, spots lies and anticipates what others will do | 5 Tell Me Something True, 14 Room Service Roulette |
 | Expertise | Specialist knowledge that cracks a case, like a remembered fact | None as primary; Battle of Wits uses it as a second skill |
 
-Direction 1 named four skills (eyes, wits, reading people, hands; these were the orchestrator's labels, not the founder's). Observation, Deduction, Interrogation and Tradecraft rename them, after the founder said the first names did not sound like an investigator's skills. Expertise is new, and more games are labelled Deduction because the idea-bank games for seating, the concierge, the séance and the switchboard are reasoning puzzles.
+**Spy skills (Bond)**
+
+| Skill | What the person does | Games where it is primary |
+| --- | --- | --- |
+| Tradecraft | Practical field skills and gadgets, such as picking a lock | 3 Lock Picking |
+| Infiltration | Moves unseen and gets in without being noticed | 12 An Entirely Normal Walk |
+| Undercover | Holds a cover story and bluffs as someone else | 11 Of Course I Work Here |
+| Risk | Nerve at the table: pushing luck and betting against others | None among the 14 |
+| Pursuit | Chases, evades and keeps going under pressure | None among the 14 |
+| Codebreaking | Cracks ciphers and codes | None among the 14 |
 
 **What the labels show (inferred):**
-- Versions 1a to 1d between them use Observation, Deduction and Tradecraft, plus Expertise as a second skill in Battle of Wits.
-- Interrogation is primary in only one December game, the bluffing game in 1e.
-- A later version aimed at bluffers would need the Interrogation games in rows 5, 11 and 14.
+- Versions 1a to 1d between them use Observation, Deduction and Tradecraft, plus Expertise as a second skill in Battle of Wits. None uses an Undercover, Infiltration or Interrogation game as a main game.
+- 1e's bluffing game is the only December game with Interrogation (and Undercover) in it.
+- Risk, Pursuit and Codebreaking have no game among the 14. Idea-bank cards outside the 14 that would fill them: Bid Me Goodnight (card 15) and Going Down? (card 3) for Risk, Mind the Carriage Gap (card 16) for Pursuit, and The Floor Is Listening (card 18) for Infiltration. I found no card for Codebreaking, so that label may need a new game or may be dropped. This mapping is my reading of the cards, not tested.
+- Direction 1's four skills were eyes, wits, reading people and hands (the orchestrator's labels, not the founder's). They map to Observation, Deduction, Interrogation and Tradecraft. The founder said the first names did not sound like an investigator's skills.
 
 ## Where each version would use them
 

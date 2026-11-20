@@ -30,7 +30,7 @@ Players who like a mixed bag of games and do not want to play the same thing twi
 | --- | --- |
 | Round 1 | Scene, investigate, then Search and Find (control): Observation |
 | Round 2 | Scene, investigate, then Battle of Wits, a mix of trivia and logic: Deduction |
-| Round 3 | Scene, investigate, then a bluffing game: Interrogation |
+| Round 3 | Scene, investigate, then a bluffing game: Interrogation and Undercover |
 | Anytime game | Lock Picking, solo, for whoever finds a locked box: Tradecraft |
 | Final race | None |
 | Last Call and ending | Unchanged |
