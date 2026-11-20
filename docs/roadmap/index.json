@@ -3112,7 +3112,7 @@
     },
     {
       "id": "AW-346",
-      "title": "Plan The Session 1 Playthrough Variants (1a To 1d)",
+      "title": "Plan The Session 1 Playthrough Variants (1a To 1e)",
       "milestone": "M7",
       "epic": "M7-C",
       "size": "S",
@@ -3305,6 +3305,62 @@
       "github": {
         "issue_number": 457,
         "url": "https://github.com/nickejanssen/arcwright/issues/457"
+      }
+    },
+    {
+      "id": "AW-354",
+      "title": "Add A Per-Mini-Game Rating, A Version Tag And The Extra Survey Questions",
+      "milestone": "M7",
+      "epic": "M7-C",
+      "size": "M",
+      "depends_on": [
+        "AW-331",
+        "AW-304",
+        "AW-346"
+      ],
+      "path": "docs/roadmap/tasks/AW-354-add-per-mini-game-rating-and-version-tags-to-the-survey.md",
+      "epic_id": "M7-C",
+      "github": {
+        "issue_number": 463,
+        "url": "https://github.com/nickejanssen/arcwright/issues/463"
+      }
+    },
+    {
+      "id": "AW-355",
+      "title": "Write The Battle Of Wits Questions And The Host Lines For Versions 1a And 1b",
+      "milestone": "M7",
+      "epic": "M7-C",
+      "size": "M",
+      "depends_on": [
+        "AW-337",
+        "AW-305",
+        "AW-319"
+      ],
+      "path": "docs/roadmap/tasks/AW-355-write-the-battle-of-wits-questions-and-version-host-lines.md",
+      "epic_id": "M7-C",
+      "github": {
+        "issue_number": 464,
+        "url": "https://github.com/nickejanssen/arcwright/issues/464"
+      }
+    },
+    {
+      "id": "AW-356",
+      "title": "Build The Version Arc Setups (1a To 1e) And The Group Run Sheet",
+      "milestone": "M7",
+      "epic": "M7-C",
+      "size": "M",
+      "depends_on": [
+        "AW-337",
+        "AW-345",
+        "AW-346",
+        "AW-354",
+        "AW-355"
+      ],
+      "path": "docs/roadmap/tasks/AW-356-build-the-version-arc-setups-and-the-group-run-sheet.md",
+      "epic_id": "M7-C",
+      "github": {
+        "issue_number": 465,
+        "url": "https://github.com/nickejanssen/arcwright/issues/465"
       }
     },
     {
