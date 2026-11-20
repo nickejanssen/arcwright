@@ -39,7 +39,7 @@ function Seated({ seat }: { seat: StoredSeat }) {
 
   useEffect(() => {
     let cancelled = false;
-    fetchMyRole()
+    fetchMyRole(seat.gameId, () => getValidPlayerToken(seat.gameId))
       .then((value) => {
         if (!cancelled) setRole(value);
       })

@@ -240,6 +240,7 @@ def _build_clue_unlock_entry(
     *,
     release_type: str,
     host_account_id: UUID | None = None,
+    host_participant_id: UUID | None = None,
     timestamp: datetime,
 ) -> dict[str, Any]:
     entry: dict[str, Any] = {
@@ -250,6 +251,8 @@ def _build_clue_unlock_entry(
     }
     if host_account_id is not None:
         entry["host_account_id"] = str(host_account_id)
+    if host_participant_id is not None:
+        entry["host_participant_id"] = str(host_participant_id)
     return entry
 
 
@@ -590,12 +593,19 @@ class MiniGameRuntime:
         self,
         run_id: UUID,
         clues: list[dict[str, Any]],
-        host_account_id: UUID,
+        host_account_id: UUID | None = None,
+        *,
+        host_participant_id: UUID | None = None,
     ) -> MiniGameRun:
         """Release clues immediately outside the scoring path. Logs the override (AC4).
 
-        The host may override regardless of run state except cancelled.
+        The host may override regardless of run state except cancelled. Who did it
+        is logged under its honest name: ``host_account_id`` for the session
+        creator's account, ``host_participant_id`` for a player seat that holds
+        the host role. At least one must be given.
         """
+        if host_account_id is None and host_participant_id is None:
+            raise ValueError("say who made the release")
         run = await self._load_run(run_id)
         if run.status == "cancelled":
             raise RunStateError(
@@ -621,6 +631,7 @@ class MiniGameRuntime:
                 clue,
                 release_type="host_override",
                 host_account_id=host_account_id,
+                host_participant_id=host_participant_id,
                 timestamp=now,
             )
             overrides.append(entry)
@@ -658,7 +669,16 @@ class MiniGameRuntime:
                 payload={
                     "clue_id": clue_id,
                     "release_type": "host_override",
-                    "host_account_id": str(host_account_id),
+                    **(
+                        {"host_account_id": str(host_account_id)}
+                        if host_account_id is not None
+                        else {}
+                    ),
+                    **(
+                        {"host_participant_id": str(host_participant_id)}
+                        if host_participant_id is not None
+                        else {}
+                    ),
                 },
             )
 

@@ -3378,6 +3378,38 @@
         "issue_number": 467,
         "url": "https://github.com/nickejanssen/arcwright/issues/467"
       }
+    },
+    {
+      "id": "AW-352",
+      "title": "Let The Host Hand The Host Role To Another Player From The Phone",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "S",
+      "depends_on": [
+        "AW-331"
+      ],
+      "path": "docs/roadmap/tasks/AW-352-let-the-host-hand-the-host-role-to-another-player-from-the-phone.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 458,
+        "url": "https://github.com/nickejanssen/arcwright/issues/458"
+      }
+    },
+    {
+      "id": "AW-353",
+      "title": "Make Start Session Check The Player Minimum",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "S",
+      "depends_on": [
+        "AW-331"
+      ],
+      "path": "docs/roadmap/tasks/AW-353-make-start-session-check-the-player-minimum.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 459,
+        "url": "https://github.com/nickejanssen/arcwright/issues/459"
+      }
     }
   ],
   "superseded_sources": [

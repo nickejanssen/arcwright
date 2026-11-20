@@ -49,9 +49,10 @@ export function fetchDisplayMiniGameState(
   return _fetchDisplay(`/v1/sessions/${sessionId}/mini-games/active/display`);
 }
 
-// Unauthenticated fetch for a player device, personalised by characterId.
-// M4 pre-auth path — replaces ArcwrightClient.getMiniGameState() when no
-// valid Firebase ID token is available. Production auth via JWT at M5 (AW-269).
+// Unauthenticated fetch that names a character. Since AW-331 (M4) the engine
+// gives a player's own view only to a sign-in that owns the character, so with
+// no sign-in this returns the shared view, the same as the display fetch above.
+// Sending the seat's own sign-in is how a phone gets its personalised view.
 export function fetchPlayerMiniGameState(
   sessionId: string,
   characterId: string,

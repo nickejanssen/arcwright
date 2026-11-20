@@ -23,6 +23,7 @@ from api.auth import (
     require_host_jwt,
     require_player_jwt,
 )
+from api.auth.seat import require_host_control, require_seated_or_host
 from api.main import app
 from api.tests.test_rounds_api import Who, _now, url
 from engine.db import get_async_session
@@ -87,6 +88,12 @@ def client(
         uid="p", session_id=who.session_id, player_id=who.player_id, role="player"
     )
     app.dependency_overrides[require_host_jwt] = lambda: JwtClaims(
+        uid="h", session_id=who.session_id, player_id=who.host_id, role="host"
+    )
+    app.dependency_overrides[require_host_control] = lambda: JwtClaims(
+        uid="h", session_id=who.session_id, player_id=who.host_id, role="host"
+    )
+    app.dependency_overrides[require_seated_or_host] = lambda: JwtClaims(
         uid="h", session_id=who.session_id, player_id=who.host_id, role="host"
     )
     app.dependency_overrides[optional_player_or_host_jwt] = lambda: None

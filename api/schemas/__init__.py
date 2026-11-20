@@ -448,6 +448,8 @@ class HeldConceptResponse(BaseModel):
     text: str
     found_from: Optional[str] = None
     found_in_beat: Optional[str] = None
+    found_in_round_title: Optional[str] = None
+    found_in_round_number: Optional[int] = None
 
 
 class HoldingsResponse(BaseModel):

@@ -20,6 +20,7 @@ from api.routers import (
     knowledge,
     lobby,
     mini_games,
+    room,
     rounds,
     sessions,
 )
@@ -62,6 +63,7 @@ def create_app() -> FastAPI:
     application.include_router(mini_games.router, prefix="/v1")
     application.include_router(lobby.router, prefix="/v1")
     application.include_router(rounds.router, prefix="/v1")
+    application.include_router(room.router, prefix="/v1")
     return application
 
 

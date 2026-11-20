@@ -30,6 +30,7 @@ from api.auth import (
     require_host_jwt,
     require_player_or_host_jwt,
 )
+from api.auth.seat import require_host_control, require_seated_or_host
 from api.main import app
 from engine.db import get_async_session
 from engine.db.orm import Base, Event
@@ -104,6 +105,8 @@ def client(
             api_key="test-key"
         )
         app.dependency_overrides[require_host_jwt] = lambda: auth_state["host"]
+        app.dependency_overrides[require_host_control] = lambda: auth_state["host"]
+        app.dependency_overrides[require_seated_or_host] = lambda: auth_state["host"]
         app.dependency_overrides[require_player_or_host_jwt] = lambda: auth_state[
             "player"
         ]

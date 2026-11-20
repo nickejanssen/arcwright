@@ -90,6 +90,10 @@ class HeldConcept:
     """The label of the subject it came from; None for what they held at the start."""
     found_in_beat: str | None = None
     """The beat it was found in; None for what they held at the start."""
+    found_in_round_title: str | None = None
+    """That beat's name, the one a screen may print; None for what they held at the start."""
+    found_in_round_number: int | None = None
+    """That round's 1-based place among the rounds that offer choices."""
 
 
 # --- the budget, worked out in one place ----------------------------------------
@@ -348,16 +352,22 @@ async def read_holdings(
                 concept_id,
                 (subjects[opportunity.subject_id], str(row.context["beat_id"])),
             )
-    return [
-        HeldConcept(
-            c.concept_id,
-            c.label,
-            c.text,
-            *found.get(c.concept_id, (None, None)),
-        )
-        for c in ctx.case.concepts
-        if c.concept_id in held
+    rounds = [
+        b
+        for b in ctx.arc.beats
+        if any(p.kind is PhaseKind.choices for p in (b.phases or []))
     ]
+    titles = {b.beat_id: (b.beat_name, n) for n, b in enumerate(rounds, start=1)}
+    held_concepts: list[HeldConcept] = []
+    for c in ctx.case.concepts:
+        if c.concept_id not in held:
+            continue
+        subject, beat = found.get(c.concept_id, (None, None))
+        title, number = titles.get(beat, (None, None)) if beat else (None, None)
+        held_concepts.append(
+            HeldConcept(c.concept_id, c.label, c.text, subject, beat, title, number)
+        )
+    return held_concepts
 
 
 def _result_from_row(

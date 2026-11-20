@@ -69,6 +69,15 @@ class SessionStateError(Exception):
     pass
 
 
+class SeatClosedError(SessionStateError):
+    """No new seat can be taken. ``code`` is stable so a screen can read it:
+    ``game_started`` (running or paused) or ``game_over`` (finished)."""
+
+    def __init__(self, code: str, message: str) -> None:
+        super().__init__(message)
+        self.code = code
+
+
 class SessionCapacityError(Exception):
     pass
 
@@ -147,7 +156,18 @@ class SessionService:
         return arc_definition is not None and is_terminal_beat(arc_definition, beat_id)
 
     async def start_session(self, db: AsyncSession, session_id: UUID) -> Session:
-        orm = await self._require_session(db, session_id)
+        # The same lock as ``lobby_join``, so a join in flight cannot add a seat
+        # after the start (AW-331, choice H).
+        from engine.session.phases import session_lock
+
+        async with session_lock(db, session_id) as orm:
+            if orm is None:
+                raise SessionNotFoundError(session_id)
+            return await self._start_locked(db, session_id, orm)
+
+    async def _start_locked(
+        self, db: AsyncSession, session_id: UUID, orm: OrmSession
+    ) -> Session:
         if orm.status != SessionStatus.created.value:
             raise SessionStateError(f"Cannot start session in status {orm.status!r}")
         orm.status = SessionStatus.active.value
@@ -186,8 +206,12 @@ class SessionService:
         statemachine_config: dict[str, Any] | None = None,
         transition_history: list[Any] | None = None,
         now: datetime | None = None,
+        paused_by: UUID | None = None,
     ) -> Session:
         """Pause the arc and snapshot state at the current beat boundary.
+
+        ``paused_by`` is the seat that paused, kept in the saved record so the
+        shared screen can say who (AW-331). None when the host key paused.
 
         AC1: writes an ``arc_beat_states`` row carrying the statemachine
         configuration (the active state set + ``session_context``) so a
@@ -226,7 +250,8 @@ class SessionService:
             Event(
                 session_id=session_id,
                 event_type="session_interrupted",
-                payload={"beat_id": snapshot_beat},
+                payload={"beat_id": snapshot_beat}
+                | ({"paused_by": str(paused_by)} if paused_by is not None else {}),
             )
         )
         await db.flush()
@@ -600,37 +625,54 @@ class SessionService:
         """Find a session by join_code and add a named player.
 
         Raises SessionNotFoundError if no session matches the code.
-        Raises SessionStateError if the session is in a terminal state.
+        Raises SeatClosedError once the game has started (``game_started``) or
+        finished (``game_over``); no seat is added then. The first human seat to
+        join becomes the host seat. The check and the seat are taken under the
+        session lock, so a start in flight cannot leave a seat behind it.
         """
+        from engine.session import host_seat
+        from engine.session.phases import session_lock
+
         result = await db.execute(
-            select(OrmSession).where(OrmSession.join_code == join_code)
+            select(OrmSession.session_id).where(OrmSession.join_code == join_code)
         )
-        orm = result.scalars().first()
-        if orm is None:
+        session_id = result.scalars().first()
+        if session_id is None:
             raise SessionNotFoundError(f"No session with join_code {join_code!r}")
-        if orm.status in (
-            SessionStatus.completed.value,
-            SessionStatus.abandoned.value,
-        ):
-            raise SessionStateError(f"Cannot join session in status {orm.status!r}")
+        async with session_lock(db, session_id) as orm:
+            if orm is None:
+                raise SessionNotFoundError(f"No session with join_code {join_code!r}")
+            if orm.status in (
+                SessionStatus.completed.value,
+                SessionStatus.abandoned.value,
+            ):
+                raise SeatClosedError(
+                    "game_over", f"Cannot join session in status {orm.status!r}"
+                )
+            if orm.status != SessionStatus.created.value:
+                raise SeatClosedError(
+                    "game_started",
+                    f"Cannot join session in status {orm.status!r}",
+                )
 
-        character = Character(behavior_profile={})
-        db.add(character)
-        await db.flush()
+            character = Character(behavior_profile={})
+            db.add(character)
+            await db.flush()
 
-        participant = OrmParticipant(
-            participant_id=uuid4(),
-            session_id=orm.session_id,
-            character_id=character.character_id,
-            join_token=secrets.token_urlsafe(32),
-            surface_type="player",
-            is_ai_controlled=False,
-            display_name=display_name,
-        )
-        db.add(participant)
-        orm.player_count += 1
-        await db.flush()
-        return _orm_participant_to_pydantic(participant)
+            participant = OrmParticipant(
+                participant_id=uuid4(),
+                session_id=orm.session_id,
+                character_id=character.character_id,
+                join_token=secrets.token_urlsafe(32),
+                surface_type="player",
+                is_ai_controlled=False,
+                display_name=display_name,
+            )
+            db.add(participant)
+            orm.player_count += 1
+            await db.flush()
+            await host_seat.assign_first(db, orm.session_id, participant.participant_id)
+            return _orm_participant_to_pydantic(participant)
 
     async def ensure_account_for_firebase_uid(
         self, db: AsyncSession, *, firebase_uid: str, email: str | None = None

@@ -21,6 +21,7 @@ from api.auth import (
     require_player_jwt,
     require_player_or_host_jwt,
 )
+from api.auth.seat import require_host_control, require_seated_or_host
 from api.main import app
 from api.schemas import SceneSweepBoardPhaseState
 from engine.db import get_async_session
@@ -88,6 +89,8 @@ def client(db_factory: async_sessionmaker[AsyncSession]) -> Iterator[TestClient]
     app.dependency_overrides[require_player_jwt] = lambda: _player_claims()
     app.dependency_overrides[require_player_or_host_jwt] = lambda: _player_claims()
     app.dependency_overrides[require_host_jwt] = lambda: _host_claims()
+    app.dependency_overrides[require_host_control] = lambda: _host_claims()
+    app.dependency_overrides[require_seated_or_host] = lambda: _host_claims()
     app.dependency_overrides[get_async_session] = _override_db
 
     with TestClient(app) as c:
