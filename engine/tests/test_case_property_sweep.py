@@ -18,11 +18,13 @@ import pytest
 from engine.arc.models import ArcDefinition
 from engine.case import resolve
 from engine.case.errors import CaseInvariantError
+from engine.tests.timing_support import machine_slowdown
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ARC_PATH = REPO_ROOT / "nightcap" / "couch-race.arc.json"
 
 SEEDS_PER_SKELETON = 1000
+SWEEP_CALM_BUDGET_SECONDS = 15.0
 SKELETON_IDS = ("locked_room_poisoning", "alibi_collapse", "pre_conspiracy_fall")
 
 
@@ -36,6 +38,7 @@ def arc() -> ArcDefinition:
 def test_sweep_invariants_hold_for_exactly_1000_seeds(
     arc: ArcDefinition, skeleton_id: str
 ) -> None:
+    slowdown_before = machine_slowdown()
     start = time.perf_counter()
     failures: list[str] = []
     count = 0
@@ -72,11 +75,15 @@ def test_sweep_invariants_hold_for_exactly_1000_seeds(
         f"(skeleton={skeleton_id}); first 5: {failures[:5]}"
     )
     assert count == SEEDS_PER_SKELETON
-    # Throughput sanity: fail if we cannot resolve 100 cases/second on this
-    # machine for a single skeleton's share of the sweep.
-    if elapsed > 15:
+    # Throughput sanity: fail if the sweep is slower than a calm machine allows,
+    # scaled by how busy this machine was before and after it (AW-350).
+    slowdown = max(slowdown_before, machine_slowdown())
+    limit = SWEEP_CALM_BUDGET_SECONDS * slowdown
+    if elapsed > limit:
         pytest.fail(
-            f"sweep for skeleton={skeleton_id} took {elapsed:.1f}s > 15s; "
+            f"sweep for skeleton={skeleton_id} took {elapsed:.1f}s > {limit:.1f}s "
+            f"({SWEEP_CALM_BUDGET_SECONDS:.0f}s on a calm machine x {slowdown:.2f} "
+            "for how busy this one was); "
             "either the resolver has regressed on perf or "
             "SEEDS_PER_SKELETON was raised without a matching throughput budget."
         )

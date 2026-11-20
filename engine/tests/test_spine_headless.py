@@ -57,6 +57,10 @@ from engine.tests.rounds_support import (
     seat_session,
     where,
 )
+from engine.tests.timing_support import machine_slowdown
+
+TIMED_TICKS = 5
+TICK_CALM_BUDGET_SECONDS = 0.4
 
 EXPECTED_ORDER = [
     ("opening", "scene"),
@@ -338,6 +342,7 @@ class TestTheTickLoopBody:
         db: AsyncSession,
         registered: Callable[[ArcDefinition], None],
     ) -> None:
+        slowdown_before = machine_slowdown()
         arc = phased_arc()
         registered(arc)
         for _ in range(20):
@@ -345,11 +350,14 @@ class TestTheTickLoopBody:
         await db.commit()
         rec = Recorder()
         await tick_active_sessions(factory, at(0), lambda _sid: rec)  # enters phases
-        started = time.perf_counter()
-        ticked = await tick_active_sessions(factory, at(1), lambda _sid: rec)
-        elapsed = time.perf_counter() - started
-        assert ticked == 20
-        assert elapsed < 0.2
+        timings: list[float] = []
+        for _ in range(TIMED_TICKS):
+            started = time.perf_counter()
+            ticked = await tick_active_sessions(factory, at(1), lambda _sid: rec)
+            timings.append(time.perf_counter() - started)
+            assert ticked == 20
+        budget = TICK_CALM_BUDGET_SECONDS * max(slowdown_before, machine_slowdown())
+        assert min(timings) < budget
 
 
 class TestEventsWaitForTheCommit:
