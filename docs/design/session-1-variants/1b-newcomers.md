@@ -14,7 +14,7 @@ supersedes: []
 
 # Version 1b: Newcomers
 
-Part of [the version overview](README.md). Proposed, not approved. The founder chose this as the fourth version ("Newcomers instead", answer 1) over a bluffing version, when asked which kind of player the fourth should be built for.
+Part of [the version overview](README.md). The founder approved the list of versions and the skill names on 20 November 2026 ("Approve versions and names", issue #429). The details below are still open to his edits. The founder chose this as the fourth version ("Newcomers instead", answer 1) over a bluffing version, when asked which kind of player the fourth should be built for.
 
 ## What it is
 

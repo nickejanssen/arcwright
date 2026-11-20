@@ -14,7 +14,7 @@ supersedes: []
 
 # Candidate Mini-Games And Where Each Version Would Use Them
 
-Part of [the version overview](README.md). Proposed, not approved. Written because the founder said: "we should discuss the list of candidate minigames we want to try out. I'm thinking it's at least 10 between what has been built and not built, but if we can slot the minigames per variation, then we can plan what minigames need to be built and playtested independent of nightcap."
+Part of [the version overview](README.md). The founder approved the list of versions and the skill names on 20 November 2026 ("Approve versions and names", issue #429). The details below are still open to his edits. Written because the founder said: "we should discuss the list of candidate minigames we want to try out. I'm thinking it's at least 10 between what has been built and not built, but if we can slot the minigames per variation, then we can plan what minigames need to be built and playtested independent of nightcap."
 
 ## Words used here
 

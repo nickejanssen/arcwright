@@ -14,7 +14,7 @@ supersedes: []
 
 # Version 1c: Story And Intrigue
 
-Part of [the version overview](README.md). Proposed, not approved. Founder's words (D-146): "a maximize story + intrigue version".
+Part of [the version overview](README.md). The founder approved the list of versions and the skill names on 20 November 2026 ("Approve versions and names", issue #429). The details below are still open to his edits. Founder's words (D-146): "a maximize story + intrigue version".
 
 ## What it is
 

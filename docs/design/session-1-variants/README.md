@@ -14,7 +14,7 @@ supersedes: []
 
 # Session 1 Playthrough Versions (1a To 1e)
 
-> Status: **proposed, not approved.** Task AW-346 (issue #429). Written 2026-11-20 from the founder interview recorded word for word on issue #429. Nothing here is a recorded decision until the founder approves this page; the answers below are what he said, and "meaning as understood" is the interviewer's reading.
+> Status: **the list of five versions and the skill names are approved by the founder** (20 November 2026, "Approve versions and names", issue #429). Not covered by that approval: the survey extension (AW-354), the dates and the decision-log rows, which the orchestrator records. Task AW-346 (issue #429). Written 2026-11-20 from the founder interview recorded word for word on issue #429.
 
 ## The short version
 

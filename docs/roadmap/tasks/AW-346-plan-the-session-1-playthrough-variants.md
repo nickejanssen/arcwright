@@ -64,7 +64,7 @@ New tasks filed from this plan: AW-354 (#463, per-mini-game rating, version tags
 ## Acceptance Criteria
 
 - [x] Each version (1a to 1e) is written down with its arc setup and what it tests (`docs/design/session-1-variants/`).
-- [ ] The founder has approved the list of five versions (his approval is recorded on this issue; not yet given).
+- [x] The founder has approved the list of five versions and the skill names: "Approve versions and names" (issue #429, 20 November 2026).
 - [x] The replay-spoiler approach is decided: a second case for replays, and two groups playing two versions in a counterbalanced order (founder's answers on issue #429; recorded as a decision when he approves the sheets).
 - [x] The survey or debrief can tell the versions apart: the overview's survey table, with the build in AW-354 and a printed-card fallback.
 - [x] The core variant is named: 1a, the agency race, played by the founder's 1 December end-to-end test (the date changed from the 5 December TV run; see above).

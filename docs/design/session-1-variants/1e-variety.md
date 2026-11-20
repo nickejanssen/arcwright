@@ -14,7 +14,7 @@ supersedes: []
 
 # Version 1e: Variety (Direction 1)
 
-Part of [the version overview](README.md). Proposed, not approved. Founder's words (D-144, 19 November 2026): "Direction 1 with 2 as variant 1b". Direction 1 was the orchestrator's option "a different skill every round". When asked where Direction 1 should live in the four versions, the founder answered: "Make it a fifth version" (answer 12 on issue #429).
+Part of [the version overview](README.md). The founder approved the list of versions and the skill names on 20 November 2026 ("Approve versions and names", issue #429). The details below are still open to his edits. Founder's words (D-144, 19 November 2026): "Direction 1 with 2 as variant 1b". Direction 1 was the orchestrator's option "a different skill every round". When asked where Direction 1 should live in the four versions, the founder answered: "Make it a fifth version" (answer 12 on issue #429).
 
 ## What it is
 

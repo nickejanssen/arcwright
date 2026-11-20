@@ -14,7 +14,7 @@ supersedes: []
 
 # Version 1a: The Agency Race (Core, Maximize Fun)
 
-Part of [the version overview](README.md). Proposed, not approved. Founder's words (D-146): "a detective agency version that has the building to a final race because everyone is competitive in the dysfunctional agency and they are trying to race the others to the solution. It could be a mix of trivia and caSE QUESTIONS. I like this version to test a lot!"
+Part of [the version overview](README.md). The founder approved the list of versions and the skill names on 20 November 2026 ("Approve versions and names", issue #429). The details below are still open to his edits. Founder's words (D-146): "a detective agency version that has the building to a final race because everyone is competitive in the dysfunctional agency and they are trying to race the others to the solution. It could be a mix of trivia and caSE QUESTIONS. I like this version to test a lot!"
 
 ## What it is
 
