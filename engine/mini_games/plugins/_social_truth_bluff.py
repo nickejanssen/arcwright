@@ -15,6 +15,7 @@ from uuid import UUID
 
 from engine.db.orm import MiniGameSubmission
 from engine.events.models import AudienceTarget, EventCategory
+from engine.mini_games.audience_view import AudienceRule
 from engine.mini_games.resolver import ResolvedMiniGameSnapshot
 from engine.mini_games.runtime import (
     MechanicEventDirective,
@@ -29,6 +30,12 @@ VOTE_WINDOW_SECONDS = 15
 
 class SocialTruthBluffPlugin:
     mechanic_type: str = MECHANIC_TYPE
+    # The saved state holds no player text, so the rule names only the step.
+    # "prompt" is the phone-only prompt; the shared screen and host never get it.
+    audience_rule = AudienceRule(
+        public_state=("phase", "input_closed", "current_spotlight_index"),
+        withheld_presentation=("prompt",),
+    )
 
     def validate_payload(self, payload: dict[str, Any]) -> None:
         if not isinstance(payload, dict):

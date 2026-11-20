@@ -1,0 +1,173 @@
+{
+  "input": {
+    "player": {
+      "deadline_at": "2026-12-12T20:00:00",
+      "definition_version": "0.1.0",
+      "game_id": "tell-me-something-true",
+      "mechanic_type": "social-truth-bluff",
+      "my_submissions": [],
+      "phase_state": {
+        "deadline_at": "2026-12-12T20:00:00",
+        "phase": "input",
+        "prompt_ready": true,
+        "submitted": false
+      },
+      "presentation": {
+        "lie_label": "Sell the lie",
+        "prompt": "Finish the sentence, then choose: truth or lie.",
+        "title": "Tell Me Something True: Late Night",
+        "true_label": "Tell the truth"
+      },
+      "run_id": "a0000000-0000-4000-8000-000000000099",
+      "runtime_state": {
+        "current_spotlight_index": 0,
+        "input_closed": false,
+        "phase": "input"
+      },
+      "status": "active"
+    },
+    "shared_display": {
+      "deadline_at": "2026-12-12T20:00:00",
+      "definition_version": "0.1.0",
+      "game_id": "tell-me-something-true",
+      "mechanic_type": "social-truth-bluff",
+      "my_submissions": [],
+      "phase_state": {
+        "deadline_at": "2026-12-12T20:00:00",
+        "phase": "input",
+        "prompt_ready": false,
+        "submitted": false
+      },
+      "presentation": {
+        "lie_label": "Sell the lie",
+        "title": "Tell Me Something True: Late Night",
+        "true_label": "Tell the truth"
+      },
+      "run_id": "a0000000-0000-4000-8000-000000000099",
+      "runtime_state": {
+        "current_spotlight_index": 0,
+        "input_closed": false,
+        "phase": "input"
+      },
+      "status": "active"
+    }
+  },
+  "scoreboard": {
+    "player": {
+      "deadline_at": "2026-12-12T20:00:00",
+      "definition_version": "0.1.0",
+      "game_id": "tell-me-something-true",
+      "mechanic_type": "social-truth-bluff",
+      "my_submissions": [],
+      "phase_state": null,
+      "presentation": {
+        "lie_label": "Sell the lie",
+        "prompt": "Finish the sentence, then choose: truth or lie.",
+        "title": "Tell Me Something True: Late Night",
+        "true_label": "Tell the truth"
+      },
+      "run_id": "a0000000-0000-4000-8000-000000000099",
+      "runtime_state": {
+        "current_spotlight_index": 0,
+        "input_closed": true,
+        "phase": "scoreboard"
+      },
+      "status": "active"
+    },
+    "shared_display": {
+      "deadline_at": "2026-12-12T20:00:00",
+      "definition_version": "0.1.0",
+      "game_id": "tell-me-something-true",
+      "mechanic_type": "social-truth-bluff",
+      "my_submissions": [],
+      "phase_state": null,
+      "presentation": {
+        "lie_label": "Sell the lie",
+        "title": "Tell Me Something True: Late Night",
+        "true_label": "Tell the truth"
+      },
+      "run_id": "a0000000-0000-4000-8000-000000000099",
+      "runtime_state": {
+        "current_spotlight_index": 0,
+        "input_closed": true,
+        "phase": "scoreboard"
+      },
+      "status": "active"
+    }
+  },
+  "spotlight": {
+    "player": {
+      "deadline_at": "2026-12-12T20:00:00",
+      "definition_version": "0.1.0",
+      "game_id": "tell-me-something-true",
+      "mechanic_type": "social-truth-bluff",
+      "my_submissions": [],
+      "phase_state": {
+        "can_vote": false,
+        "connected_character_ids": [
+          "a0000000-0000-4000-8000-0000000000c1",
+          "a0000000-0000-4000-8000-0000000000c2",
+          "a0000000-0000-4000-8000-0000000000c3"
+        ],
+        "deadline_at": "2026-12-12T20:00:00",
+        "eligible_voter_ids": [
+          "a0000000-0000-4000-8000-0000000000c1",
+          "a0000000-0000-4000-8000-0000000000c3"
+        ],
+        "has_voted": false,
+        "is_spotlighted_player": true,
+        "phase": "spotlight",
+        "target_character_id": "a0000000-0000-4000-8000-0000000000c2"
+      },
+      "presentation": {
+        "lie_label": "Sell the lie",
+        "prompt": "Finish the sentence, then choose: truth or lie.",
+        "title": "Tell Me Something True: Late Night",
+        "true_label": "Tell the truth"
+      },
+      "run_id": "a0000000-0000-4000-8000-000000000099",
+      "runtime_state": {
+        "current_spotlight_index": 1,
+        "input_closed": true,
+        "phase": "spotlight"
+      },
+      "status": "active"
+    },
+    "shared_display": {
+      "deadline_at": "2026-12-12T20:00:00",
+      "definition_version": "0.1.0",
+      "game_id": "tell-me-something-true",
+      "mechanic_type": "social-truth-bluff",
+      "my_submissions": [],
+      "phase_state": {
+        "can_vote": false,
+        "connected_character_ids": [
+          "a0000000-0000-4000-8000-0000000000c1",
+          "a0000000-0000-4000-8000-0000000000c2",
+          "a0000000-0000-4000-8000-0000000000c3"
+        ],
+        "deadline_at": "2026-12-12T20:00:00",
+        "eligible_voter_ids": [
+          "a0000000-0000-4000-8000-0000000000c1",
+          "a0000000-0000-4000-8000-0000000000c3"
+        ],
+        "has_voted": false,
+        "is_spotlighted_player": false,
+        "phase": "spotlight",
+        "target_character_id": "a0000000-0000-4000-8000-0000000000c2"
+      },
+      "presentation": {
+        "lie_label": "Sell the lie",
+        "title": "Tell Me Something True: Late Night",
+        "true_label": "Tell the truth"
+      },
+      "run_id": "a0000000-0000-4000-8000-000000000099",
+      "runtime_state": {
+        "current_spotlight_index": 1,
+        "input_closed": true,
+        "phase": "spotlight"
+      },
+      "status": "active"
+    }
+  }
+}
