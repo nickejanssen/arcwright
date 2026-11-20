@@ -103,6 +103,35 @@ Progress: 7 of about 23 critical-path tasks are merged, roughly 30 percent (infe
 5. **AW-306** (story-tool importer, first to cut), then **AW-308** (session 1 preflight).
 6. **AW-341** (#418, events after the save in the remaining routes) and **AW-340** (#414) after session 1, unless a screen task needs AW-341 sooner.
 
+## Claude and Codex lanes (founder, 2026-11-20)
+
+The founder approved running Claude Code and Codex side by side ("Approve the split", 2026-11-20, in the orchestrator session). This section replaces "Next build order" above until the next full handoff refresh. Targets are D-149: 1 December founder end-to-end test on case 1 (version 1a), 5 December beta-test capable with case 2 written, 15 December all versions testable.
+
+**Rules for two AIs at once**
+
+- One task, one branch, one AI. Before starting, the builder posts "Claimed by Claude" or "Claimed by Codex" with its branch name on the task's issue. Nobody starts a claimed task.
+- Lanes own file areas; two builders never edit the same files. A task that needs another lane's files waits, or the orchestrator re-plans it with the founder.
+- Shared records belong to the orchestrator only: `HANDOVER.md`, `docs/product/decisions-log.csv`, `docs/product/open-questions-log.csv`, the status page, and merges. A builder may add its own task's entry to `docs/roadmap/index.json` and edit its own task file.
+- Every pull request: all six checks pass, every inline review thread answered and resolved, and a review by the other AI for anything medium or large (the automatic Codex check is not that review). Codex reviews with `$arcwright-reviewer`; Claude with the `reviewer` agent or `/review-pr`.
+- The founder approves each plan in the builder's own session or by his own comment on the issue; a relayed approval does not count (see the #462 review, 2026-11-20). He names each merge; the orchestrator merges at the exact checked commit after updating the branch with main.
+- Codex starts from the Codex app in worktree mode on the `arcwright` project (setup in `.codex/environments/environment.toml`); skills: `$github-task-implementer`, `$arcwright-reviewer`, `$arcwright-sme` (`docs/agents/USAGE.md`, Part 4). The orchestrator cannot drive Codex; the founder pastes the prompt the orchestrator gives him.
+
+**Claude lane: screens (`dashboard/`)**
+
+1. AW-332 (#435), round screens. The plan may start now; the build starts after AW-331 (#462) merges.
+2. AW-333 (#436), endgame screens.
+3. AW-334 (#437), a full game's screens proved in CI without a TV.
+
+**Codex lane: mini-game rules and packages (`engine/mini_games/` and the mini-game packages)**
+
+1. AW-351 (#457), the Tell Me Something True screen and engine agree. Must merge before AW-332 builds screens 10 to 12.
+2. AW-337 (#395), the Battle of Wits and Search and Find mechanics version 1a needs, after the founder approves its plan.
+3. AW-348 (#443), Battle of Wits played on its own first (D-151).
+
+**Founder lane:** his own approval comment on #434 (AW-331); case 1 approval by 28 November (AW-305); the agency framing (AW-319); the Battle of Wits tone (AW-355); the recap voice (AW-327).
+
+**After these land:** AW-354 (#463) and AW-341 (#418), which touch AW-331's files; AW-356 (#465); AW-345 (#428) for 15 December. If 1 December is at risk, D-149 drops versions, never the dates; the 1a final race is the first cut (inferred from the cut order in `docs/design/session-1-variants/README.md`).
+
 ## Waiting on the founder (ask one at a time, with a recommendation)
 
 1. AW-326 plan approval when it arrives, in its session or by his own comment on #388.
