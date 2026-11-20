@@ -33,7 +33,7 @@ async def _latest(db: AsyncSession, session_id: UUID) -> dict[str, Any] | None:
             Event.session_id == session_id, Event.event_type == HOST_SEAT_EVENT
         )
     )
-    payloads = list(result.scalars().all())
+    payloads: list[dict[str, Any]] = list(result.scalars().all())
     if not payloads:
         return None
     latest: dict[str, Any] = max(payloads, key=lambda p: int(p["counter"]))
