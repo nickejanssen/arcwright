@@ -1,0 +1,439 @@
+{
+  "_WARNING": "SPOILERS. This file is the full solution to The Lido as data. The founder must not open it.",
+  "schema": {
+    "name": "case_graph",
+    "version": "0.1-draft",
+    "status": "PROPOSAL. The spec 0092 WP1 case-graph schema does not exist yet. This shape is a draft offered to WP1, not an engine contract.",
+    "conventions": {
+      "ids": "Stable, lowercase, prefixed: ch_ character, loc_ location, f_ fact, cl_ false claim, t_ essential truth, r_ route, o_ opportunity, fu_ free follow-up, c_ reconstruction concept, af_ authorised falsehood, w_ competitive window, lg_ leverage grant, ev_ opening event.",
+      "composition": "Every element with player-facing text carries composition: 'authored' (text ships as written) or 'authored_with_dressing' (facts and listed anchors are fixed; a model may re-express the surrounding prose within the character's knowledge state). Nothing in this case is 'generative'.",
+      "truth_first": "Facts are atoms. Scene text is presentation. Resolution reads fact ids only and never parses prose.",
+      "slots": "Detective slots are characters with behaviour_source human_controlled. Active slots by player count are listed in case.active_slots."
+    }
+  },
+  "case": {
+    "id": "the-lido",
+    "title": "The Lido",
+    "date_in_fiction": "1976-08-21",
+    "setting": "Tilverton Lido, Tilverton, an invented Midlands boot-and-shoe town. Closing-night dance on the floor of the let-out pool.",
+    "player_range": {"min": 2, "max": 4},
+    "active_slots": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]},
+    "config": {
+      "investigation_budget_per_player": 6,
+      "free_action_kinds": ["follow_up", "review"],
+      "leverage": {"starting": 0, "bank_cap": 2},
+      "target_minutes": 30,
+      "max_minutes": 60,
+      "last_call": {
+        "authored_trigger": "The sergeant from Tilverton station arrives at the gate.",
+        "fires_when": "every active player has spent the budget, or the investigation clock reaches 17 minutes, whichever is first",
+        "minimum_fair_solvability": "every active player has been offered at least 4 investigation turns",
+        "countdown_seconds": 150,
+        "lock": "private_simultaneous"
+      }
+    }
+  },
+  "locations": [
+    {"id": "loc_dance_floor", "name": "The pool floor, shallow end", "dark_after_2200": false},
+    {"id": "loc_pit", "name": "The diving pit", "dark_after_2200": true},
+    {"id": "loc_boards", "name": "The diving boards and their steps", "dark_after_2200": true},
+    {"id": "loc_sluice", "name": "The sluice chamber under the iron lid", "dark_after_2200": true},
+    {"id": "loc_plant_room", "name": "The plant room", "dark_after_2200": true},
+    {"id": "loc_urn", "name": "The cafe hatch and tea urn", "dark_after_2200": false},
+    {"id": "loc_cash_table", "name": "The cash and raffle table", "dark_after_2200": false},
+    {"id": "loc_bandstand", "name": "The band's staging and backcloth", "dark_after_2200": false},
+    {"id": "loc_committee_room", "name": "The committee room", "dark_after_2200": false},
+    {"id": "loc_cubicle_1", "name": "Cubicle 1, reserved Chairman", "dark_after_2200": false},
+    {"id": "loc_gate_office", "name": "The gate office and turnstile", "dark_after_2200": false},
+    {"id": "loc_terrace", "name": "The sun terrace", "dark_after_2200": false},
+    {"id": "loc_hedge", "name": "The back hedge, allotment side", "dark_after_2200": false}
+  ],
+  "characters": [
+    {
+      "id": "ch_len", "role": "victim", "behaviour_source": "none_deceased", "is_culprit": false, "composition": "authored",
+      "identity": {"name": "Leonard Purkiss", "known_as": "Len", "age": 61, "occupation": "Solid fuel merchant; chairman of the Tilverton Lido Association since 1957", "address_form": "Mr Purkiss; Len to the committee"},
+      "personality": "Vain about small things and generous about large ones. Makes the same joke every year and waits for the laugh. Cannot bear to be seen hesitating.",
+      "goals": ["Have one last closing night go off properly", "Sign the surrender on Monday without a scene", "Make his dive"],
+      "relationships": [
+        {"to": "ch_bernard", "kind": "old_friend", "note": "Thirty years of Saturdays. Trusts him with the valve and the secret of the dive."},
+        {"to": "ch_hilary", "kind": "ally_turned_opponent", "note": "She called him Judas at a quarter to eight."},
+        {"to": "ch_dennis", "kind": "colleague", "note": "Told him on Thursday the books go to audit on Monday."},
+        {"to": "ch_rudge", "kind": "counterparty", "note": "Dislikes him; has agreed to sign anyway."},
+        {"to": "ch_slot_a", "kind": "client_of_detective", "note": "Hired slot A about the turnstile."}
+      ]
+    },
+    {
+      "id": "ch_dennis", "role": "suspect", "behaviour_source": "ai_driven", "is_culprit": true, "composition": "authored_with_dressing",
+      "identity": {"name": "Dennis Wragg", "age": 44, "occupation": "Chief clerk, counting house, Corbould's boot factory; treasurer of the Association; tonight's master of ceremonies", "address_form": "Mr Wragg; Dennis to everybody, he insists"},
+      "personality": "Knows the name of every child at the dance and uses it. Happiest with a microphone and a running order. Tidy to the point of fuss. Agrees with you first and corrects you second.",
+      "goals": ["Keep the evening to time", "Take record money on the raffle", "HIDDEN: have the pit empty by ten past ten", "HIDDEN: keep the books from the District's auditor"],
+      "voice": {"would_say": "Now then. Let's have it right, shall we?", "would_never_say": "Anything unkind about Len, or anything that is not true, bar one thing."},
+      "relationships": [
+        {"to": "ch_len", "kind": "colleague", "note": "Twelve years on the committee together."},
+        {"to": "ch_bernard", "kind": "relies_on", "note": "Knows Bernard signed the chit and will stand by it."},
+        {"to": "ch_hilary", "kind": "useful_to_blame", "note": "Will mention her quarrel, truthfully."},
+        {"to": "ch_slot_b", "kind": "client_of_detective", "note": "Hired slot B to watch the cash box."}
+      ],
+      "generation_rails": ["Tells exactly one lie (af_dennis). Every other statement must be true.", "Never confesses.", "When caught, concedes absence and nothing else."]
+    },
+    {
+      "id": "ch_bernard", "role": "suspect", "behaviour_source": "ai_driven", "is_culprit": false, "composition": "authored_with_dressing",
+      "identity": {"name": "Bernard Tolley", "age": 58, "occupation": "Baths Superintendent since 1947; formerly a stoker, Royal Navy", "address_form": "Mr Tolley; Bernard to Len only"},
+      "personality": "Speaks of the pool as 'she'. Hangs every key on its own hook with the handle to the left. Says little, and less to anyone holding a clipboard.",
+      "goals": ["Get Len's signature on the letter that keeps him in the gate cottage", "Count everyone safely out", "HIDDEN: not be the man whose valve killed his friend"],
+      "voice": {"would_say": "She's forty-one year old. She has her ways.", "would_never_say": "Any figure of speech. Any blame of Len."},
+      "relationships": [
+        {"to": "ch_len", "kind": "old_friend", "note": "Kept the pit full for the dive nineteen years running."},
+        {"to": "ch_rudge", "kind": "fears", "note": "Signed Rudge's chit knowing it false."},
+        {"to": "ch_hilary", "kind": "respects", "note": "They winterise the plant together each October."}
+      ],
+      "generation_rails": ["Tells exactly one lie (af_bernard) until fu_bernard.", "Believes the valve failed by itself. Never accuses anyone."]
+    },
+    {
+      "id": "ch_hilary", "role": "suspect", "behaviour_source": "ai_driven", "is_culprit": false, "composition": "authored_with_dressing",
+      "identity": {"name": "Hilary Gaunt", "age": 54, "occupation": "Games mistress, Tilverton High School for Girls; vice-chairman of the Association; coach of Tilverton Otters", "address_form": "Miss Gaunt, always"},
+      "personality": "Taught half the town to swim and remembers who cried. Corrects grammar and posture. Furious in complete sentences.",
+      "goals": ["Stop Len signing on Monday", "Say goodbye to the water in her own way", "HIDDEN: not be unmasked as the Advertiser's 'Naiad'"],
+      "voice": {"would_say": "I should like that written down exactly as I said it.", "would_never_say": "Anything sentimental about Len tonight."},
+      "relationships": [
+        {"to": "ch_len", "kind": "ally_turned_opponent", "note": "Twenty years his vice-chairman. Feels sold."},
+        {"to": "ch_rudge", "kind": "enemy", "note": "Calls him 'the gentleman from Great Harding'."},
+        {"to": "ch_bernard", "kind": "trusts", "note": "The only other person who knows how the plant works."},
+        {"to": "ch_slot_c", "kind": "client_of_detective", "note": "Hired slot C about the night visitor."}
+      ],
+      "generation_rails": ["Tells exactly one lie (af_hilary) until fu_hilary."]
+    },
+    {
+      "id": "ch_rudge", "role": "suspect", "behaviour_source": "ai_driven", "is_culprit": false, "composition": "authored_with_dressing",
+      "identity": {"name": "Clive Rudge", "age": 38, "occupation": "Deputy Director of Leisure and Amenities, Harding Vale District Council", "address_form": "Mr Rudge"},
+      "personality": "Three-piece suit at eighty degrees. Twenty-four hour clock. Refers to the pool as 'the asset' and the dance as 'the event'. Not unkind; unused.",
+      "goals": ["Have Len's signature on Monday", "Get through the event without an incident on a District asset", "HIDDEN: collect breaches so the District owes the Association nothing"],
+      "voice": {"would_say": "I am not able to comment on that at this time.", "would_never_say": "The word 'lido'."},
+      "relationships": [
+        {"to": "ch_len", "kind": "counterparty", "note": "Feared Len was wavering after the speech."},
+        {"to": "ch_bernard", "kind": "superior", "note": "Holds his signed chit."},
+        {"to": "ch_hilary", "kind": "enemy", "note": "Suspects her of the leaks."},
+        {"to": "ch_slot_d", "kind": "client_of_detective", "note": "Hired slot D to document breaches."}
+      ],
+      "generation_rails": ["Tells exactly one lie (af_rudge) until fu_rudge."]
+    },
+    {
+      "id": "ch_peggy", "role": "witness", "behaviour_source": "ai_driven", "is_culprit": false, "composition": "authored_with_dressing",
+      "identity": {"name": "Peggy Allsop", "age": 63, "occupation": "Runs the cafe hatch and the tea urn", "address_form": "Mrs Allsop; Peggy"},
+      "personality": "Has policed the hosepipe ban in her street single-handed since July. Counts cups.",
+      "goals": ["Not run out of water before the last pot"],
+      "relationships": [{"to": "ch_dennis", "kind": "exasperated_by", "note": "Told him off at five to nine."}]
+    },
+    {
+      "id": "ch_vic", "role": "witness", "behaviour_source": "ai_driven", "is_culprit": false, "composition": "authored_with_dressing",
+      "identity": {"name": "Vic Lomas", "age": 59, "occupation": "Bandleader, Vic Lomas and His Music", "address_form": "Mr Lomas; Vic"},
+      "personality": "Thirty years of functions. Minds about his backcloth more than about most people.",
+      "goals": ["Be paid for the two extra numbers", "Get the mark off his cloth"],
+      "relationships": [{"to": "ch_dennis", "kind": "hired_by", "note": "Dennis booked the band and changed the running order."}]
+    },
+    {
+      "id": "ch_slot_a", "role": "detective_slot", "behaviour_source": "human_controlled", "is_culprit": false, "composition": "authored",
+      "identity": {"name": "PLAYER_NAMED", "slot": "A", "client": "ch_len"},
+      "personality": "Player-owned.",
+      "goals": ["Find why the turnstile over-reads", "After 22:17: prove what happened to the client"],
+      "relationships": [{"to": "ch_len", "kind": "detective_for", "note": "Hired Thursday."}]
+    },
+    {
+      "id": "ch_slot_b", "role": "detective_slot", "behaviour_source": "human_controlled", "is_culprit": false, "composition": "authored",
+      "identity": {"name": "PLAYER_NAMED", "slot": "B", "client": "ch_dennis"},
+      "personality": "Player-owned.",
+      "goals": ["Watch the cash box for a pilferer"],
+      "relationships": [{"to": "ch_dennis", "kind": "detective_for", "note": "Hired Friday."}]
+    },
+    {
+      "id": "ch_slot_c", "role": "detective_slot", "behaviour_source": "human_controlled", "is_culprit": false, "composition": "authored",
+      "identity": {"name": "PLAYER_NAMED", "slot": "C", "client": "ch_hilary"},
+      "personality": "Player-owned.",
+      "goals": ["Find who has been in the pool after dark"],
+      "relationships": [{"to": "ch_hilary", "kind": "detective_for", "note": "Hired Wednesday."}]
+    },
+    {
+      "id": "ch_slot_d", "role": "detective_slot", "behaviour_source": "human_controlled", "is_culprit": false, "composition": "authored",
+      "identity": {"name": "PLAYER_NAMED", "slot": "D", "client": "ch_rudge"},
+      "personality": "Player-owned.",
+      "goals": ["Document breaches of the lease"],
+      "relationships": [{"to": "ch_rudge", "kind": "detective_for", "note": "Hired Monday, by letter."}]
+    }
+  ],
+  "facts": [
+    {"id": "k_sluice_opened", "kind": "canonical", "true": true, "time": "20:40", "text": "Dennis Wragg wound the pit sluice fully open with the T-key."},
+    {"id": "k_len_dived", "kind": "canonical", "true": true, "time": "22:09", "text": "Len Purkiss dived from the top board into about eight inches of water."},
+    {"id": "k_pit_full_2015", "kind": "canonical", "true": true, "time": "20:15", "text": "Nine feet of water stood in the pit, level with its lip."},
+    {"id": "k_sluice_shut_1750", "kind": "canonical", "true": true, "time": "17:50", "text": "Bernard shut the pit sluice on Len's order and hung the key on hook 3."},
+    {"id": "k_dive_custom", "kind": "canonical", "true": true, "time": "1957-1975", "text": "Len dived from the top board in blazer and flannels after every closing night, and never looked first."},
+    {"id": "k_skim", "kind": "canonical", "true": true, "time": "season", "text": "Dennis kept back about 2,600 pounds of gate money over the season."},
+    {"id": "k_audit_threat", "kind": "canonical", "true": true, "time": "Thu 19 Aug", "text": "Len told Dennis the books go to the District Treasurer on Monday."},
+    {"id": "k_grease_morning", "kind": "canonical", "true": true, "time": "07:30", "text": "Bernard put graphite grease on the sluice spindle and the T-key socket and on nothing else."},
+    {"id": "k_hilary_swim", "kind": "canonical", "true": true, "time": "20:00", "text": "Hilary Gaunt swam twenty widths of the full pit behind the backcloth."},
+    {"id": "k_rudge_saw", "kind": "canonical", "true": true, "time": "21:20", "text": "Rudge saw about four feet in the pit and the outlet running."},
+    {"id": "k_allotment_water", "kind": "canonical", "true": true, "time": "12:00-17:50", "text": "Bernard ran much of the pool to the allotment society's tanks by hose."},
+    {"id": "k_naiad", "kind": "canonical", "true": true, "time": "summer", "text": "Hilary Gaunt is 'Naiad' and has been passing District papers to the Advertiser."},
+    {"id": "k_chit_unseen", "kind": "canonical", "true": true, "time": "18:00", "text": "Rudge countersigned the empty-tank chit from the terrace without looking."},
+
+    {"id": "f_body", "kind": "observation", "true": true, "time": "22:17", "text": "Len Purkiss lies at the bottom of the diving pit, under the tip of the top board, in blazer and flannels, soaked through. He is barefoot. There is a white strap of skin on his left wrist.", "composition": "authored"},
+    {"id": "f_pit_floor_shines", "kind": "observation", "true": true, "time": "22:17", "text": "The floor of the pit shines under the torch. A last skin of water is sliding to the grating in the corner.", "composition": "authored"},
+    {"id": "f_announcement", "kind": "observation", "true": true, "time": "20:00", "text": "Dennis Wragg at the microphone: 'She was let out at noon, ladies and gentlemen, and she's dry as a bone. So mind the slope, and dance on the floor.'", "composition": "authored"},
+    {"id": "f_board_light", "kind": "observation", "true": true, "time": "20:25", "text": "While Len spoke, light shivered on the underside of the top board.", "composition": "authored"},
+    {"id": "f_speech", "kind": "observation", "true": true, "time": "20:25", "text": "Len Purkiss: 'Nineteen closing nights, and I have not gone home dry from one of them.' And to the young: 'Never look down. Look down and you'll never go.'", "composition": "authored"},
+    {"id": "f_streamers_thrown", "kind": "observation", "true": true, "time": "20:30", "text": "At the toast, streamers and paper hats went up. A good many went over the band's backcloth.", "composition": "authored"},
+    {"id": "f_handwash", "kind": "observation", "true": true, "time": "20:55", "text": "Peggy Allsop told Dennis Wragg off, in front of the queue, for washing his hands in a bowl of urn water.", "composition": "authored"},
+    {"id": "f_extra_numbers", "kind": "observation", "true": true, "time": "21:05", "text": "Dennis Wragg announced two extra numbers by popular demand. Carriages moved from a quarter to ten to ten.", "composition": "authored"},
+    {"id": "f_gurgle", "kind": "observation", "true": true, "time": "21:15", "text": "In a pause of the Gay Gordons the drains gave one long gurgle. The floor laughed.", "composition": "authored"},
+    {"id": "f_quarrel", "kind": "observation", "true": true, "time": "19:45", "text": "Miss Gaunt and Len Purkiss had words at the foot of the board steps. She tore her programme in two.", "composition": "authored"},
+    {"id": "f_damp_hair", "kind": "observation", "true": true, "time": "20:25", "text": "Miss Gaunt's hair was damp at the speech.", "composition": "authored"},
+    {"id": "f_rudge_pacing", "kind": "observation", "true": true, "time": "evening", "text": "Mr Rudge paced out the sun terrace twice, heel to toe, and wrote on a clipboard.", "composition": "authored"},
+    {"id": "f_bernard_turnstile", "kind": "observation", "true": true, "time": "20:20-22:15", "text": "Bernard Tolley stood at the exit turnstile from the speech until the last guest, looking over his shoulder at the deep end.", "composition": "authored"},
+    {"id": "f_lights_off", "kind": "observation", "true": true, "time": "22:00", "text": "At ten Bernard threw the switch on the festoon lights. Only the gate lamp was left.", "composition": "authored"},
+
+    {"id": "f_streamers_sodden", "kind": "evidence", "true": true, "text": "On the sump grating: streamers in the Association's blue and gold, pulped grey, and a paper hat gone to porridge. Forty yards away on the dance floor the same streamers lie dry and curled.", "composition": "authored"},
+    {"id": "f_under_board", "kind": "evidence", "true": true, "text": "He lies ten feet out from the nearest wall, directly under the tip of the top board.", "composition": "authored"},
+    {"id": "f_shoes_watch", "kind": "evidence", "true": true, "text": "At the foot of the board steps: a pair of brown brogues, set square. Socks folded in the right. In the left a wristwatch, a pair of spectacles and a wallet.", "composition": "authored"},
+    {"id": "f_wheel_open", "kind": "evidence", "true": true, "text": "The iron lid is shifted a hand's width. Below it the sluice wheel is wound out to the end of its thread. The spindle and the wheel rim are thick with fresh black-silver grease, and there are finger channels in it.", "composition": "authored"},
+    {"id": "f_plant_grease_key", "kind": "evidence", "true": true, "text": "Plant room: a tin of graphite grease with the lid off and a rag in it. A row of hooks, every key hung handle to the left, except a long T-key on hook 4 with its handle to the right. Its socket is black inside. Hook 3 is empty.", "composition": "authored"},
+    {"id": "f_towel_smear", "kind": "evidence", "true": true, "text": "Peggy Allsop's tea towel: two black-silver hand shapes that will not rinse. 'That's Mr Wragg, five to nine. I told him. Soap won't shift it. I've a good mind to send him the bill.'", "composition": "authored_with_dressing"},
+    {"id": "f_raffle_smear", "kind": "evidence", "true": true, "text": "The raffle book. Stubs to pink 340 are clean. From pink 341 each stub has a grey thumb mark in the same corner. The seller's column is initialled D.W. throughout.", "composition": "authored"},
+    {"id": "f_backcloth_paw", "kind": "evidence", "true": true, "text": "Vic Lomas shows the edge of his backcloth: a black hand, palm and four fingers. 'Your treasurer. Ten to nine. Came through from behind wiping himself on it like it was a roller towel.'", "composition": "authored_with_dressing"},
+    {"id": "f_cashbox_print", "kind": "evidence", "true": true, "text": "The cash box you minded from 20:38 to 20:52. When Mr Wragg took it back his thumb left a grey-black print on the lid. It is still there.", "composition": "authored"},
+    {"id": "f_dive_photos", "kind": "evidence", "true": true, "text": "Committee room, north wall: nineteen framed photographs, 1957 to 1975. In each, Len Purkiss stands on the board steps in blazer and flannels, wet to the skin and delighted. Each is captioned in the same hand: The Chairman's Dive. There is a twentieth nail with nothing on it.", "composition": "authored"},
+    {"id": "f_surrender_audit", "kind": "evidence", "true": true, "text": "On the committee table, a Deed of Surrender, unsigned, dated for Monday 23 August. Schedule 3: on surrender the Association's books and vouchers pass to the District Treasurer for audit.", "composition": "authored"},
+    {"id": "f_dry_change", "kind": "evidence", "true": true, "text": "Cubicle 1: a towel over the door. On the bench, laid out in order, a vest, a shirt, flannels, braces, socks, and a comb.", "composition": "authored"},
+    {"id": "f_turnstile_count", "kind": "evidence", "true": true, "text": "The brass counter on the entrance turnstile reads 61,412 for the season. The seal on it is unbroken.", "composition": "authored"},
+    {"id": "f_ledger_short", "kind": "evidence", "true": true, "text": "The takings book, in a neat clerk's hand, banks a season of about 44,000 admissions at 20p and 10p.", "composition": "authored"},
+    {"id": "f_costume_damp", "kind": "evidence", "true": true, "text": "Miss Gaunt's kit bag: a black regulation costume and a white rubber cap rolled in a towel. All three are wet.", "composition": "authored"},
+    {"id": "f_naiad_carbons", "kind": "evidence", "true": true, "text": "Under the towel, carbon copies of four letters to the Editor, Tilverton Advertiser, signed 'Naiad', each enclosing a District committee paper.", "composition": "authored"},
+    {"id": "f_rudge_note", "kind": "evidence", "true": true, "text": "Mr Rudge's clipboard, top sheet, his hand: '21.20 Deep tank NOT empty. Approx 4 ft. Outlet running. Breach cl. 9. Not raised.'", "composition": "authored"},
+    {"id": "f_allotment_hose", "kind": "evidence", "true": true, "text": "A canvas fire hose runs from the main outlet housing, through a gap cut low in the back hedge, to three galvanised tanks on the allotment side. The tanks are brim full. The hose is still weeping.", "composition": "authored"},
+    {"id": "f_turnstile_brief", "kind": "evidence", "true": true, "text": "Mr Purkiss's instruction to you, Thursday: 'The turnstile says sixty-one thousand. The bank says nearer forty-four. Find me the fault in the machine before I am obliged to think worse.'", "composition": "authored"},
+    {"id": "f_after_my_dip", "kind": "evidence", "true": true, "text": "His note to you tonight, on the back of a raffle ticket: 'Foot of the boards, ten past ten, after my dip. Bring a dry cigarette.'", "composition": "authored"},
+    {"id": "f_stakeout_lid", "kind": "evidence", "true": true, "text": "From the hedge at twenty to nine you watched a man in shirt-sleeves lift the iron lid at the foot of the board steps and work at something below it with a long T-shaped iron. Against the fairy lights you never saw his face. After he went there was a sound like a bath emptying a long way down.", "composition": "authored"},
+    {"id": "f_rudge_whisper", "kind": "evidence", "true": true, "text": "At twenty-five past nine Mr Rudge said in your ear: 'The deep tank is not empty. Four feet, and the outlet running. Remember that you heard me say so.'", "composition": "authored"},
+    {"id": "f_hilary_swim", "kind": "testimony", "true": true, "text": "Miss Gaunt: 'Very well. At eight o'clock I swam twenty widths of that pit. It was full to the lip and as warm as tea. I was saying goodbye to it, which is more than he had the decency to do.'", "composition": "authored_with_dressing"},
+    {"id": "f_bernard_full", "kind": "testimony", "true": true, "text": "Bernard Tolley: 'She was at the lip. I chalked the ladder quarter past eight, you can see it. I shut that wheel ten to six and hung the key. When I come with the torch she was wound right out.'", "composition": "authored_with_dressing"},
+    {"id": "f_bernard_dive", "kind": "testimony", "true": true, "text": "Bernard Tolley: 'Pit stays full till he's had his dive. Nineteen year. Then I let her go overnight. He never looks. He says if you look you don't go.'", "composition": "authored_with_dressing"},
+    {"id": "f_bernard_greased", "kind": "testimony", "true": true, "text": "Bernard Tolley: 'I greased the spindle and the key this morning, for the winter. Graphite. There's nothing else on this site wears that muck.'", "composition": "authored_with_dressing"},
+    {"id": "f_bernard_water", "kind": "testimony", "true": true, "text": "Bernard Tolley: 'It was going down the brook else. There's men up there carried bath water to their beans since June.'", "composition": "authored_with_dressing"},
+    {"id": "f_rudge_breach_plan", "kind": "testimony", "true": true, "text": "Mr Rudge: 'I observed the tank at twenty-one twenty. It was not my place to shout about it. A breach is a breach, and it bears on compensation.'", "composition": "authored_with_dressing"},
+    {"id": "f_dennis_concedes", "kind": "testimony", "true": true, "text": "Dennis Wragg: 'I stepped away five minutes. A man can step away. I don't see that I'm to account for every five minutes of a dance I was running.'", "composition": "authored_with_dressing"},
+    {"id": "f_hilary_surrender", "kind": "testimony", "true": true, "text": "Miss Gaunt: 'He was to sign us away on Monday. With him gone it falls to me, and I shall not sign. Write that down as well.'", "composition": "authored_with_dressing"},
+    {"id": "f_chit_exists", "kind": "testimony", "true": true, "text": "Mr Rudge produces a District form: 'Tank certified empty 18.00. Signed B. Tolley, Superintendent. Countersigned C. Rudge.'", "composition": "authored"},
+    {"id": "f_dennis_points", "kind": "testimony", "true": true, "text": "Dennis Wragg: 'Bernard signed her off dry at six. I only announced what I was given. And I don't like to say it, but Miss Gaunt had words with Len tonight. Everybody saw.'", "composition": "authored_with_dressing"},
+
+    {"id": "cl_dennis_table", "kind": "claim", "true": false, "text": "Dennis Wragg: 'I was at the cash table from Len's speech until I called the raffle. Ask the detective I engaged.'", "composition": "authored"},
+    {"id": "cl_bernard_dry", "kind": "claim", "true": false, "text": "Bernard Tolley: 'Pit was dry by six. I walked it with a broom.'", "composition": "authored"},
+    {"id": "cl_hilary_table", "kind": "claim", "true": false, "text": "Miss Gaunt: 'I was at the committee table from eight until the last waltz. I have not been in that water since Thursday.'", "composition": "authored"},
+    {"id": "cl_rudge_terrace", "kind": "claim", "true": false, "text": "Mr Rudge: 'I remained on the terrace throughout. I did not go beyond the band.'", "composition": "authored"},
+    {"id": "th_edge", "kind": "theory", "true": false, "text": "Dennis Wragg: 'Poor Len. No lights, a drop of gin, and that edge. He'll have walked straight off it.'", "composition": "authored"},
+    {"id": "th_hose", "kind": "theory", "true": false, "text": "Mr Rudge: 'Evidently somebody has had a hose on him. In breach of the Order, I might add.'", "composition": "authored"},
+    {"id": "th_valve_failed", "kind": "theory", "true": false, "text": "Bernard Tolley: 'I can't have seated her. Forty-one year old, she weeps. It's my doing.'", "composition": "authored"},
+    {"id": "th_carried", "kind": "theory", "true": false, "text": "Miss Gaunt: 'There is water in the footbath and in the paddling pool. I suggest somebody look there before they look at me.'", "composition": "authored"}
+  ],
+  "timeline": [
+    {"time": "07:30", "fact": "k_grease_morning", "actors": ["ch_bernard"]},
+    {"time": "17:50", "fact": "k_sluice_shut_1750", "actors": ["ch_bernard", "ch_len"]},
+    {"time": "18:00", "fact": "k_chit_unseen", "actors": ["ch_rudge", "ch_bernard"]},
+    {"time": "19:45", "fact": "f_quarrel", "actors": ["ch_hilary", "ch_len"]},
+    {"time": "20:00", "fact": "f_announcement", "actors": ["ch_dennis"]},
+    {"time": "20:00", "fact": "k_hilary_swim", "actors": ["ch_hilary"]},
+    {"time": "20:15", "fact": "k_pit_full_2015", "actors": ["ch_bernard"]},
+    {"time": "20:25", "fact": "f_speech", "actors": ["ch_len"]},
+    {"time": "20:25", "fact": "f_board_light", "actors": []},
+    {"time": "20:30", "fact": "f_streamers_thrown", "actors": []},
+    {"time": "20:40", "fact": "k_sluice_opened", "actors": ["ch_dennis"]},
+    {"time": "20:55", "fact": "f_handwash", "actors": ["ch_dennis", "ch_peggy"]},
+    {"time": "21:05", "fact": "f_extra_numbers", "actors": ["ch_dennis", "ch_vic"]},
+    {"time": "21:15", "fact": "f_gurgle", "actors": []},
+    {"time": "21:20", "fact": "k_rudge_saw", "actors": ["ch_rudge"]},
+    {"time": "22:00", "fact": "f_lights_off", "actors": ["ch_bernard"]},
+    {"time": "22:09", "fact": "k_len_dived", "actors": ["ch_len"]},
+    {"time": "22:17", "fact": "f_body", "actors": ["ch_bernard"]}
+  ],
+  "knowledge_at_start": [
+    {"character": "ch_dennis", "fact": "k_sluice_opened", "learned_at": "20:40", "from": "self"},
+    {"character": "ch_dennis", "fact": "k_dive_custom", "learned_at": "1964", "from": "ch_len"},
+    {"character": "ch_dennis", "fact": "k_skim", "learned_at": "season", "from": "self"},
+    {"character": "ch_dennis", "fact": "k_audit_threat", "learned_at": "Thu 19 Aug", "from": "ch_len"},
+    {"character": "ch_dennis", "fact": "k_pit_full_2015", "learned_at": "20:40", "from": "self"},
+    {"character": "ch_dennis", "fact": "f_chit_exists", "learned_at": "18:05", "from": "ch_rudge"},
+    {"character": "ch_dennis", "fact": "f_quarrel", "learned_at": "19:45", "from": "self"},
+    {"character": "ch_bernard", "fact": "k_sluice_shut_1750", "learned_at": "17:50", "from": "self"},
+    {"character": "ch_bernard", "fact": "k_pit_full_2015", "learned_at": "20:15", "from": "self"},
+    {"character": "ch_bernard", "fact": "k_dive_custom", "learned_at": "1957", "from": "ch_len"},
+    {"character": "ch_bernard", "fact": "k_grease_morning", "learned_at": "07:30", "from": "self"},
+    {"character": "ch_bernard", "fact": "k_allotment_water", "learned_at": "12:00", "from": "self"},
+    {"character": "ch_bernard", "fact": "f_wheel_open", "learned_at": "22:18", "from": "self"},
+    {"character": "ch_bernard", "fact": "th_valve_failed", "learned_at": "22:18", "from": "self", "confidence": 0.7, "note": "A false belief he holds sincerely."},
+    {"character": "ch_hilary", "fact": "k_hilary_swim", "learned_at": "20:00", "from": "self"},
+    {"character": "ch_hilary", "fact": "k_dive_custom", "learned_at": "1957", "from": "ch_len"},
+    {"character": "ch_hilary", "fact": "k_naiad", "learned_at": "summer", "from": "self"},
+    {"character": "ch_hilary", "fact": "f_surrender_audit", "learned_at": "Thu 19 Aug", "from": "ch_len"},
+    {"character": "ch_rudge", "fact": "k_rudge_saw", "learned_at": "21:20", "from": "self"},
+    {"character": "ch_rudge", "fact": "k_chit_unseen", "learned_at": "18:00", "from": "self"},
+    {"character": "ch_rudge", "fact": "f_chit_exists", "learned_at": "18:00", "from": "ch_bernard"},
+    {"character": "ch_rudge", "fact": "f_surrender_audit", "learned_at": "Mon 16 Aug", "from": "self"},
+    {"character": "ch_peggy", "fact": "f_towel_smear", "learned_at": "20:55", "from": "self"},
+    {"character": "ch_peggy", "fact": "f_handwash", "learned_at": "20:55", "from": "self"},
+    {"character": "ch_vic", "fact": "f_backcloth_paw", "learned_at": "20:50", "from": "self"},
+    {"character": "ch_vic", "fact": "f_extra_numbers", "learned_at": "21:05", "from": "ch_dennis"},
+    {"character": "ch_slot_a", "fact": "f_turnstile_brief", "learned_at": "Thu 19 Aug", "from": "ch_len"},
+    {"character": "ch_slot_a", "fact": "f_after_my_dip", "learned_at": "21:40", "from": "ch_len"},
+    {"character": "ch_slot_b", "fact": "f_cashbox_print", "learned_at": "20:52", "from": "self"},
+    {"character": "ch_slot_c", "fact": "f_stakeout_lid", "learned_at": "20:40", "from": "self"},
+    {"character": "ch_slot_d", "fact": "f_rudge_whisper", "learned_at": "21:25", "from": "ch_rudge"}
+  ],
+  "baseline_facts": ["f_body", "f_pit_floor_shines", "f_announcement", "f_board_light", "f_speech", "f_streamers_thrown", "f_handwash", "f_extra_numbers", "f_gurgle", "f_quarrel", "f_damp_hair", "f_rudge_pacing", "f_bernard_turnstile", "f_lights_off"],
+  "private_start_facts": {
+    "ch_slot_a": ["f_turnstile_brief", "f_after_my_dip"],
+    "ch_slot_b": ["f_cashbox_print"],
+    "ch_slot_c": ["f_stakeout_lid"],
+    "ch_slot_d": ["f_rudge_whisper"]
+  },
+  "essential_truths": [
+    {
+      "id": "t_water_late", "text": "The pit was still deep with water after the dance began, and was let out during it.",
+      "routes": [
+        {"id": "r_t1_streamers", "facts_all": ["f_streamers_sodden"]},
+        {"id": "r_t1_clipboard", "facts_all": ["f_rudge_note"]},
+        {"id": "r_t1_swim", "facts_all": ["f_hilary_swim"]},
+        {"id": "r_t1_bernard", "facts_all": ["f_bernard_full"]},
+        {"id": "r_t1_stakeout", "facts_all": ["f_stakeout_lid"]},
+        {"id": "r_t1_whisper", "facts_all": ["f_rudge_whisper"]}
+      ]
+    },
+    {
+      "id": "t_own_dive", "text": "Len went off the top board himself: the Chairman's Dive, made every closing night, expecting deep water.",
+      "routes": [
+        {"id": "r_t2_shoes", "facts_all": ["f_shoes_watch"]},
+        {"id": "r_t2_photos", "facts_all": ["f_dive_photos"]},
+        {"id": "r_t2_change", "facts_all": ["f_dry_change"]},
+        {"id": "r_t2_note", "facts_all": ["f_after_my_dip"]}
+      ]
+    },
+    {
+      "id": "t_dennis_sluice", "text": "Dennis Wragg opened the sluice.",
+      "routes": [
+        {"id": "r_t3_towel_wheel", "facts_all": ["f_towel_smear", "f_wheel_open"]},
+        {"id": "r_t3_towel_plant", "facts_all": ["f_towel_smear", "f_plant_grease_key"]},
+        {"id": "r_t3_raffle_wheel", "facts_all": ["f_raffle_smear", "f_wheel_open"]},
+        {"id": "r_t3_raffle_plant", "facts_all": ["f_raffle_smear", "f_plant_grease_key"]},
+        {"id": "r_t3_cloth_wheel", "facts_all": ["f_backcloth_paw", "f_wheel_open"]},
+        {"id": "r_t3_cloth_plant", "facts_all": ["f_backcloth_paw", "f_plant_grease_key"]},
+        {"id": "r_t3_box_wheel", "facts_all": ["f_cashbox_print", "f_wheel_open"]},
+        {"id": "r_t3_box_plant", "facts_all": ["f_cashbox_print", "f_plant_grease_key"]}
+      ]
+    }
+  ],
+  "opportunities": [
+    {"id": "o_pit_floor", "label": "Climb down into the pit", "target": {"type": "place", "id": "loc_pit"}, "kind": "search", "cost": 1, "prerequisites": {}, "grants": ["f_streamers_sodden", "f_under_board"], "visibility": "private", "dark": true, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored"},
+    {"id": "o_board_steps", "label": "Go up the diving board steps", "target": {"type": "place", "id": "loc_boards"}, "kind": "search", "cost": 1, "prerequisites": {}, "grants": ["f_shoes_watch"], "visibility": "private", "dark": true, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored"},
+    {"id": "o_sluice", "label": "Lift the iron lid by the board steps", "target": {"type": "place", "id": "loc_sluice"}, "kind": "search", "cost": 1, "prerequisites": {}, "grants": ["f_wheel_open"], "visibility": "private", "dark": true, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored"},
+    {"id": "o_plant_room", "label": "Look round the plant room", "target": {"type": "place", "id": "loc_plant_room"}, "kind": "search", "cost": 1, "prerequisites": {}, "grants": ["f_plant_grease_key"], "visibility": "private", "dark": true, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored"},
+    {"id": "o_urn", "label": "Have a cup of tea with Mrs Allsop", "target": {"type": "person", "id": "ch_peggy"}, "kind": "interview", "cost": 1, "prerequisites": {}, "grants": ["f_towel_smear"], "visibility": "private", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored_with_dressing"},
+    {"id": "o_raffle", "label": "Go through the raffle book", "target": {"type": "object", "id": "loc_cash_table"}, "kind": "search", "cost": 1, "prerequisites": {}, "grants": ["f_raffle_smear"], "visibility": "private", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored"},
+    {"id": "o_band", "label": "Catch Vic Lomas packing up", "target": {"type": "person", "id": "ch_vic"}, "kind": "interview", "cost": 1, "prerequisites": {}, "grants": ["f_backcloth_paw"], "visibility": "private", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored_with_dressing"},
+    {"id": "o_committee_room", "label": "Try the committee room", "target": {"type": "place", "id": "loc_committee_room"}, "kind": "search", "cost": 1, "prerequisites": {}, "grants": ["f_dive_photos", "f_surrender_audit"], "visibility": "private", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored"},
+    {"id": "o_cubicle", "label": "Open Cubicle 1", "target": {"type": "place", "id": "loc_cubicle_1"}, "kind": "search", "cost": 1, "prerequisites": {}, "grants": ["f_dry_change"], "visibility": "private", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored"},
+    {"id": "o_gate_office", "label": "Read the turnstile and the takings book", "target": {"type": "object", "id": "loc_gate_office"}, "kind": "search", "cost": 1, "prerequisites": {}, "grants": ["f_turnstile_count", "f_ledger_short"], "visibility": "private", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored"},
+    {"id": "o_kit_bag", "label": "Look in Miss Gaunt's kit bag", "target": {"type": "object", "id": "ch_hilary"}, "kind": "search", "cost": 1, "prerequisites": {}, "grants": ["f_costume_damp", "f_naiad_carbons"], "visibility": "private", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored"},
+    {"id": "o_clipboard", "label": "Read Mr Rudge's clipboard", "target": {"type": "object", "id": "ch_rudge"}, "kind": "search", "cost": 1, "prerequisites": {}, "grants": ["f_rudge_note"], "visibility": "private", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored"},
+    {"id": "o_hedge", "label": "Walk the back hedge", "target": {"type": "place", "id": "loc_hedge"}, "kind": "search", "cost": 1, "prerequisites": {}, "grants": ["f_allotment_hose"], "visibility": "private", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored"},
+    {"id": "o_int_dennis", "label": "Speak to Dennis Wragg", "target": {"type": "person", "id": "ch_dennis"}, "kind": "interview", "cost": 1, "prerequisites": {}, "grants": ["cl_dennis_table", "th_edge", "f_dennis_points"], "visibility": "public", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored_with_dressing"},
+    {"id": "o_int_bernard", "label": "Speak to Bernard Tolley", "target": {"type": "person", "id": "ch_bernard"}, "kind": "interview", "cost": 1, "prerequisites": {}, "grants": ["cl_bernard_dry"], "visibility": "public", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored_with_dressing"},
+    {"id": "o_int_hilary", "label": "Speak to Miss Gaunt", "target": {"type": "person", "id": "ch_hilary"}, "kind": "interview", "cost": 1, "prerequisites": {}, "grants": ["cl_hilary_table", "th_carried", "f_hilary_surrender"], "visibility": "public", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored_with_dressing"},
+    {"id": "o_int_rudge", "label": "Speak to Mr Rudge", "target": {"type": "person", "id": "ch_rudge"}, "kind": "interview", "cost": 1, "prerequisites": {}, "grants": ["cl_rudge_terrace", "th_hose", "f_chit_exists"], "visibility": "public", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored_with_dressing"},
+    {"id": "fu_bernard", "label": "Put it to Bernard that the pit was not dry", "target": {"type": "person", "id": "ch_bernard"}, "kind": "follow_up", "cost": 0, "prerequisites": {"opportunities_all": ["o_int_bernard"], "facts_any": ["f_streamers_sodden", "f_rudge_note", "f_hilary_swim", "f_stakeout_lid", "f_rudge_whisper", "f_wheel_open"]}, "grants": ["f_bernard_full", "th_valve_failed"], "visibility": "private", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored_with_dressing"},
+    {"id": "fu_bernard_dive", "label": "Ask Bernard what Len was doing on the boards", "target": {"type": "person", "id": "ch_bernard"}, "kind": "follow_up", "cost": 0, "prerequisites": {"opportunities_all": ["o_int_bernard"], "facts_any": ["f_shoes_watch", "f_dive_photos", "f_dry_change", "f_after_my_dip"]}, "grants": ["f_bernard_dive"], "visibility": "private", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored_with_dressing"},
+    {"id": "fu_bernard_grease", "label": "Ask Bernard about the black grease", "target": {"type": "person", "id": "ch_bernard"}, "kind": "follow_up", "cost": 0, "prerequisites": {"opportunities_all": ["o_int_bernard"], "facts_any": ["f_wheel_open", "f_plant_grease_key", "f_towel_smear", "f_raffle_smear", "f_backcloth_paw", "f_cashbox_print"]}, "grants": ["f_bernard_greased"], "visibility": "private", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored_with_dressing"},
+    {"id": "fu_bernard_water", "label": "Ask Bernard about the hose in the hedge", "target": {"type": "person", "id": "ch_bernard"}, "kind": "follow_up", "cost": 0, "prerequisites": {"opportunities_all": ["o_int_bernard"], "facts_any": ["f_allotment_hose"]}, "grants": ["f_bernard_water"], "visibility": "private", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored_with_dressing"},
+    {"id": "fu_hilary", "label": "Show Miss Gaunt the wet costume", "target": {"type": "person", "id": "ch_hilary"}, "kind": "follow_up", "cost": 0, "prerequisites": {"opportunities_all": ["o_int_hilary"], "facts_any": ["f_costume_damp"]}, "grants": ["f_hilary_swim"], "visibility": "private", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored_with_dressing"},
+    {"id": "fu_rudge", "label": "Read Mr Rudge his own note", "target": {"type": "person", "id": "ch_rudge"}, "kind": "follow_up", "cost": 0, "prerequisites": {"opportunities_all": ["o_int_rudge"], "facts_any": ["f_rudge_note", "f_rudge_whisper"]}, "grants": ["f_rudge_breach_plan"], "visibility": "private", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored_with_dressing"},
+    {"id": "fu_dennis", "label": "Ask Dennis where he was at a quarter to nine", "target": {"type": "person", "id": "ch_dennis"}, "kind": "follow_up", "cost": 0, "prerequisites": {"opportunities_all": ["o_int_dennis"], "facts_any": ["f_towel_smear", "f_raffle_smear", "f_backcloth_paw", "f_cashbox_print"]}, "grants": ["f_dennis_concedes"], "visibility": "private", "dark": false, "reach": {"2": ["ch_slot_a", "ch_slot_b"], "3": ["ch_slot_a", "ch_slot_b", "ch_slot_c"], "4": ["ch_slot_a", "ch_slot_b", "ch_slot_c", "ch_slot_d"]}, "composition": "authored_with_dressing"}
+  ],
+  "authorised_falsehoods": [
+    {"id": "af_dennis", "speaker": "ch_dennis", "claim": "cl_dennis_table", "delivered_in": "o_int_dennis", "why": "Places him away from the sluice.", "refuted_by": ["f_towel_smear", "f_raffle_smear", "f_backcloth_paw", "f_cashbox_print"], "retraction": "fu_dennis"},
+    {"id": "af_bernard", "speaker": "ch_bernard", "claim": "cl_bernard_dry", "delivered_in": "o_int_bernard", "why": "He signed the chit, and he believes his valve failed.", "refuted_by": ["f_streamers_sodden", "f_rudge_note", "f_hilary_swim", "f_stakeout_lid", "f_rudge_whisper", "f_wheel_open"], "retraction": "fu_bernard"},
+    {"id": "af_hilary", "speaker": "ch_hilary", "claim": "cl_hilary_table", "delivered_in": "o_int_hilary", "why": "She was trespassing in a roped-off tank an hour after calling the dead man Judas.", "refuted_by": ["f_costume_damp"], "retraction": "fu_hilary"},
+    {"id": "af_rudge", "speaker": "ch_rudge", "claim": "cl_rudge_terrace", "delivered_in": "o_int_rudge", "why": "He saw the pit emptying, said nothing, and a man died in it.", "refuted_by": ["f_rudge_note", "f_rudge_whisper"], "retraction": "fu_rudge"}
+  ],
+  "sincere_false_beliefs": [
+    {"id": "sb_valve", "holder": "ch_bernard", "claim": "th_valve_failed", "refuted_by": ["f_wheel_open", "f_plant_grease_key"]},
+    {"id": "sb_edge", "holder": "ch_dennis", "claim": "th_edge", "note": "Offered as a guess, phrased as a guess. Not counted as his lie.", "refuted_by": ["f_under_board", "f_shoes_watch"]},
+    {"id": "sb_hose", "holder": "ch_rudge", "claim": "th_hose", "refuted_by": ["f_streamers_sodden", "f_rudge_note"]},
+    {"id": "sb_carried", "holder": "ch_hilary", "claim": "th_carried", "refuted_by": ["f_shoes_watch", "f_under_board"]}
+  ],
+  "concepts": [
+    {"id": "c_pit_let_out", "label": "The pit was let out during the dance", "true": true, "role": "chain", "offered_when_any": ["f_streamers_sodden", "f_rudge_note", "f_hilary_swim", "f_bernard_full", "f_stakeout_lid", "f_rudge_whisper", "f_wheel_open", "f_gurgle"]},
+    {"id": "c_own_dive", "label": "Len made his closing-night dive off the top board", "true": true, "role": "chain", "offered_when_any": ["f_shoes_watch", "f_dive_photos", "f_dry_change", "f_bernard_dive", "f_after_my_dip", "f_speech"]},
+    {"id": "c_turnstile", "label": "The turnstile count and the banked takings disagree", "true": true, "role": "optional", "offered_when_any": ["f_turnstile_count", "f_ledger_short", "f_turnstile_brief"]},
+    {"id": "c_audit", "label": "The books go to audit when the lease is surrendered", "true": true, "role": "optional", "offered_when_any": ["f_surrender_audit"]},
+    {"id": "c_dry_from_six", "label": "The pit was dry from six", "true": false, "role": "chain", "offered_when_any": ["cl_bernard_dry", "f_chit_exists", "f_announcement"]},
+    {"id": "c_walked_off", "label": "He walked off the edge in the dark", "true": false, "role": "chain", "offered_when_any": ["th_edge", "f_lights_off"]},
+    {"id": "c_hosed", "label": "Somebody turned a hose on him", "true": false, "role": "chain", "offered_when_any": ["th_hose", "f_allotment_hose"]},
+    {"id": "c_valve_failed", "label": "The old valve failed by itself", "true": false, "role": "chain", "offered_when_any": ["th_valve_failed"]},
+    {"id": "c_carried", "label": "He was drowned elsewhere and carried in", "true": false, "role": "chain", "offered_when_any": ["th_carried"]},
+    {"id": "c_would_not_sign", "label": "With Len gone, the surrender is not signed", "true": true, "role": "optional", "offered_when_any": ["f_hilary_surrender", "f_surrender_audit"]}
+  ],
+  "solution": {
+    "culprit": "ch_dennis",
+    "candidate_culprits": ["ch_dennis", "ch_bernard", "ch_hilary", "ch_rudge"],
+    "grammar": "culprit, then an arranged chain of 2 to 4 concepts chosen from those offered to the player",
+    "accepted_reconstructions": [
+      {"id": "ar_main", "culprit": "ch_dennis", "chain_in_order": ["c_pit_let_out", "c_own_dive"], "optional_anywhere": ["c_turnstile", "c_audit", "c_would_not_sign"]}
+    ],
+    "proof_groups": {
+      "c_pit_let_out": ["t_water_late"],
+      "c_own_dive": ["t_own_dive"],
+      "culprit:ch_dennis": ["t_dennis_sluice"]
+    },
+    "resolution_rule": "SOLVED if and only if: culprit equals ch_dennis; the chain with optional concepts removed equals chain_in_order exactly; the chain contains no concept with true=false; and the player legitimately owns every fact of at least one route of every essential truth named in proof_groups. Facts heard from another player are knowledge, not owned proof. No model call takes part."
+  },
+  "competitive_windows": [
+    {
+      "id": "w_torch", "name": "The Superintendent's Torch",
+      "trigger": {"type": "story", "when": "first attempt by any active slot on an opportunity with dark=true"},
+      "contest": {"type": "minigame", "same_challenge_for_all": true, "package": "UNASSIGNED"},
+      "reward": {"kind": "access_priority", "to": "winner", "effect": "one extra free investigation at any opportunity with dark=true", "expires": "end of the following round"},
+      "non_winners": "Dark opportunities stay open at normal cost and grant the same facts.",
+      "grants_essential_proof_exclusively": false,
+      "authored_text": "The festoons are off at the meter and Bernard Tolley is in no state to be asked. There is one good torch on the premises. It is on the gate office shelf.",
+      "composition": "authored"
+    }
+  ],
+  "leverage_grants": [
+    {"id": "lg_bernard", "trigger_opportunity": "fu_bernard", "amount": 1, "to": "first_to_complete", "source": "story"},
+    {"id": "lg_hilary", "trigger_opportunity": "fu_hilary", "amount": 1, "to": "first_to_complete", "source": "story"},
+    {"id": "lg_rudge", "trigger_opportunity": "fu_rudge", "amount": 1, "to": "first_to_complete", "source": "story"},
+    {"id": "lg_dennis", "trigger_opportunity": "fu_dennis", "amount": 1, "to": "first_to_complete", "source": "story"},
+    {"id": "lg_torch", "trigger_window": "w_torch", "amount": 1, "to": "winner", "source": "minigame", "limit_per_case": 1}
+  ],
+  "opening_events": [
+    {"id": "ev_01", "seq": 1, "category": "narrative", "event_type": "opening.establish", "audience": {"target": "all"}, "asserts": ["f_announcement"], "composition": "authored", "presentation_hints": {"emotion": "warm", "lighting_hint": "dusk_festoon", "animation_hint": "slow_push_in", "pause_before_ms": 0},
+     "payload": {"text": "Tilverton Lido, Saturday the twenty-first of August, 1976. They let her out at noon. By teatime the shallow end was dry enough for sandals, and tonight two hundred people are dancing on the floor of a swimming pool. Dennis Wragg has the microphone. 'She was let out at noon, ladies and gentlemen, and she's dry as a bone. So mind the slope, and dance on the floor.'"}},
+    {"id": "ev_02", "seq": 2, "category": "narrative", "event_type": "opening.room", "audience": {"target": "all"}, "asserts": ["f_quarrel", "f_rudge_pacing", "f_bernard_turnstile", "f_damp_hair"], "composition": "authored", "presentation_hints": {"emotion": "wry", "animation_hint": "cut_between_faces", "pause_before_ms": 400},
+     "payload": {"text": "Miss Gaunt has had words with the chairman at the foot of the board steps and torn her programme in two. Her hair is damp. Mr Rudge, from the District, is in a three-piece suit, pacing out the sun terrace heel to toe and writing down the answer. Bernard Tolley stands at the turnstile counting people who have not left yet, and looking over his shoulder at the deep end."}},
+    {"id": "ev_03", "seq": 3, "category": "character_dialogue", "event_type": "opening.speech", "audience": {"target": "all"}, "asserts": ["f_speech", "f_board_light", "f_streamers_thrown"], "composition": "authored", "presentation_hints": {"emotion": "fond", "voice_hint": "public_address_echo", "lighting_hint": "festoon_on_boards", "pause_before_ms": 600},
+     "payload": {"speaker": "ch_len", "text": "Len Purkiss takes the staging at twenty-five past eight. Behind the band's backcloth the diving boards stand up against the last of the sky, and light shivers on the underside of the top one. 'Nineteen closing nights,' he says, 'and I have not gone home dry from one of them.' He gets his laugh. 'And a word to the young. Never look down. Look down and you'll never go.' Streamers go up at the toast. A good many go over the cloth."}},
+    {"id": "ev_04", "seq": 4, "category": "narrative", "event_type": "opening.dance", "audience": {"target": "all"}, "asserts": ["f_handwash", "f_extra_numbers", "f_gurgle"], "composition": "authored", "presentation_hints": {"emotion": "comic", "animation_hint": "montage", "pause_before_ms": 300},
+     "payload": {"text": "At five to nine Peggy Allsop stops the tea queue dead to tell Mr Wragg what she thinks of a man who washes his hands in urn water in a drought. At five past he is back at the microphone with two extra numbers by popular demand, carriages now at ten. In a pause of the Gay Gordons the drains give one long gurgle, and somebody shouts that the old girl's stomach has gone."}},
+    {"id": "ev_05", "seq": 5, "category": "narrative", "event_type": "opening.discovery", "audience": {"target": "all"}, "asserts": ["f_lights_off", "f_body", "f_pit_floor_shines"], "composition": "authored", "presentation_hints": {"emotion": "grave", "urgency": "high", "lighting_hint": "single_torch", "animation_hint": "hold", "pause_before_ms": 1500},
+     "payload": {"text": "At ten the last waltz ends and Bernard Tolley throws the switch on the festoons. At seventeen minutes past, his torch finds the chairman at the bottom of the diving pit, under the tip of the top board. Blazer and flannels, soaked through. Barefoot. A white strap of skin on his left wrist. The floor of the pit shines, and a last skin of water is sliding to the grating in the corner."}},
+    {"id": "ev_06", "seq": 6, "category": "state_transition", "event_type": "opening.frame", "audience": {"target": "all"}, "asserts": [], "composition": "authored", "presentation_hints": {"emotion": "level", "pause_before_ms": 800},
+     "payload": {"text": "The station has been telephoned. A sergeant is on his way from the far side of town. There are four people here who each engaged a detective this week, over four small matters, and did not mention it to the others."}},
+    {"id": "ev_a", "seq": 7, "category": "private_delivery", "event_type": "opening.private_thread", "audience": {"target": "specific_slot", "slot": "ch_slot_a"}, "asserts": ["f_turnstile_brief", "f_after_my_dip"], "composition": "authored", "presentation_hints": {"emotion": "private", "pause_before_ms": 0},
+     "payload": {"text": "Your client is the man in the pit. On Thursday Mr Purkiss gave you this: 'The turnstile says sixty-one thousand. The bank says nearer forty-four. Find me the fault in the machine before I am obliged to think worse.' Tonight at twenty to ten he pushed a raffle ticket into your hand. On the back: 'Foot of the boards, ten past ten, after my dip. Bring a dry cigarette.'"}},
+    {"id": "ev_b", "seq": 7, "category": "private_delivery", "event_type": "opening.private_thread", "audience": {"target": "specific_slot", "slot": "ch_slot_b"}, "asserts": ["f_cashbox_print"], "composition": "authored", "presentation_hints": {"emotion": "private", "pause_before_ms": 0},
+     "payload": {"text": "Your client is Mr Wragg, the treasurer. Somebody has been dipping the float, he says, and you are to watch the cash box. You watched it. From 20:38 to 20:52 you held it yourself, while he saw the band about the running order. When he took it back his thumb left a grey-black print on the lid. It is still there."}},
+    {"id": "ev_c", "seq": 7, "category": "private_delivery", "event_type": "opening.private_thread", "audience": {"target": "specific_slot", "slot": "ch_slot_c"}, "asserts": ["f_stakeout_lid"], "composition": "authored", "presentation_hints": {"emotion": "private", "pause_before_ms": 0},
+     "payload": {"text": "Your client is Miss Gaunt. Somebody has been in her pool after dark: wet marks on the terrace three mornings running. You spent the dance in the back hedge. At twenty to nine a man in shirt-sleeves lifted the iron lid at the foot of the board steps and worked at something below it with a long T-shaped iron. Against the fairy lights you never saw his face. After he went there was a sound like a bath emptying a long way down."}},
+    {"id": "ev_d", "seq": 7, "category": "private_delivery", "event_type": "opening.private_thread", "audience": {"target": "specific_slot", "slot": "ch_slot_d"}, "asserts": ["f_rudge_whisper"], "composition": "authored", "presentation_hints": {"emotion": "private", "pause_before_ms": 0},
+     "payload": {"text": "Your client is Mr Rudge, of the District. You are to note every breach of the lease, with times. At twenty-five past nine he came and said in your ear: 'The deep tank is not empty. Four feet, and the outlet running. Remember that you heard me say so.' Then he went back to the terrace."}}
+  ],
+  "ending": {
+    "truth_last_line": "He never looked down. Somebody knew that.",
+    "composition": "authored"
+  }
+}
