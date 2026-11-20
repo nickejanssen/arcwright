@@ -31,24 +31,42 @@ Part of [the version overview](README.md). Proposed, not approved. Written becau
 
 Status is **built** (a package exists in `nightcap/mini_games/`, verified by reading its manifest), **new** (a design only), or **idea** (a card in the [idea bank](../../gdd/nightcap/04-supporting-design/minigame-idea-bank.md), a recommendation not yet validated). Player ranges for built games are what their packages declare (spec: D-142 says each game declares its own range). No shipped game declares 2 or 3 players (HANDOVER), so every built game that needs 4 or more is skipped at 2 or 3 by the `fitting` rule (D-147).
 
-| # | Game | What it is | Status | Declared players | Build class |
-| --- | --- | --- | --- | --- | --- |
-| 1 | **Search and Find** | Everyone searches the same busy scene on their phone and taps hidden items | New. Nearest built: Scene Sweep (evidence search race, draft, 4 to 8, 105 s, no screen) | Target 1 to 8 | One drawn scene, a phone screen |
-| 2 | **Battle of Wits** | Timed trivia, logic, mental math and case questions; fastest correct ranks first | New | Target 1 to 8 | Text only, plus written questions |
-| 3 | **Lock Picking** | Pick a lock on your phone; solo, pair or group | New. Nearest built: Evidence Locker #402 (clue-gated lock breach, 1 player, 60 s, active) | Built: 1. Target 1 to 8 | Adapt the built game; a group start |
-| 4 | **Crime Scene Smash** | Match-3 clue race with a shared leaderboard | Built, active | 4 to 8, 90 s | Needs a 2 to 4 range |
-| 5 | **Tell Me Something True** | Truth-and-lie bluffing with a spotlight on one player | Built, draft | 4 to 8, 240 s | Needs a 2 to 4 range; a screen mismatch is filed as AW-351 |
-| 6 | The Emergency Seating Committee | Two swaps to satisfy as many seating demands as possible | Idea (card 6) | Solo to 8 as written | Paper first; light screen |
-| 7 | The Counterfeit Concierge | Spend limited checks to spot forged guest credentials | Idea (card 12) | Solo to 8 as written | Text and small cards |
-| 8 | The Séance Has Been Double-Booked | Untangle two spirits' clues and reunite objects | Idea (card 8) | Solo to 8 as written | Illustrated deck |
-| 9 | Switchboard After Midnight | Connect hotel calls from partial descriptions | Idea (card 9) | Solo to 8 as written | Text and routing |
-| 10 | The Clockmaker Pleads the Fifth | Watch four disagreeing clocks and find the one that skips | Idea (card 14) | Solo to 8 as written | A small animation |
-| 11 | Of Course I Work Here | Hidden-role bluff: who missed the staff briefing | Idea (card 4) | Best from 4 players; solo and 2 as written | Hidden-role logic; the hardest |
-| 12 | An Entirely Normal Walk | Tail a bellhop across a lobby; choose cover or shortcut | Idea (card 1) | Solo to 8 as written | A route screen |
-| 13 | The Witness Protection Sketch Artist | Build a funny portrait from a tray of faces and accessories | Idea (card 17) | Solo to 8 as written | Art tray |
-| 14 | Room Service Roulette | Everyone secretly picks lift, stairs or corridor; congestion decides | Idea (card 13) | Solo to 8 as written | Simultaneous-choice rules |
+| # | Game | What it is | Status | Declared players | Build class | Primary skill | Also uses |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 1 | **Search and Find** | Everyone searches the same busy scene on their phone and taps hidden items | New. Nearest built: Scene Sweep (evidence search race, draft, 4 to 8, 105 s, no screen) | Target 1 to 8 | One drawn scene, a phone screen | Eyes | Speed |
+| 2 | **Battle of Wits** | Timed trivia, logic, mental math and case questions; fastest correct ranks first | New | Target 1 to 8 | Text only, plus written questions | Wits | Speed |
+| 3 | **Lock Picking** | Pick a lock on your phone; solo, pair or group | New. Nearest built: Evidence Locker #402 (clue-gated lock breach, 1 player, 60 s, active) | Built: 1. Target 1 to 8 | Adapt the built game; a group start | Hands | Patience |
+| 4 | **Crime Scene Smash** | Match-3 clue race with a shared leaderboard | Built, active | 4 to 8, 90 s | Needs a 2 to 4 range | Eyes (pattern spotting) | Hands |
+| 5 | **Tell Me Something True** | Truth-and-lie bluffing with a spotlight on one player | Built, draft | 4 to 8, 240 s | Needs a 2 to 4 range; a screen mismatch is filed as AW-351 | Reading people | Wits |
+| 6 | The Emergency Seating Committee | Two swaps to satisfy as many seating demands as possible | Idea (card 6) | Solo to 8 as written | Paper first; light screen | Planning | Wits |
+| 7 | The Counterfeit Concierge | Spend limited checks to spot forged guest credentials | Idea (card 12) | Solo to 8 as written | Text and small cards | Wits (deduction) | Planning |
+| 8 | The Séance Has Been Double-Booked | Untangle two spirits' clues and reunite objects | Idea (card 8) | Solo to 8 as written | Illustrated deck | Wits (deduction) | Eyes |
+| 9 | Switchboard After Midnight | Connect hotel calls from partial descriptions | Idea (card 9) | Solo to 8 as written | Text and routing | Wits (matching) | Planning |
+| 10 | The Clockmaker Pleads the Fifth | Watch four disagreeing clocks and find the one that skips | Idea (card 14) | Solo to 8 as written | A small animation | Eyes (observation) | Wits |
+| 11 | Of Course I Work Here | Hidden-role bluff: who missed the staff briefing | Idea (card 4) | Best from 4 players; solo and 2 as written | Hidden-role logic; the hardest | Reading people | Wits |
+| 12 | An Entirely Normal Walk | Tail a bellhop across a lobby; choose cover or shortcut | Idea (card 1) | Solo to 8 as written | A route screen | Planning (risk) | Reading people |
+| 13 | The Witness Protection Sketch Artist | Build a funny portrait from a tray of faces and accessories | Idea (card 17) | Solo to 8 as written | Art tray | Eyes (matching) | Planning |
+| 14 | Room Service Roulette | Everyone secretly picks lift, stairs or corridor; congestion decides | Idea (card 13) | Solo to 8 as written | Simultaneous-choice rules | Reading people | Planning |
 
 The idea cards' ranking in the bank reflects predicted appeal and has not been tested (the bank says so). I picked rows 6 to 14 for the cohorts they fit, not only for their rank.
+
+## Skill labels
+
+Each game has a **primary skill** (what mainly decides who does well) and an **also uses** skill. The five labels are Direction 1's four skills, from the orchestrator's explanation the founder chose (eyes, wits, reading people, hands) plus **planning**, which I added because several idea-bank games are about choosing under limits. These labels are my first pass from each game's description. No game has been played, so none is validated, and the founder can change any label.
+
+| Skill | What it means | Games where it is primary |
+| --- | --- | --- |
+| Eyes | Spotting, matching and observing what is on screen | 1 Search and Find, 4 Crime Scene Smash, 10 The Clockmaker, 13 The Sketch Artist |
+| Wits | Knowledge, logic, deduction and mental math | 2 Battle of Wits, 7 The Counterfeit Concierge, 8 The Séance, 9 Switchboard |
+| Reading people | Bluffing, spotting bluffs and predicting what others will do | 5 Tell Me Something True, 11 Of Course I Work Here, 14 Room Service Roulette |
+| Hands | Touch, timing and dexterity on a phone | 3 Lock Picking |
+| Planning | Choosing a route or arrangement under limits | 6 The Emergency Seating Committee, 12 An Entirely Normal Walk |
+
+**What the labels show (inferred):**
+- **Reading people** is a primary skill in only one December game, the bluffing game in 1e.
+- **Hands** has one game, Lock Picking.
+- **Planning** has no game in any December version.
+- 1a, 1b, 1c and 1d between them use only Eyes, Wits and Hands, so those four versions leave out reading people and planning. A later version aimed at bluffers would need the bluffing games in rows 5, 11 and 14.
 
 ## Where each version would use them
 
