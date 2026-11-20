@@ -42,7 +42,7 @@ The version sheets (AW-346) compare four versions of Nightcap. The approved surv
 
 **Interaction profile:** Independent execution after plan approval; the question wording is the founder's.
 
-**Required founder inputs:** approval of the plan, and of the question wording.
+**Required founder inputs:** approval of the plan, and of the question wording. The extension of the survey itself was approved by the founder on 2026-11-20 ("Approve (Recommended)", issue #429).
 
 **Current phase and next gate:** filed; next gate is the plan.
 

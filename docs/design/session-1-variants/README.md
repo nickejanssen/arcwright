@@ -14,7 +14,7 @@ supersedes: []
 
 # Session 1 Playthrough Versions (1a To 1e)
 
-> Status: **the list of five versions and the skill names are approved by the founder** (20 November 2026, "Approve versions and names", issue #429). Not covered by that approval: the survey extension (AW-354), the dates and the decision-log rows, which the orchestrator records. Task AW-346 (issue #429). Written 2026-11-20 from the founder interview recorded word for word on issue #429.
+> Status: **approved by the founder on 20 November 2026** (issue #429): the five versions and the skill names, the run order, the extra survey questions (the wording still goes to the founder in AW-354), the dates, and the seven decision-log rows the orchestrator records. Task AW-346 (issue #429). Written 2026-11-20 from the founder interview recorded word for word on issue #429.
 
 ## The short version
 
