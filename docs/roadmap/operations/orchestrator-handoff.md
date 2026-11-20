@@ -118,7 +118,7 @@ The founder approved running Claude Code and Codex side by side ("Approve the sp
 
 **Claude lane: screens (`dashboard/`)**
 
-1. AW-332 (#435), round screens. The plan may start now; the build starts after AW-331 (#462) merges.
+1. AW-332 (#435), round screens. Plan session started 2026-11-20; AW-331 (#462) merged as `553eba4`, so the build may start once the founder approves the plan.
 2. AW-333 (#436), endgame screens.
 3. AW-334 (#437), a full game's screens proved in CI without a TV.
 
@@ -128,7 +128,7 @@ The founder approved running Claude Code and Codex side by side ("Approve the sp
 2. AW-337 (#395), the Battle of Wits and Search and Find mechanics version 1a needs, after the founder approves its plan.
 3. AW-348 (#443), Battle of Wits played on its own first (D-151).
 
-**Founder lane:** his own approval comment on #434 (AW-331); case 1 approval by 28 November (AW-305); the agency framing (AW-319); the Battle of Wits tone (AW-355); the recap voice (AW-327).
+**Founder lane:** case 1 approval by 28 November (AW-305); the agency framing (AW-319); the Battle of Wits tone (AW-355); the recap voice (AW-327).
 
 **After these land:** AW-354 (#463) and AW-341 (#418), which touch AW-331's files; AW-356 (#465); AW-345 (#428) for 15 December. If 1 December is at risk, D-149 drops versions, never the dates; the 1a final race is the first cut (inferred from the cut order in `docs/design/session-1-variants/README.md`).
 
