@@ -26,7 +26,7 @@ Five playthrough versions of Nightcap, each built for a different kind of player
 | **1b Newcomers** | Friends who rarely play games | Fewest things to learn, more host explanation, no racing | Search and Find, Battle of Wits (easy questions) | [1b](1b-newcomers.md) |
 | **1c Story and intrigue** | Players who care most about the characters and secrets | Few mini-games, more story weight, one private solo game | Search and Find, Lock Picking | [1c](1c-story-and-intrigue.md) |
 | **1d Deduction and puzzles** | Players who like working it out | Mini-games framed as evidence work, logic questions, a lock to pick | Search and Find, Lock Picking, Battle of Wits (logic questions) | [1d](1d-deduction-and-puzzles.md) |
-| **1e Variety** (Direction 1) | Players who like a mixed bag of games | A different skill each round: eyes, wits, reading people, plus Lock Picking as an anytime game. No repeat, no final race | Search and Find, Battle of Wits, a bluffing game, Lock Picking | [1e](1e-variety.md) |
+| **1e Variety** (Direction 1) | Players who like a mixed bag of games | A different investigator skill each round: Observation, Deduction, Interrogation, plus Lock Picking (Tradecraft) as an anytime game. No repeat, no final race | Search and Find, Battle of Wits, a bluffing game, Lock Picking | [1e](1e-variety.md) |
 
 The control game is not a version. It is one mini-game (Search and Find, provisionally) that appears inside every version, so ratings can be compared. The candidate list and which version uses which game are in [minigame-slotting.md](minigame-slotting.md).
 

@@ -33,40 +33,41 @@ Status is **built** (a package exists in `nightcap/mini_games/`, verified by rea
 
 | # | Game | What it is | Status | Declared players | Build class | Primary skill | Also uses |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| 1 | **Search and Find** | Everyone searches the same busy scene on their phone and taps hidden items | New. Nearest built: Scene Sweep (evidence search race, draft, 4 to 8, 105 s, no screen) | Target 1 to 8 | One drawn scene, a phone screen | Eyes | Speed |
-| 2 | **Battle of Wits** | Timed trivia, logic, mental math and case questions; fastest correct ranks first | New | Target 1 to 8 | Text only, plus written questions | Wits | Speed |
-| 3 | **Lock Picking** | Pick a lock on your phone; solo, pair or group | New. Nearest built: Evidence Locker #402 (clue-gated lock breach, 1 player, 60 s, active) | Built: 1. Target 1 to 8 | Adapt the built game; a group start | Hands | Patience |
-| 4 | **Crime Scene Smash** | Match-3 clue race with a shared leaderboard | Built, active | 4 to 8, 90 s | Needs a 2 to 4 range | Eyes (pattern spotting) | Hands |
-| 5 | **Tell Me Something True** | Truth-and-lie bluffing with a spotlight on one player | Built, draft | 4 to 8, 240 s | Needs a 2 to 4 range; a screen mismatch is filed as AW-351 | Reading people | Wits |
-| 6 | The Emergency Seating Committee | Two swaps to satisfy as many seating demands as possible | Idea (card 6) | Solo to 8 as written | Paper first; light screen | Planning | Wits |
-| 7 | The Counterfeit Concierge | Spend limited checks to spot forged guest credentials | Idea (card 12) | Solo to 8 as written | Text and small cards | Wits (deduction) | Planning |
-| 8 | The Séance Has Been Double-Booked | Untangle two spirits' clues and reunite objects | Idea (card 8) | Solo to 8 as written | Illustrated deck | Wits (deduction) | Eyes |
-| 9 | Switchboard After Midnight | Connect hotel calls from partial descriptions | Idea (card 9) | Solo to 8 as written | Text and routing | Wits (matching) | Planning |
-| 10 | The Clockmaker Pleads the Fifth | Watch four disagreeing clocks and find the one that skips | Idea (card 14) | Solo to 8 as written | A small animation | Eyes (observation) | Wits |
-| 11 | Of Course I Work Here | Hidden-role bluff: who missed the staff briefing | Idea (card 4) | Best from 4 players; solo and 2 as written | Hidden-role logic; the hardest | Reading people | Wits |
-| 12 | An Entirely Normal Walk | Tail a bellhop across a lobby; choose cover or shortcut | Idea (card 1) | Solo to 8 as written | A route screen | Planning (risk) | Reading people |
-| 13 | The Witness Protection Sketch Artist | Build a funny portrait from a tray of faces and accessories | Idea (card 17) | Solo to 8 as written | Art tray | Eyes (matching) | Planning |
-| 14 | Room Service Roulette | Everyone secretly picks lift, stairs or corridor; congestion decides | Idea (card 13) | Solo to 8 as written | Simultaneous-choice rules | Reading people | Planning |
+| 1 | **Search and Find** | Everyone searches the same busy scene on their phone and taps hidden items | New. Nearest built: Scene Sweep (evidence search race, draft, 4 to 8, 105 s, no screen) | Target 1 to 8 | One drawn scene, a phone screen | Observation | - |
+| 2 | **Battle of Wits** | Timed trivia, logic, mental math and case questions; fastest correct ranks first | New | Target 1 to 8 | Text only, plus written questions | Deduction | Expertise |
+| 3 | **Lock Picking** | Pick a lock on your phone; solo, pair or group | New. Nearest built: Evidence Locker #402 (clue-gated lock breach, 1 player, 60 s, active) | Built: 1. Target 1 to 8 | Adapt the built game; a group start | Tradecraft | - |
+| 4 | **Crime Scene Smash** | Match-3 clue race with a shared leaderboard | Built, active | 4 to 8, 90 s | Needs a 2 to 4 range | Observation | - |
+| 5 | **Tell Me Something True** | Truth-and-lie bluffing with a spotlight on one player | Built, draft | 4 to 8, 240 s | Needs a 2 to 4 range; a screen mismatch is filed as AW-351 | Interrogation | Deduction |
+| 6 | The Emergency Seating Committee | Two swaps to satisfy as many seating demands as possible | Idea (card 6) | Solo to 8 as written | Paper first; light screen | Deduction | - |
+| 7 | The Counterfeit Concierge | Spend limited checks to spot forged guest credentials | Idea (card 12) | Solo to 8 as written | Text and small cards | Deduction | Observation |
+| 8 | The Séance Has Been Double-Booked | Untangle two spirits' clues and reunite objects | Idea (card 8) | Solo to 8 as written | Illustrated deck | Deduction | Observation |
+| 9 | Switchboard After Midnight | Connect hotel calls from partial descriptions | Idea (card 9) | Solo to 8 as written | Text and routing | Deduction | Observation |
+| 10 | The Clockmaker Pleads the Fifth | Watch four disagreeing clocks and find the one that skips | Idea (card 14) | Solo to 8 as written | A small animation | Observation | Deduction |
+| 11 | Of Course I Work Here | Hidden-role bluff: who missed the staff briefing | Idea (card 4) | Best from 4 players; solo and 2 as written | Hidden-role logic; the hardest | Interrogation | Deduction |
+| 12 | An Entirely Normal Walk | Tail a bellhop across a lobby; choose cover or shortcut | Idea (card 1) | Solo to 8 as written | A route screen | Tradecraft | Interrogation |
+| 13 | The Witness Protection Sketch Artist | Build a funny portrait from a tray of faces and accessories | Idea (card 17) | Solo to 8 as written | Art tray | Observation | - |
+| 14 | Room Service Roulette | Everyone secretly picks lift, stairs or corridor; congestion decides | Idea (card 13) | Solo to 8 as written | Simultaneous-choice rules | Interrogation | Deduction |
 
 The idea cards' ranking in the bank reflects predicted appeal and has not been tested (the bank says so). I picked rows 6 to 14 for the cohorts they fit, not only for their rank.
 
 ## Skill labels
 
-Each game has a **primary skill** (what mainly decides who does well) and an **also uses** skill. The five labels are Direction 1's four skills, from the orchestrator's explanation the founder chose (eyes, wits, reading people, hands) plus **planning**, which I added because several idea-bank games are about choosing under limits. These labels are my first pass from each game's description. No game has been played, so none is validated, and the founder can change any label.
+Each game has a **primary skill** (what mainly decides who does well) and an **also uses** skill, named for what an investigator actually does. The labels are my first pass from each game's description. No game has been played, so none is validated, and the founder can change any label. A dash means no second skill.
 
-| Skill | What it means | Games where it is primary |
+| Skill | What an investigator does | Games where it is primary |
 | --- | --- | --- |
-| Eyes | Spotting, matching and observing what is on screen | 1 Search and Find, 4 Crime Scene Smash, 10 The Clockmaker, 13 The Sketch Artist |
-| Wits | Knowledge, logic, deduction and mental math | 2 Battle of Wits, 7 The Counterfeit Concierge, 8 The Séance, 9 Switchboard |
-| Reading people | Bluffing, spotting bluffs and predicting what others will do | 5 Tell Me Something True, 11 Of Course I Work Here, 14 Room Service Roulette |
-| Hands | Touch, timing and dexterity on a phone | 3 Lock Picking |
-| Planning | Choosing a route or arrangement under limits | 6 The Emergency Seating Committee, 12 An Entirely Normal Walk |
+| Observation | Notices details at a scene and spots what does not belong | 1 Search and Find, 4 Crime Scene Smash, 10 The Clockmaker, 13 The Sketch Artist |
+| Deduction | Reasons from evidence to a conclusion, by logic and elimination | 2 Battle of Wits, 6 The Emergency Seating Committee, 7 The Counterfeit Concierge, 8 The Séance, 9 Switchboard |
+| Interrogation | Reads people, spots lies and anticipates what others will do | 5 Tell Me Something True, 11 Of Course I Work Here, 14 Room Service Roulette |
+| Tradecraft | Practical field skills: picking a lock, tailing a suspect | 3 Lock Picking, 12 An Entirely Normal Walk |
+| Expertise | Specialist knowledge that cracks a case, like a remembered fact | None as primary; Battle of Wits uses it as a second skill |
+
+Direction 1 named four skills (eyes, wits, reading people, hands; these were the orchestrator's labels, not the founder's). Observation, Deduction, Interrogation and Tradecraft rename them, after the founder said the first names did not sound like an investigator's skills. Expertise is new, and more games are labelled Deduction because the idea-bank games for seating, the concierge, the séance and the switchboard are reasoning puzzles.
 
 **What the labels show (inferred):**
-- **Reading people** is a primary skill in only one December game, the bluffing game in 1e.
-- **Hands** has one game, Lock Picking.
-- **Planning** has no game in any December version.
-- 1a, 1b, 1c and 1d between them use only Eyes, Wits and Hands, so those four versions leave out reading people and planning. A later version aimed at bluffers would need the bluffing games in rows 5, 11 and 14.
+- Versions 1a to 1d between them use Observation, Deduction and Tradecraft, plus Expertise as a second skill in Battle of Wits.
+- Interrogation is primary in only one December game, the bluffing game in 1e.
+- A later version aimed at bluffers would need the Interrogation games in rows 5, 11 and 14.
 
 ## Where each version would use them
 

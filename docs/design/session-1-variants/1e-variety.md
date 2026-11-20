@@ -18,7 +18,7 @@ Part of [the version overview](README.md). Proposed, not approved. Founder's wor
 
 ## What it is
 
-The mini-game set the founder first chose: every round ends in a group game that tests a different skill, with Lock Picking as an anytime game. No game kind repeats, there is no final race, and the games are the Mario Party kind of variety.
+The mini-game set the founder first chose: every round ends in a group game that tests a different investigator skill (the founder's original words were eyes, wits, reading people and hands; see the skill labels in [minigame-slotting.md](minigame-slotting.md)), with Lock Picking as an anytime game. No game kind repeats, there is no final race, and the games are the Mario Party kind of variety.
 
 ## Who it targets
 
@@ -28,10 +28,10 @@ Players who like a mixed bag of games and do not want to play the same thing twi
 
 | Part | Setup (a starting point, not a rule; D-145) |
 | --- | --- |
-| Round 1 | Scene, investigate, then Search and Find (control): eyes |
-| Round 2 | Scene, investigate, then Battle of Wits, a mix of trivia and logic: wits |
-| Round 3 | Scene, investigate, then a bluffing game: reading people |
-| Anytime game | Lock Picking, solo, for whoever finds a locked box: hands |
+| Round 1 | Scene, investigate, then Search and Find (control): Observation |
+| Round 2 | Scene, investigate, then Battle of Wits, a mix of trivia and logic: Deduction |
+| Round 3 | Scene, investigate, then a bluffing game: Interrogation |
+| Anytime game | Lock Picking, solo, for whoever finds a locked box: Tradecraft |
 | Final race | None |
 | Last Call and ending | Unchanged |
 
