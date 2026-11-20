@@ -49,6 +49,7 @@ The playable build is the superseded Couch Race design. The founder chose a thin
 - [AW-348: Play a minigame live with Nightcap offline](../tasks/AW-348-play-a-minigame-live-with-nightcap-offline.md)
 - [AW-349: Prove a browser minigame port and reuse the same package in an Arcwright experience](../tasks/AW-349-prove-browser-minigame-port-and-package-reuse.md)
 - [AW-347: Send Mini-Game Package Screens The State They Read, Safely Per Audience](../tasks/AW-347-send-mini-game-renderers-the-state-they-read.md)
+- [AW-351: Make The Tell Me Something True Screen And The Engine Agree On The Step And The Spotlight](../tasks/AW-351-make-the-tell-me-something-true-screen-and-engine-agree.md)
 - AW-291 (existing task; see `docs/roadmap/index.json`)
 - AW-274 (existing task; see `docs/roadmap/index.json`)
 

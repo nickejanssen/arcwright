@@ -46,13 +46,13 @@ A mini-game package draws its own screens from two pieces of data: its live game
 
 **Required founder inputs:** approval of the plan, in the build session or by his own comment on this issue. A build session must not act on an approval relayed by another session.
 
-**Current phase and next gate:** filed; next gate is the plan.
+**Current phase and next gate:** plan approved by the founder in the build session on 2026-11-19 (Question 1 answered A); build in progress. Follow-up filed as AW-351 (#457).
 
 **Outstanding owner actions:** none.
 
 ## Acceptance Criteria
 
-- [ ] With the live API reply shape, the Tell Me Something True package screen, mounted through the dashboard loader, shows its real step (input, spotlight, scoreboard) rather than its placeholder text. Test against a recorded reply from the real route.
+- [ ] The replies a real route sends, recorded at the input, spotlight and scoreboard steps, reach the Tell Me Something True package screen unchanged through the dashboard loader: the real step is in the screen's state (`runtimeState.phase`), and the generated title from `presentation` replaces the screen's fallback title. (Reworded on 2026-11-19, founder's option A on #440: the screen does not yet read the step or draw a spotlight line, so showing them is AW-351.)
 - [ ] A privacy test runs a mini-game where each player submits a marker, then reads the active run as the shared screen, as each player and as the host: the shared screen gets no player's marker, and no player gets another player's marker.
 - [ ] The old `phase_state` and `mechanic_type` fields are unchanged; existing mini-game and API tests pass with no assertion weakened.
 - [ ] No new game-specific function is added under `api/` or `engine/`; the new shape works for any package.
@@ -70,7 +70,7 @@ A mini-game package draws its own screens from two pieces of data: its live game
 ## Dependencies
 
 - AW-329 (#432) merged, so the loader test can run in `dashboard/`. The Python half can be planned at once.
-- Blocks AW-332 (#435) screens 10 to 12.
+- Blocks AW-332 (#435) screens 10 to 12. AW-351 (the screen and engine mismatch) follows it and also blocks those screens.
 
 ## Must Not Do
 
