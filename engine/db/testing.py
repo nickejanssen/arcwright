@@ -16,8 +16,9 @@ from __future__ import annotations
 
 import uuid
 
-from sqlalchemy import JSON, Text, text
+from sqlalchemy import JSON, Text, Uuid, text
 from sqlalchemy.dialects.postgresql import JSONB
+from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from sqlalchemy.ext.asyncio import (
     AsyncEngine,
     AsyncSession,
@@ -38,6 +39,9 @@ def patch_metadata_for_sqlite() -> None:
     Substitutions:
       - ``VECTOR(N)`` -> ``Text`` (pgvector is unavailable in SQLite)
       - ``JSONB`` -> ``JSON`` (SQLite has no JSONB compiler)
+      - Postgres ``UUID`` -> generic ``Uuid`` (SQLite gives a ``UUID``-named
+        column numeric affinity, so an ID such as ``...0000-000000000e31`` is
+        stored as a number and read back as a float)
       - ``gen_random_uuid()`` server default -> Python-side ``uuid4`` default
       - ``now()`` server default -> SQLite ``CURRENT_TIMESTAMP``
       - ``'{}'::jsonb`` / ``'[]'::jsonb`` defaults -> the literal without cast
@@ -54,6 +58,9 @@ def patch_metadata_for_sqlite() -> None:
 
             if isinstance(col.type, JSONB):
                 col.type = JSON()
+
+            if isinstance(col.type, PGUUID):
+                col.type = Uuid(as_uuid=True)
 
             sd = col.server_default
             if sd is None:
