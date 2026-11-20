@@ -27,6 +27,20 @@ Four playthrough versions of Nightcap, each built for a different kind of player
 | **1c Story and intrigue** | Players who care most about the characters and secrets | Few mini-games, more story weight, one private solo game | Search and Find, Lock Picking | [1c](1c-story-and-intrigue.md) |
 | **1d Deduction and puzzles** | Players who like working it out | Mini-games framed as evidence work, logic questions, a lock to pick | Search and Find, Lock Picking, Battle of Wits (logic questions) | [1d](1d-deduction-and-puzzles.md) |
 
+The control game is not a fifth version. It is one mini-game (Search and Find, provisionally) that appears inside all four, so ratings can be compared. The candidate list and which version uses which game are in [minigame-slotting.md](minigame-slotting.md).
+
+## How the versions differ at a glance
+
+| | 1a Agency race | 1b Newcomers | 1c Story and intrigue | 1d Deduction and puzzles |
+| --- | --- | --- | --- | --- |
+| Main pressure | The clock and rivals | None | The story | The puzzle |
+| Mini-games in three rounds | 5, one kind repeated | 2 | 1 group, 1 solo | 3 |
+| Final race | Yes, into Last Call | No | No | No |
+| Scoreboard weight | Loud | Light | Quiet | Light |
+| Host explanation | Standard | Extra, plain words | Standard, more narration | Standard |
+| Repeats a mechanic | Yes | No | No | No |
+| Mechanics needed | Battle of Wits, Search and Find | Search and Find, Battle of Wits | Search and Find, Lock Picking | Search and Find, Lock Picking, Battle of Wits |
+
 The lettering is proposed: a and b are the versions the two-group plan plays first. D-144 called the agency race's final race "variant 1b"; making the agency race the core version (below) supersedes that label, so the orchestrator should amend D-144's wording if this page is approved.
 
 The bluffing game (idea bank card 4) is in no version. The founder chose Newcomers over Social bluffers as the fourth version, so the hardest new mechanic waits until after December.

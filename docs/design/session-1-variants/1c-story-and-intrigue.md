@@ -16,40 +16,83 @@ supersedes: []
 
 Part of [the version overview](README.md). Proposed, not approved. Founder's words (D-146): "a maximize story + intrigue version".
 
-## Who it is for
+## What it is
 
-Players who care most about the characters, secrets and the feeling of a story: the murder-mystery dinner and *Hunt A Killer* crowd. Played only if a third group is found.
+The same case with the story turned up and the games turned down. Few mini-games, longer scenes, one private solo find that only one player sees, and a quiet scoreboard. The games serve the mystery instead of interrupting it.
 
-## What players do and see (invented example)
+## Who it targets
 
-Round 1: a long scene on the TV in which the hotel's manager lies about the guest list (invented), staged line by line. Mini-games are few and short. During round 2 one player's investigation turns up a locked writing box. Only their phone shows the lock. The others carry on investigating and notice them concentrating. The player picks the lock alone and reads a private letter that the host never repeats to the room. The room learns only that something was found. Round 3 is a scene and a group Search and Find framed as "sweeping the room". No race, no leaderboard fanfare: the score is a small line under the story.
+Players who care most about the characters, secrets and the feeling of being in a story: the murder-mystery dinner party and *Hunt A Killer* crowd. Played only if a third group is found (run order, group 3 on case 1, then group 4 plays it on case 2).
 
-## Mini-games (a starting setup, not a rule; D-145)
+## How it is composed
 
-Search and Find (control), one group game in round 3, plus Lock Picking as a solo game found through investigation. `fitting`, no repeat (D-136). Solo runs do not count (founder answer 9). Round 1 and 2 may run zero group mini-games (zero is allowed, D-147).
+| Part | Setup (a starting point, not a rule; D-145) |
+| --- | --- |
+| Round 1 | A long staged scene, then investigate; no mini-game |
+| Round 2 | Scene and investigate. An investigation can lead one player to a locked box: Lock Picking as a solo side game |
+| Round 3 | Scene, investigate, then Search and Find (control), framed as sweeping the room |
+| Final race | None |
+| Scoreboard | One quiet line under the story, not a leaderboard fanfare |
+| Last Call and ending | Unchanged |
 
-## What it tests
+One group game and one solo side game. `mini_game_pick: fitting`, no repeat (D-136, D-147). A solo run does not count against no-repeat (founder answer 9).
+
+## The goal
+
+Make players feel they are inside a story with secrets, not playing a game with a story around it. Success is players talking about characters, not scores, and saying they felt like detectives.
+
+## How it is different from the others
+
+| Compared with | Difference |
+| --- | --- |
+| 1a Agency race | Opposite pressure: no race, almost no scoring weight, more scene time |
+| 1b Newcomers | Not easier, just quieter; one player has information the others do not |
+| 1d Deduction and puzzles | The solo find is a story moment (a private letter), not a puzzle to be solved well |
+
+## What is being tested
 
 - With less game and more story, do players feel more like detectives?
-- Does a private solo find (only one player has it) make the others curious or left out?
-- Do players talk about characters, not scores?
+- Does a private solo find make the others curious, or left out?
+- Do players talk about the characters more than about winning?
+- Is a quiet scoreboard enough, or do players miss the competition?
+
+## Why this variation
+
+The game's pass bar includes "felt like a detective", and the story is why a murder mystery beats a quiz game. Without a version that turns the story up, we cannot tell whether the mini-games help or hurt that feeling. It also tests the founder's solo-find idea (D-136, D-143) in the setting where it fits best.
+
+An honest limit (inferred): the story comes from the case and is the same in every version, so 1c can only change how much scene time and host narration each round gets. Deeper story variation would need optional extra scene content in case 2. That is a question for the founder, not yet decided.
+
+## Mini-games and side games
+
+| Role | Game | Status |
+| --- | --- | --- |
+| Control | Search and Find, round 3 | New; shared |
+| Side game (solo) | Lock Picking, found through investigation | The built Evidence Locker #402 (a one-player lock-breach puzzle, verified in its manifest) is the nearest; needs AW-345 to start from an investigation |
+| Cohort (group) | None required; one is optional if a round needs it | |
+
+Alternates (see [the candidate list](minigame-slotting.md)): Tell Me Something True (a built group bluffing game, 4 to 8 players, so not at 2 or 3), Of Course I Work Here (hidden-role bluff, deferred) and An Entirely Normal Walk.
 
 ## What the survey adds
 
-The shared questions, plus: "How much did you care who did it? (1 to 5)" and, for the solo player: "Did finding that alone feel good or lonely?"
+The shared questions, plus "How much did you care who did it? (1 to 5)" and, for the solo player: "Did finding that alone feel good or lonely?"
 
 ## What it costs
 
 | Part | Cost |
 | --- | --- |
 | Arc setup | Arc file only |
-| Lock Picking | New mechanic, phone-only puzzle, drawn lock graphic. Solo start needs AW-345 (not built) |
-| More story weight | Writing. The story itself comes from the case and is the same in every version (inferred), so what 1c can change cheaply is host narration and how much scene time each round gets. Deeper story variation would mean optional extra scene content written into case 2 (open question for the founder) |
+| Lock Picking | Adapt or build; phone-only puzzle. A solo start needs AW-345 (not built) |
+| More story weight | Writing: longer host narration and scene lines per round |
+| Deeper story variation | Optional extra content written into case 2; not planned |
 
 ## Ready if (15 December)
 
-Lock Picking and AW-345 built, the host narration lines for this version written, and one extra group found.
+Lock Picking and AW-345 built, the host narration for this version written, and a third group found.
+
+## What it looks like (invented example)
+
+Round 1 is a long scene on the TV in which the hotel manager lies about the guest list (invented), staged line by line. In round 2 one player's investigation turns up a locked writing box. Only their phone shows the lock. The others carry on and notice them concentrating. The player picks the lock alone and reads a private letter. The room learns only that something was found. Round 3 is a scene and a group Search and Find framed as sweeping the room.
 
 ## Prior art
 
-*Hunt A Killer* boxes and murder-mystery dinner kits: single-use cases with character roles and scripted reveals (recalled). Hidden-role bluffing (*Deception: Murder in Hong Kong*, verified at excerpt level) is the strongest story-intrigue mechanic but is deferred: the founder chose Newcomers as the fourth version.
+*Hunt A Killer* boxes and murder-mystery dinner kits: single-use cases with character roles and scripted reveals (recalled). Hidden-role bluffing (*Deception: Murder in Hong Kong*, verified at excerpt level) is the strongest story-and-intrigue mechanic but is deferred, because the founder chose Newcomers as the fourth version.
