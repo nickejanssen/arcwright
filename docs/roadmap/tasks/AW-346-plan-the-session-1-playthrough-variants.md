@@ -24,6 +24,12 @@ supersedes: []
 
 Session 1 is now several playthroughs of the same case, 1a to 1d, each set up differently, so the founder can compare mini-game structures with real players. Define each variant, the order to play them, what each one tests and how the survey tells them apart.
 
+## Founder Direction (2026-11-19)
+
+Founder's words: "On testable variant for our december timeline could be a detective agency version that has the building to a final race because everyone is competitive in the dysfunctional agency and they are trying to race the others to the solution. It could be a mix of trivia and caSE QUESTIONS. I like this version to test a lot! This could be the maximize fun version, then we have a maximize story + intrigue version, then we have a maximize deduction, investigation, and puzzles version, and 1 more. Each targeting a different type of player/cohort. We could learn so much from this. Please, lets make this happen!" Also: "Direction 1 with 2 as variant 1b, and merge 452 Also, it is not a strict 3 minigames per Nightcap playthrough. A game has 3 rounds isnt strict. We may playtest that, but its not strict. We should not hard code what games are played. They must be adaptive. There are anytime games, grou games, etc. End of round games can be the same as the number off rounds, but dont make it a concreate inflexible rule."
+
+Recorded as D-144, D-145 and D-146. The variants now target kinds of players: maximize fun (a dysfunctional detective agency racing each other to the solution, building to a final race, trivia mixed with case questions; the founder's December priority), maximize story and intrigue, maximize deduction, investigation and puzzles, and a fourth not yet named. Rounds and mini-game counts are not fixed (D-145).
+
 ## Why This Matters
 
 - Founder direction on 19 November 2026, recorded as D-137: "Both in session 1, not required to be played, but I would like to A/B test that experience. We could have Sesseion 1a, 1b, 1c, and possibly 1d to test out varied experiences."
