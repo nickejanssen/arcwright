@@ -47,12 +47,26 @@ Recorded as D-144, D-145 and D-146. The variants now target kinds of players: ma
 
 **Interaction profile:** Decision interview and facilitated live operation. The founder chooses the variants and the spoiler approach; nothing here is built without his approval.
 
+## Interview Record And Sheets (2026-11-20)
+
+The founder interview ran in a planning session. His answers are on issue #429, word for word. The sheets are in `docs/design/session-1-variants/` ([overview](../../design/session-1-variants/README.md)). Summary of what he said, to be confirmed when he approves the sheets:
+
+- The fourth version is for newcomers. The agency race (1a) is the core version, and may repeat Battle of Wits; Battle of Wits is played on its own first (AW-348).
+- The control mini-game is Search and Find, for now.
+- A second case is written for replays. Targets: 1 December (end-to-end test of case 1), 5 December (feedback fixed, case 2 written, beta-test capable), 15 December (cases 1 and 2 with versions a to d testable). This replaces the 12 or 13 December session 1 of D-112; the orchestrator amends D-112, D-137 and the status page when he confirms.
+- Two groups of 2 to 4 friends, each playing two versions on the two cases in a counterbalanced order.
+- A solo mini-game run does not count against the no-repeat rule. The final race runs back to back with Last Call.
+- The founder accepts being spoiled on both cases.
+
+New tasks filed from this plan: AW-354 (per-mini-game rating, version tags, extra survey questions), AW-355 (Battle of Wits questions and host lines), AW-356 (version arc setups and the group run sheet).
+
 ## Acceptance Criteria
 
-- [ ] Each variant (1a to 1d) is written down with its arc setup and what it tests, and the founder has approved the list.
-- [ ] The replay-spoiler approach is decided and recorded.
-- [ ] The survey or debrief can tell the variants apart.
-- [ ] The core variant is named and is what the founder TV run plays.
+- [x] Each version (1a to 1d) is written down with its arc setup and what it tests (`docs/design/session-1-variants/`).
+- [ ] The founder has approved the list of versions (his approval is recorded on this issue; not yet given).
+- [x] The replay-spoiler approach is decided: a second case for replays, and two groups playing two versions in a counterbalanced order (founder's answers on issue #429; recorded as a decision when he approves the sheets).
+- [x] The survey or debrief can tell the versions apart: the overview's survey table, with the build in AW-354 and a printed-card fallback.
+- [x] The core variant is named: 1a, the agency race, played by the founder's 1 December end-to-end test (the date changed from the 5 December TV run; see above).
 
 ## Tests/Verification
 
@@ -61,7 +75,7 @@ Recorded as D-144, D-145 and D-146. The variants now target kinds of players: ma
 
 ## Dependencies
 
-- AW-344, AW-345, AW-337 for the structures being compared; AW-305 for the case; AW-308 for preflight.
+- AW-344 (merged), AW-345, AW-337 for the structures being compared; AW-354, AW-355 and AW-356 for what the plan implies; AW-305 for the case; AW-308 for preflight.
 - Decisions: D-112, D-136, D-137.
 
 ## Must Not Do

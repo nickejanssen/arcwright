@@ -3306,6 +3306,50 @@
         "issue_number": 457,
         "url": "https://github.com/nickejanssen/arcwright/issues/457"
       }
+    },
+    {
+      "id": "AW-354",
+      "title": "Add A Per-Mini-Game Rating, A Version Tag And The Extra Survey Questions",
+      "milestone": "M7",
+      "epic": "M7-C",
+      "size": "M",
+      "depends_on": [
+        "AW-331",
+        "AW-304",
+        "AW-346"
+      ],
+      "path": "docs/roadmap/tasks/AW-354-add-per-mini-game-rating-and-version-tags-to-the-survey.md",
+      "epic_id": "M7-C"
+    },
+    {
+      "id": "AW-355",
+      "title": "Write The Battle Of Wits Questions And The Host Lines For Versions 1a And 1b",
+      "milestone": "M7",
+      "epic": "M7-C",
+      "size": "M",
+      "depends_on": [
+        "AW-337",
+        "AW-305",
+        "AW-319"
+      ],
+      "path": "docs/roadmap/tasks/AW-355-write-the-battle-of-wits-questions-and-version-host-lines.md",
+      "epic_id": "M7-C"
+    },
+    {
+      "id": "AW-356",
+      "title": "Build The Version Arc Setups (1a To 1d) And The Group Run Sheet",
+      "milestone": "M7",
+      "epic": "M7-C",
+      "size": "M",
+      "depends_on": [
+        "AW-337",
+        "AW-345",
+        "AW-346",
+        "AW-354",
+        "AW-355"
+      ],
+      "path": "docs/roadmap/tasks/AW-356-build-the-version-arc-setups-and-the-group-run-sheet.md",
+      "epic_id": "M7-C"
     }
   ],
   "superseded_sources": [
