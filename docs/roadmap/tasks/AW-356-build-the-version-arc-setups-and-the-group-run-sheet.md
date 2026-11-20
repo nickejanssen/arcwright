@@ -27,7 +27,7 @@ Turn each version sheet into a real arc setup (which mini-games run in which rou
 ## Why This Matters
 
 - AW-346's sheets are only paper until each is an arc file the engine can run. Each setup is arc-file only where its mechanics exist (verified by reading: AW-344 merged the slots and `mini_game_pick`).
-- The run order (two groups, counterbalanced) and the screener are operations the founder needs before inviting friends.
+- The run order (two groups, matched order, reversed in a second wave) and the screener are operations the founder needs before inviting friends.
 
 ## Technical Scope
 

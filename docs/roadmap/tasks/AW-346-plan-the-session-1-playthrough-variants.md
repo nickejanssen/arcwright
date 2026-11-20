@@ -55,7 +55,7 @@ The founder interview ran in a planning session. His answers are on issue #429, 
 - The control mini-game is Search and Find, for now.
 - A second case is written for replays. Targets: 1 December (end-to-end test of case 1), 5 December (feedback fixed, case 2 written, beta-test capable), 15 December (cases 1 and 2 with versions a to d testable). This replaces the 12 or 13 December session 1 of D-112; the orchestrator amends D-112, D-137 and the status page when he confirms.
 - Version 1e, "Variety" (Direction 1, a different skill each round), is a fifth version at the founder's word: "Make it a fifth version".
-- Two groups of 2 to 4 friends, each playing two versions on the two cases in a counterbalanced order.
+- Two groups of 2 to 4 friends, each playing two versions on the two cases. Order: both groups play 1b first on case 1 and 1a second on case 2 (matched order, so cohort preference is read apart from first-play preference); the order is reversed in a second wave if more groups are found. See the overview, "Run order". Reviewed after Codex raised the first-play confound; the founder agreed to vary which version is played first (relayed by the orchestrator session).
 - A solo mini-game run does not count against the no-repeat rule. The final race runs back to back with Last Call.
 - The founder accepts being spoiled on both cases.
 
@@ -65,7 +65,7 @@ New tasks filed from this plan: AW-354 (#463, per-mini-game rating, version tags
 
 - [x] Each version (1a to 1e) is written down with its arc setup and what it tests (`docs/design/session-1-variants/`).
 - [x] The founder has approved the list of five versions and the skill names: "Approve versions and names" (issue #429, 20 November 2026).
-- [x] The replay-spoiler approach is decided: a second case for replays, and two groups playing two versions in a counterbalanced order (founder's answers on issue #429; recorded as a decision when he approves the sheets).
+- [x] The replay-spoiler approach is decided: a second case for replays, and two groups playing two versions, in a matched order that is reversed in a second wave (founder's answers on issue #429; recorded as a decision when he approves the sheets).
 - [x] The survey or debrief can tell the versions apart: the overview's survey table, with the build in AW-354 and a printed-card fallback.
 - [x] The core variant is named: 1a, the agency race, played by the founder's 1 December end-to-end test (the date changed from the 5 December TV run; see above).
 
@@ -76,7 +76,8 @@ New tasks filed from this plan: AW-354 (#463, per-mini-game rating, version tags
 
 ## Dependencies
 
-- AW-344 (merged), AW-345, AW-337 for the structures being compared; AW-354, AW-355 and AW-356 for what the plan implies; AW-305 for the case; AW-308 for preflight.
+- AW-344 (merged), AW-345, AW-337 for the structures being compared; AW-305 for the case; AW-308 for preflight.
+- Downstream follow-ups, not prerequisites: AW-354, AW-355 and AW-356 depend on this plan, and this task finishes when the version plan is approved.
 - Decisions: D-112, D-136, D-137.
 
 ## Must Not Do

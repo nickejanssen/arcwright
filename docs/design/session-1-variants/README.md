@@ -91,21 +91,41 @@ Two founder ideas from earlier on issue #429, recorded word for word there: vary
 
 **Last Call stays the same in every version.** Each player privately locks a theory (spec 0094, AW-326). The winner is decided by the theory, never by a race or by speed (D-138, GDD).
 
-## Run order with two groups
+## Run order
 
-With the second case written (answer 4) and two groups (answer 7), the proposed order is counterbalanced so that case quality and order of play do not pass for version differences:
+With the second case written (answer 4) and two groups (answer 7), each group plays two versions, one per case. Two questions need different things from the order, so the order is chosen for both:
+
+- **Can newcomers play it unaided?** This is only a fair test the first time the newcomer group plays anything. So 1b is played first by the newcomer group.
+- **Does each kind of player prefer the version built for them?** This is read as a *difference between groups*: how much more group A prefers version X over Y than group B does. That difference is free of the first-play effect only if both groups play the same two versions **in the same order**, because then the first-play effect shifts both groups equally and cancels out. If the groups played in opposite orders, "this cohort likes its own version" could not be told apart from "this cohort liked whatever came first" (the point raised in review of this page).
+
+**Wave 1** (the two groups the founder plans for, answer 7): both groups play the same order.
 
 | Group | Case 1 | Case 2 |
 | --- | --- | --- |
-| Group 1 (competitive friends) | 1a Agency race | 1b Newcomers |
+| Group 1 (competitive friends) | 1b Newcomers | 1a Agency race |
 | Group 2 (friends who rarely play games) | 1b Newcomers | 1a Agency race |
-| Group 3, if found (story lovers) | 1c Story and intrigue | 1d Deduction and puzzles |
-| Group 4, if found (puzzle lovers) | 1d Deduction and puzzles | 1c Story and intrigue |
-| Group 5, if found (variety lovers) | 1e Variety | 1a Agency race |
 
-Each group plays its own cohort's version first, then a different one on the fresh case. That tests the founder's idea directly: does each kind of player prefer the version built for them? Recruiting uses a short screener about what people enjoy at game nights, asked by the founder before inviting.
+**Wave 2** (only if a second group of each cohort is found): the order is reversed, so first-play effect and version are separated across the whole set.
 
-**Candid limit (inferred).** Two groups of 2 to 4 give quotes and strong signals, not statistics. A group's second playthrough is also easier because they have learned the rules; the counterbalance cancels this only across groups. Treat results as lessons, not measurements.
+| Group | Case 1 | Case 2 |
+| --- | --- | --- |
+| Group 1b (a second competitive group) | 1a Agency race | 1b Newcomers |
+| Group 2b (a second newcomer group) | 1a Agency race | 1b Newcomers |
+
+**Other pairs, only if more groups are found:** groups 3 and 4 (story lovers and puzzle lovers) both play 1c then 1d, with the order reversed for any later groups. Group 5 (variety lovers) plays 1e then 1a; with no second cohort on the same pair, its result is a story, not a comparison.
+
+**How each result is read:**
+
+| Question | Read from | Why it is not first-play preference |
+| --- | --- | --- |
+| Do newcomers follow it unaided? | The newcomer group's first playthrough (1b), the host-question count and "could you follow" answer | It is the first thing they play |
+| Does each cohort prefer the version built for it? | The difference between the two groups' "which did you prefer" answers, within the same order | Both groups had the same order, so first-play preference cancels |
+| Is there a first-play effect? | Whether the "second-played" version is preferred by both groups | Reported on its own, not folded into the cohort result |
+| Which version is better overall? | Not answered with two groups; only after wave 2 | Order and version are tied together in wave 1 |
+
+Recruiting uses a short screener about what people enjoy at game nights, asked by the founder before inviting. A group that does not fit its cohort is recorded as it is, not moved.
+
+**Candid limit (inferred).** Two groups of 2 to 4 give quotes and strong signals, not statistics. A group's second playthrough is also easier because they have learned the rules, and that is the same for both groups in wave 1 by design. A difference between two groups also reflects those people, not only their kind of player. Treat results as lessons, not measurements.
 
 ## Survey: how the versions are told apart
 
@@ -152,4 +172,4 @@ Labels: **verified** means read in this repository or in a source excerpt during
 | *Unlock!* and *Exit: The Game* (escape-room card games, puzzles gate progress, difficulty ratings) | 1d puzzles; 1b difficulty | Recalled |
 | *Hunt A Killer* boxes and murder-mystery dinner kits (single-use cases, character roles, scripted reveals) | 1c; the replay-spoiler reasoning | Recalled |
 | *Clue* (the solution is reshuffled each game) | Not available to us: the case has a fixed, fair truth | Recalled |
-| Playtesting two designs in a balanced order across groups | The run order | Recalled (standard practice) |
+| Playtesting two designs with the same order for matched groups and a reversed order in a later wave | The run order | Recalled (standard practice) |

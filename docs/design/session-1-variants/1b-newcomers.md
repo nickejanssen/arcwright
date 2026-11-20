@@ -22,7 +22,7 @@ The same case with the fewest things to learn. Fewer mini-games, no racing, no f
 
 ## Who it targets
 
-Friends who rarely play games and may not know what a "round" or a "mini-game" is. Group 2 in the run order plays it first, and group 1 plays it second.
+Friends who rarely play games and may not know what a "round" or a "mini-game" is. In the run order, both groups play it first, on case 1: the newcomer group, so the unaided test is its first experience, and the competitive group, so both groups have the same order.
 
 ## How it is composed
 

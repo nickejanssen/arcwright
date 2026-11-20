@@ -22,7 +22,7 @@ The same murder case, played as a competition between rivals at a dysfunctional 
 
 ## Who it targets
 
-Competitive players who enjoy beating their friends at quick games: the Jackbox and Mario Party crowd. Group 1 in the run order (competitive friends) plays it first.
+Competitive players who enjoy beating their friends at quick games: the Jackbox and Mario Party crowd. In the run order, groups 1 and 2 play it second, on case 2, after 1b.
 
 ## How it is composed
 

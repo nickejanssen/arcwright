@@ -22,7 +22,7 @@ The same case with the story turned up and the games turned down. Few mini-games
 
 ## Who it targets
 
-Players who care most about the characters, secrets and the feeling of being in a story: the murder-mystery dinner party and *Hunt A Killer* crowd. Played only if a third group is found (run order, group 3 on case 1, then group 4 plays it on case 2).
+Players who care most about the characters, secrets and the feeling of being in a story: the murder-mystery dinner party and *Hunt A Killer* crowd. Played only if a third group is found (run order: groups 3 and 4 both play it first, on case 1, then 1d on case 2).
 
 ## How it is composed
 
