@@ -12,7 +12,7 @@ supersedes: []
 ---
 
 > Current version: v2.0
-> Last updated: 2026-11-16
+> Last updated: 2026-11-20
 > Status: Current
 > Canonical path: docs/product/nightcap-status.md
 
@@ -40,8 +40,9 @@ Player evidence so far is three people from the v2.2 paper test: fun 3 of 5, "fe
 
 | Session | Target | Where | It must prove |
 | --- | --- | --- | --- |
-| Founder TV run | By 2026-12-05 | Founder's house, alone with a TV and two phones | The game runs start to finish |
-| 1 | 2026-12-12 or 13 | Founder's house, two to four friends | People understand it, enjoy it and finish |
+| Founder end-to-end test | 2026-12-01 | Founder's house, TV and phones, case 1, version 1a | The game runs start to finish (D-149) |
+| Beta-test capable | 2026-12-05 | Founder's house | The founder's feedback is fixed and case 2 is written (D-149) |
+| 1 | By 2026-12-15 | Founder's house, two groups of two to four friends | People understand it, enjoy it and finish; versions testable with live groups (D-149, run order D-150) |
 | 2 | About 2027-01-09 | Founder's house | The fixes worked; a second case written in a story tool (D-117) |
 | 3 | Late January 2027 | Friends' house, without the founder | It works with nobody to help. Needs cloud hosting (AW-269) |
 
@@ -54,7 +55,7 @@ Planning assumption: 10 to 15 founder hours a week, which depends on AI usage li
 - Join with a room code, two to four players.
 - Opening: who you are and why you are here.
 - Three beats. Each beat is one round (D-113): watch a scene, investigate, review your notes, play one or more mini-games up to a cap set per round (D-136), skinned to the story when that is natural and openly a game when not (D-143), see the story react. No mini-game mechanic repeats in a playthrough; an investigation can also lead one player into a solo mini-game (D-136).
-- Session 1 is played as several playthrough variants, 1a to 1d, to A/B test mini-game structures (D-137). The core variant must be ready for the founder TV run; the extras are optional.
+- Session 1 is played as five playthrough versions, each for a kind of player (D-148): 1a Agency race (the core, needed for the 1 December test), 1b Newcomers, 1c Story and intrigue, 1d Deduction and puzzles, 1e Variety. The two planned groups both play 1b on case 1, then 1a on case 2 (D-150). Slipped work drops versions, never the dates (D-149). Sheets: `docs/design/session-1-variants/`.
 - Six investigations per player across the game. Review is free.
 - A simple notebook: a list of what you personally found.
 - Last Call with a countdown and a private lock.
@@ -81,7 +82,7 @@ Planning assumption: 10 to 15 founder hours a week, which depends on AI usage li
 
 ## Critical path by week
 
-Estimates are inferred, not measured. "Build days" means focused AI build sessions.
+Estimates are inferred, not measured. "Build days" means focused AI build sessions. The dates changed on 2026-11-20 (D-149: 1, 5 and 15 December); the week rows below predate that and are kept for the build estimates.
 
 | Week | Work | Tasks | Build days | Founder hours |
 | --- | --- | --- | --- | --- |
@@ -128,8 +129,8 @@ A scheduled session is not a passed session. If fun or detective feeling scores 
 
 | Signal | Response |
 | --- | --- |
-| No founder TV run by 2026-12-05 | Session 1 moves to 19 or 20 December |
-| Case not approved by 2026-11-28 | The same slip; the case is the critical path |
+| A version is not ready for its date | Drop versions, never the dates (D-149): cut 1e, then 1d, then 1c; the cut order is in `docs/design/session-1-variants/README.md` |
+| Case 1 not approved by 2026-11-28 | Raise it with the founder at once; case 1 is the critical path for the 1 December test |
 | Build sessions run short | Cut in this order: the Postmortem becomes fixed text; three mini-games become two; three beats become two; the story-tool importer moves to after session 1 |
 
 ## Mini-games inside a real session
