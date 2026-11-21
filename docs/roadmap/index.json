@@ -3396,6 +3396,22 @@
       }
     },
     {
+      "id": "AW-359",
+      "title": "Fix The Review Findings On The Round Screens That Merged In AW-332 Part A",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "S",
+      "depends_on": [
+        "AW-332"
+      ],
+      "path": "docs/roadmap/tasks/AW-359-fix-the-review-findings-on-the-round-screens.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 477,
+        "url": "https://github.com/nickejanssen/arcwright/issues/477"
+      }
+    },
+    {
       "id": "AW-352",
       "title": "Let The Host Hand The Host Role To Another Player From The Phone",
       "milestone": "M7",
