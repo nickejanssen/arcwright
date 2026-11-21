@@ -4,7 +4,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
-import { createElement } from "react";
+import { StrictMode, createElement } from "react";
 import EyesUpPhone from "../src/screens/round/EyesUpPhone.js";
 import InvestigatePhone, {
   clearHeldFinding,
@@ -155,5 +155,40 @@ test("a menu in the order A, B, A is shown as A, B, A", async () => {
       "the Butler heads two separate groups",
     );
     await page.unmount();
+  });
+});
+
+test("the held finding survives React StrictMode, which the dev server uses", async () => {
+  clearHeldFinding();
+  const engine = fakeEngine();
+  await withFetch(engine, async () => {
+    const investigate = await mount(
+      createElement(InvestigatePhone, slot("choices")),
+    );
+    await investigate.clickContaining("Search the desk");
+    await investigate.click("Spend it");
+    await investigate.unmount();
+
+    const eyes = await mount(
+      createElement(
+        StrictMode,
+        null,
+        createElement(EyesUpPhone, slot("scene")),
+      ),
+    );
+    assert.ok(eyes.text().includes("A torn page is wedged behind the drawer."));
+    await eyes.rerender(
+      createElement(
+        StrictMode,
+        null,
+        createElement(EyesUpPhone, slot("scene")),
+      ),
+    );
+    assert.ok(
+      eyes.text().includes("A torn page is wedged behind the drawer."),
+      "still shown after a later render",
+    );
+    assert.ok(eyes.buttons().some((b) => b.textContent?.trim() === "OK"));
+    await eyes.unmount();
   });
 });

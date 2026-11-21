@@ -61,15 +61,30 @@ export default function EyesUpPhone(props: SlotProps) {
   const [dismissed, setDismissed] = useState(false);
   const [, renderAgain] = useState(0);
 
-  // The held finding is read on every render, so it is gone once its hold is
-  // over; a timer renders again at that moment in case nothing else does.
-  const pending = dismissed ? null : peekHeldFinding(sessionId);
-  const msLeft = pending ? heldFindingMsLeft(sessionId) : null;
+  // The finding and the moment its hold ends are taken once, when this screen
+  // opens, so nothing that clears the shared hold afterwards (React StrictMode
+  // in the dev server, or an unmount) can lose it. Every render checks the
+  // moment again, so the finding goes when its hold is over; a timer renders
+  // once more at that moment in case nothing else does.
+  const [captured] = useState(() => {
+    const finding = peekHeldFinding(sessionId);
+    const msLeft = finding ? heldFindingMsLeft(sessionId) : null;
+    return finding && msLeft !== null
+      ? { finding, endsAt: Date.now() + msLeft }
+      : null;
+  });
+  const pending =
+    !dismissed && captured && Date.now() < captured.endsAt
+      ? captured.finding
+      : null;
+  const endsAt = captured?.endsAt ?? null;
   useEffect(() => {
-    if (msLeft === null) return;
-    const timer = setTimeout(() => renderAgain((n) => n + 1), msLeft + 50);
+    if (endsAt === null) return;
+    const wait = endsAt - Date.now();
+    if (wait <= 0) return;
+    const timer = setTimeout(() => renderAgain((n) => n + 1), wait + 50);
     return () => clearTimeout(timer);
-  }, [msLeft === null]);
+  }, [endsAt]);
 
   // Whatever happens, a held finding is shown here once.
   useEffect(() => () => clearHeldFinding(), []);
