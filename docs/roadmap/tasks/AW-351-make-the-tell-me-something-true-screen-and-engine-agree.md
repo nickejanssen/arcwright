@@ -188,9 +188,9 @@ result-hold direction and subsequently approved the details below.
 approval. AW-332 still owns the other round and result screens.
 Spec 0093 Part E and the durable product approval record must be reconciled before
 implementation because the proposed hold changes the approved advancement rule.
-The founder previously prohibited edits to `docs/product/decisions-log.csv` in this
-task; do not modify it unless that restriction is explicitly lifted. Design
-approval alone does not lift the restriction.
+The founder explicitly allowed a narrow exception to the earlier prohibition on
+editing `docs/product/decisions-log.csv`: record this approved decision only.
+That exception does not approve the implementation plan or other log edits.
 
 ## Completed-Result Implementation Plan
 
@@ -212,13 +212,22 @@ TypeScript dashboard and existing Node tests. No new dependency or table.
 Part I and 0095 screens 10 to 12. The existing immediate-advance sentence in
 0093 must be reconciled before code is treated as approved.
 
+### Review focus
+
+- A late lobby response must eventually show the name without blocking the game.
+- A solo or unbound run must never be exposed as a shared round result.
+- Repeated games, overlapping reads and stale visits must never show the wrong run.
+- A disconnect, pause or restart must preserve the hold and readiness safely.
+- Rewards and public result reads must not leak private information or duplicate grants.
+
 ### Preconditions and file boundaries
 
-- [ ] Obtain explicit permission to edit `docs/product/decisions-log.csv` solely
-  to record this approval; the founder explicitly prohibited edits to that file
-  earlier. Then update the record and `docs/specs/0093-engine-spine-for-the-thin-version.md`
+- [x] The founder permitted a narrow exception to edit `docs/product/decisions-log.csv`
+  solely to record the approved result-hold decision. Record it as D-155; the
+  exception does not authorize unrelated log edits.
+- [ ] After plan approval, update `docs/specs/0093-engine-spine-for-the-thin-version.md`
   to reflect the approved opt-in hold. Do not alter the open-questions log or
-  `HANDOVER.md`. The task file remains the design and approval record.
+  `HANDOVER.md`. The task file remains the design and plan record.
 - [ ] **Live configuration gap:** the two arcs currently registered in
   `config/arcs.json`, `nightcap/arc.json` and `nightcap/couch-race.arc.json`,
   contain no phased mini-games. AW-305 owns the real session-1 arc. Do not edit
@@ -244,13 +253,18 @@ tests in `engine/tests/test_phases.py`, `engine/tests/test_mini_game_phase.py`,
 
 - [ ] Write failing tests for `PhaseDefinition.result_hold_seconds: int | None`:
   absent means the old immediate advance; a positive value is allowed only on
-  `mini_game`; zero, negative and use on other phases are refused. The invented
-  Nightcap-like fixture opts in with 15 seconds.
+  `mini_game`; zero, negative and use on other phases are refused. Add a separate
+  `result_public: bool = False` field. For this shared-result implementation,
+  require a positive hold and `result_public: true` together; reject a hold with
+  no public-result opt-in or the flag without a hold, so an author cannot create
+  a blank shared hold by accident. Private holds remain outside this task. The
+  invented Nightcap-like group fixture opts in with 15 seconds and the flag.
 - [ ] Write failing real-transition tests: a completed or timed-out bound run
   with a valid standing enters one hold on the same visit, saves its run ID,
   eligible human participant IDs and a new deadline, and does not start the next
   phase. Two ticks and a process-state reread must not reset the deadline or
-  create two holds. A cancelled run or invalid/empty standing skips the hold.
+  create two holds. A cancelled run or invalid/empty standing skips the hold;
+  an invalid standing produces a host-only, content-free diagnostic once.
 - [ ] Write failing readiness tests for all eligible seats, disconnected seats,
   host seat, AI and unauthorized seats, zero seats, stale visit IDs, duplicate
   taps, host move-on, deadline, and pause/restart/resume. Exactly one next phase
@@ -281,6 +295,13 @@ tests in `api/tests/test_mini_game_views_api.py` and
   different session, missing/duplicate bindings and malformed standings must
   never return the wrong result. Concurrent phase change versus read must not
   mix a visit with another run.
+- [ ] Prove the unsigned result is available only for an explicitly opted-in,
+  shared round-phase hold and its bound run: require both the authored hold and
+  `result_public: true`, plus the matching current phase visit. With the flag
+  absent or false, the public read returns 404. A solo investigation run,
+  unbound run or unknown audience must fail closed. Do not infer solo or public
+  scope from `participation_mode` or player count: the same mechanic can serve
+  both. AW-345 owns the still-open solo visibility decision.
 - [ ] Add `GET /v1/sessions/{session_id}/mini-games/result/display` with no
   player sign-in. It returns 404 when no valid current hold exists. A successful
   response contains only `run_id`, `game_id`, `definition_version`,
@@ -310,10 +331,17 @@ tests in `api/tests/test_mini_game_views_api.py` and
   restart must restore the same hold; two consecutive runs must not show stale
   names or a previous standing. Map participant IDs to public lobby names and
   show a neutral fallback for a missing name, never an internal ID.
+- [ ] Keep mounting independent of a slow or failed lobby read. Retry or finish
+  name resolution asynchronously and update the current screen when a delayed
+  public name arrives, without requiring an event-stream reconnect. Cancel or
+  ignore stale lookups after unmount, run change or a newer response. Add a
+  controlled delayed-success test and a stale-response test using deferred
+  promises rather than a fragile real-time threshold.
 - [ ] Keep result hold behavior opt-in and generic. Do not invent solo-game TV
-  or other-phone behavior: AW-345 owns that direction. AW-332 retains its
-  broader round and result screen work. Run dashboard typecheck and tests and
-  Nightcap web typecheck and tests.
+  or other-phone behavior: AW-345 owns that direction. This phase-bound read
+  does not claim standalone support, which AW-348 owns. AW-332 retains its broader
+  round and result screen work. Run dashboard typecheck and tests and Nightcap
+  web typecheck and tests.
 
 ### 4. Verification and handoff
 
@@ -325,7 +353,6 @@ tests in `api/tests/test_mini_game_views_api.py` and
   Push the same branch, wait for all six CI checks, answer every review thread,
   and do not merge or deploy.
 
-**Plan approval is pending.** The founder's design approval is not approval of
-this plan or permission to edit the protected decision log. The absent real
-phased arc is a prerequisite gap for the live Nightcap opt-in and must not be
-quietly marked complete.
+**Plan approval is pending.** The founder's design and narrow decision-log
+exception do not approve this plan. The absent real phased arc is a prerequisite
+gap for the live Nightcap opt-in and must not be quietly marked complete.
