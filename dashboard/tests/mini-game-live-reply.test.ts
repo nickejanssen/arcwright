@@ -322,6 +322,46 @@ test("a completed result shows the public standing after a slow lobby reply", as
   await close(window);
 });
 
+test("a transient result read preserves the hold and retries successfully", async () => {
+  let fail = false;
+  const fetcher: typeof fetch = async (input) => {
+    const url = String(input);
+    if (url.endsWith("/mini-games/active/display"))
+      return new Response("", { status: 404 });
+    if (url.endsWith("/mini-games/result/display")) {
+      if (fail) return new Response("unavailable", { status: 503 });
+      return Response.json({
+        run_id: "r",
+        game_id: GAME_ID,
+        definition_version: "0.1.0",
+        phase_entry: 3,
+        deadline_at: null,
+        standing: [["p-1"]],
+      });
+    }
+    if (url.endsWith("/lobby"))
+      return Response.json({
+        players: [{ participant_id: "p-1", display_name: "Alex" }],
+      });
+    return new Response("", { status: 404 });
+  };
+  const { stage, controller, window } = await bootWith(
+    "input",
+    "shared_display",
+    undefined,
+    fetcher,
+  );
+  assert.match(stage.textContent ?? "", /Alex/);
+  fail = true;
+  await controller.refresh();
+  assert.match(stage.textContent ?? "", /Alex/);
+  fail = false;
+  await controller.refresh();
+  assert.match(stage.textContent ?? "", /Alex/);
+  controller.unmount();
+  await close(window);
+});
+
 test("the phone can mark the held visit ready", async () => {
   let posted: unknown;
   const fetcher: typeof fetch = async (input, init) => {

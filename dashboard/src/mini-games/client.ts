@@ -156,6 +156,7 @@ export async function bootMiniGameStage(
   let namesRetry: ReturnType<typeof setTimeout> | undefined;
   let namesAbort: AbortController | undefined;
   let resultPoll: ReturnType<typeof setTimeout> | undefined;
+  let readFailed = false;
   const isStale = (seq: number): boolean =>
     seq !== refreshSequence || opts.signal?.aborted === true;
 
@@ -276,11 +277,13 @@ export async function bootMiniGameStage(
   };
 
   const fetchActiveState = async (): Promise<MiniGameState | null> => {
+    readFailed = false;
     const url = `${baseUrl}/v1/sessions/${encodeURIComponent(opts.sessionId)}/mini-games/active${opts.token ? "" : "/display"}`;
     let res: Response;
     try {
       res = await doFetch(url, { headers: authHeaders() });
     } catch {
+      readFailed = true;
       return null;
     }
     if (res.status === 404) {
@@ -288,7 +291,11 @@ export async function bootMiniGameStage(
         const result = await doFetch(
           `${baseUrl}/v1/sessions/${encodeURIComponent(opts.sessionId)}/mini-games/result/display`,
         );
-        if (!result.ok) return null;
+        if (result.status === 404) return null;
+        if (!result.ok) {
+          readFailed = true;
+          return null;
+        }
         const data = (await result.json()) as {
           run_id: string;
           game_id: string;
@@ -363,10 +370,14 @@ export async function bootMiniGameStage(
           mySubmissions: [],
         };
       } catch {
+        readFailed = true;
         return null;
       }
     }
-    if (!res.ok) return null;
+    if (!res.ok) {
+      readFailed = true;
+      return null;
+    }
     const data = (await res.json()) as {
       run_id: string;
       game_id: string;
@@ -552,6 +563,7 @@ export async function bootMiniGameStage(
 
   const refresh = async (): Promise<void> => {
     const mySeq = ++refreshSequence;
+    const previousState = lastState;
     const state = await fetchActiveState();
     if (isStale(mySeq)) return;
     if (lastState?.runId !== state?.runId) {
@@ -570,6 +582,13 @@ export async function bootMiniGameStage(
       void loadNames(state.runId);
     }
     if (!state) {
+      if (readFailed && previousState?.resultHold) {
+        lastState = previousState;
+        resultPoll = setTimeout(() => {
+          void refresh();
+        }, 1000);
+        return;
+      }
       unmountActive();
       setStageState(stage, StageStates.Idle);
       return;

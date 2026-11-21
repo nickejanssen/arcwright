@@ -870,6 +870,43 @@ class TestGetActiveMiniGameDisplay:
         resp = client.get(f"/v1/sessions/{_SESSION_ID}/mini-games/result/display")
         assert resp.status_code == 404
 
+    def test_public_result_route_serializes_only_the_allowlisted_fields(
+        self, client: TestClient, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
+        from api.routers import mini_games
+
+        async def public_result(_db: Any, _session_id: UUID) -> dict[str, Any]:
+            return {
+                "run_id": "run-public",
+                "game_id": "test-game",
+                "definition_version": "0.1.0",
+                "phase_entry": 3,
+                "deadline_at": None,
+                "standing": [[str(_PART_ID)]],
+            }
+
+        monkeypatch.setattr(mini_games, "public_mini_game_result", public_result)
+        response = client.get(f"/v1/sessions/{_SESSION_ID}/mini-games/result/display")
+        assert response.status_code == 200
+        body = response.json()
+        assert set(body) == {
+            "run_id",
+            "game_id",
+            "definition_version",
+            "phase_entry",
+            "deadline_at",
+            "standing",
+        }
+        serialized = response.text
+        for marker in (
+            "private-statement-marker",
+            "private-truth-marker",
+            "private-prompt-marker",
+            "private-behavior-marker",
+            "other-session-marker",
+        ):
+            assert marker not in serialized
+
     def test_returns_404_when_no_active_run(self, client: TestClient) -> None:
         resp = client.get(f"/v1/sessions/{_SESSION_ID}/mini-games/active/display")
         assert resp.status_code == 404
