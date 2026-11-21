@@ -124,6 +124,7 @@ export const copy = {
     ok: "OK",
     gettingGameReady: "Getting the game ready...",
     earnedInvestigation: "You earned one more investigation.",
+    noMiniGameInProgress: "No mini-game in progress.",
   },
 
   notebook: {

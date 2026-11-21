@@ -25,7 +25,7 @@ interface Props {
   participantId: string;
   characterId: string;
   token?: string;
-  onInitialLoad: () => void;
+  onStageState: (state: string) => void;
   services?: StageServices;
 }
 
@@ -42,18 +42,15 @@ export default function RoundMiniGameStage(props: Props) {
       "[data-mini-game-stage]",
     );
     if (!stage) return;
-    let reported = false;
     const observer = new MutationObserver(() => {
-      if (reported) return;
-      reported = true;
-      props.onInitialLoad();
+      props.onStageState(stage.dataset.miniGameState ?? "idle");
     });
     observer.observe(stage, {
       attributes: true,
       attributeFilter: ["data-mini-game-state"],
     });
     return () => observer.disconnect();
-  }, [services, props.onInitialLoad]);
+  }, [services, props.onStageState]);
 
   useEffect(() => {
     if (props.services) {
@@ -72,13 +69,13 @@ export default function RoundMiniGameStage(props: Props) {
       .catch(() => {
         if (!cancelled) {
           setFailed(true);
-          props.onInitialLoad();
+          props.onStageState("boot-error");
         }
       });
     return () => {
       cancelled = true;
     };
-  }, [props.services, props.onInitialLoad]);
+  }, [props.services, props.onStageState]);
 
   if (failed) {
     return (

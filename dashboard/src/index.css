@@ -294,6 +294,9 @@ html[data-reduce-motion="always"] *::after {
 .tv-mini-game-loading {
   font-size: 2.5rem;
 }
+.tv-mini-game-idle {
+  font-size: 2.5rem;
+}
 .tv-mini-game .mini-game-stage {
   width: 100%;
   font-size: 2.5rem;

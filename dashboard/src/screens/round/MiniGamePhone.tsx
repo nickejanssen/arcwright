@@ -22,7 +22,7 @@ export default function MiniGamePhone(
   const [token, setToken] = useState<string | null>(null);
   const [tokenFailed, setTokenFailed] = useState(false);
   const [loading, setLoading] = useState(true);
-  const ready = useCallback(() => setLoading(false), []);
+  const stageStateChanged = useCallback(() => setLoading(false), []);
 
   useEffect(() => setLoading(true), [round.phaseEntry]);
 
@@ -80,7 +80,7 @@ export default function MiniGamePhone(
           participantId={seat.participantId}
           characterId={seat.characterId ?? ""}
           token={token}
-          onInitialLoad={ready}
+          onStageState={stageStateChanged}
           services={props.stageServices}
         />
       )}

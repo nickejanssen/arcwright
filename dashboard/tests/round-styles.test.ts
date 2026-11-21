@@ -29,6 +29,7 @@ test("every round TV text rule is at least 40 px (2.5rem at the default size)", 
     ".tv-ready-item",
     ".tv-prompt",
     ".tv-mini-game-loading",
+    ".tv-mini-game-idle",
     ".tv-mini-game .mini-game-stage",
   ]) {
     const size = /font-size:\s*([\d.]+)rem/.exec(ruleBody(selector));

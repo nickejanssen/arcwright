@@ -13,8 +13,15 @@ export default function MiniGameTv(
   props: SlotProps & { stageServices?: StageServices },
 ) {
   const [loading, setLoading] = useState(true);
-  const ready = useCallback(() => setLoading(false), []);
-  useEffect(() => setLoading(true), [props.round.phaseEntry]);
+  const [idle, setIdle] = useState(false);
+  const stageStateChanged = useCallback((state: string) => {
+    setLoading(false);
+    setIdle(state === "idle");
+  }, []);
+  useEffect(() => {
+    setLoading(true);
+    setIdle(false);
+  }, [props.round.phaseEntry]);
 
   return (
     <main className="tv-mini-game">
@@ -24,13 +31,18 @@ export default function MiniGameTv(
           {copy.round.gettingGameReady}
         </p>
       )}
+      {idle && (
+        <p className="tv-mini-game-idle" role="status">
+          {copy.round.noMiniGameInProgress}
+        </p>
+      )}
       <RoundMiniGameStage
         key={props.round.phaseEntry ?? "mini-game"}
         surface="shared_display"
         sessionId={props.sessionId}
         participantId="display"
         characterId=""
-        onInitialLoad={ready}
+        onStageState={stageStateChanged}
         services={props.stageServices}
       />
     </main>
