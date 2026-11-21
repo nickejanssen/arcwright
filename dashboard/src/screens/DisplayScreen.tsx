@@ -4,10 +4,13 @@
 
 import { useEffect } from "react";
 import type { FeedState } from "../shell/feed";
+import { formatClock } from "../shell/clock";
 import { copy } from "../shell/copy";
 import { resolveScreen } from "../shell/phaseScreens";
 import type { SlotTable } from "../shell/phaseScreens";
 import { useFeed } from "../shell/useFeed";
+
+export { formatClock };
 
 interface Props {
   sessionId: string;
@@ -28,13 +31,6 @@ function publicJoinBaseUrl(): string {
     // Fall back to the display origin if the rehearsal URL is malformed.
   }
   return window.location.origin;
-}
-
-export function formatClock(seconds: number): string {
-  const whole = Math.max(0, Math.floor(seconds));
-  const minutes = Math.floor(whole / 60);
-  const rest = String(whole % 60).padStart(2, "0");
-  return `${minutes}:${rest}`;
 }
 
 export default function DisplayScreen({ sessionId }: Props) {

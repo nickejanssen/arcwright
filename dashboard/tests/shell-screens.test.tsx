@@ -47,8 +47,10 @@ function round(over: Partial<RoundState> = {}): RoundState {
     phase: "scene",
     status: "running",
     secondsLeft: 102,
+    phaseEntry: 3,
     readyCount: 1,
     playerCount: 3,
+    players: [],
     lines: [{ concept_id: "concept_internal_9", text: "A line" }],
     ...over,
   };
@@ -70,6 +72,9 @@ function tv(l: LobbyState | null, r: RoundState | null, extra = {}) {
     sessionId: "game-uuid-1111",
     feed: { lobby: l, round: r, unreachable: false, gone: false, ...extra },
     joinBaseUrl: "https://app.test",
+    // These tests are about the shell's own screens, so no phase has a round
+    // screen of its own here (those are tested in round-screens.test.tsx).
+    slots: {},
   });
 }
 
@@ -84,6 +89,7 @@ function phone(l: LobbyState | null, r: RoundState | null, extra = {}) {
     controls,
     settings: DEFAULT_SETTINGS,
     onSettingsChange: () => undefined,
+    slots: {},
   });
 }
 
