@@ -343,6 +343,8 @@ test("a transient result read preserves the hold and retries successfully", asyn
       return Response.json({
         players: [{ participant_id: "p-1", display_name: "Alex" }],
       });
+    if (url.endsWith("/room"))
+      return Response.json({ phase_entry: 3, ready_count: 0, player_count: 1 });
     return new Response("", { status: 404 });
   };
   const { stage, controller, window } = await bootWith(
@@ -351,12 +353,14 @@ test("a transient result read preserves the hold and retries successfully", asyn
     undefined,
     fetcher,
   );
+  await new Promise((resolve) => setTimeout(resolve, 0));
   assert.match(stage.textContent ?? "", /Alex/);
   fail = true;
   await controller.refresh();
   assert.match(stage.textContent ?? "", /Alex/);
   fail = false;
   await controller.refresh();
+  await new Promise((resolve) => setTimeout(resolve, 0));
   assert.match(stage.textContent ?? "", /Alex/);
   controller.unmount();
   await close(window);
