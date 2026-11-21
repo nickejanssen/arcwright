@@ -3,7 +3,7 @@
 // and shown as text. The TV holds no sign-in and reads only the room view the
 // feed already holds.
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import type { SlotProps } from "../../shell/phaseScreens";
 import { copy } from "../../shell/copy";
 import { readLines, useStagedLines } from "./staging";
@@ -14,6 +14,18 @@ export default function StoryTv({ round }: SlotProps) {
   const phaseKey = `${round.phaseEntry ?? "none"}:${lines.map((l) => l.text).join("|")}`;
   const shown = useStagedLines(lines, phaseKey);
 
+  // A long story does not fit on the TV: as each new line appears it is scrolled
+  // into view, and earlier lines stay reachable by scrolling. Lines that are all
+  // there from the start (a reload, or reduced motion) start at the top.
+  const box = useRef<HTMLDivElement>(null);
+  const before = useRef(0);
+  useEffect(() => {
+    if (before.current > 0 && shown.length > before.current) {
+      box.current?.lastElementChild?.scrollIntoView({ block: "end" });
+    }
+    before.current = shown.length;
+  }, [shown.length]);
+
   return (
     <div className="tv-story">
       <div className="tv-story-top">
@@ -23,7 +35,7 @@ export default function StoryTv({ round }: SlotProps) {
           running={round.status === "running"}
         />
       </div>
-      <div className="tv-lines" aria-live="polite">
+      <div className="tv-lines" aria-live="polite" ref={box}>
         {shown.map((line, i) => (
           <p key={`${i}:${line.text}`} className="tv-line">
             {line.speaker && (

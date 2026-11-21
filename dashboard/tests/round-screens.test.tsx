@@ -16,7 +16,7 @@ import { scheduleLines } from "../src/screens/round/staging.js";
 import { PhoneView } from "../src/screens/WaitingScreen.js";
 import { DEFAULT_SLOTS, resolveScreen } from "../src/shell/phaseScreens.js";
 import { DEFAULT_SETTINGS } from "../src/shell/settings.js";
-import { mount } from "./helpers/dom.js";
+import { mount, settle } from "./helpers/dom.js";
 import {
   ME,
   fakeEngine,
@@ -516,4 +516,50 @@ test("a finding on screen when thinking time ends stays, with the time's-up word
     assert.ok(!later.text().includes("A torn page"));
     await later.unmount();
   });
+});
+
+test("screen 4 scrolls each newly shown line into view; lines there from the start stay at the top", async () => {
+  const scrolled: string[] = [];
+  const proto = Element.prototype as unknown as {
+    scrollIntoView?: (arg?: unknown) => void;
+  };
+  const original = proto.scrollIntoView;
+  proto.scrollIntoView = function (this: Element) {
+    scrolled.push(this.textContent ?? "");
+  };
+  try {
+    const lines = [
+      { text: "First line.", speaker: null, hints: { pause_before_ms: 0 } },
+      { text: "Second line.", speaker: null, hints: { pause_before_ms: 0 } },
+    ];
+    reduceMotion(true);
+    const still = await mount(
+      createElement(StoryTv, {
+        sessionId: "g",
+        lobby: lobby(),
+        round: round({ lines }),
+      }),
+    );
+    assert.ok(still.text().includes("Second line."));
+    assert.deepEqual(scrolled, [], "all shown at once: no scrolling");
+    await still.unmount();
+
+    reduceMotion(false);
+    const staged = await mount(
+      createElement(StoryTv, {
+        sessionId: "g",
+        lobby: lobby(),
+        round: round({ lines }),
+      }),
+    );
+    assert.deepEqual(scrolled, [], "the first line is already in view");
+    await new Promise((resolve) => setTimeout(resolve, 2300));
+    await settle();
+    assert.ok(staged.text().includes("Second line."));
+    assert.deepEqual(scrolled, ["Second line."], "the new line is scrolled to");
+    await staged.unmount();
+  } finally {
+    proto.scrollIntoView = original;
+    reduceMotion(false);
+  }
 });

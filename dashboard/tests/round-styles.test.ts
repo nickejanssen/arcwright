@@ -58,3 +58,10 @@ test("nothing on the thinking-time TV is animated", () => {
   assert.ok(!/@keyframes/.test(css), "no keyframe animation in the stylesheet");
   assert.ok(!/\.tv-clock[^{]*\{[^}]*animation/.test(css));
 });
+
+test("the story lines scroll instead of being cut off", () => {
+  const body = ruleBody(".tv-lines");
+  assert.ok(!/overflow(-y)?:\s*hidden/.test(body), "no hidden overflow");
+  assert.match(body, /overflow-y:\s*auto/);
+  assert.match(body, /min-height:\s*0/);
+});

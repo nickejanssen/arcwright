@@ -296,8 +296,15 @@ html[data-reduce-motion="always"] *::after {
   gap: 1.5rem;
   width: 100%;
   max-width: 1500px;
-  overflow: hidden;
+  /* A long story scrolls instead of being cut off; the newest line is kept in
+     view by StoryTv. No scrollbar on the TV. */
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-width: none;
   text-align: left;
+}
+.tv-lines::-webkit-scrollbar {
+  display: none;
 }
 .tv-line {
   font-size: 2.75rem;
