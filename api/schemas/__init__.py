@@ -337,6 +337,7 @@ class CostSummaryResponse(BaseModel):
 
 class LobbyPlayerEntry(BaseModel):
     participant_id: UUID
+    character_id: UUID
     display_name: Optional[str] = None
 
 

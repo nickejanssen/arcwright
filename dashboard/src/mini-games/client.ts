@@ -147,6 +147,7 @@ export async function bootMiniGameStage(
   // checks that no newer refresh has begun. This prevents double-mount on
   // concurrent state_transition events and on the boot/streamLoop overlap.
   let refreshSequence = 0;
+  let playerNames: Record<string, string> = {};
   const isStale = (seq: number): boolean =>
     seq !== refreshSequence || opts.signal?.aborted === true;
 
@@ -215,12 +216,58 @@ export async function bootMiniGameStage(
       deadline_at: string | null;
       runtime_state?: Record<string, unknown> | null;
       presentation?: Record<string, unknown> | null;
+      phase_state?: Record<string, unknown> | null;
       my_submissions: Array<{
         submission_id: string;
         is_accepted: boolean;
         rejection_reason?: string | null;
       }>;
     };
+    let currentPlayerNames = playerNames;
+    if (opts.surface === "shared_display") {
+      const controller = new AbortController();
+      let timeout: ReturnType<typeof setTimeout> | undefined;
+      try {
+        const lobbyPlayers = await Promise.race([
+          (async () => {
+            const lobby = await doFetch(
+              `${baseUrl}/v1/sessions/${encodeURIComponent(opts.sessionId)}/lobby`,
+              { signal: controller.signal },
+            );
+            if (!lobby.ok) return null;
+            const body = (await lobby.json()) as {
+              players?: Array<{
+                character_id?: unknown;
+                display_name?: unknown;
+              }>;
+            };
+            return Array.isArray(body.players) ? body.players : null;
+          })(),
+          new Promise<null>((resolve) => {
+            timeout = setTimeout(() => {
+              controller.abort();
+              resolve(null);
+            }, 500);
+          }),
+        ]);
+        if (lobbyPlayers) {
+          currentPlayerNames = Object.fromEntries(
+            lobbyPlayers
+              .filter(
+                (p): p is { character_id: string; display_name: string } =>
+                  typeof p.character_id === "string" &&
+                  typeof p.display_name === "string" &&
+                  p.display_name.trim().length > 0,
+              )
+              .map((p) => [p.character_id, p.display_name]),
+          );
+        }
+      } catch {
+        // The game remains visible if the public lobby is temporarily unavailable.
+      } finally {
+        if (timeout !== undefined) clearTimeout(timeout);
+      }
+    }
     return {
       runId: data.run_id,
       gameId: data.game_id,
@@ -231,6 +278,10 @@ export async function bootMiniGameStage(
       deadlineAt: data.deadline_at,
       ...(data.runtime_state ? { runtimeState: data.runtime_state } : {}),
       ...(data.presentation ? { presentation: data.presentation } : {}),
+      ...(data.phase_state ? { phaseState: data.phase_state } : {}),
+      ...(opts.surface === "shared_display"
+        ? { playerNames: currentPlayerNames }
+        : {}),
       mySubmissions: data.my_submissions.map((s) =>
         toSubmissionResult(s.submission_id, s.is_accepted, s.rejection_reason),
       ),
@@ -369,6 +420,7 @@ export async function bootMiniGameStage(
     const mySeq = ++refreshSequence;
     const state = await fetchActiveState();
     if (isStale(mySeq)) return;
+    if (state?.playerNames) playerNames = state.playerNames;
     if (!state) {
       unmountActive();
       setStageState(stage, StageStates.Idle);

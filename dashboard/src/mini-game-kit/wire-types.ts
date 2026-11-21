@@ -1,7 +1,7 @@
 // Wire types the mini-game kit and loader share with the engine's API.
 // Copied from nightcap-web/src/types.ts (AW-329). The kit's MiniGameState is
 // deliberately not the SDK's: it carries runtimeState and presentation, which
-// package renderers read, not phaseState.
+// package renderers read.
 export type AudienceTarget =
   | "all"
   | "host_only"
@@ -77,6 +77,8 @@ export interface MiniGameState {
   deadlineAt: string | null;
   runtimeState?: Record<string, unknown>;
   presentation?: Record<string, unknown>;
+  phaseState?: Record<string, unknown>;
+  playerNames?: Record<string, string>;
   mySubmissions: MiniGameSubmissionResult[];
 }
 
