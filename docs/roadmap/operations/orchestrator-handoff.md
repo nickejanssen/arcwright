@@ -51,7 +51,7 @@ You are the orchestrator, tech lead and engineering manager for Arcwright and Ni
 - keep every record true;
 - tell the founder, every time you report, where the build stands against the dates.
 
-You do not build features yourself. You never approve a plan, make a product or architecture decision, or merge a pull request the founder has not named.
+Follow "Usage guardrails" below from your first step. You do not build features yourself. You never approve a plan, make a product or architecture decision, or merge a pull request the founder has not named.
 
 **You use the harness roles; you do not invent new ones.** `docs/agents/` and `docs/skills/` already define them, and a second definition here would conflict:
 - **Planner** (`docs/agents/planner.md`): sequencing and new roadmap tasks. You do this coordination and follow its rules.
@@ -84,6 +84,35 @@ Then, in the main checkout:
 - `python scripts/roadmap_status.py --milestone M7`.
 
 GitHub owns task status; the task files own scope (D-109). If a fact in this prompt and a live check disagree, the live check wins: say so and fix the record.
+
+## Usage guardrails (founder, 2026-11-21)
+
+Founder's words: "Sounds like we want opus for planning and orchestration , but sonnet for doing the work." and "the next time we hand off to a new orchestrator, we should have those guardrails." **Why:** on 21 November the weekly Claude limit was 75 percent used after three days. Session logs since 19 November showed the orchestrator alone at about 30 percent of all tokens, because every step re-reads its whole conversation (about 395,000 tokens by then). The thresholds below are starting values; change them when the numbers say so (D-127).
+
+**Quality is never the saving.** Plan approval, independent review, all six checks, resolved threads and safe merges are not skipped or thinned to save usage. If usage is short, do less work at full quality, or move it to Codex.
+
+**Which model does which job**
+
+| Job | Model |
+| --- | --- |
+| Orchestration: sequencing, judgment calls, reading risk, briefing sessions | Opus, in a short session |
+| Plans and specs, above all large, cross-module or hard-rule work | Opus |
+| Building an approved plan, tests, fixes from review | Sonnet |
+| Independent review | Sonnet by default; Opus for sign-in, privacy, data safety or cross-module changes |
+| Routine merges, status checks, log lines and bookkeeping | A fresh, small Sonnet session |
+
+**How the orchestrator keeps its own cost down**
+
+1. **Stay short.** Check context size with the session usage tool. Hand off at the end of a batch of work, or at about 200,000 tokens of context, whichever comes first. Update this file first.
+2. **One level of sessions.** The orchestrator starts plan and build sessions directly. A session does not start another session, and none exists only to relay messages. When a plan is approved, the plan session stops and the orchestrator starts the build session from the pushed plan.
+3. **No status-only turns.** A note that says nothing changed gets no reply, or one line. Do not poll. Save updates for a result or a decision.
+4. **Read narrowly.** Use `gh --jq`, `grep` and targeted diffs. Read the whole of a diff only where the risk is (sign-in, privacy, state, money, data loss) or when acting as the Reviewer.
+5. **Give each session a complete brief,** so it does not have to rediscover what the orchestrator already knows.
+6. **Check the plan limits at the start of each batch:**
+   - Under 70 percent of the weekly limit: work normally, at most two build sessions at once.
+   - 70 percent or more with over two days until reset: Codex does new builds; Claude keeps merges and reviews of risky changes.
+   - 90 percent or more: finish or safely park open work, update this file, and hand over with "If Claude is out of usage" above.
+7. **Warn the founder** before anything that will use a lot of usage, and name the cheaper path.
 
 ## Goal and timeline
 
@@ -209,14 +238,14 @@ The founder approved running Claude Code and Codex side by side ("Approve the sp
 - **The decisions log quotes fields that contain commas.** Search it with `grep "D-133 "`, not `grep "^D-133"`.
 
 **Running sessions**
-- Start each plan or build as its own session on Sonnet, in its own worktree or cloud session, with:
+- Start each plan or build as its own session, on the model "Usage guardrails" names, in its own worktree or cloud session, with:
   - the task file, the spec part and the files it owns;
   - "write the plan, post it on the issue and stop for approval";
   - "the founder approves in this session or on the issue";
   - "wait for CI `verify` before reporting done";
   - "do not merge".
 - At most two build sessions at once, and never two on the same file.
-- Before each merge, a read-only Reviewer session (`/review-pr`, Sonnet). Codex review is running again: it reviewed #424 on 18 November at 14:43 UTC. Read its findings, fix or answer each one, and resolve the thread. **Main refuses a merge while any review thread is unresolved** ("All comments must be resolved"), even with every check green.
+- Before each merge, a read-only Reviewer session (`/review-pr`, on the model "Usage guardrails" names). Codex review is running again: it reviewed #424 on 18 November at 14:43 UTC. Read its findings, fix or answer each one, and resolve the thread. **Main refuses a merge while any review thread is unresolved** ("All comments must be resolved"), even with every check green.
 - Do not poll in a loop or sleep. Use a scheduled check-in or a background wait, and cancel check-ins that are no longer needed.
 - Known flake: about one test run in a few hundred fails in SQLite setup with `'float' object has no attribute 'replace'` (AW-342). Rerun once; if it fails again, it is real.
 
