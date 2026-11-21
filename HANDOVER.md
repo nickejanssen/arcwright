@@ -2,7 +2,7 @@
 
 > Read `AGENTS.md` first, then this file, before touching code. It is the short start-of-session brief for every agent (Claude, Codex, Copilot) and for the founder. If it disagrees with a current source, investigate before acting, then fix this file. Keep it short and link to the owner of each detail.
 
-Last updated: 2026-11-21, checked against PR #480 head `a3dfd32` and base `eb11fb7`.
+Last updated: 2026-11-21, checked against main `eb11fb7` and open PRs #478 to #480.
 
 ## System map
 
@@ -23,7 +23,7 @@ Keep them apart. Nothing in `engine/` may name Nightcap or assume a murder myste
 - Nothing is deployed to the cloud. The game runs from the founder's PC through a tunnel.
 - The online paper test is paused (D-111). Do not restart it.
 - AI tooling is frozen to break-fixes until the rebuild's first TV session (D-110, D-111), with targeted exceptions for AW-318 retrieval (D-131) and the Arcwright-owned harness migration (D-132).
-- **Screens status (2026-11-21):** AW-332 part B (screens 10 to 12, #435) is implemented in PR #480 with all six checks passing. The founder TV run has not happened. AW-359 (#477) remains an open review-fix task on part A in PR #478.
+- **Screens status (2026-11-21):** AW-332 part B (screens 10 to 12, #435) is in PR #480. The founder TV run has not happened. AW-359 (#477) remains an open review-fix task on part A in PR #478.
 
 ## Where work lives
 
@@ -200,4 +200,3 @@ Add one dated entry per merged pull request: what changed, why, which checks cov
 - **2026-11-15** Reset consolidation. Recorded decisions D-112 to D-119 and ADR-0026; added milestone M7 and tasks AW-296 to AW-317 with matching GitHub issues; added the full target stack (technology stack 2.11), the creator roles (architecture 1.7), the reset audit, the knowledge-base upkeep routine, this file and the task issue template; rewrote the Nightcap status page. Documentation only. Open: everything in "Current work".
 - **2026-11-14** Added the dungeon master section and the founder communication style (PR #346). Documentation only.
 - **2026-11-19** Pull request #430 (AW-343, issue #423) merged. The menu read (`read_menu`, route `GET /me/menu`) now returns a private `rewards` list: `grant_id`, `run_id`, `beat_id`, `amount`, `kind`, one per saved mini-game `budget_grant` row for that player, in both the open and closed menu. `grant_id` is the row's own `decision_id`; the live `mini_game_reward_granted` message carries the same `grant_id`. The list and `remaining_budget` come from the same ledger rows (`_ledger` in `engine/session/choices.py`, `rewards_from_rows` in `engine/session/mini_game_reward.py`), so a grant that commits mid-read cannot show in one and not the other. `told` is unchanged and the read ignores it. The read keeps returning a reward for the rest of the game; the phone uses `grant_id` to show each once. No table, migration, dependency, prompt or model call. Spec 0095 screen 12's "(gap)" note is left for AW-332 to update. Founder review on the pull request found the snapshot race and a weak failure-path test; both fixed. Checks: all six required and optional checks, and Codex review with no findings, on the pull request; locally 1363 passed and 1 skipped, ruff, format and provider-leak clean.
-- **2026-11-21** Pull request #480 (AW-332 part B, screens 10 to 12, issue #435) merged after all six required checks passed on its final head. A separate Codex task approved the full diff with no blockers, and every review thread was answered and resolved. The phone reward card reads `rewards` and remaining budget from the menu, without relying on a live message or showing a placing. Dashboard tests: 148 passed locally; tests remain outside CI until AW-334. Not yet deployed or seen in the founder TV run.
