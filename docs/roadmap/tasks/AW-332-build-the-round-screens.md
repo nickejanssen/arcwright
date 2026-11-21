@@ -43,9 +43,11 @@ Build screens 4 to 12 of spec 0095: the story on the TV, the quiet TV during thi
 ## Acceptance Criteria
 
 - [x] Each of screens 4 to 12 has a component test with fixture data.
-- [x] The TV during thinking time shows only the round title, clock and who is ready (D-134).
+- [ ] The TV during thinking time shows only the round title, clock and who is ready (D-134).
 - [x] The phone's investigations-left number equals the route's number in every step.
 - [x] A reward shows on the phone from the menu read when no live message arrived.
+
+The D-134 criterion remains unchecked: the thinking-time TV also shows "Investigate on your phones" from the founder-approved copy sample on issue #435. The founder's direction on that conflict remains open in AW-359 (#477). No copy change is made here.
 
 ## Tests/Verification
 
