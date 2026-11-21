@@ -22,7 +22,21 @@ export default function MiniGamePhone(
   const [token, setToken] = useState<string | null>(null);
   const [tokenFailed, setTokenFailed] = useState(false);
   const [loading, setLoading] = useState(true);
-  const stageStateChanged = useCallback(() => setLoading(false), []);
+  const [stageMessage, setStageMessage] = useState<
+    "idle" | "unavailable" | "failed" | null
+  >(null);
+  const stageStateChanged = useCallback((state: string) => {
+    setLoading(false);
+    setStageMessage(
+      state === "idle"
+        ? "idle"
+        : state === "unavailable"
+          ? "unavailable"
+          : !state.startsWith("active:")
+            ? "failed"
+            : null,
+    );
+  }, []);
 
   useEffect(() => setLoading(true), [round.phaseEntry]);
 
@@ -76,6 +90,21 @@ export default function MiniGamePhone(
       {tokenFailed && (
         <p className="sh-error" role="alert">
           {copy.round.failed}
+        </p>
+      )}
+      {stageMessage === "idle" && (
+        <p className="sh-line" role="status">
+          {copy.round.noMiniGameInProgress}
+        </p>
+      )}
+      {stageMessage === "failed" && (
+        <p className="sh-error" role="alert">
+          {copy.round.miniGameCouldNotShow}
+        </p>
+      )}
+      {stageMessage === "unavailable" && (
+        <p className="sh-error" role="alert">
+          {copy.round.miniGameUnavailable}
         </p>
       )}
       {token && seat && (

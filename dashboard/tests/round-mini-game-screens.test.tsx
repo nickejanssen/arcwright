@@ -115,6 +115,63 @@ test("screen 10 distinguishes a network outage from a skipped mini-game", async 
   await page.unmount();
 });
 
+test("screen 10 shows a fallback when the package definition cannot load", async () => {
+  const services = fixtureServices();
+  services.loadDefinition = async () => {
+    throw new Error("definition unavailable");
+  };
+  const page = await mount(
+    createElement(MiniGameTv, {
+      ...base,
+      round: round({ phase: "mini_game", phaseEntry: 12 }),
+      stageServices: services,
+    }),
+  );
+  await settle();
+
+  assert.ok(page.text().includes("The mini-game could not be shown."));
+  await page.unmount();
+});
+
+test("screen 11 explains when no mini-game is running", async () => {
+  const services = fixtureServices();
+  const fetcher = services.fetcher!;
+  services.fetcher = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    if (String(input).endsWith("/mini-games/active")) {
+      return new Response("not found", { status: 404 });
+    }
+    return fetcher(input, init);
+  }) as typeof fetch;
+  const page = await mount(
+    createElement(MiniGamePhone, {
+      ...base,
+      round: round({ phase: "mini_game", phaseEntry: 12 }),
+      stageServices: services,
+    }),
+  );
+
+  assert.ok(page.text().includes("No mini-game in progress."));
+  await page.unmount();
+});
+
+test("screen 11 shows a fallback when the package definition cannot load", async () => {
+  const services = fixtureServices();
+  services.loadDefinition = async () => {
+    throw new Error("definition unavailable");
+  };
+  const page = await mount(
+    createElement(MiniGamePhone, {
+      ...base,
+      round: round({ phase: "mini_game", phaseEntry: 12 }),
+      stageServices: services,
+    }),
+  );
+  await settle();
+
+  assert.ok(page.text().includes("The mini-game could not be shown."));
+  await page.unmount();
+});
+
 test("screen 11 uses this seat's sign-in on the player route", async () => {
   const seen: string[] = [];
   const page = await mount(
