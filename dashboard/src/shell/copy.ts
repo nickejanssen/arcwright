@@ -87,6 +87,52 @@ export const copy = {
     },
   },
 
+  // The round screens (AW-332, the approved sample on issue #435). Square
+  // brackets in the sample are filled in by the screens. The case and the arc
+  // file supply the round title, the lines, the subject and choice labels and
+  // the notebook text.
+  round: {
+    ready: "Ready:",
+    readyWord: "ready",
+    notReadyWord: "not yet",
+    speaker: (name: string) => `${name}:`,
+    investigateOnPhones: "Investigate on your phones.",
+    eyesUp: "Eyes on the TV.",
+    imReady: "I'm ready",
+    readyWaiting: "Ready. Waiting for the others.",
+    whoYouAre: "Who you are",
+    lookInto: "Look into:",
+    left: (n: number) => `${n} left`,
+    isNew: "new",
+    isSeen: "seen",
+    kinds: {
+      person: "Person",
+      place: "Place",
+      object: "Object",
+      record: "Record",
+    } as Readonly<Record<string, string>>,
+    spend: (cost: number, left: number) => `Spend ${cost} of your ${left}?`,
+    spendIt: "Spend it",
+    notNow: "Not now",
+    noneLeft: "No investigations left. You can still reread.",
+    failed: "That did not work. Try again.",
+    timesUp: "Time's up. It's in your notebook.",
+    saved: "Saved to your notebook.",
+    backToList: "Back to the list",
+    tabNow: "Now",
+    tabNotebook: "Notebook",
+    ok: "OK",
+  },
+
+  notebook: {
+    title: "Notebook",
+    found: (n: number) => `${n} found`,
+    atTheStart: "At the start",
+    round: (n: number, title: string | null) =>
+      title ? `Round ${n}: ${title}` : `Round ${n}`,
+    empty: "Nothing yet. Look into something.",
+  },
+
   settings: {
     title: "Settings",
     back: "Back",

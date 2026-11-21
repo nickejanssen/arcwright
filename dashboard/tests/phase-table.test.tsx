@@ -38,8 +38,10 @@ function round(phase: string | null, status: RoundState["status"]): RoundState {
     phase,
     status,
     secondsLeft: 30,
+    phaseEntry: 1,
     readyCount: 0,
     playerCount: 3,
+    players: [],
     lines: [],
   };
 }
@@ -163,16 +165,21 @@ test("room, paused and ended come from the engine's status, ahead of any phase",
   );
 });
 
-test("the shipped slot maps are empty, so every phase shows the plain screens until AW-332 and AW-333", () => {
+test("the shipped slot maps fill scene, choices and bridge; mini_game and commit stay plain until their tasks", () => {
   for (const phase of PHASES) {
-    assert.equal(
-      resolveScreen(
-        "tv",
-        lobby("active"),
-        round(phase, "running"),
-        DEFAULT_SLOTS,
-      ).kind,
-      "fallback",
-    );
+    const filled =
+      phase === "scene" || phase === "choices" || phase === "bridge";
+    for (const surface of ["tv", "phone"] as const) {
+      assert.equal(
+        resolveScreen(
+          surface,
+          lobby("active"),
+          round(phase, "running"),
+          DEFAULT_SLOTS,
+        ).kind,
+        filled ? "phase" : "fallback",
+        `${surface} ${phase}`,
+      );
+    }
   }
 });

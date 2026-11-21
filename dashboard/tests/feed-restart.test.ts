@@ -31,8 +31,10 @@ function round(phase: string): RoundState {
     phase,
     status: "running",
     secondsLeft: 30,
+    phaseEntry: 1,
     readyCount: 0,
     playerCount: 3,
+    players: [],
     lines: [],
   };
 }
