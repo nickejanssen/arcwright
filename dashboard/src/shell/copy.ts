@@ -125,6 +125,7 @@ export const copy = {
     gettingGameReady: "Getting the game ready...",
     earnedInvestigation: "You earned one more investigation.",
     noMiniGameInProgress: "No mini-game in progress.",
+    miniGameUnavailable: "Could not reach the mini-game.",
   },
 
   notebook: {

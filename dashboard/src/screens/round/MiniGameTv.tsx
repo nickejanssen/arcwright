@@ -14,13 +14,16 @@ export default function MiniGameTv(
 ) {
   const [loading, setLoading] = useState(true);
   const [idle, setIdle] = useState(false);
+  const [unavailable, setUnavailable] = useState(false);
   const stageStateChanged = useCallback((state: string) => {
     setLoading(false);
     setIdle(state === "idle");
+    setUnavailable(state === "unavailable");
   }, []);
   useEffect(() => {
     setLoading(true);
     setIdle(false);
+    setUnavailable(false);
   }, [props.round.phaseEntry]);
 
   return (
@@ -34,6 +37,11 @@ export default function MiniGameTv(
       {idle && (
         <p className="tv-mini-game-idle" role="status">
           {copy.round.noMiniGameInProgress}
+        </p>
+      )}
+      {unavailable && (
+        <p className="tv-mini-game-loading" role="alert">
+          {copy.round.miniGameUnavailable}
         </p>
       )}
       <RoundMiniGameStage

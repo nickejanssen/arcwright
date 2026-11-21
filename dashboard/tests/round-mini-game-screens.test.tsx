@@ -93,6 +93,28 @@ test("screen 10 explains when no mini-game is running", async () => {
   await page.unmount();
 });
 
+test("screen 10 distinguishes a network outage from a skipped mini-game", async () => {
+  const services = fixtureServices();
+  const fetcher = services.fetcher!;
+  services.fetcher = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    if (String(input).endsWith("/mini-games/active/display")) {
+      throw new TypeError("Failed to fetch");
+    }
+    return fetcher(input, init);
+  }) as typeof fetch;
+  const page = await mount(
+    createElement(MiniGameTv, {
+      ...base,
+      round: round({ phase: "mini_game", phaseEntry: 12 }),
+      stageServices: services,
+    }),
+  );
+
+  assert.ok(page.text().includes("Could not reach the mini-game."));
+  assert.ok(!page.text().includes("No mini-game in progress."));
+  await page.unmount();
+});
+
 test("screen 11 uses this seat's sign-in on the player route", async () => {
   const seen: string[] = [];
   const page = await mount(

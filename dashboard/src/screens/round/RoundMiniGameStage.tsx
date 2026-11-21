@@ -1,7 +1,7 @@
 // Loads the package registry lazily so the screen tests can supply a fixture
 // renderer without relying on Vite's import.meta.glob transform.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { MiniGameStage } from "../../mini-games/MiniGameStage";
 import type { MiniGameDefinition, Surface } from "../../mini-game-kit/index";
@@ -35,6 +35,33 @@ export default function RoundMiniGameStage(props: Props) {
     props.services ?? null,
   );
   const [failed, setFailed] = useState(false);
+  const activeRequestOutcome = useRef<"not-found" | "other" | null>(null);
+  const fetcher = useMemo(() => {
+    if (!services) return undefined;
+    const request = services.fetcher ?? fetch;
+    return (async (input: RequestInfo | URL, init?: RequestInit) => {
+      const url =
+        typeof input === "string"
+          ? input
+          : input instanceof URL
+            ? input.toString()
+            : input.url;
+      const isActiveRead = /\/mini-games\/active(?:\/display)?(?:[?#]|$)/.test(
+        url,
+      );
+      try {
+        const response = await request(input, init);
+        if (isActiveRead) {
+          activeRequestOutcome.current =
+            response.status === 404 ? "not-found" : "other";
+        }
+        return response;
+      } catch (error) {
+        if (isActiveRead) activeRequestOutcome.current = "other";
+        throw error;
+      }
+    }) as typeof fetch;
+  }, [services]);
 
   useEffect(() => {
     if (!services) return;
@@ -43,7 +70,12 @@ export default function RoundMiniGameStage(props: Props) {
     );
     if (!stage) return;
     const observer = new MutationObserver(() => {
-      props.onStageState(stage.dataset.miniGameState ?? "idle");
+      const state = stage.dataset.miniGameState ?? "idle";
+      props.onStageState(
+        state === "idle" && activeRequestOutcome.current !== "not-found"
+          ? "unavailable"
+          : state,
+      );
     });
     observer.observe(stage, {
       attributes: true,
@@ -95,7 +127,7 @@ export default function RoundMiniGameStage(props: Props) {
         token={props.token}
         registry={services.registry}
         loadDefinition={services.loadDefinition}
-        fetcher={services.fetcher}
+        fetcher={fetcher}
         perfTransport={services.perfTransport}
       />
     </div>
