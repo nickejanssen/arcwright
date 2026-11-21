@@ -18,6 +18,10 @@ const PREVIEW_LABEL = "NON_AUTHORITATIVE_PREVIEW";
 const GAME_ID = "tell-me-something-true";
 
 type Status = MiniGameContext["state"]["status"];
+type DisplayState = MiniGameContext["state"] & {
+  phaseState?: Record<string, unknown>;
+  playerNames?: Record<string, string>;
+};
 
 interface PromptContent {
   prompt: string;
@@ -415,7 +419,7 @@ export default defineRenderer({
       shell.appendChild(reveal);
       const timer = addTimer(shell, ctx);
       let count = 0;
-      let currentState = ctx.state;
+      let currentState: DisplayState = ctx.state;
 
       const showSpotlight = (target: unknown): void => {
         const name =
@@ -445,7 +449,7 @@ export default defineRenderer({
             : phaseLabel(state.status),
         );
         if (state.status === "active" && step === "spotlight") {
-          showSpotlight(state.phaseState?.target_character_id);
+          showSpotlight(currentState.phaseState?.target_character_id);
         } else {
           setText(spotlight, "The room is warming up.");
         }
