@@ -79,6 +79,15 @@ export interface MiniGameState {
   presentation?: Record<string, unknown>;
   phaseState?: Record<string, unknown>;
   playerNames?: Record<string, string>;
+  resultHold?: {
+    phaseEntry: number;
+    standing: string[][];
+    myReady?: boolean;
+    readyCount?: number;
+    playerCount?: number;
+    paused?: boolean;
+    secondsLeft?: number | null;
+  };
   mySubmissions: MiniGameSubmissionResult[];
 }
 

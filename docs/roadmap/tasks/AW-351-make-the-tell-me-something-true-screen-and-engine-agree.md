@@ -353,6 +353,6 @@ tests in `api/tests/test_mini_game_views_api.py` and
   Push the same branch, wait for all six CI checks, answer every review thread,
   and do not merge or deploy.
 
-**Plan approval is pending.** The founder's design and narrow decision-log
-exception do not approve this plan. The absent real phased arc is a prerequisite
-gap for the live Nightcap opt-in and must not be quietly marked complete.
+**Plan approved:** The founder approved implementation on 2026-11-21. The
+absent real phased arc remains a prerequisite gap for the live Nightcap opt-in
+and must not be quietly marked complete.

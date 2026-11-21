@@ -90,6 +90,9 @@ const STATE_TRANSITION_EVENT_TYPES = new Set([
   "mini_game_cancelled",
   "mini_game_paused",
   "mini_game_resumed",
+  "mini_game_result_hold",
+  "mini_game_result_ready_changed",
+  "phase_changed",
 ]);
 
 function setStageState(stage: HTMLElement, state: StageState): void {
@@ -148,6 +151,12 @@ export async function bootMiniGameStage(
   // concurrent state_transition events and on the boot/streamLoop overlap.
   let refreshSequence = 0;
   let playerNames: Record<string, string> = {};
+  let lastState: MiniGameState | null = null;
+  let namesLoading = false;
+  let namesRetry: ReturnType<typeof setTimeout> | undefined;
+  let namesAbort: AbortController | undefined;
+  let resultPoll: ReturnType<typeof setTimeout> | undefined;
+  let readFailed = false;
   const isStale = (seq: number): boolean =>
     seq !== refreshSequence || opts.signal?.aborted === true;
 
@@ -198,16 +207,177 @@ export async function bootMiniGameStage(
   const authHeaders = (): Record<string, string> =>
     opts.token ? { Authorization: `Bearer ${opts.token}` } : {};
 
+  const loadNames = async (runId: string): Promise<void> => {
+    if (namesLoading) return;
+    namesLoading = true;
+    let succeeded = false;
+    const controller = new AbortController();
+    namesAbort = controller;
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    try {
+      const lobby = await Promise.race([
+        doFetch(
+          `${baseUrl}/v1/sessions/${encodeURIComponent(opts.sessionId)}/lobby`,
+          { signal: controller.signal },
+        ),
+        new Promise<Response>((_, reject) => {
+          timeout = setTimeout(() => {
+            controller.abort();
+            reject(new Error("name lookup timed out"));
+          }, 5000);
+        }),
+      ]);
+      if (!lobby.ok) return;
+      const body = (await lobby.json()) as {
+        players?: Array<{
+          character_id?: unknown;
+          participant_id?: unknown;
+          display_name?: unknown;
+        }>;
+      };
+      const names: Record<string, string> = {};
+      for (const player of body.players ?? []) {
+        if (
+          typeof player.display_name !== "string" ||
+          !player.display_name.trim()
+        )
+          continue;
+        if (typeof player.character_id === "string")
+          names[player.character_id] = player.display_name;
+        if (typeof player.participant_id === "string")
+          names[player.participant_id] = player.display_name;
+      }
+      if (
+        stream.cancelled ||
+        opts.signal?.aborted ||
+        lastState?.runId !== runId
+      )
+        return;
+      playerNames = names;
+      succeeded = true;
+      if (lastState && active && active.runId === lastState.runId) {
+        lastState = { ...lastState, playerNames };
+        active.lifecycle.update(lastState);
+      }
+    } catch {
+      // A later refresh retries the public names lookup.
+    } finally {
+      if (timeout !== undefined) clearTimeout(timeout);
+      namesLoading = false;
+      namesAbort = undefined;
+      if (lastState && lastState.runId !== runId && !stream.cancelled) {
+        void loadNames(lastState.runId);
+      } else if (!succeeded && !stream.cancelled && !opts.signal?.aborted) {
+        namesRetry = setTimeout(() => {
+          namesRetry = undefined;
+          if (lastState) void loadNames(lastState.runId);
+        }, 2000);
+      }
+    }
+  };
+
   const fetchActiveState = async (): Promise<MiniGameState | null> => {
+    readFailed = false;
     const url = `${baseUrl}/v1/sessions/${encodeURIComponent(opts.sessionId)}/mini-games/active${opts.token ? "" : "/display"}`;
     let res: Response;
     try {
       res = await doFetch(url, { headers: authHeaders() });
     } catch {
+      readFailed = true;
       return null;
     }
-    if (res.status === 404) return null;
-    if (!res.ok) return null;
+    if (res.status === 404) {
+      try {
+        const result = await doFetch(
+          `${baseUrl}/v1/sessions/${encodeURIComponent(opts.sessionId)}/mini-games/result/display`,
+        );
+        if (result.status === 404) return null;
+        if (!result.ok) {
+          readFailed = true;
+          return null;
+        }
+        const data = (await result.json()) as {
+          run_id: string;
+          game_id: string;
+          definition_version: string;
+          phase_entry: number;
+          deadline_at: string | null;
+          standing: string[][];
+        };
+        let myReady = false;
+        let readyCount: number | undefined;
+        let playerCount: number | undefined;
+        let paused = false;
+        let secondsLeft: number | null = null;
+        {
+          const roomController = new AbortController();
+          let roomTimeout: ReturnType<typeof setTimeout> | undefined;
+          try {
+            const room = await Promise.race([
+              doFetch(
+                `${baseUrl}/v1/sessions/${encodeURIComponent(opts.sessionId)}/room`,
+                { signal: roomController.signal },
+              ),
+              new Promise<Response>((_, reject) => {
+                roomTimeout = setTimeout(() => {
+                  roomController.abort();
+                  reject(new Error("room lookup timed out"));
+                }, 1000);
+              }),
+            ]);
+            if (room.ok) {
+              const body = (await room.json()) as {
+                phase_entry?: number;
+                players?: Array<{ participant_id: string; ready: boolean }>;
+                ready_count?: number;
+                player_count?: number;
+                paused?: boolean;
+                seconds_left?: number | null;
+              };
+              if (body.phase_entry !== data.phase_entry) return null;
+              myReady =
+                body.phase_entry === data.phase_entry &&
+                body.players?.some(
+                  (p) => p.participant_id === opts.participantId && p.ready,
+                ) === true;
+              readyCount = body.ready_count;
+              playerCount = body.player_count;
+              paused = body.paused === true;
+              secondsLeft = body.seconds_left ?? null;
+            }
+          } catch {
+            // The ready action remains idempotent when the room read fails.
+          } finally {
+            if (roomTimeout !== undefined) clearTimeout(roomTimeout);
+          }
+        }
+        return {
+          runId: data.run_id,
+          gameId: data.game_id,
+          definitionVersion: data.definition_version,
+          status: "completed",
+          deadlineAt: data.deadline_at,
+          resultHold: {
+            phaseEntry: data.phase_entry,
+            standing: data.standing,
+            myReady,
+            readyCount,
+            playerCount,
+            paused,
+            secondsLeft,
+          },
+          playerNames,
+          mySubmissions: [],
+        };
+      } catch {
+        readFailed = true;
+        return null;
+      }
+    }
+    if (!res.ok) {
+      readFailed = true;
+      return null;
+    }
     const data = (await res.json()) as {
       run_id: string;
       game_id: string;
@@ -223,51 +393,6 @@ export async function bootMiniGameStage(
         rejection_reason?: string | null;
       }>;
     };
-    let currentPlayerNames = playerNames;
-    if (opts.surface === "shared_display") {
-      const controller = new AbortController();
-      let timeout: ReturnType<typeof setTimeout> | undefined;
-      try {
-        const lobbyPlayers = await Promise.race([
-          (async () => {
-            const lobby = await doFetch(
-              `${baseUrl}/v1/sessions/${encodeURIComponent(opts.sessionId)}/lobby`,
-              { signal: controller.signal },
-            );
-            if (!lobby.ok) return null;
-            const body = (await lobby.json()) as {
-              players?: Array<{
-                character_id?: unknown;
-                display_name?: unknown;
-              }>;
-            };
-            return Array.isArray(body.players) ? body.players : null;
-          })(),
-          new Promise<null>((resolve) => {
-            timeout = setTimeout(() => {
-              controller.abort();
-              resolve(null);
-            }, 500);
-          }),
-        ]);
-        if (lobbyPlayers) {
-          currentPlayerNames = Object.fromEntries(
-            lobbyPlayers
-              .filter(
-                (p): p is { character_id: string; display_name: string } =>
-                  typeof p.character_id === "string" &&
-                  typeof p.display_name === "string" &&
-                  p.display_name.trim().length > 0,
-              )
-              .map((p) => [p.character_id, p.display_name]),
-          );
-        }
-      } catch {
-        // The game remains visible if the public lobby is temporarily unavailable.
-      } finally {
-        if (timeout !== undefined) clearTimeout(timeout);
-      }
-    }
     return {
       runId: data.run_id,
       gameId: data.game_id,
@@ -279,9 +404,7 @@ export async function bootMiniGameStage(
       ...(data.runtime_state ? { runtimeState: data.runtime_state } : {}),
       ...(data.presentation ? { presentation: data.presentation } : {}),
       ...(data.phase_state ? { phaseState: data.phase_state } : {}),
-      ...(opts.surface === "shared_display"
-        ? { playerNames: currentPlayerNames }
-        : {}),
+      ...(opts.surface === "shared_display" ? { playerNames } : {}),
       mySubmissions: data.my_submissions.map((s) =>
         toSubmissionResult(s.submission_id, s.is_accepted, s.rejection_reason),
       ),
@@ -329,6 +452,24 @@ export async function bootMiniGameStage(
     characterId: opts.characterId,
     state,
     definition,
+    ...(opts.token
+      ? {
+          markReady: async (phaseEntry: number) => {
+            const res = await doFetch(
+              `${baseUrl}/v1/sessions/${encodeURIComponent(opts.sessionId)}/me/ready`,
+              {
+                method: "POST",
+                headers: {
+                  ...authHeaders(),
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ phase_entry: phaseEntry }),
+              },
+            );
+            if (!res.ok) throw new Error(`ready failed: ${res.status}`);
+          },
+        }
+      : {}),
     submit: async (payload, submissionId) => {
       const id = submissionId ?? generateSubmissionId(state, stream, view);
       return submitAction(state.runId, id, payload);
@@ -414,14 +555,40 @@ export async function bootMiniGameStage(
       lifecycle: mountedLifecycle,
       unsubscribeEvents: unsubscribe,
     };
+    if (lastState?.runId === state.runId) {
+      lastState = { ...lastState, playerNames };
+      active.lifecycle.update(lastState);
+    }
   };
 
   const refresh = async (): Promise<void> => {
     const mySeq = ++refreshSequence;
+    const previousState = lastState;
     const state = await fetchActiveState();
     if (isStale(mySeq)) return;
-    if (state?.playerNames) playerNames = state.playerNames;
+    if (lastState?.runId !== state?.runId) {
+      playerNames = {};
+      namesAbort?.abort();
+    }
+    lastState = state;
+    if (resultPoll !== undefined) clearTimeout(resultPoll);
+    resultPoll = state?.resultHold
+      ? setTimeout(() => {
+          void refresh();
+        }, 2000)
+      : undefined;
+    if (state) {
+      state.playerNames = playerNames;
+      void loadNames(state.runId);
+    }
     if (!state) {
+      if (readFailed && previousState?.resultHold) {
+        lastState = previousState;
+        resultPoll = setTimeout(() => {
+          void refresh();
+        }, 1000);
+        return;
+      }
       unmountActive();
       setStageState(stage, StageStates.Idle);
       return;
@@ -504,6 +671,11 @@ export async function bootMiniGameStage(
     refresh,
     unmount: () => {
       stream.cancelled = true;
+      if (namesRetry !== undefined) clearTimeout(namesRetry);
+      if (resultPoll !== undefined) clearTimeout(resultPoll);
+      namesAbort?.abort();
+      refreshSequence++;
+      lastState = null;
       if (stream.reader) {
         void stream.reader.cancel();
         stream.reader = null;

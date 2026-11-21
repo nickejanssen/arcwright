@@ -16,7 +16,7 @@ from pydantic import ValidationError
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from engine.arc.models import ArcDefinition
+from engine.arc.models import ArcDefinition, PhaseDefinition
 from engine.arc.registry import load_arc_definition
 from engine.characters.service import CharacterService
 from engine.db.orm import Decision, Event
@@ -32,6 +32,7 @@ from engine.session.phases import (
     mark_ready,
     round_view,
     tick,
+    valid_result_standing,
 )
 from engine.session.service import SessionService
 from engine.tests.rounds_support import (
@@ -59,6 +60,39 @@ SECONDS = {
     "mini_game": MINI_GAME_SECONDS,
     "bridge": BRIDGE_SECONDS,
 }
+
+
+def test_result_hold_schema_requires_explicit_public_mini_game() -> None:
+    legacy = PhaseDefinition(kind="mini_game", seconds=30)
+    assert legacy.result_hold_seconds is None
+    assert legacy.result_public is False
+    hold = PhaseDefinition(
+        kind="mini_game", seconds=30, result_hold_seconds=15, result_public=True
+    )
+    assert hold.result_hold_seconds == 15
+    for values in (
+        {"kind": "mini_game", "result_hold_seconds": 0, "result_public": True},
+        {"kind": "mini_game", "result_hold_seconds": 15},
+        {"kind": "mini_game", "result_public": True},
+        {"kind": "scene", "result_hold_seconds": 15, "result_public": True},
+    ):
+        with pytest.raises(ValidationError):
+            PhaseDefinition(seconds=30, **values)
+
+
+def test_result_standing_requires_exactly_the_eligible_players() -> None:
+    assert valid_result_standing([["a"], ["b"]], {"a", "b"})
+    assert valid_result_standing([["a", "b"]], {"a", "b"})
+    for standing in (
+        [],
+        [[]],
+        [["a"]],
+        [["a", "a", "b"]],
+        [["a", "b", "c"]],
+        "private",
+    ):
+        assert not valid_result_standing(standing, {"a", "b"})
+    assert not valid_result_standing([], set())
 
 
 @pytest_asyncio.fixture()
