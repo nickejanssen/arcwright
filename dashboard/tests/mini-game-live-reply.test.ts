@@ -89,6 +89,7 @@ async function bootWith(
     display: replies[phase].shared_display,
     active: replies[phase].player,
   },
+  fetcher: typeof fetch = serverReturning(reply),
 ) {
   const window = new HappyWindow();
   const stage = window.document.createElement(
@@ -117,7 +118,7 @@ async function bootWith(
     characterId: "c-1",
     loadDefinition: async () => tmstDefinition as unknown as MiniGameDefinition,
     view: window as unknown as Window,
-    fetcher: serverReturning(reply),
+    fetcher,
     perfTransport: "none",
   });
   assert.equal(seen.length, 1, "the screen was mounted once");
@@ -251,4 +252,91 @@ test("spotlight events use the public name and never show an unknown ID", async 
   await close(window);
   assert.match(named, /Alex/);
   assert.doesNotMatch(unknown, /unknown-id|Alex/);
+});
+
+test("a stalled lobby cannot block the shared game from mounting", async () => {
+  const reply = {
+    display: replies.input.shared_display,
+    active: replies.input.player,
+  };
+  const standard = serverReturning(reply);
+  let release!: () => void;
+  const stalled = new Promise<Response>((resolve) => {
+    release = () => resolve(new Response("unavailable", { status: 503 }));
+  });
+  const fetcher: typeof fetch = (input, init) =>
+    String(input).endsWith("/lobby") ? stalled : standard(input, init);
+  const boot = bootWith("input", "shared_display", reply, fetcher);
+  const result = await Promise.race([
+    boot.then(() => "mounted"),
+    new Promise<string>((resolve) =>
+      setTimeout(() => resolve("blocked"), 1800),
+    ),
+  ]);
+  release();
+  const { controller, window } = await boot;
+  controller.unmount();
+  await close(window);
+  assert.equal(result, "mounted");
+});
+
+test("legacy spotlight labels remain visible without a player-name mapping", async () => {
+  const { stage, controller, window, lifecycle } = await bootWith(
+    "input",
+    "shared_display",
+  );
+  lifecycle.handleEvent({
+    event_type: "tmst_spotlight_started",
+    payload: { target_character_id: "legacy-id", spotlight_label: "Vesper" },
+  } as Parameters<SurfaceLifecycle["handleEvent"]>[0]);
+  const shown =
+    stage.querySelector('[data-role="spotlight"]')?.textContent ?? "";
+  controller.unmount();
+  await close(window);
+  assert.match(shown, /Vesper/);
+});
+
+test("a failed lobby refresh keeps previously received public names", async () => {
+  const reply = {
+    display: replies.input.shared_display,
+    active: replies.input.player,
+  };
+  const standard = serverReturning(reply);
+  let failLobby = false;
+  const fetcher: typeof fetch = (input, init) =>
+    failLobby && String(input).endsWith("/lobby")
+      ? Promise.resolve(new Response("unavailable", { status: 503 }))
+      : standard(input, init);
+  const { stage, controller, window } = await bootWith(
+    "input",
+    "shared_display",
+    reply,
+    fetcher,
+  );
+  failLobby = true;
+  reply.display = replies.spotlight.shared_display;
+  await controller.refresh();
+  const shown =
+    stage.querySelector('[data-role="spotlight"]')?.textContent ?? "";
+  controller.unmount();
+  await close(window);
+  assert.match(shown, /Alex/);
+});
+
+test("a legacy spotlight label remains visible on mount", async () => {
+  const display = {
+    ...replies.input.shared_display,
+    runtime_state: { spotlight_label: "Vesper" },
+  };
+  const reply = { display, active: replies.input.player };
+  const { stage, controller, window } = await bootWith(
+    "input",
+    "shared_display",
+    reply,
+  );
+  const shown =
+    stage.querySelector('[data-role="spotlight"]')?.textContent ?? "";
+  controller.unmount();
+  await close(window);
+  assert.match(shown, /Vesper/);
 });

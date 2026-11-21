@@ -421,7 +421,7 @@ export default defineRenderer({
       let count = 0;
       let currentState: DisplayState = ctx.state;
 
-      const showSpotlight = (target: unknown): void => {
+      const showSpotlight = (target: unknown, legacyLabel?: unknown): void => {
         const name =
           typeof target === "string"
             ? currentState.playerNames?.[target]
@@ -430,7 +430,7 @@ export default defineRenderer({
           spotlight,
           name
             ? `${name} is in the spotlight.`
-            : "A player is in the spotlight.",
+            : text(legacyLabel, "A player is in the spotlight."),
         );
       };
 
@@ -450,6 +450,14 @@ export default defineRenderer({
         );
         if (state.status === "active" && step === "spotlight") {
           showSpotlight(currentState.phaseState?.target_character_id);
+        } else if (typeof step !== "string" && state.status === "active") {
+          setText(
+            spotlight,
+            text(
+              state.runtimeState?.spotlight_label,
+              "The room is warming up.",
+            ),
+          );
         } else {
           setText(spotlight, "The room is warming up.");
         }
@@ -481,7 +489,7 @@ export default defineRenderer({
           if (event.event_type === "tmst_spotlight_started") {
             const data = record(event.payload);
             setText(phase, "Spotlight: truth or lie?");
-            showSpotlight(data.target_character_id);
+            showSpotlight(data.target_character_id, data.spotlight_label);
             return;
           }
           if (event.event_type === "tmst_reveal_resolved") {
