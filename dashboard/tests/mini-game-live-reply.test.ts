@@ -39,10 +39,10 @@ const replies = recorded as unknown as Record<
 >;
 
 function emptyStream(): Response {
-  return new Response(
-    new ReadableStream<Uint8Array>({ start: (c) => c.close() }),
-    { status: 200, headers: { "content-type": "text/event-stream" } },
-  );
+  return new Response(new ReadableStream<Uint8Array>(), {
+    status: 200,
+    headers: { "content-type": "text/event-stream" },
+  });
 }
 
 // The shared screen reads the public address; a phone reads the signed-in one.
@@ -223,6 +223,7 @@ test("the recorded spotlight names the player on the shared screen", async () =>
     "spotlight",
     "shared_display",
   );
+  await new Promise((resolve) => setTimeout(resolve, 0));
   const spotlight =
     stage.querySelector('[data-role="spotlight"]')?.textContent ?? "";
   controller.unmount();
@@ -235,6 +236,7 @@ test("spotlight events use the public name and never show an unknown ID", async 
     "input",
     "shared_display",
   );
+  await new Promise((resolve) => setTimeout(resolve, 0));
   const event = {
     event_type: "tmst_spotlight_started",
     payload: { target_character_id: "a0000000-0000-4000-8000-0000000000c2" },
@@ -278,6 +280,182 @@ test("a stalled lobby cannot block the shared game from mounting", async () => {
   controller.unmount();
   await close(window);
   assert.equal(result, "mounted");
+});
+
+test("a completed result shows the public standing after a slow lobby reply", async () => {
+  let release!: (response: Response) => void;
+  const lobby = new Promise<Response>((resolve) => {
+    release = resolve;
+  });
+  const fetcher: typeof fetch = async (input) => {
+    const url = String(input);
+    if (url.endsWith("/mini-games/active/display"))
+      return new Response("", { status: 404 });
+    if (url.endsWith("/mini-games/result/display"))
+      return Response.json({
+        run_id: "r",
+        game_id: GAME_ID,
+        definition_version: "0.1.0",
+        phase_entry: 3,
+        deadline_at: null,
+        standing: [["participant-a"]],
+      });
+    if (url.endsWith("/lobby")) return lobby;
+    return new Response("", { status: 404 });
+  };
+  const { stage, controller, window } = await bootWith(
+    "input",
+    "shared_display",
+    undefined,
+    fetcher,
+  );
+  assert.match(stage.textContent ?? "", /Player/);
+  release(
+    Response.json({
+      players: [{ participant_id: "participant-a", display_name: "Alex" }],
+    }),
+  );
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.match(stage.textContent ?? "", /Alex/);
+  assert.doesNotMatch(stage.textContent ?? "", /participant-a/);
+  controller.unmount();
+  await close(window);
+});
+
+test("the phone can mark the held visit ready", async () => {
+  let posted: unknown;
+  const fetcher: typeof fetch = async (input, init) => {
+    const url = String(input);
+    if (url.endsWith("/mini-games/active"))
+      return new Response("", { status: 404 });
+    if (url.endsWith("/mini-games/result/display"))
+      return Response.json({
+        run_id: "r",
+        game_id: GAME_ID,
+        definition_version: "0.1.0",
+        phase_entry: 3,
+        deadline_at: null,
+        standing: [["p-1"]],
+      });
+    if (url.endsWith("/room"))
+      return Response.json({
+        phase_entry: 3,
+        players: [{ participant_id: "p-1", ready: false }],
+      });
+    if (url.endsWith("/me/ready")) {
+      posted = JSON.parse(String(init?.body));
+      return Response.json({});
+    }
+    return new Response("", { status: 404 });
+  };
+  const { stage, controller, window } = await bootWith(
+    "input",
+    "phone",
+    undefined,
+    fetcher,
+  );
+  (
+    stage.querySelector('[data-role="result-ready"]') as HTMLButtonElement
+  ).click();
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.deepEqual(posted, { phase_entry: 3 });
+  assert.match(stage.textContent ?? "", /Waiting for the room/);
+  controller.unmount();
+  await close(window);
+});
+
+test("result refresh shows ready count and the paused clock", async () => {
+  const fetcher: typeof fetch = async (input) => {
+    const url = String(input);
+    if (url.endsWith("/mini-games/active/display"))
+      return new Response("", { status: 404 });
+    if (url.endsWith("/mini-games/result/display"))
+      return Response.json({
+        run_id: "r",
+        game_id: GAME_ID,
+        definition_version: "0.1.0",
+        phase_entry: 3,
+        deadline_at: null,
+        standing: [["p-1", "p-2"]],
+      });
+    if (url.endsWith("/room"))
+      return Response.json({
+        phase_entry: 3,
+        paused: true,
+        seconds_left: 11,
+        ready_count: 1,
+        player_count: 2,
+      });
+    return new Response("", { status: 404 });
+  };
+  const { stage, controller, window } = await bootWith(
+    "input",
+    "shared_display",
+    undefined,
+    fetcher,
+  );
+  assert.match(stage.textContent ?? "", /1 of 2 ready/);
+  assert.match(
+    stage.querySelector('[data-role="timer"]')?.textContent ?? "",
+    /0:11/,
+  );
+  controller.unmount();
+  await close(window);
+});
+
+test("a late name lookup from an earlier run cannot rename the next run", async () => {
+  let runId = "run-a";
+  let releaseOld!: (response: Response) => void;
+  const oldLobby = new Promise<Response>((resolve) => {
+    releaseOld = resolve;
+  });
+  let lobbyCalls = 0;
+  const fetcher: typeof fetch = async (input) => {
+    const url = String(input);
+    if (url.endsWith("/mini-games/active/display"))
+      return Response.json({
+        ...replies.spotlight.shared_display,
+        run_id: runId,
+      });
+    if (url.endsWith("/lobby")) {
+      lobbyCalls++;
+      return lobbyCalls === 1
+        ? oldLobby
+        : Response.json({
+            players: [
+              {
+                character_id: "a0000000-0000-4000-8000-0000000000c2",
+                display_name: "New Name",
+              },
+            ],
+          });
+    }
+    return new Response("", { status: 404 });
+  };
+  const { stage, controller, window } = await bootWith(
+    "spotlight",
+    "shared_display",
+    undefined,
+    fetcher,
+  );
+  runId = "run-b";
+  await controller.refresh();
+  releaseOld(
+    Response.json({
+      players: [
+        {
+          character_id: "a0000000-0000-4000-8000-0000000000c2",
+          display_name: "Old Name",
+        },
+      ],
+    }),
+  );
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.doesNotMatch(stage.textContent ?? "", /Old Name/);
+  assert.match(stage.textContent ?? "", /New Name/);
+  controller.unmount();
+  await close(window);
 });
 
 test("legacy spotlight labels remain visible without a player-name mapping", async () => {

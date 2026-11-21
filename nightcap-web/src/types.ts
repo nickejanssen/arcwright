@@ -67,6 +67,16 @@ export interface MiniGameSubmissionResult {
 }
 
 export interface MiniGameState {
+  resultHold?: {
+    phaseEntry: number;
+    standing: string[][];
+    myReady?: boolean;
+    readyCount?: number;
+    playerCount?: number;
+    paused?: boolean;
+    secondsLeft?: number | null;
+  };
+  playerNames?: Record<string, string>;
   runId: string;
   gameId: string;
   definitionVersion?: string;

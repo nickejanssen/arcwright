@@ -44,6 +44,15 @@ function text(value: unknown, fallback: string): string {
   return typeof value === "string" && value.trim() ? value : fallback;
 }
 
+function standingText(state: MiniGameContext["state"]): string {
+  return (state.resultHold?.standing ?? [])
+    .map(
+      (tier, index) =>
+        `${index + 1}. ${tier.map((id) => state.playerNames?.[id] ?? "Player").join(" & ")}`,
+    )
+    .join(" | ");
+}
+
 function presentation(ctx: MiniGameContext): Record<string, unknown> {
   return record(ctx.state.presentation);
 }
@@ -131,7 +140,11 @@ function addPreviewShell(
 function addTimer(
   parent: HTMLElement,
   ctx: MiniGameContext,
-): { node: HTMLElement; cancel: () => void } {
+): {
+  node: HTMLElement;
+  cancel: () => void;
+  update: (deadline: string | null) => void;
+} {
   const doc = parent.ownerDocument;
   const node = el(
     doc,
@@ -140,12 +153,24 @@ function addTimer(
     ["--:--"],
   );
   parent.appendChild(node);
-  const countdown = useCountdown({
-    deadlineAt: ctx.state.deadlineAt,
-    view: doc.defaultView,
-    onTick: (remaining) => setText(node, formatRemaining(remaining)),
-  });
-  return { node, cancel: countdown.cancel };
+  let deadline = ctx.state.deadlineAt;
+  const start = (at: string | null) =>
+    useCountdown({
+      deadlineAt: at,
+      view: doc.defaultView,
+      onTick: (remaining) => setText(node, formatRemaining(remaining)),
+    });
+  let countdown = start(deadline);
+  return {
+    node,
+    cancel: () => countdown.cancel(),
+    update: (next) => {
+      if (next === deadline) return;
+      deadline = next;
+      countdown.cancel();
+      countdown = start(next);
+    },
+  };
 }
 
 export default defineRenderer({
@@ -231,16 +256,29 @@ export default defineRenderer({
         "aria-live": "polite",
         hidden: true,
       });
+      const readyButton = el(
+        doc,
+        "button",
+        {
+          type: "button",
+          class: "tmst-button",
+          "data-role": "result-ready",
+          hidden: true,
+        },
+        ["Ready to continue"],
+      );
       shell.appendChild(status);
       shell.appendChild(prompt);
       shell.appendChild(statementInput);
       shell.appendChild(actionRow);
       shell.appendChild(voteRow);
       shell.appendChild(result);
+      shell.appendChild(readyButton);
       const timer = addTimer(shell, ctx);
 
       let promptReady = false;
       let currentVote: VotePrompt | null = null;
+      let currentState = ctx.state;
       const statementGuard = createSubmissionGuard({
         submit: async (submissionId, payload) =>
           ctx.submit(payload, submissionId).catch(() => ({
@@ -259,6 +297,30 @@ export default defineRenderer({
       });
 
       const applyStatus = (state: MiniGameContext["state"]): void => {
+        currentState = state;
+        timer.update(state.deadlineAt);
+        if (state.resultHold?.paused && state.resultHold.secondsLeft != null)
+          setText(
+            timer.node,
+            formatRemaining(state.resultHold.secondsLeft * 1000),
+          );
+        setHidden(readyButton, !state.resultHold || !ctx.markReady);
+        setDisabled(readyButton, state.resultHold?.myReady === true);
+        if (state.resultHold) {
+          setHidden(prompt, true);
+          setHidden(statementInput, true);
+          setHidden(actionRow, true);
+          setHidden(voteRow, true);
+          setText(result, standingText(state));
+          setHidden(result, false);
+          setText(
+            status,
+            state.resultHold.myReady
+              ? "Ready. Waiting for the room."
+              : "Round complete.",
+          );
+          return;
+        }
         setText(status, phaseLabel(state.status));
         const active = state.status === "active";
         setDisabled(
@@ -332,6 +394,17 @@ export default defineRenderer({
       on(lieButton, "click", submitStatement(false));
       on(voteTruth, "click", submitVote("truth"));
       on(voteLie, "click", submitVote("lie"));
+      on(readyButton, "click", async () => {
+        if (!currentState.resultHold || !ctx.markReady) return;
+        setDisabled(readyButton, true);
+        try {
+          await ctx.markReady(currentState.resultHold.phaseEntry);
+          setText(status, "Ready. Waiting for the room.");
+        } catch {
+          setDisabled(readyButton, false);
+          setText(result, "Could not mark ready. Please try again.");
+        }
+      });
       applyStatus(ctx.state);
 
       return {
@@ -436,6 +509,26 @@ export default defineRenderer({
 
       const applyStatus = (state: MiniGameContext["state"]): void => {
         currentState = state;
+        timer.update(state.deadlineAt);
+        if (state.resultHold?.paused && state.resultHold.secondsLeft != null)
+          setText(
+            timer.node,
+            formatRemaining(state.resultHold.secondsLeft * 1000),
+          );
+        if (state.resultHold) {
+          setText(phase, "Results");
+          setText(spotlight, "The room's standings");
+          setText(
+            tally,
+            state.resultHold.readyCount != null &&
+              state.resultHold.playerCount != null
+              ? `${state.resultHold.readyCount} of ${state.resultHold.playerCount} ready.`
+              : "",
+          );
+          setText(reveal, standingText(state));
+          setHidden(reveal, false);
+          return;
+        }
         const step = state.runtimeState?.phase;
         const labels: Record<string, string> = {
           input: "Write your statement.",

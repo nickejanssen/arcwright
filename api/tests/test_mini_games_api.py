@@ -863,6 +863,13 @@ class TestContentEventEmission:
 class TestGetActiveMiniGameDisplay:
     """Tests for the public /display endpoint (no auth required)."""
 
+    def test_public_result_is_unavailable_for_an_active_run(
+        self, client: TestClient, db_factory: async_sessionmaker[AsyncSession]
+    ) -> None:
+        asyncio.run(_seed_session_and_run(db_factory))
+        resp = client.get(f"/v1/sessions/{_SESSION_ID}/mini-games/result/display")
+        assert resp.status_code == 404
+
     def test_returns_404_when_no_active_run(self, client: TestClient) -> None:
         resp = client.get(f"/v1/sessions/{_SESSION_ID}/mini-games/active/display")
         assert resp.status_code == 404
