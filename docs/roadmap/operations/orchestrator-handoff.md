@@ -147,11 +147,11 @@ Progress: 7 of about 23 critical-path tasks are merged, roughly 30 percent (infe
 
 ## In flight at handoff (21 November 2026)
 
-Main is `5b6205c` or later. Check `gh pr list --state open`; the live answer wins.
+Main is `fdd0c77` or later. Check `gh pr list --state open`; the live answer wins.
 
-- **PR #473, AW-332 part A (Claude lane), round screens.** Head `2ec8300`, all six checks pass, no open threads. Needs the full Codex review (`$arcwright-reviewer`), since no independent reviewer has read its last two fix commits, then the founder's merge word.
-- **PR #472, AW-351 (Codex lane), Tell Me Something True.** Head `1f3c87a`, blocked: two open review threads, and its revised implementation plan is not approved. It adds one new decision row on its branch, so check that branch before numbering a new decision. It shares no files with #473, and the two merge cleanly (checked with `git merge-tree`).
-- **Waiting on the founder:** the two items above; case 1 approval by 28 November (AW-305); the agency framing (AW-319); the Battle of Wits tone (AW-355); the recap voice (AW-327).
+- **AW-332 part A merged** (#473, `b018d83`). Part B, screens 10 to 12, is next and must also read the held finding.
+- **AW-351 merged** (#472, `fdd0c77`) on the founder's "Merge anyway", with two findings open in AW-358 (#475). The D-155 result hold has an approved design, but its implementation plan is not approved and it is not built.
+- **Waiting on the founder:** the D-155 implementation plan; case 1 approval by 28 November (AW-305); the agency framing (AW-319); the Battle of Wits tone (AW-355); the recap voice (AW-327).
 
 ## Next build order (older snapshot; "Claude and Codex lanes" below replaces it)
 

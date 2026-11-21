@@ -3380,6 +3380,22 @@
       }
     },
     {
+      "id": "AW-358",
+      "title": "Fix The Two Review Findings Left Open When AW-351 Merged",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-351"
+      ],
+      "path": "docs/roadmap/tasks/AW-358-fix-the-two-findings-left-open-by-aw-351.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 475,
+        "url": "https://github.com/nickejanssen/arcwright/issues/475"
+      }
+    },
+    {
       "id": "AW-352",
       "title": "Let The Host Hand The Host Role To Another Player From The Phone",
       "milestone": "M7",
