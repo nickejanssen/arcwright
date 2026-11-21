@@ -12,6 +12,7 @@ import type { SlotProps } from "../../shell/phaseScreens";
 import {
   FindingView,
   clearHeldFinding,
+  heldFindingMsLeft,
   peekHeldFinding,
 } from "./InvestigatePhone";
 import PhoneRoundFrame, { ReadyControl } from "./PhoneRoundFrame";
@@ -57,23 +58,38 @@ function WhoYouAre(props: {
 export default function EyesUpPhone(props: SlotProps) {
   const { sessionId, round, seat, getToken } = props;
   const api = usePlayerApi(sessionId, getToken);
-  const [pending, setPending] = useState(() => peekHeldFinding(sessionId));
+  const [dismissed, setDismissed] = useState(false);
+  const [, renderAgain] = useState(0);
+
+  // The held finding is read on every render, so it is gone once its hold is
+  // over; a timer renders again at that moment in case nothing else does.
+  const pending = dismissed ? null : peekHeldFinding(sessionId);
+  const msLeft = pending ? heldFindingMsLeft(sessionId) : null;
+  useEffect(() => {
+    if (msLeft === null) return;
+    const timer = setTimeout(() => renderAgain((n) => n + 1), msLeft + 50);
+    return () => clearTimeout(timer);
+  }, [msLeft === null]);
 
   // Whatever happens, a held finding is shown here once.
   useEffect(() => () => clearHeldFinding(), []);
 
+  // Ready is always on screen: a finding beside it never blocks it.
   const now = pending ? (
-    <FindingView
-      finding={pending}
-      closed
-      action={{
-        label: copy.round.ok,
-        onClick: () => {
-          clearHeldFinding();
-          setPending(null);
-        },
-      }}
-    />
+    <>
+      <FindingView
+        finding={pending}
+        closed
+        action={{
+          label: copy.round.ok,
+          onClick: () => {
+            clearHeldFinding();
+            setDismissed(true);
+          },
+        }}
+      />
+      <ReadyControl api={api} round={round} seat={seat} />
+    </>
   ) : (
     <>
       <p className="sh-title">{copy.round.eyesUp}</p>

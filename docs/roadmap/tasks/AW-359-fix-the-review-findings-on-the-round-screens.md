@@ -68,6 +68,7 @@ All in `dashboard/` (the screens lane). No engine, API or package change.
 - Do not change `engine/`, `api/`, `nightcap/mini_games/`, `nightcap-web/`, `sdk/`, `auth.ts`, `seatStore.ts` or `package.json`.
 - Do not put a game rule in TypeScript: no arithmetic on the budget, no right-or-wrong, no ordering or filtering of the menu.
 - Do not build AW-332 part B (screens 10 to 12) under this task.
+- Do not change the notebook's grouping (`Notebook.tsx`, `groupHoldings`). It clusters by subject the same way the menu did, which the review did not flag; it is noted in `HANDOVER.md` Known issues.
 
 ## Kickoff Prompt
 
