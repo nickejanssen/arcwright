@@ -185,3 +185,8 @@ arc schema changes, and choose an initial hold duration before implementation.
 The earlier approval to investigate the public lobby mapping does not approve
 these additions. The implementation plan will identify exact files and checks
 after the design is accepted. AW-332 still owns the other round and result screens.
+Spec 0093 Part E and the durable product approval record must be reconciled before
+implementation because the proposed hold changes the approved advancement rule.
+The founder previously prohibited edits to `docs/product/decisions-log.csv` in this
+task; do not modify it unless that restriction is explicitly lifted. Design
+approval alone does not lift the restriction.
