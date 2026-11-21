@@ -2,6 +2,7 @@ const BASE = "/v1";
 
 export interface LobbyPlayer {
   participant_id: string;
+  character_id: string;
   display_name: string | null;
 }
 

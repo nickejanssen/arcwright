@@ -215,12 +215,40 @@ export async function bootMiniGameStage(
       deadline_at: string | null;
       runtime_state?: Record<string, unknown> | null;
       presentation?: Record<string, unknown> | null;
+      phase_state?: Record<string, unknown> | null;
       my_submissions: Array<{
         submission_id: string;
         is_accepted: boolean;
         rejection_reason?: string | null;
       }>;
     };
+    let playerNames: Record<string, string> = {};
+    if (opts.surface === "shared_display") {
+      try {
+        const lobby = await doFetch(
+          `${baseUrl}/v1/sessions/${encodeURIComponent(opts.sessionId)}/lobby`,
+        );
+        if (lobby.ok) {
+          const body = (await lobby.json()) as {
+            players?: Array<{ character_id?: unknown; display_name?: unknown }>;
+          };
+          if (Array.isArray(body.players)) {
+            playerNames = Object.fromEntries(
+              body.players
+                .filter(
+                  (p): p is { character_id: string; display_name: string } =>
+                    typeof p.character_id === "string" &&
+                    typeof p.display_name === "string" &&
+                    p.display_name.trim().length > 0,
+                )
+                .map((p) => [p.character_id, p.display_name]),
+            );
+          }
+        }
+      } catch {
+        // The game remains visible if the public lobby is temporarily unavailable.
+      }
+    }
     return {
       runId: data.run_id,
       gameId: data.game_id,
@@ -231,6 +259,8 @@ export async function bootMiniGameStage(
       deadlineAt: data.deadline_at,
       ...(data.runtime_state ? { runtimeState: data.runtime_state } : {}),
       ...(data.presentation ? { presentation: data.presentation } : {}),
+      ...(data.phase_state ? { phaseState: data.phase_state } : {}),
+      ...(opts.surface === "shared_display" ? { playerNames } : {}),
       mySubmissions: data.my_submissions.map((s) =>
         toSubmissionResult(s.submission_id, s.is_accepted, s.rejection_reason),
       ),

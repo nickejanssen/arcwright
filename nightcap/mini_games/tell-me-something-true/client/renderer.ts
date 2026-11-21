@@ -415,9 +415,40 @@ export default defineRenderer({
       shell.appendChild(reveal);
       const timer = addTimer(shell, ctx);
       let count = 0;
+      let currentState = ctx.state;
+
+      const showSpotlight = (target: unknown): void => {
+        const name =
+          typeof target === "string"
+            ? currentState.playerNames?.[target]
+            : undefined;
+        setText(
+          spotlight,
+          name
+            ? `${name} is in the spotlight.`
+            : "A player is in the spotlight.",
+        );
+      };
 
       const applyStatus = (state: MiniGameContext["state"]): void => {
-        setText(phase, phaseLabel(state.status));
+        currentState = state;
+        const step = state.runtimeState?.phase;
+        const labels: Record<string, string> = {
+          input: "Write your statement.",
+          spotlight: "Spotlight: truth or lie?",
+          scoreboard: "Scoreboard.",
+        };
+        setText(
+          phase,
+          state.status === "active" && typeof step === "string"
+            ? (labels[step] ?? phaseLabel(state.status))
+            : phaseLabel(state.status),
+        );
+        if (state.status === "active" && step === "spotlight") {
+          showSpotlight(state.phaseState?.target_character_id);
+        } else {
+          setText(spotlight, "The room is warming up.");
+        }
         if (state.status === "timed_out") {
           setText(
             reveal,
@@ -445,10 +476,8 @@ export default defineRenderer({
           }
           if (event.event_type === "tmst_spotlight_started") {
             const data = record(event.payload);
-            setText(
-              spotlight,
-              text(data.spotlight_label, "A statement is under the light."),
-            );
+            setText(phase, "Spotlight: truth or lie?");
+            showSpotlight(data.target_character_id);
             return;
           }
           if (event.event_type === "tmst_reveal_resolved") {
@@ -458,6 +487,8 @@ export default defineRenderer({
             return;
           }
           if (event.event_type === "tmst_scoreboard_ready") {
+            setText(phase, "Scoreboard.");
+            setText(spotlight, "The room is warming up.");
             setText(
               reveal,
               "Scoreboard ready. Final scoring remains engine-owned.",

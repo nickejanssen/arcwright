@@ -69,6 +69,7 @@ async def get_lobby_state(
         players=[
             LobbyPlayerEntry(
                 participant_id=p.participant_id,
+                character_id=p.character_id,
                 display_name=p.display_name,
             )
             for p in participants

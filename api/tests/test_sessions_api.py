@@ -167,6 +167,15 @@ class TestCreateSession:
         )
         assert second.status_code == 201, second.text
 
+        public_players = client.get(f"/v1/sessions/{session_id}/lobby").json()[
+            "players"
+        ]
+        by_name = {
+            player["display_name"]: player["character_id"] for player in public_players
+        }
+        assert by_name["Smoke One"] == first_character_id
+        assert by_name["Smoke Two"] == second_character_id
+
         started = client.post(f"/v1/sessions/{session_id}/start")
         assert started.status_code == 200, started.text
         assert started.json()["status"] == "active"
