@@ -28,11 +28,15 @@ type View =
 // A finding on screen when the phase ends stays on screen: the phone finishes
 // its moment (spec 0095, "How the feelings answer shapes the layout"). The next
 // screen of this phone picks it up and shows it with the time's-up words.
+// The finding is marked as held the moment it is shown (at is null), because
+// the next screen is built before this one's cleanup runs. The clock starts
+// when this screen goes away.
 const HOLD_MS = 30_000;
-let held: (Finding & { at: number }) | null = null;
+export const MENU_RETRY_MS = 2000;
+let held: (Finding & { at: number | null }) | null = null;
 
 export function peekHeldFinding(now: number = Date.now()): Finding | null {
-  return held && now - held.at <= HOLD_MS
+  return held && (held.at === null || now - held.at <= HOLD_MS)
     ? { subjectLabel: held.subjectLabel, content: held.content }
     : null;
 }
@@ -106,9 +110,10 @@ export default function InvestigatePhone(props: SlotProps) {
   const [failed, setFailed] = useState(false);
   const [busy, setBusy] = useState(false);
 
-  async function reread(): Promise<void> {
+  async function reread(clearFailure = false): Promise<void> {
     try {
       setMenu(await api.menu());
+      if (clearFailure) setFailed(false);
     } catch {
       setFailed(true);
     }
@@ -119,12 +124,19 @@ export default function InvestigatePhone(props: SlotProps) {
     void reread();
   }, [round.phaseEntry, api]);
 
-  // A finding still on screen when this screen goes away is held for the next.
-  const showing = useRef<Finding | null>(null);
-  showing.current = view.kind === "finding" ? view.finding : null;
+  // If the first menu read fails, try again until it loads, so a short
+  // disconnect does not leave the phone stuck in this phase.
+  useEffect(() => {
+    if (menu !== null || !failed) return;
+    const timer = setTimeout(() => void reread(true), MENU_RETRY_MS);
+    return () => clearTimeout(timer);
+  }, [menu, failed]);
+
+  // A finding still on screen when this screen goes away is held for the next:
+  // it is marked held when shown, and its clock starts here.
   useEffect(
     () => () => {
-      if (showing.current) held = { ...showing.current, at: Date.now() };
+      if (held && held.at === null) held = { ...held, at: Date.now() };
     },
     [],
   );
@@ -139,15 +151,19 @@ export default function InvestigatePhone(props: SlotProps) {
       setMenu((m) =>
         m ? { ...m, remainingBudget: reply.remainingBudget } : m,
       );
-      setView({
-        kind: "finding",
-        finding: { subjectLabel: item.subjectLabel, content: reply.content },
-      });
+      const finding = {
+        subjectLabel: item.subjectLabel,
+        content: reply.content,
+      };
+      held = { ...finding, at: null };
+      setView({ kind: "finding", finding });
       void reread();
     } catch (error) {
-      if (error instanceof ApiError) {
-        // The engine answered and said no: that choice is over. Read the menu
-        // again so the list shows what the engine now says.
+      if (error instanceof ApiError && error.status < 500) {
+        // The engine answered and said no: that choice is over. (A 5xx from a
+        // proxy may not have reached the engine, so it is retried with the
+        // same ID, like a dropped send.) Read the menu again so the list shows
+        // what the engine now says.
         tracker.answered();
         setView({ kind: "list" });
         void reread();
@@ -167,6 +183,7 @@ export default function InvestigatePhone(props: SlotProps) {
   }
 
   function backToList(): void {
+    clearHeldFinding();
     setFailed(false);
     setView({ kind: "list" });
     void reread();

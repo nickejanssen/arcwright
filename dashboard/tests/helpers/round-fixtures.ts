@@ -165,6 +165,10 @@ export interface FakeEngine {
   dropAnswerOnce: boolean;
   // The engine refuses the next choices call.
   refuseNextChoice: boolean;
+  // A proxy answers the next choices call with a 503; the engine never sees it.
+  unavailableNextChoice: boolean;
+  // The next menu read fails as a dropped connection would.
+  dropNextMenu: boolean;
   // The phase entry the engine reports from ready.
   entryNow: number;
   rewards: Array<{
@@ -193,6 +197,8 @@ export function fakeEngine(
     readyEntries: [],
     dropAnswerOnce: false,
     refuseNextChoice: false,
+    unavailableNextChoice: false,
+    dropNextMenu: false,
     entryNow: 7,
     rewards: [],
     fetch: undefined as unknown as typeof fetch,
@@ -217,6 +223,10 @@ export function fakeEngine(
     });
 
     if (path.endsWith("/me/menu")) {
+      if (engine.dropNextMenu) {
+        engine.dropNextMenu = false;
+        throw new TypeError("Failed to fetch");
+      }
       return json({
         open: engine.open,
         remaining_budget: engine.budget,
@@ -235,6 +245,10 @@ export function fakeEngine(
     if (path.endsWith("/me/choices")) {
       const choiceId = String(body?.choice_id);
       const opportunityId = String(body?.opportunity_id);
+      if (engine.unavailableNextChoice) {
+        engine.unavailableNextChoice = false;
+        return json({ detail: "bad gateway" }, 503);
+      }
       if (engine.refuseNextChoice) {
         engine.refuseNextChoice = false;
         return json({ detail: { code: "not_on_menu" } }, 409);
