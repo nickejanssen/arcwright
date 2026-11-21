@@ -2,7 +2,7 @@
 
 > Read `AGENTS.md` first, then this file, before touching code. It is the short start-of-session brief for every agent (Claude, Codex, Copilot) and for the founder. If it disagrees with a current source, investigate before acting, then fix this file. Keep it short and link to the owner of each detail.
 
-Last updated: 2026-11-21, checked against main `eb11fb7` and open PRs #478 to #480.
+Last updated: 2026-11-21, checked against main `c8a2670` and open PRs #478 and #480.
 
 ## System map
 
