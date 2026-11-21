@@ -93,3 +93,30 @@ test("rewards arrive from menu reads, acknowledge once, persist across remounts,
     await secondGrant.unmount();
   });
 });
+
+test("a failed reward menu read retries during the same phase", async () => {
+  window.localStorage.clear();
+  const engine = fakeEngine({ budget: 5 });
+  engine.dropMenus = 1;
+  engine.rewards = [
+    {
+      grant_id: "grant_internal_1",
+      run_id: "run_internal_1",
+      beat_id: "beat_internal_1",
+      amount: 1,
+      kind: "investigation",
+    },
+  ];
+
+  await withFetch(engine, async () => {
+    const page = await mount(screen(12));
+    await new Promise((done) => setTimeout(done, 1100));
+    await settle();
+
+    assert.ok(
+      engine.calls.filter((call) => call.path.endsWith("/me/menu")).length >= 2,
+    );
+    assert.ok(page.text().includes("You earned one more investigation."));
+    await page.unmount();
+  });
+});

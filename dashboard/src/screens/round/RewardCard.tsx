@@ -1,5 +1,5 @@
 // Screen 12: read saved rewards from the player's menu. Live reward messages
-// may be missed, so the room phase feed is the retry trigger.
+// may be missed, so phase changes start a menu read and failed reads retry.
 
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
@@ -40,16 +40,21 @@ export default function RewardCard(props: RewardCardProps) {
   useEffect(() => {
     if (!props.round || props.round.phaseEntry === null) return;
     let cancelled = false;
-    void api
-      .menu()
-      .then((menu) => {
+    let retry: ReturnType<typeof setTimeout> | undefined;
+    const readMenu = async () => {
+      try {
+        const menu = await api.menu();
         if (cancelled) return;
         setRewards(menu.rewards);
         setRemaining(menu.remainingBudget);
-      })
-      .catch(() => undefined);
+      } catch {
+        if (!cancelled) retry = setTimeout(() => void readMenu(), 1000);
+      }
+    };
+    void readMenu();
     return () => {
       cancelled = true;
+      if (retry !== undefined) clearTimeout(retry);
     };
   }, [api, props.round?.phase, props.round?.phaseEntry]);
 

@@ -33,18 +33,24 @@ export default function MiniGamePhone(
       return;
     }
     let cancelled = false;
-    void getToken()
-      .then((value) => {
+    let retry: ReturnType<typeof setTimeout> | undefined;
+    const acquireToken = async () => {
+      try {
+        const value = await getToken();
         if (!cancelled) setToken(value);
-      })
-      .catch(() => {
+        if (!cancelled) setTokenFailed(false);
+      } catch {
         if (!cancelled) {
           setTokenFailed(true);
           setLoading(false);
+          retry = setTimeout(() => void acquireToken(), 1000);
         }
-      });
+      }
+    };
+    void acquireToken();
     return () => {
       cancelled = true;
+      if (retry !== undefined) clearTimeout(retry);
     };
   }, [getToken, sessionId]);
 

@@ -110,6 +110,32 @@ test("screen 11 uses this seat's sign-in on the player route", async () => {
   await page.unmount();
 });
 
+test("screen 11 retries a failed token refresh and clears the error on recovery", async () => {
+  const seen: string[] = [];
+  let tokenCalls = 0;
+  const page = await mount(
+    createElement(MiniGamePhone, {
+      ...base,
+      getToken: async () => {
+        tokenCalls += 1;
+        if (tokenCalls === 1)
+          throw new Error("temporary token refresh failure");
+        return "player-sign-in";
+      },
+      round: round({ phase: "mini_game", phaseEntry: 12 }),
+      stageServices: fixtureServices(seen),
+    }),
+  );
+  assert.ok(page.text().includes("That did not work. Try again."));
+  await new Promise((done) => setTimeout(done, 1100));
+  await settle();
+
+  assert.ok(tokenCalls >= 2);
+  assert.ok(page.text().includes("Fixture phone view"));
+  assert.ok(!page.text().includes("That did not work. Try again."));
+  await page.unmount();
+});
+
 test("a later mini-game phase entry remounts the package stage", async () => {
   const seen: string[] = [];
   const services = fixtureServices(seen);
