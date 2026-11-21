@@ -22,7 +22,7 @@ supersedes: []
 
 ## Plain-English Summary
 
-Build screens 4 to 12 of spec 0095: the story on the TV, the quiet TV during thinking time, the phone's investigate menu, findings and notebook, and the mini-game shared view, phone view and result, including several mini-games in a round and solo mini-games.
+Build screens 4 to 12 of spec 0095: the story on the TV, the quiet TV during thinking time, the phone's investigate menu, findings and notebook, and the mini-game shared view, phone view and reward card. Multiple mini-games in one round are supported. Solo play remains AW-345.
 
 ## Why This Matters
 
@@ -42,10 +42,10 @@ Build screens 4 to 12 of spec 0095: the story on the TV, the quiet TV during thi
 
 ## Acceptance Criteria
 
-- [ ] Each of screens 4 to 12 has a component test with fixture data.
-- [ ] The TV during thinking time shows only the round title, clock and who is ready (D-134).
-- [ ] The phone's investigations-left number equals the route's number in every step.
-- [ ] A reward shows on the result screen from the menu read when no live message arrived.
+- [x] Each of screens 4 to 12 has a component test with fixture data.
+- [x] The TV during thinking time shows only the round title, clock and who is ready (D-134).
+- [x] The phone's investigations-left number equals the route's number in every step.
+- [x] A reward shows on the phone from the menu read when no live message arrived.
 
 ## Tests/Verification
 
