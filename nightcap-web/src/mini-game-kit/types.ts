@@ -58,6 +58,7 @@ export interface MiniGameContext {
   characterId: string;
   state: MiniGameState;
   definition: MiniGameDefinition;
+  markReady?(phaseEntry: number): Promise<void>;
   /**
    * Submit an action to the engine. If `submissionId` is provided, it is
    * used end-to-end; otherwise a UUID is generated locally. Pass a stable

@@ -275,9 +275,15 @@ class PhaseDefinition(BaseModel):
     written ``closing``, so the arc file never holds them."""
     recap: Optional[RecapConfig] = None
     """Required on a ``recap`` phase and allowed nowhere else."""
+    result_hold_seconds: Optional[int] = Field(default=None, gt=0)
+    result_public: bool = False
 
     @model_validator(mode="after")
     def validate_lines_and_audience(self) -> "PhaseDefinition":
+        if (self.result_hold_seconds is not None) != self.result_public:
+            raise ValueError("result hold requires an explicitly public result")
+        if self.result_public and self.kind is not PhaseKind.mini_game:
+            raise ValueError("result holds are only available for mini-game phases")
         if self.lines and self.kind not in _LINE_PHASES:
             msg = f"a {self.kind.value} phase cannot carry written lines"
             raise ValueError(msg)

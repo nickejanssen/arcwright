@@ -58,7 +58,7 @@ from engine.db.orm import MiniGameRun, MiniGameSubmission, SessionParticipant
 from engine.mini_games.audience_view import Audience, RunView, Viewer, build_run_view
 from engine.mini_games.plugins import default_registry
 from engine.mini_games.runtime import MiniGameRuntime, MiniGameRuntimeError
-from engine.session.phases import RoundError
+from engine.session.phases import RoundError, public_mini_game_result
 from engine.session.room_view import display_subject
 
 router = APIRouter(prefix="/sessions", tags=["mini-games"])
@@ -566,6 +566,17 @@ async def get_active_mini_game_display(
         presentation=view.presentation,
         my_submissions=[],
     )
+
+
+@router.get("/{session_id}/mini-games/result/display")
+async def get_mini_game_result_display(
+    session_id: UUID,
+    db: AsyncSession = Depends(get_async_session),
+) -> dict[str, Any]:
+    result = await public_mini_game_result(db, session_id)
+    if result is None:
+        raise HTTPException(status_code=404, detail="No public mini-game result")
+    return result
 
 
 @router.post(

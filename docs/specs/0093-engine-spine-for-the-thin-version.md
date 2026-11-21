@@ -145,7 +145,7 @@ One JSON file per written case, in the game's own folder. The arc file names it.
 | --- | --- | --- |
 | `scene` | Sends the beat's written scene lines as events, with presentation hints (D-070) | Every player has marked ready, or the authored time is up, or the host moves on |
 | `choices` | Opens the investigation menu for each player (Part D) | Every player has marked ready, or the authored time is up, or the host moves on |
-| `mini_game` | Creates and starts the run bound to the beat (Part E) | The run reaches an end state |
+| `mini_game` | Creates and starts the run bound to the beat (Part E) | The run reaches an end state, followed by an optional result hold |
 | `bridge` | Sends the beat's written bridge lines | The authored time is up, or every player has marked ready, or the host moves on |
 
 - One engine function, the **tick**, takes a session and the current time, and applies everything that is due: phase deadlines and the mini-game deadline. Calling it twice at the same moment makes each change once.
@@ -171,7 +171,7 @@ One JSON file per written case, in the game's own folder. The arc file names it.
 
 - Entering a `mini_game` phase resolves the beat's binding, creates the run and starts it. The run saves which beat and binding it belongs to inside its stored definition, so no table changes.
 - The tick calls the existing timeout check. With no submissions at all, the run ends when its deadline passes.
-- When a run reaches any end state (completed, timed out, resolved or cancelled by the host), the session is told, the phase ends and the round continues.
+- When a run reaches an end state, the session is told and the round continues immediately unless the phase explicitly opts into a public result hold (D-155). An opted-in completed or timed-out run with a valid standing holds the same phase visit until all eligible players are ready, its authored positive result clock expires, or the host moves on. The hold and its eligible players are saved, and pause freezes its clock. Cancelled runs and invalid standings skip the hold. Only the current visit's allowlisted public standing is readable; private outcomes and submissions remain private.
 - A beat with no binding skips the phase. A binding that cannot be resolved ends the phase at once with a recorded error, and the host is told; the game does not hang.
 - Existing behaviour for duplicate and late submissions, scoring and what a package releases is not changed.
 
@@ -293,7 +293,7 @@ Every test below runs without a network, without a real database server, and wit
 
 **Part E**
 - [ ] Entering a `mini_game` phase creates and starts exactly one run, and the run records its beat and binding.
-- [ ] With zero submissions the run ends when its deadline passes, and the phase ends.
+- [ ] With zero submissions the run ends when its deadline passes, and the phase ends after any opted-in result hold.
 - [ ] Each end state (completed, timed out, host resolve, host cancel) ends the phase.
 - [ ] A beat with no binding skips the phase; a binding that cannot be resolved ends the phase with a recorded error.
 - [ ] The existing mini-game tests pass unchanged.
