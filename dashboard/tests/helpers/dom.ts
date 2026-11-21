@@ -15,6 +15,7 @@ for (const name of [
   "Element",
   "Event",
   "MouseEvent",
+  "MutationObserver",
 ]) {
   globals[name] = (happy as unknown as Record<string, unknown>)[name];
 }

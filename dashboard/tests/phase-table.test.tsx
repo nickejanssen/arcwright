@@ -165,10 +165,13 @@ test("room, paused and ended come from the engine's status, ahead of any phase",
   );
 });
 
-test("the shipped slot maps fill scene, choices and bridge; mini_game and commit stay plain until their tasks", () => {
+test("the shipped slot maps fill scene, choices, mini_game and bridge; commit stays plain for AW-333", () => {
   for (const phase of PHASES) {
     const filled =
-      phase === "scene" || phase === "choices" || phase === "bridge";
+      phase === "scene" ||
+      phase === "choices" ||
+      phase === "mini_game" ||
+      phase === "bridge";
     for (const surface of ["tv", "phone"] as const) {
       assert.equal(
         resolveScreen(

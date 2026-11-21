@@ -122,6 +122,8 @@ export const copy = {
     tabNow: "Now",
     tabNotebook: "Notebook",
     ok: "OK",
+    gettingGameReady: "Getting the game ready...",
+    earnedInvestigation: "You earned one more investigation.",
   },
 
   notebook: {

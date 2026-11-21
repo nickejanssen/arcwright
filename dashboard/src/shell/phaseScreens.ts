@@ -2,8 +2,7 @@
 // names which screen to show on the TV and on a phone. It holds no rule: it
 // reads the engine's status and phase name and looks them up.
 //
-// The round screens are filled in by AW-332 (the mini-game phase waits for its
-// next pull request) and the endgame screens by AW-333; until a phase has one,
+// The round screens are filled in by AW-332 and the endgame screens by AW-333; until a phase has one,
 // the plain "play continues" screen shows.
 
 import type { ComponentType } from "react";
@@ -27,6 +26,7 @@ export interface SlotProps {
 export interface SlotSeat {
   // Matches this phone to its row in the room view. Never shown.
   participantId: string;
+  characterId?: string;
   displayName: string;
 }
 

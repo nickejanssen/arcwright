@@ -16,6 +16,7 @@ import { copy } from "../shell/copy";
 import PhoneFrame from "../shell/PhoneFrame";
 import { resolveScreen } from "../shell/phaseScreens";
 import type { SlotTable } from "../shell/phaseScreens";
+import RewardCard from "./round/RewardCard";
 import { applySettings, loadSettings, saveSettings } from "../shell/settings";
 import type { Settings } from "../shell/settings";
 import { useFeed } from "../shell/useFeed";
@@ -80,6 +81,7 @@ function Seated({ seat }: { seat: StoredSeat }) {
       sessionId={seat.gameId}
       displayName={seat.displayName}
       participantId={seat.participantId}
+      characterId={seat.characterId}
       getToken={getToken}
       joinCode={seat.joinCode}
       joinUrl={joinUrl}
@@ -98,6 +100,7 @@ interface PhoneViewProps {
   // This seat's own row in the room view, and its sign-in, for the screens
   // that read or send for this player.
   participantId?: string;
+  characterId?: string;
   getToken?: () => Promise<string>;
   joinCode: string;
   joinUrl: string;
@@ -159,6 +162,7 @@ export function PhoneView(props: PhoneViewProps) {
           round={round}
           seat={{
             participantId: props.participantId ?? "",
+            characterId: props.characterId,
             displayName: props.displayName,
           }}
           getToken={props.getToken}
@@ -168,6 +172,19 @@ export function PhoneView(props: PhoneViewProps) {
       body = <p className="sh-title">{copy.seated.eyesOnTv}</p>;
     }
   }
+
+  const activeBody =
+    round?.status === "running" && round.phaseEntry !== null ? (
+      <RewardCard
+        sessionId={props.sessionId}
+        getToken={props.getToken}
+        round={round}
+      >
+        {body}
+      </RewardCard>
+    ) : (
+      body
+    );
 
   return (
     <PhoneFrame
@@ -189,7 +206,7 @@ export function PhoneView(props: PhoneViewProps) {
       roomCode={props.joinCode}
       joinUrl={props.joinUrl}
     >
-      {body}
+      {activeBody}
     </PhoneFrame>
   );
 }

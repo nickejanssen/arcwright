@@ -23,6 +23,8 @@ export interface Menu {
   remainingBudget: number;
   // In the order the route gave.
   items: MenuItem[];
+  // IDs are used only to acknowledge a reward in this browser. Never display.
+  rewards: Array<{ grantId: string }>;
 }
 
 export interface Choice {
@@ -57,6 +59,7 @@ export interface PlayerApi {
 interface MenuWire {
   open: boolean;
   remaining_budget: number;
+  rewards?: Array<{ grant_id: string }>;
   items: Array<{
     opportunity_id: string;
     subject_id: string;
@@ -117,6 +120,9 @@ export function createPlayerApi(
       return {
         open: wire.open,
         remainingBudget: wire.remaining_budget,
+        rewards: (wire.rewards ?? []).map((reward) => ({
+          grantId: reward.grant_id,
+        })),
         items: wire.items.map((i) => ({
           opportunityId: i.opportunity_id,
           subjectId: i.subject_id,
