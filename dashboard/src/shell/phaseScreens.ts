@@ -2,8 +2,9 @@
 // names which screen to show on the TV and on a phone. It holds no rule: it
 // reads the engine's status and phase name and looks them up.
 //
-// The round and endgame screens are filled in by AW-332 and AW-333; until a
-// phase has one, the plain "play continues" screen shows.
+// The round screens are filled in by AW-332 (the mini-game phase waits for its
+// next pull request) and the endgame screens by AW-333; until a phase has one,
+// the plain "play continues" screen shows.
 
 import type { ComponentType } from "react";
 import type { LobbyState } from "../api/lobby";
@@ -17,6 +18,16 @@ export interface SlotProps {
   sessionId: string;
   lobby: LobbyState;
   round: RoundState;
+  // A phone's own seat and sign-in. The TV holds neither, so a TV screen is
+  // given neither; a screen that needs them is a phone screen.
+  seat?: SlotSeat;
+  getToken?: () => Promise<string>;
+}
+
+export interface SlotSeat {
+  // Matches this phone to its row in the room view. Never shown.
+  participantId: string;
+  displayName: string;
 }
 
 // One phase's screens, one per surface. Either may be left empty.

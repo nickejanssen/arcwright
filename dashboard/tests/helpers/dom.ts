@@ -60,6 +60,9 @@ export interface Mounted {
   buttons(): HTMLButtonElement[];
   button(label: string): HTMLButtonElement;
   click(label: string): Promise<void>;
+  // Clicks the first button whose text contains `part` (for buttons that hold
+  // several words, such as a menu item with its label and cost).
+  clickContaining(part: string): Promise<void>;
   rerender(element: ReactElement): Promise<void>;
   unmount(): Promise<void>;
 }
@@ -95,6 +98,24 @@ export async function mount(element: ReactElement): Promise<Mounted> {
     button,
     async click(label) {
       const target = button(label);
+      await act(async () => {
+        target.dispatchEvent(
+          new (globals.MouseEvent as typeof MouseEvent)("click", {
+            bubbles: true,
+          }),
+        );
+      });
+      await settle();
+    },
+    async clickContaining(part) {
+      const target = buttons().find((b) => b.textContent?.includes(part));
+      if (!target) {
+        throw new Error(
+          `no button containing "${part}"; buttons: ${buttons()
+            .map((b) => b.textContent?.trim())
+            .join(" | ")}`,
+        );
+      }
       await act(async () => {
         target.dispatchEvent(
           new (globals.MouseEvent as typeof MouseEvent)("click", {

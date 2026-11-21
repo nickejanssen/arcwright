@@ -3,7 +3,7 @@
 // table names inside the frame with the Menu button. It carries no ID in its
 // address.
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getValidPlayerToken } from "../api/auth";
 import { createControls } from "../api/controls";
 import type { Controls } from "../api/controls";
@@ -58,6 +58,11 @@ function Seated({ seat }: { seat: StoredSeat }) {
     if (feed.gone) seatStore.clear(seat.gameId);
   }, [feed.gone, seat.gameId]);
 
+  const getToken = useCallback(
+    () => getValidPlayerToken(seat.gameId),
+    [seat.gameId],
+  );
+
   const controls = useMemo(
     () => createControls(seat.gameId, () => getValidPlayerToken(seat.gameId)),
     [seat.gameId],
@@ -74,6 +79,8 @@ function Seated({ seat }: { seat: StoredSeat }) {
     <PhoneView
       sessionId={seat.gameId}
       displayName={seat.displayName}
+      participantId={seat.participantId}
+      getToken={getToken}
       joinCode={seat.joinCode}
       joinUrl={joinUrl}
       feed={feed}
@@ -88,6 +95,10 @@ function Seated({ seat }: { seat: StoredSeat }) {
 interface PhoneViewProps {
   sessionId: string;
   displayName: string;
+  // This seat's own row in the room view, and its sign-in, for the screens
+  // that read or send for this player.
+  participantId?: string;
+  getToken?: () => Promise<string>;
   joinCode: string;
   joinUrl: string;
   feed: FeedState;
@@ -141,7 +152,18 @@ export function PhoneView(props: PhoneViewProps) {
       body = <p className="sh-title">{copy.seated.gameOver}</p>;
     } else if (resolved.kind === "phase" && round) {
       const Slot = resolved.Slot;
-      body = <Slot sessionId={props.sessionId} lobby={lobby} round={round} />;
+      body = (
+        <Slot
+          sessionId={props.sessionId}
+          lobby={lobby}
+          round={round}
+          seat={{
+            participantId: props.participantId ?? "",
+            displayName: props.displayName,
+          }}
+          getToken={props.getToken}
+        />
+      );
     } else {
       body = <p className="sh-title">{copy.seated.eyesOnTv}</p>;
     }
