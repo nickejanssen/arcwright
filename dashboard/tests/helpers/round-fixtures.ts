@@ -167,8 +167,10 @@ export interface FakeEngine {
   refuseNextChoice: boolean;
   // A proxy answers the next choices call with a 503; the engine never sees it.
   unavailableNextChoice: boolean;
-  // The next menu read fails as a dropped connection would.
-  dropNextMenu: boolean;
+  // How many of the next menu reads fail, as a dropped connection would.
+  dropMenus: number;
+  // The next choices call is processed but its answer waits for this promise.
+  holdNextChoice: Promise<void> | null;
   // The phase entry the engine reports from ready.
   entryNow: number;
   rewards: Array<{
@@ -198,7 +200,8 @@ export function fakeEngine(
     dropAnswerOnce: false,
     refuseNextChoice: false,
     unavailableNextChoice: false,
-    dropNextMenu: false,
+    dropMenus: 0,
+    holdNextChoice: null,
     entryNow: 7,
     rewards: [],
     fetch: undefined as unknown as typeof fetch,
@@ -223,8 +226,8 @@ export function fakeEngine(
     });
 
     if (path.endsWith("/me/menu")) {
-      if (engine.dropNextMenu) {
-        engine.dropNextMenu = false;
+      if (engine.dropMenus > 0) {
+        engine.dropMenus -= 1;
         throw new TypeError("Failed to fetch");
       }
       return json({
@@ -298,6 +301,11 @@ export function fakeEngine(
       if (engine.dropAnswerOnce) {
         engine.dropAnswerOnce = false;
         throw new TypeError("Failed to fetch");
+      }
+      if (engine.holdNextChoice) {
+        const gate = engine.holdNextChoice;
+        engine.holdNextChoice = null;
+        await gate;
       }
       return json(answer);
     }

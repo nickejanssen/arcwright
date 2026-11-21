@@ -33,10 +33,16 @@ type View =
 // when this screen goes away.
 const HOLD_MS = 30_000;
 export const MENU_RETRY_MS = 2000;
-let held: (Finding & { at: number | null }) | null = null;
+// It belongs to one game: another game in the same tab never picks it up.
+let held: (Finding & { sessionId: string; at: number | null }) | null = null;
 
-export function peekHeldFinding(now: number = Date.now()): Finding | null {
-  return held && (held.at === null || now - held.at <= HOLD_MS)
+export function peekHeldFinding(
+  sessionId: string,
+  now: number = Date.now(),
+): Finding | null {
+  return held &&
+    held.sessionId === sessionId &&
+    (held.at === null || now - held.at <= HOLD_MS)
     ? { subjectLabel: held.subjectLabel, content: held.content }
     : null;
 }
@@ -109,6 +115,10 @@ export default function InvestigatePhone(props: SlotProps) {
   const [view, setView] = useState<View>({ kind: "list" });
   const [failed, setFailed] = useState(false);
   const [busy, setBusy] = useState(false);
+  // False once this screen is gone: a reply that lands after that is not shown
+  // and holds nothing.
+  const alive = useRef(true);
+  const [failures, setFailures] = useState(0);
 
   async function reread(clearFailure = false): Promise<void> {
     try {
@@ -116,6 +126,8 @@ export default function InvestigatePhone(props: SlotProps) {
       if (clearFailure) setFailed(false);
     } catch {
       setFailed(true);
+      // A new count makes the retry effect run again, so it keeps going.
+      setFailures((n) => n + 1);
     }
   }
 
@@ -127,19 +139,20 @@ export default function InvestigatePhone(props: SlotProps) {
   // If the first menu read fails, try again until it loads, so a short
   // disconnect does not leave the phone stuck in this phase.
   useEffect(() => {
-    if (menu !== null || !failed) return;
+    if (menu !== null || failures === 0) return;
     const timer = setTimeout(() => void reread(true), MENU_RETRY_MS);
     return () => clearTimeout(timer);
-  }, [menu, failed]);
+  }, [menu, failures]);
 
   // A finding still on screen when this screen goes away is held for the next:
   // it is marked held when shown, and its clock starts here.
-  useEffect(
-    () => () => {
+  useEffect(() => {
+    alive.current = true;
+    return () => {
+      alive.current = false;
       if (held && held.at === null) held = { ...held, at: Date.now() };
-    },
-    [],
-  );
+    };
+  }, []);
 
   async function send(item: MenuItem): Promise<void> {
     const attempt = tracker.attempt(item.opportunityId);
@@ -148,6 +161,7 @@ export default function InvestigatePhone(props: SlotProps) {
     try {
       const reply = await api.choose(attempt.choiceId, attempt.opportunityId);
       tracker.answered();
+      if (!alive.current) return;
       setMenu((m) =>
         m ? { ...m, remainingBudget: reply.remainingBudget } : m,
       );
@@ -155,7 +169,7 @@ export default function InvestigatePhone(props: SlotProps) {
         subjectLabel: item.subjectLabel,
         content: reply.content,
       };
-      held = { ...finding, at: null };
+      held = { ...finding, sessionId, at: null };
       setView({ kind: "finding", finding });
       void reread();
     } catch (error) {

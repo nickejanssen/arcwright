@@ -57,7 +57,7 @@ function WhoYouAre(props: {
 export default function EyesUpPhone(props: SlotProps) {
   const { sessionId, round, seat, getToken } = props;
   const api = usePlayerApi(sessionId, getToken);
-  const [pending, setPending] = useState(() => peekHeldFinding());
+  const [pending, setPending] = useState(() => peekHeldFinding(sessionId));
 
   // Whatever happens, a held finding is shown here once.
   useEffect(() => () => clearHeldFinding(), []);
