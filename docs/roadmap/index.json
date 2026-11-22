@@ -3412,6 +3412,38 @@
       }
     },
     {
+      "id": "AW-360",
+      "title": "Keep A Held Finding From Covering The Mini-Game On The Phone",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "S",
+      "depends_on": [
+        "AW-359"
+      ],
+      "path": "docs/roadmap/tasks/AW-360-keep-a-held-finding-from-covering-the-mini-game.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 483,
+        "url": "https://github.com/nickejanssen/arcwright/issues/483"
+      }
+    },
+    {
+      "id": "AW-361",
+      "title": "Keep Mini-Game Presentation Without An Audience Rule Off The TV",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "S",
+      "depends_on": [
+        "AW-347"
+      ],
+      "path": "docs/roadmap/tasks/AW-361-keep-unruled-mini-game-presentation-off-the-tv.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 484,
+        "url": "https://github.com/nickejanssen/arcwright/issues/484"
+      }
+    },
+    {
       "id": "AW-352",
       "title": "Let The Host Hand The Host Role To Another Player From The Phone",
       "milestone": "M7",
