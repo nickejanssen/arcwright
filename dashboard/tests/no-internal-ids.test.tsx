@@ -10,9 +10,12 @@ import type { ReactElement } from "react";
 import Notebook from "../src/screens/notebook/Notebook.js";
 import EyesUpPhone from "../src/screens/round/EyesUpPhone.js";
 import InvestigatePhone from "../src/screens/round/InvestigatePhone.js";
+import MiniGamePhone from "../src/screens/round/MiniGamePhone.js";
+import MiniGameTv from "../src/screens/round/MiniGameTv.js";
+import RewardCard from "../src/screens/round/RewardCard.js";
 import StoryTv from "../src/screens/round/StoryTv.js";
 import ThinkingTv from "../src/screens/round/ThinkingTv.js";
-import { mount } from "./helpers/dom.js";
+import { mount, settle } from "./helpers/dom.js";
 import {
   INTERNAL_IDS,
   ME,
@@ -22,6 +25,7 @@ import {
   withFetch,
 } from "./helpers/round-fixtures.js";
 import type { Mounted } from "./helpers/dom.js";
+import { fixtureServices } from "./helpers/mini-game-fixture.js";
 
 const base = {
   sessionId: "game-uuid-1111",
@@ -104,6 +108,61 @@ test("no internal ID on any round screen", async () => {
       "screen 9",
     );
     await notebook.unmount();
+
+    const tvGame = await look(
+      createElement(MiniGameTv, {
+        sessionId: "game-uuid-1111",
+        lobby: lobby(),
+        round: round({ phase: "mini_game", phaseEntry: 12 }),
+        stageServices: fixtureServices(),
+      }),
+      "screen 10",
+    );
+    await settle();
+    assertClean(tvGame, "screen 10 after package mount");
+    await tvGame.unmount();
+
+    const phoneGame = await look(
+      createElement(MiniGamePhone, {
+        ...base,
+        seat: {
+          participantId: ME,
+          characterId: "character-internal",
+          displayName: "Jordan",
+        },
+        round: round({ phase: "mini_game", phaseEntry: 12 }),
+        stageServices: fixtureServices(),
+      }),
+      "screen 11",
+    );
+    await settle();
+    assertClean(phoneGame, "screen 11 after package mount");
+    await phoneGame.unmount();
+
+    engine.rewards = [
+      {
+        grant_id: "grant_internal_1",
+        run_id: "run_internal_1",
+        beat_id: "beat_internal_1",
+        amount: 1,
+        kind: "investigation",
+      },
+    ];
+    const reward = await look(
+      createElement(
+        RewardCard,
+        {
+          sessionId: "game-uuid-1111",
+          getToken: base.getToken,
+          round: round({ phase: "bridge", phaseEntry: 14 }),
+        },
+        createElement("p", null, "Screen underneath"),
+      ),
+      "screen 12",
+    );
+    await settle();
+    assertClean(reward, "screen 12 after menu read");
+    await reward.unmount();
   });
   document.documentElement.setAttribute("data-reduce-motion", "system");
 });

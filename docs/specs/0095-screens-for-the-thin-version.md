@@ -340,21 +340,21 @@ Checked by reading code on 2026-11-16. Nothing was run. Line numbers will drift.
 - **Shows:** the package's own phone view, mounted by the loader. The kit already handles the countdown, double-submit guarding and an audience check (`nightcap-web/src/mini-game-kit/`, verified by reading).
 - **Feeds:** `GET /v1/sessions/{id}/mini-games/active` with the player's sign-in (exists, `api/routers/mini_games.py:399`), and the submissions route (exists). Not the display address with a character ID (decision 6).
 
-## 12. Phone: Mini-game result
+## 12. Phone: Mini-game reward card
 
 ```
 +---------------------------+
-| You placed 1st.           |
-|                           |
-| You earned one extra      |
+| You earned one more       |
 | investigation.            |
+|                           |
 |            5 left         |
 | [         OK           ]  |
 +---------------------------+
 ```
 
-- **Shows:** your own placing; for the top-ranked, the extra investigation (D-126).
-- **Feeds:** the standing (spec 0094, Part I) and the budget from the menu route. **(gap)** Spec 0093's answer to Q1 adds the investigation to the budget but does not say that the winner is told. AW-328 is asked to send a private event to each rewarded player; if it does not, AW-332 shows the placing only and the budget in the header.
+- **Shows:** the saved mini-game reward once per grant, and the remaining investigation count returned by the menu route. The player acknowledges each grant with OK. A later grant gets its own card.
+- **Feeds:** `GET /v1/sessions/{id}/me/menu`, including `rewards` matched by `grant_id` and `remaining_budget`. Read on each phase change and after a mini-game phase. A live message is not required. Acknowledged grant IDs are kept in this phone's browser storage as a convenience.
+- **No placing line:** no route returns the player's placing to this screen. The card reports the saved reward from the menu, not a standing or a rank. This follows the approved AW-332 plan on issue #435.
 
 ## 13. TV: Last Call
 

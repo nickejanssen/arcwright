@@ -122,6 +122,11 @@ export const copy = {
     tabNow: "Now",
     tabNotebook: "Notebook",
     ok: "OK",
+    gettingGameReady: "Getting the game ready...",
+    earnedInvestigation: "You earned one more investigation.",
+    noMiniGameInProgress: "No mini-game in progress.",
+    miniGameUnavailable: "Could not reach the mini-game.",
+    miniGameCouldNotShow: "The mini-game could not be shown.",
   },
 
   notebook: {

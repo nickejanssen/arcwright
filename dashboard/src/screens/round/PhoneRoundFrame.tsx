@@ -20,6 +20,7 @@ interface FrameProps {
   round: RoundState;
   // The route's investigations-left number; null where it does not matter.
   left: number | null;
+  showClock?: boolean;
   now: ReactNode;
 }
 
@@ -37,7 +38,7 @@ export default function PhoneRoundFrame(props: FrameProps) {
           <span className="rd-name">{props.seat.displayName}</span>
         )}{" "}
         {round.beatName && <span className="rd-title">{round.beatName}</span>}{" "}
-        {clock !== null && (
+        {props.showClock !== false && clock !== null && (
           <span className="rd-clock">{formatClock(clock)}</span>
         )}{" "}
         {props.left !== null && (
