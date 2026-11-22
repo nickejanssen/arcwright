@@ -34,7 +34,7 @@ class _RuledMechanic:
     audience_rule = AudienceRule(
         public_state=("step",),
         own_state=("notes",),
-        withheld_presentation=("secret_prompt",),
+        public_presentation=("title",),
     )
 
 
@@ -102,7 +102,7 @@ def test_player_whose_entry_is_missing_gets_no_notes_key() -> None:
     assert view.runtime_state == {"step": "input"}
 
 
-def test_withheld_presentation_keys_go_to_players_only() -> None:
+def test_presentation_keys_not_named_public_go_to_players_only() -> None:
     player = build_run_view(_registry(), _run(), Viewer(Audience.player, CHAR_A))
     tv = build_run_view(_registry(), _run(), Viewer(Audience.shared_display))
     host = build_run_view(_registry(), _run(), Viewer(Audience.host))
@@ -112,6 +112,21 @@ def test_withheld_presentation_keys_go_to_players_only() -> None:
     }
     assert tv.presentation == {"title": "A title"}
     assert host.presentation == {"title": "A title"}
+
+
+def test_presentation_keys_the_rule_does_not_name_never_reach_tv_or_host() -> None:
+    run = _run(
+        presentation={
+            "title": "A title",
+            "added_later_by_a_generator": "UNLISTED-VALUE",
+        }
+    )
+    for viewer in (Viewer(Audience.shared_display), Viewer(Audience.host)):
+        view = build_run_view(_registry(), run, viewer)
+        assert view.presentation == {"title": "A title"}
+        assert "UNLISTED-VALUE" not in str(view)
+    player = build_run_view(_registry(), run, Viewer(Audience.player, CHAR_A))
+    assert player.presentation["added_later_by_a_generator"] == "UNLISTED-VALUE"
 
 
 def test_unknown_mechanic_sends_nothing() -> None:
@@ -128,6 +143,60 @@ def test_mechanic_without_a_rule_sends_no_state() -> None:
     )
     assert view.runtime_state == {}
     assert view.presentation == {"title": "A title", "secret_prompt": "only for phones"}
+
+
+def test_mechanic_without_a_rule_sends_the_shared_display_no_presentation() -> None:
+    view = build_run_view(
+        _registry(), _run(mechanic_type="test-unruled"), Viewer(Audience.shared_display)
+    )
+    assert view.runtime_state == {}
+    assert view.presentation == {}
+    assert "only for phones" not in str(view)
+
+
+def test_mechanic_without_a_rule_sends_the_host_no_presentation() -> None:
+    view = build_run_view(
+        _registry(), _run(mechanic_type="test-unruled"), Viewer(Audience.host)
+    )
+    assert view.runtime_state == {}
+    assert view.presentation == {}
+
+
+def test_seated_player_of_a_mechanic_without_a_rule_keeps_the_whole_presentation() -> (
+    None
+):
+    view = build_run_view(
+        _registry(), _run(mechanic_type="test-unruled"), Viewer(Audience.player, CHAR_B)
+    )
+    assert view.presentation == {"title": "A title", "secret_prompt": "only for phones"}
+
+
+def test_player_without_a_seat_of_a_mechanic_without_a_rule_gets_nothing() -> None:
+    view = build_run_view(
+        _registry(), _run(mechanic_type="test-unruled"), Viewer(Audience.player, None)
+    )
+    assert view.presentation == {}
+
+
+def test_every_registered_mechanic_without_a_rule_keeps_presentation_off_the_tv() -> (
+    None
+):
+    registry = default_registry()
+    unruled = [
+        mechanic_type
+        for mechanic_type, plugin in registry._registry.items()
+        if not isinstance(getattr(plugin, "audience_rule", None), AudienceRule)
+    ]
+    assert unruled, "expected at least one registered mechanic without a rule"
+    for mechanic_type in unruled:
+        run = _run(
+            mechanic_type=mechanic_type,
+            presentation={"title": "T", "phone_only": "PHONE-ONLY"},
+        )
+        for viewer in (Viewer(Audience.shared_display), Viewer(Audience.host)):
+            view = build_run_view(registry, run, viewer)
+            assert view.presentation == {}, mechanic_type
+            assert "PHONE-ONLY" not in str(view), mechanic_type
 
 
 def test_own_state_that_is_not_a_map_is_dropped() -> None:
@@ -183,7 +252,13 @@ def test_tell_me_something_true_declares_a_rule_that_keeps_its_prompt_off_the_tv
             "current_spotlight_index": 1,
             "spotlight_order": [CHAR_A, CHAR_B],
         },
-        presentation={"title": "A title", "prompt": "phone-only prompt"},
+        presentation={
+            "title": "A title",
+            "true_label": "Truth",
+            "lie_label": "Lie",
+            "prompt": "phone-only prompt",
+            "added_later": "not declared",
+        },
     )
     tv = build_run_view(default_registry(), run, Viewer(Audience.shared_display))
     player = build_run_view(default_registry(), run, Viewer(Audience.player, CHAR_A))
@@ -192,7 +267,11 @@ def test_tell_me_something_true_declares_a_rule_that_keeps_its_prompt_off_the_tv
         "input_closed": True,
         "current_spotlight_index": 1,
     }
-    assert tv.presentation == {"title": "A title"}
+    assert tv.presentation == {
+        "title": "A title",
+        "true_label": "Truth",
+        "lie_label": "Lie",
+    }
     assert player.presentation["prompt"] == "phone-only prompt"
 
 
