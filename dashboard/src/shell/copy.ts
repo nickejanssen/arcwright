@@ -138,6 +138,22 @@ export const copy = {
     empty: "Nothing yet. Look into something.",
   },
 
+  endgame: {
+    lastCall: "Last Call",
+    lastCallPrompt: "Build your theory on your phone. Then lock it.",
+    locked: "Locked",
+    notLocked: "Not locked",
+    yourTheory: "Your theory",
+    choose: "Choose...",
+    proof: "Proof",
+    saved: "Saved as you go.",
+    lock: "Lock my theory",
+    confirmLock: "Lock it? You can't change it after this.",
+    waiting: "Locked. Waiting for the others.",
+    accused: "The accused",
+    accuses: (name: string, answer: string) => `${name} accuses ${answer}`,
+  },
+
   settings: {
     title: "Settings",
     back: "Back",
