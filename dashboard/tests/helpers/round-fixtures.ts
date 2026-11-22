@@ -170,6 +170,9 @@ export interface FakeEngine {
   refuseNextChoice: boolean;
   // A proxy answers the next choices call with a 503; the engine never sees it.
   unavailableNextChoice: boolean;
+  // Each queued gate holds one menu read (the body is fixed when the read is
+  // made, as a slow network would deliver it) until the gate opens.
+  menuGates: Array<Promise<void>>;
   // How many of the next menu reads fail, as a dropped connection would.
   dropMenus: number;
   // The next choices call is processed but its answer waits for this promise.
@@ -204,6 +207,7 @@ export function fakeEngine(
     refuseNextChoice: false,
     unavailableNextChoice: false,
     dropMenus: 0,
+    menuGates: [],
     holdNextChoice: null,
     entryNow: 7,
     rewards: [],
@@ -233,7 +237,8 @@ export function fakeEngine(
         engine.dropMenus -= 1;
         throw new TypeError("Failed to fetch");
       }
-      return json({
+      const gate = engine.menuGates.shift();
+      const reply = json({
         open: engine.open,
         remaining_budget: engine.budget,
         items: engine.items.map((i) => ({
@@ -247,6 +252,8 @@ export function fakeEngine(
         })),
         rewards: engine.rewards,
       });
+      if (gate) await gate;
+      return reply;
     }
     if (path.endsWith("/me/choices")) {
       const choiceId = String(body?.choice_id);
@@ -257,6 +264,11 @@ export function fakeEngine(
       }
       if (engine.refuseNextChoice) {
         engine.refuseNextChoice = false;
+        if (engine.holdNextChoice) {
+          const gate = engine.holdNextChoice;
+          engine.holdNextChoice = null;
+          await gate;
+        }
         return json({ detail: { code: "not_on_menu" } }, 409);
       }
       const seen = answers.get(choiceId);

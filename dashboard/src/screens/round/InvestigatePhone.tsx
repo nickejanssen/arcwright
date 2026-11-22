@@ -47,6 +47,19 @@ export function peekHeldFinding(
     : null;
 }
 
+// How long the held finding has left to show; null when none is held for this
+// game. A hold that has not started (the investigate screen is still up) has
+// the whole hold left.
+export function heldFindingMsLeft(
+  sessionId: string,
+  now: number = Date.now(),
+): number | null {
+  if (!held || held.sessionId !== sessionId) return null;
+  if (held.at === null) return HOLD_MS;
+  const holdRemaining = HOLD_MS - (now - held.at);
+  return holdRemaining > 0 ? holdRemaining : null;
+}
+
 export function clearHeldFinding(): void {
   held = null;
 }
@@ -77,8 +90,9 @@ export function FindingView(props: {
   );
 }
 
-// The menu's items grouped under the subject each is about. Subjects appear in
-// the order of their first item and items keep the route's order.
+// The menu's items shown under the subject each is about, in exactly the order
+// the route gave: a run of items about the same subject share a heading, and a
+// subject that comes back later gets a new heading. Nothing is moved.
 function groupBySubject(items: MenuItem[]): Array<{
   subjectId: string;
   label: string;
@@ -92,8 +106,8 @@ function groupBySubject(items: MenuItem[]): Array<{
     items: MenuItem[];
   }> = [];
   for (const item of items) {
-    const group = groups.find((g) => g.subjectId === item.subjectId);
-    if (group) group.items.push(item);
+    const last = groups[groups.length - 1];
+    if (last && last.subjectId === item.subjectId) last.items.push(item);
     else {
       groups.push({
         subjectId: item.subjectId,
@@ -118,13 +132,21 @@ export default function InvestigatePhone(props: SlotProps) {
   // False once this screen is gone: a reply that lands after that is not shown
   // and holds nothing.
   const alive = useRef(true);
+  // The number of the newest menu read.
+  const readSeq = useRef(0);
   const [failures, setFailures] = useState(0);
 
   async function reread(clearFailure = false): Promise<void> {
+    // Only the newest read counts: an older reply that lands late is dropped,
+    // and so is any reply once this screen is gone.
+    const mine = ++readSeq.current;
     try {
-      setMenu(await api.menu());
+      const fresh = await api.menu();
+      if (mine !== readSeq.current || !alive.current) return;
+      setMenu(fresh);
       if (clearFailure) setFailed(false);
     } catch {
+      if (mine !== readSeq.current || !alive.current) return;
       setFailed(true);
       // A new count makes the retry effect run again, so it keeps going.
       setFailures((n) => n + 1);
@@ -162,6 +184,8 @@ export default function InvestigatePhone(props: SlotProps) {
       const reply = await api.choose(attempt.choiceId, attempt.opportunityId);
       tracker.answered();
       if (!alive.current) return;
+      // The reply is newer than any read already in flight.
+      readSeq.current += 1;
       setMenu((m) =>
         m ? { ...m, remainingBudget: reply.remainingBudget } : m,
       );
@@ -173,6 +197,7 @@ export default function InvestigatePhone(props: SlotProps) {
       setView({ kind: "finding", finding });
       void reread();
     } catch (error) {
+      if (!alive.current) return;
       if (error instanceof ApiError && error.status < 500) {
         // The engine answered and said no: that choice is over. (A 5xx from a
         // proxy may not have reached the engine, so it is retried with the
@@ -186,7 +211,7 @@ export default function InvestigatePhone(props: SlotProps) {
       // be sent again with the same ID.
       setFailed(true);
     } finally {
-      setBusy(false);
+      if (alive.current) setBusy(false);
     }
   }
 
@@ -264,8 +289,8 @@ export default function InvestigatePhone(props: SlotProps) {
         {menu.remainingBudget === 0 && (
           <p className="sh-line">{copy.round.noneLeft}</p>
         )}
-        {groupBySubject(menu.items).map((group) => (
-          <div key={group.subjectId} className="rd-group">
+        {groupBySubject(menu.items).map((group, gi) => (
+          <div key={`${gi}:${group.subjectId}`} className="rd-group">
             <h3 className="rd-subject">
               {copy.round.kinds[group.kind] && (
                 <>
