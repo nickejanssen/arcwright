@@ -11,6 +11,7 @@ import PhoneRoundFrame from "./PhoneRoundFrame";
 import {
   FindingView,
   clearHeldFinding,
+  heldFindingMsLeft,
   peekHeldFinding,
 } from "./InvestigatePhone";
 
@@ -18,7 +19,20 @@ export default function MiniGamePhone(
   props: SlotProps & { stageServices?: StageServices },
 ) {
   const { getToken, round, seat, sessionId } = props;
-  const [finding, setFinding] = useState(() => peekHeldFinding(sessionId));
+  const [dismissed, setDismissed] = useState(false);
+  const [, renderAgain] = useState(0);
+  const [captured] = useState(() => {
+    const finding = peekHeldFinding(sessionId);
+    const msLeft = finding ? heldFindingMsLeft(sessionId) : null;
+    return finding && msLeft !== null
+      ? { finding, endsAt: Date.now() + msLeft }
+      : null;
+  });
+  const pending =
+    !dismissed && captured && Date.now() < captured.endsAt
+      ? captured.finding
+      : null;
+  const endsAt = captured?.endsAt ?? null;
   const [token, setToken] = useState<string | null>(null);
   const [tokenFailed, setTokenFailed] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -37,6 +51,16 @@ export default function MiniGamePhone(
             : null,
     );
   }, []);
+
+  useEffect(() => {
+    if (endsAt === null) return;
+    const wait = endsAt - Date.now();
+    if (wait <= 0) return;
+    const timer = setTimeout(() => renderAgain((n) => n + 1), wait + 50);
+    return () => clearTimeout(timer);
+  }, [endsAt]);
+
+  useEffect(() => () => clearHeldFinding(), []);
 
   useEffect(() => setLoading(true), [round.phaseEntry]);
 
@@ -68,58 +92,61 @@ export default function MiniGamePhone(
     };
   }, [getToken, sessionId]);
 
-  const now = finding ? (
-    <FindingView
-      finding={finding}
-      closed
-      action={{
-        label: copy.round.ok,
-        onClick: () => {
-          clearHeldFinding();
-          setFinding(null);
-        },
-      }}
-    />
-  ) : (
-    <section className="rd-mini-game" aria-busy={loading}>
-      {loading && (
-        <p className="sh-line" role="status">
-          {copy.round.gettingGameReady}
-        </p>
-      )}
-      {tokenFailed && (
-        <p className="sh-error" role="alert">
-          {copy.round.failed}
-        </p>
-      )}
-      {stageMessage === "idle" && (
-        <p className="sh-line" role="status">
-          {copy.round.noMiniGameInProgress}
-        </p>
-      )}
-      {stageMessage === "failed" && (
-        <p className="sh-error" role="alert">
-          {copy.round.miniGameCouldNotShow}
-        </p>
-      )}
-      {stageMessage === "unavailable" && (
-        <p className="sh-error" role="alert">
-          {copy.round.miniGameUnavailable}
-        </p>
-      )}
-      {token && seat && (
-        <RoundMiniGameStage
-          key={round.phaseEntry ?? "mini-game"}
-          surface="phone"
-          sessionId={sessionId}
-          participantId={seat.participantId}
-          characterId={seat.characterId ?? ""}
-          token={token}
-          onStageState={stageStateChanged}
-          services={props.stageServices}
+  const now = (
+    <>
+      {pending && (
+        <FindingView
+          finding={pending}
+          closed
+          action={{
+            label: copy.round.ok,
+            onClick: () => {
+              clearHeldFinding();
+              setDismissed(true);
+            },
+          }}
         />
       )}
-    </section>
+      <section className="rd-mini-game" aria-busy={loading}>
+        {loading && (
+          <p className="sh-line" role="status">
+            {copy.round.gettingGameReady}
+          </p>
+        )}
+        {tokenFailed && (
+          <p className="sh-error" role="alert">
+            {copy.round.failed}
+          </p>
+        )}
+        {stageMessage === "idle" && (
+          <p className="sh-line" role="status">
+            {copy.round.noMiniGameInProgress}
+          </p>
+        )}
+        {stageMessage === "failed" && (
+          <p className="sh-error" role="alert">
+            {copy.round.miniGameCouldNotShow}
+          </p>
+        )}
+        {stageMessage === "unavailable" && (
+          <p className="sh-error" role="alert">
+            {copy.round.miniGameUnavailable}
+          </p>
+        )}
+        {token && seat && (
+          <RoundMiniGameStage
+            key={round.phaseEntry ?? "mini-game"}
+            surface="phone"
+            sessionId={sessionId}
+            participantId={seat.participantId}
+            characterId={seat.characterId ?? ""}
+            token={token}
+            onStageState={stageStateChanged}
+            services={props.stageServices}
+          />
+        )}
+      </section>
+    </>
   );
 
   return (
