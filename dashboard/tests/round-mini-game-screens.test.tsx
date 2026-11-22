@@ -3,11 +3,13 @@
 
 import assert from "node:assert/strict";
 import test from "node:test";
-import { createElement } from "react";
+import { act, StrictMode, createElement } from "react";
 
 import MiniGamePhone from "../src/screens/round/MiniGamePhone.js";
 import MiniGameTv from "../src/screens/round/MiniGameTv.js";
-import InvestigatePhone from "../src/screens/round/InvestigatePhone.js";
+import InvestigatePhone, {
+  clearHeldFinding,
+} from "../src/screens/round/InvestigatePhone.js";
 import { DEFAULT_SLOTS, resolveScreen } from "../src/shell/phaseScreens.js";
 import { mount, settle } from "./helpers/dom.js";
 import {
@@ -29,6 +31,27 @@ const base = {
   },
   getToken: async () => "player-sign-in",
 };
+
+async function leaveDeskFinding(remainingMs?: number) {
+  const investigate = await mount(
+    createElement(InvestigatePhone, {
+      ...base,
+      round: round({ phase: "choices" }),
+    }),
+  );
+  await investigate.clickContaining("Search the desk");
+  await investigate.click("Spend it");
+
+  const realNow = Date.now;
+  if (remainingMs !== undefined) {
+    Date.now = () => realNow() - 30_000 + remainingMs;
+  }
+  try {
+    await investigate.unmount();
+  } finally {
+    Date.now = realNow;
+  }
+}
 
 test("the mini-game phase selects screen 10 on TV and screen 11 on phone", () => {
   const state = round({ phase: "mini_game", phaseEntry: 12 });
@@ -286,4 +309,94 @@ test("a finding left open at time-up is shown once on the mini-game phone", asyn
     );
     await second.unmount();
   });
+});
+
+test("the mini-game stays playable beside a finding and OK dismisses it in StrictMode", async () => {
+  clearHeldFinding();
+  try {
+    const engine = fakeEngine();
+    await withFetch(engine, async () => {
+      await leaveDeskFinding();
+      const props = {
+        ...base,
+        round: round({ phase: "mini_game", phaseEntry: 12 }),
+        stageServices: fixtureServices(),
+      };
+      const pageElement = () =>
+        createElement(StrictMode, null, createElement(MiniGamePhone, props));
+      const page = await mount(pageElement());
+      try {
+        assert.ok(
+          page.text().includes("A torn page is wedged behind the drawer."),
+        );
+        assert.ok(
+          page.text().includes("Fixture phone view"),
+          "the mini-game remains mounted and playable beside the finding",
+        );
+        assert.ok(page.buttons().some((b) => b.textContent?.trim() === "OK"));
+
+        await page.rerender(pageElement());
+        await page.click("OK");
+        assert.ok(
+          !page.text().includes("A torn page is wedged behind the drawer."),
+        );
+        assert.ok(page.text().includes("Fixture phone view"));
+
+        await page.rerender(pageElement());
+        assert.ok(
+          !page.text().includes("A torn page is wedged behind the drawer."),
+        );
+      } finally {
+        await page.unmount();
+      }
+    });
+  } finally {
+    clearHeldFinding();
+  }
+});
+
+test("the finding expires without a tap and stays gone on re-entry", async () => {
+  clearHeldFinding();
+  try {
+    const engine = fakeEngine();
+    await withFetch(engine, async () => {
+      await leaveDeskFinding(2_000);
+      const props = {
+        ...base,
+        round: round({ phase: "mini_game", phaseEntry: 12 }),
+        stageServices: fixtureServices(),
+      };
+      let page: Awaited<ReturnType<typeof mount>> | undefined;
+      try {
+        page = await mount(createElement(MiniGamePhone, props));
+        assert.ok(
+          page.text().includes("A torn page is wedged behind the drawer."),
+        );
+        await act(async () => {
+          await new Promise((done) => setTimeout(done, 2_250));
+        });
+        await settle();
+        assert.ok(
+          !page.text().includes("A torn page is wedged behind the drawer."),
+        );
+        assert.ok(page.text().includes("Fixture phone view"));
+        await page.unmount();
+        page = undefined;
+
+        page = await mount(
+          createElement(MiniGamePhone, {
+            ...props,
+            round: round({ phase: "mini_game", phaseEntry: 13 }),
+          }),
+        );
+        assert.ok(
+          !page.text().includes("A torn page is wedged behind the drawer."),
+        );
+      } finally {
+        if (page) await page.unmount();
+      }
+    });
+  } finally {
+    clearHeldFinding();
+  }
 });
