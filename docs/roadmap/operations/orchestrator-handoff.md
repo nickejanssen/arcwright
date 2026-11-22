@@ -147,11 +147,12 @@ Progress: 7 of about 23 critical-path tasks are merged, roughly 30 percent (infe
 
 ## In flight at handoff (21 November 2026)
 
-Main is `fdd0c77` or later. Check `gh pr list --state open`; the live answer wins.
+Main is `bb0d29a` or later. Check `gh pr list --state open`; the live answer wins.
 
-- **AW-332 part A merged** (#473, `b018d83`). Part B, screens 10 to 12, is next and must also read the held finding.
-- **AW-351 merged** (#472, `fdd0c77`) on the founder's "Merge anyway", with two findings open in AW-358 (#475). The D-155 result hold has an approved design, but its implementation plan is not approved and it is not built.
-- **Waiting on the founder:** the D-155 implementation plan; case 1 approval by 28 November (AW-305); the agency framing (AW-319); the Battle of Wits tone (AW-355); the recap voice (AW-327).
+- **Merged:** AW-332 parts A and B (#473, #480), the AW-359 fixes (#478), AW-351 (#472) and the D-155 result hold (#479). None has been seen on a TV.
+- **Assigned 21 November, each needs its plan approved by the founder:** Codex with GPT-6 Luna on AW-360 (#483), AW-358 (#475) and AW-333 (#436). Claude Sonnet on AW-361 (#484), plus independent review of AW-358 and AW-333. These four avoid each other's files; only AW-333 may edit shared dashboard copy, styles or routes.
+- **Held back:** AW-337 needs the founder's creative interview, and should not add mechanics before AW-361 merges. AW-355 and AW-356 follow it. AW-334 follows AW-333. AW-301 and AW-308 need the founder, a TV and phones.
+- **Waiting on the founder:** the four plans; case 1 approval by 28 November (AW-305); "Investigate on your phones." on the TV (#477, item 5); the agency framing (AW-319); the Battle of Wits tone (AW-355); the recap voice (AW-327).
 
 ## Next build order (older snapshot; "Claude and Codex lanes" below replaces it)
 

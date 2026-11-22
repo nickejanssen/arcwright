@@ -497,7 +497,9 @@ async def get_active_mini_game_display(
     player's phone sends its sign-in and its character_id and gets a
     personalized phase state (is_spotlighted_player, can_vote, has_voted,
     submitted). A sign-in that names a character it does not own is refused
-    with 403. Private submissions are never included in this response.
+    with 403. Private submissions are never included in this response. The
+    run's ``runtime_state`` and ``presentation`` are always the shared display's
+    view, whoever calls; a phone reads its own fuller view from ``/active``.
     """
     if claims is not None:
         _require_session_match(session_id, claims)

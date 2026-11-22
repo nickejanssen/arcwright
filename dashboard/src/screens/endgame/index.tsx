@@ -3,5 +3,12 @@
 // has ended" screen shows.
 
 import type { SlotMap } from "../../shell/phaseScreens";
+import LastCallTv from "./LastCallTv";
+import TheoryPhone from "./TheoryPhone";
+import AccusedTv from "./AccusedTv";
+import EyesUpEndgame from "./EyesUpEndgame";
 
-export const endgameScreens: Readonly<Record<string, SlotMap>> = {};
+export const endgameScreens: Readonly<Record<string, SlotMap>> = {
+  commit: { tv: LastCallTv, phone: TheoryPhone },
+  reveal: { tv: AccusedTv, phone: EyesUpEndgame },
+};
