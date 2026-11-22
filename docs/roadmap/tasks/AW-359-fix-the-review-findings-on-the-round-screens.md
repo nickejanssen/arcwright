@@ -39,7 +39,12 @@ All in `dashboard/` (the screens lane). No engine, API or package change.
 2. **Stale menu read (P1)** (`InvestigatePhone.tsx`). Number every menu request and ignore any reply that is not from the newest request, so an older reply cannot replace a newer budget and menu.
 3. **Rejected choice after the screen is gone (P2)** (`InvestigatePhone.tsx`). Check that the screen is still there on the failure path too, and start no new request and set no state after it has gone.
 4. **Grouping reorders the menu (P2)** (`InvestigatePhone.tsx`). Show consecutive items about the same subject as one group, in the engine's order. A menu in the order A, B, A stays A, B, A.
-5. **Open question, not built (P2):** the thinking-time TV shows "Investigate on your phones." D-134 says round title, clock and ready list only, but that sentence is line 3 of the copy sample the founder approved on #435. It stays unless the founder says to remove it (a one-line change).
+5. **Found while merging #478, not fixed there:** `dashboard/src/screens/round/MiniGamePhone.tsx` (AW-332 part B) shows a held finding in place of the mini-game until OK is tapped and never expires it. Show it beside the game or expire it with `heldFindingMsLeft`, with a test.
+6. **Open question, not built (P2):** the thinking-time TV shows "Investigate on your phones." D-134 says round title, clock and ready list only, but that sentence is line 3 of the copy sample the founder approved on #435. It stays unless the founder says to remove it (a one-line change).
+
+## Status
+
+Items 1 to 4 are fixed in pull request #478. Items 5 and 6 are open, so this task stays open (the pull request says `Refs #477`, not `Closes`).
 
 ## Human Collaboration Contract
 
