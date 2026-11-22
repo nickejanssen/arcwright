@@ -493,6 +493,7 @@ export default defineRenderer({
       const timer = addTimer(shell, ctx);
       let count = 0;
       let currentState: DisplayState = ctx.state;
+      let eventSpotlight: { target: unknown; label: unknown } | null = null;
 
       const showSpotlight = (target: unknown, legacyLabel?: unknown): void => {
         const name =
@@ -508,6 +509,12 @@ export default defineRenderer({
       };
 
       const applyStatus = (state: MiniGameContext["state"]): void => {
+        if (
+          state.resultHold ||
+          state.status !== "active" ||
+          state.runtimeState?.phase === "scoreboard"
+        )
+          eventSpotlight = null;
         currentState = state;
         timer.update(state.deadlineAt);
         if (state.resultHold?.paused && state.resultHold.secondsLeft != null)
@@ -527,6 +534,11 @@ export default defineRenderer({
           );
           setText(reveal, standingText(state));
           setHidden(reveal, false);
+          return;
+        }
+        if (eventSpotlight) {
+          setText(phase, "Spotlight: truth or lie?");
+          showSpotlight(eventSpotlight.target, eventSpotlight.label);
           return;
         }
         const step = state.runtimeState?.phase;
@@ -581,6 +593,10 @@ export default defineRenderer({
           }
           if (event.event_type === "tmst_spotlight_started") {
             const data = record(event.payload);
+            eventSpotlight = {
+              target: data.target_character_id,
+              label: data.spotlight_label,
+            };
             setText(phase, "Spotlight: truth or lie?");
             showSpotlight(data.target_character_id, data.spotlight_label);
             return;
@@ -592,6 +608,7 @@ export default defineRenderer({
             return;
           }
           if (event.event_type === "tmst_scoreboard_ready") {
+            eventSpotlight = null;
             setText(phase, "Scoreboard.");
             setText(spotlight, "The room is warming up.");
             setText(

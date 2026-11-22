@@ -10,7 +10,7 @@ refused state-machine transition is ignored silently and does not raise.
 from __future__ import annotations
 
 from collections.abc import AsyncIterator, Callable
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from typing import Any
 from unittest.mock import AsyncMock, patch
 from uuid import UUID, uuid4
@@ -228,6 +228,85 @@ async def test_real_run_transition_enters_result_hold(
     hold = await current_phase(db, seated.session_id)
     assert hold is not None and hold.result_run_id == str(run.run_id)
     assert await public_mini_game_result(db, seated.session_id) is not None
+
+
+@pytest.mark.asyncio
+async def test_tmst_finished_scoreboard_is_recoverable_as_public_result(
+    db: AsyncSession,
+    registered: Callable[[ArcDefinition], None],
+    no_model_calls: None,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from api.routers.mini_games import get_mini_game_result_display
+    from engine.mini_games.plugins import default_registry
+    from engine.tests.test_social_truth_bluff_runtime import load_tmst_snapshot
+
+    binding = {
+        "binding_id": "tmst-round",
+        "game_id": "tell-me-something-true",
+        "version": "0.1.0",
+    }
+    data = phased_arc(
+        mini_game_root="nightcap/mini_games", mini_games={"beat_one": [binding]}
+    ).model_dump(mode="json")
+    beat = next(b for b in data["beats"] if b["beat_id"] == "beat_one")
+    phase = next(p for p in beat["phases"] if p["kind"] == "mini_game")
+    phase.update(seconds=300, result_hold_seconds=15, result_public=True)
+    arc = ArcDefinition.model_validate(data)
+    registered(arc)
+    monkeypatch.setattr(
+        "engine.session.mini_game_phase.build_registry", default_registry
+    )
+    monkeypatch.setattr(
+        "engine.session.mini_game_phase._resolve",
+        AsyncMock(return_value=load_tmst_snapshot()),
+    )
+    seated = await seat_session(db, arc, players=4)
+    rec = Recorder()
+    await tick(db, seated.session_id, at(0), rec)
+    await reach_phase(db, seated, "beat_one", "mini_game", at(ENTERED), rec)
+    run = await the_run(db, seated.session_id)
+    game = MiniGameRuntime(
+        db, SessionEventBus(), default_registry(), clock=lambda: at(ENTERED + 1)
+    )
+    for i, character in enumerate(seated.characters):
+        await game.submit_action(
+            run.run_id,
+            f"input-{i}",
+            character,
+            {
+                "action": "input",
+                "statement_text": f"private-statement-{i}",
+                "declared_truth": True,
+            },
+        )
+    for _ in range(6):
+        run = await the_run(db, seated.session_id)
+        if run.status != "active":
+            break
+        await tick(
+            db, seated.session_id, aware(run.deadline) + timedelta(seconds=1), rec
+        )
+    run = await the_run(db, seated.session_id)
+    assert run.status == "completed"
+    assert rec.of_type("tmst_scoreboard_ready")
+    assert await game.get_active_run(seated.session_id) is None
+    result = await get_mini_game_result_display(seated.session_id, db)
+    assert result["run_id"] == str(run.run_id)
+    assert result["game_id"] == "tell-me-something-true"
+    assert set(result) == {
+        "run_id",
+        "game_id",
+        "definition_version",
+        "phase_entry",
+        "deadline_at",
+        "standing",
+    }
+    assert {p for tier in result["standing"] for p in tier} == {
+        str(p) for p in seated.participants
+    }
+    assert result["standing"] == run.outcome["standing"]
+    assert "private-statement" not in str(result)
 
 
 @pytest_asyncio.fixture()
