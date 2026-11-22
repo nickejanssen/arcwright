@@ -160,17 +160,13 @@ test("the phase table names the story, thinking time, eyes up and investigate sc
     InvestigatePhone,
   );
 
-  // Last Call is AW-333.
+  // Last Call is supplied by the endgame screen table.
   for (const phase of ["commit"]) {
     const r = round({ phase });
-    assert.equal(
-      resolveScreen("tv", l, r, DEFAULT_SLOTS).kind,
-      "fallback",
-      phase,
-    );
+    assert.equal(resolveScreen("tv", l, r, DEFAULT_SLOTS).kind, "phase", phase);
     assert.equal(
       resolveScreen("phone", l, r, DEFAULT_SLOTS).kind,
-      "fallback",
+      "phase",
       phase,
     );
   }

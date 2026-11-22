@@ -165,13 +165,15 @@ test("room, paused and ended come from the engine's status, ahead of any phase",
   );
 });
 
-test("the shipped slot maps fill scene, choices, mini_game and bridge; commit stays plain for AW-333", () => {
+test("the shipped slot maps include Last Call and the accused", () => {
   for (const phase of PHASES) {
     const filled =
       phase === "scene" ||
       phase === "choices" ||
       phase === "mini_game" ||
-      phase === "bridge";
+      phase === "bridge" ||
+      phase === "commit" ||
+      phase === "reveal";
     for (const surface of ["tv", "phone"] as const) {
       assert.equal(
         resolveScreen(
