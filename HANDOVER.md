@@ -2,7 +2,7 @@
 
 > Read `AGENTS.md` first, then this file, before touching code. It is the short start-of-session brief for every agent (Claude, Codex, Copilot) and for the founder. If it disagrees with a current source, investigate before acting, then fix this file. Keep it short and link to the owner of each detail.
 
-Last updated: 2026-11-19, against main `ab763ae`.
+Last updated: 2026-11-21, checked against main `c8a2670` and open PRs #478 and #480.
 
 ## System map
 
@@ -23,6 +23,7 @@ Keep them apart. Nothing in `engine/` may name Nightcap or assume a murder myste
 - Nothing is deployed to the cloud. The game runs from the founder's PC through a tunnel.
 - The online paper test is paused (D-111). Do not restart it.
 - AI tooling is frozen to break-fixes until the rebuild's first TV session (D-110, D-111), with targeted exceptions for AW-318 retrieval (D-131) and the Arcwright-owned harness migration (D-132).
+- **Screens status (2026-11-21):** AW-332 part B (screens 10 to 12, #435) is in PR #480. The founder TV run has not happened. AW-359 (#477) remains an open review-fix task on part A in PR #478.
 
 ## Where work lives
 
@@ -72,6 +73,7 @@ Work is never left in chat. If you find work, it becomes a roadmap task record a
 - **Two timing tests can fail on a busy machine (AW-350, pull request #455 not merged).** `test_twenty_sessions_tick_in_under_two_hundred_milliseconds` and the 1000-seed case sweep measure wall-clock time. Rerun once. #455 waits on two review points: the sweep's load check can miss load that starts and ends inside the sweep, and the founder has not accepted raising the tick test's calm limit from 0.2 s to 0.4 s.
 - **The TV can receive a mini-game's whole generated `presentation` (verified in code, 2026-11-21).** `build_run_view` applies no filter when a mechanic has no audience rule, and three of the four registered mechanics have none. The TV route needs no sign-in. Whether a real run exposes phone-only text is not tested. Recorded on #457; the recommendation is that AW-337's plan closes it before adding mechanics.
 - **The choice lock has not run on Postgres.** Two simultaneous choices are kept from both spending budget by a row lock that the tests (SQLite) skip. Check it before the TV walkthrough (AW-301).
+- **Four review findings on the merged round screens are being fixed (AW-359, #477).** An independent review of AW-332 part A (head `2ec8300`) found, and the merge did not fix (verified in code on `main`, 2026-11-21): a held finding can hide the Ready button for good; an older menu read can overwrite a newer one; a refused choice can start a request after the screen has gone; and the menu groups items by subject, so a menu in the order A, B, A shows as A, A, B (the approved plan said keep the engine's order). The notebook (`Notebook.tsx`, `groupHoldings`) clusters by subject the same way and is not changed by AW-359; check it if the order matters. **Open question for the founder:** the thinking-time TV shows "Investigate on your phones." D-134 says title, clock and ready list only, but that sentence is line 3 of the copy sample he approved on #435; it stays unless he says to remove it. Remove this bullet when AW-359 merges.
 - **The tracker still partly describes Couch Race.** Labels and comments were applied on 2026-11-15; bodies and milestone criteria are AW-299.
 - **Another session holds unsaved work.** Branch `claude/lido-case-and-spec-followups` had an uncommitted edit to spec 0092 and an untracked case folder on 2026-11-15. Do not open the case folder.
 

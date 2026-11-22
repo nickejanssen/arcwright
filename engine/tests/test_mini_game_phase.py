@@ -13,7 +13,7 @@ from collections.abc import AsyncIterator, Callable
 from datetime import datetime, timezone
 from typing import Any
 from unittest.mock import AsyncMock, patch
-from uuid import UUID
+from uuid import UUID, uuid4
 
 import pytest
 import pytest_asyncio
@@ -41,6 +41,8 @@ from engine.session.phases import (
     current_phase,
     finish_mini_game_phase,
     host_move_on,
+    mark_ready,
+    public_mini_game_result,
     tick,
 )
 from engine.session.service import SessionService
@@ -52,6 +54,7 @@ from engine.tests.rounds_support import (
     Seated,
     at,
     phased_arc,
+    play_mini_game,
     reach_phase,
     round_phases,
     seat_session,
@@ -60,6 +63,171 @@ from engine.tests.rounds_support import (
 )
 
 ENTERED = 100  # the second at which a test enters beat_one's mini-game phase
+
+
+@pytest.mark.asyncio
+async def test_public_result_hold_survives_tick_and_ends_on_ready(
+    db: AsyncSession, registered: Callable[[ArcDefinition], None], no_model_calls: None
+) -> None:
+    data = phased_arc().model_dump(mode="json")
+    beat = next(b for b in data["beats"] if b["beat_id"] == "beat_one")
+    phase = next(p for p in beat["phases"] if p["kind"] == "mini_game")
+    phase.update(result_hold_seconds=15, result_public=True)
+    seated, rec = await in_mini_game(
+        db, registered, arc=ArcDefinition.model_validate(data)
+    )
+    run = await the_run(db, seated.session_id)
+    run.status = "completed"
+    run.outcome = {
+        "standing": [[str(p) for p in seated.participants]],
+        "private": "secret",
+    }
+    await db.flush()
+    before = await current_phase(db, seated.session_id)
+    assert before is not None
+    await tick(db, seated.session_id, at(ENTERED + 1), rec)
+    hold = await current_phase(db, seated.session_id)
+    assert (
+        hold is not None
+        and hold.entry == before.entry
+        and hold.result_run_id == str(run.run_id)
+    )
+    result = await public_mini_game_result(db, seated.session_id)
+    assert result is not None and "private" not in result
+    assert set(result) == {
+        "run_id",
+        "game_id",
+        "definition_version",
+        "phase_entry",
+        "deadline_at",
+        "standing",
+    }
+    assert result["standing"] == [[str(p) for p in seated.participants]]
+    original_outcome = run.outcome
+    run.outcome = {"standing": [[str(seated.participants[0]), "outsider"]]}
+    await db.flush()
+    assert await public_mini_game_result(db, seated.session_id) is None
+    run.outcome = original_outcome
+    duplicate = MiniGameRun(
+        run_id=uuid4(),
+        session_id=seated.session_id,
+        game_id=run.game_id,
+        definition_version=run.definition_version,
+        definition_snapshot=run.definition_snapshot,
+        status="completed",
+        outcome=run.outcome,
+        clue_unlock_record={},
+    )
+    db.add(duplicate)
+    await db.flush()
+    assert await public_mini_game_result(db, seated.session_id) is None
+    await db.delete(duplicate)
+    await db.flush()
+    await tick(db, seated.session_id, at(ENTERED + 2), rec)
+    assert (await current_phase(db, seated.session_id)).entry == hold.entry
+    for participant in seated.participants:
+        await mark_ready(
+            db,
+            seated.session_id,
+            participant,
+            at(ENTERED + 3),
+            rec,
+            phase_entry=hold.entry,
+        )
+    assert await public_mini_game_result(db, seated.session_id) is None
+
+
+@pytest.mark.asyncio
+async def test_result_hold_clock_pauses_and_expires(
+    db: AsyncSession, registered: Callable[[ArcDefinition], None], no_model_calls: None
+) -> None:
+    data = phased_arc().model_dump(mode="json")
+    beat = next(b for b in data["beats"] if b["beat_id"] == "beat_one")
+    phase = next(p for p in beat["phases"] if p["kind"] == "mini_game")
+    phase.update(result_hold_seconds=15, result_public=True)
+    seated, rec = await in_mini_game(
+        db, registered, arc=ArcDefinition.model_validate(data)
+    )
+    run = await the_run(db, seated.session_id)
+    run.status = "timed_out"
+    run.outcome = {"standing": [[str(p) for p in seated.participants]]}
+    await db.flush()
+    await tick(db, seated.session_id, at(ENTERED + 1), rec)
+    hold = await current_phase(db, seated.session_id)
+    assert hold is not None and hold.result_run_id
+    svc = SessionService()
+    await svc.pause_session(db, seated.session_id, now=at(ENTERED + 5))
+    paused = await current_phase(db, seated.session_id)
+    assert paused is not None and paused.remaining_seconds == 11
+    assert await public_mini_game_result(db, seated.session_id) is not None
+    await svc.resume_session(db, seated.session_id, now=at(ENTERED + 30))
+    resumed = await current_phase(db, seated.session_id)
+    assert resumed is not None and resumed.deadline_at == at(ENTERED + 41)
+    await tick(db, seated.session_id, at(ENTERED + 41), rec)
+    assert await public_mini_game_result(db, seated.session_id) is None
+
+
+@pytest.mark.asyncio
+async def test_result_hold_deadline_takes_precedence_over_last_ready(
+    db: AsyncSession, registered: Callable[[ArcDefinition], None], no_model_calls: None
+) -> None:
+    data = phased_arc().model_dump(mode="json")
+    beat = next(b for b in data["beats"] if b["beat_id"] == "beat_one")
+    phase = next(p for p in beat["phases"] if p["kind"] == "mini_game")
+    phase.update(result_hold_seconds=15, result_public=True)
+    seated, rec = await in_mini_game(
+        db, registered, arc=ArcDefinition.model_validate(data)
+    )
+    run = await the_run(db, seated.session_id)
+    run.status = "completed"
+    run.outcome = {"standing": [[str(p) for p in seated.participants]]}
+    await db.flush()
+    await tick(db, seated.session_id, at(ENTERED + 1), rec)
+    hold = await current_phase(db, seated.session_id)
+    assert hold is not None
+    await mark_ready(
+        db,
+        seated.session_id,
+        seated.participants[0],
+        at(ENTERED + 2),
+        rec,
+        phase_entry=hold.entry,
+    )
+    await mark_ready(
+        db,
+        seated.session_id,
+        seated.participants[1],
+        at(ENTERED + 16),
+        rec,
+        phase_entry=hold.entry,
+    )
+    assert (await reasons(db, seated.session_id))[-1] == "time"
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("finish", ["completed", "timed_out"])
+async def test_real_run_transition_enters_result_hold(
+    db: AsyncSession,
+    registered: Callable[[ArcDefinition], None],
+    no_model_calls: None,
+    finish: str,
+) -> None:
+    data = phased_arc().model_dump(mode="json")
+    beat = next(b for b in data["beats"] if b["beat_id"] == "beat_one")
+    phase = next(p for p in beat["phases"] if p["kind"] == "mini_game")
+    phase.update(result_hold_seconds=15, result_public=True)
+    seated, rec = await in_mini_game(
+        db, registered, arc=ArcDefinition.model_validate(data)
+    )
+    if finish == "completed":
+        await play_mini_game(db, seated, ENTERED + 2, rec)
+    else:
+        await tick(db, seated.session_id, at(ENTERED + MINI_GAME_DURATION + 1), rec)
+    run = await the_run(db, seated.session_id)
+    assert run.status == finish
+    hold = await current_phase(db, seated.session_id)
+    assert hold is not None and hold.result_run_id == str(run.run_id)
+    assert await public_mini_game_result(db, seated.session_id) is not None
 
 
 @pytest_asyncio.fixture()

@@ -39,6 +39,30 @@ from engine.tests.rounds_support import at, phased_arc, where
 BASE = 6  # the arc's default budget
 
 
+@pytest.mark.asyncio
+async def test_reward_is_given_once_across_result_hold_and_move_on(
+    db: AsyncSession,
+    registered: Callable[[ArcDefinition], None],
+    monkeypatch: pytest.MonkeyPatch,
+    no_model_calls: None,
+) -> None:
+    data = reward_arc(1).model_dump(mode="json")
+    beat = next(b for b in data["beats"] if b["beat_id"] == "beat_one")
+    phase = next(p for p in beat["phases"] if p["kind"] == "mini_game")
+    phase.update(result_hold_seconds=15, result_public=True)
+    seated, rec = await in_mini_game(
+        db, registered, monkeypatch, ArcDefinition.model_validate(data)
+    )
+    await place_players(db, seated, [1, 2, 3])
+    await tick(db, seated.session_id, at(AFTER_DEADLINE), rec)
+    await tick(db, seated.session_id, at(AFTER_DEADLINE + 1), rec)
+    assert len(rec.of_type("mini_game_result_hold")) == 1
+    assert len(await grants(db, seated.session_id)) == 1
+    await host_move_on(db, seated.session_id, at(AFTER_DEADLINE + 2), rec)
+    assert len(await grants(db, seated.session_id)) == 1
+    assert len(rec.of_type("mini_game_reward_granted")) == 1
+
+
 @pytest_asyncio.fixture()
 async def db() -> AsyncIterator[AsyncSession]:
     engine, factory = await make_sqlite_session_factory()

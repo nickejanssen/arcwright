@@ -1,6 +1,7 @@
 // Screens 4 to 9 (AW-332, pull request A) from fixture data: the key words
 // show, each screen is chosen by the phase table, and the round route the feed
-// reads is the room view. Screens 10 to 12 are the next pull request.
+// reads is the room view. Screens 10 to 12 have fixture coverage in their own
+// tests.
 
 import assert from "node:assert/strict";
 import test from "node:test";
@@ -159,8 +160,8 @@ test("the phase table names the story, thinking time, eyes up and investigate sc
     InvestigatePhone,
   );
 
-  // The mini-game screens are the next pull request, and Last Call is AW-333.
-  for (const phase of ["mini_game", "commit"]) {
+  // Last Call is AW-333.
+  for (const phase of ["commit"]) {
     const r = round({ phase });
     assert.equal(
       resolveScreen("tv", l, r, DEFAULT_SLOTS).kind,
@@ -173,6 +174,13 @@ test("the phase table names the story, thinking time, eyes up and investigate sc
       phase,
     );
   }
+  const miniGame = round({ phase: "mini_game" });
+  const tvMiniGame = resolveScreen("tv", l, miniGame, DEFAULT_SLOTS);
+  const phoneMiniGame = resolveScreen("phone", l, miniGame, DEFAULT_SLOTS);
+  assert.ok(tvMiniGame.kind === "phase");
+  assert.ok(phoneMiniGame.kind === "phase");
+  assert.equal(tvMiniGame.Slot.name, "MiniGameTv");
+  assert.equal(phoneMiniGame.Slot.name, "MiniGamePhone");
 });
 
 test("screen 4, the TV story: title, speaker and line, clock, and who is ready by word and mark", async () => {

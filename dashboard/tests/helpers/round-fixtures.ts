@@ -25,7 +25,10 @@ export const INTERNAL_IDS = [
   "concept_internal_3",
   "concept_internal_opening",
   "grant_internal_1",
+  "grant_internal_2",
   "run_internal_1",
+  "run_internal_2",
+  "character-internal",
   "choice-id-token",
 ] as const;
 

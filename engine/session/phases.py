@@ -45,7 +45,7 @@ from engine.arc.models import (
 )
 from engine.arc.registry import load_arc_definition
 from engine.case.authored import AuthoredCase
-from engine.db.orm import Decision, Event, SessionParticipant
+from engine.db.orm import Decision, Event, MiniGameRun, SessionParticipant
 from engine.db.orm import Session as OrmSession
 from engine.events.models import (
     AudienceTarget,
@@ -202,6 +202,8 @@ class PhaseState:
     deadline_at: datetime | None
     remaining_seconds: float | None
     reason: str | None
+    result_run_id: str | None = None
+    result_eligible: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -277,6 +279,8 @@ def _state_from(payload: dict[str, Any]) -> PhaseState:
         deadline_at=_parse_time(payload.get("deadline_at")),
         remaining_seconds=payload.get("remaining_seconds"),
         reason=payload.get("reason"),
+        result_run_id=payload.get("result_run_id"),
+        result_eligible=tuple(payload.get("result_eligible") or ()),
     )
 
 
@@ -307,6 +311,8 @@ async def _save(
     remaining_seconds: float | None = None,
     reason: str | None = None,
     new_entry: bool = False,
+    result_run_id: str | None = None,
+    result_eligible: tuple[str, ...] = (),
 ) -> PhaseState:
     """Save the next state. ``entry`` names one visit to a phase: a new
     visit (``new_entry``) takes the next number; ending, pausing and resuming
@@ -326,6 +332,8 @@ async def _save(
         "deadline_at": deadline_at.isoformat() if deadline_at else None,
         "remaining_seconds": remaining_seconds,
         "reason": reason,
+        "result_run_id": result_run_id,
+        "result_eligible": list(result_eligible),
     }
     db.add(
         Event(
@@ -378,10 +386,27 @@ async def ready_ids(db: AsyncSession, session_id: UUID, phase_entry: int) -> set
 async def _everyone_ready(
     db: AsyncSession, session_id: UUID, state: PhaseState
 ) -> bool:
-    humans = {str(pid) for pid in await human_player_ids(db, session_id)}
+    humans = (
+        set(state.result_eligible)
+        if state.result_run_id
+        else {str(pid) for pid in await human_player_ids(db, session_id)}
+    )
     if not humans:
         return False
     return humans <= await _ready_ids(db, session_id, state.entry)
+
+
+def valid_result_standing(standing: Any, eligible: set[str]) -> bool:
+    if not eligible or not isinstance(standing, list) or not standing:
+        return False
+    members: list[str] = []
+    for tier in standing:
+        if not isinstance(tier, list) or not tier:
+            return False
+        if any(not isinstance(member, str) for member in tier):
+            return False
+        members.extend(tier)
+    return len(members) == len(set(members)) and set(members) == eligible
 
 
 # --- publishing -----------------------------------------------------------------
@@ -656,6 +681,12 @@ async def _due_reason(
     publish: Publish,
 ) -> str | None:
     if state.phase == PhaseKind.mini_game.value:
+        if state.result_run_id:
+            if state.deadline_at is not None and now >= state.deadline_at:
+                return "time"
+            if await _everyone_ready(db, session_id, state):
+                return "ready"
+            return None
         return await mini_game_phase.advance(
             db,
             session_id,
@@ -676,6 +707,135 @@ async def _due_reason(
     if state.deadline_at is not None and now >= state.deadline_at:
         return "time"
     return None
+
+
+async def _start_result_hold(
+    db: AsyncSession,
+    orm: OrmSession,
+    arc: ArcDefinition,
+    state: PhaseState,
+    now: datetime,
+    publish: Publish,
+) -> bool:
+    definition = _phases(_beat(arc, state.beat_id))[state.phase_index]
+    if definition.result_hold_seconds is None or state.result_run_id:
+        return False
+    run = await _unique_bound_run(db, orm.session_id, state)
+    if run is None or run.status not in ("completed", "timed_out"):
+        return False
+    eligible = tuple(sorted(str(p) for p in await human_player_ids(db, orm.session_id)))
+    outcome = run.outcome if isinstance(run.outcome, dict) else {}
+    if not valid_result_standing(outcome.get("standing"), set(eligible)):
+        await mini_game_phase._tell_host_unavailable(
+            publish, orm.session_id, now, state.beat_id, "invalid_result_standing"
+        )
+        return False
+    await mini_game_phase.stop_open_run(
+        db, orm.session_id, state.beat_id, state.entry, now, publish
+    )
+    deadline = now + timedelta(seconds=definition.result_hold_seconds)
+    await _save(
+        db,
+        orm.session_id,
+        state,
+        now,
+        status="running",
+        beat_id=state.beat_id,
+        phase_index=state.phase_index,
+        phase=state.phase,
+        deadline_at=deadline,
+        result_run_id=str(run.run_id),
+        result_eligible=eligible,
+    )
+    await emit(
+        publish,
+        content_event(
+            orm.session_id,
+            now,
+            category=EventCategory.state_transition,
+            event_type="mini_game_result_hold",
+            audience=AudienceTarget.all,
+            payload={"phase_entry": state.entry, "deadline_at": deadline.isoformat()},
+        ),
+    )
+    return True
+
+
+async def _unique_bound_run(
+    db: AsyncSession, session_id: UUID, state: PhaseState
+) -> MiniGameRun | None:
+    rows = await db.execute(
+        select(MiniGameRun).where(MiniGameRun.session_id == session_id)
+    )
+    matching = []
+    for run in rows.scalars().all():
+        snapshot = run.definition_snapshot
+        binding = snapshot.get("binding") if isinstance(snapshot, dict) else None
+        if (
+            isinstance(binding, dict)
+            and binding.get("beat_id") == state.beat_id
+            and binding.get("phase_entry") == state.entry
+        ):
+            matching.append(run)
+    return matching[0] if len(matching) == 1 else None
+
+
+async def public_mini_game_result(
+    db: AsyncSession, session_id: UUID
+) -> dict[str, Any] | None:
+    """Read only the public result of the current explicitly opted-in visit."""
+    async with session_lock(db, session_id) as orm:
+        if orm is None or orm.status not in ("active", "paused"):
+            return None
+        state = await current_phase(db, session_id)
+        if (
+            state is None
+            or state.status not in ("running", "paused")
+            or state.phase != PhaseKind.mini_game.value
+            or not state.result_run_id
+            or orm.current_beat_id != state.beat_id
+        ):
+            return None
+        arc = load_arc_definition(orm.arc_id)
+        if arc is None or not arc.is_phased:
+            return None
+        if state.phase_index < 0:
+            return None
+        try:
+            definition = _phases(_beat(arc, state.beat_id))[state.phase_index]
+        except (RoundError, IndexError):
+            return None
+        if (
+            definition.kind is not PhaseKind.mini_game
+            or not definition.result_public
+            or definition.result_hold_seconds is None
+        ):
+            return None
+        run = await _unique_bound_run(db, session_id, state)
+        if (
+            run is None
+            or str(run.run_id) != state.result_run_id
+            or run.status not in ("completed", "timed_out")
+        ):
+            return None
+        outcome = run.outcome if isinstance(run.outcome, dict) else {}
+        standing = outcome.get("standing")
+        eligible = set(state.result_eligible)
+        seated = {str(pid) for pid in await human_player_ids(db, session_id)}
+        if (
+            len(eligible) != len(state.result_eligible)
+            or not eligible <= seated
+            or not valid_result_standing(standing, eligible)
+        ):
+            return None
+        return {
+            "run_id": str(run.run_id),
+            "game_id": run.game_id,
+            "definition_version": run.definition_version,
+            "phase_entry": state.entry,
+            "deadline_at": state.deadline_at,
+            "standing": standing,
+        }
 
 
 async def _settle(
@@ -704,6 +864,11 @@ async def _settle(
             reason = await _due_reason(db, orm.session_id, state, now, publish)
             if reason is None:
                 break
+            if reason == mini_game_phase.ENDED and await _start_result_hold(
+                db, orm, arc, state, now, publish
+            ):
+                changes.append("result_hold")
+                continue
             await _end(db, orm, arc, state, reason, now, publish)
             changes.append(f"ended:{reason}")
             continue
@@ -772,7 +937,9 @@ async def mark_ready(
             raise RoundError("phase_not_running")
         if phase_entry is not None and phase_entry != state.entry:
             return state
-        if PhaseKind(state.phase) not in _READY_PHASES:
+        if state.result_run_id and str(participant_id) not in state.result_eligible:
+            raise RoundError("not_a_participant")
+        if PhaseKind(state.phase) not in _READY_PHASES and not state.result_run_id:
             raise RoundError("phase_not_ready_able", f"{state.phase} ends on its own")
         if str(participant_id) not in await _ready_ids(db, session_id, state.entry):
             db.add(
@@ -790,6 +957,18 @@ async def mark_ready(
                 )
             )
             await db.flush()
+            if state.result_run_id:
+                await emit(
+                    publish,
+                    content_event(
+                        session_id,
+                        now,
+                        category=EventCategory.state_transition,
+                        event_type="mini_game_result_ready_changed",
+                        audience=AudienceTarget.all,
+                        payload={"phase_entry": state.entry},
+                    ),
+                )
         await _settle(db, orm, arc, now, publish)
         newest = await current_phase(db, session_id)
         assert newest is not None
@@ -845,7 +1024,10 @@ async def finish_mini_game_phase(
             db, session_id, state.beat_id, state.entry
         ):
             return False
-        await _end(db, orm, arc, state, mini_game_phase.ENDED, now, publish)
+        if state.result_run_id:
+            return False
+        if not await _start_result_hold(db, orm, arc, state, now, publish):
+            await _end(db, orm, arc, state, mini_game_phase.ENDED, now, publish)
         return True
 
 
@@ -997,6 +1179,8 @@ async def freeze_phase(db: AsyncSession, session_id: UUID, now: datetime) -> Non
             phase_index=state.phase_index,
             phase=state.phase,
             remaining_seconds=max(0.0, (state.deadline_at - now).total_seconds()),
+            result_run_id=state.result_run_id,
+            result_eligible=state.result_eligible,
         )
         if state.phase == PhaseKind.mini_game.value:
             await mini_game_phase.pause_bound_run(
@@ -1020,6 +1204,8 @@ async def thaw_phase(db: AsyncSession, session_id: UUID, now: datetime) -> None:
             phase_index=state.phase_index,
             phase=state.phase,
             deadline_at=now + timedelta(seconds=state.remaining_seconds or 0.0),
+            result_run_id=state.result_run_id,
+            result_eligible=state.result_eligible,
         )
         if state.phase == PhaseKind.mini_game.value:
             await mini_game_phase.resume_bound_run(
@@ -1078,6 +1264,9 @@ async def round_view(db: AsyncSession, session_id: UUID, now: datetime) -> Round
         ready = await commit_phase.locked_ids(db, session_id, state.entry)
     else:
         ready = await _ready_ids(db, session_id, state.entry)
+    eligible = (
+        set(state.result_eligible) if state.result_run_id else {str(p) for p in humans}
+    )
     return RoundView(
         session_status=orm.status,
         beat_id=state.beat_id,
@@ -1088,8 +1277,8 @@ async def round_view(db: AsyncSession, session_id: UUID, now: datetime) -> Round
         status=state.status,
         deadline_at=state.deadline_at,
         seconds_left=seconds_left,
-        ready_count=len({str(p) for p in humans} & ready),
-        player_count=len(humans),
+        ready_count=len(eligible & ready),
+        player_count=len(eligible),
         lines=lines,
     )
 

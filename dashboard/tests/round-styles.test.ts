@@ -28,6 +28,9 @@ test("every round TV text rule is at least 40 px (2.5rem at the default size)", 
     ".tv-ready",
     ".tv-ready-item",
     ".tv-prompt",
+    ".tv-mini-game-loading",
+    ".tv-mini-game-idle",
+    ".tv-mini-game .mini-game-stage",
   ]) {
     const size = /font-size:\s*([\d.]+)rem/.exec(ruleBody(selector));
     assert.ok(size, `${selector} sets a size in rem`);
@@ -39,6 +42,8 @@ test("every round phone control is at least 44 px tall", () => {
   for (const selector of [".rd-tab", ".rd-item", ".rd-summary", ".rd-note"]) {
     assert.match(ruleBody(selector), /min-height:\s*44px/, selector);
   }
+  assert.match(ruleBody(".rd-reward-card button"), /min-height:\s*44px/);
+  assert.match(ruleBody(".rd-mini-game button"), /min-height:\s*44px/);
 });
 
 test("a ready player is shown by a word and a mark, not by colour alone", () => {
