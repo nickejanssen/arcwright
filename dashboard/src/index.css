@@ -533,3 +533,9 @@ html[data-reduce-motion="always"] *::after {
   align-items: baseline;
   justify-content: space-between;
 }
+/* Last Call choices remain usable on a phone. */
+.endgame-theory select {
+  min-height: 44px;
+  max-width: 100%;
+  font: inherit;
+}
