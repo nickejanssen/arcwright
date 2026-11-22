@@ -31,7 +31,12 @@ class Audience(str, Enum):
 
 @dataclass(frozen=True)
 class Viewer:
-    """Who is reading. A player is identified by character ID."""
+    """Who is reading. A player is identified by character ID.
+
+    The caller must have checked that the character ID belongs to the reader's
+    seat before it builds an ``Audience.player`` viewer. A blank ID is treated as
+    no seat, so the viewer gets the shared display's view.
+    """
 
     audience: Audience
     character_id: str | None = None
@@ -81,7 +86,9 @@ def build_run_view(registry: MechanicRegistry, run: Any, viewer: Viewer) -> RunV
 
     presentation = _as_dict(snapshot.get("presentation"))
     rule = getattr(plugin, "audience_rule", None)
-    own_entries = viewer.audience is Audience.player and viewer.character_id
+    own_entries = viewer.audience is Audience.player and bool(
+        viewer.character_id and viewer.character_id.strip()
+    )
 
     # Only a seated player reads the whole presentation. The shared display and
     # the host read the keys the rule names; with no rule that is nothing.

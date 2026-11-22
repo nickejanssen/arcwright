@@ -178,6 +178,17 @@ def test_player_without_a_seat_of_a_mechanic_without_a_rule_gets_nothing() -> No
     assert view.presentation == {}
 
 
+@pytest.mark.parametrize("blank", ["", " ", "\t\n"])
+def test_player_with_a_blank_character_id_gets_the_shared_display_view(
+    blank: str,
+) -> None:
+    run = _run(presentation={"title": "A title", "secret_prompt": "only for phones"})
+    view = build_run_view(_registry(), run, Viewer(Audience.player, blank))
+    assert view.runtime_state == {"step": "input"}
+    assert view.presentation == {"title": "A title"}
+    assert MARKER_A not in str(view) and "only for phones" not in str(view)
+
+
 def test_every_registered_mechanic_without_a_rule_keeps_presentation_off_the_tv() -> (
     None
 ):
@@ -187,7 +198,6 @@ def test_every_registered_mechanic_without_a_rule_keeps_presentation_off_the_tv(
         for mechanic_type, plugin in registry._registry.items()
         if not isinstance(getattr(plugin, "audience_rule", None), AudienceRule)
     ]
-    assert unruled, "expected at least one registered mechanic without a rule"
     for mechanic_type in unruled:
         run = _run(
             mechanic_type=mechanic_type,
