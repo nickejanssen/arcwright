@@ -6,6 +6,43 @@ import { fetchRound } from "../src/api/round.js";
 import { mount } from "./helpers/dom.js";
 import { lobby, round } from "./helpers/round-fixtures.js";
 
+test("reduced motion shows public accusations together and omits seats with no answer", async () => {
+  document.documentElement.setAttribute("data-reduce-motion", "always");
+  const state = round({
+    phase: "reveal",
+    players: [
+      { participantId: "a", name: "Alex", ready: false },
+      { participantId: "b", name: "Blair", ready: false },
+      { participantId: "c", name: "Casey", ready: false },
+    ],
+    closing: {
+      reveal: {
+        players: [
+          { participant_id: "a", answer: { label: "Answer A" } },
+          { participant_id: "b", answer: { label: "Answer B" } },
+          { participant_id: "c", answer: null },
+        ],
+      },
+    },
+  });
+  const page = await mount(
+    createElement(TvView, {
+      sessionId: "game",
+      feed: { lobby: lobby(), round: state, unreachable: false, gone: false },
+      joinBaseUrl: "https://app.test",
+    }),
+  );
+  try {
+    assert.match(page.text(), /Alex accuses Answer A/);
+    assert.match(page.text(), /Blair accuses Answer B/);
+    assert.doesNotMatch(page.text(), /Casey/);
+    assert.ok(page.container.querySelector('[aria-live="polite"]'));
+  } finally {
+    await page.unmount();
+    document.documentElement.removeAttribute("data-reduce-motion");
+  }
+});
+
 test("Last Call TV shows the clock without private theory content", async () => {
   const page = await mount(
     createElement(TvView, {

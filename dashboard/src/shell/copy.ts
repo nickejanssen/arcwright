@@ -150,6 +150,8 @@ export const copy = {
     lock: "Lock my theory",
     confirmLock: "Lock it? You can't change it after this.",
     waiting: "Locked. Waiting for the others.",
+    noTheory: "No theory was locked.",
+    retry: "Try again",
     accused: "The accused",
     accuses: (name: string, answer: string) => `${name} accuses ${answer}`,
   },
