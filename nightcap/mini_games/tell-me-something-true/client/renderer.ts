@@ -297,6 +297,7 @@ export default defineRenderer({
       });
 
       const applyStatus = (state: MiniGameContext["state"]): void => {
+        // Name-only updates retain the snapshot object; a refresh replaces it.
         currentState = state;
         timer.update(state.deadlineAt);
         if (state.resultHold?.paused && state.resultHold.secondsLeft != null)
@@ -512,7 +513,9 @@ export default defineRenderer({
         if (
           state.resultHold ||
           state.status !== "active" ||
-          state.runtimeState?.phase === "scoreboard"
+          state.runtimeState?.phase === "scoreboard" ||
+          (state.runtimeState !== currentState.runtimeState &&
+            state.runtimeState?.phase === "spotlight")
         )
           eventSpotlight = null;
         currentState = state;

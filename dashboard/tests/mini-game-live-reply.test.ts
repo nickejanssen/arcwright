@@ -231,6 +231,38 @@ test("the recorded spotlight names the player on the shared screen", async () =>
   assert.match(spotlight, /Alex/);
 });
 
+test("a refreshed snapshot replaces an earlier spotlight event", async () => {
+  const reply = {
+    display: replies.input.shared_display,
+    active: replies.input.player,
+  };
+  const { stage, controller, window, lifecycle } = await bootWith(
+    "input",
+    "shared_display",
+    reply,
+  );
+  try {
+    lifecycle.handleEvent({
+      event_type: "tmst_spotlight_started",
+      payload: {
+        target_character_id: "unknown-id",
+        spotlight_label: "Earlier player",
+      },
+    } as Parameters<SurfaceLifecycle["handleEvent"]>[0]);
+    assert.match(stage.textContent ?? "", /Earlier player/);
+    reply.display = replies.spotlight.shared_display;
+    await controller.refresh();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    assert.match(
+      stage.querySelector('[data-role="spotlight"]')?.textContent ?? "",
+      /Alex/,
+    );
+  } finally {
+    controller.unmount();
+    await close(window);
+  }
+});
+
 test("spotlight events use the public name and never show an unknown ID", async () => {
   const { stage, controller, window, lifecycle } = await bootWith(
     "input",
