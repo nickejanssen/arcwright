@@ -231,6 +231,38 @@ test("the recorded spotlight names the player on the shared screen", async () =>
   assert.match(spotlight, /Alex/);
 });
 
+test("a refreshed snapshot replaces an earlier spotlight event", async () => {
+  const reply = {
+    display: replies.input.shared_display,
+    active: replies.input.player,
+  };
+  const { stage, controller, window, lifecycle } = await bootWith(
+    "input",
+    "shared_display",
+    reply,
+  );
+  try {
+    lifecycle.handleEvent({
+      event_type: "tmst_spotlight_started",
+      payload: {
+        target_character_id: "unknown-id",
+        spotlight_label: "Earlier player",
+      },
+    } as Parameters<SurfaceLifecycle["handleEvent"]>[0]);
+    assert.match(stage.textContent ?? "", /Earlier player/);
+    reply.display = replies.spotlight.shared_display;
+    await controller.refresh();
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    assert.match(
+      stage.querySelector('[data-role="spotlight"]')?.textContent ?? "",
+      /Alex/,
+    );
+  } finally {
+    controller.unmount();
+    await close(window);
+  }
+});
+
 test("spotlight events use the public name and never show an unknown ID", async () => {
   const { stage, controller, window, lifecycle } = await bootWith(
     "input",
@@ -254,6 +286,88 @@ test("spotlight events use the public name and never show an unknown ID", async 
   await close(window);
   assert.match(named, /Alex/);
   assert.doesNotMatch(unknown, /unknown-id|Alex/);
+});
+
+test("a slow lobby reply names the current spotlight without reconnecting", async () => {
+  let release!: (response: Response) => void;
+  const lobby = new Promise<Response>((resolve) => {
+    release = resolve;
+  });
+  const standard = serverReturning({
+    display: replies.input.shared_display,
+    active: replies.input.player,
+  });
+  const fetcher: typeof fetch = (input, init) =>
+    String(input).endsWith("/lobby") ? lobby : standard(input, init);
+  const { stage, controller, window, lifecycle } = await bootWith(
+    "input",
+    "shared_display",
+    undefined,
+    fetcher,
+  );
+  try {
+    lifecycle.handleEvent({
+      event_type: "tmst_spotlight_started",
+      payload: { target_character_id: "a0000000-0000-4000-8000-0000000000c2" },
+    } as Parameters<SurfaceLifecycle["handleEvent"]>[0]);
+    assert.match(
+      stage.querySelector('[data-role="spotlight"]')?.textContent ?? "",
+      /A player/,
+    );
+    await new Promise((resolve) => setTimeout(resolve, 550));
+    release(
+      Response.json({
+        players: [
+          {
+            character_id: "a0000000-0000-4000-8000-0000000000c2",
+            display_name: "Alex",
+          },
+        ],
+      }),
+    );
+    await new Promise((resolve) => setTimeout(resolve, 0));
+    assert.match(
+      stage.querySelector('[data-role="spotlight"]')?.textContent ?? "",
+      /Alex/,
+    );
+  } finally {
+    controller.unmount();
+    await close(window);
+  }
+});
+
+test("a lobby reply after unmount does not update the screen", async () => {
+  let release!: (response: Response) => void;
+  const lobby = new Promise<Response>((resolve) => {
+    release = resolve;
+  });
+  const standard = serverReturning({
+    display: replies.input.shared_display,
+    active: replies.input.player,
+  });
+  const fetcher: typeof fetch = (input, init) =>
+    String(input).endsWith("/lobby") ? lobby : standard(input, init);
+  const { stage, controller, window } = await bootWith(
+    "input",
+    "shared_display",
+    undefined,
+    fetcher,
+  );
+  controller.unmount();
+  const before = stage.innerHTML;
+  release(
+    Response.json({
+      players: [
+        {
+          character_id: "a0000000-0000-4000-8000-0000000000c2",
+          display_name: "Alex",
+        },
+      ],
+    }),
+  );
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.equal(stage.innerHTML, before);
+  await close(window);
 });
 
 test("a stalled lobby cannot block the shared game from mounting", async () => {

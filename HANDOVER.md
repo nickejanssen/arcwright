@@ -2,7 +2,7 @@
 
 > Read `AGENTS.md` first, then this file, before touching code. It is the short start-of-session brief for every agent (Claude, Codex, Copilot) and for the founder. If it disagrees with a current source, investigate before acting, then fix this file. Keep it short and link to the owner of each detail.
 
-Last updated: 2026-11-22, checked against main `f39b7cd`.
+Last updated: 2026-11-22, checked against main `9952ae7`.
 
 ## System map
 
@@ -132,6 +132,9 @@ Work the list top to bottom. Building starts only at step 7. Whether a step is d
 
 ## Log
 
+- **2026-11-22** PR #489 (AW-358, issue #475) preserves a spotlight through delayed public name lookup and refreshes it from a newer spotlight snapshot. A real four-player game test checks the saved public standing during an opted-in result hold. HTTP-to-screen recovery, production opt-in and the founder's TV and phone test remain open.
+- **2026-11-22** PR #486 (AW-360, issue #483) merged as `9952ae7`. The phone keeps the mini-game playable beside a held finding, which expires at its remaining deadline or can be dismissed early. All six GitHub checks passed. Local dashboard checks passed except the separate AW-358 spotlight regression, which is addressed in PR #489. No physical phone or live walkthrough was performed.
+- **2026-11-22** PR #490 merged as `dee97c3`, recording the #488 merge and its open items in this handover.
 - **2026-11-22** Pull request #488 (AW-361, issue #484) merged by squash as `60c7021` after all six checks passed on head `0912450` and Codex found nothing. A mini-game mechanic with no audience rule now sends the no-sign-in TV route and the host an empty `presentation`; a seated player still gets the whole thing. `AudienceRule.withheld_presentation` (a deny-list) became `public_presentation` (an allow-list), so a key nobody has named stays off the TV; Tell Me Something True lists `title`, `true_label` and `lie_label`, so its TV reply is unchanged. Founder approved the plan in the build session ("Approved, go") and said "Yes, merge when green". Four review notes answered and resolved; one fix (a blank character ID counts as no seat). Left open: tighten Tell Me Something True to `title` only when the dashboard recording next changes; add a public list method to `MechanicRegistry` (the registry-wide test reads `_registry`); each mechanic that gets a real TV screen (AW-337 and later) must declare `public_presentation`. `engine/` and `api/` only; no TV screen was run.
 - **2026-11-22** PR #487 (AW-333 part A, issue #436) adds screens 13 to 16: public Last Call and accused screens, the private theory form and locked view. Review fixes cover retry, optional account text, reduced motion and players without an accusation; plan approval is recorded on #436. Local dashboard checks: 169 tests passed, typecheck, build and scoped lint passed on `411b64b`. Screens 17 to 22 remain for part B; the phone's result must wait for the TV Verdict, and the shared completion signal is unresolved. Individual reveal skip remains unimplemented. Not deployed or seen on a real TV.
 
