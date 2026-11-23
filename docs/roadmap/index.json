@@ -3474,6 +3474,20 @@
         "issue_number": 459,
         "url": "https://github.com/nickejanssen/arcwright/issues/459"
       }
+    },
+    {
+      "id": "AW-362",
+      "title": "Research Solo Journaling Games On Arcwright And Recommend Go Or No-Go",
+      "milestone": "Post-M6",
+      "epic": null,
+      "size": "M",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-362-research-solo-journaling-games-on-arcwright.md",
+      "epic_id": null,
+      "github": {
+        "issue_number": 493,
+        "url": "https://github.com/nickejanssen/arcwright/issues/493"
+      }
     }
   ],
   "superseded_sources": [

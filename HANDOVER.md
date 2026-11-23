@@ -132,6 +132,7 @@ Work the list top to bottom. Building starts only at step 7. Whether a step is d
 
 ## Log
 
+- **2026-11-23** Filed AW-362 (#493): founder direction that solo journaling tabletop games could be Arcwright's single-player flagship. Recorded in `docs/product/2026-11-23-solo-journaling-direction.md` (18 reference games, engine needs, business view, risks) and an open question. Written on low usage without web research, SME agents or GameGene, so most game rows are labelled Partial or Unverified; AW-362 verifies them. Not approved scope; waits until after the 15 December Nightcap session unless the founder says otherwise. Documentation only.
 - **2026-11-22** PR #491 (AW-337, #395) merged as `1ebc2aa`. It records founder direction for Battle of Wits and Search and Find. Build plans and their remaining tuning decisions are still open.
 - **2026-11-22** PR #489 (AW-358, #475) merged as `cdd841e`. It preserves spotlight through delayed name lookup and verifies saved public standings through a real four-player result handler test. HTTP-to-screen recovery, production opt-in and real-device checks remain open.
 - **2026-11-22** PR #486 (AW-360, issue #483) merged as `9952ae7`. The phone keeps the mini-game playable beside a held finding, which expires at its remaining deadline or can be dismissed early. All six GitHub checks passed. Local dashboard checks passed except the separate AW-358 spotlight regression, which is addressed in PR #489. No physical phone or live walkthrough was performed.
