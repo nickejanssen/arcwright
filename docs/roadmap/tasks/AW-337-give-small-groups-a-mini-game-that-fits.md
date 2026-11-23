@@ -34,6 +34,67 @@ Inspirations: Jackbox's murder mystery trivia game (trivia with mini-games to sa
 
 Decisions from the interview: D-142 (1 to 8 players, 2 to 4 common) and D-143 (fun first; skinned when natural; solo, pair or group). Open questions in `docs/product/open-questions-log.csv`: how a pair mini-game starts (AW-345), and whether a solo run counts against no-repeat.
 
+## Direction For The Version 1a Mechanics (2026-11-22, approved by the founder)
+
+Creative interview held 22 November 2026 for the two mechanics version 1a needs: Battle of Wits and Search and Find. **This is direction approval only. It is not plan approval and authorizes no code.** The build plan for each mechanic needs the founder's own approval. Adding either mechanic is blocked until AW-361 (#484) merges.
+
+Approval, his selection in the interview dialog: "Approve, record it (Recommended)". Settled earlier and not reopened: D-136, D-137, D-142, D-143, D-147, D-148, D-151, D-152.
+
+### Battle of Wits
+
+Feel, in the founder's words: "It is the same feeling as the last game in Murder Mystery Trivia. Racing to be right, trying to rember answers, fightinh the clock and cheering when you get soemthing correct, feeling short on time, feeling like even if you get behind theres still a chance and theres no winner until the game ends! Laughing at some answers, being wowed by others, feeling like you learned something."
+
+**Chosen by the founder:**
+
+| Choice | Decision | His words |
+| --- | --- | --- |
+| Direction | Speed race with catch-up help: the player in last place gets two wrong answers struck out on their own phone for the next question | Selected "B: speed race + catch-up help (Recommended)" |
+| Answer format | Four buttons, plus drag-and-drop sorting | "four buttons, drag and drop sorting," |
+| Sorting score | Partial credit per item in the right place | "partial credit, but every questions has a timer, so i dont think we need more points for faster" |
+| Speed bonus | None anywhere; the timer is the pressure | Selected "No speed bonus anywhere (Recommended)" |
+| Reveal pacing | After every question the TV shows the right answer, who got it and a running ranking; at the end it ranks last to first, names the winner and returns to the story | Selected "After every question, then a final ranking (Recommended)" |
+| Question tone (for AW-355) | Real trivia with a witty host; funny questions and answers are fine if they are good quality. No question bank written here | Selected "Real trivia with a witty host (Recommended)", then: "The questions and answers can be can be funny too, but they shoudl still be good quality questions." |
+
+**Proposed defaults, shown to him and covered by his approval, not chosen one by one:**
+
+- Last place also gets one item pre-placed on a sorting question. If everyone is tied for last, no one gets help.
+- Ties share rank and use the existing tie-break (D-152).
+- A player who does not answer scores zero on that question and the round continues. A dropped phone can rejoin.
+- Case questions (round 2) use only facts players have already seen and give no solution away (D-126).
+- The final race is the same mechanic with a bigger prize. Its standing counts only in the existing tie-break (D-152).
+- Declares 1 to 8 players, tuned for 2 to 4 (D-142). Must be played on its own first (D-151, AW-348).
+
+### Search and Find
+
+Feel, in the founder's words: "On the TV is a fun and elaborate creative scene that delights the eye and makes everyone smile from it being fun and humorous and clever. It feels familiar to anyone who has played "Houseplants and Hot Sauce: A Seek-And-Find Book for Grown-Ups", "The Great Big Animal Search Book", "Pierre the Maze Detective: The Search for the Stolen Maze Stone" and "A Sherlock Holmes Seek & Find Mystery: The Crimes of London" are really good examples you should use. Everyone has the same scene that is on their tv on their phone and they are able to pinch and pan to look closer at the scene to find everything. Everyone is racing to find the most items. Everyone is shouting when they find something. Jumping when the tv says "10 seconds left!", and they are looking back and forth from tv to phone to race to find the most items before the time goes out."
+
+**Chosen by the founder:**
+
+| Choice | Decision | His words |
+| --- | --- | --- |
+| Find rule | The TV shows the items to find; the first player to tap one claims it with their name; most claims wins | Selected "A: first finder claims it (Recommended)" |
+| Wrong tap | A short freeze on that phone; no points lost; the length is tuned in testing | Selected "Short freeze on that phone (Recommended)" |
+
+**Proposed defaults, shown to him and covered by his approval:**
+
+- One drawn scene, identical on the TV and every phone, with pinch and pan. The scene is art work and is not designed here. The four books he named are the reference for feel; they were not read.
+- The round ends when the timer runs out or every item is claimed. The TV calls "10 seconds left!".
+- Taps that arrive together go to whichever the server received first. Ties share rank.
+- Declares 1 to 8 players, tuned for 2 to 4 (D-142). Items are for fun and release no case facts (D-126).
+- It is the control game with the same rules in every version (D-152), provisional.
+
+### Decisions to record (for the orchestrator; this branch does not edit the decisions log)
+
+1. Battle of Wits direction: speed race with catch-up help; four buttons plus drag-and-drop sorting; partial credit on sorting; no speed bonus anywhere; reveal after every question; tone per AW-355. Relates to D-151, D-152.
+2. Search and Find direction: first finder claims each item; most claims wins; wrong tap freezes that phone briefly. Relates to D-152.
+3. Open for the plans, not decided: exact question counts and timer lengths per round, freeze length, item counts, and which scene to draw.
+
+### Next steps
+
+- Wait for AW-361 (#484) to merge; no mechanic is added before it.
+- A build session writes one plan per mechanic; each needs the founder's approval.
+- Battle of Wits must be played on its own first (AW-348) before version 1a repeats it (D-151).
+
 ## Why This Matters
 
 - Rewritten on 2026-11-19 after the founder answered spec 0095 Q4 (D-136). His words: "I want the best number fo mini-games to fit a playthrough, not just trying to force in whats possible given our current mini-game inventory. I would rather create more mini-games to make it correct than adjusted for the test." And: "Wrappers can change the style/aesthetic of the game to match the story, but it doesnt change the mechanic, so playing the same game mechanic multiple times in one playthrough of the game seems like what we wouldnt want to do."
