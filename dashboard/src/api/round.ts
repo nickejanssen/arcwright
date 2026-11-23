@@ -9,6 +9,7 @@ export interface RoundPlayer {
   participantId: string;
   name: string | null;
   ready: boolean;
+  locked?: boolean;
 }
 
 export interface RoundState {
@@ -25,6 +26,14 @@ export interface RoundState {
   playerCount: number;
   players: RoundPlayer[];
   lines: Array<Record<string, unknown>>;
+  closing?: {
+    reveal?: {
+      players: Array<{
+        participant_id: string;
+        answer: { label: string } | null;
+      }>;
+    } | null;
+  } | null;
 }
 
 interface RoomWire {
@@ -41,8 +50,10 @@ interface RoomWire {
     participant_id: string;
     display_name?: string | null;
     ready?: boolean;
+    locked?: boolean;
   }>;
   lines?: Array<Record<string, unknown>>;
+  closing?: RoundState["closing"];
 }
 
 // The room view says whether the game is over or paused; the screens' table
@@ -74,7 +85,9 @@ export async function fetchRound(
       participantId: p.participant_id,
       name: p.display_name ?? null,
       ready: Boolean(p.ready),
+      locked: Boolean(p.locked),
     })),
     lines: wire.lines ?? [],
+    closing: wire.closing ?? null,
   };
 }

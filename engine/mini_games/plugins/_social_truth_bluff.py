@@ -31,10 +31,11 @@ VOTE_WINDOW_SECONDS = 15
 class SocialTruthBluffPlugin:
     mechanic_type: str = MECHANIC_TYPE
     # The saved state holds no player text, so the rule names only the step.
-    # "prompt" is the phone-only prompt; the shared screen and host never get it.
+    # The shared screen and host read only the keys named here; "prompt" and any
+    # key added later stay on the phones.
     audience_rule = AudienceRule(
         public_state=("phase", "input_closed", "current_spotlight_index"),
-        withheld_presentation=("prompt",),
+        public_presentation=("title", "true_label", "lie_label"),
     )
 
     def validate_payload(self, payload: dict[str, Any]) -> None:
