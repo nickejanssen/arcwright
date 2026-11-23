@@ -31,7 +31,12 @@ class Audience(str, Enum):
 
 @dataclass(frozen=True)
 class Viewer:
-    """Who is reading. A player is identified by character ID."""
+    """Who is reading. A player is identified by character ID.
+
+    The caller must have checked that the character ID belongs to the reader's
+    seat before it builds an ``Audience.player`` viewer. A blank ID is treated as
+    no seat, so the viewer gets the shared display's view.
+    """
 
     audience: Audience
     character_id: str | None = None
@@ -44,13 +49,14 @@ class AudienceRule:
     ``public_state``: top-level state keys everyone may read.
     ``own_state``: top-level state keys whose value maps character ID to that
     player's entry. A player reads only their own entry; nobody else gets the key.
-    ``withheld_presentation``: presentation keys kept from the shared display and
-    the host (for example a prompt meant for one phone).
+    ``public_presentation``: presentation keys the shared display and the host may
+    read. Every other key goes only to a seated player (for example a prompt meant
+    for one phone). A key nobody has named stays hidden from the shared display.
     """
 
     public_state: tuple[str, ...] = ()
     own_state: tuple[str, ...] = ()
-    withheld_presentation: tuple[str, ...] = ()
+    public_presentation: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -80,16 +86,24 @@ def build_run_view(registry: MechanicRegistry, run: Any, viewer: Viewer) -> RunV
 
     presentation = _as_dict(snapshot.get("presentation"))
     rule = getattr(plugin, "audience_rule", None)
-    if not isinstance(rule, AudienceRule):
-        return RunView(runtime_state={}, presentation=copy.deepcopy(presentation))
+    own_entries = viewer.audience is Audience.player and bool(
+        viewer.character_id and viewer.character_id.strip()
+    )
 
-    own_entries = viewer.audience is Audience.player and viewer.character_id
-    withheld = () if own_entries else rule.withheld_presentation
-    shown_presentation = {
-        key: copy.deepcopy(value)
-        for key, value in presentation.items()
-        if key not in withheld
-    }
+    # Only a seated player reads the whole presentation. The shared display and
+    # the host read the keys the rule names; with no rule that is nothing.
+    if own_entries:
+        shown_presentation = copy.deepcopy(presentation)
+    else:
+        public = rule.public_presentation if isinstance(rule, AudienceRule) else ()
+        shown_presentation = {
+            key: copy.deepcopy(value)
+            for key, value in presentation.items()
+            if key in public
+        }
+
+    if not isinstance(rule, AudienceRule):
+        return RunView(runtime_state={}, presentation=shown_presentation)
 
     state = MiniGameRuntime._mechanic_state(run)
 

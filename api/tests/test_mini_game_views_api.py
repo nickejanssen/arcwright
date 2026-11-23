@@ -90,7 +90,7 @@ class _PrivateNotesMechanic:
     audience_rule = AudienceRule(
         public_state=("step",),
         own_state=("notes",),
-        withheld_presentation=("phone_prompt",),
+        public_presentation=("title",),
     )
 
 
@@ -362,6 +362,54 @@ class TestPrivacyPerAudience:
         assert res.status_code == 200
         _assert_no_marker_of(res.text, ["a", "b", "c"])
         assert res.json()["runtime_state"] == {}
+
+
+class TestMechanicWithNoRuleKeepsPresentationOffTheSharedScreen:
+    """AW-361: no rule means the no-sign-in routes get an empty presentation."""
+
+    @pytest.fixture()
+    def seeded(
+        self, client: TestClient, db_factory: async_sessionmaker[AsyncSession]
+    ) -> TestClient:
+        asyncio.run(
+            _seed(
+                db_factory,
+                game_id="scene-sweep",
+                mechanic_type="evidence-search-race",
+                runtime_state=_private_state(),
+                presentation=_private_presentation(),
+            )
+        )
+        return client
+
+    def test_shared_screen_gets_an_empty_presentation(self, seeded: TestClient) -> None:
+        res = _read_display(seeded)
+        assert res.status_code == 200
+        assert res.json()["presentation"] == {}
+        assert "PHONE-ONLY-PROMPT" not in res.text
+        assert "Shared title" not in res.text
+
+    def test_shared_screen_with_a_players_id_in_the_address_gets_nothing(
+        self, seeded: TestClient
+    ) -> None:
+        for key in PLAYERS:
+            res = _read_display(seeded, PLAYERS[key][1])
+            assert res.status_code == 200
+            assert res.json()["presentation"] == {}
+            assert "PHONE-ONLY-PROMPT" not in res.text
+
+    def test_host_gets_an_empty_presentation(self, seeded: TestClient) -> None:
+        res = _read_active(seeded, _host())
+        assert res.status_code == 200
+        assert res.json()["presentation"] == {}
+        assert "PHONE-ONLY-PROMPT" not in res.text
+
+    def test_seated_player_still_gets_the_whole_presentation(
+        self, seeded: TestClient
+    ) -> None:
+        res = _read_active(seeded, _player("a"))
+        assert res.status_code == 200
+        assert res.json()["presentation"] == _private_presentation()
 
 
 class TestOldFieldsUnchanged:
