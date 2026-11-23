@@ -26,7 +26,7 @@ Get the first hand-written case into the engine's format, prove it is fair by ru
 
 ## Why This Matters
 
-The first case is the most likely thing to move the session 1 date, and the founder cannot inspect it because he plays it unspoiled. A separate reviewer has to report on it.
+Case 1 gates the founder's first end-to-end 1a run. The founder hosts and tests under D-153. Independent blind participants need only player-facing material. Public records stay spoiler-free.
 
 ## Technical Scope
 
@@ -35,13 +35,17 @@ The first case is the most likely thing to move the session 1 date, and the foun
 - It passes the case-graph invariants named in spec 0092.
 - A reviewer session that did not write the case reports pass or fail per invariant, using counts only.
 - The real session 1 arc file sets `release_content: false` on its mini-game bindings, so a mini-game hands out no case information (AW-328, D-126; spec 0093, Q1 Answered). The setting and its test exist; this task only turns it on.
-- The case-writing session commits and pushes its work; on 15 November 2026 its spec edit and case folder were still unsaved on branch `claude/lido-case-and-spec-followups`.
+- Before engine conversion, validate the physical staging and paper difficulty gates below. Coordinate the approved round layout and Last Call transition with AW-356. Keep the private case in an approved private handoff.
 
 ## Human Collaboration Contract
 
-**Interaction profile:** Creative collaboration. The founder approves premise, cast, tone and sample scenes without the solution (spec 0092, Q7).
+**Interaction profile:** Creative collaboration and facilitated live operation. The founder reviews the case under D-153 and approves the preflight before the cold run and the runtime plan before integration. Current phase: paper preflight. A local four-round draft and one-off facilitator sheet are prepared. An AI blind run gives directional evidence only. The next human gate is confirmation of the sightlines and drainage timeline, followed by the host's approval to run a fresh blind session. Record approvals and results without publishing case truth.
 
 ## Acceptance Criteria
+
+- [ ] Stage the witness positions, check when observations become possible, and reconcile drainage and event timing before inviting a fresh solver.
+- [ ] Run a cold human paper test on the revised draft and a separate attempt to make a credible alternative fit. Record each round's leading suspect, runner-up and decisive observation. Allow six investigations without coaching or competitive rewards. A defensible proof should first become available in Round 4, with an evidence-backed rival theory still plausible at the end of Round 3.
+- [ ] Recheck all active seats at two, three and four players, including one recoverable wrong turn and independent evidence paths. Resolve any blocker and rerun the affected gate before beginning engine conversion.
 
 - [ ] The case loads and a headless session completes on it at two and at four players.
 - [ ] The reviewer's report contains no culprit, method, truth or route.
@@ -49,7 +53,8 @@ The first case is the most likely thing to move the session 1 date, and the foun
 
 ## Tests/Verification
 
-- The fairness check passes in CI on the case file.
+- Run the spec 0093 Part A checks A1 to A6 against the actual 1a choice windows. Verify private brief and finding delivery, shared-only quiz evidence, private lock and the full closing sequence.
+- Run the founder's timed TV-and-phone rehearsal after the engine and screen checks. Record what was merged, deployed and observed in play separately.
 
 ## Dependencies
 
@@ -59,5 +64,5 @@ The first case is the most likely thing to move the session 1 date, and the foun
 
 ## Must Not Do
 
-- Never state the culprit, method, essential truths or routes in chat, commit messages, pull request text, issue text or any summary the founder reads.
+- Keep the culprit, method, essential truths and routes out of commit messages, pull requests, issues, public files and player-facing materials before the reveal. D-153 governs private founder access.
 - Do not move solution material out of the file marked as spoilers.
