@@ -41,7 +41,7 @@ class _Question(BaseModel):
         return self
 
 
-_QUESTIONS = TypeAdapter(list[_Question])
+_QUESTIONS: TypeAdapter[list[_Question]] = TypeAdapter(list[_Question])
 
 
 def _points(question: dict[str, Any], payload: dict[str, Any]) -> int:
