@@ -38,6 +38,21 @@ Designer names are left out on purpose, because getting them wrong is worse than
 
 Solo journaling tabletop games give one player a simple, repeatable loop: roll dice or draw cards, look up a prompt, and write what happens in a journal. The hook is the story and the player's sense of authorship, not the mechanics. The mechanics are light and shared across many games (prompt tables, oracles, card decks, progress tracks, maps, memory limits). Arcwright already does the hard part these games leave to the player: a human-authored arc, deterministic state, a knowledge graph, characters that remember, and personalised narration. Built on Arcwright, a solo journaling game could keep the authored structure and the player's freedom, and add a world that responds, characters that recall what the player wrote, and pacing that bends to them. The founder sees three shapes: one standalone game with many stories that share a loop; something tied to Nightcap; or a family of separate games on the engine.
 
+## Design stance: adapt, do not transplant
+
+Founder direction, 2026-11-24: "we would adapt and not just take the concept and plop it into a game." Arcwright takes what players love about these games and adapts it, keeping what paper does best and adding what only the engine can do. The reference games show what works. None of them is a template to copy.
+
+**Tactility is a main reason people love the genre.** The founder named it directly. It covers rolling real dice, drawing and shuffling cards, handwriting in a notebook, drawing a map, and the finished journal as a keepsake. A screen-only version loses much of this, and loses the slow, ritual pace that makes the writing feel personal. Any design must say how it keeps or replaces each of these.
+
+Options to test (ideas, not decisions):
+
+1. **Hybrid play (likely the strongest).** The player keeps real dice, cards and a paper journal. Arcwright is the companion: it keeps state, remembers characters and past entries, answers oracle questions, and voices characters. The player enters a roll or draw, or the phone reads it. This keeps the tactile part and adds what paper cannot.
+2. **Physical kit plus app.** A printed or boxed deck, a journal and dice designed for the game, linked to the app. This is also a product to sell, and fits print-and-play for a cheap first test.
+3. **Digital tactility.** For screen-only play: dice you shake, cards you flip, handwriting or drawing input, haptics, sound, and a journal that looks and exports like a real book.
+4. **A real keepsake at the end.** A printable or printed journal and map built from the player's own entries.
+
+Arcwright's additions, in every option: a world and characters that remember, prompts that bend to what the player wrote, authored arcs with real payoffs, and continuity across sessions.
+
 ## The reference games
 
 Each game was named for a reason. The "Lesson for Arcwright" column says what each one teaches.
@@ -89,10 +104,11 @@ Across the games the writer knows, the same few mechanics repeat: a prompt table
 
 1. **The audience may reject AI.** Many solo journaling players value writing it all themselves, and the indie tabletop community is often hostile to generative AI. If the AI writes for the player, the core joy may be lost. Mitigation to test: the player stays the author; the engine keeps state, remembers, asks better questions and voices characters only when asked. This is the biggest risk and should be the first thing tested with real players.
 2. **Player text and canonical state.** In these games the player writes what happened. Architecture principle 2 says AI must not decide what happened. The engine needs a rule for turning a player's journal entry into state: the player confirms structured facts, or uses choices and tags, or AI suggests tags that the player approves. AI must never set state on its own. This needs an ADR.
-3. **IP.** The listed games are reference only. Arcwright must build original games and stories, not adaptations, unless a licence is signed.
-4. **Focus.** Nightcap has fixed dates (D-149). This must not draw build sessions away before then.
-5. **Competition.** AI story apps already exist. The difference must be authored arcs, real memory and player authorship, and AW-362 should check the field.
-6. **Wellbeing titles** (Just Roll With It style) bring safety, privacy and claims risk; keep them out of the first test.
+3. **IP.** The listed games are inspiration for what players love, not material to copy. Arcwright's games and stories are original, built to the adapt-not-transplant stance above, unless a licence is signed.
+4. **Losing the tactile feel.** A screen-only design may lose what players love most (see Design stance). Test hybrid play early.
+5. **Focus.** Nightcap has fixed dates (D-149). This must not draw build sessions away before then.
+6. **Competition.** AI story apps already exist. The difference must be authored arcs, real memory and player authorship, and AW-362 should check the field.
+7. **Wellbeing titles** (Just Roll With It style) bring safety, privacy and claims risk; keep them out of the first test.
 
 ## What the engine would need
 
@@ -115,6 +131,7 @@ Status of each against today's engine is not verified in code; AW-362 checks it.
 1. Which shape first: shared-loop anthology, solo Nightcap mode, or separate titles?
 2. Who writes: the player only, the player with AI help on request, or AI drafts the player edits? (This decides most of the design and the audience risk.)
 3. When may this start: after the 15 December Nightcap session, or in parallel as research only?
+4. How should the tactile part work: hybrid play with real dice, cards and paper; a physical kit plus app; digital tactility only; or a mix?
 
 ## Next steps
 

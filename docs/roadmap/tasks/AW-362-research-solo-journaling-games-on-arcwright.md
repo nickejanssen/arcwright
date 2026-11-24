@@ -38,15 +38,16 @@ The founder thinks solo journaling tabletop games (one player, simple dice or ca
 2. **Design precedent with GameGene:** look up claims, genes and joseki for prompt tables, oracles, memory loss, map drawing, card-driven exploration, cozy calendars and journaling. Cite pageUrls.
 3. **Engine gap analysis with the SME agents** (arc-execution, knowledge-graph, session-runtime, character-behavior, model-routing, safety, developer-api; nightcap-sme for a solo Nightcap mode; daily-case-sme for overlap). Check each of the 11 engine needs in the direction record against the code, with file paths. Mark which are hard-rule changes.
 4. **Player text to state:** propose options for turning a journal entry into state without AI deciding what happened. Draft an ADR outline only; do not decide.
-5. **Market and audience:** market size, prices and the audience's view of AI, each with sources. No unsourced numbers.
-6. **Cost:** estimate cost per player-hour for solo play under the routing table's tiers, with caching.
-7. **Recommendation:** go or no-go, the first shape (anthology, solo Nightcap, separate titles), and a paper or Wizard-of-Oz test design with a success measure.
+5. **What players love, and tactility:** for each game, what players say they love (reviews, community posts), with the tactile parts called out (dice, cards, handwriting, maps, the finished journal). Say how each would be kept or adapted under the four tactile options in the direction record's Design stance. Founder direction (2026-11-24): adapt what players love, do not transplant the games.
+6. **Market and audience:** market size, prices and the audience's view of AI, each with sources. No unsourced numbers.
+7. **Cost:** estimate cost per player-hour for solo play under the routing table's tiers, with caching.
+8. **Recommendation:** go or no-go, the first shape (anthology, solo Nightcap, separate titles), and a paper or Wizard-of-Oz test design with a success measure.
 
 **Usage note:** this is a large job (about 20 to 40 web lookups, 8 SME calls, several GameGene queries). Cheapest full path: one session; batch the game lookups in parallel; one question per SME agent; GameGene by search terms, not full listings. Warn the founder of the size before starting.
 
 ## Human Collaboration Contract
 
-**Interaction profile:** Decision interview plus independent research. The founder answers the three questions in the direction record (shape, who writes, when) one at a time with tappable options. The research itself is independent. No approval is inferred from this task existing.
+**Interaction profile:** Decision interview plus independent research. The founder answers the four questions in the direction record (shape, who writes, when, tactile approach) one at a time with tappable options. The research itself is independent. No approval is inferred from this task existing.
 
 ## Acceptance Criteria
 
