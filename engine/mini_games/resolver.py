@@ -122,7 +122,7 @@ async def resolve_loaded_mini_game_snapshot(
     temperature: float = 0.3,
 ) -> ResolvedMiniGameSnapshot:
     definition = loaded_game.definition
-    authored_content = _json_object(definition.authored_content)
+    authored_content = _authored_content(loaded_game)
     presentation: dict[str, Any] = {}
 
     if definition.content_mode is ContentMode.authored:
@@ -170,6 +170,40 @@ async def resolve_loaded_mini_game_snapshot(
     )
     _validate_snapshot_output(snapshot)
     return snapshot
+
+
+def _authored_content(loaded_game: LoadedMiniGame) -> dict[str, Any]:
+    """Read optional server-only inputs from the selected authored package."""
+    definition = loaded_game.definition
+    authored = _json_object(definition.authored_content)
+    reference = authored.pop("server_content_path", None)
+    if reference is None:
+        return authored
+    if definition.content_mode is not ContentMode.authored:
+        raise MiniGameContentResolutionError("server content requires authored mode")
+    if not isinstance(reference, str) or not reference:
+        raise MiniGameContentResolutionError(
+            "server_content_path must be a relative path"
+        )
+
+    relative = Path(reference)
+    server_dir = loaded_game.package_path / "server"
+    source = (loaded_game.package_path / relative).resolve()
+    if relative.is_absolute() or not source.is_relative_to(server_dir):
+        raise MiniGameContentResolutionError(
+            "server content must stay in the package server directory"
+        )
+    try:
+        private = json.loads(source.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        raise MiniGameContentResolutionError(
+            "could not load package server content"
+        ) from exc
+    if not isinstance(private, dict) or authored.keys() & private.keys():
+        raise MiniGameContentResolutionError(
+            "server content must be an object with distinct keys"
+        )
+    return {**authored, **private}
 
 
 async def _resolve_generated_payload(
