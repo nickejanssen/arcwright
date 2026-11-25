@@ -8,7 +8,7 @@
 import { spawnSync } from "node:child_process";
 import { mkdirSync, readdirSync, rmSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fileURLToPath, pathToFileURL } from "node:url";
 import { build } from "esbuild";
 
 const testsDir = dirname(fileURLToPath(import.meta.url));
@@ -63,8 +63,17 @@ const compiled = readdirSync(outDir, { recursive: true })
   .map((name) => join(outDir, String(name)))
   .filter((path) => path.endsWith(".test.mjs"));
 
-const result = spawnSync(process.execPath, ["--test", ...compiled], {
-  stdio: "inherit",
-  env: { ...process.env, DASHBOARD_DIR: dashboardDir },
-});
+const result = spawnSync(
+  process.execPath,
+  [
+    "--import",
+    pathToFileURL(join(testsDir, "node20-globals.mjs")).href,
+    "--test",
+    ...compiled,
+  ],
+  {
+    stdio: "inherit",
+    env: { ...process.env, DASHBOARD_DIR: dashboardDir },
+  },
+);
 process.exit(result.status ?? 1);
