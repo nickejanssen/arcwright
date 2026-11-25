@@ -1,0 +1,37 @@
+{
+  "questions": [
+    {
+      "kind": "choice",
+      "prompt": "The Moonray Café sets out two cups at each of two tables. How many cups is that?",
+      "options": [
+        { "id": "one", "label": "One" },
+        { "id": "six", "label": "Six" },
+        { "id": "four", "label": "Four" },
+        { "id": "eight", "label": "Eight" }
+      ],
+      "answer": ["four"]
+    },
+    {
+      "kind": "sort",
+      "prompt": "Put these fictional ferry departures in order from earliest to latest.",
+      "options": [
+        { "id": "opal", "label": "Opal, 10:10" },
+        { "id": "willow", "label": "Willow, 09:50" },
+        { "id": "copper", "label": "Copper, 09:15" },
+        { "id": "pine", "label": "Pine, 09:40" }
+      ],
+      "answer": ["copper", "pine", "willow", "opal"]
+    },
+    {
+      "kind": "choice",
+      "prompt": "A robot faces north at a crossroads and turns right once. Which way does it face now?",
+      "options": [
+        { "id": "west", "label": "West" },
+        { "id": "south", "label": "South" },
+        { "id": "north", "label": "North" },
+        { "id": "east", "label": "East" }
+      ],
+      "answer": ["east"]
+    }
+  ]
+}

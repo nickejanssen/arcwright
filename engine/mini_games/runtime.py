@@ -28,6 +28,7 @@ from uuid import UUID
 from sqlalchemy import select, update
 from sqlalchemy.engine import CursorResult
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm.attributes import set_committed_value
 
 from engine.db.orm import MiniGameRun, MiniGameSubmission
 from engine.events.bus import SessionEventBus
@@ -41,6 +42,7 @@ from engine.mini_games.resolver import ResolvedMiniGameSnapshot
 # ---------------------------------------------------------------------------
 
 Clock = Callable[[], datetime]
+_RANKED_ROSTER = "_runtime_ranked_roster"
 
 
 def _utcnow() -> datetime:
@@ -177,6 +179,21 @@ class StatefulMechanicPlugin(Protocol):
         now: datetime,
     ) -> MechanicProgress:
         """Advance the mechanic when the current authoritative deadline expires."""
+        ...
+
+
+@runtime_checkable
+class RunPreparingMechanic(Protocol):
+    """Opt-in preparation with a frozen roster of human, non-host seats."""
+
+    def prepare_run(
+        self,
+        snapshot: ResolvedMiniGameSnapshot,
+        *,
+        run_id: UUID,
+        participants: list[tuple[UUID, UUID]],
+    ) -> ResolvedMiniGameSnapshot:
+        """Return server-only content to persist before initializing the game."""
         ...
 
 
@@ -372,12 +389,32 @@ class MiniGameRuntime:
             )
 
         now = self._clock()
+        snapshot = self._decode_snapshot(run)
+        plugin = self._registry.get(snapshot.mechanic_type)
+        roster = None
+        if isinstance(plugin, RunPreparingMechanic):
+            roster = await self._ranked_participants(run.session_id)
+            snapshot = plugin.prepare_run(
+                snapshot, run_id=run.run_id, participants=roster
+            )
         await self._increment_revision(run)
+        if roster is not None:
+            snapshot = snapshot.model_copy(
+                update={
+                    "resolved_content": {
+                        **snapshot.resolved_content,
+                        _RANKED_ROSTER: [
+                            [str(character_id), str(participant_id)]
+                            for character_id, participant_id in roster
+                        ],
+                    }
+                },
+            )
+            run.definition_snapshot = snapshot.model_dump(mode="json")
         run.status = "active"
         run.started_at = now
         await self._db.flush()
 
-        snapshot = self._decode_snapshot(run)
         await self._publish(
             run,
             category=EventCategory.state_transition,
@@ -408,7 +445,8 @@ class MiniGameRuntime:
     ) -> MiniGameSubmission:
         """Validate and record a player submission. Idempotent on submission_id.
 
-        - If the run deadline has passed, triggers timeout path first.
+        - Expired prepared runs wait for the tick to publish their transition.
+          Other runs retain the existing timeout-on-submit behavior.
         - Concurrent submissions are serialized via revision increment.
         - Duplicate submission_id returns the existing record unchanged.
         """
@@ -421,8 +459,9 @@ class MiniGameRuntime:
 
         now = self._clock()
 
-        # Check for timeout before processing submission
-        if run.deadline and now > run.deadline:
+        prepared = self._saved_roster(run) is not None
+        expired = run.deadline is not None and now > run.deadline
+        if expired and not prepared:
             handled = await self._handle_deadline_transition(run, now)
             if handled:
                 await self._db.flush()
@@ -437,7 +476,13 @@ class MiniGameRuntime:
         # Idempotency: return existing record for duplicate submission_id
         existing = await self._find_submission(run_id, submission_id)
         if existing is not None:
+            if prepared and existing.character_id != character_id:
+                raise RunStateError("submission ID belongs to another player")
             return existing
+        if expired and prepared:
+            # A rejected request is rolled back. The tick owns stage changes
+            # so it cannot leave clients with an event for a rolled-back reveal.
+            raise RunStateError("answer window has closed")
 
         snapshot = self._decode_snapshot(run)
         plugin = self._registry.get(snapshot.mechanic_type)
@@ -718,7 +763,7 @@ class MiniGameRuntime:
                 snapshot,
                 submissions,
                 outcome,
-                await self._ranked_participants(run.session_id),
+                await self._run_roster(run, ranked=True),
             ),
         }
         eligible_character_ids = [char_id for char_id, _ in eligible_participants]
@@ -887,7 +932,10 @@ class MiniGameRuntime:
             )
             .options(selectinload(MiniGameRun.submissions))
         )
-        return result.scalar_one_or_none()
+        run = result.scalar_one_or_none()
+        if run is not None:
+            self._normalize_prepared_deadline(run)
+        return run
 
     # ------------------------------------------------------------------
     # Internal: helpers
@@ -900,7 +948,18 @@ class MiniGameRuntime:
         run = result.scalar_one_or_none()
         if run is None:
             raise MiniGameRuntimeError(f"run {run_id} not found")
+        self._normalize_prepared_deadline(run)
         return run
+
+    def _normalize_prepared_deadline(self, run: MiniGameRun) -> None:
+        # SQLite drops the timezone from a persisted UTC datetime.
+        deadline = run.deadline
+        if (
+            deadline is not None
+            and deadline.tzinfo is None
+            and self._saved_roster(run) is not None
+        ):
+            set_committed_value(run, "deadline", deadline.replace(tzinfo=timezone.utc))
 
     async def _find_submission(
         self,
@@ -985,6 +1044,28 @@ class MiniGameRuntime:
         )
         return [(row[0], row[1]) for row in result.all()]
 
+    async def _run_roster(
+        self, run: MiniGameRun, *, ranked: bool = False
+    ) -> list[tuple[UUID, UUID]]:
+        roster = self._saved_roster(run)
+        if roster is not None:
+            return [
+                (UUID(character), UUID(participant))
+                for character, participant in roster
+            ]
+        if ranked:
+            return await self._ranked_participants(run.session_id)
+        return await self._eligible_participants(run.session_id)
+
+    def _saved_roster(self, run: MiniGameRun) -> list[list[str]] | None:
+        snapshot = run.definition_snapshot or {}
+        content = snapshot.get("resolved_content") or {}
+        roster = content.get(_RANKED_ROSTER)
+        if roster is None:
+            return None
+        plugin = self._registry.get(snapshot["mechanic_type"])
+        return roster if isinstance(plugin, RunPreparingMechanic) else None
+
     async def _publish(
         self,
         run: MiniGameRun,
@@ -1019,7 +1100,7 @@ class MiniGameRuntime:
         if not isinstance(plugin, StatefulMechanicPlugin):
             return
 
-        participants = await self._eligible_participants(run.session_id)
+        participants = await self._run_roster(run)
         progress = plugin.initialize_state(
             snapshot,
             participants=participants,
@@ -1040,7 +1121,7 @@ class MiniGameRuntime:
             return None
 
         state = self._mechanic_state(run)
-        participants = await self._eligible_participants(run.session_id)
+        participants = await self._run_roster(run)
         progress = plugin.on_submission(
             snapshot,
             state=state,
@@ -1065,7 +1146,7 @@ class MiniGameRuntime:
         progress = plugin.on_deadline_expired(
             snapshot,
             state=self._mechanic_state(run),
-            participants=await self._eligible_participants(run.session_id),
+            participants=await self._run_roster(run),
             accepted_submissions=await self._load_accepted_submissions(run.run_id),
             now=now,
         )

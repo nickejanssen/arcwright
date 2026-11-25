@@ -17,7 +17,16 @@ export default defineConfig({
     allowedHosts: true,
     // Package renderers and definitions live in nightcap/mini_games/, outside
     // dashboard/.
-    fs: { allow: [".."] },
+    fs: {
+      allow: [".."],
+      deny: [
+        ".env",
+        ".env.*",
+        "*.{crt,pem}",
+        "**/nightcap/mini_games/*/server/**",
+        "**/engine/**",
+      ],
+    },
     proxy: {
       "/v1": {
         target: "http://localhost:8000",
