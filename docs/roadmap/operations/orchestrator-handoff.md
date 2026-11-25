@@ -145,14 +145,18 @@ Progress: 7 of about 23 critical-path tasks are merged, roughly 30 percent (infe
 2. **The first case's state is unknown here.** Branch `claude/lido-case-and-spec-followups` had unpushed work on 15 November. AW-305 waits on it.
 3. **The mini-games are now a design-and-build job, not a tweak** (D-136): distinct mechanics designed for 2 to 4 players (AW-337, size L), several per round (AW-344) and solo mini-games (AW-345), all wanted in session 1 as A/B variants (D-137, AW-346). This adds an estimated 6 to 10 build days (inferred). The core variant gates the dates; extra variants that are not ready are simply not played.
 
-## In flight at handoff (21 November 2026)
+## In flight at handoff (25 November 2026)
 
-Main is `bb0d29a` or later. Check `gh pr list --state open`; the live answer wins.
+Main is `2cbe8ec` or later. Check `gh pr list --state open`; the live answer wins. Weekly Claude usage reset on 25 November (2 percent used, next reset 2 December 14:00 UTC). Days left: 6 to 1 December, 10 to 5 December, 20 to 15 December.
 
-- **Merged:** AW-332 parts A and B (#473, #480), the AW-359 fixes (#478), AW-351 (#472) and the D-155 result hold (#479). None has been seen on a TV.
-- **Assigned 21 November, each needs its plan approved by the founder:** Codex with GPT-6 Luna on AW-360 (#483), AW-358 (#475) and AW-333 (#436). Claude Sonnet on AW-361 (#484), plus independent review of AW-358 and AW-333. These four avoid each other's files; only AW-333 may edit shared dashboard copy, styles or routes.
-- **Held back:** AW-337 needs the founder's creative interview, and should not add mechanics before AW-361 merges. AW-355 and AW-356 follow it. AW-334 follows AW-333. AW-301 and AW-308 need the founder, a TV and phones.
-- **Waiting on the founder:** the four plans; case 1 approval by 28 November (AW-305); "Investigate on your phones." on the TV (#477, item 5); the agency framing (AW-319); the Battle of Wits tone (AW-355); the recap voice (AW-327).
+- **Merged since 21 November:** AW-360 (#486), AW-358 (#489), AW-361 (#488), AW-333 part A screens 13 to 16 (#487), AW-337 direction (#491). None has been seen on a TV.
+- **Open PRs:**
+  - #494 (AW-337 Battle of Wits, Codex), head `4eca241`, six checks pass. Claude Sonnet review passed it with one gap: the privacy test calls `build_run_view` directly, not the real API route; dashboard tests, typecheck and build were not run. The founder holds a Codex prompt for both. Not named for merge.
+  - #495 (AW-334 PR 1, Claude), head `05624ec`: puts the dashboard tests in the required CI job; that job fails in CI only. Sonnet session `aw-334-pr1-ci-fix` is fixing it on the same branch. Plan approved on #437.
+- **Not truly done:** AW-358 (#475) was closed without its dashboard tests being run; AW-360 (#483) stays open until they are. Once #495 lands, CI runs them.
+- **Top risk, case 1 (AW-305, #358):** the case file on main (`nightcap/cases/the-lido/`, unchanged since #456) was refused by the written-case check on 21 November (`A0 malformed_file`, 495 problems). Commit `2cbe8ec` moved AW-305 into a paper preflight first (staging, timeline, a cold human paper test, a seat recheck), with engine conversion after those gates. The revised draft is local and private, not on main. A real game cannot load case 1 until conversion is done. Never put case truth in GitHub (D-153).
+- **Still to build for 1 December (1a):** Search and Find, Battle of Wits questions (AW-355), the 1a arc setup (AW-356), AW-333 part B (screens 17 to 22), AW-334 PRs 2 to 4, then the TV walkthrough (AW-301, AW-308).
+- **Waiting on the founder:** whether case 1 conversion starts now beside the paper gates; naming #494 for merge after its fixes; the AW-305 sightline and timeline confirmation; the Battle of Wits tone (AW-355); the recap voice (AW-327); the agency framing (AW-319).
 
 ## Next build order (older snapshot; "Claude and Codex lanes" below replaces it)
 
