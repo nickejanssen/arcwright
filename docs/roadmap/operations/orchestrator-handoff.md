@@ -155,7 +155,8 @@ Main is `5f61176` or later. Check `gh pr list --state open`; the live answer win
 - **Not truly done:** AW-358 (#475) was closed without its dashboard tests being run; AW-360 (#483) stays open until they are. Once #495 lands, CI runs them.
 - **Top risk, case 1 (AW-305, #358):** the case file on main (`nightcap/cases/the-lido/`, unchanged since #456) was refused by the written-case check on 21 November (`A0 malformed_file`, 495 problems). Commit `2cbe8ec` moved AW-305 into a paper preflight first (staging, timeline, a cold human paper test, a seat recheck), with engine conversion after those gates. The revised draft is local and private, not on main. A real game cannot load case 1 until conversion is done. Never put case truth in GitHub (D-153).
 - **Still to build for 1 December (1a):** Search and Find, Battle of Wits questions (AW-355), the 1a arc setup (AW-356), AW-333 part B (screens 17 to 22), AW-334 PRs 2 to 4, then the TV walkthrough (AW-301, AW-308).
-- **Waiting on the founder:** whether case 1 conversion starts now beside the paper gates; naming #495 for merge; the AW-305 sightline and timeline confirmation; the Battle of Wits tone (AW-355); the recap voice (AW-327); the agency framing (AW-319).
+- **Case 1 next step (D-156):** Codex (GPT-6.2 Sol High) converts the revised draft in its `afa9` worktree to spec 0093 Part A and passes A0 to A6, after a private backup. No paper gates first.
+- **Waiting on the founder:** naming #495 for merge; the AW-305 sightline and timeline confirmation; the Battle of Wits tone (AW-355); the recap voice (AW-327); the agency framing (AW-319).
 
 ## Next build order (older snapshot; "Claude and Codex lanes" below replaces it)
 

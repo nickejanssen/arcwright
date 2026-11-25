@@ -35,18 +35,16 @@ Case 1 gates the founder's first end-to-end 1a run. The founder hosts and tests 
 - It passes the case-graph invariants named in spec 0092.
 - A reviewer session that did not write the case reports pass or fail per invariant, using counts only.
 - The real session 1 arc file sets `release_content: false` on its mini-game bindings, so a mini-game hands out no case information (AW-328, D-126; spec 0093, Q1 Answered). The setting and its test exist; this task only turns it on.
-- Before engine conversion, validate the physical staging and paper difficulty gates below. Coordinate the approved round layout and Last Call transition with AW-356. Keep the private case in an approved private handoff.
+- Convert the revised draft (Codex worktree, 22 November) to the spec 0093 Part A format now, with no paper gates first (D-156). Change the story only where a check forces it. Coordinate the approved round layout and Last Call transition with AW-356. Keep the private case in an approved private handoff and a private backup outside every repo.
 
 ## Human Collaboration Contract
 
-**Interaction profile:** Creative collaboration and facilitated live operation. The founder reviews the case under D-153 and approves the preflight before the cold run and the runtime plan before integration. Current phase: paper preflight. A local four-round draft and one-off facilitator sheet are prepared. An AI blind run gives directional evidence only. The next human gate is confirmation of the sightlines and drainage timeline, followed by the host's approval to run a fresh blind session. Record approvals and results without publishing case truth.
+**Interaction profile:** Creative collaboration and facilitated live operation. The founder reviews the case under D-153 and approves the preflight before the cold run and the runtime plan before integration. Current phase: engine conversion (D-156). A local four-round draft and one-off facilitator sheet are prepared; an AI blind run and an adversarial review gave directional evidence only. The sightline and timing check and the human blind test are no longer gates: the founder's 1 December run tests the technology, and the 5 December beta with friends is the story's blind test. Record approvals and results without publishing case truth.
 
 ## Acceptance Criteria
 
-- [ ] Stage the witness positions, check when observations become possible, and reconcile drainage and event timing before inviting a fresh solver.
-- [ ] Run a cold human paper test on the revised draft and a separate attempt to make a credible alternative fit. Record each round's leading suspect, runner-up and decisive observation. Allow six investigations without coaching or competitive rewards. A defensible proof should first become available in Round 4, with an evidence-backed rival theory still plausible at the end of Round 3.
-- [ ] Recheck all active seats at two, three and four players, including one recoverable wrong turn and independent evidence paths. Resolve any blocker and rerun the affected gate before beginning engine conversion.
-
+- [ ] The revised draft is backed up outside every repo before conversion starts.
+- [ ] The converted case passes A0 to A6 at two, three and four players.
 - [ ] The case loads and a headless session completes on it at two and at four players.
 - [ ] The reviewer's report contains no culprit, method, truth or route.
 - [ ] Founder approvals at premise, design and full-prose stages are recorded on the issue.
@@ -61,6 +59,10 @@ Case 1 gates the founder's first end-to-end 1a run. The founder hosts and tests 
 - AW-302: spec 0093 approved. The format is Part A of `docs/specs/0093-engine-spine-for-the-thin-version.md`.
 - AW-324, which builds the loader and the fairness check the case must pass.
 - Findings and evidence: `docs/product/2026-11-15-reset-audit.md`
+
+## Later, after playtesting starts (not gates for this task)
+
+- Witness sightlines and timing, and a story-quality blind read, move to story iteration once playtests run (D-156). Record what the 5 December beta shows per round: leading suspect, runner-up, what changed their mind.
 
 ## Must Not Do
 
