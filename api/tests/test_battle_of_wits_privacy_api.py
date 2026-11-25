@@ -45,7 +45,8 @@ async def test_battle_of_wits_routes_keep_answers_and_catch_up_private(
         async with sessions() as db, db.begin():
             yield db
 
-    monkeypatch.setitem(app.dependency_overrides, get_async_session, request_session)
+    overrides: dict[Any, Any] = app.dependency_overrides
+    monkeypatch.setitem(overrides, get_async_session, request_session)
     monkeypatch.setattr(mini_games, "MiniGameRuntime", make_runtime)
     try:
         async with sessions() as db, db.begin():
@@ -186,7 +187,7 @@ async def test_battle_of_wits_routes_keep_answers_and_catch_up_private(
                     assert response.status_code == 200, (viewer, response.text)
                     body = response.json()
                     body["my_submissions"].sort(key=lambda item: item["submission_id"])
-                    state = {"stage": stage}
+                    state: dict[str, Any] = {"stage": stage}
                     if stage is question_view and viewer in private:
                         state["player"] = private[viewer]
                     assert body == {
