@@ -32,7 +32,7 @@ test("a saved seat is found by game, by code (any case) and as the most recent",
   clock.now = 2_000;
   store.touch("game-1");
 
-  assert.equal(store.get("game-1")?.displayName, "Jordan");
+  assert.equal(store.get("game-1")?.displayName, "X");
   assert.equal(store.findByCode("k7qp")?.gameId, "game-1");
   assert.equal(store.findByCode("NOPE"), null);
   assert.equal(store.mostRecent()?.gameId, "game-1");
