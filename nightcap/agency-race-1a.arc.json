@@ -1,0 +1,133 @@
+{
+  "arc_id": "nightcap-agency-race-1a",
+  "name": "Nightcap Agency Race",
+  "min_players": 2,
+  "max_players": 4,
+  "character_mode": "generated",
+  "aesthetic_config": {},
+  "arc_structure": "story_circle",
+  "play_mode": "detective_race",
+  "narrator": {
+    "type": "host_persona",
+    "surface": "shared_display",
+    "persona_mode": "fixed",
+    "omniscient": true,
+    "player_addressable": false
+  },
+  "quality_tier_default": "standard",
+  "generative_elements": {},
+  "content_rails": {"age_floor": 18},
+  "knowledge_rules": {"clues_private_until_shared": true},
+  "pacing_config": {"w_time": 0.25, "w_action": 0.25, "w_suspicion": 0.25, "w_coverage": 0.25},
+  "case_file": "nightcap/cases/local/agency-race-1a.json",
+  "mini_game_root": "nightcap/mini_games",
+  "choice_config": {"budget": 6},
+  "beats": [
+    {
+      "beat_id": "round_1",
+      "beat_name": "Round 1",
+      "beat_type": "investigation",
+      "story_circle_step": 1,
+      "structural_function": "opening",
+      "phases": [
+        {"kind": "scene", "seconds": 30, "lines": [{"text": "Welcome to the agency. Your first brief is ready."}]},
+        {"kind": "choices", "seconds": 120},
+        {"kind": "mini_game", "seconds": 75},
+        {"kind": "bridge", "seconds": 10, "lines": [{"text": "Back to your desks."}]}
+      ],
+      "mini_game_pick": "listed",
+      "mini_games": [{"binding_id": "round-1-race", "game_id": "battle-of-wits", "version": "0.1.0", "release_content": false, "reward": {"kind": "investigation", "amount": 1, "to": "top_ranked"}}]
+    },
+    {
+      "beat_id": "round_2",
+      "beat_name": "Round 2",
+      "beat_type": "investigation",
+      "story_circle_step": 2,
+      "structural_function": "investigate",
+      "phases": [
+        {"kind": "scene", "seconds": 30, "lines": [{"text": "You've got time to follow another lead."}]},
+        {"kind": "choices", "seconds": 120},
+        {"kind": "mini_game", "seconds": 75},
+        {"kind": "mini_game", "seconds": 75},
+        {"kind": "bridge", "seconds": 10, "lines": [{"text": "The next brief is ready."}]}
+      ],
+      "mini_game_pick": "listed",
+      "mini_games": [
+        {"binding_id": "round-2-control", "game_id": "battle-of-wits", "version": "0.1.0", "release_content": false, "reward": {"kind": "investigation", "amount": 1, "to": "top_ranked"}},
+        {"binding_id": "round-2-race", "game_id": "battle-of-wits", "version": "0.1.0", "release_content": false, "reward": {"kind": "investigation", "amount": 1, "to": "top_ranked"}}
+      ]
+    },
+    {
+      "beat_id": "round_3",
+      "beat_name": "Round 3",
+      "beat_type": "investigation",
+      "story_circle_step": 3,
+      "structural_function": "investigate",
+      "phases": [
+        {"kind": "scene", "seconds": 30, "lines": [{"text": "Look back at what you've found."}]},
+        {"kind": "choices", "seconds": 120},
+        {"kind": "mini_game", "seconds": 75},
+        {"kind": "bridge", "seconds": 10, "lines": [{"text": "One round left."}]}
+      ],
+      "mini_game_pick": "listed",
+      "mini_games": [{"binding_id": "round-3-race", "game_id": "battle-of-wits", "version": "0.1.0", "release_content": false, "reward": {"kind": "investigation", "amount": 1, "to": "top_ranked"}}]
+    },
+    {
+      "beat_id": "round_4",
+      "beat_name": "Round 4",
+      "beat_type": "investigation",
+      "story_circle_step": 4,
+      "structural_function": "investigate",
+      "phases": [
+        {"kind": "scene", "seconds": 30, "lines": [{"text": "This is your last opportunity to investigate before the final race."}]},
+        {"kind": "choices", "seconds": 120},
+        {"kind": "mini_game", "seconds": 75}
+      ],
+      "mini_game_pick": "listed",
+      "mini_games": [{"binding_id": "final-race", "game_id": "battle-of-wits", "version": "0.1.0", "release_content": false, "reward": {"kind": "investigation", "amount": 1, "to": "top_ranked"}}]
+    },
+    {
+      "beat_id": "finale",
+      "beat_name": "Last Call",
+      "beat_type": "closing",
+      "story_circle_step": 5,
+      "structural_function": "commit",
+      "phases": [{"kind": "commit", "seconds": 150}, {"kind": "reveal", "seconds": 15}]
+    },
+    {
+      "beat_id": "resolution",
+      "beat_name": "The Truth",
+      "beat_type": "closing",
+      "story_circle_step": 6,
+      "structural_function": "reveal",
+      "phases": [{"kind": "scene", "seconds": 60, "source": "case_closing"}]
+    },
+    {
+      "beat_id": "verdict",
+      "beat_name": "Verdict",
+      "beat_type": "closing",
+      "story_circle_step": [7, 8],
+      "structural_function": "result",
+      "phases": [
+        {"kind": "result", "seconds": 20},
+        {
+          "kind": "recap",
+          "seconds": 20,
+          "recap": {
+            "lines": [],
+            "fallbacks": [{"text": "Thanks for taking the case."}]
+          }
+        }
+      ]
+    }
+  ],
+  "beat_graph": {
+    "round_1": ["round_2"],
+    "round_2": ["round_3"],
+    "round_3": ["round_4"],
+    "round_4": ["finale"],
+    "finale": ["resolution"],
+    "resolution": ["verdict"],
+    "verdict": []
+  }
+}
