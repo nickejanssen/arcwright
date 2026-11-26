@@ -165,7 +165,7 @@ test("room, paused and ended come from the engine's status, ahead of any phase",
   );
 });
 
-test("the shipped slot maps include Last Call and the accused", () => {
+test("the shipped slot maps cover every phase, Last Call to the recap", () => {
   for (const phase of PHASES) {
     const filled =
       phase === "scene" ||
@@ -173,7 +173,9 @@ test("the shipped slot maps include Last Call and the accused", () => {
       phase === "mini_game" ||
       phase === "bridge" ||
       phase === "commit" ||
-      phase === "reveal";
+      phase === "reveal" ||
+      phase === "result" ||
+      phase === "recap";
     for (const surface of ["tv", "phone"] as const) {
       assert.equal(
         resolveScreen(

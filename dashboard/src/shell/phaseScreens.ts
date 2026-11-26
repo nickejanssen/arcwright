@@ -2,13 +2,14 @@
 // names which screen to show on the TV and on a phone. It holds no rule: it
 // reads the engine's status and phase name and looks them up.
 //
-// The round screens are filled in by AW-332 and the endgame screens by AW-333; until a phase has one,
-// the plain "play continues" screen shows.
+// The round screens are filled in by AW-332 and the endgame screens by AW-333;
+// a phase without one shows the plain "play continues" screen.
 
 import type { ComponentType } from "react";
 import type { LobbyState } from "../api/lobby";
 import type { RoundState } from "../api/round";
 import { endgameScreens } from "../screens/endgame";
+import { AFTER_RECAP } from "../screens/endgame/after";
 import { roundScreens } from "../screens/round";
 
 export type SurfaceKind = "tv" | "phone";
@@ -54,6 +55,18 @@ export function resolveScreen(
   slots: SlotTable = DEFAULT_SLOTS,
 ): Resolved {
   if (lobby.status === "created") return { kind: "room" };
+  // A finished recap, from the engine's own state: its newest phase is "recap"
+  // and either that phase has ended while the session is still live, or the
+  // session was completed with the recap reached. The survey follows. An
+  // abandoned session, or one ended before the recap, is simply over.
+  if (round?.phase === "recap") {
+    const done =
+      lobby.status === "completed" ||
+      (lobby.status === "active" && round.status === "ended");
+    const Slot = slots[AFTER_RECAP]?.[surface];
+    if (done && Slot) return { kind: "phase", phase: AFTER_RECAP, Slot };
+    if (lobby.status === "paused") return { kind: "paused" };
+  }
   if (
     lobby.status === "completed" ||
     lobby.status === "abandoned" ||

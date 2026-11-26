@@ -154,6 +154,33 @@ export const copy = {
     retry: "Try again",
     accused: "The accused",
     accuses: (name: string, answer: string) => `${name} accuses ${answer}`,
+    verdict: "The Verdict",
+    solved: (name: string) => `${name} solved it.`,
+    notSolved: (name: string) => `${name} did not solve it.`,
+    theirProof: (proof: string) => `Their proof: ${proof}`,
+    nobody: "Nobody solved it. The case wins.",
+    wonMore: (name: string) => `${name} won more mini-games.`,
+    placedHigher: (name: string) => `${name} placed higher in the mini-games.`,
+    sharedWin: "A tie. They share the win.",
+    right: "Right",
+    wrong: "Wrong",
+    postmortem: "Postmortem",
+  },
+
+  // The thanks screen and the survey (spec 0095 screens 21 and 22).
+  survey: {
+    thanks: "Thanks for playing. Answer three quick questions on your phone.",
+    answered: "Answered",
+    notYet: "Not yet",
+    fun: "How fun was it?",
+    detective: "Did you feel like a detective?",
+    again: "Play again?",
+    yes: "Yes",
+    maybe: "Maybe",
+    no: "No",
+    comment: "Anything else? (optional)",
+    send: "Send",
+    sent: "Sent. You can change your answers and send again.",
   },
 
   settings: {

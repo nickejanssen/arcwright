@@ -10,6 +10,18 @@ export interface RoundPlayer {
   name: string | null;
   ready: boolean;
   locked?: boolean;
+  // Whether this player has answered the survey. Never what they said.
+  answeredSurvey?: boolean;
+}
+
+// The public part of the result: who solved it, who won and by which rule.
+export interface RoundResult {
+  decided_by: string;
+  winners: Array<{
+    participant_id: string;
+    proof: { label: string; concept_id?: string } | null;
+  }>;
+  players: Array<{ participant_id: string; solved: boolean }>;
 }
 
 export interface RoundState {
@@ -30,7 +42,16 @@ export interface RoundState {
     reveal?: {
       players: Array<{
         participant_id: string;
-        answer: { label: string } | null;
+        answer: { value?: string; label: string } | null;
+      }>;
+    } | null;
+    result?: RoundResult | null;
+    // In the engine's order.
+    recap?: {
+      lines: Array<{
+        participant_id: string;
+        text: string;
+        hints?: Record<string, unknown>;
       }>;
     } | null;
   } | null;
@@ -51,6 +72,7 @@ interface RoomWire {
     display_name?: string | null;
     ready?: boolean;
     locked?: boolean;
+    answered_survey?: boolean;
   }>;
   lines?: Array<Record<string, unknown>>;
   closing?: RoundState["closing"];
@@ -86,6 +108,7 @@ export async function fetchRound(
       name: p.display_name ?? null,
       ready: Boolean(p.ready),
       locked: Boolean(p.locked),
+      answeredSurvey: Boolean(p.answered_survey),
     })),
     lines: wire.lines ?? [],
     closing: wire.closing ?? null,
