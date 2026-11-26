@@ -107,7 +107,7 @@ Founder's words: "Sounds like we want opus for planning and orchestration , but 
 2. **One level of sessions.** The orchestrator starts plan and build sessions directly. A session does not start another session, and none exists only to relay messages. When a plan is approved, the plan session stops and the orchestrator starts the build session from the pushed plan.
 3. **No status-only turns.** A note that says nothing changed gets no reply, or one line. Do not poll. Save updates for a result or a decision.
 4. **Read narrowly.** Use `gh --jq`, `grep` and targeted diffs. Read the whole of a diff only where the risk is (sign-in, privacy, state, money, data loss) or when acting as the Reviewer.
-5. **Give each session a complete brief,** so it does not have to rediscover what the orchestrator already knows.
+5. **Give each session a complete brief,** so it does not have to rediscover what the orchestrator already knows. Every Claude build brief ends with: when the work is done, run `/ship` (commit, open the PR, review it, fix real problems, keep CI green and answer review comments; it never merges). The orchestrator does the final merge under D-157. Do not turn on GitHub auto-merge: only three of the six checks are required on main, so it would skip the CodeQL scans and the independent review (founder, 2026-11-26: "Yes").
 6. **Check the plan limits at the start of each batch:**
    - Under 70 percent of the weekly limit: work normally, at most two build sessions at once.
    - 70 percent or more with over two days until reset: Codex does new builds; Claude keeps merges and reviews of risky changes.
