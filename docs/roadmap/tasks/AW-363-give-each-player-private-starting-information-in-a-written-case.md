@@ -1,7 +1,7 @@
 ---
-id: productroadmap.roadmap.tasks.aw-362-give-each-player-private-starting-information-in-a-written-case
+id: productroadmap.roadmap.tasks.aw-363-give-each-player-private-starting-information-in-a-written-case
 namespace: product-roadmap
-title: "AW-362: Give Each Player Private Starting Information In A Written Case"
+title: "AW-363: Give Each Player Private Starting Information In A Written Case"
 owner: Nico Janssen
 status: draft
 review_by: "2027-02-25"
@@ -12,7 +12,7 @@ tags: []
 supersedes: []
 ---
 
-# AW-362: Give Each Player Private Starting Information In A Written Case
+# AW-363: Give Each Player Private Starting Information In A Written Case
 
 **Milestone / Epic:** M7 / M7-B  
 **Size:** M  

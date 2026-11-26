@@ -3476,7 +3476,7 @@
       }
     },
     {
-      "id": "AW-362",
+      "id": "AW-363",
       "title": "Give Each Player Private Starting Information In A Written Case",
       "milestone": "M7",
       "epic": "M7-B",
@@ -3484,11 +3484,27 @@
       "depends_on": [
         "AW-324"
       ],
-      "path": "docs/roadmap/tasks/AW-362-give-each-player-private-starting-information-in-a-written-case.md",
+      "path": "docs/roadmap/tasks/AW-363-give-each-player-private-starting-information-in-a-written-case.md",
       "epic_id": "M7-B",
       "github": {
         "issue_number": 497,
         "url": "https://github.com/nickejanssen/arcwright/issues/497"
+      }
+    },
+    {
+      "id": "AW-364",
+      "title": "Show Each Player Their Full Theory Sentence After The Verdict",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "S",
+      "depends_on": [
+        "AW-333"
+      ],
+      "path": "docs/roadmap/tasks/AW-364-show-each-player-their-full-theory-sentence-after-the-verdict.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 504,
+        "url": "https://github.com/nickejanssen/arcwright/issues/504"
       }
     }
   ],
