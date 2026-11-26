@@ -207,3 +207,69 @@ async def test_supported_room_sizes(count, tmp_path):
                     await client.post("/api/join", json={"name": "Overflow"})
                 ).status_code == 409
             assert (await start(client, seats[0]))["status"] == "active"
+
+
+@pytest.mark.asyncio
+async def test_answer_body_is_bounded_and_names_reject_controls(tmp_path):
+    app = create_app(tmp_path, clock=Clock())
+    async with app.router.lifespan_context(app):
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            for name in ("Ada\n", "A\x00da", "A\x85da"):
+                response = await client.post("/api/join", json={"name": name})
+                assert response.status_code == 422
+            player = await join(client, "Ada")
+            game = await start(client, player)
+            oversized = answer(game, "large", "x" * 8192)
+            response = await client.post(
+                "/api/answer", headers=headers(player), json=oversized
+            )
+            assert response.status_code == 413
+
+            async def chunks():
+                body = json.dumps(oversized).encode()
+                for offset in range(0, len(body), 1024):
+                    yield body[offset : offset + 1024]
+
+            response = await client.post(
+                "/api/answer",
+                headers={**headers(player), "Content-Type": "application/json"},
+                content=chunks(),
+            )
+            assert response.status_code == 413
+            response = await client.post(
+                "/api/answer",
+                headers={**headers(player), "Content-Type": "application/json"},
+                content=b"{",
+            )
+            assert response.status_code == 422
+
+
+@pytest.mark.asyncio
+async def test_asset_mount_cannot_return_bank_via_parent_paths(tmp_path):
+    assets = tmp_path / "assets"
+    assets.mkdir()
+    (assets / "public.js").write_text("console.log('public')", encoding="utf-8")
+    server = tmp_path / "server"
+    server.mkdir()
+    bank = server / "bank.json"
+    private = '{"questions": ["private bank marker"]}'
+    bank.write_text(private, encoding="utf-8")
+    app = create_app(tmp_path, clock=Clock())
+    async with app.router.lifespan_context(app):
+        async with httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=app), base_url="http://test"
+        ) as client:
+            assert (await client.get("/assets/public.js")).status_code == 200
+            # HTTPX normalizes literal parent segments. Encoded requests also
+            # exercise the decoded parent path inside the asset mount.
+            for path in (
+                "/assets/../server/bank.json",
+                "/assets/%2e%2e/server/bank.json",
+                "/assets/..%2fserver%2fbank.json",
+                "/assets/%2e%2e%5cserver%5cbank.json",
+            ):
+                response = await client.get(path)
+                assert response.status_code == 404
+                assert private not in response.text

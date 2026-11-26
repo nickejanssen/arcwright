@@ -71,6 +71,28 @@ export function mountRoom(root: HTMLElement, fetcher = fetch): () => void {
     return response.json();
   }
 
+  function renderResult(
+    standing: string[][],
+    names: Record<string, string>,
+  ): void {
+    const title = doc.createElement("h3");
+    title.textContent = "Final standing";
+    const label = (tier: string[]) =>
+      tier.map((id) => names[id] ?? "Player").join(", ");
+    const winner = doc.createElement("p");
+    const first = standing[0] ?? [];
+    if (first.length) {
+      winner.textContent = `${first.length === 1 ? "Winner" : "Winners"}: ${label(first)}`;
+    }
+    const ranking = doc.createElement("ol");
+    for (const tier of standing) {
+      const item = doc.createElement("li");
+      item.textContent = label(tier);
+      ranking.append(item);
+    }
+    stage.replaceChildren(title, winner, ranking);
+  }
+
   function render(room: Room): void {
     form.hidden = true;
     lobby.hidden = room.game !== null;
@@ -91,7 +113,13 @@ export function mountRoom(root: HTMLElement, fetcher = fetch): () => void {
     const game = room.game;
     if (!game || !seat || !room.definition) return;
     const signature = JSON.stringify(game);
-    if (!lifecycle || active?.runId !== game.runId) {
+    if (game.resultHold) {
+      lifecycle?.unmount();
+      lifecycle = null;
+      if (signature !== lastGame) {
+        renderResult(game.resultHold.standing, game.playerNames ?? {});
+      }
+    } else if (!lifecycle || active?.runId !== game.runId) {
       lifecycle?.unmount();
       lifecycle = renderer.mount(stage, {
         surface: "phone",

@@ -15,6 +15,7 @@ from pathlib import Path
 from secrets import token_urlsafe
 from tempfile import TemporaryDirectory
 from typing import Any
+from unicodedata import category
 from uuid import UUID, uuid4
 
 # The launcher uses an authored package and can run without internet access.
@@ -25,7 +26,7 @@ import uvicorn
 from fastapi import FastAPI, Header, HTTPException, Request
 from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -47,6 +48,7 @@ PACKAGE = ROOT / "nightcap/mini_games/battle-of-wits"
 GAME_ID = "battle-of-wits"
 VERSION = "0.1.0"
 MAX_PLAYERS = 8
+MAX_ANSWER_BYTES = 4096
 FINAL = {"completed", "timed_out"}
 
 
@@ -210,6 +212,8 @@ def create_app(
 
     @app.post("/api/join", status_code=201)
     async def join(request: Join) -> dict[str, str]:
+        if any(category(char) == "Cc" for char in request.name):
+            raise HTTPException(422, "Names cannot contain control characters.")
         name = request.name.strip()
         if not name:
             raise HTTPException(422, "Enter a name to join.")
@@ -311,18 +315,27 @@ def create_app(
 
     @app.post("/api/answer")
     async def answer(
-        request: Answer, authorization: str | None = Header(default=None)
+        request: Request, authorization: str | None = Header(default=None)
     ) -> dict[str, Any]:
+        body = bytearray()
+        async for chunk in request.stream():
+            if len(body) + len(chunk) > MAX_ANSWER_BYTES:
+                raise HTTPException(413, "The answer is too large.")
+            body.extend(chunk)
+        try:
+            submitted = Answer.model_validate_json(body)
+        except ValidationError:
+            raise HTTPException(422, "Enter a valid answer.") from None
         async with lock, app.state.factory.begin() as db:
             player = await seat(db, authorization)
-            if request.run_id != active_run:
+            if submitted.run_id != active_run:
                 raise HTTPException(409, "That round has ended.")
             try:
                 response = await runtime(db).submit_action(
-                    request.run_id,
-                    request.submission_id,
+                    submitted.run_id,
+                    submitted.submission_id,
                     player.character_id,
-                    request.payload,
+                    submitted.payload,
                     participant_id=player.participant_id,
                 )
             except (RunStateError, ValueError):

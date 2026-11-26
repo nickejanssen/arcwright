@@ -45,9 +45,9 @@ python -m scripts.play_battle_of_wits
 
 Open the printed Wi-Fi link on one to eight phones or computers on the same
 network. If Windows Firewall asks, allow Python on the private network. Enter
-distinct names and join before someone taps **Start**. Use **Play again** on
-the results screen to keep the seats and start a fresh round. Refresh the same
-tab to reconnect. Press Ctrl+C on the PC to stop the room and clear the seats.
+distinct names and join before someone taps **Start**. Refresh the same tab to
+reconnect. Press Ctrl+C on the PC to stop the room and clear the seats.
+Players can't join after a round starts. **Play again** starts a fresh round with the same players.
 
 The launcher builds and serves a dedicated page. It needs no external database,
 account, model call, or running Nightcap service. Use it on a trusted local
