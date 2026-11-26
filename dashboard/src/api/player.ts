@@ -54,6 +54,8 @@ export interface PlayerApi {
   // (nothing was saved then).
   ready(phaseEntry: number): Promise<{ phaseEntry: number }>;
   holdings(): Promise<Holding[]>;
+  // The words for each thing held, by its ID. The ID is never shown.
+  heldLabels(): Promise<Map<string, string>>;
 }
 
 interface MenuWire {
@@ -83,6 +85,7 @@ interface ChoiceWire {
 
 interface HoldingsWire {
   concepts: Array<{
+    concept_id: string;
     label: string;
     text: string;
     found_from?: string | null;
@@ -164,6 +167,10 @@ export function createPlayerApi(
         roundTitle: c.found_in_round_title ?? null,
         roundNumber: c.found_in_round_number ?? null,
       }));
+    },
+    async heldLabels() {
+      const wire = await call<HoldingsWire>("/holdings");
+      return new Map(wire.concepts.map((c) => [c.concept_id, c.label]));
     },
   };
 }
