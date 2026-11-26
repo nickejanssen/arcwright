@@ -5,6 +5,10 @@
       "path": "nightcap/couch-race.arc.json"
     },
     {
+      "id_prefix": "nightcap-agency-race-1a",
+      "path": "nightcap/agency-race-1a.arc.json"
+    },
+    {
       "id_prefix": "nightcap",
       "path": "nightcap/arc.json"
     }
