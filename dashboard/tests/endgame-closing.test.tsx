@@ -662,3 +662,37 @@ test("survey: a slow saved copy does not overwrite what the player just chose", 
     }
   });
 });
+
+test("survey: unsent answers survive the screen dropping out for one read", async () => {
+  await serving(surveyEngine(new Map()).fetcher, async () => {
+    const view = (state: RoundState | null) =>
+      createElement(PhoneView, {
+        ...phone(after).props,
+        sessionId: "game-with-a-draft",
+        feed: {
+          lobby: lobby({ status: "completed" }),
+          round: state,
+          unreachable: false,
+          gone: false,
+        },
+      });
+    const page = await mount(view(after));
+    try {
+      await fill(page);
+      await typeInto(
+        page.container.querySelector("textarea") as never,
+        "Half written",
+      );
+      await page.rerender(view(null));
+      assert.equal(page.container.querySelector("textarea"), null);
+      await page.rerender(view(after));
+      assert.equal(
+        page.container.querySelector("textarea")!.value,
+        "Half written",
+      );
+      assert.equal(page.button("Send").disabled, false);
+    } finally {
+      await page.unmount();
+    }
+  });
+});

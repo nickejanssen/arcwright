@@ -25,6 +25,10 @@ const QUESTIONS = [
   },
 ];
 
+// What this phone has chosen but not yet sent, by game. One failed room read
+// takes the screen away for a moment; this brings the answers back.
+const drafts = new Map<string, { answers: SurveyAnswers; comment: string }>();
+
 export default function SurveyPhone({ sessionId, getToken }: SlotProps) {
   const api = useMemo(
     () =>
@@ -34,14 +38,22 @@ export default function SurveyPhone({ sessionId, getToken }: SlotProps) {
       }),
     [sessionId, getToken],
   );
-  const [answers, setAnswers] = useState<SurveyAnswers>({});
-  const [comment, setComment] = useState("");
+  const [answers, setAnswers] = useState<SurveyAnswers>(
+    () => drafts.get(sessionId)?.answers ?? {},
+  );
+  const [comment, setComment] = useState(
+    () => drafts.get(sessionId)?.comment ?? "",
+  );
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState(false);
   const [failed, setFailed] = useState<"read" | "send" | null>(null);
   const [attempt, setAttempt] = useState(0);
   // Set once the player touches the form, so a slow read never undoes it.
-  const touched = useRef(false);
+  const touched = useRef(drafts.has(sessionId));
+
+  useEffect(() => {
+    if (touched.current && !sent) drafts.set(sessionId, { answers, comment });
+  }, [sessionId, answers, comment, sent]);
 
   useEffect(() => {
     let active = true;
@@ -49,7 +61,7 @@ export default function SurveyPhone({ sessionId, getToken }: SlotProps) {
       .read()
       .then((saved) => {
         if (!active) return;
-        setFailed(null);
+        setFailed((now) => (now === "read" ? null : now));
         if (!saved.answered || touched.current) return;
         setAnswers(saved.answers);
         setComment(saved.comment ?? "");
@@ -74,6 +86,7 @@ export default function SurveyPhone({ sessionId, getToken }: SlotProps) {
     setFailed(null);
     try {
       await api.save(answers, comment.trim() ? comment : null);
+      drafts.delete(sessionId);
       setSent(true);
     } catch {
       setFailed("send");
