@@ -49,3 +49,6 @@ team-ai/graph/observations/
 # Arcwright-owned knowledge CLI build artifacts
 team-ai/runtime/dist/
 team-ai/runtime/coverage/
+
+# Converted case files hold case solutions; never commit them (D-153).
+nightcap/cases/local/
