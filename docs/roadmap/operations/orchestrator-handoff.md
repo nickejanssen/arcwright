@@ -36,7 +36,7 @@ Everything needed to carry on is in this repository and on GitHub. Nothing depen
 | `/scribe` | Follow `docs/agents/scribe.md` |
 | Starting a child session | The founder starts a new Codex task and pastes the prompt the orchestrator wrote |
 
-**Rules that do not change:** AGENTS.md hard rules; plan approval in the founder's own words, in the builder's own task or his own comment on the issue; he names each merge; merge with `gh pr merge N --squash --match-head-commit <sha>` after updating the branch with main and seeing all six checks pass and every review thread resolved; one task, one branch, one AI; a log line in `HANDOVER.md` for every merge.
+**Rules that do not change:** AGENTS.md hard rules; plan approval in the founder's own words, in the builder's own task or his own comment on the issue; the orchestrator may merge on its own judgment under D-157's conditions; merge with `gh pr merge N --squash --match-head-commit <sha>` after updating the branch with main and seeing all six checks pass and every review thread resolved; one task, one branch, one AI; a log line in `HANDOVER.md` for every merge.
 
 **While Claude is out,** the "other AI" review in the lane rules cannot happen. Use a separate Codex task with `$arcwright-reviewer`, one that did not write the code, and say so in the pull request.
 
@@ -179,7 +179,7 @@ The founder approved running Claude Code and Codex side by side ("Approve the sp
 - Lanes own file areas; two builders never edit the same files. A task that needs another lane's files waits, or the orchestrator re-plans it with the founder.
 - Shared records belong to the orchestrator only: `HANDOVER.md`, `docs/product/decisions-log.csv`, `docs/product/open-questions-log.csv`, the status page, and merges. A builder may add its own task's entry to `docs/roadmap/index.json` and edit its own task file.
 - Every pull request: all six checks pass, every inline review thread answered and resolved, and a review by the other AI for anything medium or large (the automatic Codex check is not that review). Codex reviews with `$arcwright-reviewer`; Claude with the `reviewer` agent or `/review-pr`.
-- The founder approves each plan in the builder's own session or by his own comment on the issue; a relayed approval does not count (see the #462 review, 2026-11-20). He names each merge; the orchestrator merges at the exact checked commit after updating the branch with main.
+- The founder approves each plan in the builder's own session or by his own comment on the issue; a relayed approval does not count (see the #462 review, 2026-11-20). Under D-157 the orchestrator merges on its own judgment once every condition holds (safe, no lost work on any PR, top-quality code, the PR objectively meets its goal, all CI passes, plus an independent review for medium or large PRs and every thread resolved); it merges at the exact checked commit after updating the branch with main.
 - Codex starts from the Codex app in worktree mode on the `arcwright` project (setup in `.codex/environments/environment.toml`); skills: `$github-task-implementer`, `$arcwright-reviewer`, `$arcwright-sme` (`docs/agents/USAGE.md`, Part 4). The orchestrator cannot drive Codex; the founder pastes the prompt the orchestrator gives him.
 
 **Claude lane: screens (`dashboard/`)**
