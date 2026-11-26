@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Battle of Wits</title>
+    <link rel="stylesheet" href="./room.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Battle of Wits</h1>
+      </header>
+      <form>
+        <label for="name">Your name</label>
+        <input
+          id="name"
+          name="name"
+          required
+          maxlength="40"
+          autocomplete="nickname"
+        />
+        <button type="submit">Join</button>
+      </form>
+      <section id="lobby" hidden>
+        <h2>Players</h2>
+        <ul id="players"></ul>
+      </section>
+      <section id="game" aria-label="Round" hidden></section>
+      <button id="start" type="button" hidden>Start</button>
+      <p id="message" role="status"></p>
+    </main>
+    <script type="module">
+      import { mountRoom } from "../src/standalone-battle-of-wits";
+      mountRoom(document.querySelector("main"));
+    </script>
+  </body>
+</html>

@@ -33,7 +33,29 @@ The definition declares a 65-second run budget. The answer and reveal windows
 take 59 seconds before tick latency. Allow time for the server to tick and for
 the separate final result hold when setting up a destination phase.
 
-AW-348 can use the package directory above, version `0.1.0`, and
-`invented-v1` with the normal package resolver and mechanic registry. An
-independent join and replay URL, physical devices, and player pacing evidence
-are part of the AW-348 live run.
+## Play over Wi-Fi
+
+From the repo root in Windows PowerShell, with Python 3.11+, Node, and the usual
+development dependencies installed (`pip install -r requirements.txt`,
+`npm install --prefix sdk`, then `npm ci --prefix dashboard`), run:
+
+```powershell
+python -m scripts.play_battle_of_wits
+```
+
+Open the printed Wi-Fi link on one to eight phones or computers on the same
+network. If Windows Firewall asks, allow Python on the private network. Enter
+distinct names and join before someone taps **Start**. Use **Play again** on
+the results screen to keep the seats and start a fresh round. Refresh the same
+tab to reconnect. Press Ctrl+C on the PC to stop the room and clear the seats.
+
+The launcher builds and serves a dedicated page. It needs no external database,
+account, model call, or running Nightcap service. Use it on a trusted local
+network. The resolver reloads the configured, server-only bank for every round.
+It uses the included `invented-v1` bank until the package points to updated
+standalone questions that its 0.1.0 rules accept. Active rounds keep the
+questions they started with.
+
+The HTTP room tests use a fixed clock to check results, late answers, replay,
+and bank replacement. The dashboard tests check isolated phone views. A
+physical phone on the founder's Wi-Fi is a separate live check.
