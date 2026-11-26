@@ -3474,6 +3474,22 @@
         "issue_number": 459,
         "url": "https://github.com/nickejanssen/arcwright/issues/459"
       }
+    },
+    {
+      "id": "AW-362",
+      "title": "Give Each Player Private Starting Information In A Written Case",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-324"
+      ],
+      "path": "docs/roadmap/tasks/AW-362-give-each-player-private-starting-information-in-a-written-case.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 497,
+        "url": "https://github.com/nickejanssen/arcwright/issues/497"
+      }
     }
   ],
   "superseded_sources": [
