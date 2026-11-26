@@ -147,16 +147,15 @@ Progress: 7 of about 23 critical-path tasks are merged, roughly 30 percent (infe
 
 ## In flight at handoff (25 November 2026)
 
-Main is `5f61176` or later. Check `gh pr list --state open`; the live answer wins. Weekly Claude usage reset on 25 November (2 percent used, next reset 2 December 14:00 UTC). Days left: 6 to 1 December, 10 to 5 December, 20 to 15 December.
+Main is `c590977` or later. Check `gh pr list --state open`; the live answer wins. Weekly Claude usage reset on 25 November (2 percent used, next reset 2 December 14:00 UTC). Days left: 6 to 1 December, 10 to 5 December, 20 to 15 December.
 
 - **Merged since 21 November:** AW-360 (#486), AW-358 (#489), AW-361 (#488), AW-333 part A screens 13 to 16 (#487), AW-337 direction (#491), AW-337 Battle of Wits (#494, `5f61176`, with an API-level privacy test). None has been seen on a TV.
-- **Open PRs:**
-  - #495 (AW-334 PR 1, Claude), head `cdb723a`: puts the dashboard tests in the required CI job. All six checks pass after a Node 20 `navigator` fix. Plan approved on #437. Waits for the founder to name the merge.
-- **Not truly done:** AW-358 (#475) was closed without its dashboard tests being run; AW-360 (#483) stays open until they are. Once #495 lands, CI runs them.
+- **Merged 25 November:** #495 (AW-334 PR 1, `c590977`): the required CI job now runs the dashboard tests.
+- **Not truly done:** AW-358 (#475) was closed without its dashboard tests being run; AW-360 (#483) stays open until they are. #495 has landed, so CI now runs them; confirm and close.
 - **Top risk, case 1 (AW-305, #358):** the case file on main (`nightcap/cases/the-lido/`, unchanged since #456) was refused by the written-case check on 21 November (`A0 malformed_file`, 495 problems). Commit `2cbe8ec` moved AW-305 into a paper preflight first (staging, timeline, a cold human paper test, a seat recheck), with engine conversion after those gates. The revised draft is local and private, not on main. A real game cannot load case 1 until conversion is done. Never put case truth in GitHub (D-153).
 - **Still to build for 1 December (1a):** Search and Find, Battle of Wits questions (AW-355), the 1a arc setup (AW-356), AW-333 part B (screens 17 to 22), AW-334 PRs 2 to 4, then the TV walkthrough (AW-301, AW-308).
 - **Case 1 next step (D-156):** Codex (GPT-6.2 Sol High) converts the revised draft in its `afa9` worktree to spec 0093 Part A and passes A0 to A6, after a private backup. No paper gates first.
-- **Waiting on the founder:** naming #495 for merge; the AW-305 sightline and timeline confirmation; the Battle of Wits tone (AW-355); the recap voice (AW-327); the agency framing (AW-319).
+- **Waiting on the founder:** the AW-305 sightline and timeline confirmation; the Battle of Wits tone (AW-355); the recap voice (AW-327); the agency framing (AW-319).
 
 ## Next build order (older snapshot; "Claude and Codex lanes" below replaces it)
 
