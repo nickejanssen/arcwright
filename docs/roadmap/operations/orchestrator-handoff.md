@@ -36,7 +36,7 @@ Everything needed to carry on is in this repository and on GitHub. Nothing depen
 | `/scribe` | Follow `docs/agents/scribe.md` |
 | Starting a child session | The founder starts a new Codex task and pastes the prompt the orchestrator wrote |
 
-**Rules that do not change:** AGENTS.md hard rules; plan approval in the founder's own words, in the builder's own task or his own comment on the issue; he names each merge; merge with `gh pr merge N --squash --match-head-commit <sha>` after updating the branch with main and seeing all six checks pass and every review thread resolved; one task, one branch, one AI; a log line in `HANDOVER.md` for every merge.
+**Rules that do not change:** AGENTS.md hard rules; plan approval in the founder's own words, in the builder's own task or his own comment on the issue; the orchestrator may merge on its own judgment under D-157's conditions; merge with `gh pr merge N --squash --match-head-commit <sha>` after updating the branch with main and seeing all six checks pass and every review thread resolved; one task, one branch, one AI; a log line in `HANDOVER.md` for every merge.
 
 **While Claude is out,** the "other AI" review in the lane rules cannot happen. Use a separate Codex task with `$arcwright-reviewer`, one that did not write the code, and say so in the pull request.
 
@@ -145,14 +145,17 @@ Progress: 7 of about 23 critical-path tasks are merged, roughly 30 percent (infe
 2. **The first case's state is unknown here.** Branch `claude/lido-case-and-spec-followups` had unpushed work on 15 November. AW-305 waits on it.
 3. **The mini-games are now a design-and-build job, not a tweak** (D-136): distinct mechanics designed for 2 to 4 players (AW-337, size L), several per round (AW-344) and solo mini-games (AW-345), all wanted in session 1 as A/B variants (D-137, AW-346). This adds an estimated 6 to 10 build days (inferred). The core variant gates the dates; extra variants that are not ready are simply not played.
 
-## In flight at handoff (21 November 2026)
+## In flight at handoff (25 November 2026)
 
-Main is `bb0d29a` or later. Check `gh pr list --state open`; the live answer wins.
+Main is `c590977` or later. Check `gh pr list --state open`; the live answer wins. Weekly Claude usage reset on 25 November (2 percent used, next reset 2 December 14:00 UTC). Days left: 6 to 1 December, 10 to 5 December, 20 to 15 December.
 
-- **Merged:** AW-332 parts A and B (#473, #480), the AW-359 fixes (#478), AW-351 (#472) and the D-155 result hold (#479). None has been seen on a TV.
-- **Assigned 21 November, each needs its plan approved by the founder:** Codex with GPT-6 Luna on AW-360 (#483), AW-358 (#475) and AW-333 (#436). Claude Sonnet on AW-361 (#484), plus independent review of AW-358 and AW-333. These four avoid each other's files; only AW-333 may edit shared dashboard copy, styles or routes.
-- **Held back:** AW-337 needs the founder's creative interview, and should not add mechanics before AW-361 merges. AW-355 and AW-356 follow it. AW-334 follows AW-333. AW-301 and AW-308 need the founder, a TV and phones.
-- **Waiting on the founder:** the four plans; case 1 approval by 28 November (AW-305); "Investigate on your phones." on the TV (#477, item 5); the agency framing (AW-319); the Battle of Wits tone (AW-355); the recap voice (AW-327).
+- **Merged since 21 November:** AW-360 (#486), AW-358 (#489), AW-361 (#488), AW-333 part A screens 13 to 16 (#487), AW-337 direction (#491), AW-337 Battle of Wits (#494, `5f61176`, with an API-level privacy test). None has been seen on a TV.
+- **Merged 25 November:** #495 (AW-334 PR 1, `c590977`): the required CI job now runs the dashboard tests.
+- **Not truly done:** AW-358 (#475) was closed without its dashboard tests being run; AW-360 (#483) stays open until they are. #495 has landed, so CI now runs them; confirm and close.
+- **Top risk, case 1 (AW-305, #358):** the case file on main (`nightcap/cases/the-lido/`, unchanged since #456) was refused by the written-case check on 21 November (`A0 malformed_file`, 495 problems). Commit `2cbe8ec` moved AW-305 into a paper preflight first (staging, timeline, a cold human paper test, a seat recheck), with engine conversion after those gates. The revised draft is local and private, not on main. A real game cannot load case 1 until conversion is done. Never put case truth in GitHub (D-153).
+- **Still to build for 1 December (1a):** Search and Find, Battle of Wits questions (AW-355), the 1a arc setup (AW-356), AW-333 part B (screens 17 to 22), AW-334 PRs 2 to 4, then the TV walkthrough (AW-301, AW-308).
+- **Case 1 next step (D-156):** Codex (GPT-6.2 Sol High) converts the revised draft in its `afa9` worktree to spec 0093 Part A and passes A0 to A6, after a private backup. No paper gates first.
+- **Waiting on the founder:** the AW-305 sightline and timeline confirmation; the Battle of Wits tone (AW-355); the recap voice (AW-327); the agency framing (AW-319).
 
 ## Next build order (older snapshot; "Claude and Codex lanes" below replaces it)
 
@@ -175,7 +178,7 @@ The founder approved running Claude Code and Codex side by side ("Approve the sp
 - Lanes own file areas; two builders never edit the same files. A task that needs another lane's files waits, or the orchestrator re-plans it with the founder.
 - Shared records belong to the orchestrator only: `HANDOVER.md`, `docs/product/decisions-log.csv`, `docs/product/open-questions-log.csv`, the status page, and merges. A builder may add its own task's entry to `docs/roadmap/index.json` and edit its own task file.
 - Every pull request: all six checks pass, every inline review thread answered and resolved, and a review by the other AI for anything medium or large (the automatic Codex check is not that review). Codex reviews with `$arcwright-reviewer`; Claude with the `reviewer` agent or `/review-pr`.
-- The founder approves each plan in the builder's own session or by his own comment on the issue; a relayed approval does not count (see the #462 review, 2026-11-20). He names each merge; the orchestrator merges at the exact checked commit after updating the branch with main.
+- The founder approves each plan in the builder's own session or by his own comment on the issue; a relayed approval does not count (see the #462 review, 2026-11-20). Under D-157 the orchestrator merges on its own judgment once every condition holds (safe, no lost work on any PR, top-quality code, the PR objectively meets its goal, all CI passes, plus an independent review for medium or large PRs and every thread resolved); it merges at the exact checked commit after updating the branch with main.
 - Codex starts from the Codex app in worktree mode on the `arcwright` project (setup in `.codex/environments/environment.toml`); skills: `$github-task-implementer`, `$arcwright-reviewer`, `$arcwright-sme` (`docs/agents/USAGE.md`, Part 4). The orchestrator cannot drive Codex; the founder pastes the prompt the orchestrator gives him.
 
 **Claude lane: screens (`dashboard/`)**
