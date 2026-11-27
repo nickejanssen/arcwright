@@ -14,11 +14,11 @@ supersedes: []
 
 # Arcwright Game Toolkit: Inventory, Journeys And Draft Proposal
 
-> Current version: v0.1 DRAFT
+> Current version: v0.2 DRAFT
 > Last updated: 2026-11-27
 > Status: Draft, **pending founder approval**. Nothing here is approved build scope.
 > Canonical path: docs/design/tooling/game-toolkit-proposal.md
-> Task: AW-373, [issue #523](https://github.com/nickejanssen/arcwright/issues/523), steps 1 and 2. The task record arrives with [pull request #524](https://github.com/nickejanssen/arcwright/pull/524).
+> Task: [AW-373](../../roadmap/tasks/AW-373-make-the-game-mini-game-and-playtest-toolkit-a-product.md), [issue #523](https://github.com/nickejanssen/arcwright/issues/523), steps 1 and 2.
 
 ## The short answer
 
@@ -27,6 +27,8 @@ supersedes: []
 - **Stories have a fairness checker and early writing guides**, but no guided way to start, no blank starting file and no publish step.
 - **Making a whole new game has no tool.** Several tools only look in the Nightcap folders.
 - **The Codex "copies" are short pointers, on purpose.** The task record calls this drift. The real drift is small: some descriptions differ and one still cites a replaced decision record. The bigger problem is that Claude Code has no pointers at all.
+- **Story configurations** (a case and its versions, such as 1a) are treated as a separate product track. Part 4 lists only what they should share with this toolkit.
+- **The toolkit can grow into the committed creator products** if its rules live in Python with thin commands on top (Part 5). Offering it to outside developers would be new scope.
 - **Recommendation:** one front door that you ask in plain words, one start page, one source for every skill, and small build pieces starting with AW-372. No new all-in-one program.
 
 ## How to read this
@@ -36,7 +38,7 @@ supersedes: []
 | **Built** | A tool or written procedure for the step exists. This does not mean anyone has used it in a real game. |
 | **Partly** | Something exists, but it covers only some cases or needs hand work. |
 | **Missing** | No tool or procedure was found. |
-| **Verified** | Read in the file, or run, on 27 November 2026 at `main` commit `848bed6`. |
+| **Verified** | Read in the file, or run, on 27 November 2026 at `main` commit `848bed6` (Parts 4 and 5 at `4118aaa`). |
 | **Inferred** | A conclusion drawn from what was read. Not directly proven. |
 
 **Run on 27 November:** `pytest engine/tests/test_minigame_tool.py scripts/tests/test_playtest_tool.py scripts/tests/test_playtest_skill_contract.py` (26 passed); `playtest_tool.py --json validate` (ok) and `list`; `minigame_tool.py validate` on all six package folders under `nightcap/mini_games/` other than `_fixtures` (all load); `--help` for the tool commands and the case checker.
@@ -231,6 +233,46 @@ Sizes (inferred): **S** about a day of one build session, **M** one to three, **
 
 **Rules for every piece:** nothing game-specific enters `engine/`; no new dependency, deploy or spending without approval; no editor with menus and no restart of the deferred spec 0080 program unless you decide that.
 
+## Part 4: Story configurations (a separate product track)
+
+Added at the founder's request, relayed by the orchestrator session on 27 November 2026. His words as relayed: "Consider what this should look like for story configurations as well. I consider that a different type of product for arcwright, but if there are learnings and cross-utilization needed, then we should flag that."
+
+A **story configuration** here means a case plus one setup of how it is played, such as version 1a (inferred reading). **This section does not design that product.** It flags what the two tracks should share. The story rows in Part 2 and build piece 6 are the overlap: that is the part to move or reshape if the story track gets its own proposal.
+
+**Where it stands (verified).** Five versions, 1a to 1e, were approved on 20 November (D-148, [version sheets](../session-1-variants/README.md)). Each is one setup of the arc file, the file holding a game's rounds and rules. Of the five, only 1a has such a file registered (`nightcap/agency-race-1a.arc.json`, `config/arcs.json`). [AW-356](https://github.com/nickejanssen/arcwright/issues/465), which builds the setups and the run sheet, is open.
+
+| Shared item | What should be shared | What stays with stories (inferred) | Label |
+|---|---|---|---|
+| Validation | One way to say "does this load and is it fair", with the same pass or fail output. Today the case checker reads the round order from an arc, mini-games have their own validator, and no command checks an arc file alone | Fairness rules and spoiler safety | Existing tools verified; sharing inferred |
+| Play and preview command | One habit: name a thing, get a running room and the phone address. AW-372 plans it for a mini-game; AW-367 plans it for case 1 | Choosing the case, version and seats | Task records verified; sharing inferred |
+| Playtest harness | Two things share this name: scripted session runs (`engine/harness/`) and the Playtest Lab page checks. Both can serve either track | Made-up players and routes that suit a mystery | Both verified; use for versions not tried |
+| Evidence and research | One record of what was played: game, case, version, group, mini-game version. Play records already work for any game; version tags and ratings are AW-354 | Which questions compare versions | Records and task verified; one shared report inferred |
+| Guide format | Same shape for every guide: goal, steps, commands that run, what is missing | Writing craft | Inferred |
+| One source for Claude and Codex | Same source-plus-pointer rule and the same drift test | Rules for who may read case files | Pointer pattern verified for Codex; story use inferred |
+| Mini-game choice | A version picks mini-games by name and version, so the toolkit's "ready" check and player counts feed story setup | Which game fits which moment | Binding verified in the 1a arc file; the "ready" check is missing |
+
+## Part 5: How the toolkit grows into the creator products
+
+**What is committed (verified).** [PRD requirements](../../prd/02-requirements.md) line 94: at the first horizon (H1) a developer gets a web API, a TypeScript web SDK generated from the API description, a hosted dashboard with live knowledge graph inspection, documentation, and Nightcap as the public example. [PRD scope](../../prd/03-scope.md) line 46 and D-035 stage the visual creator tools, called Visual Storyworld, in five phases: (1) inspection, (2) structured editing during H2 preparation, (3) live preview and debugging at H2 launch, (4) a visual flow editor, (5) asset libraries, a marketplace if there is demand, and AI-assisted authoring. The MVP definition in the requirements file ranks the developer dashboard and authoring interface lowest and defers them until the player experience is proven.
+
+**Where that stands.** The session routes in the API take a registered arc ID; no route for uploading an arc definition was found. SDK source exists in `sdk/src/`; no generation step was found in its package file. No knowledge graph inspection screen was found in `dashboard/src/screens/`, and [AW-236](https://github.com/nickejanssen/arcwright/issues/89) is open (verified by listing and search).
+
+The mapping below is a recommendation (inferred). It approves nothing in the right-hand column.
+
+| Toolkit piece | Could grow into | Build it this way now | Would be new product scope: needs your approval |
+|---|---|---|---|
+| 1 Play command (AW-372) | Phase 3 live preview | Room logic separate from the command, driven by the package | Hosting rooms for outside developers |
+| 2 One source for agents | No committed product | Plain written procedures | Shipping agent skills to developers |
+| 3 Front door and start page | Developer documentation | Start page readable without any agent | An agent that helps outside developers author (nearest commitment is phase 5) |
+| 4 Mini-game guide and labels | Developer documentation | Label rules checked in Python | Third-party mini-game packaging or submission (the mini-game skill calls it out of scope) |
+| 5 Port proof (AW-349) | Sample projects (H2 preparation) | Record real effort and limits | An importer or porting service for developers |
+| 6 Story kit | API arc input; phase 2 arc and character editing | Checks return structured results a screen or the API could show | A public story authoring product beyond the staged phases |
+| 7 Results report | Hosted dashboard; phase 3 debugging | Report built on game-neutral play records | **A developer-facing playtest lab or research product** |
+| 8 Any-game support | Needed by every row above | No game names in tools | None found |
+| 9 New-game starter and arc check | API arc input; phases 2 and 4 | One arc check that a command, the API and an editor could all call | Public templates or a starter kit |
+
+**Habits that keep the internal tools from being thrown away (recommendation):** write each rule once in Python and keep commands thin; offer a machine-readable result beside the plain one; keep game names out; treat the existing arc and package files as the only formats. None of this builds anything for outsiders now.
+
 ## Open questions for your interview
 
 One at a time. Each is yours because it turns on priority or taste.
@@ -242,6 +284,7 @@ One at a time. Each is yours because it turns on priority or taste.
 | Q3 | In brainstorming and story writing, how much should the tools write? | They ask, offer options and check; you choose, and final story text stays yours |
 | Q4 | Who is version one for, and what does "publish" mean? | You and your agents. Publish means playtest pages and marking something ready. Outside creators later |
 | Q5 | Two games are labelled ready but have no rules. Relabel them as drafts? | Yes. Both are used only by the old Couch Race arc, so the same change must say what that arc does without them |
+| Q6 | When should story configurations get their own proposal? | Right after you approve this one. Decide the shared items first and fold build piece 6 into that proposal |
 
 ## What happens next
 
