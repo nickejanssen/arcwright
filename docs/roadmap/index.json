@@ -3566,6 +3566,22 @@
         "issue_number": 512,
         "url": "https://github.com/nickejanssen/arcwright/issues/512"
       }
+    },
+    {
+      "id": "AW-372",
+      "title": "Play Any Mini-Game On Wi-Fi From The Mini-Game Tool",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-348"
+      ],
+      "path": "docs/roadmap/tasks/AW-372-play-any-mini-game-on-wi-fi-from-the-mini-game-tool.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 520,
+        "url": "https://github.com/nickejanssen/arcwright/issues/520"
+      }
     }
   ],
   "superseded_sources": [
