@@ -11,15 +11,24 @@ in one saved event, and holdings are knowledge-graph facts.
 
 from __future__ import annotations
 
-from functools import lru_cache
+import asyncio
+from collections import OrderedDict
+from concurrent.futures import Future, ThreadPoolExecutor
+from dataclasses import dataclass, field
 from pathlib import Path
+from threading import Lock
 from uuid import UUID
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from engine.arc.models import ArcDefinition
-from engine.case.authored import AuthoredCase, AuthoredCaseRefused, load_authored_case
+from engine.case.authored import (
+    AuthoredCase,
+    AuthoredCaseRefused,
+    check_case,
+    parse_authored_case,
+)
 from engine.db.orm import Character, Event, SessionParticipant
 from engine.knowledge.holdings import grant_concept
 
@@ -31,35 +40,25 @@ class CaseRefusedAtStartError(Exception):
     """The arc's case file was refused by the fairness check."""
 
 
-def load_arc_case(arc: ArcDefinition) -> AuthoredCase | None:
-    """Load and check the case the arc names, or None if it names none.
+@dataclass(frozen=True)
+class _CaseInputs:
+    source: bytes = field(repr=False)
+    beats: tuple[str, ...]
+    budget: int
+    choice_beats: frozenset[str] | None
 
-    The path is relative to the repository root, like ``config/arcs.json``.
-    """
-    if not arc.case_file:
-        return None
+
+def _validate(inputs: _CaseInputs) -> AuthoredCase:
     try:
-        case = load_authored_case(
-            _REPO_ROOT / arc.case_file,
-            beat_order=[beat.beat_id for beat in arc.beats],
-            budget=arc.choice_config.budget,
-        )
+        case = parse_authored_case(inputs.source.decode("utf-8"))
+        check = check_case(case, beat_order=inputs.beats, budget=inputs.budget)
+        if not check.passed:
+            raise AuthoredCaseRefused(check)
     except AuthoredCaseRefused as refused:
-        msg = f"case refused: {refused.name}"
-        raise CaseRefusedAtStartError(msg) from refused
-    if arc.is_phased:
-        with_choices = {
-            beat.beat_id
-            for beat in arc.beats
-            if any(phase.kind.value == "choices" for phase in beat.phases or [])
-        }
-        offered_in = {b for opp in case.opportunities for b in opp.beats}
-        missing = sorted(
-            beat_id
-            for beat_id in offered_in
-            if beat_id in {beat.beat_id for beat in arc.beats}
-            and beat_id not in with_choices
-        )
+        raise CaseRefusedAtStartError(f"case refused: {refused.name}") from refused
+    if inputs.choice_beats is not None:
+        offered = {beat for opp in case.opportunities for beat in opp.beats}
+        missing = sorted(offered.intersection(inputs.beats) - inputs.choice_beats)
         if missing:
             msg = "case offers choices in beats with no choices phase: " + ", ".join(
                 missing
@@ -68,28 +67,52 @@ def load_arc_case(arc: ArcDefinition) -> AuthoredCase | None:
     return case
 
 
-@lru_cache(maxsize=16)
-def _checked_case(
-    case_file: str, beat_order: tuple[str, ...], budget: int
-) -> AuthoredCase:
-    return load_authored_case(
-        _REPO_ROOT / case_file, beat_order=beat_order, budget=budget
-    )
+_worker = ThreadPoolExecutor(max_workers=1, thread_name_prefix="case-validation")
+_checked: OrderedDict[_CaseInputs, AuthoredCase] = OrderedDict()
+_pending: dict[_CaseInputs, Future[AuthoredCase]] = {}
+_cache_lock = Lock()
 
 
-def cached_arc_case(arc: ArcDefinition) -> AuthoredCase | None:
-    """The arc's case, read and checked once per file, beat order and budget.
+def _check_and_remember(inputs: _CaseInputs) -> AuthoredCase:
+    try:
+        case = _validate(inputs)
+        with _cache_lock:
+            _checked[inputs] = case
+            if len(_checked) > 16:
+                _checked.popitem(last=False)
+        return case
+    finally:
+        with _cache_lock:
+            del _pending[inputs]
 
-    For reads during play (menu, holdings): ``load_arc_case`` already refused
-    an unfair case when the session started.
-    """
+
+async def cached_arc_case(arc: ArcDefinition) -> AuthoredCase | None:
+    """Share a check of the exact bytes and rules across starts and room reads."""
     if not arc.case_file:
         return None
-    return _checked_case(
-        arc.case_file,
+    source = await asyncio.to_thread((_REPO_ROOT / arc.case_file).read_bytes)
+    inputs = _CaseInputs(
+        source,
         tuple(beat.beat_id for beat in arc.beats),
         arc.choice_config.budget,
+        frozenset(
+            beat.beat_id
+            for beat in arc.beats
+            if any(phase.kind.value == "choices" for phase in beat.phases or [])
+        )
+        if arc.is_phased
+        else None,
     )
+    with _cache_lock:
+        if inputs in _checked:
+            _checked.move_to_end(inputs)
+            return _checked[inputs]
+        future = _pending.get(inputs)
+        if future is None:
+            future = _worker.submit(_check_and_remember, inputs)
+            _pending[inputs] = future
+    result = asyncio.wrap_future(future)
+    return await asyncio.shield(result)
 
 
 async def seat_authored_case(

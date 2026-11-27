@@ -7,9 +7,11 @@ is involved anywhere.
 
 from __future__ import annotations
 
+import asyncio
 import copy
 import json
 import re
+from collections import deque
 from collections.abc import AsyncIterator, Callable
 from pathlib import Path
 from typing import Any
@@ -24,12 +26,14 @@ from engine.arc.models import ArcDefinition
 from engine.arc.registry import load_arc_definition
 from engine.case.authored import (
     RULE_NAMES,
+    AuthoredCase,
     AuthoredCaseRefused,
     check_authored_case_file,
     check_case,
     full_report,
     load_authored_case,
     parse_authored_case,
+    rules,
     summary_report,
 )
 from engine.case.authored import __main__ as authored_cli
@@ -44,6 +48,7 @@ from engine.knowledge.holdings import CONCEPT_FACT_TYPE, concepts_held, grant_co
 from engine.session import case_seating
 from engine.session.case_seating import CAST_SEATED_EVENT
 from engine.session.service import SessionService, SessionStateError
+from engine.tests.rounds_support import phased_arc
 
 ENGINE_DIR = Path(__file__).resolve().parent.parent
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "authored_case"
@@ -660,3 +665,99 @@ class TestGuards:
             text = path.read_text(encoding="utf-8")
             assert words.findall(text) == [], path.name
             assert model_use.findall(text) == [], path.name
+
+
+@pytest.mark.asyncio
+async def test_concurrent_checks_share_result_and_changed_inputs_are_checked(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    raw = valid_raw()
+    raw["case_id"] = "cache-regression"
+    path = tmp_path / "case.json"
+    path.write_text(json.dumps(raw), encoding="utf-8")
+    arc = fixture_arc(path)
+    calls = 0
+    original = case_seating._validate
+
+    def counted(inputs: case_seating._CaseInputs) -> AuthoredCase:
+        nonlocal calls
+        calls += 1
+        return original(inputs)
+
+    monkeypatch.setattr(case_seating, "_validate", counted)
+    first, second = await asyncio.gather(
+        case_seating.cached_arc_case(arc), case_seating.cached_arc_case(arc)
+    )
+    assert first is not None and first is second and calls == 1
+    changed_budget = arc.model_copy(
+        update={"choice_config": arc.choice_config.model_copy(update={"budget": 0})}
+    )
+    with pytest.raises(case_seating.CaseRefusedAtStartError):
+        await case_seating.cached_arc_case(changed_budget)
+    reordered = arc.model_copy(update={"beats": list(reversed(arc.beats))})
+    with pytest.raises(case_seating.CaseRefusedAtStartError):
+        await case_seating.cached_arc_case(reordered)
+    phased = phased_arc(case_path=path)
+    assert await case_seating.cached_arc_case(phased) is not None
+    without_choices = phased.model_copy(
+        update={
+            "beats": [
+                beat.model_copy(
+                    update={
+                        "phases": [
+                            phase
+                            for phase in beat.phases or []
+                            if phase.kind.value != "choices"
+                        ]
+                    }
+                )
+                for beat in phased.beats
+            ]
+        }
+    )
+    with pytest.raises(case_seating.CaseRefusedAtStartError, match="no choices phase"):
+        await case_seating.cached_arc_case(without_choices)
+    a2_one_route(raw)
+    path.write_text(json.dumps(raw), encoding="utf-8")
+    with pytest.raises(
+        case_seating.CaseRefusedAtStartError, match="truth_not_redundant"
+    ):
+        await case_seating.cached_arc_case(arc)
+
+
+@pytest.mark.parametrize("budget", [0, 1, 2, 4, 8])
+@pytest.mark.parametrize("late_prerequisite", [False, True])
+def test_pruned_search_matches_all_legal_paths(
+    budget: int, late_prerequisite: bool
+) -> None:
+    raw = valid_raw()
+    if late_prerequisite:
+        a3_order_makes_it_unsolvable(raw)
+    case = parse_authored_case(raw)
+    # Independent exhaustive reference on a tiny fixture. Retain even
+    # irrelevant holdings, and try every legal free and paid choice.
+    states = {(frozenset(case.opening), 0)}
+    for beat in BEATS:
+        queue = deque(states)
+        while queue:
+            held, spent = queue.popleft()
+            for opp in case.opportunities:
+                if beat not in opp.beats or not set(opp.requires) <= held:
+                    continue
+                next_state = (held.union(opp.gives), spent + opp.cost)
+                if (
+                    next_state[0] != held
+                    and next_state[1] <= budget
+                    and next_state not in states
+                ):
+                    states.add(next_state)
+                    queue.append(next_state)
+    minimum = min(
+        (
+            spent
+            for held, spent in states
+            if rules._route_done(case, held) and rules._slots_done(case, held)
+        ),
+        default=None,
+    )
+    assert rules._min_paid_choices(case, BEATS, budget) == minimum

@@ -194,7 +194,7 @@ async def _context(
     arc = load_arc_definition(orm.arc_id)
     if arc is None or not arc.is_phased:
         raise RoundError("not_phased", "this game does not run by phases")
-    case = cached_arc_case(arc)
+    case = await cached_arc_case(arc)
     if case is None:
         raise RoundError("no_written_case", "this game has no written case")
     return _Context(orm, arc, case, character_id)
