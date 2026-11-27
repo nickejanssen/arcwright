@@ -84,16 +84,12 @@ Mini-game work comes before stories and whole games; that was your answer. **Whi
 
 ## The lifecycle in one picture
 
-```mermaid
-flowchart TD
-    I["Import something that exists"] --> C
-    B["Step 1 · Brainstorm"] --> C["Step 2 · Create"]
-    C --> F["Step 3 · Configure"]
-    F --> T["Step 4 · Test"]
-    T --> Y["Step 5 · Playtest"]
-    Y --> R["Step 6 · Research"]
-    R --> U["Step 7 · Publish"]
-    R -. "learned something" .-> F
+```text
+1 Brainstorm ─► 2 Create ─► 3 Configure ─► 4 Test ─► 5 Playtest
+                   ▲             ▲                       │
+  Import ──────────┘             │                       ▼
+  (something that exists)        └─── learned ─── 6 Research ─► 7 Publish
+                                      something
 ```
 
 What exists today. **Built** means a tool or written procedure exists, not that it has been used in play.
