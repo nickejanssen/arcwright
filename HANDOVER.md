@@ -133,6 +133,7 @@ Work the list top to bottom. Building starts only at step 7. Whether a step is d
 
 ## Log
 
+- **2026-11-27** PR #522 merged as `848bed6` (docs): AW-372 now ties `play` into the mini-game skill lifecycle, per the founder. Founder approved Codex's AW-369 plan with the under-10-second target (recorded on #513) and chose the side card for AW-370 (recorded on #516). AW-373 (#523) filed in PR #524: make the game, mini-game and playtest toolkit a product.
 - **2026-11-27** PR #514 merged as `57c1909` (docs): Codex's case 1a browser dress rehearsal. Files AW-369 (#513, 4-minute start freeze), AW-370 (#516, unread reward covers timed controls; founder chose a side card like AW-360) and AW-371 (#517, mini-game beacons return 404). Plans for AW-369 and AW-366 await founder approval.
 - **2026-11-27** PR #521 merged as `3e349e2`: files AW-372 (#520), one `minigame_tool.py play <package>` command for any mini-game's Wi-Fi room. A follow-up docs PR adds the founder's 27 November ask that `play` be part of the mini-game skill's lifecycle and adapt to each package.
 - **2026-11-26** D-158: AW-349 (#444) moves to after the founder's 1 December test, amending D-141 for that task only (founder's words in the decisions log).
