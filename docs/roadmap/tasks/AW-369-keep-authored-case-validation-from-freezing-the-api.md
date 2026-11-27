@@ -7,7 +7,7 @@ status: draft
 review_by: "2027-02-26"
 sensitivity: internal
 source: authored
-x-scope-evidence: "Spec 0093 Part A and spec 0095 lobby flow"
+x-scope-evidence: "D-124, D-139"
 tags: []
 supersedes: []
 ---
