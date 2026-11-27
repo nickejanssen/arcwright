@@ -7,6 +7,7 @@ status: active
 review_by: "2026-12-24"
 sensitivity: internal
 source: authored
+x-scope-evidence: none
 tags: []
 supersedes: []
 ---
@@ -47,7 +48,7 @@ Open problems behind these rules: [#509](https://github.com/nickejanssen/arcwrig
 | **Mini-game stuck** on one phone | Reload that phone. | |
 | **Mini-game stuck** for everyone | Wait: the part ends by itself after 75 seconds. Or host: **Menu**, **Finish mini-game now**. If that fails, **Cancel mini-game** (no winner), then **Move on**. Reload screens that stay behind. | It happens in two rounds running. Note it and decide whether to carry on. |
 | **A timer seems stuck** | Is it paused? Anyone can tap **Menu**, **Resume**. Otherwise reload that screen. Host can tap **Move on** (during Last Call it asks first and locks every theory). | The TV and phones all stay at 0:00 for 30 seconds after reload: restart the engine (window 1). |
-| **Resume fails** and the game stays paused | Resume needs the internet and the writing service. Check the internet, try again, read window 1. Avoid Pause unless you need it. | Three failed tries. Start a new game. |
+| **Resume fails** and the game stays paused | Resume usually needs the internet and the writing service. Check the internet, try again, read window 1. Avoid Pause unless you need it. | Three failed tries. Start a new game. |
 | **Engine crashed** (window 1 stopped, TV cannot reach the game) | In window 1 press the Up arrow, then Enter. Reload every screen. Saved progress stays. A part whose time ran out while it was down ends at once. | It stops twice more. |
 | Window 1 repeats "round tick pass failed" | The database is down. Check Docker Desktop is running, then in window 3 run `docker compose up -d --wait`. | Still repeating after one minute. |
 | **Screens program crashed** (window 2 stopped) | In window 2 press the Up arrow, then Enter. Reload every screen. Seats stay if the PC address is unchanged. | It stops twice more. |
@@ -148,7 +149,7 @@ All checks are from reading the code on 2026-11-26 unless marked otherwise. "Tes
 | Join refusals; seat made before sign-in finishes; no player maximum at join | `engine/session/service.py` (`lobby_join`), `api/routers/lobby.py`, `JoinScreen.tsx` |
 | Part lengths and early endings | `nightcap/agency-race-1a.arc.json`, `engine/session/phases.py`, `mini_game_phase.py` |
 | Engine restart keeps saved progress; expired part ends at once | `api/tick_loop.py`, `engine/session/phases.py` (state is saved, events are in memory) |
-| Resume calls a model | `api/routers/sessions.py` (`resume_session`), `engine/narrator/bridge.py` |
+| Resume usually calls a model (not when there is no saved snapshot) | `api/routers/sessions.py` (`resume_session`), `engine/narrator/bridge.py` |
 | Missing case file breaks Start game | `engine/session/case_seating.py`; seen in a headless run recorded on issue #362 |
 | `make rehearsal` creates Couch Race and stops everything when one part stops | `scripts/rehearsal.py` |
 | Key-reading and address lines in PowerShell | **Tested** on a made-up `.env` file |

@@ -23,14 +23,14 @@ supersedes: []
 
 ## Plain-English Summary
 
-First, if a phone joins but its sign-in step then fails, the seat stays in the game with nobody in it, and trying again adds another. Second, resuming a paused game needs a call to the writing model; if that call fails the game stays paused.
+First, if a phone joins but its sign-in step then fails, the seat stays in the game with nobody in it, and trying again adds another. Second, resuming a paused game usually needs a call to the writing model; if that call fails the game stays paused.
 
 ## Why This Matters
 
 - Found during AW-308 (#362) by reading the code. **Neither has been seen happen.**
 - `dashboard/src/screens/JoinScreen.tsx` joins first and exchanges the sign-in second; a retry joins again. If the empty seat is first, it holds the host role (`engine/session/host_seat.py`).
 - `lobby_join` in `engine/session/service.py` has no player maximum.
-- `resume_session` in `api/routers/sessions.py` awaits `generate_narrator_bridge` inside the same request, so a failure rolls the resume back.
+- `resume_session` in `api/routers/sessions.py` awaits `generate_narrator_bridge` inside the same request, so a failure rolls the resume back. With no saved snapshot, `engine/narrator/bridge.py` returns written text without a model call.
 
 ## Technical Scope
 
