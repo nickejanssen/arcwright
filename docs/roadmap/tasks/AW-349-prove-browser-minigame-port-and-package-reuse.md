@@ -18,7 +18,7 @@ supersedes: []
 **Size:** M  
 **Product:** Shared  
 **Owner:** One implementation session and founder playtest  
-**Target date:** Before 2026-12-05, the founder TV run (D-141). Order: after AW-348.
+**Target date:** After the founder's 1 December 2026 test (D-158, which amends D-141 for this task). Order: after AW-348.
 
 ## Plain-English Summary
 
