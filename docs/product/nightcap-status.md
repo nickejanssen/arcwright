@@ -11,8 +11,8 @@ tags: []
 supersedes: []
 ---
 
-> Current version: v2.1
-> Last updated: 2026-11-26
+> Current version: v2.2
+> Last updated: 2026-11-27
 > Status: Current
 > Canonical path: docs/product/nightcap-status.md
 
@@ -152,7 +152,7 @@ Paper Test #2 is paused (D-111). v3.0 and v3.1 stay online exactly as they are, 
 
 ## The tooling freeze
 
-Since 2026-09-27, work on AI helper tooling and the knowledge base has been limited to fixing things that break (D-110). It ends when the rebuilt game's first TV session is played (D-111). Fixing the specialist agents (AW-296) and refreshing the index (AW-297) are break-fixes and are allowed.
+Since 2026-09-27, work on AI helper tooling and the knowledge base has been limited to fixing things that break (D-110). It ends when the rebuilt game's first TV session is played (D-111). Fixing the specialist agents (AW-296) and refreshing the index (AW-297) are break-fixes and are allowed. On 2026-11-27 the founder made an exception for the game, mini-game and playtest toolkit, AW-373 including AW-372 (D-159); the freeze otherwise continues.
 
 ## Your steps
 
