@@ -11,28 +11,34 @@ tags: []
 supersedes: []
 ---
 
-> Current version: v2.0
-> Last updated: 2026-11-20
+> Current version: v2.1
+> Last updated: 2026-11-26
 > Status: Current
 > Canonical path: docs/product/nightcap-status.md
 
 # Nightcap: Where Things Stand
 
-One page that says what is playable, what the plan is, what is next, and what the founder needs to do. It is updated whenever a decision is recorded. It does not replace the task tracker: whether a task is open or closed is answered on GitHub (`python scripts/roadmap_status.py --milestone M7`).
+One page that says what is playable, what the plan is, what is next, and what the founder needs to do. It is updated whenever a decision is recorded or a milestone lands. It does not replace the task tracker: whether a task is open or closed is answered on GitHub (`python scripts/roadmap_status.py --milestone M7`).
 
 ## In one paragraph
 
-The game you can run today is not the game being shipped. The TV-and-phones build is the older Couch Race design. The Nightcap in the Master GDD has a rebuild plan (spec 0092), approved for the thin version on 2026-11-15 (D-123), and no code yet. That approval permits the inventory of the current build (AW-300) only. The first rebuild spec, the engine spine (spec 0093), was approved on 2026-11-16 (D-124); its build tasks may write plans, and each plan needs its own approval before code. The second, the endgame (spec 0094), was approved the same day (D-125). A mini-game win gives the top-ranked one extra investigation (D-126, AW-328). The founder chose on 2026-11-14 to keep the date and ship a thin but complete version to friends at his house on 12 or 13 December 2026, with as much added as fits (D-112). The date is at risk, not safe. The two things most likely to move it are the first case and the new screens.
+As of 26 November 2026, the rebuilt Nightcap runs a whole game of case 1, version 1a, from start to finish without screens: at two and at four players, through the rounds, Battle of Wits, Last Call, the Verdict, the Postmortem and the survey, with no AI call deciding anything (Codex runs, reported on #362). Every screen for that game is built and tested in code, but they have not been played together in a browser or seen on a TV yet. A Codex dress rehearsal in a browser is running now, and the founder's first TV run is planned for 29 or 30 November. Battle of Wits can also be played on its own over home Wi-Fi (PR #506). The targets are the founder's end-to-end test on 1 December, beta-capable with case 2 written on 5 December, and all versions testable by 15 December (D-149). Technology comes first, then story tooling, then story iteration (D-156).
 
 ## What is proven, and how far
 
-| Thing | Built | Auto-tested | Deployed | Seen on TV and phones | Seen with real players |
+"Reported" means a build session's report on the linked issue, not re-run by the orchestrator.
+
+| Thing | Built | Auto-tested | Played in a browser | Seen on TV and phones | Seen with real players |
 | --- | --- | --- | --- | --- | --- |
-| Arcwright engine core | Yes | Yes, 912 tests | No | Partly, through the old game | No |
-| Old Couch Race game | Yes, six fixed beats | Yes | No, local only | Partly: two players joined and moved through beats on 2026-08-01 | No |
-| Master GDD Nightcap | **No** | No | No | No | No |
-| Mini-games | Four packages; two bound to the old game | Yes | No | Not recorded | No |
-| Online paper test v3.0 and v3.1 | Yes | Yes | Online, unlisted | Does not apply | No; never sent. Paused (D-111) |
+| Arcwright engine core | Yes | Yes, about 1,750 Python tests (reported on PR #506) | Does not apply | No | No |
+| Case 1, version 1a, converted and fair | Yes, local only, never in Git (D-153) | Fairness checks A0 to A6 pass at 2, 3 and 4 players (reported, #358) | Does not apply | No | No |
+| Full game without screens | Yes | Start to survey passes at 2 and 4 players (reported, #362) | Does not apply | No | No |
+| Round and Last Call screens | Yes (AW-332, #480, #478) | Yes | Not yet | No | No |
+| Endgame screens: Verdict, result, Postmortem, survey | Yes (AW-333 part B, #503) | Yes | Not yet | No | No |
+| Battle of Wits mini-game | Yes (AW-337, #494) | Yes | Yes, its own Wi-Fi room (PR #506); real phone not yet | No | No |
+| Battle of Wits real questions | No, three sample questions | Does not apply | Does not apply | No | No |
+| Old Couch Race game | Yes, superseded | Yes | Yes | Partly, 2026-08-01 | No |
+| Online paper test v3.0 and v3.1 | Yes | Yes | Online, unlisted | Does not apply | No; paused (D-111) |
 
 Player evidence so far is three people from the v2.2 paper test: fun 3 of 5, "felt like a detective" 2 to 3 of 5. The fun-quickly gate (Gate 1) is still NOT PASSED.
 
@@ -95,21 +101,24 @@ Total: about 20 to 29 build days in four weeks, roughly one productive build ses
 
 ## What must be true
 
-**Before the founder TV run**
+**Before the founder's 1 December test**
 
-- The first case exists in the engine's format and passes the fairness check (AW-305).
-- A headless run completes at two and at four players with no AI call deciding anything.
-- One set of screen code is chosen (AW-300).
-- Every mini-game starts, ends on its own clock, and hands back to the story (AW-303).
-- A mini-game can be played on its own, with Nightcap off, on a phone or laptop (AW-348), and one ported browser mini-game is reused in an Arcwright experience (AW-349). Scheduled by D-141; they add an estimated 2 to 6 build days (inferred).
+- Done: case 1 converted and passing the fairness checks (AW-305, #358; still open for its remaining items).
+- Done: a headless run completes at two and four players with no AI call deciding anything (#362).
+- Done: every mini-game in the 1a run starts, ends on its own clock, and hands back to the story (AW-303, #356; open only for its TV check).
+- Done: Battle of Wits plays on its own, with Nightcap off (AW-348, PR #506).
+- In progress: a full game played in a browser with a TV window and phone windows (Codex dress rehearsal, #354).
+- Waiting on the founder: Battle of Wits questions and host lines (AW-355, #464, due 30 November); ten sample recap lines (AW-327, #389); four new endgame copy lines (PR #503).
+- Not started: the founder's first run on a real TV and two phones (AW-301, #354), planned for 29 or 30 November.
+- Later, not needed for 1 December: reusing a ported browser mini-game in an Arcwright experience (AW-349, #444); the full theory sentence after the Verdict (AW-364, #504).
 
 **Before session 1**
 
 - The founder has played it start to finish once.
-- A dropped phone can rejoin and keeps its private notes (AW-308).
+- A dropped phone can rejoin and keeps its private notes (AW-308, #362; automated check in progress).
 - The TV never shows private information. Checked by looking, not only by tests (AW-308).
 - The survey is ready and the play record is being saved.
-- A one-page host cheat sheet exists for when something breaks.
+- A one-page host cheat sheet exists for when something breaks (AW-308; draft in progress).
 
 ## How we will know it worked
 
@@ -135,22 +144,7 @@ A scheduled session is not a passed session. If fun or detective feeling scores 
 
 ## Mini-games inside a real session
 
-Verified in code on 2026-11-14: the mini-game engine is built and well tested, but nothing in the product starts a mini-game during a session.
-
-| Step | State |
-| --- | --- |
-| Packages | Four exist. Two are marked active, two are drafts |
-| Bound to a beat | The old arc file binds two packages to two beats |
-| Starts when the beat is reached | **Missing.** No caller of `create_run` or `start_run` outside tests |
-| Player input | Works, and ignores duplicate submissions |
-| Clock owned by the engine | Deadline, pause and resume are built and tested |
-| Clock actually fires | **Missing.** No caller of `check_timeout` outside tests |
-| Validation and scoring | Python decides |
-| Consequence | Releases a clue into what characters know, with a fallback on timeout |
-| Returns to the story | **Not found.** Nothing links a finished run to the beat ending |
-| Real TV and phones | No recorded proof |
-
-The three missing links are AW-303. Separately from the plumbing, the GDD wants a mini-game to grow out of the story and give an opportunity such as first look or an extra action; today's packages release clues. Each needs a story wrapper and a reward change, with the founder's creative approval.
+Updated 2026-11-26. The 2026-11-14 gaps (nothing started a mini-game, nothing fired its clock, nothing returned to the story) were closed by AW-303 (#413, merged 2026-11-18). In the 1a arc, Battle of Wits stands in for Search and Find until that package exists (PR #500). The headless runs on #362 play it inside the game. It has not been seen on a TV yet.
 
 ## Paused: the online paper test
 
@@ -162,10 +156,8 @@ Since 2026-09-27, work on AI helper tooling and the knowledge base has been limi
 
 ## Your steps
 
-1. **Done 2026-11-15.** Merge the reset pull request (PR #348).
-2. **Save the other session's work.** Open the session on branch `claude/lido-case-and-spec-followups` and send it: "Commit and push your spec 0092 edit and the case folder, and open a pull request." Until then that work can be lost.
-3. **Require all checks before merge (AW-298).** GitHub, then Settings, then Branches, then edit the rule for `main`, then add `Lint, Typecheck, Test, Build, and Scan` and `team-ai` under required status checks. About ten minutes.
-4. **Done 2026-11-15.** Review and merge the agent fix (PR #352, then PR #376 for decisions-log access).
-5. **Done 2026-11-15.** Spec 0092 approved for the thin version, with the stretch goals as a condition (D-123, issue #303). The inventory (AW-300) started the same evening.
-6. **Answer the open decisions**, one at a time, when asked: the issues labelled `needs-decision`.
-7. **Keep writing the first case** with its session. It is the critical path.
+1. **Now.** Play Battle of Wits on your phone: in your main folder run `git pull`, then `python -m scripts.play_battle_of_wits`, and open the printed link. Tell the orchestrator what feels wrong.
+2. **By 30 November.** Write or approve the Battle of Wits questions and host lines (AW-355, #464).
+3. **When asked.** Review the ten recap lines on #389 and the four endgame copy lines on PR #503.
+4. **29 or 30 November, about an hour.** First run on a real TV and two phones (AW-301), using the host cheat sheet once it is merged.
+5. **1 December.** Play case 1, version 1a, start to finish.
