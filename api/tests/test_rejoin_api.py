@@ -17,6 +17,7 @@ from typing import Any
 from uuid import UUID, uuid4
 
 import pytest
+from firebase_admin import auth as firebase_auth
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -25,6 +26,8 @@ from api.main import app
 from api.routers import events, lobby
 from engine.db import get_async_session
 from engine.db.testing import make_sqlite_session_factory
+from engine.events.bus import SessionEventBus
+from engine.events.fanout import SessionConnectionRegistry
 from engine.session.phases import current_phase, host_move_on, tick
 from engine.session.service import SessionService
 from engine.tests.rounds_support import fixture_arc_registered, phased_arc
@@ -65,7 +68,7 @@ async def test_a_dropped_phone_rejoins_with_its_own_holdings_and_findings(
     monkeypatch.setitem(overrides, get_async_session, request_session)
     monkeypatch.setattr(lobby, "_ensure_firebase_app", lambda: None)
     monkeypatch.setattr(
-        lobby.firebase_auth, "create_custom_token", sign_ins.create_custom_token
+        firebase_auth, "create_custom_token", sign_ins.create_custom_token
     )
     monkeypatch.setattr(auth, "_decode_bearer", sign_ins.decode)
     registered: AbstractContextManager[None] = fixture_arc_registered(arc)
@@ -77,9 +80,9 @@ async def test_a_dropped_phone_rejoins_with_its_own_holdings_and_findings(
                     db, arc_id=arc.arc_id, host_account_id=uuid4()
                 )
             session_id = created.session_id
-            monkeypatch.setitem(events._buses, session_id, events.SessionEventBus())
+            monkeypatch.setitem(events._buses, session_id, SessionEventBus())
             monkeypatch.setitem(
-                events._registries, session_id, events.SessionConnectionRegistry()
+                events._registries, session_id, SessionConnectionRegistry()
             )
             base = f"/v1/sessions/{session_id}"
 
@@ -142,7 +145,8 @@ async def test_a_dropped_phone_rejoins_with_its_own_holdings_and_findings(
                         if state.phase == "choices":
                             break
                         await host_move_on(db, session_id, _now())
-                    assert state.phase == "choices"
+                    reached = await current_phase(db, session_id)
+                    assert reached is not None and reached.phase == "choices"
 
                 # Each player looks into something different.
                 ada_menu = await get(first, ada_token, "/me/menu")
