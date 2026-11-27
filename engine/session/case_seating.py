@@ -15,6 +15,7 @@ import asyncio
 from collections import OrderedDict
 from concurrent.futures import Future, ThreadPoolExecutor
 from dataclasses import dataclass, field
+from functools import lru_cache
 from pathlib import Path
 from threading import Lock
 from uuid import UUID
@@ -115,6 +116,40 @@ async def cached_arc_case(arc: ArcDefinition) -> AuthoredCase | None:
     return await asyncio.shield(result)
 
 
+@lru_cache(maxsize=16)
+def _restore_case(snapshot: str) -> AuthoredCase:
+    return AuthoredCase.model_validate_json(snapshot)
+
+
+async def session_case(
+    db: AsyncSession, session_id: UUID, arc: ArcDefinition
+) -> AuthoredCase | None:
+    """Read the private snapshot saved by Start, including after API restart."""
+    seated = select(Event).where(
+        Event.session_id == session_id, Event.event_type == CAST_SEATED_EVENT
+    )
+    payload = await db.scalar(seated.with_only_columns(Event.payload))
+    if payload is None:
+        # A pre-start read has no pin yet.
+        return await cached_arc_case(arc)
+    if "case_snapshot" in payload:
+        return _restore_case(payload["case_snapshot"])
+    # Older sessions have no historical bytes. Pin the available validated
+    # version on first read, serializing the backfill on the seating row.
+    row = (
+        await db.execute(
+            seated.with_for_update().execution_options(populate_existing=True)
+        )
+    ).scalar_one()
+    if "case_snapshot" in row.payload:
+        return _restore_case(row.payload["case_snapshot"])
+    case = await cached_arc_case(arc)
+    if case is not None:
+        row.payload = {**row.payload, "case_snapshot": case.model_dump_json()}
+        await db.flush()
+    return case
+
+
 async def seat_authored_case(
     db: AsyncSession, *, session_id: UUID, case: AuthoredCase
 ) -> dict[str, UUID]:
@@ -143,6 +178,7 @@ async def seat_authored_case(
                 event_type=CAST_SEATED_EVENT,
                 payload={
                     "case_id": case.case_id,
+                    "case_snapshot": case.model_dump_json(),
                     "cast": {k: str(v) for k, v in seated.items()},
                 },
             )

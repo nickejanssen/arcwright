@@ -54,7 +54,7 @@ from engine.events.models import (
     PresentationHints,
 )
 from engine.session import commit_phase, mini_game_phase
-from engine.session.case_seating import cached_arc_case
+from engine.session.case_seating import session_case
 from engine.session.models import SessionStatus
 
 logger = logging.getLogger(__name__)
@@ -505,7 +505,7 @@ async def _enter(
             },
         ),
     )
-    lines = await phase_lines(arc, definition)
+    lines = await phase_lines(db, session_id, arc, definition)
     for line_index, line in enumerate(lines):
         await emit(
             publish,
@@ -551,21 +551,25 @@ async def _enter(
     return state
 
 
-async def _commit_case(arc: ArcDefinition) -> AuthoredCase:
-    case = await cached_arc_case(arc)
+async def _commit_case(
+    db: AsyncSession, session_id: UUID, arc: ArcDefinition
+) -> AuthoredCase:
+    case = await session_case(db, session_id, arc)
     if case is None:
         raise RoundError("no_written_case", "this game has no written case")
     return case
 
 
 async def phase_lines(
-    arc: ArcDefinition, definition: PhaseDefinition
+    db: AsyncSession, session_id: UUID, arc: ArcDefinition, definition: PhaseDefinition
 ) -> list[PhaseLine]:
     """The written lines of a phase: its own, or for a scene that says so, the
     case's written ``closing``."""
     if definition.source == "case_closing":
         return [
-            PhaseLine(text=text) for text in (await _commit_case(arc)).closing if text
+            PhaseLine(text=text)
+            for text in (await _commit_case(db, session_id, arc)).closing
+            if text
         ]
     return definition.lines
 
@@ -574,7 +578,7 @@ async def _begin_commit(db: AsyncSession, orm: OrmSession, arc: ArcDefinition) -
     await commit_phase.begin(
         db,
         orm.session_id,
-        await _commit_case(arc),
+        await _commit_case(db, orm.session_id, arc),
         await human_player_ids(db, orm.session_id),
     )
 
@@ -590,7 +594,7 @@ async def _close_commit(
     await commit_phase.close(
         db,
         orm.session_id,
-        await _commit_case(arc),
+        await _commit_case(db, orm.session_id, arc),
         entry=state.entry,
         beat_id=state.beat_id,
         humans=await human_player_ids(db, orm.session_id),
@@ -1095,7 +1099,7 @@ async def read_theory_form(
             return await commit_phase.read_form(
                 db,
                 session_id,
-                await _commit_case(arc),
+                await _commit_case(db, session_id, arc),
                 participant_id,
                 entry=state.entry if state is not None and building else None,
                 open_now=open_now,
@@ -1123,7 +1127,7 @@ async def save_theory_draft(
             return await commit_phase.save_draft(
                 db,
                 session_id,
-                await _commit_case(arc),
+                await _commit_case(db, session_id, arc),
                 participant_id,
                 entry=state.entry,
                 beat_id=state.beat_id,
@@ -1153,7 +1157,7 @@ async def lock_theory(
             theory = await commit_phase.lock(
                 db,
                 session_id,
-                await _commit_case(arc),
+                await _commit_case(db, session_id, arc),
                 participant_id,
                 entry=state.entry,
                 beat_id=state.beat_id,
@@ -1262,7 +1266,7 @@ async def round_view(db: AsyncSession, session_id: UUID, now: datetime) -> Round
                     "speaker": line.speaker,
                     "hints": line.hints.model_dump(),
                 }
-                for line in await phase_lines(arc, definition)
+                for line in await phase_lines(db, session_id, arc, definition)
             )
     if state.phase == PhaseKind.commit.value:
         ready = await commit_phase.locked_ids(db, session_id, state.entry)

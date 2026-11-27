@@ -29,7 +29,7 @@ from engine.db.orm import Decision, SessionParticipant
 from engine.db.orm import Session as OrmSession
 from engine.events.models import AudienceTarget, EventCategory
 from engine.knowledge.holdings import concepts_held, grant_concept
-from engine.session.case_seating import cached_arc_case
+from engine.session.case_seating import session_case
 from engine.session.mini_game_reward import RewardGrant, rewards_from_rows
 from engine.session.models import SessionStatus
 from engine.session.phases import (
@@ -194,7 +194,7 @@ async def _context(
     arc = load_arc_definition(orm.arc_id)
     if arc is None or not arc.is_phased:
         raise RoundError("not_phased", "this game does not run by phases")
-    case = await cached_arc_case(arc)
+    case = await session_case(db, orm.session_id, arc)
     if case is None:
         raise RoundError("no_written_case", "this game has no written case")
     return _Context(orm, arc, case, character_id)

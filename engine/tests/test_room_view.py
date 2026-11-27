@@ -12,6 +12,7 @@ from __future__ import annotations
 import dataclasses
 import json
 from collections.abc import AsyncIterator, Callable
+from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
@@ -192,8 +193,13 @@ async def test_a_whole_game_read_with_no_sign_in_at_every_step(
     registered: Callable[[ArcDefinition], None],
     no_model_calls: None,
     players: int,
+    tmp_path: Path,
 ) -> None:
-    arc = closing_arc()
+    original = closing_arc()
+    assert original.case_file
+    path = tmp_path / "session-fixture.json"
+    path.write_bytes(Path(original.case_file).read_bytes())
+    arc = closing_arc(path)
     registered(arc)
     seated = await join_room(db, arc, players, start=False)
 
@@ -210,6 +216,10 @@ async def test_a_whole_game_read_with_no_sign_in_at_every_step(
     assert not any(p.ready or p.locked or p.answered_survey for p in lobby.players)
 
     await SessionService().start_session(db, seated.session_id)
+    await db.commit()
+    db.expunge_all()
+    # Every play-time read below must survive loss of the authored source.
+    path.write_text("{}", encoding="utf-8")
     rec = Recorder()
     await tick(db, seated.session_id, at(0), rec)
     opening = await check(db, seated, set(), now=0, result_reached=False)

@@ -38,7 +38,7 @@ from engine.db.orm import Decision, Event
 from engine.db.orm import Session as OrmSession
 from engine.events.models import AudienceTarget, EventCategory
 from engine.session import commit_phase, phases, recap
-from engine.session.case_seating import cached_arc_case
+from engine.session.case_seating import session_case
 from engine.session.endgame import EndgameResult, resolve_endgame
 
 REVEAL_EVENT = "theory_reveal"
@@ -61,8 +61,8 @@ class ClosingView:
     private: dict[str, Any] | None
 
 
-async def _case(arc: ArcDefinition) -> AuthoredCase:
-    case = await cached_arc_case(arc)
+async def _case(db: AsyncSession, session_id: UUID, arc: ArcDefinition) -> AuthoredCase:
+    case = await session_case(db, session_id, arc)
     if case is None:
         raise phases.RoundError("no_written_case", "this game has no written case")
     return case
@@ -189,7 +189,7 @@ async def enter(
 ) -> None:
     """Do what ``kind`` does when it starts. Safe to call twice for one visit:
     the second call finds the saved row and does nothing."""
-    case = await _case(arc)
+    case = await _case(db, session_id, arc)
     if kind is PhaseKind.reveal:
         await phases.emit(
             publish,
@@ -354,7 +354,7 @@ async def closing_view(
     ):
         raise phases.RoundError("not_a_participant")
     reveal = (
-        await _reveal_payload(db, session_id, await _case(arc))
+        await _reveal_payload(db, session_id, await _case(db, session_id, arc))
         if PhaseKind.reveal.value in reached
         else None
     )
