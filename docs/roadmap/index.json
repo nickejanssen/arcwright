@@ -3631,6 +3631,20 @@
         "issue_number": 520,
         "url": "https://github.com/nickejanssen/arcwright/issues/520"
       }
+    },
+    {
+      "id": "AW-373",
+      "title": "Make The Game, Mini-Game And Playtest Toolkit A Product",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "L",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-373-make-the-game-mini-game-and-playtest-toolkit-a-product.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 523,
+        "url": "https://github.com/nickejanssen/arcwright/issues/523"
+      }
     }
   ],
   "superseded_sources": [
