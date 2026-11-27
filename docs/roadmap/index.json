@@ -3568,6 +3568,22 @@
       }
     },
     {
+      "id": "AW-369",
+      "title": "Keep Authored-Case Validation From Freezing The API",
+      "milestone": "M7",
+      "epic": "M7-B",
+      "size": "M",
+      "depends_on": [
+        "AW-324"
+      ],
+      "path": "docs/roadmap/tasks/AW-369-keep-authored-case-validation-from-freezing-the-api.md",
+      "epic_id": "M7-B",
+      "github": {
+        "issue_number": 513,
+        "url": "https://github.com/nickejanssen/arcwright/issues/513"
+      }
+    },
+    {
       "id": "AW-372",
       "title": "Play Any Mini-Game On Wi-Fi From The Mini-Game Tool",
       "milestone": "M7",
