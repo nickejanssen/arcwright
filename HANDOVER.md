@@ -133,6 +133,7 @@ Work the list top to bottom. Building starts only at step 7. Whether a step is d
 
 ## Log
 
+- **2026-11-27** PR #521 merged as `3e349e2`: files AW-372 (#520), one `minigame_tool.py play <package>` command for any mini-game's Wi-Fi room. A follow-up docs PR adds the founder's 27 November ask that `play` be part of the mini-game skill's lifecycle and adapt to each package.
 - **2026-11-26** D-158: AW-349 (#444) moves to after the founder's 1 December test, amending D-141 for that task only (founder's words in the decisions log).
 - **2026-11-26** PR #515 (AW-308 AI part, #362) merged as `e708d69`, head `28929c4`, under D-157 after an independent Claude Sonnet review (PASS) and all six checks. Adds the host cheat sheet `docs/roadmap/operations/session-1-host-cheat-sheet.md` and `api/tests/test_rejoin_api.py` (a dropped player rejoins with their own private information, never another's). Filed AW-365 to AW-368 (#509 to #512): mini-game updates without a live stream, the dashboard dev server can serve case files (privacy), one-command start still launches Couch Race, two ways a live game gets stuck. AW-308 stays open for the founder's device checks.
 - **2026-11-26** PR #508 merged as `b51bf94`: `docs/product/nightcap-status.md` v2.1 replaces the stale 20 November page. AW-349 kept as a TV-run prerequisite per D-141 after the automated review flagged my deferral; whether to defer it is a pending founder question. AW-360 (#483) closed after re-running its tests against the pre-fix code (the two new tests fail there, all pass now).
