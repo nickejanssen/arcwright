@@ -110,8 +110,7 @@ Total: about 20 to 29 build days in four weeks, roughly one productive build ses
 - In progress: a full game played in a browser with a TV window and phone windows (Codex dress rehearsal, #354).
 - Waiting on the founder: Battle of Wits questions and host lines (AW-355, #464, due 30 November); ten sample recap lines (AW-327, #389); four new endgame copy lines (PR #503).
 - Not started: the founder's first run on a real TV and two phones (AW-301, #354), planned for 29 or 30 November.
-- Not started: reusing a ported browser mini-game in an Arcwright experience (AW-349, #444). The founder scheduled it before the TV run (D-141); it stays a prerequisite unless he decides otherwise.
-- Later, not needed for 1 December: the full theory sentence after the Verdict (AW-364, #504).
+- Later, not needed for 1 December: reusing a ported browser mini-game in an Arcwright experience (AW-349, #444; moved after the 1 December test by D-158); the full theory sentence after the Verdict (AW-364, #504).
 
 **Before session 1**
 
