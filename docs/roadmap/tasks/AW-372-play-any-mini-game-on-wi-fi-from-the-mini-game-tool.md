@@ -29,6 +29,7 @@ Today Battle of Wits has its own launcher, `python -m scripts.play_battle_of_wit
 
 - Founder, 27 November 2026: one command suite is more scalable, keeps the mini-game interaction logic in one place, and needs one set of documentation.
 - Each new package would otherwise need its own launcher script and its own instructions (inferred).
+- Founder, 27 November 2026: the mini-game command is tied to the mini-game skill too, and the result should be "easy, scalable, intuitive, adaptive, and world class quality". The skill (`docs/skills/arcwright-minigame/SKILL.md`) is how agents run the mini-game lifecycle, so `play` must be part of that lifecycle, not a side script.
 
 ## Technical Scope
 
@@ -36,6 +37,9 @@ Today Battle of Wits has its own launcher, `python -m scripts.play_battle_of_wit
 2. Make the browser room generic: results and standings come from the package's resolved result, not Battle of Wits code. Package-specific presentation stays in the package's own renderer.
 3. Keep `python -m scripts.play_battle_of_wits` working as a short alias, or remove it with the README updated in the same change.
 4. One documentation section in the mini-game skill covering every command, including `play`.
+5. Tie `play` into the skill's lifecycle: the skill's playtest step tells agents to run `play` for a live Wi-Fi test, and `status` and `onboard` name `play` as the next step for a package that can be played.
+6. Adapt to each package: player limits and other room settings come from the package's own files, never from constants in the tool. A package that cannot be played yet gets a plain message saying exactly what it is missing, instead of a stack trace.
+7. Easy to run: the command prints the address phones should open and how to stop it; `--help` explains every option in plain words.
 
 ## Human Collaboration Contract
 
@@ -47,6 +51,8 @@ Today Battle of Wits has its own launcher, `python -m scripts.play_battle_of_wit
 2. A second package with a server-side resolver starts with the same command, or the plan names exactly what a package must provide and why the second one cannot yet.
 3. Server-only files never reach the browser, for every package (the PR #506 tests, generalised).
 4. `engine/` gains no reference to Nightcap or any game title.
+5. The mini-game skill's lifecycle names `play` at the playtest step, and `status` or `onboard` suggests it for a playable package (tested).
+6. A package missing what `play` needs fails with a one-line plain explanation naming the missing piece (tested).
 
 ## Tests/Verification
 
