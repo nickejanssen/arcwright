@@ -291,23 +291,50 @@ def _min_paid_choices(
     """Fewest paid choices one player needs to reach a route to every truth and
     hold an accepted answer for every slot. Exact search, no model."""
 
+    # A held concept can affect this search only if it satisfies a goal or
+    # unlocks an opportunity that can eventually satisfy one. Work backwards
+    # through all alternatives, including prerequisites obtained for free.
+    relevant = {
+        concept
+        for truth in case.essential_truths
+        for route in truth.routes
+        for concept in route.concepts
+    }
+    for slot in case.solution:
+        for answer in slot.accepted:
+            relevant.update(_answer_needs(slot, answer))
+    while True:
+        before = len(relevant)
+        for opp in case.opportunities:
+            if not relevant.isdisjoint(opp.gives):
+                relevant.update(opp.requires)
+        if len(relevant) == before:
+            break
+
+    by_beat = {
+        beat: [
+            (
+                frozenset(opp.requires),
+                frozenset(relevant.intersection(opp.gives)),
+                opp.cost,
+            )
+            for opp in case.opportunities
+            if beat in opp.beats and not relevant.isdisjoint(opp.gives)
+        ]
+        for beat in beat_order
+    }
+
     def close_free(held: frozenset[str], beat: str) -> frozenset[str]:
         current = set(held)
-        changed = True
-        while changed:
-            changed = False
-            for opp in case.opportunities:
-                if (
-                    opp.cost == 0
-                    and beat in opp.beats
-                    and set(opp.requires) <= current
-                    and not set(opp.gives) <= current
-                ):
-                    current.update(opp.gives)
-                    changed = True
-        return frozenset(current)
+        while True:
+            before = len(current)
+            for needs, gives, cost in by_beat[beat]:
+                if cost == 0 and needs <= current:
+                    current.update(gives)
+            if len(current) == before:
+                return frozenset(current)
 
-    layer: dict[frozenset[str], int] = {frozenset(case.opening): 0}
+    layer = {frozenset(relevant.intersection(case.opening)): 0}
     for beat in beat_order:
         best: dict[frozenset[str], int] = {}
         heap: list[tuple[int, int, frozenset[str]]] = []
@@ -321,15 +348,10 @@ def _min_paid_choices(
             spent, _, held = heapq.heappop(heap)
             if spent > best[held] or spent >= budget:
                 continue
-            for opp in case.opportunities:
-                if (
-                    opp.cost == 0
-                    or beat not in opp.beats
-                    or not set(opp.requires) <= held
-                    or set(opp.gives) <= held
-                ):
+            for needs, gives, cost in by_beat[beat]:
+                if cost == 0 or not needs <= held or gives <= held:
                     continue
-                grown = close_free(held | frozenset(opp.gives), beat)
+                grown = close_free(held | gives, beat)
                 if spent + 1 < best.get(grown, budget + 1):
                     best[grown] = spent + 1
                     heapq.heappush(heap, (spent + 1, next(tie), grown))

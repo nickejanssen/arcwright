@@ -48,8 +48,8 @@ async def db() -> AsyncIterator[AsyncSession]:
     await engine.dispose()
 
 
-def the_case() -> AuthoredCase:
-    case = cached_arc_case(commit_arc())
+async def the_case() -> AuthoredCase:
+    case = await cached_arc_case(commit_arc())
     assert case is not None
     return case
 
@@ -101,7 +101,7 @@ class TestResults:
         await player_locks(db, seated, 0, RIGHT)
         for who in range(1, players):
             await player_locks(db, seated, who, WRONG)
-        result = await resolve_endgame(db, seated.session_id, the_case())
+        result = await resolve_endgame(db, seated.session_id, await the_case())
         assert who_won(seated, result) == [0]
         assert result.decided_by == "only_solver"
         assert len(result.solvers) == 1
@@ -123,7 +123,7 @@ class TestResults:
         seated, _ = await at_commit(db, registered, players=players)
         for who in range(players):
             await player_locks(db, seated, who, WRONG)
-        result = await resolve_endgame(db, seated.session_id, the_case())
+        result = await resolve_endgame(db, seated.session_id, await the_case())
         assert (result.winners, result.decided_by) == ((), "no_solver")
 
     @pytest.mark.asyncio
@@ -141,7 +141,7 @@ class TestResults:
         await add_run(db, seated, [[1], [0, 2, 3]])
         await add_run(db, seated, [[1], [2], [0, 3]])
         await add_run(db, seated, [[0], [1, 2, 3]])
-        result = await resolve_endgame(db, seated.session_id, the_case())
+        result = await resolve_endgame(db, seated.session_id, await the_case())
         assert who_won(seated, result) == [1]
         assert result.decided_by == "mini_game_wins"
 
@@ -160,10 +160,10 @@ class TestResults:
         await add_run(db, seated, [[1], [2], [0]])
         await add_run(db, seated, [[2], [0], [1]])
         # Wins: 1 each. Placings: player 0 is 1+3+2, player 1 is 2+1+3: level.
-        shared = await resolve_endgame(db, seated.session_id, the_case())
+        shared = await resolve_endgame(db, seated.session_id, await the_case())
         assert (who_won(seated, shared), shared.decided_by) == ([0, 1], "shared")
         await add_run(db, seated, [[2], [0], [1]])
-        closer = await resolve_endgame(db, seated.session_id, the_case())
+        closer = await resolve_endgame(db, seated.session_id, await the_case())
         assert (who_won(seated, closer), closer.decided_by) == (
             [0],
             "mini_game_placings",
@@ -180,7 +180,7 @@ class TestResults:
         for who in (0, 1):
             await player_locks(db, seated, who, RIGHT)
         await add_run(db, seated, [[1], [0]], status="cancelled")
-        result = await resolve_endgame(db, seated.session_id, the_case())
+        result = await resolve_endgame(db, seated.session_id, await the_case())
         assert (who_won(seated, result), result.decided_by) == ([0, 1], "shared")
 
     @pytest.mark.asyncio
@@ -194,7 +194,7 @@ class TestResults:
         await grant(db, seated, 0, "c_how_true")
         await draft(db, seated, 0, RIGHT)
         await tick(db, seated.session_id, at(DEADLINE), Recorder())
-        result = await resolve_endgame(db, seated.session_id, the_case())
+        result = await resolve_endgame(db, seated.session_id, await the_case())
         assert who_won(seated, result) == [0]
         states = {p.participant_id: p.state for p in result.players}
         assert states[str(seated.participants[0])] == "locked"
@@ -209,7 +209,7 @@ class TestResults:
     ) -> None:
         seated, _ = await at_commit(db, registered, players=4)
         await tick(db, seated.session_id, at(DEADLINE), Recorder())
-        result = await resolve_endgame(db, seated.session_id, the_case())
+        result = await resolve_endgame(db, seated.session_id, await the_case())
         assert (result.winners, result.decided_by) == ((), "no_solver")
         assert {p.state for p in result.players} == {"no_theory"}
 
@@ -225,8 +225,8 @@ class TestResults:
         await player_locks(db, seated, 1, RIGHT)
         await tick(db, seated.session_id, at(DEADLINE), Recorder())
         await add_run(db, seated, [[1], [0, 2]])
-        first = await resolve_endgame(db, seated.session_id, the_case())
-        assert first == await resolve_endgame(db, seated.session_id, the_case())
+        first = await resolve_endgame(db, seated.session_id, await the_case())
+        assert first == await resolve_endgame(db, seated.session_id, await the_case())
 
 
 class TestNothingBeforeEveryoneHasLocked:
@@ -237,7 +237,7 @@ class TestNothingBeforeEveryoneHasLocked:
         seated, _ = await at_commit(db, registered, players=2)
         await player_locks(db, seated, 0, RIGHT)
         with pytest.raises(CommitRefusal) as refused:
-            await resolve_endgame(db, seated.session_id, the_case())
+            await resolve_endgame(db, seated.session_id, await the_case())
         assert refused.value.code == "commit_not_finished"
 
     @pytest.mark.asyncio
@@ -249,5 +249,5 @@ class TestNothingBeforeEveryoneHasLocked:
         seated = await seat_session(db, arc, players=2)
         await tick(db, seated.session_id, at(0), Recorder())
         with pytest.raises(CommitRefusal) as refused:
-            await resolve_endgame(db, seated.session_id, the_case())
+            await resolve_endgame(db, seated.session_id, await the_case())
         assert refused.value.code == "no_theories"

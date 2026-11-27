@@ -170,11 +170,19 @@ class SessionService:
     ) -> Session:
         if orm.status != SessionStatus.created.value:
             raise SessionStateError(f"Cannot start session in status {orm.status!r}")
-        orm.status = SessionStatus.active.value
-        orm.started_at = datetime.now(tz=timezone.utc)
         arc_definition = load_arc_definition(orm.arc_id)
         if arc_definition is not None:
+            from engine.session.case_seating import (
+                CaseRefusedAtStartError,
+                cached_arc_case,
+                seat_authored_case,
+            )
             from engine.session.obligations import register_authored_obligations
+
+            try:
+                authored_case = await cached_arc_case(arc_definition)
+            except CaseRefusedAtStartError as exc:
+                raise SessionStateError(str(exc)) from exc
 
             await register_authored_obligations(
                 db,
@@ -182,18 +190,10 @@ class SessionService:
                 arc_definition,
                 created_beat=orm.current_beat_id,
             )
-            from engine.session.case_seating import (
-                CaseRefusedAtStartError,
-                load_arc_case,
-                seat_authored_case,
-            )
-
-            try:
-                authored_case = load_arc_case(arc_definition)
-            except CaseRefusedAtStartError as exc:
-                raise SessionStateError(str(exc)) from exc
             if authored_case is not None:
                 await seat_authored_case(db, session_id=session_id, case=authored_case)
+        orm.status = SessionStatus.active.value
+        orm.started_at = datetime.now(tz=timezone.utc)
         await db.flush()
         return _orm_session_to_pydantic(orm)
 

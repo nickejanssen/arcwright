@@ -9,8 +9,11 @@ runs for real. Made-up arc and case only.
 
 from __future__ import annotations
 
+import asyncio
 from collections.abc import AsyncIterator, Iterator
 from datetime import datetime, timezone
+from pathlib import Path
+from threading import Event
 from uuid import UUID, uuid4
 
 import pytest
@@ -20,8 +23,10 @@ from starlette.testclient import TestClient
 
 from api.auth import JwtClaims, require_player_jwt, require_player_or_host_jwt
 from api.main import app
+from engine.case.authored import AuthoredCase
 from engine.db import get_async_session
 from engine.db.testing import make_sqlite_session_factory
+from engine.session import case_seating
 from engine.session.phases import tick
 from engine.session.service import SessionService
 from engine.tests.rounds_support import closing_arc, timer_race_registry
@@ -396,3 +401,50 @@ class TestHandOver:
             url(signed, "/host/hand-over"), json={"to_participant_id": str(ids[1])}
         )
         assert display.status_code == 403
+
+
+@pytest.mark.asyncio
+async def test_health_and_other_room_respond_during_two_starts(
+    client: TestClient,
+    db_factory: async_sessionmaker[AsyncSession],
+    signed: Signed,
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    arc = closing_arc()
+    assert arc.case_file
+    path = tmp_path / "slow.json"
+    path.write_bytes(Path(arc.case_file).read_bytes() + b"  ")
+    arc = closing_arc(path)
+    monkeypatch.setattr("engine.session.service.load_arc_definition", lambda _: arc)
+    other = Signed()
+    await seed(db_factory, other, start=False)
+    await seed(db_factory, signed, start=False)
+    signed.role = "host"
+    entered, release = Event(), Event()
+    original = case_seating._validate
+    calls = 0
+
+    def slow(inputs: case_seating._CaseInputs) -> AuthoredCase:
+        nonlocal calls
+        calls += 1
+        entered.set()
+        assert release.wait(10), "validation blocked the API"
+        return original(inputs)
+
+    monkeypatch.setattr(case_seating, "_validate", slow)
+    start = asyncio.create_task(asyncio.to_thread(client.post, url(signed, "/start")))
+    try:
+        assert await asyncio.to_thread(entered.wait, 5)
+        retry = asyncio.create_task(
+            asyncio.to_thread(client.post, url(signed, "/start"))
+        )
+        assert (await asyncio.to_thread(client.get, "/health")).status_code == 200
+        room = await asyncio.to_thread(client.get, url(other, "/room"))
+        assert room.status_code == 200 and room.json()["session_status"] == "created"
+        assert not start.done() and not retry.done()
+    finally:
+        release.set()
+    first, second = await asyncio.gather(start, retry)
+    assert first.status_code == 200 and second.status_code == 409
+    assert calls == 1

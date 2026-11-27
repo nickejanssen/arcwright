@@ -12,6 +12,7 @@ from __future__ import annotations
 import dataclasses
 import json
 from collections.abc import AsyncIterator, Callable
+from pathlib import Path
 from typing import Any
 from uuid import uuid4
 
@@ -37,6 +38,7 @@ from engine.tests.rounds_support import (
     Seated,
     at,
     closing_arc,
+    phased_arc,
     where,
 )
 from engine.tests.test_endgame_headless import (
@@ -191,8 +193,13 @@ async def test_a_whole_game_read_with_no_sign_in_at_every_step(
     registered: Callable[[ArcDefinition], None],
     no_model_calls: None,
     players: int,
+    tmp_path: Path,
 ) -> None:
-    arc = closing_arc()
+    original = closing_arc()
+    assert original.case_file
+    path = tmp_path / "session-fixture.json"
+    path.write_bytes(Path(original.case_file).read_bytes())
+    arc = closing_arc(path)
     registered(arc)
     seated = await join_room(db, arc, players, start=False)
 
@@ -209,6 +216,10 @@ async def test_a_whole_game_read_with_no_sign_in_at_every_step(
     assert not any(p.ready or p.locked or p.answered_survey for p in lobby.players)
 
     await SessionService().start_session(db, seated.session_id)
+    await db.commit()
+    db.expunge_all()
+    # Every play-time read below must survive loss of the authored source.
+    path.write_text("{}", encoding="utf-8")
     rec = Recorder()
     await tick(db, seated.session_id, at(0), rec)
     opening = await check(db, seated, set(), now=0, result_reached=False)
@@ -369,3 +380,30 @@ async def test_an_unknown_session_is_not_found(
     with pytest.raises(RoundError) as refused:
         await room_view(db, uuid4(), at(0))
     assert refused.value.code == "session_not_found"
+
+
+@pytest.mark.asyncio
+async def test_cold_lobby_does_not_validate_the_case(
+    db: AsyncSession,
+    registered: Callable[[ArcDefinition], None],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    arc = closing_arc()
+    registered(arc)
+    seated = await join_room(db, arc, 2, start=False)
+
+    def unexpected(*args: Any) -> None:
+        pytest.fail("lobby read started validation")
+
+    monkeypatch.setattr(closing, "_case", unexpected)
+    assert (await room_view(db, seated.session_id, at(0))).session_status == "created"
+
+
+@pytest.mark.asyncio
+async def test_phased_lobby_without_a_case_has_no_closing_view(
+    db: AsyncSession, registered: Callable[[ArcDefinition], None]
+) -> None:
+    arc = phased_arc(case_path=None)
+    registered(arc)
+    seated = await join_room(db, arc, 2, start=False)
+    assert (await room_view(db, seated.session_id, at(0))).closing is None

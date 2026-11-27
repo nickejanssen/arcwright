@@ -7,10 +7,14 @@ is involved anywhere.
 
 from __future__ import annotations
 
+import asyncio
 import copy
+import heapq
 import json
+import random
 import re
 from collections.abc import AsyncIterator, Callable
+from itertools import count
 from pathlib import Path
 from typing import Any
 from uuid import UUID, uuid4
@@ -24,12 +28,14 @@ from engine.arc.models import ArcDefinition
 from engine.arc.registry import load_arc_definition
 from engine.case.authored import (
     RULE_NAMES,
+    AuthoredCase,
     AuthoredCaseRefused,
     check_authored_case_file,
     check_case,
     full_report,
     load_authored_case,
     parse_authored_case,
+    rules,
     summary_report,
 )
 from engine.case.authored import __main__ as authored_cli
@@ -44,6 +50,7 @@ from engine.knowledge.holdings import CONCEPT_FACT_TYPE, concepts_held, grant_co
 from engine.session import case_seating
 from engine.session.case_seating import CAST_SEATED_EVENT
 from engine.session.service import SessionService, SessionStateError
+from engine.tests.rounds_support import phased_arc
 
 ENGINE_DIR = Path(__file__).resolve().parent.parent
 FIXTURES = Path(__file__).resolve().parent / "fixtures" / "authored_case"
@@ -660,3 +667,224 @@ class TestGuards:
             text = path.read_text(encoding="utf-8")
             assert words.findall(text) == [], path.name
             assert model_use.findall(text) == [], path.name
+
+
+@pytest.mark.asyncio
+async def test_concurrent_checks_share_result_and_changed_inputs_are_checked(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    raw = valid_raw()
+    raw["case_id"] = "cache-regression"
+    path = tmp_path / "case.json"
+    path.write_text(json.dumps(raw), encoding="utf-8")
+    arc = fixture_arc(path)
+    calls = 0
+    original = case_seating._validate
+
+    def counted(inputs: case_seating._CaseInputs) -> AuthoredCase:
+        nonlocal calls
+        calls += 1
+        return original(inputs)
+
+    monkeypatch.setattr(case_seating, "_validate", counted)
+    first, second = await asyncio.gather(
+        case_seating.cached_arc_case(arc), case_seating.cached_arc_case(arc)
+    )
+    assert first is not None and first is second and calls == 1
+    changed_budget = arc.model_copy(
+        update={"choice_config": arc.choice_config.model_copy(update={"budget": 0})}
+    )
+    with pytest.raises(case_seating.CaseRefusedAtStartError):
+        await case_seating.cached_arc_case(changed_budget)
+    reordered = arc.model_copy(update={"beats": list(reversed(arc.beats))})
+    with pytest.raises(case_seating.CaseRefusedAtStartError):
+        await case_seating.cached_arc_case(reordered)
+    phased = phased_arc(case_path=path)
+    assert await case_seating.cached_arc_case(phased) is not None
+    without_choices = phased.model_copy(
+        update={
+            "beats": [
+                beat.model_copy(
+                    update={
+                        "phases": [
+                            phase
+                            for phase in beat.phases or []
+                            if phase.kind.value != "choices"
+                        ]
+                    }
+                )
+                for beat in phased.beats
+            ]
+        }
+    )
+    with pytest.raises(case_seating.CaseRefusedAtStartError, match="no choices phase"):
+        await case_seating.cached_arc_case(without_choices)
+    a2_one_route(raw)
+    path.write_text(json.dumps(raw), encoding="utf-8")
+    with pytest.raises(
+        case_seating.CaseRefusedAtStartError, match="truth_not_redundant"
+    ):
+        await case_seating.cached_arc_case(arc)
+
+
+@pytest.mark.asyncio
+async def test_each_start_pins_its_own_validated_file(
+    db: AsyncSession, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    raw = valid_raw()
+    path = tmp_path / "invented.json"
+    arc = fixture_arc(path)
+    monkeypatch.setattr("engine.session.service.load_arc_definition", lambda _: arc)
+    ids = []
+    for title in ("first version", "second version"):
+        raw["title"] = title
+        path.write_text(json.dumps(raw), encoding="utf-8")
+        service, session_id, _ = await make_session(db, arc)
+        await service.start_session(db, session_id)
+        ids.append(session_id)
+    await db.commit()
+    path.unlink()
+    db.expunge_all()
+    case_seating._restore_case.cache_clear()
+    for session_id, title in zip(ids, ("first version", "second version"), strict=True):
+        pinned = await case_seating.session_case(db, session_id, arc)
+        assert pinned is not None and pinned.title == title
+
+
+@pytest.mark.parametrize("budget", [0, 1, 2, 4, 8])
+@pytest.mark.parametrize("late_prerequisite", [False, True])
+def test_pruned_search_matches_all_legal_paths(
+    budget: int, late_prerequisite: bool
+) -> None:
+    raw = valid_raw()
+    if late_prerequisite:
+        a3_order_makes_it_unsolvable(raw)
+    case = parse_authored_case(raw)
+    assert rules._min_paid_choices(case, BEATS, budget) == exhaustive_minimum(
+        case, BEATS, budget
+    )
+
+
+# Frozen pre-AW-369 implementation, kept independent of search optimizations.
+def exhaustive_minimum(
+    case: AuthoredCase, beat_order: list[str], budget: int
+) -> int | None:
+    """Fewest paid choices one player needs to reach a route to every truth and
+    hold an accepted answer for every slot. Exact search, no model."""
+
+    def close_free(held: frozenset[str], beat: str) -> frozenset[str]:
+        current = set(held)
+        changed = True
+        while changed:
+            changed = False
+            for opp in case.opportunities:
+                if (
+                    opp.cost == 0
+                    and beat in opp.beats
+                    and set(opp.requires) <= current
+                    and not set(opp.gives) <= current
+                ):
+                    current.update(opp.gives)
+                    changed = True
+        return frozenset(current)
+
+    layer: dict[frozenset[str], int] = {frozenset(case.opening): 0}
+    for beat in beat_order:
+        best: dict[frozenset[str], int] = {}
+        heap: list[tuple[int, int, frozenset[str]]] = []
+        tie = count()
+        for held, spent in layer.items():
+            closed = close_free(held, beat)
+            if spent < best.get(closed, budget + 1):
+                best[closed] = spent
+                heapq.heappush(heap, (spent, next(tie), closed))
+        while heap:
+            spent, _, held = heapq.heappop(heap)
+            if spent > best[held] or spent >= budget:
+                continue
+            for opp in case.opportunities:
+                if (
+                    opp.cost == 0
+                    or beat not in opp.beats
+                    or not set(opp.requires) <= held
+                    or set(opp.gives) <= held
+                ):
+                    continue
+                grown = close_free(held | frozenset(opp.gives), beat)
+                if spent + 1 < best.get(grown, budget + 1):
+                    best[grown] = spent + 1
+                    heapq.heappush(heap, (spent + 1, next(tie), grown))
+        layer = best
+
+    done = [
+        spent
+        for held, spent in layer.items()
+        if rules._route_done(case, held) and rules._slots_done(case, held)
+    ]
+    return min(done) if done else None
+
+
+def test_seeded_differential_paid_choice_search() -> None:
+    rng = random.Random(369)
+    template = parse_authored_case(valid_raw())
+    decisions = set()
+    for index in range(3000):
+        concepts = [str(i) for i in range(rng.randint(3, 8))]
+        beats = BEATS[: rng.randint(1, 3)]
+        ops = []
+        for j in range(rng.randint(4, 10)):
+            # Include a paid-to-free prerequisite chain and additional random edges.
+            needs = [concepts[0]] if j == 1 else rng.sample(concepts, rng.randrange(3))
+            gives = [concepts[j]] if j < 2 else rng.sample(concepts, rng.randint(1, 2))
+            cost = [2, 0, 1][j] if j < 3 else rng.randrange(4)
+            ops.append(
+                template.opportunities[0].model_copy(
+                    update={
+                        "opportunity_id": str(j),
+                        "requires": needs,
+                        "gives": gives,
+                        "cost": cost,
+                        "beats": rng.sample(beats, rng.randint(1, len(beats))),
+                    }
+                )
+            )
+        truth = template.essential_truths[0]
+        routes = [
+            truth.routes[0].model_copy(
+                update={"concepts": rng.sample(concepts, rng.randint(1, 2))}
+            )
+            for _ in range(2)
+        ]
+        slot = template.solution[0]
+        answers = [
+            slot.accepted[0].model_copy(
+                update={
+                    "value": rng.choice(concepts),
+                    "needs": rng.sample(concepts, rng.randrange(3)),
+                }
+            )
+            for _ in range(2)
+        ]
+        case = template.model_copy(
+            update={
+                "concepts": [
+                    template.concepts[0].model_copy(update={"concept_id": c})
+                    for c in concepts
+                ],
+                "opening": rng.sample(concepts, rng.randrange(3)),
+                "opportunities": ops,
+                "essential_truths": [truth.model_copy(update={"routes": routes})],
+                "solution": [
+                    slot.model_copy(update={"kind": "concept", "accepted": answers})
+                ],
+            }
+        )
+        budget = rng.randrange(5)
+        minimum = exhaustive_minimum(case, beats, len(ops))
+        assert rules._min_paid_choices(case, beats, len(ops)) == minimum, index
+        outcome, actual = rules._a3_solvable(case, beats, budget)
+        refused = minimum is None or minimum > budget
+        assert (outcome.status == "fail") == refused, index
+        assert actual == (None if refused else minimum), index
+        decisions.add(refused)
+    assert decisions == {False, True}
