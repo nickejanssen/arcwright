@@ -31,7 +31,7 @@ Open problems behind these rules: [#509](https://github.com/nickejanssen/arcwrig
 
 | What you see | What to do | Give up when |
 | --- | --- | --- |
-| **A phone dropped or the browser closed** | Same phone, same browser: scan the TV's QR code again, or open `http://PC-ADDRESS:5173/join`. It shows "Finding your seat..." and returns to the seat with its notebook. | The phone is dead, was swapped, or its browser data was cleared. That seat cannot be recovered. The game still moves on by its clocks. Continue without them, or start a new game. |
+| **A phone dropped or the browser closed** | Same phone, same browser: open `http://PC-ADDRESS:5173/join` (the TV shows its QR code only before the game starts). It shows "Finding your seat..." and returns to the seat with its notebook. | The phone is dead, was swapped, or its browser data was cleared. That seat cannot be recovered. The game still moves on by its clocks. Continue without them, or start a new game. |
 | **The host's phone is lost** (host = first to join) | Use window 3: `Send-HostCommand "round/move-on"` (also `pause`, `resume`, `start`, `end`). | Window 3 was closed or the command is refused twice. The game still moves on by its clocks. |
 | **A phone shows the wrong or a stuck screen** | Reload the page. "Eyes on the TV." is normal in some parts. If it says "This game is no longer running.", tap **Join another game**. | Still wrong after two reloads while other phones are right. |
 | **The host's menu has no Start game or Move on** | Reload the host's phone. It checks who is host only when the page opens. | Still missing: use `Send-HostCommand` in window 3. |
