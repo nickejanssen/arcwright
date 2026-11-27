@@ -706,7 +706,11 @@
       "title": "Session 1 Readiness And Run",
       "path": "docs/roadmap/epics/M7-C-session-1-readiness-and-run.md",
       "tasks": [
-        "AW-308"
+        "AW-308",
+        "AW-365",
+        "AW-366",
+        "AW-367",
+        "AW-368"
       ],
       "github": {
         "issue_number": 374,
@@ -3505,6 +3509,62 @@
       "github": {
         "issue_number": 504,
         "url": "https://github.com/nickejanssen/arcwright/issues/504"
+      }
+    },
+    {
+      "id": "AW-365",
+      "title": "Keep Phones Updating During The Mini-Game When The Live Stream Is Unavailable",
+      "milestone": "M7",
+      "epic": "M7-C",
+      "size": "M",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-365-keep-phones-updating-during-the-mini-game-without-a-live-stream.md",
+      "epic_id": "M7-C",
+      "github": {
+        "issue_number": 509,
+        "url": "https://github.com/nickejanssen/arcwright/issues/509"
+      }
+    },
+    {
+      "id": "AW-366",
+      "title": "Stop The Dashboard Dev Server Serving Case Files To Phones",
+      "milestone": "M7",
+      "epic": "M7-C",
+      "size": "S",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-366-stop-the-dashboard-dev-server-serving-case-files.md",
+      "epic_id": "M7-C",
+      "github": {
+        "issue_number": 510,
+        "url": "https://github.com/nickejanssen/arcwright/issues/510"
+      }
+    },
+    {
+      "id": "AW-367",
+      "title": "Start A Case 1 (1a) Game With One Command That Survives One Part Crashing",
+      "milestone": "M7",
+      "epic": "M7-C",
+      "size": "S",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-367-start-a-case-1-game-with-one-safe-command.md",
+      "epic_id": "M7-C",
+      "github": {
+        "issue_number": 511,
+        "url": "https://github.com/nickejanssen/arcwright/issues/511"
+      }
+    },
+    {
+      "id": "AW-368",
+      "title": "Close Two Ways A Live Game Can Get Stuck: Half-Made Seats And Resume",
+      "milestone": "M7",
+      "epic": "M7-C",
+      "size": "S",
+      "depends_on": [],
+      "path": "docs/roadmap/tasks/AW-368-close-two-ways-a-live-game-can-get-stuck.md",
+      "epic_id": "M7-C",
+      "github": {
+        "issue_number": 512,
+        "url": "https://github.com/nickejanssen/arcwright/issues/512"
       }
     }
   ],
